@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Chip, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { Chip, IconButton, Menu, MenuItem, Stack, Typography, styled } from '@mui/material';
 import { EventId, EventInvite, InviteStatus, UserRole } from '@opentalk/rest-api-rtk-query';
 import { RegisteredUser, User } from '@opentalk/rest-api-rtk-query/src/types/user';
 import { useState } from 'react';

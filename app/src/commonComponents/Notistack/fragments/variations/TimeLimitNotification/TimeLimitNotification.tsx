@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box } from '@mui/material';
-import { styled } from '@mui/system';
+import { Box, styled } from '@mui/material';
 import { SnackbarContent, CustomContentProps } from 'notistack';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - (container) Generate .well-known/opentalk/client file ([!1842](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1842), [#1497](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1497))
 - Add training participation report configuration from dashboard ([!1833](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1833), [#2448](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2448))
 
+
+### Meeting Settings Dialog feature
+
+- Implement mobile version of the meeting settings dialog ([#1931](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1931))
+- Implement meeting settings dialog with audio section ([#1915](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1915))
+
 ### 🐛 Bug fixes
 
 - Add missing hover color on datetimepicker ([!1609](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1609))

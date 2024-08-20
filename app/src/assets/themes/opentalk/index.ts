@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import type {} from '@mui/lab/themeAugmentation';
 import { PaletteMode } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import type {} from '@mui/x-date-pickers/themeAugmentation';
@@ -688,10 +689,26 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
       MuiTab: {
         styleOverrides: {
           root: ({ theme }) => ({
-            color: theme.palette.common.white,
-            '&.Mui-focusVisible': {
-              outline: theme.palette.focus.outline,
+            color: theme.palette.text.primary,
+            textTransform: 'none',
+            '&.Mui-selected': {
+              color: theme.palette.text.secondary,
+              backgroundColor: theme.palette.secondary.light,
             },
+            '&.Mui-selected:hover': {
+              color: theme.palette.text.secondary,
+              backgroundColor: theme.palette.secondary.light,
+            },
+            '&:hover': {
+              backgroundColor: theme.palette.secondary.lighter,
+            },
+          }),
+        },
+      },
+      MuiTabs: {
+        styleOverrides: {
+          indicator: () => ({
+            backgroundColor: 'transparent',
           }),
         },
       },

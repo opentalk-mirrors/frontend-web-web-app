@@ -19,8 +19,8 @@ import {
 } from '../../../store/slices/mediaSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
+import MeetingSettingsDialog from '../../MeetingSettingsDialog';
 import ToolbarButton from './ToolbarButton';
-import VideoMenu from './VideoMenu';
 
 interface VideoButtonProps {
   isLobby?: boolean;
@@ -92,14 +92,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
       >
         <ButtonIcon />
       </ToolbarButton>
-      <VideoMenu
-        anchorEl={menuRef.current}
-        onClose={() => {
-          setShowMenu(false);
-        }}
-        open={showMenu}
-        videoEnabled={cameraEnabled}
-      />
+      <MeetingSettingsDialog open={showMenu} onClose={() => setShowMenu(false)} setting="video" />
     </div>
   );
 };

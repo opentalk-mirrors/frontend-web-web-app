@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MenuItem, MenuItemOwnProps, styled, Typography, SvgIcon } from '@mui/material';
+import { MenuItem, styled, Typography, SvgIcon, MenuItemOwnProps } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { DoneIcon } from '../../../assets/icons';
