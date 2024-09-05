@@ -1123,3 +1123,5 @@ legal-vote-report-issue-kind-notification = {displayName} meldet ein {kind} Prob
 legal-vote-report-issue-description-notification = {displayName} meldet ein Problem: "{description}"
 legal-vote-report-issue-inform-moderator-success = Die Störung wurde an den Moderator gesendet
 legal-vote-report-issue-description-placeholder = Beschreiben Sie das Problem...
+
+legal-vote-stopped-invalid-results-notification = Leider ist beim Abstimmen etwas schief gelaufen. Bitte informieren Sie den Moderator oder versuchen Sie es erneut.

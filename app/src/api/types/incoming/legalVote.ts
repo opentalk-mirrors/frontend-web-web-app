@@ -62,7 +62,7 @@ enum StopKind {
   Auto = 'auto',
 }
 
-enum VoteFinalResults {
+export enum VoteFinalResults {
   Valid = 'valid',
   Invalid = 'invalid',
 }
