@@ -18,6 +18,7 @@ import {
   FilterableParticipant,
   MeetingNotesParticipant,
   ForceMuteType,
+  LegalVoteState,
 } from '../types';
 import { sortParticipantsWithConfig } from '../utils/sortParticipants';
 import { selectAutomoderationParticipantIds } from './slices/automodSlice';
@@ -266,7 +267,7 @@ export const selectPollsAndVotingsCount = createSelector(selectAllVotes, selectA
 
 export const selectActivePollsAndVotingsCount = createSelector(selectAllVotes, selectAllPolls, (votings, polls) => {
   return (
-    votings.filter((voting) => voting.state === 'active').length +
+    votings.filter((voting) => voting.state === LegalVoteState.Started).length +
     polls.filter((poll) => poll.state === 'active').length
   );
 });

@@ -369,7 +369,7 @@ legal-vote-form-button-continue = Continue
 
 legal-vote-overview-panel-button-cancel = Abort
 legal-vote-overview-panel-button-end = Close
-ballot-overview-panel-status-active = Active
+ballot-overview-panel-status-started = Active
 ballot-overview-panel-status-finished = Finished
 ballot-overview-panel-status-canceled = Canceled
 legal-vote-select-participants-title = Select participants
@@ -604,6 +604,7 @@ lobby-password-placeholder = Password please
 dashboard-home-join = Start
 dashboard-home-created-by = Created by {$author}
 global-state-active = active
+global-state-started = active
 global-state-finished = finished
 global-state-canceled = canceled
 global-accept = Accept

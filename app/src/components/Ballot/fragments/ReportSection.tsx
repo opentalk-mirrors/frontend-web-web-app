@@ -7,7 +7,7 @@ import { useFormik } from 'formik';
 import { FC, Fragment, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { reportIssue, ReportIssueKind, VoteReportIssueOutgoing } from '../../../api/types/outgoing/legalVote';
+import { reportIssue, ReportIssueKind, VoteReportIssue } from '../../../api/types/outgoing/legalVote';
 import { CommonTextField, notifications } from '../../../commonComponents';
 import { useAppDispatch } from '../../../hooks';
 import { LegalVoteId } from '../../../types';
@@ -50,7 +50,7 @@ export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
 
   const toggleExpandedState = () => setExpanded((expanded) => !expanded);
 
-  const formik = useFormik<Omit<VoteReportIssueOutgoing, 'action'>>({
+  const formik = useFormik<Omit<VoteReportIssue, 'action'>>({
     initialValues: {
       legal_vote_id: legalVoteId as LegalVoteId,
       ...FORMIK_DEFAULTS,

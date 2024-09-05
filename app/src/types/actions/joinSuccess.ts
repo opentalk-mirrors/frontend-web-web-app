@@ -16,6 +16,7 @@ import {
   Timestamp,
 } from '../common';
 import { RoomInfo } from '../event';
+import { LegalVoteJoinSuccess, VoteSummary } from '../legalVote';
 import { Participant } from '../participant';
 import { InitialPoll } from '../poll';
 import { TimerState } from '../timer';
@@ -36,6 +37,7 @@ export interface JoinSuccessInternalState {
   automod?: InitialAutomod;
   breakout?: InitialBreakout;
   polls?: InitialPoll;
+  votes?: Array<VoteSummary>;
   participants: Participant[];
   moderation?: {
     raiseHandsEnabled: boolean;
@@ -65,6 +67,7 @@ export interface JoinSuccessIncoming {
   automod?: InitialAutomod;
   breakout?: InitialBreakout;
   polls: InitialPoll;
+  legalVote: LegalVoteJoinSuccess;
   whiteboard?: WhiteboardState;
   moderation?: {
     raiseHandsEnabled: boolean;

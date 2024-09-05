@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantId, VoteOption } from '../../types';
+import { ParticipantId, LegalVoteOption } from '../../types';
 import LinearProgressWithLabel from './LinearProgressWithLabel';
 
 interface PollResultProps {
-  votes: Record<VoteOption, number>;
+  votes: Record<LegalVoteOption, number>;
   with_abstain?: boolean;
-  voters?: Record<ParticipantId, VoteOption>;
+  voters?: Record<ParticipantId, LegalVoteOption>;
 }
 
 // Todo: Make this more generic and the legal Vote version one variation of this, so it can be used with the poll feature as well

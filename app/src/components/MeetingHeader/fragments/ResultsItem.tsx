@@ -8,7 +8,7 @@ import { LegalBallotIcon, PollIcon } from '../../../assets/icons';
 import { useAppDispatch } from '../../../hooks';
 import { Poll } from '../../../store/slices/pollSlice';
 import { setVoteOrPollIdToShow } from '../../../store/slices/uiSlice';
-import { LegalVoteType } from '../../../types';
+import { LegalVote, LegalVoteState } from '../../../types';
 
 const Chip = styled(MuiChip)(({ theme }) => ({
   marginLeft: theme.spacing(1),
@@ -31,17 +31,17 @@ const CustomMenuItem = styled(MenuItem)(() => ({
 }));
 
 interface ResultsItemProps {
-  item: LegalVoteType | Poll;
+  item: LegalVote | Poll;
 }
 
 const ResultsItem = ({ item }: ResultsItemProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const openItem = (item: LegalVoteType | Poll) => {
+  const openItem = (item: LegalVote | Poll) => {
     dispatch(setVoteOrPollIdToShow(item.id));
   };
 
-  const label = Object.hasOwn(item, 'name') ? (item as LegalVoteType).name : (item as Poll).topic;
+  const label = Object.hasOwn(item, 'name') ? (item as LegalVote).name : (item as Poll).topic;
 
   return (
     <CustomMenuItem key={item.id} onClick={() => openItem(item)}>
@@ -50,7 +50,7 @@ const ResultsItem = ({ item }: ResultsItemProps) => {
       <Chip
         size="medium"
         label={t(`global-state-${item.state}`)}
-        color={item.state === 'active' ? 'success' : 'error'}
+        color={item.state === 'active' || item.state === LegalVoteState.Started ? 'success' : 'error'}
         variant="filled"
         clickable={false}
       />

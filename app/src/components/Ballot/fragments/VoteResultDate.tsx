@@ -5,11 +5,11 @@ import { Button, styled, Typography, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { useDateFormat } from '../../../hooks';
-import { LegalVoteType } from '../../../types';
+import { LegalVoteState, LegalVote } from '../../../types';
 
 interface VoteResultDateProps {
   date: Date;
-  state: LegalVoteType['state'];
+  state: LegalVote['state'];
   showTableHint: boolean;
   showResultsHandler: () => void;
 }
@@ -22,7 +22,7 @@ const TokenTypography = styled(Typography)(({ theme }) => ({
 const VoteResultDate = ({ state, date, showTableHint, showResultsHandler }: VoteResultDateProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const tokenKey = 'legal-vote-share-token-' + (state === 'active' ? 'active' : 'inactive');
+  const tokenKey = 'legal-vote-share-token-' + (state === LegalVoteState.Started ? 'active' : 'inactive');
 
   return (
     <>

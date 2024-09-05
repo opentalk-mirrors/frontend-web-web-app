@@ -372,6 +372,7 @@ const handleControlMessage = async (
           automod: data.automod,
           breakout: data.breakout,
           polls: data.polls,
+          votes: data.legalVote?.votes,
           participants: joinedParticipants,
           moderation: data.moderation,
           isPresenter: data.media?.isPresenter,
