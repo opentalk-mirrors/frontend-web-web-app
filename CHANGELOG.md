@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Internal
 
+- Migrate from parcel to vite for `18next-fluent` lib ([#1957](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1957))
 - Migrate from parcel to vite for `fluent_conv` lib ([#1956](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1956))
 - Add missing `setup-pnpm` to the `prepare-artifact:upload-sourcemaps` CI step ([#2079](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2079))
 - Fix wrong response type for `getRoomEventInfo` endpoint ([#2064](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2064))
