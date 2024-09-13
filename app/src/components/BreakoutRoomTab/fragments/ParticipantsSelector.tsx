@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, styled, Typography } from '@mui/material';
+import { Box, Button, Typography, styled } from '@mui/material';
 import { useField, useFormikContext } from 'formik';
 import i18n from 'i18next';
 import { get, includes, isEmpty, reduce, xorBy } from 'lodash';
@@ -88,7 +88,7 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
 
   useEffect(() => {
     if (isEmpty(field.value)) {
-      let rooms;
+      let rooms: number;
       switch (expandedRef.current) {
         case AccordionOptions.Rooms:
           rooms = roomsRef.current;
@@ -100,14 +100,13 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
         }
         case AccordionOptions.Moderators:
         case AccordionOptions.Groups:
-        default:
           // todo get all moderator count and add init with moderators as dividers here
           rooms = 4;
           break;
       }
       initRooms(rooms);
     }
-  }, [field.value, getFormName, initRooms, participantsTotal, values]);
+  }, [field.value, getFormName, initRooms, values]);
 
   const allParticipantsAssigned = () => {
     const assignments: BreakoutRoomWithFullParticipants[] = field.value;
@@ -148,14 +147,14 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
 
     if (expandedForm === AccordionOptions.Rooms) {
       return validateRoomsByRooms();
-    } else if (expandedForm === AccordionOptions.Participants) {
-      return validateRoomsByParticipants();
-    } else {
-      return {
-        valid: true,
-        error: null,
-      };
     }
+    if (expandedForm === AccordionOptions.Participants) {
+      return validateRoomsByParticipants();
+    }
+    return {
+      valid: true,
+      error: null,
+    };
   };
 
   const customSubmit = () => {

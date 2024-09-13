@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Stack } from '@mui/material';
+import { Stack, styled } from '@mui/material';
 import { debounce } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -10,7 +10,7 @@ import { LastSeenTimestampAddedPayload, setLastSeenTimestamp } from '../../api/t
 import { useAppSelector } from '../../hooks';
 import { lastSeenTimestampAdded, selectLastMessageForScope } from '../../store/slices/chatSlice';
 import { selectChatSearchValue, setChatSearchValue } from '../../store/slices/uiSlice';
-import { TargetId, ChatScope } from '../../types';
+import { ChatScope, TargetId } from '../../types';
 import ChatForm from './fragments/ChatForm';
 import ChatList from './fragments/ChatList';
 import ChatSearch from './fragments/ChatSearch';
@@ -41,7 +41,7 @@ const Chat = ({ target, scope, autoFocusMessageInput }: ChatProps) => {
     const payload: LastSeenTimestampAddedPayload = { scope, timestamp, target };
     dispatch(lastSeenTimestampAdded(payload));
     dispatch(setLastSeenTimestamp.action(payload));
-  }, [lastMessageForScope]);
+  }, [lastMessageForScope, dispatch, scope, target]);
 
   const debouncedSetChatSearchValue = useCallback(
     debounce((value: string) => {

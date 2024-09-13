@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, MenuItem as MuiMenuItem, Popover as MuiPopover, styled, Stack, MenuList } from '@mui/material';
+import { Button, MenuList, MenuItem as MuiMenuItem, Popover as MuiPopover, Stack, styled } from '@mui/material';
 import { Event, EventException, EventId, InviteStatus } from '@opentalk/rest-api-rtk-query';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 import {
-  useLazyGetRoomInvitesQuery,
   useDeclineEventInviteMutation,
+  useLazyGetRoomInvitesQuery,
   useMarkFavoriteEventMutation,
   useUnmarkFavoriteEventMutation,
 } from '../../../api/rest';
@@ -129,13 +129,13 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
     try {
       await declineEventInvitation({ eventId }).unwrap();
       notifications.success(
-        t(`dashbooard-event-decline-invitation-notification`, {
+        t('dashbooard-event-decline-invitation-notification', {
           meetingTitle: title,
         })
       );
     } catch (error) {
       notifications.error(
-        t(`error-general`, {
+        t('error-general', {
           meetingTitle: title,
         })
       );

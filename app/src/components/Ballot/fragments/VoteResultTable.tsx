@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -35,10 +35,10 @@ function VoteResultTable(props: VoteResultTableProps) {
 
   useEffect(() => {
     props.scrollToResults();
-  }, []);
+  }, [props.scrollToResults]);
 
   const participants = Object.entries(vote.votingRecord || {});
-  const total = vote.votes['yes'] + vote.votes['no'] + vote.votes['abstain'];
+  const total = vote.votes.yes + vote.votes.no + vote.votes.abstain;
 
   return (
     <CustomTable stickyHeader={true}>
@@ -46,13 +46,13 @@ function VoteResultTable(props: VoteResultTableProps) {
         <TableRow>
           <TableCell>{t('global-participants')}</TableCell>
           <TableCell>
-            {t('legal-vote-yes-label')} ({vote.votes['yes'] || 0})
+            {t('legal-vote-yes-label')} ({vote.votes.yes || 0})
           </TableCell>
           <TableCell>
-            {t('legal-vote-no-label')} ({vote.votes['no'] || 0})
+            {t('legal-vote-no-label')} ({vote.votes.no || 0})
           </TableCell>
           <TableCell>
-            {t('legal-vote-abstain-label')} ({vote.votes['abstain'] || 0})
+            {t('legal-vote-abstain-label')} ({vote.votes.abstain || 0})
           </TableCell>
         </TableRow>
       </TableHead>

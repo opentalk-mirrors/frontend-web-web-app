@@ -2,26 +2,26 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  createEntityAdapter,
-  createSelector,
-  createSlice,
   EntityId,
   PayloadAction,
-  createListenerMiddleware,
   TypedStartListening,
+  createEntityAdapter,
+  createListenerMiddleware,
+  createSelector,
+  createSlice,
   isAnyOf,
 } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
-import { RootState, AppDispatch } from '../';
+import { AppDispatch, RootState } from '../';
 import { notifications } from '../../commonComponents';
 import {
   BackendParticipant,
   ChatMessage,
+  MeetingNotesAccess,
   Participant,
   ParticipantId,
   ParticipantInOtherRoom,
-  MeetingNotesAccess,
   Role,
   Speaker,
   WaitingState,

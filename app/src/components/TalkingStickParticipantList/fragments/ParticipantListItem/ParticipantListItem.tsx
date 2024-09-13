@@ -14,7 +14,7 @@ const StyledListItem = styled(ListItem, {
   shouldForwardProp: (prop) => !(['isActiveSpeaker', 'isCurrentUser'] as Array<PropertyKey>).includes(prop),
 })<{ isActiveSpeaker?: boolean; isCurrentUser?: boolean }>(({ theme, isActiveSpeaker, isCurrentUser }) => {
   const styles = {
-    padding: 0,
+    padding: theme.spacing(0, 0.5),
     border: '1px solid',
     borderRadius: theme.spacing(1),
     backgroundColor: isActiveSpeaker ? '#1A2D33' : 'unset',
@@ -80,7 +80,7 @@ const ParticipantListItem = ({
             }
           />
         </Grid>
-        <Grid item>{isActiveSpeaker ? <MicOnIcon /> : <MicOffIcon disabled />}</Grid>
+        {isActiveSpeaker ? <MicOnIcon /> : <MicOffIcon disabled />}
       </Grid>
     </StyledListItem>
   );

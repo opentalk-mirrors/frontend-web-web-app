@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Theme, useMediaQuery, Stack, styled } from '@mui/material';
+import { Stack, Theme, styled, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { debounce } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -39,14 +39,14 @@ const SpeakerView = () => {
 
     if (containerRef.current) {
       const containerWidth = containerRef.current.clientWidth;
-      const qtyParticipants = Math.max(1, Math.floor(containerWidth / thumbWidth - 0.3));
+      const qtyParticipants = Math.max(1, Math.floor(containerWidth / thumbWidth));
       setThumbsPerPage(qtyParticipants);
     }
 
     if (windowHeight !== height && windowWidth !== width) {
       setWindowSize({ width: windowHeight, height: windowWidth });
     }
-  }, [thumbWidth, setWindowSize, height, width]);
+  }, [thumbWidth, height, width]);
 
   useEffect(() => {
     const debouncedHandleResize = debounce(handleResize);
