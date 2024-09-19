@@ -16,8 +16,8 @@ const SelectParticipantsList = ({ participantsList, onCheck }: SelectParticipant
     {participantsList.map((participant) => (
       <SelectParticipantsItem
         participant={participant}
-        onCheck={(checked: boolean) => onCheck(checked, participant.id)}
-        key={participant.id}
+        onCheck={(checked) => onCheck(checked, participant.identity as ParticipantId)}
+        key={participant.identity}
       />
     ))}
   </List>

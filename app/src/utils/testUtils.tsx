@@ -7,34 +7,33 @@ import '@mui/material';
 import { ftl2js } from '@opentalk/fluent_conv';
 import { AuthProvider } from '@opentalk/redux-oidc';
 import {
+  BaseAsset,
   DateTime,
   Email,
   EventId,
   EventType,
   InviteStatus,
-  RoomId,
-  UserId,
-  TimelessEvent,
-  RecurringEvent,
-  SingleEvent,
-  RoomInvite,
-  BaseAsset,
   RecurrencePattern,
-  InviteCode,
-  AssetId,
-  SipId,
+  RecurringEvent,
+  RoomId,
+  RoomInvite,
+  SingleEvent,
+  TimelessEvent,
+  UserId,
 } from '@opentalk/rest-api-rtk-query';
+import { AssetId, InviteCode, SipId } from '@opentalk/rest-api-rtk-query/src/types';
 import {
-  combineReducers,
   ConfigureStoreOptions,
   Store,
-  createStore as createStoreTlk,
+  combineReducers,
   configureStore as configureStoreTlk,
+  createStore as createStoreTlk,
 } from '@reduxjs/toolkit';
-import { act, render as rtlRender, RenderOptions, RenderResult } from '@testing-library/react';
-import fs from 'fs';
+import { RenderOptions, RenderResult, act, render as rtlRender } from '@testing-library/react';
 import i18n from 'i18next';
+import { Participant as LivekitParticipant, LocalTrackPublication, Track } from 'livekit-client';
 import { range } from 'lodash';
+import fs from 'node:fs';
 import React from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Provider } from 'react-redux';
@@ -43,26 +42,25 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { createOpenTalkTheme } from '../assets/themes/opentalk';
 import { SnackbarProvider } from '../commonComponents';
-import { MediaProvider } from '../components/MediaProvider';
-import { idFromDescriptor, MediaId, SubscriberStateChanged, SubscriberConfig } from '../modules/WebRTC';
+import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
+import BreakoutRoomProvider from '../provider/BreakoutRoomProvider';
 import FullscreenProvider from '../provider/FullscreenProvider';
 import { appReducers } from '../store';
 import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
 import { Poll } from '../store/slices/pollSlice';
 import {
-  Participant,
-  MeetingNotesAccess,
-  WaitingState,
-  MediaSessionType,
-  ParticipantId,
-  ParticipationKind,
-  VideoSetting,
   AutomodSelectionStrategy,
-  PollId,
   LegalVote,
   LegalVoteId,
   LegalVoteKind,
   LegalVoteState,
+  MeetingNotesAccess,
+  Participant,
+  ParticipantId,
+  ParticipationKind,
+  PollId,
+  VideoSetting,
+  WaitingState,
 } from '../types';
 
 const automodState: AutomodState = {
@@ -85,9 +83,9 @@ const automodState: AutomodState = {
 };
 
 export const loadLanguage = async (lng: string) => {
-  const filename = 'public/locales/' + lng + '/k3k.ftl';
+  const filename = `public/locales/${lng}/k3k.ftl`;
   await new Promise((resolve, reject) => {
-    fs.readFile(filename, 'utf8', function (err?, data?) {
+    fs.readFile(filename, 'utf8', (err?, data?) => {
       if (err) {
         reject(err);
       }
@@ -139,9 +137,7 @@ export const render = async (ui: React.ReactElement, store?: Store, options?: Re
       return (
         <ThemeProvider theme={createOpenTalkTheme()}>
           <I18nextProvider i18n={i18n}>
-            <FullscreenProvider>
-              <SnackbarProvider>{children}</SnackbarProvider>
-            </FullscreenProvider>
+            <FullscreenProvider>{children}</FullscreenProvider>
           </I18nextProvider>
         </ThemeProvider>
       );
@@ -161,11 +157,11 @@ export const render = async (ui: React.ReactElement, store?: Store, options?: Re
               }}
             >
               <I18nextProvider i18n={i18n}>
-                <FullscreenProvider>
-                  <SnackbarProvider>
-                    <MediaProvider>{children}</MediaProvider>
-                  </SnackbarProvider>
-                </FullscreenProvider>
+                <BreakoutRoomProvider>
+                  <FullscreenProvider>
+                    <SnackbarProvider>{children}</SnackbarProvider>
+                  </FullscreenProvider>
+                </BreakoutRoomProvider>
               </I18nextProvider>
             </AuthProvider>
           </MemoryRouter>
@@ -176,7 +172,7 @@ export const render = async (ui: React.ReactElement, store?: Store, options?: Re
 
   let result: RenderResult = {} as RenderResult;
   await act(async () => {
-    result = await rtlRender(ui, { wrapper: Wrapper, ...options });
+    result = rtlRender(ui, { wrapper: Wrapper, ...options });
   });
   return result;
 };
@@ -209,7 +205,7 @@ export const mockStore = (
   const participantsIds = range(participantCount);
   const participants = participantsIds.map((index) => {
     const handIsUp = index < (options?.raiseHands || 0);
-    const kind = options?.participantKinds && options.participantKinds[index];
+    const kind = options?.participantKinds?.[index];
     const participant = {
       ...mockedParticipant(index, kind),
       handIsUp,
@@ -217,16 +213,15 @@ export const mockStore = (
     return participant;
   });
 
-  const subscribers: Array<SubscriberConfig & SubscriberStateChanged> = [];
+  const subscribers: Array<SubscriberConfig> = [];
   if (options?.video) {
     participants.forEach(({ id }, index) => {
       const audio = index < (options?.audio || 0);
       subscribers.push({
         participantId: id,
-        mediaType: MediaSessionType.Video,
+        mediaType: Track.Source.Camera,
         video: true,
         audio,
-        subscriberState: { audioRunning: audio, videoRunning: true, connection: 'connected' },
         videoSettings: VideoSetting.High,
       });
     });
@@ -236,10 +231,9 @@ export const mockStore = (
     participants.forEach(({ id }) =>
       subscribers.push({
         participantId: id,
-        mediaType: MediaSessionType.Screen,
+        mediaType: Track.Source.ScreenShare,
         video: true,
         audio: false,
-        subscriberState: { audioRunning: false, videoRunning: true, connection: 'connected' },
         videoSettings: VideoSetting.High,
       })
     );
@@ -253,16 +247,6 @@ export const mockStore = (
         return entities;
       }, {}),
     },
-    subscribers: {
-      ids: subscribers.map(idFromDescriptor),
-      entities: subscribers.reduce(
-        (entities: Record<MediaId, SubscriberConfig & SubscriberStateChanged>, subscriber) => {
-          entities[idFromDescriptor(subscriber)] = subscriber;
-          return entities;
-        },
-        {}
-      ),
-    },
     automod: {
       ...automodState,
       active: options?.automodActive,
@@ -274,8 +258,16 @@ export const mockStore = (
   });
 };
 
-export const mockedParticipant = (index: number, kind: ParticipationKind = ParticipationKind.User): Participant => ({
+export const mockedParticipant = (
+  index: number,
+  kind: ParticipationKind = ParticipationKind.User
+): Participant & {
+  identity: string;
+  getTrackPublication: () => LocalTrackPublication | undefined;
+  setMicrophoneEnabled: (enabled: boolean) => LocalTrackPublication | undefined;
+} => ({
   id: `00000000-e6b4-4759-00${index}` as ParticipantId,
+  identity: `00000000-e6b4-4759-00${index}`, //some components while using livekit participants require identity as id -> TODO: map old participants type to Livekit Participant
   displayName: `Test User Randy Mock${index}`,
   handIsUp: false,
   handUpdatedAt: '2022-03-23T12:32:30Z',
@@ -287,20 +279,31 @@ export const mockedParticipant = (index: number, kind: ParticipationKind = Parti
   lastActive: '2022-03-23T12:32:30Z',
   waitingState: WaitingState.Joined,
   meetingNotesAccess: MeetingNotesAccess.None,
-  isPresenter: false,
   isSpeaking: false,
   isRoomOwner: false,
+  getTrackPublication: () => undefined,
+  setMicrophoneEnabled: () => undefined,
 });
 
-export const mockedVideoMediaDescriptor = (index: number) => ({
-  participantId: mockedParticipant(index).id,
-  mediaType: MediaSessionType.Video,
-});
+export const mockedLivekitParticipant = (index: number) => {
+  return new LivekitParticipant(
+    `00000000-e6b4-4759-00${index}`,
+    `00000000-e6b4-4759-00${index}`,
+    `Test User Randy Mock${index}`
+  );
+};
 
-export const mockedScreenMediaDescriptor = (index: number) => ({
-  participantId: mockedParticipant(index).id,
-  mediaType: MediaSessionType.Screen,
-});
+export const mockedVideoMediaDescriptor = (index: number) =>
+  ({
+    participantId: mockedParticipant(index).id,
+    mediaType: Track.Source.Camera,
+  }) as MediaDescriptor;
+
+export const mockedScreenMediaDescriptor = (index: number) =>
+  ({
+    participantId: mockedParticipant(index).id,
+    mediaType: Track.Source.ScreenShare,
+  }) as MediaDescriptor;
 
 export const eventMockedData: TimelessEvent = {
   id: uuidv4() as EventId,
@@ -321,6 +324,7 @@ export const eventMockedData: TimelessEvent = {
   room: {
     id: uuidv4() as RoomId,
     waitingRoom: false,
+    e2EEncryption: false,
   },
   type: EventType.Single,
   updatedBy: {
@@ -363,7 +367,10 @@ export const mockedExpiringDateRoomInvite: RoomInvite = {
   expiration: '2022-04-06T13:57:38.793602Z' as DateTime,
 };
 
-export const mockedPermanentRoomInvite: RoomInvite = { ...mockedExpiringDateRoomInvite, expiration: null };
+export const mockedPermanentRoomInvite: RoomInvite = {
+  ...mockedExpiringDateRoomInvite,
+  expiration: null,
+};
 
 export const mockedRecurringEvent: RecurringEvent = {
   id: 'db61b29b-b944-422d-b20f-6ed4158aad4d' as EventId,
@@ -392,6 +399,7 @@ export const mockedRecurringEvent: RecurringEvent = {
   room: {
     id: '47cc8df7-b48e-4a56-87f8-92164613f74c' as RoomId,
     waitingRoom: false,
+    e2EEncryption: false,
     callIn: {
       tel: '+49 30 - 577 10 231 9901',
       id: '4082652646' as SipId,
@@ -443,6 +451,7 @@ export const mockedSingleEvent: SingleEvent = {
   room: {
     id: '2f60df9e-c34e-4cfd-9dc9-e7ebb297583b' as RoomId,
     waitingRoom: false,
+    e2EEncryption: false,
     callIn: {
       tel: '+49 30 - 577 10 231 9901',
       id: '0940955973' as SipId,
@@ -507,7 +516,7 @@ export const mockSubscriberState = ({ descriptor, participantId, videoOn, audioO
   entities: {
     [descriptor]: {
       participantId,
-      mediaType: MediaSessionType.Video,
+      mediaType: Track.Source.Camera,
       audio: audioOn,
       video: videoOn,
       subscriberState: {

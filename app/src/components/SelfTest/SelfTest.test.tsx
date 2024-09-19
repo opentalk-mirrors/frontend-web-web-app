@@ -1,9 +1,28 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { Typography } from '@mui/material';
+import { PropsWithChildren } from 'react';
+
 import { CommonTextField } from '../../commonComponents';
 import { render, screen, configureStore } from '../../utils/testUtils';
 import SelfTest from './SelfTest';
+
+jest.mock('@livekit/components-react', () => ({
+  useRoomContext: () => jest.fn(),
+  useMediaDeviceSelect: () => [
+    { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },
+    { deviceId: 'xxxx1', groupId: 'xxxxx1', kind: 'videoinput', label: 'video' },
+  ],
+}));
+
+jest.mock('./fragments/ToolbarContainer', () => ({
+  ...jest.requireActual('./fragments/ToolbarContainer'),
+  __esModule: true,
+  default: ({ children }: PropsWithChildren) => {
+    return <div data-testid="buttomContainer"> {children}</div>;
+  },
+}));
 
 describe('SelfTest', () => {
   const { store } = configureStore();
@@ -23,8 +42,7 @@ describe('SelfTest', () => {
     expect(screen.getByLabelText('speed-meter-button')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'speed-meter-button' })).toBeInTheDocument();
 
-    expect(screen.getByTestId('toolbarAudioButton')).toBeInTheDocument();
-    expect(screen.getByTestId('toolbarVideoButton')).toBeInTheDocument();
+    expect(screen.getByTestId('buttomContainer')).toBeInTheDocument();
     expect(screen.queryByTestId('toolbarBlurScreenButton')).not.toBeInTheDocument();
     expect(screen.queryByTestId('toolbarHandraiseButton')).not.toBeInTheDocument();
     expect(screen.queryByTestId('toolbarMenuButton')).not.toBeInTheDocument();
@@ -44,10 +62,12 @@ describe('SelfTest', () => {
     expect(headerElement.tagName).toBe('H2');
   });
   test('render room title as h1', async () => {
-    const title = 'room title';
     await render(
-      <SelfTest title={title}>
+      <SelfTest>
         <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />
+        <Typography variant="h2" textAlign="center" component="h1">
+          joinform-room-title
+        </Typography>
       </SelfTest>,
       store
     );

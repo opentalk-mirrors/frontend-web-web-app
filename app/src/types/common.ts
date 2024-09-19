@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Namespaces } from '@opentalk/rest-api-rtk-query';
+import { Track } from 'livekit-client';
 
 import { MeetingNotesState } from './meetingNotes';
 import { TimerState } from './timer';
@@ -22,10 +23,7 @@ export type FetchRequestState = {
   loading: boolean;
 };
 
-export enum MediaSessionType {
-  Screen = 'screen',
-  Video = 'video',
-}
+export type MediaSessionType = Track.Source.Camera | Track.Source.ScreenShare;
 
 export enum VideoSetting {
   Off = -1,
@@ -44,10 +42,6 @@ export interface MediaSessionState {
   audio: boolean;
   video: boolean;
   videoSettings: VideoSetting;
-}
-
-export interface PresenterRoleState {
-  isPresenter: boolean;
 }
 
 export interface SpeakingState {
@@ -90,10 +84,10 @@ export enum ForceMuteType {
 }
 export interface ForceMute {
   type: ForceMuteType;
-  allowList: Array<ParticipantId>;
+  unrestrictedParticipants: Array<ParticipantId>;
 }
 
-export type ParticipantMediaState = PresenterRoleState & {
+export type ParticipantMediaState = {
   screen?: MediaSessionState;
   video?: MediaSessionState;
   speakers?: Speaker[];

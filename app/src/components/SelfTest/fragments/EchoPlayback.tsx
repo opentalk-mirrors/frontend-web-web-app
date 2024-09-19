@@ -1,23 +1,29 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useMediaDeviceSelect } from '@livekit/components-react';
+import { LocalAudioTrack, createLocalAudioTrack } from 'livekit-client';
 import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../../../commonComponents';
-import { useAppSelector } from '../../../hooks';
 import { EchoTest, EchoTestState } from '../../../modules/WebRTC/EchoTest';
-import { selectAudioDeviceId, selectAudioEnabled } from '../../../store/slices/mediaSlice';
-import { useMediaContext } from '../../MediaProvider';
+import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
 
-export const EchoPlayBack = () => {
+interface EchoPlayBackProps {
+  localAudioTrack?: LocalAudioTrack;
+  setLocalAudioTrack: (audioTrack: LocalAudioTrack | undefined) => void;
+}
+
+const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps) => {
   const { t } = useTranslation();
+  const mediaChoices = useMediaChoices();
   const audioRef = useRef<HTMLAudioElement>(null);
-  const mediaContext = useMediaContext();
-  const stream = mediaContext.outgoingMediaStream;
-  const isAudioOn = useAppSelector(selectAudioEnabled) && !!mediaContext.hasMicrophone;
-  const isAudioLive = isAudioOn && stream?.getAudioTracks().length > 0;
-  const audioId = useAppSelector(selectAudioDeviceId);
+
+  const { activeDeviceId } = useMediaDeviceSelect({
+    kind: 'audioinput',
+    requestPermissions: false,
+  });
 
   const changeHandler = useCallback(
     (instance: EchoTest) => (echoTestState: EchoTestState) => {
@@ -25,59 +31,78 @@ export const EchoPlayBack = () => {
         case 'connected':
           break;
         case 'streamUpdate':
-          if (audioRef.current === null) {
-            console.error('no audio element found.');
-            return;
-          }
-          if (instance.outStream !== undefined) {
-            audioRef.current.srcObject = instance.outStream;
+          if (audioRef.current) {
+            audioRef.current.srcObject = instance.outStream || null;
           } else {
-            console.error('no out stream - broken or called too early.');
-            audioRef.current.srcObject = null;
+            console.error('No audio element found.');
           }
           break;
         case 'closed':
-          if (audioRef.current !== null) {
+          if (audioRef.current) {
             audioRef.current.srcObject = null;
           }
           break;
         default:
-          console.error('unknown state change');
+          console.error('Unknown state change');
       }
     },
     []
   );
 
   useEffect(() => {
-    if (!isAudioLive) {
-      return;
+    let dismounted = false;
+    if (
+      mediaChoices &&
+      (mediaChoices?.userChoices.audioEnabled || activeDeviceId !== mediaChoices?.userChoices.audioDeviceId)
+    ) {
+      createLocalAudioTrack({ deviceId: mediaChoices.userChoices.audioDeviceId })
+        .then((audioTrack) => {
+          if (dismounted) {
+            return;
+          }
+          setLocalAudioTrack(audioTrack);
+          const usedDeviceId = audioTrack.constraints.deviceId as string;
+          if (usedDeviceId !== mediaChoices.userChoices.audioDeviceId) {
+            mediaChoices.saveAudioInputDeviceId(usedDeviceId);
+          }
+        })
+        .catch((err) => {
+          mediaChoices?.saveAudioInputEnabled(false);
+          if (err.name !== 'NotAllowedError') {
+            console.error('Error while publishing audio track: ', err);
+          }
+        });
     }
-
-    const audioTrackSettings = stream.getAudioTracks()[0].getSettings();
-
-    if (!audioTrackSettings.echoCancellation) {
-      console.warn('no support for echoCancellation', audioTrackSettings);
-      notifications.warning(t('echotest-warn-no-echo-cancellation'), { persist: true });
-    }
-  }, [stream, isAudioLive, t]);
+    return () => {
+      dismounted = true;
+    };
+  }, [mediaChoices, setLocalAudioTrack, activeDeviceId]);
 
   useEffect(() => {
-    if (!isAudioLive) {
+    if (!localAudioTrack?.mediaStreamTrack) {
       return;
+    }
+
+    const audioTrackSettings = localAudioTrack.mediaStreamTrack.getSettings();
+
+    if (!audioTrackSettings.echoCancellation) {
+      notifications.warning(t('echotest-warn-no-echo-cancellation'), { persist: true });
     }
 
     const echoTest = new EchoTest();
     const echoChangeHandler = changeHandler(echoTest);
     echoTest.addEventListener('stateChanged', echoChangeHandler);
-    echoTest.connect(stream).catch((e) => {
-      console.error('Failed to connect EchoTest', e);
-    });
+    localAudioTrack.mediaStream &&
+      echoTest.connect(localAudioTrack.mediaStream).catch((e) => {
+        console.error('Failed to connect EchoTest', e);
+      });
 
     return () => {
+      localAudioTrack.mediaStreamTrack.stop();
       echoTest.close();
       echoTest.removeEventListener('stateChanged', echoChangeHandler);
     };
-  }, [audioId, stream, isAudioLive, changeHandler]);
+  }, [localAudioTrack?.mediaStreamTrack, localAudioTrack?.mediaStream, changeHandler, t]);
 
   return (
     <audio ref={audioRef} autoPlay>
@@ -85,3 +110,5 @@ export const EchoPlayBack = () => {
     </audio>
   );
 };
+
+export default EchoPlayBack;

@@ -1,56 +1,62 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useLocalParticipantPermissions, useTrackToggle } from '@livekit/components-react';
+import { Track } from 'livekit-client';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ShareScreenOffIcon, ShareScreenOnIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
-import { selectMediaChangeInProgress, selectShareScreenEnabled } from '../../../store/slices/mediaSlice';
-import { selectIsModerator, selectIsPresenter } from '../../../store/slices/userSlice';
-import { useMediaContext } from '../../MediaProvider';
+import { selectIsModerator } from '../../../store/slices/userSlice';
 import { ToolbarButtonIds } from '../Toolbar';
 import ToolbarButton from './ToolbarButton';
 
-const ShareScreenButton = () => {
-  const { t } = useTranslation();
-  const mediaContext = useMediaContext();
-  const isPresenter = useAppSelector(selectIsPresenter);
-  const isModerator = useAppSelector(selectIsModerator);
-  const screenSharing = useAppSelector(selectShareScreenEnabled);
-  const isLoadingMedia = useAppSelector(selectMediaChangeInProgress);
+export const LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER = 3;
 
-  const isModeratorOrPresenter = isModerator || isPresenter;
+const ShareScreenButton = () => {
+  const { toggle, enabled, pending } = useTrackToggle({ source: Track.Source.ScreenShare });
+  const localParticipantPermissions = useLocalParticipantPermissions();
+  const { t } = useTranslation();
+  const isModerator = useAppSelector(selectIsModerator);
+  const [permissionDenied, setPermissionDenied] = useState(false);
+
+  const canPublishScreenShare =
+    localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
+  const isModeratorOrPresenter = isModerator || canPublishScreenShare;
 
   const getToolTipTitle = () => {
     if (!isModeratorOrPresenter) {
       return t('toolbar-button-screen-share-tooltip-request-moderator-presenter-role');
     }
-    if (mediaContext.permissionDenied) {
+    if (permissionDenied) {
       return t('device-permission-denied');
     }
-    if (screenSharing) {
+    if (enabled) {
       return t('toolbar-button-screen-share-turn-off-tooltip-title');
     }
     return t('toolbar-button-screen-share-turn-on-tooltip-title');
   };
 
+  const onClick = () => {
+    toggle().catch((error: Error) => {
+      setPermissionDenied(true);
+      if (error.name !== 'NotAllowedError') {
+        console.error('Error while screen sharing: ', error);
+      }
+    });
+  };
+
   return (
     <ToolbarButton
-      onClick={() => {
-        if (!isLoadingMedia && isModeratorOrPresenter) {
-          // this promise must be awaited, oterwise Safari will not allow screenshare
-          mediaContext.trySetScreenShare(!screenSharing).catch(() => {
-            console.error('failed to start screenshare');
-          });
-        }
-      }}
       tooltipTitle={getToolTipTitle()}
-      active={screenSharing && isModeratorOrPresenter}
-      disabled={isLoadingMedia || !isModeratorOrPresenter}
+      onClick={onClick}
+      active={enabled && isModeratorOrPresenter}
+      disabled={pending || !isModeratorOrPresenter}
       data-testid="toolbarBlurScreenButton"
       id={ToolbarButtonIds.ShareScreen}
     >
-      {screenSharing ? <ShareScreenOnIcon /> : <ShareScreenOffIcon />}
+      {enabled ? <ShareScreenOnIcon /> : <ShareScreenOffIcon />}
     </ToolbarButton>
   );
 };

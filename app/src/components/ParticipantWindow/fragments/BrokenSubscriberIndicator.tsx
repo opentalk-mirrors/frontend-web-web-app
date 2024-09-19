@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useRemoteParticipant } from '@livekit/components-react';
+import { Track } from 'livekit-client';
 import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,8 +10,7 @@ import { CameraOnIcon, ConnectionGoodIcon, MicOnIcon } from '../../../assets/ico
 import { useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/mediaSlice';
-import { selectSubscriberById, selectSubscriberHasVideoById } from '../../../store/slices/mediaSubscriberSlice';
-import { MediaSessionType, VideoSetting } from '../../../types';
+import { VideoSetting } from '../../../types';
 import { FailureBadge } from './FailureBadge';
 
 type IRemoteVideoProps = VideoHTMLAttributes<HTMLVideoElement> & {
@@ -17,18 +18,21 @@ type IRemoteVideoProps = VideoHTMLAttributes<HTMLVideoElement> & {
 };
 
 const BrokenSubscriberIndicator = ({ descriptor }: IRemoteVideoProps) => {
-  const subscriber = useAppSelector(selectSubscriberById(descriptor));
-  const { t } = useTranslation();
-  const subscriberState = subscriber?.subscriberState;
-  const qualityCap = useAppSelector(selectQualityCap);
-  const hasVideo = useAppSelector(selectSubscriberHasVideoById(descriptor));
-  const expectVideo = hasVideo && (descriptor.mediaType === MediaSessionType.Screen || qualityCap !== VideoSetting.Off);
+  const participant = useRemoteParticipant(descriptor.participantId);
 
-  if (subscriber === undefined || !(subscriber.audio || expectVideo)) {
+  const isParticipantDisconnected = participant?.signalClient.isDisconnected;
+  const { t } = useTranslation();
+  const qualityCap = useAppSelector(selectQualityCap);
+
+  const hasVideo = participant?.isCameraEnabled && participant.videoTrackPublications.size !== 0;
+  const expectVideo =
+    hasVideo && (descriptor.mediaType === Track.Source.ScreenShare || qualityCap !== VideoSetting.Off);
+
+  if (participant === undefined || !(participant.isMicrophoneEnabled || expectVideo)) {
     return null;
   }
 
-  if (subscriberState === undefined || subscriberState.connection !== 'connected') {
+  if (isParticipantDisconnected === undefined || isParticipantDisconnected) {
     return (
       <FailureBadge title={t('participant-stream-broken-tooltip') || ''}>
         <ConnectionGoodIcon color="error" fontSize="medium" />
@@ -36,8 +40,8 @@ const BrokenSubscriberIndicator = ({ descriptor }: IRemoteVideoProps) => {
     );
   }
 
-  const audioBroken = subscriber.audio && !subscriberState.audioRunning;
-  const videoBroken = expectVideo && !subscriberState.videoRunning;
+  const audioBroken = participant.isMicrophoneEnabled && participant.audioTrackPublications.size === 0;
+  const videoBroken = expectVideo && participant.videoTrackPublications.size === 0;
 
   if (!audioBroken && !videoBroken) {
     return null;

@@ -1,17 +1,18 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useRemoteParticipant } from '@livekit/components-react';
 import { Popover } from '@mui/material';
+import { ConnectionQuality } from 'livekit-client';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ConnectionGoodIcon, ConnectionMediumIcon } from '../../../assets/icons';
-import { useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
-import { selectStatsPacketLossByDescriptor } from '../../../store/slices/connectionStatsSlice';
-import { selectIsSubscriberOnlineByDescriptor } from '../../../store/slices/mediaSubscriberSlice';
 import { OverlayIconButton } from './OverlayIconButton';
-import { StatisticsContent } from './StatisticsContent';
+
+// Will be addressed in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2129
+// import { StatisticsContent } from './StatisticsContent';
 
 const Statistics = ({
   descriptor,
@@ -23,8 +24,9 @@ const Statistics = ({
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
-  const isOnline = useAppSelector(selectIsSubscriberOnlineByDescriptor(descriptor));
-  const hasPaketLoss = useAppSelector(selectStatsPacketLossByDescriptor(descriptor));
+  const participant = useRemoteParticipant(descriptor.participantId);
+  const isOnline = participant?.connectionQuality === ConnectionQuality.Lost;
+  const hasPacketLoss = participant?.connectionQuality === ConnectionQuality.Poor;
 
   const handleClose = useCallback((event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -43,7 +45,7 @@ const Statistics = ({
   return (
     <>
       <OverlayIconButton onClick={toggleStats} size="large" color="secondary" aria-label={t('statistics-video')}>
-        {hasPaketLoss ? <ConnectionMediumIcon color="error" /> : <ConnectionGoodIcon />}
+        {hasPacketLoss ? <ConnectionMediumIcon color="error" /> : <ConnectionGoodIcon />}
       </OverlayIconButton>
       <Popover
         open={open}
@@ -60,7 +62,7 @@ const Statistics = ({
         disablePortal={disablePopoverPortal}
         keepMounted={false}
       >
-        <StatisticsContent descriptor={descriptor} />
+        {/* <StatisticsContent descriptor={descriptor} /> */}
       </Popover>
     </>
   );

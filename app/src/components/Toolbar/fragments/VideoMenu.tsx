@@ -2,45 +2,35 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
+  Avatar,
   Divider,
+  FormGroup,
+  ListItemText,
+  MenuList,
   FormControlLabel as MuiFormControlLabel,
-  ListItem,
-  Slider,
-  styled,
+  MenuItem as MuiMenuItem,
+  Stack,
   Switch,
   ThemeProvider,
   Typography,
-  Avatar,
-  Stack,
-  MenuItem as MuiMenuItem,
-  ListItemText,
-  FormGroup,
-  MenuList,
+  styled,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CameraOnIcon, ErrorIcon, SettingsIcon, WarningIcon, CloseIcon } from '../../../assets/icons';
+import { CameraOnIcon, CloseIcon, ErrorIcon, WarningIcon } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
-import { notifications } from '../../../commonComponents';
-import { useAppSelector, useAppDispatch } from '../../../hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
+import useMediaDevice from '../../../hooks/useMediaDevice';
 import browser from '../../../modules/BrowserSupport';
-import { DeviceId } from '../../../modules/Media/MediaUtils';
+import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
 import { selectVideoBackgrounds } from '../../../store/slices/configSlice';
-import { selectQualityCap, selectVideoDeviceId, selectVideoBackgroundEffects } from '../../../store/slices/mediaSlice';
+import { selectVideoBackgroundEffects, setBackgroundEffects } from '../../../store/slices/mediaSlice';
 import { mirroredVideoSet, selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
-import { VideoSetting } from '../../../types';
-import { useMediaContext } from '../../MediaProvider';
+import { DeviceId } from '../../../types/device';
 import DeviceList from './DeviceList';
-import { ToolbarMenu, ToolbarMenuProps, MenuSectionTitle } from './ToolbarMenuUtils';
-
-const SliderContainer = styled(ListItem)(({ theme }) => ({
-  background: theme.palette.secondary.lightest,
-  borderRadius: theme.borderRadius.medium,
-  margin: theme.spacing(0, 2),
-  width: 'auto',
-}));
+import { MenuSectionTitle, ToolbarMenu, ToolbarMenuProps } from './ToolbarMenuUtils';
 
 const MenuItem = styled(MuiMenuItem)({
   '&.MuiMenuItem-root:hover': {
@@ -97,115 +87,70 @@ const MultilineTypography = styled(Typography)({
   whiteSpace: 'pre-wrap',
 });
 
-const VideoMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
+interface VideoMenuProps extends ToolbarMenuProps {
+  videoEnabled: boolean;
+  isLobby: boolean;
+}
+
+const VideoMenu = ({ anchorEl, onClose, open, isLobby }: VideoMenuProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const videoInDevice = useAppSelector(selectVideoDeviceId);
-  const qualityCap = useAppSelector(selectQualityCap);
+  const fullscreenHandle = useFullscreenContext();
+  const mediaChoices = useMediaChoices();
+
   const backgroundEffects = useAppSelector(selectVideoBackgroundEffects);
   const mirroringEnabled = useAppSelector(selectMirroredVideoEnabled);
   const videoBackgrounds = useAppSelector(selectVideoBackgrounds);
 
-  const fullscreenHandle = useFullscreenContext();
+  const {
+    startMedia,
+    localDevices: devices,
+    permissionDenied,
+    loadLocalDevices,
+  } = useMediaDevice({ kind: 'videoinput' });
 
-  const mediaContext = useMediaContext();
-  const selectedDevice = videoInDevice || mediaContext.defaultVideoDevice;
-  const devices = mediaContext.videoDevices;
-  const [loadingList, setLoadingList] = useState<boolean>(false);
-  const [loadingChange, setLoadingChange] = useState<boolean>(false);
+  // Some browsers (e.g. Firefox) duplicate devices, so we need to filter them out
+  const filteredDevices = useMemo(() => {
+    const seenDeviceIds = new Set<string>();
+
+    return devices
+      .filter((device) => {
+        if (device.deviceId === '' || seenDeviceIds.has(device.deviceId)) {
+          return false;
+        }
+        seenDeviceIds.add(device.deviceId);
+        return true;
+      })
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [devices]);
+
+  const selectedDeviceId = mediaChoices?.userChoices.videoDeviceId;
+
+  const isBrowserSafariOrFireFox = browser.isSafari() || (browser.isFirefox() && isLobby);
 
   const isBlurred = backgroundEffects.style === 'blur';
 
-  const isBrowserSafari = browser.isSafari();
-  const setBlur = useCallback(
-    (enabled: boolean) => {
-      if (!loadingChange) {
-        setLoadingChange(true);
-        mediaContext.trySetBackground({ style: enabled ? 'blur' : 'off' }).finally(() => setLoadingChange(false));
-      }
-    },
-    [mediaContext, loadingChange]
-  );
-
-  const setImageBackground = useCallback(
-    (imageUrl: string) => {
-      if (!loadingChange) {
-        setLoadingChange(true);
-        mediaContext.trySetBackground({ style: 'image', imageUrl }).finally(() => {
-          setLoadingChange(false);
-        });
-      }
-    },
-    [mediaContext, loadingChange]
-  );
-
+  const setBlur = (enabled: boolean) => {
+    dispatch(setBackgroundEffects({ style: enabled ? 'blur' : 'off' }));
+  };
+  const setImageBackground = (imageUrl: string) => {
+    dispatch(setBackgroundEffects({ style: 'image', imageUrl }));
+  };
   const toggleMirroring = () => dispatch(mirroredVideoSet(!mirroringEnabled));
 
-  // todo remove this here @s.sydow
+  const handleClick = async (deviceId: DeviceId) => {
+    if (deviceId !== mediaChoices?.userChoices.videoDeviceId) {
+      await startMedia(false, deviceId);
+    }
+  };
+
   useEffect(() => {
-    const shouldFetchDevices =
-      open &&
-      !mediaContext.permissionDenied &&
-      (!mediaContext.hasAllVideoDetails || mediaContext.defaultVideoDevice === undefined);
-    if (!loadingList && shouldFetchDevices) {
-      setLoadingList(true);
-      mediaContext
-        .getDeviceDetails({ video: true })
-        .catch((e) => notifications.error(`Get video devices failed: ${e}`))
-        .finally(() => setLoadingList(false));
+    if (open) {
+      loadLocalDevices('videoinput');
     }
-  }, [loadingList, setLoadingList, mediaContext, open]);
+  }, [open]);
 
-  // We need this mapping for screen readers to read slider labels properly
-  // A function passed to the getAriaValueText prop of the Slider must have signature
-  // (number) => string
-  const getSliderLabel = (value: VideoSetting) => {
-    switch (value) {
-      case VideoSetting.Off:
-        return t('quality-audio-only');
-
-      case VideoSetting.Low:
-        return t('quality-low');
-
-      case VideoSetting.Medium:
-        return t('quality-medium');
-
-      case VideoSetting.High:
-        return t('quality-high');
-
-      default:
-        return 'Unknown slider value';
-    }
-  };
-
-  const qualityMarks = [
-    {
-      value: VideoSetting.Off,
-      label: getSliderLabel(VideoSetting.Off),
-    },
-    {
-      value: VideoSetting.Low,
-      label: getSliderLabel(VideoSetting.Low),
-    },
-    {
-      value: VideoSetting.Medium,
-      label: getSliderLabel(VideoSetting.Medium),
-    },
-    {
-      value: VideoSetting.High,
-      label: getSliderLabel(VideoSetting.High),
-    },
-  ];
-
-  const handleClick = (deviceId: DeviceId) => {
-    if (!loadingChange) {
-      setLoadingChange(true);
-      mediaContext
-        .changeVideoInput(deviceId)
-        .then(onClose)
-        .finally(() => setLoadingChange(false));
-    }
-  };
+  const sortedDevices = filteredDevices.sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <ThemeProvider theme={createOpenTalkTheme()}>
@@ -230,57 +175,30 @@ const VideoMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           <CameraOnIcon />
           {t('videomenu-choose-input')}
         </MenuSectionTitle>
-
-        {mediaContext.permissionDenied && (
+        {permissionDenied === true && (
           <MenuSectionTitle>
             <ErrorIcon />
             <MultilineTypography variant="body2">{t('device-permission-denied')}</MultilineTypography>
           </MenuSectionTitle>
         )}
-
-        {devices === undefined || !mediaContext.hasAllVideoDetails ? (
+        {filteredDevices.length === 0 && permissionDenied === 'pending' ? (
           <MenuSectionTitle>
             <WarningIcon />
             <ListItemText>{t('devicemenu-wait-for-permission')}</ListItemText>
           </MenuSectionTitle>
         ) : (
           <DeviceList
-            devices={devices}
-            selectedDevice={selectedDevice}
-            onClick={(deviceId: DeviceId) => handleClick(deviceId)}
+            devices={sortedDevices}
+            selectedDevice={selectedDeviceId as DeviceId | undefined}
+            onClick={handleClick}
             ariaLabelId="video-menu-title"
           />
         )}
-
         <Divider variant="middle" />
-
-        <MenuSectionTitle>
-          <SettingsIcon />
-          {t('videomenu-settings')}
-        </MenuSectionTitle>
-        <Typography fontWeight="normal" id="quality-slider" sx={{ pt: 1, pb: 2, px: 2 }}>
-          {t('quality-cap-setting')}
-        </Typography>
-        <SliderContainer sx={{ px: 3 }}>
-          <Slider
-            value={qualityCap}
-            onChangeCommitted={(ev, value) => mediaContext.setMaxQuality(value as VideoSetting)}
-            aria-labelledby="quality-slider"
-            valueLabelDisplay="off"
-            step={1}
-            marks={qualityMarks}
-            min={VideoSetting.Off}
-            max={VideoSetting.High}
-            getAriaValueText={(value) => getSliderLabel(value)}
-          />
-        </SliderContainer>
-
-        <Divider variant="middle" />
-
         <MenuSectionTitle>{t('videomenu-background')}</MenuSectionTitle>
         <FormGroup>
           <BackgroundOptionsContainer spacing={1}>
-            {!isBrowserSafari && (
+            {!isBrowserSafariOrFireFox && (
               <FormControlLabel
                 control={<Switch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />}
                 label={
@@ -289,6 +207,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
                   </Typography>
                 }
                 labelPlacement="start"
+                disabled={backgroundEffects.loading}
               />
             )}
             <FormControlLabel
@@ -303,14 +222,18 @@ const VideoMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           </BackgroundOptionsContainer>
         </FormGroup>
 
-        {!isBrowserSafari && videoBackgrounds.length > 0 && (
+        {!isBrowserSafariOrFireFox && videoBackgrounds.length > 0 && (
           <>
             <Divider variant="middle" />
             <Typography fontWeight="normal" id="background-images-title" sx={{ px: 2 }}>
               {t('videomenu-background-images')}
             </Typography>
             <BackgroundImageList aria-labelledby="background-images-title" role="listbox">
-              <BackgroundImageItem onClick={() => setBlur(false)} aria-label={t('videomenu-background-no-image')}>
+              <BackgroundImageItem
+                disabled={backgroundEffects.loading}
+                onClick={() => setBlur(false)}
+                aria-label={t('videomenu-background-no-image')}
+              >
                 <ClearBackground variant="square" active={backgroundEffects.style === 'off'}>
                   <CloseIcon />
                 </ClearBackground>
@@ -322,6 +245,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
                     key={image.url}
                     onClick={() => (!selectedEnabled ? setImageBackground(image.url) : setBlur(false))}
                     aria-label={image.altText}
+                    disabled={backgroundEffects.loading}
                   >
                     <VideoBackgroundImage
                       src={image.thumb}

@@ -5,31 +5,52 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CameraOffIcon, CameraOnIcon } from '../../../assets/icons';
-import { useAppSelector } from '../../../hooks';
-import { selectMediaChangeInProgress, selectVideoEnabled } from '../../../store/slices/mediaSlice';
-import { useMediaContext } from '../../MediaProvider';
+import { SuspenseLoading, showConsentNotification } from '../../../commonComponents';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useManageVideoEffect } from '../../../hooks/useManageVideoEffect';
+import useMediaDevice from '../../../hooks/useMediaDevice';
+import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
+import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import { ToolbarButtonIds } from '../Toolbar';
 import ToolbarButton from './ToolbarButton';
 import VideoMenu from './VideoMenu';
 
-const VideoButton = ({ isLobby }: { isLobby?: boolean }) => {
-  const mediaContext = useMediaContext();
-  const videoEnabled = useAppSelector(selectVideoEnabled);
-  const isCameraOn = videoEnabled && mediaContext.hasCamera;
+interface VideoButtonProps {
+  isLobby?: boolean;
+}
+
+const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
+  const { t } = useTranslation();
+  const askConsent = useAppSelector(selectNeedRecordingConsent);
+  const dispatch = useAppDispatch();
+  const mediaChoices = useMediaChoices();
+  const videoEnabled = mediaChoices?.userChoices.videoEnabled || false;
+
+  !isLobby && useManageVideoEffect();
+
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
-  const isLoadingMedia = useAppSelector(selectMediaChangeInProgress);
+  const { startMedia, devices, permissionDenied } = useMediaDevice({
+    kind: 'videoinput',
+  });
 
-  const { t } = useTranslation();
+  const onClick = async () => {
+    if (askConsent && !mediaChoices?.userChoices.videoEnabled) {
+      const consent = await showConsentNotification(dispatch);
+      if (!consent) {
+        return;
+      }
+    }
 
-  const toggleVideo = () => {
-    if (!isLoadingMedia) {
-      mediaContext.trySetVideo(!videoEnabled);
+    if (mediaChoices?.userChoices.videoEnabled) {
+      mediaChoices.saveVideoInputEnabled(false);
+    } else {
+      await startMedia(true);
     }
   };
 
   const tooltipText = () => {
-    if (mediaContext.permissionDenied) {
+    if (permissionDenied === true) {
       return t('device-permission-denied');
     }
     if (videoEnabled) {
@@ -38,19 +59,26 @@ const VideoButton = ({ isLobby }: { isLobby?: boolean }) => {
     return t('toolbar-button-video-turn-on-tooltip-title');
   };
 
-  const contextTitle = t('toolbar-button-video-context-title');
+  const pendingPermission = permissionDenied === 'pending';
+
+  const ButtonIcon = () => {
+    if (pendingPermission) {
+      return <SuspenseLoading size="1rem" />;
+    }
+    return videoEnabled ? <CameraOnIcon /> : <CameraOffIcon />;
+  };
 
   return (
     <div ref={menuRef}>
       <ToolbarButton
         tooltipTitle={tooltipText()}
-        onClick={toggleVideo}
+        onClick={onClick}
         hasContext
-        contextDisabled={!mediaContext.hasCamera}
-        contextTitle={contextTitle}
+        contextDisabled={pendingPermission || devices.length === 0}
+        contextTitle={t('toolbar-button-video-context-title')}
         contextMenuId="video-context-menu"
         contextMenuExpanded={showMenu}
-        disabled={!mediaContext.hasCamera || isLoadingMedia}
+        disabled={pendingPermission || devices.length === 0}
         active={videoEnabled}
         openMenu={() => {
           setShowMenu(true);
@@ -59,7 +87,7 @@ const VideoButton = ({ isLobby }: { isLobby?: boolean }) => {
         data-testid="toolbarVideoButton"
         id={ToolbarButtonIds.Video}
       >
-        {isCameraOn ? <CameraOnIcon /> : <CameraOffIcon />}
+        <ButtonIcon />
       </ToolbarButton>
       <VideoMenu
         anchorEl={menuRef.current}
@@ -67,6 +95,8 @@ const VideoButton = ({ isLobby }: { isLobby?: boolean }) => {
           setShowMenu(false);
         }}
         open={showMenu}
+        videoEnabled={videoEnabled}
+        isLobby={isLobby}
       />
     </div>
   );

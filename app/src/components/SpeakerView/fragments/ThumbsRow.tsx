@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Stack } from '@mui/material';
+import { ParticipantLoop, useRemoteParticipants } from '@livekit/components-react';
+import { Stack, styled } from '@mui/material';
+import { Participant } from 'livekit-client';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useAppSelector } from '../../../hooks';
@@ -22,37 +24,49 @@ export interface ThumbsProps {
 }
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
-  const participants = useAppSelector(selectAllOnlineParticipants);
+  const signalingParticipants = useAppSelector(selectAllOnlineParticipants);
+  const remoteParticipants = useRemoteParticipants();
+
+  // Create a map for quick lookups of remoteParticipants by identity
+  const remoteParticipantsMap = useMemo(() => {
+    return new Map(remoteParticipants.map((p) => [p.identity, p]));
+  }, [remoteParticipants]);
+
+  const participants = useMemo(
+    () =>
+      signalingParticipants.map(
+        (participant) =>
+          remoteParticipantsMap.get(participant.id) ||
+          new Participant(participant.id, participant.id, participant.displayName)
+      ),
+    [signalingParticipants, remoteParticipantsMap]
+  );
 
   const [firstVisibleParticipantIndex, setFirstVisibleParticipantIndex] = useState(0);
   const lastVisibleParticipantIndex = Math.min(firstVisibleParticipantIndex + thumbsPerWindow, participants.length);
   const currentlyVisibleParticipantsNumber = lastVisibleParticipantIndex - firstVisibleParticipantIndex;
 
   const slideLeft = () => {
-    const newFirstIndex = Math.max(firstVisibleParticipantIndex - thumbsPerWindow, 0);
-    setFirstVisibleParticipantIndex(newFirstIndex);
+    setFirstVisibleParticipantIndex((prevIndex) => Math.max(prevIndex - thumbsPerWindow, 0));
   };
 
   const slideRight = () => {
-    const newFirstIndex = Math.max(participants.length - thumbsPerWindow, 0);
-    const minFirstIndex = Math.min(lastVisibleParticipantIndex, newFirstIndex);
-    setFirstVisibleParticipantIndex(minFirstIndex);
+    // we compare number of visible participants (thumbnails) with the participants length, to detect
+    // if a participant, we were showing in the thumbnails row, has left the meeting
+    // if there is a gap -> we update the firstVisibleParticipantIndex and move the whole row to the left
+    setFirstVisibleParticipantIndex((prevIndex) =>
+      Math.min(prevIndex + thumbsPerWindow, participants.length - thumbsPerWindow)
+    );
   };
 
-  // we compare number of visible participants (thumbnails) with the participants length, to detect
-  // if a participant, we were showing in the thumbnails row, has left the meeting
-  // if there is a gap -> we update the firstVisibleParticipantIndex and move the whole row to the left
   useEffect(() => {
     if (currentlyVisibleParticipantsNumber < participants.length) {
-      setFirstVisibleParticipantIndex((firstVisibleParticipantIndex) => Math.max(firstVisibleParticipantIndex - 1, 0));
+      setFirstVisibleParticipantIndex((prevIndex) => Math.max(prevIndex - 1, 0));
     }
   }, [participants.length, currentlyVisibleParticipantsNumber]);
 
-  const visibleParticipantIds = useMemo(
-    () =>
-      participants
-        .slice(firstVisibleParticipantIndex, lastVisibleParticipantIndex)
-        .map((participant) => participant.id),
+  const visibleParticipants = useMemo(
+    () => participants.slice(firstVisibleParticipantIndex, lastVisibleParticipantIndex),
     [participants, firstVisibleParticipantIndex, lastVisibleParticipantIndex]
   );
 
@@ -61,9 +75,9 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
       {firstVisibleParticipantIndex > 0 && (
         <IconSlideButton direction="left" aria-label="navigate-to-left" onClick={slideLeft} />
       )}
-      {visibleParticipantIds.map((participantId, index) => (
-        <Thumbnail width={thumbWidth} key={participantId} participantId={participantId} index={index} />
-      ))}
+      <ParticipantLoop participants={visibleParticipants}>
+        <Thumbnail width={thumbWidth} />
+      </ParticipantLoop>
       {lastVisibleParticipantIndex < participants.length && (
         <IconSlideButton direction="right" aria-label="navigate-to-right" onClick={slideRight} />
       )}

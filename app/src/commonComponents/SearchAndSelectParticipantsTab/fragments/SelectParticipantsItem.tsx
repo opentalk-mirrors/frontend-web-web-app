@@ -2,22 +2,31 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  Grid,
-  styled,
-  ListItemAvatar as MuiListItemAvatar,
   Checkbox,
-  ListItem as MuiListItem,
-  FormControlLabel as MuiFormControlLabel,
+  Grid,
   ListItemText,
+  FormControlLabel as MuiFormControlLabel,
+  ListItem as MuiListItem,
+  ListItemAvatar as MuiListItemAvatar,
+  styled,
 } from '@mui/material';
+import { RemoteParticipant } from 'livekit-client';
 import React from 'react';
 
 import { ParticipantAvatar } from '../../';
-import { Participant } from '../../../types';
+import { useAppSelector } from '../../../hooks';
+import { selectParticipantAvatarUrl, selectParticipantName } from '../../../store/slices/participantsSlice';
 
-export interface SelectableParticipant extends Participant {
+export interface SelectableParticipant extends RemoteParticipant {
   selected: boolean;
 }
+
+// This helper preserves the methods and prototype chain of the RemoteParticipant object
+// The spread operator only copies properties, whereas Object.assign with Object.create
+// ensures the full object structure, including methods, is maintained
+export const toSelectableParticipant = (participant: RemoteParticipant, isSelected: boolean): SelectableParticipant => {
+  return Object.assign(Object.create(participant), participant, { selected: isSelected });
+};
 
 type SelectParticipantsItemProps = {
   participant: SelectableParticipant;
@@ -45,30 +54,35 @@ const FormControlLabel = styled(MuiFormControlLabel)(() => ({
   margin: 0,
 }));
 
-const SelectParticipantsItem = ({ participant, onCheck }: SelectParticipantsItemProps) => (
-  <ListItem alignItems="flex-start">
-    <Grid container direction="row" wrap="nowrap">
-      <Grid item>
-        <ListItemAvatar>
-          <Avatar src={participant.avatarUrl}>{participant.displayName}</Avatar>
-        </ListItemAvatar>
+const SelectParticipantsItem = ({ participant, onCheck }: SelectParticipantsItemProps) => {
+  const displayName = useAppSelector(selectParticipantName(participant.identity));
+  const avatarUrl = useAppSelector(selectParticipantAvatarUrl(participant.identity));
+
+  return (
+    <ListItem alignItems="flex-start">
+      <Grid container direction="row" wrap="nowrap">
+        <Grid item>
+          <ListItemAvatar>
+            <Avatar src={avatarUrl}>{displayName}</Avatar>
+          </ListItemAvatar>
+        </Grid>
+        <Grid item zeroMinWidth xs>
+          <FormControlLabel
+            key={participant.identity}
+            control={
+              <Checkbox
+                checked={participant.selected}
+                id={participant.identity}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => onCheck(event.target.checked)}
+              />
+            }
+            label={<ListItemText translate="no">{displayName}</ListItemText>}
+            labelPlacement="start"
+          />
+        </Grid>
       </Grid>
-      <Grid item zeroMinWidth xs>
-        <FormControlLabel
-          key={participant.id}
-          control={
-            <Checkbox
-              checked={participant.selected}
-              id={participant.id}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => onCheck(event.target.checked)}
-            />
-          }
-          label={<ListItemText translate="no">{participant.displayName}</ListItemText>}
-          labelPlacement="start"
-        />
-      </Grid>
-    </Grid>
-  </ListItem>
-);
+    </ListItem>
+  );
+};
 
 export default SelectParticipantsItem;

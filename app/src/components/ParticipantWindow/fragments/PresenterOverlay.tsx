@@ -2,13 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Grid, styled } from '@mui/material';
+import { Track } from 'livekit-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BackIcon, PinIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
+import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
-import { MediaSessionType, ParticipantId } from '../../../types';
+import { ParticipantId } from '../../../types';
 import { OverlayIconButton } from './OverlayIconButton';
 import Statistics from './Statistics';
 
@@ -56,7 +58,10 @@ export const PresenterOverlay = ({
 }: PresenterOverlayProps) => {
   const { t } = useTranslation();
 
-  const videoDescriptor = useMemo(() => ({ participantId, mediaType: MediaSessionType.Video }), [participantId]);
+  const videoDescriptor = useMemo<MediaDescriptor>(
+    () => ({ participantId, mediaType: Track.Source.Camera }),
+    [participantId]
+  );
   const displayName = useAppSelector(selectParticipantName(participantId));
 
   const arrowIconDirection = useMemo(() => {
@@ -81,7 +86,7 @@ export const PresenterOverlay = ({
           onClick={togglePin}
           translate="no"
           color={isVideoPinned ? 'primary' : 'secondary'}
-          aria-label={t(`indicator-pinned`, {
+          aria-label={t('indicator-pinned', {
             participantName: displayName || '',
           })}
         >

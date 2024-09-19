@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useParticipantContext } from '@livekit/components-react';
 import { styled } from '@mui/material';
 import { useCallback } from 'react';
 
@@ -27,26 +28,20 @@ const ThumbnailContainer = styled('div')<{ width: number }>(({ width, theme }) =
   },
 }));
 
-export const Thumbnail = ({
-  participantId,
-  width,
-  index,
-}: {
-  participantId: ParticipantId;
-  width: number;
-  index: number;
-}) => {
+export const Thumbnail = ({ width }: { width: number }) => {
+  const participant = useParticipantContext();
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
   const dispatch = useAppDispatch();
 
   const togglePin = useCallback(() => {
-    const updatePinnedId = pinnedParticipantId === participantId ? undefined : participantId;
+    const updatePinnedId =
+      pinnedParticipantId === participant.identity ? undefined : (participant.identity as ParticipantId);
     dispatch(pinnedParticipantIdSet(updatePinnedId));
-  }, [dispatch, participantId, pinnedParticipantId]);
+  }, [dispatch, participant.identity, pinnedParticipantId]);
 
   return (
-    <ThumbnailContainer onClick={togglePin} width={width} data-testid={`thumbsVideo-${participantId}`}>
-      <ParticipantWindow participantId={participantId} isThumbnail={true} mediaRef={`thumb-${index}`} />
+    <ThumbnailContainer onClick={togglePin} width={width} data-testid={`thumbsVideo-${participant.identity}`}>
+      <ParticipantWindow isThumbnail={true} />
     </ThumbnailContainer>
   );
 };

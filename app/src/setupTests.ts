@@ -9,8 +9,10 @@ import { TariffId } from '@opentalk/rest-api-rtk-query';
 import '@testing-library/jest-dom';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { TextDecoder, TextEncoder } from 'node:util';
 import React from 'react';
-import { TextEncoder } from 'util';
+
+import { DefaultAvatarImage } from '../src/store/slices/configSlice';
 
 global.React = React;
 
@@ -18,46 +20,18 @@ global.console = {
   ...console,
 };
 
-global.TextEncoder = TextEncoder;
+Object.assign(global, { TextDecoder, TextEncoder });
 
-window.config = {
+const config = {
   controller: 'localhost:8000',
   insecure: false,
   baseUrl: 'http://localhost:3000',
-  helpdeskUrl: '/helpdesk',
-  beta: { isBeta: true },
-  oidcConfig: {
-    clientId: 'Frontend',
-    redirectPath: '/auth/callback',
-    scope: 'openid profile email',
-    popupRedirectPath: '/auth/popup_callback',
-    authority: 'http://localhost',
-    signOutRedirectUri: '/dashboard',
-  },
-  changePassword: {
-    active: false,
-    url: 'DUMMY',
-  },
-  provider: {
-    active: false,
-  },
-  speedTest: {
-    ndtDownloadWorkerJs: '',
-    ndtServer: '',
-    ndtUploadWorkerJs: '',
-  },
-  features: {
-    userSearch: true,
-    muteUsers: true,
-    resetHandraises: true,
-    addUser: false,
-    joinWithoutMedia: false,
-    sharedFolder: false,
-  },
-  videoBackgrounds: [],
-  maxVideoBandwidth: 600000,
-  libravatarDefaultImage: 'robohash',
-  errorReportAddress: 'report@opentalk.eu',
+  helpdeskUrl: '',
+  imprintUrl: '',
+  dataProtectionUrl: '',
+  userSurveyUrl: '',
+  userSurveyApiKey: '',
+  errorReportAddress: '',
   tariff: {
     id: '' as TariffId,
     name: '',
@@ -65,7 +39,101 @@ window.config = {
     enabledModules: [],
     modules: {},
   },
+  beta: {
+    isBeta: false,
+    badgeUrl: '',
+  },
+  livekit: {
+    e2eeSalt: '',
+  },
+  oidcConfig: {
+    clientId: 'Frontend',
+
+    redirectPath: '/auth/callback',
+    signOutRedirectUri: '/dashboard',
+    scope: 'openid profile email',
+    popupRedirectPath: '/auth/callback',
+    authority: 'http://localhost:8080/auth/realms/OPENTALK',
+  },
+  changePassword: {
+    active: false,
+    url: '',
+  },
+  speedTest: {
+    ndtServer: '',
+    ndtDownloadWorkerJs: '/workers/ndt7-download-worker.js',
+    ndtUploadWorkerJs: '/workers/ndt7-upload-worker.js',
+  },
+  features: {
+    enterpriseChat: true,
+    userSearch: true,
+    muteUsers: true,
+    breakoutRooms: true,
+    poll: true,
+    vote: true,
+    timer: true,
+    autoModeration: false,
+    protocol: true,
+    addUser: false,
+    talkingStick: false,
+    wheelOfNames: false,
+    recorder: true,
+    recording: true,
+  },
+  provider: {
+    active: false, // indicates if we are are in the provider context
+    accountManagementUrl: '',
+  },
+  videoBackgrounds: [
+    {
+      altText: 'OpenTalk',
+      url: '/assets/videoBackgrounds/elevate-bg.png',
+      thumb: '/assets/videoBackgrounds/thumbs/elevate-bg-thumb.png',
+    },
+    {
+      altText: 'OpenTalk',
+      url: '/assets/videoBackgrounds/ot1.png',
+      thumb: '/assets/videoBackgrounds/thumbs/ot1-thumb.png',
+    },
+    {
+      altText: 'OpenTalk',
+      url: '/assets/videoBackgrounds/ot2-png',
+      thumb: '/assets/videoBackgrounds/thumbs/ot2-thumb.png',
+    },
+    {
+      altText: 'OpenTalk',
+      url: '/assets/videoBackgrounds/ot3.png',
+      thumb: '/assets/videoBackgrounds/thumbs/ot3-thumb.png',
+    },
+    {
+      altText: 'OpenTalk',
+      url: '/assets/videoBackgrounds/ot4.png',
+      thumb: '/assets/videoBackgrounds/thumbs/ot4-thumb.png',
+    },
+    {
+      altText: 'OpenTalk',
+      url: '/assets/videoBackgrounds/ot5.png',
+      thumb: '/assets/videoBackgrounds/thumbs/ot5-thumb.png',
+    },
+    {
+      altText: 'OpenTalk',
+      url: '/assets/videoBackgrounds/ot6.png',
+      thumb: '/assets/videoBackgrounds/thumbs/ot6-thumb.png',
+    },
+    {
+      altText: 'OpenTalk',
+      url: '/assets/videoBackgrounds/ot7.png',
+      thumb: '/assets/videoBackgrounds/thumbs/ot7-thumb.png',
+    },
+  ],
+  maxVideoBandwidth: 8000000,
+  libravatarDefaultImage: 'robohash' as DefaultAvatarImage,
+  settings: {
+    waitingRoomDefaultValue: false,
+  },
 };
+
+window.config = config;
 
 const handlers = [
   rest.get('http://OP/.well-known/openid-configuration', async (req, res, ctx) => {
@@ -86,60 +154,6 @@ const server = setupServer(...handlers);
 global.beforeAll(() => server.listen());
 global.afterEach(() => server.resetHandlers());
 
-const mockLocalMedia = (jest: typeof globalThis.jest) => {
-  const getInstance = () => ({
-    initializeWebRtcContext: jest.fn(),
-    //broken -- see https://github.com/facebook/jest/issues/10894
-    reconfigure: () => Promise.resolve(), //jest.fn(() => Promise.resolve()),
-    requestPermission: () => Promise.resolve(), //jest.fn().mockResolvedValue(undefined),
-    getLevelNode: () => Promise.resolve(undefined), // jest.fn().mockResolvedValue(undefined),
-    getSpeechDetectionNode: () => Promise.resolve(undefined),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-  });
-
-  return {
-    __esModule: true,
-    LocalMedia: {
-      enumerateDevices: () => Promise.resolve([]), // jest.fn().mockResolvedValue([]),
-      getInstance: jest.fn(getInstance),
-    },
-    default: getInstance(),
-  };
-};
-
-const mockLocalScreen = (jest: typeof globalThis.jest) => {
-  const getInstance = () => ({
-    initializeWebRtcContext: jest.fn(),
-    requestPermission: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-  });
-
-  return {
-    __esModule: true,
-    LocalScreen: {
-      getInstance: jest.fn(getInstance),
-    },
-    default: getInstance(),
-  };
-};
-
-jest.mock('./modules/Media/LocalMedia', () => mockLocalMedia(jest));
-jest.mock('./modules/Media/LocalScreen', () => mockLocalScreen(jest));
-jest.mock('./modules/WebRTC', () => {
-  const { idFromDescriptor, descriptorFromId, MediaStreamState } = jest.requireActual('./modules/WebRTC/WebRTC');
-  return {
-    __esModule: true,
-    getMediaStream: () => ({ getTracks: () => [] }),
-    requestVideoQuality: () => {
-      return;
-    },
-    idFromDescriptor,
-    descriptorFromId,
-    MediaStreamState,
-  };
-});
 jest.mock('@opentalk/i18next-fluent', () => {
   class Fluent {
     static type: string;
@@ -172,3 +186,7 @@ global.beforeEach(() => {
     },
   });
 });
+
+jest.mock('@livekit/components-react', () => ({
+  useRoomContext: () => jest.fn(),
+}));

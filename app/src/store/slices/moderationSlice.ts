@@ -19,7 +19,7 @@ const initialState: ModerationState = {
   raiseHandsEnabled: true,
   forceMute: {
     type: ForceMuteType.Disabled,
-    allowList: [],
+    unrestrictedParticipants: [],
   },
 };
 
@@ -36,16 +36,19 @@ export const moderationSlice = createSlice({
     disableRaisedHands: (state) => {
       state.raiseHandsEnabled = false;
     },
-    forceMuteEnabled: (state, { payload: { allowList } }: PayloadAction<Pick<ForceMute, 'allowList'>>) => {
+    forceMuteEnabled: (
+      state,
+      { payload: { unrestrictedParticipants } }: PayloadAction<Pick<ForceMute, 'unrestrictedParticipants'>>
+    ) => {
       state.forceMute = {
         type: ForceMuteType.Enabled,
-        allowList,
+        unrestrictedParticipants,
       };
     },
     forceMuteDisabled: (state) => {
       state.forceMute = {
         type: ForceMuteType.Disabled,
-        allowList: [],
+        unrestrictedParticipants: [],
       };
     },
     /**
@@ -71,7 +74,7 @@ export const moderationSlice = createSlice({
       } else {
         state.forceMute = {
           type: ForceMuteType.Disabled,
-          allowList: [],
+          unrestrictedParticipants: [],
         };
       }
     });
@@ -93,6 +96,10 @@ export const selectHandUp = (state: RootState) => state.moderation.hasHandUp;
 export const selectHandUpdatedAt = (state: RootState) => state.moderation.handUpdatedAt;
 export const selectRaiseHandsEnabled = (state: RootState) => state.moderation.raiseHandsEnabled;
 export const selectForceMute = (state: RootState) => state.moderation.forceMute;
+export const selectShouldForceMuted = (state: RootState) =>
+  state.user.uuid &&
+  state.moderation?.forceMute.type === ForceMuteType.Enabled &&
+  !state.moderation.forceMute.unrestrictedParticipants.includes(state.user.uuid);
 export const selectMicrophonesEnabled = (state: RootState) =>
   state.moderation.forceMute.type === ForceMuteType.Disabled;
 

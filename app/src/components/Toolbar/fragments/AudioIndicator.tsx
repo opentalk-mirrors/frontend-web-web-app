@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { LocalAudioTrack, createAudioAnalyser } from 'livekit-client';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import BrowserSupport from '../../../modules/BrowserSupport';
 import { SignalLevel } from '../../../modules/Media/LevelNode';
-import { selectIsUserSpeaking } from '../../../store/slices/mediaSlice';
-import { useMediaContext } from '../../MediaProvider';
 
 const IndicatorContainer = styled('div')({
   overflow: 'hidden',
@@ -19,8 +17,6 @@ const IndicatorContainer = styled('div')({
   borderRadius: 'inherit',
 });
 
-const maxLevel = 0; // dB
-const minLevel = -65; // dB
 const fullCircle = 2 * Math.PI;
 const startAngle = fullCircle * (2 / 12); // start at 5 o'clock
 const scaleRange = (11 / 12) * fullCircle; // end at 4 o'clock
@@ -77,36 +73,94 @@ const drawCircle = (
 
 interface AudioIndicatorProps {
   shape: 'circle' | 'bar';
+  localAudioTrack: LocalAudioTrack;
 }
 
-const AudioIndicator = ({ shape }: AudioIndicatorProps) => {
-  const theme = useTheme();
-  const mediaContext = useMediaContext();
-  const isUserSpeaking = useSelector(selectIsUserSpeaking);
+const UPDATE_VOLUME_INTERVAL = 1000 / 30;
+const PEAK_DECAY_RATE = 0.01;
+const MIN_PEAK_LEVEL = 0.05;
 
+const AudioIndicator = ({ shape, localAudioTrack }: AudioIndicatorProps) => {
+  const [signalLevel, setSignalLevel] = useState<SignalLevel>({
+    peak: 0,
+    level: 0,
+    clip: false,
+  });
+
+  const theme = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
-
   const containerRef = useRef<HTMLDivElement>(null);
-
   const needsClearCanvasHack = useMemo(() => BrowserSupport.isSafari(), []);
-
   const [{ width, height }, setDimensions] = useState({ width: 2 * lineWidth, height: 2 * lineWidth });
 
-  const handleResize = () => {
+  const handleResize = useCallback(() => {
     if (containerRef.current) {
       setDimensions({
         width: containerRef.current.clientWidth,
         height: containerRef.current.clientHeight,
       });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!localAudioTrack) {
+      return;
+    }
+
+    const { cleanup, analyser } = createAudioAnalyser(localAudioTrack);
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const updateVolume = () => {
+      analyser.getByteFrequencyData(dataArray);
+      let sum = 0;
+      for (let i = 0; i < dataArray.length; i++) {
+        const a = dataArray[i];
+        sum += a * a;
+      }
+      setSignalLevel((prev) => {
+        const level = Math.sqrt(sum / dataArray.length) / 255;
+        const peak = prev.peak > level ? prev.peak : level;
+
+        return {
+          ...prev,
+          level,
+          peak,
+        };
+      });
+    };
+
+    const interval = setInterval(updateVolume, UPDATE_VOLUME_INTERVAL);
+
+    return () => {
+      cleanup();
+      clearInterval(interval);
+    };
+  }, [localAudioTrack, localAudioTrack?.mediaStreamTrack]);
 
   useEffect(() => {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationRef.current);
+    };
+  }, [handleResize]);
+
+  useEffect(() => {
+    const peakDecayInterval = setInterval(() => {
+      setSignalLevel((prev) => ({
+        ...prev,
+        peak: Math.max(prev.peak - PEAK_DECAY_RATE, MIN_PEAK_LEVEL),
+      }));
+    }, 50);
+
+    return () => {
+      clearInterval(peakDecayInterval);
+    };
   }, []);
 
   const render = useCallback(() => {
@@ -114,8 +168,6 @@ const AudioIndicator = ({ shape }: AudioIndicatorProps) => {
     if (ctx === null) {
       return;
     }
-
-    const signalLevel = mediaContext.getAudioLevel();
 
     if (signalLevel === undefined) {
       return;
@@ -129,13 +181,10 @@ const AudioIndicator = ({ shape }: AudioIndicatorProps) => {
 
     const { peak, level, clip } = signalLevel;
 
-    const peakScaled = (Math.max(peak, minLevel) - minLevel) / (maxLevel - minLevel);
-    const levelScaled = (Math.max(level, minLevel) - minLevel) / (maxLevel - minLevel);
-
-    let barColor;
+    let barColor: string;
     if (clip) {
       barColor = theme.palette.error.main;
-    } else if (isUserSpeaking) {
+    } else if (level > 0) {
       barColor = theme.palette.primary.dark;
     } else {
       barColor = theme.palette.text.disabled;
@@ -143,13 +192,13 @@ const AudioIndicator = ({ shape }: AudioIndicatorProps) => {
     const peakColor = theme.palette.secondary.main;
 
     if (shape === 'circle') {
-      drawCircle({ peak: peakScaled, level: levelScaled, clip }, barColor, peakColor, ctx);
+      drawCircle({ peak, level, clip }, barColor, peakColor, ctx);
     } else {
-      drawFillUp({ peak: peakScaled, level: levelScaled, clip }, barColor, peakColor, ctx);
+      drawFillUp({ peak, level, clip }, barColor, peakColor, ctx);
     }
 
     animationRef.current = requestAnimationFrame(render);
-  }, [mediaContext.getAudioLevel, isUserSpeaking, theme, shape, needsClearCanvasHack]);
+  }, [theme, shape, needsClearCanvasHack, signalLevel]);
 
   useEffect(() => {
     render();

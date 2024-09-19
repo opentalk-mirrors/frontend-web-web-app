@@ -10,18 +10,15 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useGetRoomEventInfoQuery } from '../../api/rest';
 import { enterRoom } from '../../api/types/outgoing/control';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useInviteCode } from '../../hooks/useInviteCode';
+import { useMediaChoices } from '../../provider/MediaChoicesProvider';
 import { selectFeatures } from '../../store/slices/configSlice';
-import { selectRoomConnectionState, ConnectionState, selectRoomId } from '../../store/slices/roomSlice';
+import { ConnectionState, selectRoomConnectionState } from '../../store/slices/roomSlice';
 import ImprintContainer from '../ImprintContainer';
-import { useMediaContext } from '../MediaProvider/MediaProvider';
 import SelfTest from '../SelfTest';
 
 const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
@@ -49,11 +46,8 @@ const WaitingView = () => {
   const connectionState = useAppSelector(selectRoomConnectionState);
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const mediaContext = useMediaContext();
   const { joinWithoutMedia } = useAppSelector(selectFeatures);
-  const inviteCode = useInviteCode();
-  const roomId = useAppSelector(selectRoomId);
-  const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId as RoomId, inviteCode }, { skip: !roomId });
+  const mediaChoices = useMediaChoices();
 
   const [isAutoJoinEnabled, setIsAutoJoinEnabled] = useState(true);
 
@@ -61,17 +55,17 @@ const WaitingView = () => {
 
   const moveToRoom = useCallback(async () => {
     if (joinWithoutMedia) {
-      await mediaContext.trySetVideo(false);
-      await mediaContext.trySetAudio(false);
+      mediaChoices?.saveAudioInputEnabled(false);
+      mediaChoices?.saveVideoInputEnabled(false);
     }
     dispatch(enterRoom.action());
-  }, [dispatch, joinWithoutMedia, mediaContext]);
+  }, [dispatch, joinWithoutMedia, mediaChoices]);
 
   useEffect(() => {
     if (readyToEnter && isAutoJoinEnabled) {
       moveToRoom();
     }
-  }, [readyToEnter]);
+  }, [readyToEnter, isAutoJoinEnabled, moveToRoom]);
 
   return (
     <>
@@ -84,7 +78,6 @@ const WaitingView = () => {
               </ActionButton>
             )
           }
-          title={roomData?.title}
         >
           <Grid container item alignItems="center" direction="column" sm={12} md="auto" mt={0}>
             <WaitingRoomText variant="body1">
@@ -95,7 +88,7 @@ const WaitingView = () => {
                 control={
                   <Checkbox checked={isAutoJoinEnabled} onChange={() => setIsAutoJoinEnabled((state) => !state)} />
                 }
-                label={t(`waiting-room-auto-join-label`)}
+                label={t('waiting-room-auto-join-label')}
               />
             )}
           </Grid>

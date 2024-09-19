@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Grid } from '@mui/material';
+import { VideoTrack, useTracks } from '@livekit/components-react';
+import { CircularProgress, Grid, Typography, styled } from '@mui/material';
+import { Track } from 'livekit-client';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,15 +11,10 @@ import { useTranslation } from 'react-i18next';
 import { PinIcon } from '../../assets/icons';
 import { NameTile } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
-import {
-  selectAudioEnabled,
-  selectMediaChangeInProgress,
-  selectShareScreenEnabled,
-  selectVideoEnabled,
-} from '../../store/slices/mediaSlice';
+import { useMediaChoices } from '../../provider/MediaChoicesProvider';
+import { selectVideoBackgroundEffects } from '../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
 import { selectDisplayName } from '../../store/slices/userSlice';
-import { useMediaContext } from '../MediaProvider';
 import { OverlayIconButton } from '../ParticipantWindow/fragments/OverlayIconButton';
 
 type PropsType = VideoHTMLAttributes<HTMLVideoElement>;
@@ -36,16 +33,16 @@ const Container = styled(Grid)({
   },
 });
 
-const NoVideoText = styled('div')({
+const NoVideoText = styled(Typography)(({ theme }) => ({
   position: 'absolute',
   transform: 'translateY(50%)',
   background: 'rgba(38, 48, 61, 0.95)',
   color: 'white',
-  borderRadius: '0.312rem',
+  borderRadius: theme.borderRadius.medium,
   padding: '1ex',
-});
+}));
 
-const Video = styled('video', {
+const Video = styled(VideoTrack, {
   shouldForwardProp: (prop) => !['noRoundedCorners', 'mirroringEnabled'].includes(prop as string),
 })<{ noRoundedCorners?: boolean; mirroringEnabled?: boolean }>(({ theme, noRoundedCorners, mirroringEnabled }) => ({
   position: 'absolute',
@@ -58,7 +55,6 @@ const Video = styled('video', {
 }));
 
 const ThumbnailVideo = styled(Video)(({ theme }) => ({
-  position: 'absolute',
   right: theme.spacing(1),
   bottom: theme.spacing(1),
   maxWidth: 100,
@@ -74,38 +70,43 @@ const PinIconButton = styled(OverlayIconButton)(({ theme }) => ({
 interface LocalVideoProps extends PropsType {
   noRoundedCorners?: boolean;
   fullscreenMode?: boolean;
-  hideUserName?: boolean;
   isVideoPinned?: boolean;
   togglePinVideo?: () => void;
 }
 
-const LocalVideo = ({
-  noRoundedCorners,
-  fullscreenMode,
-  togglePinVideo,
-  isVideoPinned,
-  hideUserName,
-  ...props
-}: LocalVideoProps) => {
-  const isVideoEnabled = useAppSelector(selectVideoEnabled);
-  const screenShareEnabled = useAppSelector(selectShareScreenEnabled);
+const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoPinned }: LocalVideoProps) => {
+  const videoTrackRef = useTracks([Track.Source.Camera]).find((trackRef) => trackRef.participant.isLocal);
+  const screenShareTrackRef = useTracks([Track.Source.ScreenShare]).find((trackRef) => trackRef.participant.isLocal);
+
+  const mediaChoices = useMediaChoices();
   const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoThumbnailRef = useRef<HTMLVideoElement>(null);
-  const mediaContext = useMediaContext();
-  const outgoingVideoStream = mediaContext.outgoingMediaStream;
-  const outgoingScreenStream = mediaContext.outgoingScreenStream;
+
   const displayName = useAppSelector(selectDisplayName);
-  const isAudioEnabled = useAppSelector(selectAudioEnabled) && !!mediaContext.hasMicrophone;
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
-  const isLoadingMedia = useAppSelector(selectMediaChangeInProgress);
+  const backgroundEffects = useAppSelector(selectVideoBackgroundEffects);
+
+  const isVideoEnabled = mediaChoices?.userChoices.videoEnabled || false;
+  const isAudioEnabled = mediaChoices?.userChoices.audioEnabled || false;
+  const screenShareEnabled = screenShareTrackRef?.participant.isScreenShareEnabled || false;
+
+  const outgoingVideoStream = videoTrackRef?.publication.track?.mediaStream || null;
+  let outgoingScreenStream: MediaStream | null = null;
+  if (screenShareTrackRef) {
+    outgoingScreenStream = screenShareTrackRef?.publication.track?.mediaStream || null;
+  }
 
   const isVideoRunning =
     outgoingVideoStream?.getVideoTracks().find((t) => t.enabled && t.readyState === 'live') !== undefined;
+  const showLoadingSpinner =
+    isVideoEnabled && (outgoingVideoStream === null || !outgoingVideoStream?.active) && !isVideoRunning;
+  const isVideoMissing =
+    mediaChoices?.userChoices.videoEnabled &&
+    videoTrackRef?.publication.track?.isMuted &&
+    !videoTrackRef?.publication.track.mediaStreamTrack;
 
-  const isVideoMissing = isVideoEnabled && !isLoadingMedia && !isVideoRunning;
-
-  const attachVideo = useCallback((refObject: RefObject<HTMLVideoElement>, stream: MediaStream) => {
+  const attachVideo = useCallback((refObject: RefObject<HTMLVideoElement>, stream: MediaStream | null) => {
     if (refObject.current !== null) {
       refObject.current.volume = 0;
       refObject.current.srcObject = stream;
@@ -118,12 +119,6 @@ const LocalVideo = ({
       refObject.current.srcObject = null;
     }
   }, []);
-
-  useEffect(() => {
-    if (isVideoMissing) {
-      console.warn('Video is enabled but video tracks are closed');
-    }
-  }, [isVideoMissing, t]);
 
   useEffect(() => {
     if (screenShareEnabled && isVideoEnabled) {
@@ -141,18 +136,31 @@ const LocalVideo = ({
       detachVideo(videoThumbnailRef);
       return;
     }
+    videoTrackRef?.publication.track?.mediaStreamTrack.stop();
+    screenShareTrackRef?.publication.track?.mediaStreamTrack.stop();
     detachVideo(videoRef);
     detachVideo(videoThumbnailRef);
-  }, [outgoingVideoStream, outgoingScreenStream, screenShareEnabled, attachVideo, detachVideo, isVideoEnabled]);
+  }, [
+    outgoingVideoStream,
+    outgoingScreenStream,
+    screenShareEnabled,
+    attachVideo,
+    detachVideo,
+    backgroundEffects,
+    isVideoEnabled,
+    videoTrackRef,
+    screenShareTrackRef,
+    backgroundEffects,
+  ]);
 
   return (
-    <Container container justifyContent="center" alignItems="center" flexDirection="column">
-      {(isVideoEnabled || screenShareEnabled) && (
+    <Container container justifyContent="center" alignItems="center">
+      {(isVideoEnabled || screenShareEnabled) && (screenShareTrackRef || videoTrackRef) && (
         <>
           {fullscreenMode && (
             <PinIconButton
               onClick={togglePinVideo}
-              aria-label={t(`indicator-pinned`, {
+              aria-label={t('indicator-pinned', {
                 participantName: displayName || '',
               })}
               color={isVideoPinned ? 'primary' : 'secondary'}
@@ -161,33 +169,26 @@ const LocalVideo = ({
             </PinIconButton>
           )}
           <Video
-            ref={videoRef}
-            autoPlay
-            muted
+            trackRef={screenShareTrackRef || videoTrackRef}
             noRoundedCorners={noRoundedCorners}
             mirroringEnabled={mirroredVideoEnabled && !screenShareEnabled}
-            {...props}
           />
-          {screenShareEnabled && isVideoEnabled && (
+          {screenShareEnabled && isVideoEnabled && videoTrackRef && (
             <ThumbnailVideo
-              ref={videoThumbnailRef}
-              autoPlay
-              muted
+              trackRef={videoTrackRef}
               noRoundedCorners={noRoundedCorners}
               mirroringEnabled={mirroredVideoEnabled}
-              {...props}
             />
           )}
-          {!hideUserName && (
-            <NameTile
-              localAudioOn={isAudioEnabled}
-              localVideoOn={isVideoEnabled}
-              displayName={displayName || ''}
-              className="positionBottom"
-            />
-          )}
+          <NameTile
+            localAudioOn={fullscreenMode ? isAudioEnabled : true}
+            localVideoOn={fullscreenMode ? isVideoEnabled : true}
+            displayName={displayName || ''}
+            className="positionBottom"
+          />
         </>
       )}
+      {showLoadingSpinner && <CircularProgress color="primary" size="2.5rem" />}
       {isVideoMissing && <NoVideoText>{t('localvideo-no-device')}</NoVideoText>}
     </Container>
   );

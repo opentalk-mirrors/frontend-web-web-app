@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Box, IconButton as MuiIconButton, Slide } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { ParticipantContext } from '@livekit/components-react';
+import { Box, IconButton as MuiIconButton, Slide, styled } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../assets/icons';
-import { useAppSelector, useAppDispatch } from '../../hooks';
+import { useAppDispatch } from '../../hooks';
 import { useFullscreenContext } from '../../hooks/useFullscreenContext';
-import { selectCombinedSpeakerId } from '../../store/selectors';
-import { selectAllOnlineParticipants } from '../../store/slices/participantsSlice';
 import { toggledFullScreenMode } from '../../store/slices/uiSlice';
 import LocalVideo from '../LocalVideo';
 import ParticipantWindow from '../ParticipantWindow';
@@ -55,11 +54,6 @@ const FullscreenView = () => {
   const [hasVisibleControls, setVisibleControls] = useState<boolean>(false);
   const [isLocalVideoPinned, setIsLocalVideoPinned] = useState<boolean>(false);
 
-  const fullscreenSpeakerId = fullscreenHandle.fullscreenParticipantID;
-  const selectedSpeakerId = useAppSelector(selectCombinedSpeakerId);
-  const participants = useAppSelector(selectAllOnlineParticipants);
-  const usedParticipantId = fullscreenSpeakerId || selectedSpeakerId;
-  const selectedParticipant = participants.find((p) => p.id === usedParticipantId) || participants[0];
   const isActive = fullscreenHandle.hasActiveOverlay || hasVisibleControls;
 
   const dispatch = useAppDispatch();
@@ -71,16 +65,6 @@ const FullscreenView = () => {
     }
   }, [hasVisibleControls]);
 
-  const screenVideo = useMemo(() => {
-    if (selectedParticipant === undefined) {
-      return null;
-    }
-
-    return (
-      <ParticipantWindow activePresenter={isActive} participantId={selectedParticipant.id} mediaRef="fullscreen" />
-    );
-  }, [selectedParticipant, isActive]);
-
   const toggleLocalVideoPin = () => setIsLocalVideoPinned((prevState) => !prevState);
 
   const handleCloseFullscreen = () => {
@@ -89,28 +73,30 @@ const FullscreenView = () => {
   };
 
   return (
-    <Container
-      ref={(containerElement: HTMLDivElement | null) => fullscreenHandle.setRootElement(containerElement)}
-      onMouseMove={() => setVisibleControls(true)}
-      onMouseLeave={() => setVisibleControls(false)}
-      id="fullscreen-container"
-      data-testid="fullscreen"
-    >
-      <IconButton aria-label={t('indicator-fullscreen-close')} onClick={handleCloseFullscreen} color="secondary">
-        <CloseIcon />
-      </IconButton>
-      <Slide direction="down" in={isLocalVideoPinned || isActive} mountOnEnter>
-        <LocalVideoContainer data-testid="fullscreenLocalVideo">
-          <LocalVideo fullscreenMode togglePinVideo={toggleLocalVideoPin} isVideoPinned={isLocalVideoPinned} />
-        </LocalVideoContainer>
-      </Slide>
-      <Slide direction="up" in={isActive} mountOnEnter unmountOnExit>
-        <ToolbarWrapper>
-          <Toolbar layout="fullscreen" />
-        </ToolbarWrapper>
-      </Slide>
-      {screenVideo}
-    </Container>
+    <ParticipantContext.Provider value={fullscreenHandle.fullscreenParticipant}>
+      <Container
+        ref={(containerElement: HTMLDivElement | null) => fullscreenHandle.setRootElement(containerElement)}
+        onMouseMove={() => setVisibleControls(true)}
+        onMouseLeave={() => setVisibleControls(false)}
+        id="fullscreen-container"
+        data-testid="fullscreen"
+      >
+        <IconButton aria-label={t('indicator-fullscreen-close')} onClick={handleCloseFullscreen} color="secondary">
+          <CloseIcon />
+        </IconButton>
+        <Slide direction="down" in={isLocalVideoPinned || isActive} mountOnEnter>
+          <LocalVideoContainer data-testid="fullscreenLocalVideo">
+            <LocalVideo fullscreenMode togglePinVideo={toggleLocalVideoPin} isVideoPinned={isLocalVideoPinned} />
+          </LocalVideoContainer>
+        </Slide>
+        <Slide direction="up" in={isActive} mountOnEnter unmountOnExit>
+          <ToolbarWrapper>
+            <Toolbar layout="fullscreen" />
+          </ToolbarWrapper>
+        </Slide>
+        {fullscreenHandle.fullscreenParticipant && <ParticipantWindow activePresenter={isActive} />}
+      </Container>
+    </ParticipantContext.Provider>
   );
 };
 

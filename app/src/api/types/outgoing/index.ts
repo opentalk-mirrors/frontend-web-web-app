@@ -11,6 +11,8 @@ import * as control from './control';
 import ControlMessage from './control';
 import * as legalVote from './legalVote';
 import LegalVoteMessage from './legalVote';
+import * as livekit from './livekit';
+import LivekitMessage from './livekit';
 import * as media from './media';
 import MediaMessage from './media';
 import * as meetingNotes from './meetingNotes';
@@ -38,6 +40,7 @@ export * as meetingNotes from './meetingNotes';
 export * as timer from './timer';
 export * as whiteboard from './whiteboard';
 export * as recording from './streaming';
+export * as livekit from './livekit';
 
 export type Action =
   | automod.Action
@@ -51,7 +54,8 @@ export type Action =
   | meetingNotes.Action
   | timer.Action
   | whiteboard.Action
-  | recording.Action;
+  | recording.Action
+  | livekit.Action;
 
 // we need to use type mapping, to convert `Namespaced` interface into types
 // otherwise we will have problems with `convertToCamelCase` function
@@ -92,6 +96,9 @@ type WhiteboardMessageMappedType = {
 type RecordingMessageMappedType = {
   [P in keyof RecordingMessage]: RecordingMessage[P];
 };
+type LivekitMessageMappedType = {
+  [P in keyof LivekitMessage]: LivekitMessage[P];
+};
 
 export type Message =
   | AutomodMessageMappedType
@@ -105,4 +112,5 @@ export type Message =
   | MeetingNotesMessageMappedType
   | TimerMessageMappedType
   | WhiteboardMessageMappedType
-  | RecordingMessageMappedType;
+  | RecordingMessageMappedType
+  | LivekitMessageMappedType;

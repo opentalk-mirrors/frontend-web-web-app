@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { authReducer } from '@opentalk/redux-oidc';
-import { configureStore, Middleware, MiddlewareAPI, Dispatch, AnyAction } from '@reduxjs/toolkit';
+import { AnyAction, Dispatch, Middleware, MiddlewareAPI, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { merge } from 'lodash';
 
@@ -13,11 +13,10 @@ import breakoutReducer from './slices/breakoutSlice';
 import chatReducer from './slices/chatSlice';
 import { initialState as initialConfig } from './slices/configSlice';
 import configReducer from './slices/configSlice';
-import connectionStatsReducer from './slices/connectionStatsSlice';
 import eventReducer from './slices/eventSlice';
 import legalVoteReducer from './slices/legalVoteSlice';
+import livekitReducer from './slices/livekitSlice';
 import mediaReducer, { mediaMiddleware } from './slices/mediaSlice';
-import subscribersReducer, { mediaSubscriberMiddleware } from './slices/mediaSubscriberSlice';
 import meetingNotesReducer from './slices/meetingNotesSlice';
 import moderationReducer from './slices/moderationSlice';
 import participantsReducer, { participantsMiddleware } from './slices/participantsSlice';
@@ -32,11 +31,10 @@ import uiReducer from './slices/uiSlice';
 import userReducer from './slices/userSlice';
 import whiteboardReducer from './slices/whiteboardSlice';
 
-const middleware: Array<Middleware> = [
+export const middleware: Array<Middleware> = [
   apiMiddleware,
   restApi.middleware,
   rtkQueryErrorLoggerMiddlware,
-  mediaSubscriberMiddleware.middleware,
   mediaMiddleware.middleware,
   timerMiddleware.middleware,
   roomMiddleware.middleware,
@@ -85,8 +83,6 @@ export const appReducers = {
   slot: slotReducer,
   speed: speedMeterReducer,
   poll: pollReducer,
-  subscribers: subscribersReducer,
-  stats: connectionStatsReducer,
   [restApi.reducerPath]: restApi.reducer,
   events: eventReducer,
   meetingNotes: meetingNotesReducer,
@@ -94,6 +90,7 @@ export const appReducers = {
   whiteboard: whiteboardReducer,
   streaming: streamingReducer,
   sharedFolder: sharedFolderReducer,
+  livekit: livekitReducer,
 };
 
 const store = configureStore({

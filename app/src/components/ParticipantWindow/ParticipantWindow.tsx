@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Box as MuiBox } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useParticipantContext } from '@livekit/components-react';
+import { Box as MuiBox, styled } from '@mui/material';
+import { useState } from 'react';
 
 import { NameTile } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
@@ -36,36 +37,20 @@ const HandRaisedBox = styled(MuiBox)({
 });
 
 interface ParticipantWindowProps {
-  participantId: ParticipantId;
   activePresenter?: boolean;
   alwaysShowOverlay?: boolean;
   isThumbnail?: boolean;
-  mediaRef: string;
 }
 
-const ParticipantWindow = ({
-  participantId,
-  activePresenter,
-  alwaysShowOverlay,
-  isThumbnail,
-  mediaRef,
-}: ParticipantWindowProps) => {
+const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: ParticipantWindowProps) => {
+  const participant = useParticipantContext();
+  const participantId = participant.identity as ParticipantId;
+
   const fullscreenHandle = useFullscreenContext();
-  const displayName = useAppSelector(selectParticipantName(participantId));
+  const displayName = useAppSelector(selectParticipantName(participant.identity));
   const [activeOverlay, setActiveOverlay] = useState<boolean>(!!alwaysShowOverlay);
 
   const handleDisplayOverlay = (show: boolean) => !alwaysShowOverlay && setActiveOverlay(show);
-
-  const videoTile = useMemo(() => {
-    return (
-      <ParticipantVideo
-        participantId={participantId}
-        presenterVideoIsActive={activePresenter}
-        isThumbnail={isThumbnail}
-        mediaRef={mediaRef}
-      />
-    );
-  }, [participantId, activePresenter, isThumbnail, mediaRef]);
 
   return (
     <Container
@@ -73,10 +58,18 @@ const ParticipantWindow = ({
       onMouseLeave={() => handleDisplayOverlay(false)}
       data-testid="ParticipantWindow"
     >
-      {videoTile}
+      <ParticipantVideo
+        participantId={participantId}
+        presenterVideoIsActive={activePresenter}
+        isThumbnail={isThumbnail}
+      />
       <VideoOverlay participantId={participantId} active={activeOverlay && !fullscreenHandle.active} />
       {!fullscreenHandle.active && (
-        <NameTile displayName={displayName || ''} participantId={participantId} className="positionBottom" />
+        <NameTile
+          displayName={displayName || participant.name || ''}
+          participantId={participantId}
+          className="positionBottom"
+        />
       )}
       <HandRaisedBox>
         <HandRaisedIndicator participantId={participantId} />

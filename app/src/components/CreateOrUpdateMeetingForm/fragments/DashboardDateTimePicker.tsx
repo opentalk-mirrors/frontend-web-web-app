@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack } from '@mui/material';
-import { StreamingPlatform, RecurrencePattern } from '@opentalk/rest-api-rtk-query';
+import { RecurrencePattern, StreamingPlatform } from '@opentalk/rest-api-rtk-query';
 import { FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +27,7 @@ export interface CreateOrUpdateMeetingFormikValues {
   sharedFolder: boolean;
   streaming: Streaming;
   showMeetingDetails: boolean;
+  e2eEncryption: boolean;
 }
 
 type DashboardDateTimePickerProps = {

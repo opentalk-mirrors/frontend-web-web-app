@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { CssBaseline, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { AuthProvider } from '@opentalk/redux-oidc';
-import React from 'react';
 
 import { createOpenTalkTheme } from './assets/themes/opentalk';
 import { SnackbarProvider } from './commonComponents';
-import { MediaProvider } from './components/MediaProvider';
 import { useAppSelector } from './hooks';
 import BreakoutRoomProvider from './provider/BreakoutRoomProvider';
 import FullscreenProvider from './provider/FullscreenProvider';
+import MediaChoicesProvider from './provider/MediaChoicesProvider';
 import { selectBaseUrl, selectControllerUrl, selectOidcConfig } from './store/slices/configSlice';
 import { ConnectionState, selectRoomConnectionState } from './store/slices/roomSlice';
 
@@ -40,11 +39,11 @@ const Provider = ({ children }: ProviderProps) => {
         <ThemeProvider theme={inRoom ? createOpenTalkTheme('dark') : createOpenTalkTheme()}>
           <CssBaseline />
           <BreakoutRoomProvider>
-            <MediaProvider>
-              <FullscreenProvider>
-                <SnackbarProvider>{children}</SnackbarProvider>
-              </FullscreenProvider>
-            </MediaProvider>
+            <FullscreenProvider>
+              <SnackbarProvider>
+                <MediaChoicesProvider>{children}</MediaChoicesProvider>
+              </SnackbarProvider>
+            </FullscreenProvider>
           </BreakoutRoomProvider>
         </ThemeProvider>
       </AuthProvider>

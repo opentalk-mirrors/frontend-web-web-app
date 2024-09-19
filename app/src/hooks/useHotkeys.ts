@@ -1,21 +1,23 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useMediaDeviceSelect } from '@livekit/components-react';
 import { debounce } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '.';
 import { pass } from '../api/types/outgoing/automod';
-import { useMediaContext } from '../components/MediaProvider';
 import { useFullscreenContext } from '../hooks/useFullscreenContext';
+import { useMediaChoices } from '../provider/MediaChoicesProvider';
 import { selectIsUserMicDisabled } from '../store/selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker } from '../store/slices/automodSlice';
-import { selectAudioEnabled, selectMediaChangeInProgress, selectVideoEnabled } from '../store/slices/mediaSlice';
+import { getLivekitRoom } from '../store/slices/livekitSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { selectTimerStyle } from '../store/slices/timerSlice';
 import { selectHotkeysEnabled } from '../store/slices/uiSlice';
 import { RoomMode, TimerStyle } from '../types';
+import useMediaDevice from './useMediaDevice';
 
 export const HOTKEY_MICROPHONE = 'm';
 export const HOTKEY_VIDEO = 'v';
@@ -33,16 +35,12 @@ export const useHotkeysActive = (): boolean => {
 };
 
 export const useHotkeys = () => {
-  const mediaContext = useMediaContext();
   const fullscreenContext = useFullscreenContext();
-  const audioEnabled = useAppSelector(selectAudioEnabled);
-  const videoEnabled = useAppSelector(selectVideoEnabled);
   const roomMode = useAppSelector(selectCurrentRoomMode);
   const speakerState = useAppSelector(selectSpeakerState);
   const hasMicrophoneDisabledByModerator = useAppSelector(selectIsUserMicDisabled);
   const dispatch = useDispatch();
 
-  const isLoadingMedia = useAppSelector(selectMediaChangeInProgress);
   const startingAudio = useRef<Promise<void> | undefined>();
   const stoppingAudio = useRef<Promise<void> | undefined>();
   const [isInPushedToTalkMode, setIsInPushedToTalkMode] = useState(false);
@@ -52,66 +50,84 @@ export const useHotkeys = () => {
 
   const hotkeysActive = hotkeysEnabled && timerStyle !== TimerStyle.CoffeeBreak;
 
-  const switchAudio = useCallback((value: boolean) => mediaContext.trySetAudio(value), [mediaContext]);
+  const { devices: audioDevices } = useMediaDeviceSelect({ kind: 'audioinput', requestPermissions: false });
+  const { devices: videoDevices } = useMediaDeviceSelect({ kind: 'videoinput', requestPermissions: false });
 
-  const toggleAudio = useCallback(() => {
-    if (!isLoadingMedia) {
-      switchAudio(!audioEnabled);
-    }
-  }, [isLoadingMedia, switchAudio, audioEnabled]);
+  const mediaChoices = useMediaChoices();
+  const audioEnabled = mediaChoices?.userChoices.audioEnabled || false;
 
-  const toggleVideo = useCallback(() => {
-    if (!isLoadingMedia) {
-      mediaContext.trySetVideo(!videoEnabled);
-    }
-  }, [isLoadingMedia, mediaContext, videoEnabled]);
+  const { startMedia } = useMediaDevice({
+    kind: 'audioinput',
+  });
+
+  const toggleAudio = useCallback(
+    async (forcedState?: boolean) => {
+      const room = getLivekitRoom();
+      if (forcedState || !audioEnabled) {
+        await startMedia(true);
+        room.localParticipant.setMicrophoneEnabled(true);
+      } else {
+        mediaChoices?.saveAudioInputEnabled(false);
+        room.localParticipant.setMicrophoneEnabled(false);
+      }
+    },
+    [audioEnabled, startMedia, mediaChoices?.saveAudioInputEnabled]
+  );
+  const toggleVideo = useCallback(
+    () => mediaChoices?.saveVideoInputEnabled(!mediaChoices?.userChoices.videoEnabled),
+    [mediaChoices?.saveVideoInputEnabled, mediaChoices?.userChoices.videoEnabled]
+  );
 
   // Push-to-talk function shall work ONLY if the user is muted (audio is disabled)
   // On keydown we start the push-to-talk mode and unmute the user,
   // On keyup - stop the push-to-talk mode and mute the user again
   // We use `startingAudio` and `stoppingAudio` promises to prevent race condition
   // between audio en-/disabling actions in mediaContext
-  const pushToTalk = (type: 'keyup' | 'keydown') => {
-    const startAudio = async () => {
-      if (hasMicrophoneDisabledByModerator) {
-        return;
-      }
-      await switchAudio(true);
-      startingAudio.current = undefined;
-    };
-
-    const stopAudio = async () => {
-      await switchAudio(false);
-      stoppingAudio.current = undefined;
-    };
-
-    switch (type) {
-      case 'keydown':
-        if (!audioEnabled) {
-          if (startingAudio.current === undefined) {
-            if (stoppingAudio.current === undefined) {
-              startingAudio.current = startAudio();
-            } else {
-              startingAudio.current = stoppingAudio.current.then(() => startAudio());
-            }
-          }
-          setIsInPushedToTalkMode(true);
+  const pushToTalk = useCallback(
+    (type: 'keyup' | 'keydown') => {
+      const startAudio = async () => {
+        if (hasMicrophoneDisabledByModerator) {
+          return;
         }
-        break;
-      case 'keyup':
-        if (isInPushedToTalkMode) {
-          if (stoppingAudio.current === undefined) {
+        toggleAudio(true);
+        startingAudio.current = undefined;
+      };
+
+      const stopAudio = async () => {
+        toggleAudio(false);
+        startingAudio.current = undefined;
+        stoppingAudio.current = undefined;
+      };
+
+      switch (type) {
+        case 'keydown':
+          if (!audioEnabled) {
             if (startingAudio.current === undefined) {
-              stoppingAudio.current = stopAudio();
-            } else {
-              stoppingAudio.current = startingAudio.current.then(() => stopAudio());
+              if (stoppingAudio.current === undefined) {
+                startingAudio.current = startAudio();
+              } else {
+                startingAudio.current = stoppingAudio.current.then(() => startAudio());
+              }
             }
+            setIsInPushedToTalkMode(true);
           }
-          setIsInPushedToTalkMode(false);
-        }
-        break;
-    }
-  };
+          break;
+        case 'keyup':
+          if (isInPushedToTalkMode) {
+            if (stoppingAudio.current === undefined) {
+              if (startingAudio.current === undefined) {
+                stoppingAudio.current = stopAudio();
+              } else {
+                stoppingAudio.current = startingAudio.current.then(() => stopAudio());
+              }
+            }
+            setIsInPushedToTalkMode(false);
+          }
+          break;
+      }
+    },
+    [audioEnabled, hasMicrophoneDisabledByModerator, toggleAudio, isInPushedToTalkMode]
+  );
 
   const toggleFullscreenView = useCallback(() => {
     fullscreenContext[fullscreenContext.active ? 'exit' : 'enter']();
@@ -130,12 +146,12 @@ export const useHotkeys = () => {
 
         switch (key) {
           case HOTKEY_MICROPHONE:
-            if (type === 'keyup' && mediaContext.hasMicrophone && !hasMicrophoneDisabledByModerator) {
+            if (type === 'keyup' && audioDevices.length > 0 && !hasMicrophoneDisabledByModerator) {
               toggleAudio();
             }
             break;
           case HOTKEY_VIDEO:
-            if (type === 'keyup' && mediaContext.hasCamera) {
+            if (type === 'keyup' && videoDevices.length > 0) {
               toggleVideo();
             }
             break;
@@ -165,17 +181,17 @@ export const useHotkeys = () => {
       }
     },
     [
-      mediaContext.hasMicrophone,
-      mediaContext.hasCamera,
       pushToTalk,
       hotkeysActive,
-      audioEnabled,
       toggleAudio,
       toggleVideo,
       toggleFullscreenView,
       roomMode,
       speakerState,
       dispatch,
+      audioDevices,
+      videoDevices,
+      hasMicrophoneDisabledByModerator,
     ]
   );
 

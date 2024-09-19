@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import { useGetMeQuery, useGetRoomQuery, useGetEventQuery } from '../../../api/rest';
+import { useGetEventQuery, useGetMeQuery, useGetRoomQuery } from '../../../api/rest';
 import { EndCallIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
@@ -20,7 +20,6 @@ import ToolbarButton from './ToolbarButton';
 
 const EndCallButton = () => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
   };
@@ -28,6 +27,7 @@ const EndCallButton = () => {
   const isLoggedInUser = useAppSelector(selectIsAuthenticated);
   const { data: me } = useGetMeQuery(undefined, { skip: !isLoggedInUser });
   const { data: roomData } = useGetRoomQuery(roomId, { skip: !isLoggedInUser });
+  const dispatch = useAppDispatch();
 
   const [isConfirmDialogVisible, showConfirmDialog] = useState(false);
   const isMeetingCreator =
@@ -38,10 +38,6 @@ const EndCallButton = () => {
   const { data: eventData } = useGetEventQuery({ eventId: eventInfo?.id as EventId }, { skip: !requiresConfirmDialog });
 
   const hangUpHandler = useCallback(() => dispatch(hangUp()), [dispatch]);
-
-  const onClose = useCallback(() => {
-    showConfirmDialog(false);
-  }, [showConfirmDialog]);
 
   const handleEndCall = () => {
     if (requiresConfirmDialog) {
@@ -68,7 +64,7 @@ const EndCallButton = () => {
       {isConfirmDialogVisible && (
         <CloseMeetingDialog
           open={isConfirmDialogVisible}
-          onClose={onClose}
+          onClose={() => showConfirmDialog(false)}
           container={fullscreenContext.rootElement}
           eventData={eventData}
         />

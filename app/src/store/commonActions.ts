@@ -1,20 +1,18 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
+import { RoomId } from '@opentalk/rest-api-rtk-query';
+import { InviteCode } from '@opentalk/rest-api-rtk-query/src/types';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import convertToCamelCase from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
-import { stopTimeLimitNotification, notifications } from '../commonComponents';
-import localMediaContext from '../modules/Media/LocalMedia';
-import localScreenContext from '../modules/Media/LocalScreen';
+import { notifications, stopTimeLimitNotification } from '../commonComponents';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
-import { BreakoutRoomId } from '../types';
-import { JoinSuccessInternalState } from '../types/actions/joinSuccess';
+import { BreakoutRoomId, JoinSuccessInternalState } from '../types';
 import { getControllerBaseUrl } from '../utils/apiUtils';
 import { RootState } from './index';
-import { ConnectionState } from './slices/roomSlice';
+import { getLivekitRoom } from './slices/livekitSlice';
 
 export interface RoomCredentials {
   roomId: RoomId;
@@ -53,7 +51,7 @@ export const startRoom = createAsyncThunk<
   return ConferenceRoom.create(credentials, config, credentials.roomId === roomId ? resumptionToken : undefined);
 });
 
-export const hangUp = createAsyncThunk<void, void, { state: RootState }>('room/hangup', async (_, { getState }) => {
+export const hangUp = createAsyncThunk<void, void, { state: RootState }>('room/hangup', async () => {
   // This ensures that all notifications visible to the user prior to hanging up
   // and being redirected to the lobby room are cleared up. If you need to show
   // notification after hanging up, make sure to call it after this function.
@@ -61,13 +59,16 @@ export const hangUp = createAsyncThunk<void, void, { state: RootState }>('room/h
   // A workaround to disable notifications about time limitation of the conference, as they
   // have they own timeout strategy
   stopTimeLimitNotification();
-  const { connectionState } = getState().room;
-  if (connectionState !== ConnectionState.Leaving) {
-    throw new Error(`cannot hangup when state is '${connectionState}' and not 'leaving'.`);
-  }
+
+  const room = getLivekitRoom();
+
   shutdownConferenceContext();
-  localScreenContext.release();
-  return localMediaContext.release();
+
+  room.localParticipant.trackPublications.forEach((publication) => {
+    publication.track?.mediaStreamTrack.stop();
+    publication.track?.stop();
+  });
+  return room.disconnect();
 });
 
 export const joinSuccess = createAction<JoinSuccessInternalState>('signaling/control/join_success');

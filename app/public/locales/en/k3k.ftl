@@ -24,6 +24,7 @@ error-invalid-invitation-link = This invitation link is invalid
 
 error-system-currently-unavailable = The system is currently unavailable, please try again later.
 error-unauthorized = Unfortunately you do not have access, please contact the meeting moderator.
+error-livekit-unavailable = Livekit is not available, please contact your administrator.
 
 login-form-title = Login
 login-form-body = Please log in to continue.
@@ -69,6 +70,7 @@ audiomenu-choose-input = Choose audio input device
 videomenu-choose-input = Choose video input device
 devicemenu-wait-for-permission = Waiting for device permission
 device-permission-denied = Device permission denied. Please review your page settings.
+device-unable-to-start = Unable to start your media device, please check if its occupied by another application or select another device.
 quality-cap-setting = Quality Cap
 quality-audio-only = Off
 quality-low = Low
@@ -575,6 +577,8 @@ wrong-browser-dialog-title = Your browser is only partially supported.
 wrong-browser-dialog-message = Please use the latest version of Chrome, Firefox or Safari. If you have further difficulties, check whether your browser is running in compatibility or incognito mode. Disable them and try again here.
 wrong-browser-dialog-ok = Ok
 
+unsupported-browser-e2e-encryption-dialog-message = Your browser does not support end-to-end encryption. Please use e.g. Chrome(>=v86), Firefox(>=v117) or Safari(>=v15.4).
+
 safari-warning-notification = OpenTalk isn't fully optimized for Safari, yet. We recommend you use Chrome, Brave, Edge, or Firefox instead.
 
 error-config-title = Incorrect Configuration
@@ -886,6 +890,8 @@ dashboard-meeting-livestream-streaming-key-required = This is a mandatory field
 dashboard-meeting-waiting-room-switch = Waiting room
 dashboard-meeting-details-switch = Show meeting details
 dashboard-meeting-details-tooltip = Meeting details visible / shareable to / for all participants (also password if set).
+dashboard-meeting-e2ee-switch = Enable very high level of protection
+dashboard-meeting-e2ee-tooltip = Enable end-to-end encryption for a videoconference with a very high level of protection. Note: Dialing, use of video endpoints/room kits, streaming and recording of the conference will not be possible!
 
 streaming-targets-request-error = Could not add streaming target
 

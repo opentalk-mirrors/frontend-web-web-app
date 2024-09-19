@@ -12,7 +12,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { useCallback, useMemo, useState } from 'react';
+import { SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
 
@@ -136,7 +136,7 @@ const LayoutSelection = () => {
         aria-haspopup="true"
         aria-controls={isViewPopoverOpen ? 'view-popover-menu' : undefined}
         aria-label={t('conference-view-trigger-button')}
-        onClick={(event) =>
+        onClick={(event: { currentTarget: SetStateAction<HTMLElement | null> }) =>
           [LayoutOptions.Whiteboard].includes(selectedLayout)
             ? handleSelectedView(LayoutOptions.Grid)
             : setAnchorElement(event.currentTarget)

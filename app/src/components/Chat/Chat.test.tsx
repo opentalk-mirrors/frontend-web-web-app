@@ -65,7 +65,6 @@ describe('Chat component', () => {
           lastActive: '',
           waitingState: WaitingState.Joined,
           meetingNotesAccess: MeetingNotesAccess.None,
-          isPresenter: false,
           isSpeaking: false,
           isRoomOwner: false,
         },

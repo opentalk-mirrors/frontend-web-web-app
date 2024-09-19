@@ -131,3 +131,47 @@ export const urlSafeBase64Encode = (buffer: Uint8Array) => {
   const base64String = Array.from(new Uint8Array(buffer), (byte) => String.fromCharCode(byte)).join('');
   return window.btoa(base64String).replace(/\//g, '_').replace(/\+/g, '-').replace(/=/g, '');
 };
+
+// The goal of this XOR cipher is to add an extra layer of security by making it harder to abuse access tokens
+// without analyzing the codebase. This approach is useful in scenarios such as browser plugins or other
+// client-side applications where the primary goal is to prevent accidental tampering and unauthorized access,
+// rather than providing high-level security.
+// In this context, it's fine to store the key as a static constant.
+export const XOR_KEY = '0p3nT@lk!';
+export const XORCipher = {
+  keyCharAt(index: number) {
+    return XOR_KEY.charCodeAt(Math.floor(index % XOR_KEY.length));
+  },
+
+  fromBase64String(base64String: string) {
+    const binaryString = window.atob(base64String.replace(/_/g, '/').replace(/-/g, '+'));
+    const binaryLen = binaryString.length;
+    const bytes = new Uint8Array(binaryLen);
+    for (let i = 0; i < binaryLen; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  },
+
+  xorProcess(input: Uint8Array) {
+    const output = new Uint8Array(input.length);
+    for (let i = 0; i < input.length; i++) {
+      output[i] = input[i] ^ this.keyCharAt(i);
+    }
+    return output;
+  },
+
+  handle(input: string) {
+    try {
+      // Try to decode as base64 string to handle decryption
+      const inputArr = this.fromBase64String(input);
+      const decryptedArr = this.xorProcess(inputArr);
+      return new TextDecoder().decode(decryptedArr);
+    } catch {
+      // If base64 decoding fails, treat the input as plaintext to handle encryption
+      const inputArr = new TextEncoder().encode(input);
+      const encryptedArr = this.xorProcess(inputArr);
+      return urlSafeBase64Encode(encryptedArr);
+    }
+  },
+};

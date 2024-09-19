@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Container, IconButton, InputAdornment, Grid, styled, ThemeProvider } from '@mui/material';
+import { Button, Container, Grid, IconButton, InputAdornment, ThemeProvider, styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
 import i18next from 'i18next';
+import { isE2EESupported } from 'livekit-client';
 import { uniqueId } from 'lodash';
 import { SnackbarKey } from 'notistack';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
@@ -18,11 +19,11 @@ import { HiddenIcon, VisibleIcon } from '../../assets/icons';
 import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { CommonTextField as DefaultCommonTextField, notifications } from '../../commonComponents';
 import SuspenseLoading from '../../commonComponents/SuspenseLoading/SuspenseLoading';
-import Error from '../../components/Error';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
+import { useMediaChoices } from '../../provider/MediaChoicesProvider';
 import { startRoom } from '../../store/commonActions';
 import { selectDisallowCustomDisplayName, selectFeatures } from '../../store/slices/configSlice';
 import {
@@ -37,8 +38,8 @@ import { BreakoutRoomId, FetchRequestError } from '../../types';
 import { composeRoomPath } from '../../utils/apiUtils';
 import { formikProps } from '../../utils/formikUtils';
 import { ContitionalToolTip } from '../ConditionalToolTip/ContitionalToolTip';
+import OpentalkError from '../Error';
 import ImprintContainer from '../ImprintContainer';
-import { useMediaContext } from '../MediaProvider';
 import SelfTest from '../SelfTest';
 
 const CommonTextField = styled(DefaultCommonTextField)(({ theme }) => ({
@@ -78,39 +79,44 @@ const showWrongPasswordNotification = () => {
     key: uniqueId(),
     variant: 'error',
     persist: true,
-    onClose: () => (wrongPasswordSnackBarKey = undefined),
+    onClose: () => {
+      wrongPasswordSnackBarKey = undefined;
+    },
   });
 };
 
-const JOIN_FORM_ID = 'join-form';
+export const JOIN_FORM_ID = 'join-form';
 
-const LobbyView: FC = () => {
-  const dispatch = useAppDispatch();
-  const mediaContext = useMediaContext();
+const LobbyView = () => {
   const { t } = useTranslation();
+  const mediaChoices = useMediaChoices();
+
+  const dispatch = useAppDispatch();
+  const inviteState = useAppSelector(selectInviteState);
   const { joinWithoutMedia } = useAppSelector(selectFeatures);
+  const showPasswordField = useAppSelector(selectPasswordRequired);
+  const disallowCustomDisplayName = useAppSelector(selectDisallowCustomDisplayName);
+  const isLoggedIn = useAppSelector(selectIsAuthenticated);
+  const connectionState = useAppSelector(selectRoomConnectionState);
+
+  const { data } = useGetMeQuery(undefined, { skip: !isLoggedIn });
+  const navigateToHome = useNavigateToHome();
+  const inviteCode = useInviteCode();
+  const navigate = useNavigate();
+
+  const [inviteCodeError, setInviteCodeError] = useState<FetchRequestError>();
   const [showPassword, setShowPassword] = useState(false);
+
   const { roomId, breakoutRoomId } = useParams<'roomId' | 'breakoutRoomId'>() as {
     roomId: RoomId;
     breakoutRoomId?: BreakoutRoomId;
   };
-  const isLoggedIn = useAppSelector(selectIsAuthenticated);
-  const { data } = useGetMeQuery(undefined, { skip: !isLoggedIn });
-  const inviteCode = useInviteCode();
-  const inviteState = useAppSelector(selectInviteState);
-  const [inviteCodeError, setInviteCodeError] = useState<FetchRequestError>();
-  const connectionState = useAppSelector(selectRoomConnectionState);
-  const navigate = useNavigate();
-  const navigateToHome = useNavigateToHome();
-  const passwordRequired = useAppSelector(selectPasswordRequired);
-  const disallowCustomDisplayName = useAppSelector(selectDisallowCustomDisplayName);
-  const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
-  const disableDisplayNameField = disallowCustomDisplayName && !inviteCode;
-  const initialDisplayName = data?.displayName || '';
 
-  //Password is only required for guests or non invited users.
-  //We do not have a way of telling if you are invited with the current backend so we will always show the password if you are using the invite link.
-  const showPasswordField = passwordRequired;
+  const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
+
+  if (roomData?.e2EEncryption && !isE2EESupported()) {
+    notifications.error(t('unsupported-browser-e2e-encryption-dialog-message'));
+  }
 
   useUpdateDocumentTitle(t('joinform-room-title', { title: roomData?.title || '' }), {
     extension: '',
@@ -125,6 +131,11 @@ const LobbyView: FC = () => {
     }
   }, [inviteCode]);
 
+  useEffect(() => {
+    mediaChoices?.saveAudioInputEnabled(false);
+    mediaChoices?.saveVideoInputEnabled(false);
+  }, [mediaChoices?.saveAudioInputEnabled, mediaChoices?.saveVideoInputEnabled]);
+
   //Cleans up wrong password notification on dismount
   useEffect(() => {
     return () => {
@@ -135,11 +146,25 @@ const LobbyView: FC = () => {
     };
   }, []);
 
+  const disableDisplayNameField = disallowCustomDisplayName && !inviteCode;
+  const initialDisplayName = data?.displayName || '';
+
+  const validationSchema = useMemo(
+    () =>
+      yup.object({
+        name: yup
+          .string()
+          .trim()
+          .required(t('field-error-required', { fieldName: 'Name' })),
+      }),
+    [t]
+  );
+
   const enterRoom = useCallback(
     async (displayName: string, password: string) => {
       if (joinWithoutMedia) {
-        await mediaContext.trySetVideo(false);
-        await mediaContext.trySetAudio(false);
+        mediaChoices?.saveAudioInputEnabled(false);
+        mediaChoices?.saveVideoInputEnabled(false);
       }
 
       return dispatch(
@@ -191,29 +216,20 @@ const LobbyView: FC = () => {
           }
         });
     },
-    [navigate, t, breakoutRoomId, roomId, inviteCode, joinWithoutMedia, mediaContext]
+    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, mediaChoices, joinWithoutMedia]
   );
-
-  const validationSchema = yup.object({
-    name: yup
-      .string()
-      .trim()
-      .required(t('field-error-required', { fieldName: 'Name' })),
-  });
 
   const formik = useFormik({
     initialValues: {
-      name: data?.displayName || '',
+      name: initialDisplayName,
       password: '',
     },
     enableReinitialize: true,
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: (values) => {
       if (isLoggedIn || inviteCode !== undefined) {
-        if (disableDisplayNameField) {
-          return enterRoom(initialDisplayName, values.password);
-        }
-        return enterRoom(values.name, values.password);
+        const name = disableDisplayNameField ? initialDisplayName : values.name;
+        enterRoom(name, values.password);
       }
     },
   });
@@ -222,7 +238,7 @@ const LobbyView: FC = () => {
     !(isLoggedIn || inviteCode !== undefined) || connectionState === ConnectionState.Starting || !formik.isValid;
 
   const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
+    setShowPassword((prev) => !prev);
   };
 
   if (inviteState.loading) {
@@ -231,9 +247,9 @@ const LobbyView: FC = () => {
 
   if (inviteCodeError) {
     if (inviteCodeError?.statusText === InviteCodeErrorEnum.InvalidJson) {
-      return <Error title={t('error-invalid-invitation-link')} />;
+      return <OpentalkError title={t('error-invalid-invitation-link')} />;
     }
-    return <Error title={t('error-invite-link')} />;
+    return <OpentalkError title={t('error-invite-link')} />;
   }
 
   return (
@@ -245,7 +261,6 @@ const LobbyView: FC = () => {
               {t('joinform-enter-now')}
             </ActionButton>
           }
-          title={roomData?.title}
         >
           <ThemeProvider theme={createOpenTalkTheme('dark')}>
             <Grid
@@ -265,16 +280,15 @@ const LobbyView: FC = () => {
                 <ContitionalToolTip
                   showToolTip={Boolean(disableDisplayNameField)}
                   title={t('joinform-display-name-field-disabled-tooltip')}
-                  children={
-                    <CustomTextField
-                      {...formikProps('name', formik)}
-                      label={t('global-name')}
-                      placeholder={t('lobby-name-placeholder')}
-                      autoComplete="username"
-                      disabled={disableDisplayNameField}
-                    />
-                  }
-                />
+                >
+                  <CustomTextField
+                    {...formikProps('name', formik)}
+                    label={t('global-name')}
+                    placeholder={t('lobby-name-placeholder')}
+                    autoComplete="username"
+                    disabled={disableDisplayNameField}
+                  />
+                </ContitionalToolTip>
               </Grid>
               {showPasswordField && (
                 <Grid item sm={6} md="auto">

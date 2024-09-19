@@ -41,6 +41,8 @@ type EventRoomInfo = {
   id: RoomId;
   password?: string;
   waitingRoom: boolean;
+  // TODO - somehow this is `e2EEncryption` and not `e2eEncryption`
+  e2EEncryption: boolean;
   callIn?: CallIn;
 };
 
@@ -75,6 +77,7 @@ export interface CreateBaseEventPayload {
   title: string;
   description: string;
   waitingRoom: boolean;
+  e2eEncryption: boolean;
   password?: string;
   isAdhoc?: boolean;
   showMeetingDetails?: boolean;
@@ -147,6 +150,7 @@ export interface UpdateEventPayload {
   isAllDay?: boolean;
   recurrencePattern?: Array<RecurrencePattern>;
   waitingRoom?: boolean;
+  e2eEncryption: boolean;
   password?: string;
   isAdhoc?: boolean;
   showMeetingDetails?: boolean;
@@ -328,6 +332,7 @@ export interface EventInfo {
   isAdhoc: boolean;
   meetingDetails?: MeetingDetails;
   roomId: RoomId;
+  e2EEncryption: boolean;
 }
 
 /**

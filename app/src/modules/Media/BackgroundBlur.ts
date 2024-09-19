@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 
+// We only need this implementation for Firefox. For other browsers, we use LiveKit's virtual background and blur.
+// Once LiveKit supports Firefox, we will drop this implementation.
+
 export type SourcePlayback = {
   htmlElement: HTMLImageElement | HTMLVideoElement;
   width: number;

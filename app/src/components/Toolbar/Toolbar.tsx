@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useLocalParticipant, useLocalParticipantPermissions } from '@livekit/components-react';
 import { styled } from '@mui/material';
+import { Track } from 'livekit-client';
 import { useTranslation } from 'react-i18next';
 
 import AudioButton from './fragments/AudioButton';
@@ -40,13 +42,22 @@ const MainContainer = styled('aside')(({ theme }) => ({
   },
 }));
 
+export const LIVEKIT_AUDIO_PERMISSION_NUMBER = 2;
+
 const Toolbar = ({ layout }: { layout?: LayoutTypes }) => {
   const { t } = useTranslation();
+  const localParticipantPermissions = useLocalParticipantPermissions();
+
+  const { localParticipant } = useLocalParticipant();
+  const audioTrack = localParticipant.getTrackPublication(Track.Source.Microphone)?.audioTrack;
+  const canPublishAudio =
+    localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_AUDIO_PERMISSION_NUMBER) || false;
+
   return (
     <MainContainer aria-label={t('landmark-complementary-toolbar')} className={layout} data-testid="Toolbar">
       <HandraiseButton />
       <ShareScreenButton />
-      <AudioButton />
+      <AudioButton localAudioTrack={audioTrack} canPublishAudio={canPublishAudio} />
       <VideoButton />
       <MoreButton />
       <EndCallButton />

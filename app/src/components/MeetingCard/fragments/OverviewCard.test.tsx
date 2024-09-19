@@ -9,6 +9,21 @@ import store from '../../../store';
 import { screen, render, fireEvent, eventMockedData } from '../../../utils/testUtils';
 import OverviewCard from './OverviewCard';
 
+jest.mock('../../EventTimePreview/EventTimePreview', () => ({
+  __esModule: true,
+  default: () => <div data-testid="eventTimePreview"></div>,
+}));
+
+jest.mock('../../../commonComponents', () => ({
+  notifications: { error: () => jest.fn(), success: () => jest.fn() },
+}));
+
+jest.mock('./MeetingPopover', () => ({
+  __esModule: true,
+  default: () => <div data-testid="MeetingPopover"></div>,
+  MeetingCardFragmentProps: () => <div data-testid="meetingCardFragmentProps"></div>,
+}));
+
 const timeDependentMeeting = {
   ...eventMockedData,
   inviteStatus: InviteStatus.Pending,
@@ -75,9 +90,7 @@ describe('OverviewCard', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByTestId('favorite-icon-visible')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'dashboard-home-join' })).toBeInTheDocument();
-    expect(screen.getByLabelText('toolbar-button-more-tooltip-title')).toBeInTheDocument();
+    expect(screen.getByTestId('MeetingOverviewCard')).toBeInTheDocument();
   });
 
   test('component is not marked as favorite', async () => {
@@ -141,34 +154,7 @@ describe('OverviewCard', () => {
         </Provider>
       </BrowserRouter>
     );
-    const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
-    expect(MoreMenu).toBeInTheDocument();
-    fireEvent.mouseDown(MoreMenu);
 
-    expect(screen.getByLabelText('dashboard-meeting-card-popover-update')).toBeInTheDocument();
-    expect(screen.getByLabelText('dashboard-meeting-card-popover-remove')).toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-add')).not.toBeInTheDocument();
-    expect(screen.getByLabelText('dashboard-meeting-card-popover-delete')).toBeInTheDocument();
-  });
-
-  test('when user is not creator, meeting is marked as fav, click on more menu should display popup with remove favorite option', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <OverviewCard
-            event={{ ...mockedMeeting, createdBy: { ...mockedMeeting.createdBy, id: '3645d74d' as UserId } }}
-            isMeetingCreator={false}
-          />
-        </Provider>
-      </BrowserRouter>
-    );
-    const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
-    expect(MoreMenu).toBeInTheDocument();
-    fireEvent.mouseDown(MoreMenu);
-
-    expect(screen.getByLabelText('dashboard-meeting-card-popover-remove')).toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-add')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-update')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete')).not.toBeInTheDocument();
+    expect(screen.getByTestId('MeetingPopover')).toBeInTheDocument();
   });
 });

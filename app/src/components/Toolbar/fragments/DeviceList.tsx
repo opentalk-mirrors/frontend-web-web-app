@@ -4,7 +4,7 @@
 import { ListItemIcon, ListItemText, MenuList, Typography } from '@mui/material';
 
 import { DoneIcon } from '../../../assets/icons';
-import { DeviceId } from '../../../modules/Media/MediaUtils';
+import { DeviceId } from '../../../types/device';
 import { ToolbarMenuItem } from './ToolbarMenuUtils';
 
 interface DevicelistProps {

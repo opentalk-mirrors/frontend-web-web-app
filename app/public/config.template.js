@@ -11,15 +11,15 @@ window.config = {
   dataProtectionUrl: '${DATA_PROTECTION_URL}',
   userSurveyUrl: '${USER_SURVEY_URL}',
   userSurveyApiKey: '${USER_SURVEY_API_KEY}',
-  errorReportAddress: "${ERROR_REPORT_ADDRESS}",
+  errorReportAddress: '${ERROR_REPORT_ADDRESS}',
   disallowCustomDisplayName: '${DISALLOW_CUSTOM_DISPLAY_NAME}',
   version: {
-    product: "${PRODUCT_VERSION}",
-    frontend: "$(cat /usr/share/nginx/html/FRONTEND_VERSION)"
+    product: '${PRODUCT_VERSION}',
+    frontend: '$(cat /usr/share/nginx/html/FRONTEND_VERSION)',
   },
   beta: {
     isBeta: '${IS_BETA_RELEASE:-true}',
-    badgeUrl: "${BETA_BADGE_URL}"
+    badgeUrl: '${BETA_BADGE_URL}',
   },
   oidcConfig: {
     clientId: 'Frontend',
@@ -31,12 +31,15 @@ window.config = {
   },
   changePassword: {
     active: '${CHANGE_PASSWORD_ACTIVE}',
-    url: '${CHANGE_PASSWORD_URL}'
+    url: '${CHANGE_PASSWORD_URL}',
   },
   speedTest: {
     ndtServer: '${NDT_SERVER}',
     ndtDownloadWorkerJs: '/workers/ndt7-download-worker.js',
     ndtUploadWorkerJs: '/workers/ndt7-upload-worker.js',
+  },
+  livekit: {
+    e2eeSalt: '${LIVEKIT_E2EE_SALT}',
   },
   features: {
     userSearch: true,
@@ -44,10 +47,10 @@ window.config = {
     resetHandraises: true,
     addUser: false,
     joinWithoutMedia: false,
-    sharedFolder: false
+    sharedFolder: false,
   },
   settings: {
-	waitingRoomDefaultValue: true
+    waitingRoomDefaultValue: true,
   },
   provider: {
     active: false, // indicates if we are are in the provider context
@@ -58,5 +61,5 @@ window.config = {
   glitchtip: {
     dsn: '${SENTRY_DSN}',
   },
-  libravatarDefaultImage: 'robohash'
+  libravatarDefaultImage: 'robohash',
 };

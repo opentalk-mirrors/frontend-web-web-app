@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MediaSessionType, SpeakingState, NamespacedIncoming, ParticipantId, TrickleCandidate } from '../../../types';
+import { MediaSessionType, NamespacedIncoming, ParticipantId, SpeakingState, TrickleCandidate } from '../../../types';
 
 export interface Source {
   source: ParticipantId;
@@ -63,26 +63,9 @@ export interface MediaError extends Source {
   error: string;
 }
 
-export interface PresenterRoleGranted {
-  message: 'presenter_granted';
-}
-
-export interface PresenterRoleRevoked {
-  message: 'presenter_revoked';
-}
-
 export interface SpeakerUpdated extends SpeakingState {
   message: 'speaker_updated';
   participant: ParticipantId;
-}
-
-export interface ForceMuteEnabled {
-  message: 'force_mute_enabled';
-  allowList: Array<ParticipantId>;
-}
-
-export interface ForceMuteDisabled {
-  message: 'force_mute_disabled';
 }
 
 export type Message =
@@ -94,11 +77,7 @@ export type Message =
   | WebRtcDown
   | WebRtcSlow
   | RequestMute
-  | PresenterRoleGranted
-  | PresenterRoleRevoked
-  | SpeakerUpdated
-  | ForceMuteEnabled
-  | ForceMuteDisabled;
+  | SpeakerUpdated;
 
 export type Media = NamespacedIncoming<Message, 'media'>;
 

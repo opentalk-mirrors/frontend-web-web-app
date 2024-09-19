@@ -5,12 +5,10 @@ import { Box, Button, Stack, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { notificationAction, notifications } from '../../commonComponents';
+import { getLivekitRoom } from '../../store/slices/livekitSlice';
 import { generateUniqueId } from '../../utils/stringUtils';
 
 interface CreateTalkingStickNotificationProps {
-  localMediaContext: {
-    reconfigure: (args: { audio: boolean }) => Promise<void>;
-  };
   currentId: string;
   unmutedId: string;
   passTalkingStick: () => void;
@@ -32,7 +30,6 @@ const CustomTypography = styled(Typography)({
 });
 
 export const createTalkingStickNotification = ({
-  localMediaContext,
   currentId,
   unmutedId,
   passTalkingStick,
@@ -41,6 +38,7 @@ export const createTalkingStickNotification = ({
   id: propId,
 }: CreateTalkingStickNotificationProps) => {
   const id = propId || generateUniqueId();
+  const room = getLivekitRoom();
 
   if (isUnmuted) {
     return (
@@ -59,7 +57,7 @@ export const createTalkingStickNotification = ({
     <MutedNotificationMessage
       id={id}
       onUnmute={() => {
-        localMediaContext.reconfigure({ audio: true });
+        room.localParticipant.setMicrophoneEnabled(true);
         notifications.close(currentId);
         notificationAction({
           key: unmutedId,
