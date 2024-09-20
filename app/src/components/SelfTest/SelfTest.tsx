@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Grid, Stack, styled, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Grid, Stack, styled, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -110,13 +110,17 @@ const SelfTest = ({ children, actionButton, title }: SelftestProps) => {
         <Logo onClick={navigateToHome} />
         <UtilitiesContainer>
           <SpeedTestDialog />
-          <CircularIconButton
-            ref={anchorElement}
-            onClick={() => setIsQuickStartPopoverOpen((value) => !value)}
-            aria-label={isQuickStartPopoverOpen ? t('conference-quick-start-close') : t('conference-quick-start-open')}
-          >
-            {isQuickStartPopoverOpen ? <CloseIcon /> : <AdjustedHelpIcon />}
-          </CircularIconButton>
+          <Tooltip title={t('conference-quick-start-open')}>
+            <CircularIconButton
+              ref={anchorElement}
+              onClick={() => setIsQuickStartPopoverOpen((value) => !value)}
+              aria-label={
+                isQuickStartPopoverOpen ? t('conference-quick-start-close') : t('conference-quick-start-open')
+              }
+            >
+              {isQuickStartPopoverOpen ? <CloseIcon /> : <AdjustedHelpIcon />}
+            </CircularIconButton>
+          </Tooltip>
         </UtilitiesContainer>
       </Header>
       <MonitorContainer>
@@ -157,9 +161,11 @@ const SelfTest = ({ children, actionButton, title }: SelftestProps) => {
         <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
           {!isMobile && (
             <BackButtonContainer item>
-              <CircularIconButton aria-label={t('global-back')} onClick={navigateToHome}>
-                <BackIcon />
-              </CircularIconButton>
+              <Tooltip title={t('global-back')}>
+                <CircularIconButton aria-label={t('global-back')} onClick={navigateToHome}>
+                  <BackIcon />
+                </CircularIconButton>
+              </Tooltip>
             </BackButtonContainer>
           )}
           {children}
