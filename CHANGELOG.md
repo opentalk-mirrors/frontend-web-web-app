@@ -20,6 +20,10 @@ All notable changes to this project will be documented in this file.
 - Add new poll answer button is permanently present on screen while creating ([#1980](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1980))
 - Add missing h1 tag to all dashboard related pages ([#2002](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2002))
 
+### Bug Fixes
+
+- A11y: fix contrast of the red color in the conference ([#1996](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1996))
+
 ## 1.20.0
 
 ### New Features

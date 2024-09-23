@@ -130,7 +130,7 @@ const darkPalette: PaletteOptions = {
   },
   outline: '#DBE0E2',
   error: {
-    main: '#EF3E33',
+    main: '#FE5F60',
     contrastText: '#FFF',
     dark: '#D32F2F',
     light: '#FE6363',
