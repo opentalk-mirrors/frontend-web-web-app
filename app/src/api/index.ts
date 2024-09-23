@@ -747,25 +747,32 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
       }
       if (data.speaker === state.user.uuid && state.automod.speakerState === 'inactive') {
         dispatch(setAsActiveSpeaker());
-        notifications.showTalkingStickMutedNotification({
-          onUnmute: async () => {
-            notifications.close(currentId);
-            await localMediaContext.reconfigure({ audio: true });
-            notifications.showTalkingStickUnmutedNotification({
-              onNext: () => {
-                dispatch(automod.pass.action());
-                notifications.close(unmutedId);
-              },
-              isLastSpeaker: Boolean(data.remaining && data.remaining.length === 0),
-              key: unmutedId,
-            });
-          },
+
+        const unmutedNotificationOptions = {
           onNext: () => {
             dispatch(automod.pass.action());
-            notifications.close(currentId);
+            notifications.close(unmutedId);
           },
-          key: currentId,
-        });
+          isLastSpeaker: Boolean(data.remaining && data.remaining.length === 0),
+          key: unmutedId,
+        } as const;
+
+        if (state.media.audioEnabled) {
+          notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
+        } else {
+          notifications.showTalkingStickMutedNotification({
+            onUnmute: async () => {
+              notifications.close(currentId);
+              await localMediaContext.reconfigure({ audio: true });
+              notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
+            },
+            onNext: () => {
+              dispatch(automod.pass.action());
+              notifications.close(currentId);
+            },
+            key: currentId,
+          });
+        }
       }
       dispatch(automodSpeakerUpdated(data));
       break;
