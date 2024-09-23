@@ -35,6 +35,7 @@ const RenameParticipantDialog = ({ open, onClose, participant }: RenameParticipa
     name: yup
       .string()
       .trim()
+      .max(100, t('display-name-character-limit-error', { limit: 100 }))
       .required(t('field-error-required', { fieldName: t('participant-menu-rename-new-name') })),
   });
 

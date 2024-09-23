@@ -43,7 +43,7 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    displayNameSet: (state, action: PayloadAction<string>) => {
+    setDisplayName: (state, action: PayloadAction<string>) => {
       state.displayName = action.payload;
     },
     updateRole: (state, { payload: role }: PayloadAction<Role>) => {
@@ -131,7 +131,7 @@ export const userSlice = createSlice({
 });
 
 export const actions = userSlice.actions;
-export const { updateRole, setPresenterRole, revokePresenterRole } = actions;
+export const { updateRole, setPresenterRole, revokePresenterRole, setDisplayName } = actions;
 
 const userState = (state: RootState) => state.user;
 

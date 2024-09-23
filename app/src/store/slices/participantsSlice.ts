@@ -212,6 +212,15 @@ export const participantsSlice = createSlice({
         },
       });
     },
+    rename: (state, { payload }: PayloadAction<Pick<Participant, 'id' | 'displayName'>>) => {
+      const { id, displayName } = payload;
+      participantAdapter.updateOne(state, {
+        id,
+        changes: {
+          displayName,
+        },
+      });
+    },
   },
 
   extraReducers: (builder) => {
@@ -240,6 +249,7 @@ export const {
   approveToEnter,
   approvedAll,
   updatedSpeaker,
+  rename,
 } = participantsSlice.actions;
 export const actions = participantsSlice.actions;
 
