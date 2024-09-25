@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improvements to the user experience
 
+- Selected layout is now marked with the checkmark icon ([#2061](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2061))
 - Show notification to users when their name gets changed by the moderator ([#1990](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1990))
 - Add missing tooltip on lobby buttons ([#2054](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2054))
 - Inform user if vote result is invalid for some reason ([#2006](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/2006))

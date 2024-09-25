@@ -16,6 +16,7 @@ import BugIcon from './BugIcon';
 import BurgermenuIcon from './BurgermenuIcon';
 import CameraOffIcon from './CameraOffIcon';
 import CameraOnIcon from './CameraOnIcon';
+import CheckIcon from './CheckIcon';
 import ClockIcon from './ClockIcon';
 import CloseIcon from './CloseIcon';
 import CoffeeBreakIcon from './CoffeeBreakIcon';
@@ -108,6 +109,7 @@ export {
   BugIcon,
   CameraOffIcon,
   CameraOnIcon,
+  CheckIcon,
   ClockIcon,
   CloseIcon,
   CoffeeBreakIcon,
