@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { InfoButton } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
-import { selectCurrentBreakoutRoom } from '../../../store/slices/breakoutSlice';
+import { selectRoomTitle } from '../../../store/selectors';
 import { selectEventInfo, selectRoomInfo } from '../../../store/slices/roomSlice';
 import MeetingDetailsDialog from './MeetingDetailsDialog';
 
@@ -36,28 +36,17 @@ const RoomTitleTypograhy = styled(Typography)(({ theme }) => ({
 
 const RoomTitle = () => {
   const { t } = useTranslation();
-  const currentBreakoutRoom = useAppSelector(selectCurrentBreakoutRoom);
   const eventInfo = useAppSelector(selectEventInfo);
   const roomInfo = useAppSelector(selectRoomInfo);
   const [meetingDetailsDialogOpen, setMeetingDetailsDialogOpen] = useState(false);
 
-  const getTitle = () => {
-    if (currentBreakoutRoom) {
-      return currentBreakoutRoom.name;
-    }
+  const title = useAppSelector(selectRoomTitle);
 
-    if (eventInfo) {
-      return eventInfo.title;
-    }
-
-    return t('fallback-room-title');
-  };
-
-  const truncatedTitle = truncate(getTitle(), { length: ROOM_TITLE_MAX_LENGTH });
+  const truncatedTitle = truncate(title, { length: ROOM_TITLE_MAX_LENGTH });
 
   return (
     <Container direction="row">
-      <Tooltip translate="no" title={getTitle()} describeChild>
+      <Tooltip translate="no" title={title} describeChild>
         <RoomTitleTypograhy noWrap translate="no" variant="h1">
           {truncatedTitle}
         </RoomTitleTypograhy>

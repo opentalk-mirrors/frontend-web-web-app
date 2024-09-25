@@ -6,14 +6,18 @@ import { useTranslation } from 'react-i18next';
 
 import { VisuallyHiddenTitle } from '../../../commonComponents';
 import ProfilePicture from '../../../components/ProfilePicture';
+import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import ProfileNameForm from './fragments/ProfileNameForm';
 
 const SettingsProfilePage = () => {
   const { t } = useTranslation();
+  const pageHeading = t('dashboard-settings-profile-title');
+
+  useUpdateDocumentTitle(pageHeading);
 
   return (
     <>
-      <VisuallyHiddenTitle label={t('dashboard-settings-profile-title')} component="h1" />
+      <VisuallyHiddenTitle label={pageHeading} component="h1" />
       <Stack spacing={5}>
         <Stack spacing={3}>
           <Typography variant="h1" component="h2">

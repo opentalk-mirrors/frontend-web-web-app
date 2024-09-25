@@ -16,6 +16,7 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGetEventsQuery } from '../../../api/rest';
+import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import {
   appendRecurringEventInstances,
   SortDirection,
@@ -66,6 +67,8 @@ const EventsOverviewPage = () => {
   });
 
   const { t } = useTranslation();
+  const pageHeading = t('dashboard-events-my-meetings');
+  useUpdateDocumentTitle(pageHeading);
 
   const formatEventsByHeaderChange = useCallback(
     (events: Array<Event>) => {
@@ -165,6 +168,7 @@ const EventsOverviewPage = () => {
         entries={events || EMPTY_MEETING_PROP_ARRAY}
         filters={filter}
         onFilterChange={onFilterChange}
+        title={pageHeading}
       />
       <EventsOverview
         entries={events || EMPTY_MEETING_PROP_ARRAY}

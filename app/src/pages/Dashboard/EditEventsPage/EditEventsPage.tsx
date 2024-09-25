@@ -11,6 +11,7 @@ import { useLazyGetEventQuery } from '../../../api/rest';
 import { EditIcon } from '../../../assets/icons';
 import CreateOrUpdateMeetingForm from '../../../components/CreateOrUpdateMeetingForm';
 import InviteToMeeting from '../../../components/InviteToMeeting/InviteToMeeting';
+import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
 const steps = [
   {
@@ -49,6 +50,8 @@ const EditEventsPage = () => {
   const [getEvent, { data: event, isLoading, error }] = useLazyGetEventQuery();
   const { eventId, formStep } = useParams<'eventId' | 'formStep'>() as { eventId: EventId; formStep: string };
   const eventQuery = useMemo(() => ({ eventId: eventId, inviteesMax: 10 }), [eventId]);
+  const pageHeading = t('dashboard-meetings-create-title');
+  useUpdateDocumentTitle(pageHeading);
 
   useEffect(() => {
     getEvent(eventQuery);
@@ -103,7 +106,7 @@ const EditEventsPage = () => {
 
   return (
     <Container>
-      <Typography component="h1">{t('dashboard-meetings-create-title')}</Typography>
+      <Typography component="h1">{pageHeading}</Typography>
       <StepperHeader />
       {activeStep === 0 && (
         <CreateOrUpdateMeetingForm existingEvent={event} onForwardButtonClick={() => setActiveStep(1)} />

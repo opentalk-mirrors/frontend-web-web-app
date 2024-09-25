@@ -6,6 +6,8 @@ import { useRef, memo } from 'react';
 
 import { useAppSelector } from '../../hooks';
 import { useHotkeys } from '../../hooks/useHotkeys';
+import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
+import { selectRoomTitle } from '../../store/selectors';
 import { selectDebugMode, selectShowCoffeeBreakCurtain } from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import { CoffeeBreakView } from '../CoffeeBreakView/CoffeeBreakView';
@@ -46,6 +48,8 @@ const MeetingView = () => {
   const showCoffeeBreakCurtain = useAppSelector(selectShowCoffeeBreakCurtain);
 
   useHotkeys();
+
+  useUpdateDocumentTitle(useAppSelector(selectRoomTitle));
 
   return (
     <Container ref={containerRef}>

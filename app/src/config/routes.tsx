@@ -8,7 +8,7 @@ import React, { PropsWithChildren, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { To, RouteObject, useNavigate, Outlet, useParams } from 'react-router-dom';
 
-import { notifications, VisuallyHiddenTitle } from '../commonComponents';
+import { notifications } from '../commonComponents';
 import Error from '../components/Error';
 import { useAppSelector } from '../hooks';
 import { useInviteCode } from '../hooks/useInviteCode';
@@ -25,7 +25,10 @@ import {
   EventDetailsPage,
   DocumentationPage,
 } from '../pages/Dashboard';
+import DataProtectionPage from '../pages/DataProtectionPage';
+import ImprintPage from '../pages/ImprintPage';
 import RoomPage from '../pages/RoomPage';
+import SupportPage from '../pages/SupportPage';
 import DashboardSettingsTemplate from '../templates/DashboardSettingsTemplate';
 import DashboardTemplate from '../templates/DashboardTemplate';
 import LobbyTemplate from '../templates/LobbyTemplate';
@@ -169,14 +172,8 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
           </>
         ),
         children: [
-          {
-            path: 'imprint',
-            element: <VisuallyHiddenTitle component="h1" label={i18next.t('dashboard-legal-imprint')} />,
-          },
-          {
-            path: 'data-protection',
-            element: <VisuallyHiddenTitle component="h1" label={i18next.t('dashboard-legal-data-protection')} />,
-          },
+          { path: 'imprint', element: <ImprintPage /> },
+          { path: 'data-protection', element: <DataProtectionPage /> },
         ],
       },
       {
@@ -193,14 +190,7 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
         path: 'help',
         children: [
           { path: 'documentation', element: <DocumentationPage /> },
-          {
-            path: 'support',
-            element: (
-              <>
-                <VisuallyHiddenTitle component="h1" label={i18next.t('dashboard-help-support')} />
-              </>
-            ),
-          },
+          { path: 'support', element: <SupportPage /> },
         ],
       },
     ],

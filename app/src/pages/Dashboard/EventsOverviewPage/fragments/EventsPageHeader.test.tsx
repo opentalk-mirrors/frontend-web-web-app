@@ -55,7 +55,7 @@ describe('Events Page Header tests', () => {
 
   describe('mobile', () => {
     it.concurrent('can render', async () => {
-      await render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} />);
+      await render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
       expect(screen.getByTestId('events-page-header-mobile')).toBeInTheDocument();
     });
   });
@@ -63,7 +63,7 @@ describe('Events Page Header tests', () => {
   describe('tablet', () => {
     it.concurrent('can render', async () => {
       mockUseMediaQuery.mockReturnValueOnce(false).mockReturnValueOnce(true);
-      await render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} />);
+      await render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
       expect(screen.getByTestId('events-page-header-tablet')).toBeInTheDocument();
     });
   });
@@ -71,7 +71,7 @@ describe('Events Page Header tests', () => {
   describe('desktop', () => {
     it.concurrent('can render', async () => {
       mockUseMediaQuery.mockReturnValueOnce(true).mockReturnValueOnce(false);
-      await render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} />);
+      await render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
       expect(screen.getByTestId('events-page-header-desktop')).toBeInTheDocument();
     });
   });
