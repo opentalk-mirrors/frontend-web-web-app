@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Bug Fixes
+
+- Fix joining user appearing with the avatar of an already present user issue ([#1868](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1868))
+
 ### Internal
 
 - Migrate from parcel to vite for `18next-fluent` lib ([#1957](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1957))

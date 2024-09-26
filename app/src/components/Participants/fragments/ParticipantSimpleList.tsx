@@ -44,6 +44,7 @@ const ParticipantSimpleList: FC<ParticipantSimpleListProps> = ({ participants, .
               itemCount={participants.length}
               itemData={participants}
               overscanCount={4}
+              itemKey={(index: number, data: Participant[]) => data[index].id as string}
             >
               {ParticipantListItem}
             </FixedSizeList>
