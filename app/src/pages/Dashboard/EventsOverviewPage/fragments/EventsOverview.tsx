@@ -7,6 +7,7 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import { isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ArrowDownIcon } from '../../../../assets/icons';
 import MeetingCard from '../../../../components/MeetingCard';
@@ -83,6 +84,7 @@ const EventsOverview = ({
   const theme = useTheme();
   const [expanded, setExpanded] = useState<string[]>([]);
   const marginTopReset = theme.spacing(2);
+  const { t } = useTranslation();
 
   const handleChange = (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
     setExpanded(newExpanded ? [...expanded, panel] : expanded.filter((e) => e !== panel));
@@ -119,31 +121,47 @@ const EventsOverview = ({
         <ArrowDownButton
           active={expandAccordion === 'all'}
           onClick={() => setExpandAccordion((prev: string) => (prev === 'all' ? '' : 'all'))}
+          aria-label={t(`global-${expandAccordion === 'all' ? 'collapse' : 'expand'}`, {
+            target: t('global-meeting', { count: 2 }),
+          })}
         >
           <ArrowDownIcon color="secondary" />
         </ArrowDownButton>
-        {entries.map((entry) => (
-          <Accordion
-            data-testid="EventAccordion"
-            expanded={expandAccordion === 'all' || expanded.includes(entry.title)}
-            onChange={handleChange(entry.title)}
-            key={entry.title}
-            TransitionProps={{ unmountOnExit: true }}
-          >
-            <AccordionSummary aria-controls={`${entry.title}-control`} id={`${entry.title}-panel`}>
-              <Typography>{entry.title}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {entry.events?.map((event) => (
-                <MeetingCard
-                  key={`${isTimelessEvent(event) ? event.id : event.id + event.startsAt?.datetime}`}
-                  event={event}
-                  overview
-                />
-              ))}
-            </AccordionDetails>
-          </Accordion>
-        ))}
+        {entries.map((entry) => {
+          const isExpanded = expandAccordion === 'all' || expanded.includes(entry.title);
+
+          return (
+            <Accordion
+              data-testid="EventAccordion"
+              expanded={isExpanded}
+              onChange={handleChange(entry.title)}
+              key={entry.title}
+              slotProps={{
+                transition: {
+                  unmountOnExit: true,
+                },
+              }}
+            >
+              <AccordionSummary
+                aria-controls={`${entry.title}-control`}
+                id={`${entry.title}-panel`}
+                aria-label={t(`global-${isExpanded ? 'collapse' : 'expand'}`, { target: entry.title })}
+                aria-expanded={undefined}
+              >
+                <Typography>{entry.title}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {entry.events?.map((event) => (
+                  <MeetingCard
+                    key={`${isTimelessEvent(event) ? event.id : event.id + event.startsAt?.datetime}`}
+                    event={event}
+                    overview
+                  />
+                ))}
+              </AccordionDetails>
+            </Accordion>
+          );
+        })}
       </Stack>
     </Box>
   );

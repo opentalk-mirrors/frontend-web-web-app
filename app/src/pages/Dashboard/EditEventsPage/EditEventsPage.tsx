@@ -25,6 +25,7 @@ const steps = [
 const StepButton = styled(MuiStepButton)({
   padding: 0,
   margin: 0,
+  textTransform: 'capitalize',
 });
 
 const Container = styled(Box)(({ theme }) => ({

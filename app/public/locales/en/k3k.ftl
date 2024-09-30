@@ -616,7 +616,6 @@ global-minute = { $count ->
     *[other] minutes
 }
 global-participants = Participants
-global-meeting = Meeting
 global-save = Save
 global-save-changes = Save changes
 global-password = Password
@@ -662,6 +661,12 @@ global-streaming-link = { $count ->
 }
 global-other = Other
 global-someone = Someone
+global-expand = Expand { $target }
+global-collapse = Collapse { $target }
+global-meeting = { $count ->
+    [one] meeting
+    *[other] meetings
+}
 
 dashboard-home = Home
 dashboard-meetings = Meetings

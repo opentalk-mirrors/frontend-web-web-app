@@ -24,6 +24,10 @@ const ActiveStep = styled(Step)(({ theme }) => ({
   },
 }));
 
+const CapitalizedStepLabel = styled(StepLabel)({
+  textTransform: 'capitalize',
+});
+
 const CreateEventsPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const { t } = useTranslation();
@@ -34,7 +38,7 @@ const CreateEventsPage = () => {
   const StepperHeader = () => (
     <Stepper activeStep={0}>
       <ActiveStep>
-        <StepLabel>{t('global-meeting')}</StepLabel>
+        <CapitalizedStepLabel>{t('global-meeting', { count: 1 })}</CapitalizedStepLabel>
       </ActiveStep>
       <Step>
         <StepLabel>{t('global-participants')}</StepLabel>
