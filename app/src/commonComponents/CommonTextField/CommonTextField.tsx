@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { TextFieldProps, TextField, InputLabelProps, styled } from '@mui/material';
+import { InputLabelProps, TextField, TextFieldProps, styled } from '@mui/material';
 import React, { KeyboardEvent, useState, useEffect, FocusEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -36,7 +36,7 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
   ({ error, helperText, fullWidth, maxCharacters, showLimitAt, InputProps, InputLabelProps, ...props }, ref) => {
     const { value, hideLabel } = props;
     const { t } = useTranslation();
-    const [inputLableProps, setInputLabelProps] = useState<InputLabelProps>(InputLabelProps ?? {});
+    const [inputLabelProps, setInputLabelProps] = useState<InputLabelProps>(InputLabelProps ?? {});
     const [focused, setFocused] = useState(false);
 
     const id = props.id || generateUniqueId();
@@ -45,8 +45,8 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
     // Therefore we need this workaround, to establish a floating label behaviour for
     // text fields with start adornments
     useEffect(() => {
-      setShrinkForStartAdornment(inputLableProps?.shrink);
-    }, [InputProps?.startAdornment]);
+      setShrinkForStartAdornment(inputLabelProps?.shrink);
+    }, [inputLabelProps?.shrink]);
 
     useEffect(() => {
       // If value is being passed from the parent as props, we should always shrink the label
@@ -67,12 +67,12 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
       if (!value && focused) {
         setShrinkForStartAdornment(true);
       }
-    }, [value]);
+    }, [value, focused]);
 
     useEffect(() => {
       if (hideLabel) {
-        setInputLabelProps((prevInputLableProps) => {
-          return { ...prevInputLableProps, sx: { ...prevInputLableProps.sx, display: 'none' } };
+        setInputLabelProps((prevInputLabelProps) => {
+          return { ...prevInputLabelProps, sx: { ...prevInputLabelProps.sx, display: 'none' } };
         });
       }
     }, [hideLabel]);
@@ -81,8 +81,8 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
     // to avoid overlapping with start adornments
     const setShrinkForStartAdornment = (shrink = false) => {
       if (InputProps?.startAdornment) {
-        setInputLabelProps((prevInputLableProps) => {
-          return { ...prevInputLableProps, sx: { ...prevInputLableProps.sx, ml: shrink ? 0 : 3.5 }, shrink };
+        setInputLabelProps((prevInputLabelProps) => {
+          return { ...prevInputLabelProps, sx: { ...prevInputLabelProps.sx, ml: shrink ? 0 : 3.5 }, shrink };
         });
       }
     };
@@ -116,7 +116,7 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
       // so, if parent component doesn't specify it, we set at least to blank
       let prefix = '';
       if (error) {
-        prefix = t('global-error') + ': ';
+        prefix = `${t('global-error')}: `;
       }
 
       // if helper text is specified by the parent component it will overwrite the remaining characters text
@@ -132,7 +132,7 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
             const remainingCharacters = maxCharacters - currentLength;
             return (
               prefix +
-              t(`global-textfield-max-characters`, {
+              t('global-textfield-max-characters', {
                 remainingCharacters: Math.abs(remainingCharacters),
               })
             );
@@ -164,7 +164,7 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
         helperText={getHelperText()}
         fullWidth={fullWidth}
         hideLabel={hideLabel}
-        InputLabelProps={inputLableProps}
+        InputLabelProps={inputLabelProps}
         InputProps={InputProps}
       />
     );

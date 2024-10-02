@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MenuItem, Typography, styled, Popover } from '@mui/material';
+import { MenuItem, Popover, styled } from '@mui/material';
 
 export interface ToolbarMenuProps {
   anchorEl: HTMLDivElement | null;
@@ -28,7 +28,7 @@ const ToolbarMenuItem = styled(MenuItem)(({ theme }) => ({
   },
 }));
 
-const MenuTitle = styled(Typography)(({ theme }) => ({
+const MenuTitle = styled('span')(({ theme }) => ({
   fontWeight: 'bold',
   display: 'flex',
   alignItems: 'center',

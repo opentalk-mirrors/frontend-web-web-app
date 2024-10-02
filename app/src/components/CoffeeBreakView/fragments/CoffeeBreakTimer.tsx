@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Typography } from '@mui/material';
+import { Typography, styled } from '@mui/material';
 import { isNumber } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +37,7 @@ const CoffeeBreakTimer = () => {
     }
 
     const initialMinuteValue = totalDuration.minutes;
-    let timerTurnsRedOnMinute;
+    let timerTurnsRedOnMinute: number;
     //Based on the initial duration selected we turn the timer red to signal approaching end at different points. Numbers are a product decision.
     if (initialMinuteValue <= 5) {
       timerTurnsRedOnMinute = 0;

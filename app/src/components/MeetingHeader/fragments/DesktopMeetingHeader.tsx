@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Pagination } from '@mui/material';
+import { Pagination, styled } from '@mui/material';
 import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { WhiteboardIcon, MeetingNotesIcon } from '../../../assets/icons';
+import { MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icons';
 import { ReactComponent as Logo } from '../../../assets/images/logo.svg';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -14,12 +14,12 @@ import { selectMeetingNotesUrl } from '../../../store/slices/meetingNotesSlice';
 import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
 import { selectIsSharedFolderAvailable } from '../../../store/slices/sharedFolderSlice';
 import {
-  updatedCinemaLayout,
   selectCinemaLayout,
+  selectIsCurrentMeetingNotesHighlighted,
+  selectPaginationPageState,
   setPaginationPage,
   toggleDebugMode,
-  selectPaginationPageState,
-  selectIsCurrentMeetingNotesHighlighted,
+  updatedCinemaLayout,
 } from '../../../store/slices/uiSlice';
 import { selectIsCurrentWhiteboardHighlighted } from '../../../store/slices/uiSlice';
 import { selectIsWhiteboardAvailable } from '../../../store/slices/whiteboardSlice';
@@ -42,7 +42,7 @@ const HeaderItem = styled('div')<{ highlighted?: boolean }>(({ theme, highlighte
   background: highlighted ? theme.palette.primary.main : theme.palette.background.video,
   borderRadius: '0.25rem',
   display: 'inline-flex',
-  height: '40px',
+  padding: theme.spacing(0.9),
   justifyContent: 'center',
   alignItems: 'center',
   '& .MuiIconButton-root .MuiSvgIcon-root': {
@@ -155,9 +155,12 @@ const DesktopMeetingHeader = () => {
     dispatch(setPaginationPage(page));
   };
 
-  const handleSelectedView = (layout: LayoutOptions) => {
-    dispatch(updatedCinemaLayout(layout));
-  };
+  const handleSelectedView = useCallback(
+    (layout: LayoutOptions) => {
+      dispatch(updatedCinemaLayout(layout));
+    },
+    [dispatch]
+  );
 
   const handleMeetingNotesClick = useCallback(() => {
     if (selectedLayout !== LayoutOptions.MeetingNotes) {

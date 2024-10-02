@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Stack, styled, Typography, useTheme } from '@mui/material';
+import { Box, Stack, Typography, styled, useTheme } from '@mui/material';
 import { format } from 'date-fns';
 import Linkify from 'linkify-react';
 import { useCallback } from 'react';
@@ -185,7 +185,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   return (
     <Box display="flex" flexDirection={ownMessage ? 'row-reverse' : 'row'} flex={1} gap={1} width="100%">
       <Avatar src={ownMessage ? ownAvatarUrl : sender?.avatarUrl}>{displayName}</Avatar>
-      <Stack gap={1} py={1} minWidth={0}>
+      <Stack gap={1} py={1} width="85%">
         {renderNameAndTime()}
         <ContentTypography singleEmoji={isItSingleEmojiMessage()} variant="body2" align={ownMessage ? 'right' : 'left'}>
           <Linkify options={options}>{message.content}</Linkify>

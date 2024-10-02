@@ -21,9 +21,12 @@ const ParticipantsContainer = () => {
   const groupParticipantsEnabled = useAppSelector(selectShowParticipantGroups);
   const searchValue = useAppSelector(selectParticipantsSearchValue);
 
-  const dispatchNextSearchValue = useCallback((nextSearchValue: string) => {
-    dispatch(setParticipantsSearchValue(nextSearchValue));
-  }, []);
+  const dispatchNextSearchValue = useCallback(
+    (nextSearchValue: string) => {
+      dispatch(setParticipantsSearchValue(nextSearchValue));
+    },
+    [dispatch]
+  );
 
   return (
     <>

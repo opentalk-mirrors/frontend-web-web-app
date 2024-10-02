@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, CircularProgress, styled } from '@mui/material';
 
-const Container = styled(Box)(({ theme }) => ({
+const Container = styled(Box)(() => ({
   display: 'flex',
   flex: 1,
   justifyContent: 'center',
   alignItems: 'center',
-  background: theme.palette.background.overlay,
 }));
 
 const SuspenseLoading = () => (

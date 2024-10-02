@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Autocomplete, CircularProgress, InputAdornment, TextField, styled, UseAutocompleteProps } from '@mui/material';
+import { Autocomplete, CircularProgress, InputAdornment, TextField, UseAutocompleteProps, styled } from '@mui/material';
 import { EventId, EventInvite } from '@opentalk/rest-api-rtk-query';
-import { differenceBy, debounce } from 'lodash';
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { debounce, differenceBy } from 'lodash';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGetEventInvitesQuery, useGetMeQuery, useLazyFindUsersQuery } from '../../api/rest';
@@ -79,23 +79,29 @@ const SelectParticipants = ({
         const bName = `${b.firstname} ${b.lastname}`;
         return aName.localeCompare(bName);
       });
-    }, [isLoading, foundUsers, selectedUsers, searchValue]);
+    }, [isLoading, foundUsers, selectedUsers, searchValue, invitees?.map]);
 
-  const searchEntryHandler = useCallback((inputValue: string) => {
-    setSearchValue(inputValue);
-    debounceFindUsers(inputValue);
-  }, []);
+  const searchEntryHandler = useCallback(
+    (inputValue: string) => {
+      setSearchValue(inputValue);
+      debounceFindUsers(inputValue);
+    },
+    [debounceFindUsers]
+  );
 
   useEffect(() => {
     resetSelected && onChange([]);
-  }, [resetSelected]);
+  }, [resetSelected, onChange]);
 
-  const addSelectedUser = useCallback((user: ParticipantOption) => {
-    if (user) {
-      onChange([...selectedUsers, user]);
-    }
-    setSearchValue('');
-  }, []);
+  const addSelectedUser = useCallback(
+    (user: ParticipantOption) => {
+      if (user) {
+        onChange([...selectedUsers, user]);
+      }
+      setSearchValue('');
+    },
+    [onChange, selectedUsers]
+  );
 
   const onAutocompleteChange: UseAutocompleteProps<ParticipantOption, undefined, undefined, undefined>['onChange'] = (
     _event,

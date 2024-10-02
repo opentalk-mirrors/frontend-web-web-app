@@ -32,7 +32,7 @@ const ParticipantSimpleList: FC<ParticipantSimpleListProps> = ({ participants, .
       <AutoSizer>
         {({ height, width }: { height: number; width: number }) => {
           const rootFontSize = root
-            ? parseFloat(window.getComputedStyle(root, null).getPropertyValue('font-size'))
+            ? Number.parseFloat(window.getComputedStyle(root, null).getPropertyValue('font-size'))
             : DEFAULT_FONT_SIZE;
           const ITEM_SIZE_SCALE = 3.75; // On 16px base, 60px height is proper height for list item, therefore we got the scale of 3.75
 

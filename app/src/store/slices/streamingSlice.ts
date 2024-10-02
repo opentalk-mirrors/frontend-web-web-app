@@ -8,7 +8,7 @@ import {
   StreamingTargetId,
   StreamingTargetStatusInfo,
 } from '@opentalk/rest-api-rtk-query';
-import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../';
 import { sendStreamConsentSignal } from '../../api/types/outgoing/streaming';

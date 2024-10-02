@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import {
   ListItemIcon,
-  MenuItem as MuiMenuItem,
   MenuList,
+  MenuItem as MuiMenuItem,
   Popover,
   Stack,
   Typography,
@@ -102,7 +102,7 @@ const LayoutSelection = () => {
     setAnchorElement(null);
     fullscreenHandle.enter();
     dispatch(toggledFullScreenMode());
-  }, [fullscreenHandle]);
+  }, [fullscreenHandle, dispatch]);
 
   const handleSelectedView = (layout: LayoutOptions, order: GridViewOrder = GridViewOrder.FirstJoined) => {
     setAnchorElement(null);
@@ -124,10 +124,9 @@ const LayoutSelection = () => {
       case LayoutOptions.Whiteboard:
         return <Typography noWrap>{t('whiteboard-hide')}</Typography>;
       case LayoutOptions.Speaker:
-      default:
         return <SpeakerViewIcon />;
     }
-  }, [selectedLayout]);
+  }, [selectedLayout, isMobile, t]);
 
   return (
     <ViewPopperContainer>

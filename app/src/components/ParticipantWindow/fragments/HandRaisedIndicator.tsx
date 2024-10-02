@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, keyframes } from '@mui/material';
+import { keyframes, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { RaiseHandOnIcon } from '../../../assets/icons';

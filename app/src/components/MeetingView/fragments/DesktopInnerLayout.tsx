@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, CircularProgress } from '@mui/material';
+import { CircularProgress, styled } from '@mui/material';
 
 import { useAppSelector } from '../../../hooks';
-import { selectRoomConnectionState, ConnectionState } from '../../../store/slices/roomSlice';
+import { ConnectionState, selectRoomConnectionState } from '../../../store/slices/roomSlice';
 import { selectShowCoffeeBreakCurtain } from '../../../store/slices/uiSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import Ballot from '../../Ballot';

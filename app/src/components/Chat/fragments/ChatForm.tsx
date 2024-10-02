@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { InputAdornment, styled, Tooltip, Popover, useTheme } from '@mui/material';
+import { InputAdornment, Popover, Tooltip, styled, useTheme } from '@mui/material';
 import Picker, {
   EmojiClickData,
   SkinTones,
@@ -12,16 +12,16 @@ import Picker, {
   Categories,
 } from 'emoji-picker-react';
 import { useFormik } from 'formik';
-import { useState, KeyboardEventHandler, useMemo, FocusEvent, useRef, useLayoutEffect, KeyboardEvent } from 'react';
+import { FocusEvent, KeyboardEvent, KeyboardEventHandler, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { sendChatMessage } from '../../../api/types/outgoing/chat';
 import { EmojiIcon, SendMessageIcon } from '../../../assets/icons';
-import { AdornmentIconButton, VisuallyHiddenTitle, CommonTextField } from '../../../commonComponents';
+import { AdornmentIconButton, CommonTextField, VisuallyHiddenTitle } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
 import { saveDefaultChatMessage, selectDefaultChatMessage } from '../../../store/slices/uiSlice';
-import { GroupId, ParticipantId, TargetId, ChatScope } from '../../../types';
+import { ChatScope, GroupId, ParticipantId, TargetId } from '../../../types';
 import { formikGetValue, formikProps } from '../../../utils/formikUtils';
 import yup from '../../../utils/yupUtils';
 
