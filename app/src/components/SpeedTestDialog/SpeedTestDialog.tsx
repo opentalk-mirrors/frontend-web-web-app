@@ -14,6 +14,7 @@ import {
   DialogActions,
   DialogProps,
   Box,
+  Tooltip,
 } from '@mui/material';
 import { useCallback, useState, Fragment, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -252,16 +253,18 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
 
   return (
     <>
-      <CircularIconButton
-        key="speed-meter-button"
-        onClick={openDialog}
-        aria-label={t('speed-meter-button')}
-        aria-haspopup="dialog"
-        aria-controls="speed-meter-dialog"
-        aria-expanded={isDialogOpen}
-      >
-        <SpeedTestIcon aria-hidden="true" />
-      </CircularIconButton>
+      <Tooltip title={t('speed-meter-button')}>
+        <CircularIconButton
+          key="speed-meter-button"
+          onClick={openDialog}
+          aria-label={t('speed-meter-button')}
+          aria-haspopup="dialog"
+          aria-controls="speed-meter-dialog"
+          aria-expanded={isDialogOpen}
+        >
+          <SpeedTestIcon aria-hidden="true" />
+        </CircularIconButton>
+      </Tooltip>
       <Dialog
         {...props}
         id="speed-meter-dialog"
