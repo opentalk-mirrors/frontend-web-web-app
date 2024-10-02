@@ -1123,3 +1123,5 @@ legal-vote-report-issue-kind-notification = {displayName} reports {kind} problem
 legal-vote-report-issue-description-notification = {displayName} reports a problem: "{description}"
 legal-vote-report-issue-inform-moderator-success = The technical problem is reported to moderator
 legal-vote-report-issue-description-placeholder = Describe the problem...
+
+legal-vote-stopped-invalid-results-notification = Unfortunately something went wrong during the vote. Please inform the moderator or try again.

@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improvements to the user experience
 
+- Inform user if vote result is invalid for some reason ([#2006](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/2006))
 - Already unmuted participants no longer receive notification to unmute on their talking stick turn ([#2069](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2069))
 - Improve mobile header layout on the meetings overview page ([#2039](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2039))
 - Add multiple new video background images ([#2052](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2052))

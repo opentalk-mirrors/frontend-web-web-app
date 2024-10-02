@@ -140,7 +140,7 @@ import {
 } from './types/incoming';
 import { AutomodEventType } from './types/incoming/automod';
 import { Role } from './types/incoming/control';
-import { LegalVoteMessageType } from './types/incoming/legalVote';
+import { LegalVoteMessageType, VoteFinalResults } from './types/incoming/legalVote';
 import { Action as OutgoingActionType, automod } from './types/outgoing';
 import * as outgoing from './types/outgoing';
 import { ClearGlobalMessages } from './types/outgoing/chat';
@@ -803,6 +803,9 @@ const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMessageTyp
     case 'stopped':
       dispatch(legalVoteStopped(data));
       notifications.info(i18next.t('legal-vote-stopped'));
+      if (data.results === VoteFinalResults.Invalid) {
+        notifications.warning(i18next.t('legal-vote-stopped-invalid-results-notification'));
+      }
       break;
     case 'updated':
       dispatch(legalVoteUpdated(data));
