@@ -42,12 +42,12 @@ describe('LobbyForm', () => {
 
     await render(<LobbyView />, store);
 
-    const userNameInput = screen.getByPlaceholderText('global-name');
+    const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
     expect(userNameInput).toBeInTheDocument();
     expect(userNameInput).toHaveAttribute('type', 'text');
     expect(userNameInput).toHaveDisplayValue('Test');
 
-    const passwordInput = screen.getByPlaceholderText('global-password');
+    const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
     expect(passwordInput).toBeInTheDocument();
     expect(passwordInput).toHaveAttribute('type', 'password');
 
@@ -77,7 +77,7 @@ describe('LobbyForm', () => {
     const PASSWORD = 'lobbyFormPassword (*';
     await render(<LobbyView />, store);
 
-    const userNameInput = screen.getByPlaceholderText('global-name');
+    const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
     expect(userNameInput).toBeInTheDocument();
 
     fireEvent.change(userNameInput, { target: { value: USERNAME } });
@@ -85,7 +85,7 @@ describe('LobbyForm', () => {
       expect(userNameInput).toHaveValue(USERNAME);
     });
 
-    const passwordInput = screen.getByPlaceholderText('global-password');
+    const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
     expect(passwordInput).toBeInTheDocument();
 
     fireEvent.change(passwordInput, { target: { value: PASSWORD } });
@@ -110,7 +110,7 @@ describe('LobbyForm', () => {
   test('click on toggle visibility button should change input type=text', async () => {
     await render(<LobbyView />, store);
 
-    const passwordInput = screen.getByPlaceholderText('global-password');
+    const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
     expect(passwordInput).toHaveAttribute('type', 'password');
 
     const toggleVisibilityBtn = screen.getByRole('button', { name: /toggle-password-visibility/i });
@@ -122,6 +122,6 @@ describe('LobbyForm', () => {
 
   test('name field prefilled from displayName', async () => {
     await render(<LobbyView />, store);
-    expect(screen.getByPlaceholderText('global-name')).toHaveDisplayValue('Test');
+    expect(screen.getByPlaceholderText('lobby-name-placeholder')).toHaveDisplayValue('Test');
   });
 });
