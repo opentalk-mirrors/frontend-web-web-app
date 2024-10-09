@@ -16,7 +16,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
 
-import { FullscreenViewIcon, GridViewIcon, MeetingNotesIcon, SpeakerViewIcon } from '../../../assets/icons';
+import { CheckIcon, FullscreenViewIcon, GridViewIcon, MeetingNotesIcon, SpeakerViewIcon } from '../../../assets/icons';
 import { IconButton } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -25,6 +25,7 @@ import { selectIsMeetingNotesAvailable } from '../../../store/slices/meetingNote
 import {
   GridViewOrder,
   selectCinemaLayout,
+  selectGridViewOrder,
   selectIsCurrentMeetingNotesHighlighted,
   toggledFullScreenMode,
   updatedCinemaLayout,
@@ -86,12 +87,12 @@ const LayoutSelection = () => {
   const dispatch = useAppDispatch();
   const fullscreenHandle = useFullscreenContext();
   const selectedLayout = useAppSelector(selectCinemaLayout);
+  const selectedGridViewOrder = useAppSelector(selectGridViewOrder);
   const { t } = useTranslation();
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const isViewPopoverOpen = Boolean(anchorElement);
   const isMeetingNotesAvailable = useAppSelector(selectIsMeetingNotesAvailable);
   const isCurrentMeetingNotesHighlighted = useAppSelector(selectIsCurrentMeetingNotesHighlighted);
-  const isMeetingNotesActive = selectedLayout === LayoutOptions.MeetingNotes;
 
   /**
    * Placeholder condition for all features that has to show indicator.
@@ -159,52 +160,73 @@ const LayoutSelection = () => {
         disablePortal
       >
         <PopoverContainer id="view-popover-menu" autoFocusItem={isViewPopoverOpen}>
-          <MenuItem onClick={() => handleSelectedView(LayoutOptions.Grid)}>
+          <MenuItem role="menuitemradio" onClick={() => handleSelectedView(LayoutOptions.Grid)}>
+            <ListItemIcon>
+              {selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.FirstJoined && (
+                <CheckIcon />
+              )}
+            </ListItemIcon>
             <ListItemIcon aria-hidden={true}>
               <GridViewIcon />
             </ListItemIcon>
             {t('conference-view-grid')}
           </MenuItem>
-          <MenuItem onClick={() => handleSelectedView(LayoutOptions.Speaker)}>
+          <MenuItem role="menuitemradio" onClick={() => handleSelectedView(LayoutOptions.Speaker)}>
+            <ListItemIcon>{selectedLayout === LayoutOptions.Speaker && <CheckIcon />}</ListItemIcon>
             <ListItemIcon aria-hidden={true}>
               <SpeakerViewIcon />
             </ListItemIcon>
             {t('conference-view-speaker')}
           </MenuItem>
-          <MenuItem onClick={openFullscreenView}>
+          <MenuItem role="menuitemradio" onClick={openFullscreenView}>
+            <ListItemIcon>{fullscreenHandle.active && <CheckIcon />}</ListItemIcon>
             <ListItemIcon aria-hidden={true}>
               <FullscreenViewIcon />
             </ListItemIcon>
             {t('conference-view-fullscreen')}
           </MenuItem>
+          {isMobile && isMeetingNotesAvailable && (
+            <MenuItem
+              onClick={() => handleSelectedView(LayoutOptions.MeetingNotes)}
+              hasIndicator={isCurrentMeetingNotesHighlighted}
+              role="menuitemradio"
+            >
+              <ListItemIcon>{selectedLayout === LayoutOptions.MeetingNotes && <CheckIcon />}</ListItemIcon>
+              <ListItemIcon aria-hidden={true}>
+                <MeetingNotesIcon />
+              </ListItemIcon>
+              {t('moderationbar-button-meeting-notes-tooltip')}
+            </MenuItem>
+          )}
           <TextWithDivider variant="caption">{t('conference-view-sorting')}</TextWithDivider>
-          <MenuItem onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.VideoFirst)}>
+          <MenuItem
+            role="menuitemradio"
+            onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.VideoFirst)}
+          >
+            <ListItemIcon>
+              {selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.VideoFirst && (
+                <CheckIcon />
+              )}
+            </ListItemIcon>
             <ListItemIcon aria-hidden={true}>
               <GridViewIcon />
             </ListItemIcon>
             {t('conference-view-grid-camera-first')}
           </MenuItem>
-          <MenuItem onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.ModeratorsFirst)}>
+          <MenuItem
+            role="menuitemradio"
+            onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.ModeratorsFirst)}
+          >
+            <ListItemIcon>
+              {selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.ModeratorsFirst && (
+                <CheckIcon />
+              )}
+            </ListItemIcon>
             <ListItemIcon aria-hidden={true}>
               <GridViewIcon />
             </ListItemIcon>
             {t('conference-view-grid-moderators-first')}
           </MenuItem>
-          {isMobile && isMeetingNotesAvailable && (
-            <MenuItem
-              onClick={() => {
-                handleSelectedView(
-                  selectedLayout === LayoutOptions.MeetingNotes ? LayoutOptions.Grid : LayoutOptions.MeetingNotes
-                );
-              }}
-              hasIndicator={isCurrentMeetingNotesHighlighted}
-            >
-              <ListItemIcon aria-hidden={true}>
-                <MeetingNotesIcon />
-              </ListItemIcon>
-              {t(isMeetingNotesActive ? 'meeting-notes-hide' : 'meeting-notes-open')}
-            </MenuItem>
-          )}
         </PopoverContainer>
       </Popover>
     </ViewPopperContainer>
