@@ -84,6 +84,7 @@ import {
   waitingRoomLeft,
   selectParticipantsTotal,
   updatedSpeaker,
+  rename as participantsRename,
 } from '../store/slices/participantsSlice';
 import * as pollStore from '../store/slices/pollSlice';
 import {
@@ -99,7 +100,13 @@ import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
 import { streamUpdated } from '../store/slices/streamingSlice';
 import { updateParticipantsReady, timerStarted, timerStopped } from '../store/slices/timerSlice';
 import { updatedCinemaLayout } from '../store/slices/uiSlice';
-import { revokePresenterRole, setPresenterRole, updateRole, selectIsModerator } from '../store/slices/userSlice';
+import {
+  revokePresenterRole,
+  setPresenterRole,
+  updateRole,
+  selectIsModerator,
+  setDisplayName,
+} from '../store/slices/userSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import {
   BackendParticipant,
@@ -959,6 +966,24 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
         )
       );
       dispatch(hangUp());
+      break;
+    case 'display_name_changed':
+      dispatch(
+        participantsRename({
+          id: data.target,
+          displayName: data.newName,
+        })
+      );
+      if (data.target === state.user.uuid) {
+        dispatch(setDisplayName(data.newName));
+      }
+      notifications.info(
+        i18next.t('display-name-change-notification', {
+          moderatorName: state.participants.entities[data.issued_by]?.displayName || '',
+          oldName: data.oldName,
+          newName: data.newName,
+        })
+      );
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);

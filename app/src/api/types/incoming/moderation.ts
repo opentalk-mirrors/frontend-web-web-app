@@ -49,6 +49,14 @@ export interface DebriefSessionEnded {
   message: 'session_ended';
 }
 
+export interface DisplayNameChanged {
+  message: 'display_name_changed';
+  target: ParticipantId;
+  issued_by: ParticipantId;
+  oldName: string;
+  newName: string;
+}
+
 /* MODERATOR ONLY */
 
 // Signals to moderator that a participant has joined the waiting room.
@@ -75,7 +83,8 @@ export type Message =
   | HandraisesDisabled
   | HandraisesEnabled
   | DebriefStarted
-  | DebriefSessionEnded;
+  | DebriefSessionEnded
+  | DisplayNameChanged;
 
 export type Moderation = NamespacedIncoming<Message, 'moderation'>;
 
