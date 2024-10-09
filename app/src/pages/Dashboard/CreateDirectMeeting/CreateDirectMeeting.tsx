@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useCreateEventMutation, useLazyGetEventQuery } from '../../../api/rest';
 import { notifications } from '../../../commonComponents';
 import InviteToMeeting from '../../../components/InviteToMeeting/InviteToMeeting';
+import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'grid',
@@ -27,6 +28,9 @@ const CreateDirectMeeting = () => {
   const [createEvent, { data: event, isLoading: createEventIsLoading, error }] = useCreateEventMutation();
   const { t } = useTranslation();
   const [getEvent, { data: updatedEvent, isLoading: getEventLoading, error: getEventError }] = useLazyGetEventQuery();
+  const pageHeading = t('dashboard-direct-meeting-title');
+
+  useUpdateDocumentTitle(pageHeading);
 
   const handleCreateRoom = useCallback(async () => {
     const creationDate = new Date();
@@ -72,7 +76,7 @@ const CreateDirectMeeting = () => {
   return (
     <Container>
       <Stack>
-        <Typography variant="h1">{t('dashboard-direct-meeting-title')}</Typography>
+        <Typography variant="h1">{pageHeading}</Typography>
         <AttentionMessageTypography>{t('dashboard-adhoc-meeting-attention')}</AttentionMessageTypography>
       </Stack>
       <InviteToMeeting

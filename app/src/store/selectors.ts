@@ -21,7 +21,7 @@ import {
 } from '../types';
 import { sortParticipantsWithConfig } from '../utils/sortParticipants';
 import { selectAutomoderationParticipantIds } from './slices/automodSlice';
-import { selectCurrentBreakoutRoomId } from './slices/breakoutSlice';
+import { selectCurrentBreakoutRoom, selectCurrentBreakoutRoomId } from './slices/breakoutSlice';
 import {
   reduceMessagesToPersonalChats,
   selectAllGroupChats,
@@ -38,6 +38,7 @@ import {
   selectAllParticipants,
 } from './slices/participantsSlice';
 import { selectAllPolls } from './slices/pollSlice';
+import { selectEventInfo } from './slices/roomSlice';
 import { selectParticipantsReady } from './slices/timerSlice';
 import {
   selectParticipantsSearchValue,
@@ -283,4 +284,17 @@ export const selectAllPersonalChats = createSelector(
     groupChats
       .concat(privateChats)
       .sort((a, b) => Date.parse(b.lastMessage.timestamp) - Date.parse(a.lastMessage.timestamp))
+);
+
+export const selectRoomTitle = createSelector(
+  [selectCurrentBreakoutRoom, selectEventInfo],
+  (currentBreakoutRoom, eventInfo) => {
+    if (currentBreakoutRoom) {
+      return currentBreakoutRoom.name;
+    }
+    if (eventInfo) {
+      return eventInfo.title;
+    }
+    return i18next.t('fallback-room-title') || '';
+  }
 );

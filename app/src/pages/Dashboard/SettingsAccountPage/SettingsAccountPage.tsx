@@ -7,16 +7,20 @@ import { useTranslation } from 'react-i18next';
 import { useGetMeQuery } from '../../../api/rest';
 import { CommonTextField, VisuallyHiddenTitle } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
+import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import { selectChangePassword } from '../../../store/slices/configSlice';
 
 const SettingsAccountPage = () => {
   const { t } = useTranslation();
   const { data } = useGetMeQuery();
   const changePassword = useAppSelector(selectChangePassword);
+  const pageHeading = t('dashboard-settings-account-title');
+
+  useUpdateDocumentTitle(pageHeading);
 
   return (
     <>
-      <VisuallyHiddenTitle label={t('dashboard-settings-account-title')} component="h1" />
+      <VisuallyHiddenTitle label={pageHeading} component="h1" />
       <Grid container spacing={5} direction="column">
         <Grid item container spacing={3}>
           <Grid xs={12} item>

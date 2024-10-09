@@ -21,9 +21,10 @@ interface EventsPageHeaderProps {
   filters: DashboardEventsFilters;
   onFilterChange: FilterChangeCallbackType;
   entries: MeetingsProp[];
+  title: string;
 }
 
-const EventsPageHeader = ({ onFilterChange, filters, entries }: EventsPageHeaderProps) => {
+const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPageHeaderProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
@@ -66,7 +67,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries }: EventsPageHeader
           zeroMinWidth
         >
           <Typography variant="h1" component="h1">
-            {t('dashboard-events-my-meetings')}
+            {title}
           </Typography>
           <EventPageFilters
             filters={filters}
@@ -115,7 +116,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries }: EventsPageHeader
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h1" component="h1">
-            {t('dashboard-events-my-meetings')}
+            {title}
           </Typography>
           {isContainingRecurringEvents && (
             <Typography variant="h2" component="h2" mt={2}>

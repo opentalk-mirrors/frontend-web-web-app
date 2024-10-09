@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CreateOrUpdateMeetingForm from '../../../components/CreateOrUpdateMeetingForm';
+import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'grid',
@@ -26,6 +27,9 @@ const ActiveStep = styled(Step)(({ theme }) => ({
 const CreateEventsPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const { t } = useTranslation();
+  const pageHeading = t('dashboard-meetings-create-title');
+
+  useUpdateDocumentTitle(pageHeading);
 
   const StepperHeader = () => (
     <Stepper activeStep={0}>
@@ -40,7 +44,7 @@ const CreateEventsPage = () => {
 
   return (
     <Container>
-      <Typography component="h1">{t('dashboard-meetings-create-title')}</Typography>
+      <Typography component="h1">{pageHeading}</Typography>
       <StepperHeader />
       {activeStep === 0 && <CreateOrUpdateMeetingForm onForwardButtonClick={() => setActiveStep(1)} />}
     </Container>

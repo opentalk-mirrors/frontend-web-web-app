@@ -20,6 +20,7 @@ import SuspenseLoading from '../../../commonComponents/SuspenseLoading/SuspenseL
 import EventTimePreview from '../../../components/EventTimePreview';
 import InviteToMeeting from '../../../components/InviteToMeeting/InviteToMeeting';
 import InvitedParticipants from '../../../components/InvitedParticipants';
+import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import ButtonBack from './fragments/ButtonBack';
 import RoomAssetTable from './fragments/RoomAssetTable';
 
@@ -45,6 +46,8 @@ const EventDetailsPage = () => {
   const roomParticipantLimit = tariff?.quotas.roomParticipantLimit;
   const theme = useTheme();
   const navigate = useNavigate();
+  const pageHeading = event?.title || t('fallback-room-title') || '';
+  useUpdateDocumentTitle(pageHeading);
 
   if (isLoading || isFetching) return <SuspenseLoading />;
 
@@ -116,7 +119,7 @@ const EventDetailsPage = () => {
     >
       <Stack>
         <Stack mb={4}>
-          <Typography variant="h1">{event.title}</Typography>
+          <Typography variant="h1">{pageHeading}</Typography>
           <Typography mt={1}>{getTimeInformationString()}</Typography>
         </Stack>
 

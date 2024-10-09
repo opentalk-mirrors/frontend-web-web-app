@@ -5,14 +5,19 @@ import { Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { VisuallyHiddenTitle } from '../../../commonComponents';
+import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import LanguageSelector from './fragments/LanguageSelector';
 
 const SettingsGeneralPage = () => {
   const { t } = useTranslation();
 
+  const pageHeading = t('dashboard-settings-general-title');
+
+  useUpdateDocumentTitle(pageHeading);
+
   return (
     <>
-      <VisuallyHiddenTitle label={t('dashboard-settings-general-title')} component="h1" />
+      <VisuallyHiddenTitle label={pageHeading} component="h1" />
       <Grid container direction="column" data-testid="dashboardSettingsGeneral" spacing={5}>
         <Grid item>
           <LanguageSelector />

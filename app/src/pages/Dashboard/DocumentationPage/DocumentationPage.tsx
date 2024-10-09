@@ -5,10 +5,14 @@ import { Typography, TableContainer, Table, TableRow, TableCell, Paper, Button, 
 import { useTranslation } from 'react-i18next';
 
 import { useQuickStartUrl } from '../../../hooks/useQuickStartUrl';
+import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
 const DocumentationPage = () => {
   const { t } = useTranslation();
   const { dashboardQuickStartUrl, conferenceQuickStartUrl } = useQuickStartUrl();
+  const pageHeading = t('dashboard-help-documentation');
+
+  useUpdateDocumentTitle(pageHeading);
 
   const openQuickStart = (url: string | undefined) => {
     if (url) {
@@ -20,7 +24,7 @@ const DocumentationPage = () => {
 
   return (
     <>
-      <Typography variant="h1">{t('dashboard-help-documentation')}</Typography>{' '}
+      <Typography variant="h1">{pageHeading}</Typography>{' '}
       <TableContainer component={Paper} sx={{ mt: 2, mb: 2, maxHeight: 250, maxWidth: 1000 }}>
         <Table padding="normal" stickyHeader>
           <TableBody>

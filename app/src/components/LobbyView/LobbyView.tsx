@@ -21,6 +21,7 @@ import Error from '../../components/Error';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
+import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
 import { startRoom } from '../../store/commonActions';
 import { selectDisallowCustomDisplayName, selectFeatures } from '../../store/slices/configSlice';
 import {
@@ -92,6 +93,10 @@ const LobbyView: FC = () => {
   //Password is only required for guests or non invited users.
   //We do not have a way of telling if you are invited with the current backend so we will always show the password if you are using the invite link.
   const showPasswordField = passwordRequired;
+
+  useUpdateDocumentTitle(t('joinform-room-title', { title: roomData?.title || '' }), {
+    extension: '',
+  });
 
   // Temporary request to figure out if we need to show a password field until it is added in getEventInfo request - https://git.opentalk.dev/opentalk/backend/services/controller/-/issues/603
   useEffect(() => {
