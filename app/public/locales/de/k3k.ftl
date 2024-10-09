@@ -473,6 +473,8 @@ breakout-room-room-overview-participant-list = Teilnehmer in Breakout-Räumen
 moderator-join-breakout-room = Raum betreten
 fallback-room-title = Meeting-Raum
 
+secure-connection-button-label = Sicherheitsmonitor anzeigen
+secure-connection-title = Sicherheitsmonitor
 secure-connection-message = Diese Verbindung ist verschlüsselt und sicher.
 secure-connection-registered-only = Nur registrierte Teilnehmer
 secure-connection-no-sip = Keine Telefon-Teilnehmer
