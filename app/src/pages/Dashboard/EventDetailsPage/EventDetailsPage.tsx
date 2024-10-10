@@ -125,7 +125,7 @@ const EventDetailsPage = () => {
 
         {event.description && event.description !== '' && (
           <Stack mb={4}>
-            <Typography>{t('dashboard-meeting-details-page-description-title')}</Typography>
+            <Typography variant="h2">{t('dashboard-meeting-details-page-description-title')}</Typography>
             <Box maxHeight={50} overflow="auto" mt={1}>
               <Typography variant="body2">{event.description}</Typography>
             </Box>
