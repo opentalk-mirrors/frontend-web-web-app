@@ -13,6 +13,9 @@ logs
 npm-debug.log*
 lerna-debug.log*
 
+# pnpm cache
+.pnpm-store
+
 # Yarn 3.x (https://yarnpkg.com/getting-started/qa)
 .yarn/*
 
