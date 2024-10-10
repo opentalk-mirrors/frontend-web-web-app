@@ -777,13 +777,15 @@ dashboard-recurrence-meeting-card-delete-dialog-all = The entire meeting series
 dashboard-recurrence-meeting-card-delete-dialog-cancel = Cancel
 
 dashboard-create-meeting-dialog-title = Please confirm
-dashboard-create-meeting-dialog-message = You already have a meeting scheduled for this time: <eventTitle>{$eventTitle} <eventTime>{$eventTime}</eventTime></eventTitle> Are you sure you want to create a new one?
-dashboard-update-meeting-dialog-message = You already have a meeting scheduled for this time: <eventTitle>{$eventTitle} <eventTime>{$eventTime}</eventTime></eventTitle> Are you sure you want to update?
+dashboard-create-or-update-meeting-dialog-message = You already have a meeting scheduled for this time: 
+dashboard-create-meeting-dialog-prompt = Are you sure you want to create a new one?
+dashboard-update-meeting-dialog-prompt = Are you sure you want to update?
 dashboard-create-meeting-dialog-ok = Create
 dashboard-update-meeting-dialog-ok = Update
 dashboard-create-meeting-dialog-cancel = Cancel
 
 dashboard-direct-meeting-title = Who do you want to invite to your meeting?
+dashboard-direct-meeting-attention = Attention: This is an adhoc meeting, it will be automatically deleted after 24h and not shown in the dashboard.
 dashboard-direct-meeting-label-select-participants = Invite participants - Max. {maxParticipants} participants per meeting, incl. you
 dashboard-direct-meeting-label-select-participants-fallback = Invite participants
 dashboard-direct-meeting-button-cancel = Cancel
@@ -830,7 +832,7 @@ dashboard-events-filter-by-invites = Only show invites
 dashboard-events-filter-by-favorites = Only show favorites
 dashboard-events-search = Search
 dashboard-events-note-limited-view = Note: You have recurring meetings in your list, therefore we have limited the temporal view.
-dashboard-adhoc-meeting-attention = Attention: This is an adhoc meeting, it will be automatically deleted after 24h and not shown in the dashboard.
+
 
 dashbooard-event-accept-invitation-notification = Invite accepted for meeting {meetingTitle}
 dashbooard-event-decline-invitation-notification = Invite declined for meeting {meetingTitle}
