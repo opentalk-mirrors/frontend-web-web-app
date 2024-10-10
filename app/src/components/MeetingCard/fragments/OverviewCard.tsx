@@ -118,7 +118,11 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
       const startDate = new Date(event.startsAt.datetime);
       const endDate = new Date(event.endsAt.datetime);
 
-      return <EventTimePreview startDate={startDate} endDate={endDate} />;
+      return (
+        <Typography variant="body1" fontWeight={400}>
+          <EventTimePreview startDate={startDate} endDate={endDate} />
+        </Typography>
+      );
     }
 
     return (

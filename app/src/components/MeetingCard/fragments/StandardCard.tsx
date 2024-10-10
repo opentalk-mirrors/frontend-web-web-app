@@ -47,7 +47,6 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
   const endDate = !isTimelessEvent(event) && event.endsAt ? new Date(event.endsAt.datetime) : undefined;
   const isTimeIndependent = !!event.isTimeIndependent;
 
-  //TODO This can be improved upon. We need to agree on some requirements
   const renderTimeString = () => {
     let timeString = t('dashboard-meeting-card-error');
 
@@ -56,7 +55,11 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
     } else if (isTimeIndependent) {
       timeString = t('dashboard-meeting-card-timeindependent');
     } else if (endDate && startDate) {
-      return <EventTimePreview startDate={startDate} endDate={endDate} />;
+      return (
+        <Typography variant="body2" noWrap>
+          <EventTimePreview startDate={startDate} endDate={endDate} />
+        </Typography>
+      );
     }
 
     return (
@@ -85,6 +88,7 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
         <Grid item>
           <Stack spacing={2}>
             {renderTimeString()}
+
             <Tooltip translate="no" title={title || ''} describeChild placement="bottom-start">
               <Typography variant="h1" component="h2" fontWeight={600} noWrap>
                 {title}

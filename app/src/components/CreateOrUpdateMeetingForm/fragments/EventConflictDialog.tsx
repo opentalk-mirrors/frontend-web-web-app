@@ -7,7 +7,7 @@ import { truncate } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../../assets/icons';
-import { formatDate } from '../../../utils/timeFormatUtils';
+import EventTimePreview from '../../EventTimePreview';
 
 interface EventConflictDialogProps {
   onConfirm: () => void;
@@ -18,12 +18,10 @@ interface EventConflictDialogProps {
 
 export const EventConflictDialog = ({ onConfirm, onCancel, event, isUpdate }: EventConflictDialogProps) => {
   const { t } = useTranslation();
-  const startDate = formatDate(new Date(event.startsAt.datetime)).getDateString();
-  const startTime = formatDate(new Date(event.startsAt.datetime)).getTimeString();
-  const endTime = formatDate(new Date(event.endsAt.datetime)).getTimeString();
+  const startDate = new Date(event.startsAt.datetime);
+  const endDate = new Date(event.endsAt.datetime);
 
   const eventTitle = truncate(event.title, { length: 20 });
-  const eventTime = `${startDate} ${startTime} - ${endTime}`;
 
   return (
     <Dialog open maxWidth="sm" fullWidth disablePortal onClose={onCancel}>
@@ -38,7 +36,9 @@ export const EventConflictDialog = ({ onConfirm, onCancel, event, isUpdate }: Ev
         <Typography component="span" variant="h1" ml={0}>
           {eventTitle}{' '}
         </Typography>
-        <Typography component="span">{eventTime}</Typography>
+        <Typography component="span">
+          <EventTimePreview startDate={startDate} endDate={endDate} />
+        </Typography>
         <Typography mt={1}>{t(`dashboard-${isUpdate ? 'update' : 'create'}-meeting-dialog-prompt`)}</Typography>
       </DialogContent>
       <DialogActions>

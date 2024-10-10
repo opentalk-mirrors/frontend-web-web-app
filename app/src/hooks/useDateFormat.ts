@@ -9,7 +9,7 @@ import { Locale, isValid, format } from 'date-fns';
 
 import useLocale from './useLocale';
 
-type FormatOutput = 'date' | 'time';
+type FormatOutput = 'date' | 'time' | 'attribute-date';
 
 const getFormattedDate = (date: Date, locale: Locale | undefined) => {
   const formattedDate = format(date, 'P', { locale });
@@ -27,6 +27,9 @@ const useDateFormat = (date: Date = new Date(), output: FormatOutput = 'date') =
   let formattedTimestamp = '';
 
   switch (output) {
+    case 'attribute-date':
+      formattedTimestamp = format(validDate, 'yyyy-MM-dd');
+      break;
     case 'date':
       formattedTimestamp = getFormattedDate(validDate, locale);
       break;
