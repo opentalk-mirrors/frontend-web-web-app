@@ -14,10 +14,6 @@ All notable changes to this project will be documented in this file.
 - Extract unrelated code / ui changes from LiveKit branch ([#2088](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2088))
 - Migrate from parcel to vite for `18next-fluent` lib ([#1957](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1957))
 - Migrate from parcel to vite for `fluent_conv` lib ([#1956](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1956))
-- Add missing `setup-pnpm` to the `prepare-artifact:upload-sourcemaps` CI step ([#2079](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2079))
-- Fix wrong response type for `getRoomEventInfo` endpoint ([#2064](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2064))
-- Rename protocol module to meeting notes ([#1973](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1973))
-- Migrate from yarn to pnpm ([#1955](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1955))
 
 ### Improvements to the user experience
 
@@ -28,21 +24,36 @@ All notable changes to this project will be documented in this file.
 - Add missing tooltip on lobby buttons ([#2054](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2054))
 - Inform user if vote result is invalid for some reason ([#2006](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/2006))
 - Already unmuted participants no longer receive notification to unmute on their talking stick turn ([#2069](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2069))
-- Improve mobile header layout on the meetings overview page ([#2039](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2039))
-- Add multiple new video background images ([#2052](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2052))
-- Remove hover effect and more menu icon disappearing([#2056](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/2056))
-- Add new poll answer button is permanently present on screen while creating ([#1980](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1980))
-- Add missing h1 tag to all dashboard related pages ([#2002](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2002))
 
 ### Bug Fixes
 
 - A11y: fix contrast of the red color in the conference ([#1996](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1996))
 
-## 1.20.0
+## 1.21.0
 
 ### New Features
 
 - Create new sorting mechanims in conference at grid view ([#1994](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1994))
+
+### Internal
+
+- Add missing `setup-pnpm` to the `prepare-artifact:upload-sourcemaps` CI step ([#2079](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2079))
+- Fix wrong response type for `getRoomEventInfo` endpoint ([#2064](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2064))
+- Rename protocol module to meeting notes ([#1973](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1973))
+- Migrate from yarn to pnpm ([#1955](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1955))
+
+### Improvements to the user experience
+
+- Improve mobile header layout on the meetings overview page ([#2039](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2039))
+- Add multiple new video background images ([#2052](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2052))
+- Remove hover effect and more menu icon disappearing ([#2056](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2056))
+- Add new poll answer button is permanently present on screen while creating ([#1980](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1980))
+- Add missing h1 tag to all dashboard related pages ([#2002](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2002))
+
+## 1.20.0
+
+### New Features
+
 - Implement multiple choice polls ([#1795](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1795))
 - Implement legal vote issue reporting system ([#1903](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1903))
 
