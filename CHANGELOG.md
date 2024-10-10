@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Internal
 
+- Cleanup left over parcel dependencies ([#2152](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2152)
 - Extract unrelated code / ui changes from LiveKit branch ([#2088](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2088))
 - Migrate from parcel to vite for `18next-fluent` lib ([#1957](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1957))
 - Migrate from parcel to vite for `fluent_conv` lib ([#1956](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1956))
