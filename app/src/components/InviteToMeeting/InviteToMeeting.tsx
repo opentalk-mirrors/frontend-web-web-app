@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Grid } from '@mui/material';
 import { Event, EventInvite, isEvent, UserRole } from '@opentalk/rest-api-rtk-query';
-import { QueryStatus } from '@reduxjs/toolkit/dist/query';
 import { merge } from 'lodash';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -36,41 +35,38 @@ const InviteToMeeting = ({
   invitationsSent,
   showOnlyLinkFields,
 }: InviteToMeetingProps) => {
-  const [creatEventInvitation, { isLoading: sendingInvitation, isSuccess, status, isError }] =
-    useCreateEventInviteMutation();
+  const [creatEventInvitation, { isLoading: sendingInvitation }] = useCreateEventInviteMutation();
 
   const [deleteEvent] = useDeleteEventMutation();
   const features = useAppSelector(selectFeatures);
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [selectedUsers, setSelectedUser] = useState<Array<ParticipantOption>>([]);
+  const [selectedUsers, setSelectedUsers] = useState<Array<ParticipantOption>>([]);
 
   const { data: tariff } = useGetMeTariffQuery();
   const userTariffLimit = tariff?.quotas.roomParticipantLimit;
 
-  const sendInvitations = useCallback(async () => {
+  const sendInvitations = async () => {
     const allInvites = selectedUsers.map((selectedUser) => {
-      const invite =
+      const invitee =
         'id' in selectedUser ? { invitee: selectedUser.id, role: UserRole.USER } : { email: selectedUser.email };
-      return creatEventInvitation(merge({ eventId: existingEvent.id }, invite));
+
+      return creatEventInvitation(merge({ eventId: existingEvent.id }, invitee)).unwrap();
     });
 
-    setSelectedUser(() => []);
+    //RTK query mutations will be sent out individually regardless of us using all or allSettled.
+    //This part is used to determine, which notification to show based on if at least one got rejected.
+    const results = await Promise.allSettled(allInvites);
+    if (results.some((result) => result.status === 'rejected')) {
+      notifications.error(t('dashboard-direct-meeting-invitations-error'));
+    } else {
+      notifications.success(t('dashboard-direct-meeting-invitations-successful'));
+    }
 
-    await Promise.all(allInvites)
-      .then(() => {
-        invitationsSent && invitationsSent();
-        if (!isError) {
-          notifications.success(t('dashboard-direct-meeting-invitations-successful'));
-        } else {
-          notifications.error(t('dashboard-direct-meeting-invitations-error'));
-        }
-      })
-      .catch(() => {
-        notifications.error(t('dashboard-direct-meeting-invitations-error'));
-      });
-  }, [t, selectedUsers, existingEvent, creatEventInvitation, invitationsSent, isError]);
+    invitationsSent && invitationsSent();
+    setSelectedUsers([]);
+  };
 
   const handleCancelMeetingPress = () => {
     if (adhocMeeting && isEvent(existingEvent)) {
@@ -79,14 +75,12 @@ const InviteToMeeting = ({
     navigate('/dashboard/');
   };
 
-  const addSelectedUser = (selected: ParticipantOption[]) => {
-    if (selected.length > 0) {
-      setSelectedUser((selectedUsers) => [...selectedUsers, selected[0]]);
-    }
+  const addSelectedUser = (selected: ParticipantOption) => {
+    setSelectedUsers((selectedUsers) => [...selectedUsers, selected]);
   };
 
   const removeSelectedUser = (removedUser: EventInvite) => {
-    setSelectedUser((selectedUsers) => selectedUsers.filter((user) => user.email !== removedUser.profile.email));
+    setSelectedUsers((selectedUsers) => selectedUsers.filter((user) => user.email !== removedUser.profile.email));
   };
 
   const selectParticipantsLabel = userTariffLimit
@@ -104,10 +98,9 @@ const InviteToMeeting = ({
                 <SelectParticipants
                   label={selectParticipantsLabel}
                   placeholder={t('dashboard-select-participants-textfield-placeholder')}
-                  onChange={addSelectedUser}
+                  onParticipantSelect={addSelectedUser}
                   selectedUsers={selectedUsers}
                   invitees={existingEvent?.invitees}
-                  resetSelected={isSuccess && status === QueryStatus.fulfilled}
                   eventId={existingEvent.id}
                 />
               )}
