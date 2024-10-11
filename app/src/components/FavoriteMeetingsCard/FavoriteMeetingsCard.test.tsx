@@ -34,6 +34,6 @@ describe('favorite meetings card', () => {
       </BrowserRouter>
     );
 
-    expect(screen.queryAllByTestId('favorite-entry')).toHaveLength(dummyMeetings.length);
+    expect(screen.queryAllByRole('link')).toHaveLength(dummyMeetings.length);
   });
 });

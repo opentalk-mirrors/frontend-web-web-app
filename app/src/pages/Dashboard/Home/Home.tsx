@@ -141,7 +141,9 @@ const Home = () => {
     }
     return (
       <Stack spacing={2} flex={1} justifyContent="flex-end">
-        <Typography>{t('dashboard-meeting-card-title-favorite-meetings')}</Typography>
+        <Typography variant="body1" component="h3">
+          {t('dashboard-meeting-card-title-favorite-meetings')}
+        </Typography>
         <FavoriteMeetingsCard meetings={getMappedFavoriteMeetings()} />
       </Stack>
     );

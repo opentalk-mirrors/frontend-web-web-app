@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, styled, Tooltip, Link as MuiLink } from '@mui/material';
+import { Box, styled, Tooltip, Link as MuiLink, List, ListItem } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -24,11 +24,8 @@ const FavoritesWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-const FavoritesContainer = styled('div')(({ theme }) => ({
+const FavoritesContainer = styled(List)(({ theme }) => ({
   height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(2),
   overflow: 'auto',
   paddingRight: theme.spacing(3),
 }));
@@ -48,17 +45,31 @@ const FavoriteIcon = styled(Favorite)(({ theme }) => ({
   },
 }));
 
-const FavoriteEntry = styled(Link)(({ theme }) => ({
-  color: theme.palette.secondary.contrastText,
-  textDecoration: 'none',
-  paddingBottom: theme.spacing(2),
+const FavoriteEntry = styled(ListItem)(({ theme }) => ({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
   flex: `0 0 auto`,
 
+  '&:not(:first-child):not(:last-child)': {
+    padding: theme.spacing(2, 0, 2, 0),
+  },
+
+  '&:first-child': {
+    padding: theme.spacing(0, 0, 2, 0),
+  },
+
+  '&:last-child': {
+    padding: theme.spacing(2, 0, 0, 0),
+  },
+
   '&:not(:last-child)': {
     borderBottom: `1px solid ${theme.palette.secondary.contrastText}`,
+  },
+
+  '& > a': {
+    color: theme.palette.secondary.contrastText,
+    textDecoration: 'none',
   },
 }));
 
@@ -79,9 +90,11 @@ const FavoriteMeetingsCard = ({ meetings }: { meetings: Array<FavoriteMeetingPro
 
   const renderFavorites = () => {
     if (sortedMeetings.length > 0) {
-      return sortedMeetings.map(({ subject, roomId }, index) => (
-        <FavoriteEntry data-testid="favorite-entry" to={`/room/${roomId}`} target="_blank" key={index}>
-          {subject}
+      return sortedMeetings.map(({ subject, roomId }) => (
+        <FavoriteEntry key={roomId}>
+          <Link to={`/room/${roomId}`} target="_blank">
+            {subject}
+          </Link>
         </FavoriteEntry>
       ));
     }
