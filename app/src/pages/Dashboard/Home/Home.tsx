@@ -1,7 +1,18 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Grid, Skeleton, Stack, styled, Typography, useMediaQuery, useTheme } from '@mui/material';
+import {
+  Button,
+  Grid,
+  List,
+  ListItem,
+  Skeleton,
+  Stack,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { DateTime, Event, EventException, RoomId } from '@opentalk/rest-api-rtk-query';
 import { formatRFC3339 } from 'date-fns';
 import { isEmpty } from 'lodash';
@@ -47,6 +58,11 @@ const HeaderButtonsContainer = styled(Grid)(({ theme }) => ({
   rowGap: theme.spacing(2),
   justifyContent: 'space-between',
 }));
+
+const CustomList = styled(List)({
+  width: '100%',
+  overflow: 'auto',
+});
 
 const Home = () => {
   const [animated, setAnimated] = useState<boolean>(false);
@@ -179,18 +195,10 @@ const Home = () => {
         );
         tiEvents = tiEvents.concat(expandedEvents.slice(0, maxEventsPerPage - tiEvents.length));
       }
-      return (
-        <Stack spacing={2} height="100%" overflow="auto">
-          {tiEvents.map((upcomingEvent) => renderEvent(upcomingEvent))}
-        </Stack>
-      );
+      return <CustomList>{tiEvents.map((upcomingEvent) => renderEvent(upcomingEvent))}</CustomList>;
     }
 
-    return (
-      <Stack spacing={2} height="100%" overflow="auto">
-        {upcomingEvents?.data.map((upcomingEvent) => renderEvent(upcomingEvent))}
-      </Stack>
-    );
+    return <CustomList>{upcomingEvents?.data.map((upcomingEvent) => renderEvent(upcomingEvent))}</CustomList>;
   };
 
   const renderEvent = (event: Event | EventException) => {
@@ -198,7 +206,11 @@ const Home = () => {
     if (!event.isTimeIndependent && event.startsAt) {
       startsAt = event.startsAt.datetime;
     }
-    return <MeetingCard key={`${event.id}${startsAt}`} event={event} />;
+    return (
+      <ListItem key={`${event.id}${startsAt}`} disableGutters>
+        <MeetingCard event={event} />
+      </ListItem>
+    );
   };
 
   const JoinMeetingDialog = () => (
