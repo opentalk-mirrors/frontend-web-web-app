@@ -160,6 +160,7 @@ const SelfTest = ({ children, actionButton }: SelftestProps) => {
                 mb={2}
                 component="h2"
                 color={theme.palette.common.white}
+                lang="en"
               >
                 {t('selftest-header')}
               </Typography>
