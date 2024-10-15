@@ -334,9 +334,6 @@ statistics-local-network-endpoint = Lokaler Endpunkt
 statistics-remote-network-endpoint = Entfernter Endpunkt
 statistics-value-redacted = (redigiert)
 
-slotmachine-label=Wheel Of Names
-slotmachine-pre-message=Lotterie hat
-slotmachine-post-message=Teilnehmer
 font-awesome-license = Font Awesome Lizenz
 
 legal-vote-tab-title = Abstimmungen
