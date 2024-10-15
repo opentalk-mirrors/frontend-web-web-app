@@ -9,6 +9,7 @@ import LegalVoteMessage from './legalVote';
 import LivekitMessage from './livekit';
 import MediaMessage from './media';
 import MeetingNotesMessage from './meetingNotes';
+import MeetingReportMessage from './meetingReport';
 import ModerationMessage from './moderation';
 import PollMessage from './poll';
 import SharedFolderMessage from './sharedFolder';
@@ -22,6 +23,7 @@ export * as chat from './chat';
 export * as moderation from './moderation';
 export * as poll from './poll';
 export * as meetingNotes from './meetingNotes';
+export * as meetingReport from './meetingReport';
 export * as timer from './timer';
 export * as whiteboard from './whiteboard';
 export * as media from './media';
@@ -41,6 +43,7 @@ export type Message =
   | PollMessage
   | ModerationMessage
   | MeetingNotesMessage
+  | MeetingReportMessage
   | TimerMessage
   | WhiteboardMessage
   | StreamingMessage

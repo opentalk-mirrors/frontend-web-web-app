@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
 import { disableMicrophoneRestrictions, enableMicrophoneRestrictions } from '../../../api/types/outgoing/livekit';
+import { generateAttendanceReport } from '../../../api/types/outgoing/meetingReport';
 import {
   disableRaiseHands,
   disableWaitingRoom,
@@ -37,6 +38,7 @@ import {
   RecordingsIcon,
   TimerIcon,
   TrashIcon,
+  AttendanceReportIcon,
 } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import {
@@ -172,6 +174,15 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     },
   };
 
+  const exportAttendanceReportItem = {
+    label: 'more-menu-export-attendance-report',
+    icon: <AttendanceReportIcon />,
+    action: () => {
+      onClose();
+      dispatch(generateAttendanceReport.action({ includeEmailAddresses: false }));
+    },
+  };
+
   const moderatorMenuItems = [
     {
       label: 'more-menu-create-invite',
@@ -186,6 +197,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     toggleMicrophones,
     toggleChatItem,
     deleteGlobalChatItem,
+    exportAttendanceReportItem,
   ];
 
   //Exclude start/stop recording when errored/unavailable until we have designs/approach for how to handle errored and unavailable streams

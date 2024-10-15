@@ -17,6 +17,7 @@ import {
   startTimeLimitNotification,
 } from '../commonComponents';
 import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification';
+import { showWithLinkNotification } from '../components/WithLinkNotification';
 import LayoutOptions from '../enums/LayoutOptions';
 import i18n from '../i18n';
 import { ConferenceRoom, getCurrentConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
@@ -99,6 +100,7 @@ import {
   WaitingState,
   matchBuilder,
 } from '../types';
+import { composeMeetingDetailsUrl } from '../utils/apiUtils';
 import { initSentryReportWithUser } from '../utils/glitchtipUtils';
 import { isStringEnum } from '../utils/tsUtils';
 import { restApi } from './rest';
@@ -110,6 +112,7 @@ import {
   livekit,
   media,
   meetingNotes,
+  meetingReport,
   moderation,
   poll,
   sharedFolder,
@@ -951,6 +954,34 @@ const handleMeetingNotesMessage = (
 };
 
 /**
+ * Handles meetingReport messages
+ *
+ * It takes a dispatch function and a meetingReport message, and dispatches an action based on the message
+ * @param {AppDispatch} dispatch function to fire an event
+ * @param {meetingReport.Message} data Message content
+ * @param {RootState} state Global state
+ */
+const handleMeetingReportMessage = (dispatch: AppDispatch, data: meetingReport.Message, state: RootState) => {
+  let assetLocation;
+  switch (data.message) {
+    case 'pdf_asset':
+      if (state.room.eventInfo?.id) {
+        assetLocation = composeMeetingDetailsUrl(state.config.baseUrl, state.room.eventInfo?.id).href;
+      }
+      showWithLinkNotification({ translationKey: 'meeting-report-pdf-asset-message', url: assetLocation });
+      break;
+    case 'error':
+      // Will be handled in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2165
+      break;
+    default: {
+      const dataString = JSON.stringify(data, null, 2);
+      console.error(`Unknown meeting report message type: ${dataString}`);
+      throw new Error(`Unknown message type: ${dataString}`);
+    }
+  }
+};
+
+/**
  * Handles timer messages
  *
  * It takes a dispatch function and a protocol message, and dispatches an action based on the message
@@ -1168,6 +1199,9 @@ const onMessage =
       case 'meeting_notes':
         handleMeetingNotesMessage(dispatch, message.payload, getState());
         break;
+      case 'meeting_report':
+        handleMeetingReportMessage(dispatch, message.payload, getState());
+        break;
       case 'polls':
         handlePollVoteMessage(dispatch, message.payload);
         break;
@@ -1272,6 +1306,7 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.poll.handler(builder, dispatch))
       .addModule((builder) => outgoing.media.handler(builder, dispatch))
       .addModule((builder) => outgoing.meetingNotes.handler(builder, dispatch))
+      .addModule((builder) => outgoing.meetingReport.handler(builder, dispatch))
       .addModule((builder) => outgoing.moderation.handler(builder, dispatch))
       .addModule((builder) => outgoing.timer.handler(builder, dispatch))
       .addModule((builder) => outgoing.whiteboard.handler(builder, dispatch))

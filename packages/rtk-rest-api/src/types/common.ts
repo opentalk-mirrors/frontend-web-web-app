@@ -24,6 +24,7 @@ export type Namespaces =
   | 'media'
   | 'moderation'
   | 'meeting_notes'
+  | 'meeting_report'
   | 'timer'
   | 'recording'
   | 'whiteboard'

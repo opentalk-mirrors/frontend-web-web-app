@@ -258,6 +258,7 @@ chat-disabled-message = Der Chat wurde durch den Moderator deaktiviert
 chat-disabled-tooltip = Der Chat wurde durch den Moderator deaktiviert
 more-menu-start-streaming = Livestream starten
 more-menu-stop-streaming = Livestream beenden
+more-menu-export-attendance-report = Teilnahmebericht exportieren
 
 microphones-enabled-notification = Der Moderator hat die Mikrofone wieder aktiviert
 microphones-disabled-notification = Der Moderator hat die Mikrofone deaktiviert
@@ -996,6 +997,8 @@ meeting-notes-hide = Protokoll schließen
 meeting-notes-open = Protokoll öffnen
 meeting-notes-tab-title = Protokoll erstellen
 meeting-notes-button-show = Protokoll anzeigen
+
+meeting-report-pdf-asset-message = <messageContainer>Der Teilnahmebericht wurde exportiert. Die entsprechende Datei befindet sich im Dashboard unter den <messageLink>Meeting Details</messageLink>.</messageContainer>
 
 beta-flag-tooltip-text = Sie nutzen die Beta-Version von OpenTalk. Wir entwickeln kontinuierlich neue Funktionen und stellen diese im Rahmen unserer <demoLink>Demo</demoLink> frühzeitig als Ausblick bereit. Bitte beachten Sie, dass es zu Einschränkungen bei der Nutzung kommen kann. Kritik, Ideen und Fehler können Sie uns gerne an <reportEmailLink>{$reportEmail}</reportEmailLink> senden.<br /><br />Viel Spaß beim ausprobieren von OpenTalk!
 
