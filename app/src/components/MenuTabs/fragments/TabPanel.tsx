@@ -4,7 +4,7 @@
 import { Box } from '@mui/material';
 import React from 'react';
 
-import { useIsMobile } from '../../../hooks/useIsMobile';
+import { useIsMobile } from '../../../hooks/useMediaQuery';
 
 export enum MenuTab {
   Chat = 'chat',

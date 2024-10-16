@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { acceptParticipantFromWaitingRoomToRoom } from '../../../api/types/outgoing/moderation';
 import { ParticipantAvatar, notifications } from '../../../commonComponents';
 import { useAppDispatch, useDateFormat } from '../../../hooks';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+import { useIsMobile } from '../../../hooks/useMediaQuery';
 import { approveToEnter } from '../../../store/slices/participantsSlice';
 import { Participant, WaitingState } from '../../../types';
 

@@ -1,19 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  List as MuiList,
-  ListItem as MuiListItem,
-  ListItemText,
-  styled,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { List as MuiList, ListItem as MuiListItem, ListItemText, styled, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
 import { useAppSelector } from '../../../hooks';
+import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import { selectDataProtectionUrl, selectImprintUrl, selectHelpdeskUrl } from '../../../store/slices/configSlice';
 
 export interface SecondaryRoute {
@@ -86,8 +79,7 @@ const NavItem = styled(NavLink)(({ theme }) => ({
 
 const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: NavigationProps) => {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDesktop = useIsDesktop();
   const imprintUrl = useAppSelector(selectImprintUrl);
   const dataProtectionUrl = useAppSelector(selectDataProtectionUrl);
   const helpdeskUrl = useAppSelector(selectHelpdeskUrl);

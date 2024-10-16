@@ -1,16 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  Container as MuiContainer,
-  Grid,
-  Paper,
-  Skeleton,
-  Stack,
-  styled,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { Container as MuiContainer, Grid, Paper, Skeleton, Stack, styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import React, { useState } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
@@ -19,6 +10,7 @@ import { HomeIcon, SettingsIcon, MeetingsIcon, MyAccountIcon, LegalLinksIcon, He
 import { ReactComponent as Logo } from '../assets/images/logoGradient.svg';
 import DashboardNavigation, { PrimaryRoute } from '../components/DashboardNavigation';
 import { useAppSelector } from '../hooks';
+import { useIsDesktop } from '../hooks/useMediaQuery';
 import { selectIsProviderActive } from '../store/slices/configSlice';
 import BrowserCompatibilityInfo from './fragments/BrowserCompatibilityInfo';
 
@@ -165,8 +157,7 @@ const getRoutes = (useProviderSettings: boolean) => {
 const DashboardTemplate = () => {
   const [header, setHeader] = useState<React.ReactNode>();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDesktop = useIsDesktop();
   const isProviderActive = useAppSelector(selectIsProviderActive);
 
   if (!isAuthenticated) {

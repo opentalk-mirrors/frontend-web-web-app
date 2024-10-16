@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Collapse as CollapseMui, styled, useMediaQuery, useTheme } from '@mui/material';
+import { Collapse as CollapseMui, styled } from '@mui/material';
 import { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { useIsMobile } from '../../hooks/useMediaQuery';
 import MobileHeadbar from './fragments/MobileHeadbar';
 import PrimaryNavigation from './fragments/PrimaryNavigation';
 import { PrimaryRoute } from './fragments/PrimaryNavigationList';
@@ -59,8 +60,7 @@ const DashboardNavigation = ({ routes }: DashboardProps) => {
   const { pathname } = useLocation();
   const [activeNavbar, setActiveNavbar] = useState<boolean>(false);
   const [secondaryRoutes, setSecondaryRoutes] = useState<SecondaryRoute[] | undefined>();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   const activeMenu = useMemo(() => {

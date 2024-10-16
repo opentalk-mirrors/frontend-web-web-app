@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Container, Stack, Tooltip, Typography, styled, useMediaQuery, useTheme } from '@mui/material';
+import { Container, Stack, Tooltip, Typography, styled, useTheme } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { LocalAudioTrack } from 'livekit-client';
 import { ReactNode, useEffect, useRef, useState } from 'react';
@@ -14,6 +14,7 @@ import arrowImage from '../../assets/images/arrow-illustration.png';
 import { CircularIconButton } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
+import { useIsMobile } from '../../hooks/useMediaQuery';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useMediaChoices } from '../../provider/MediaChoicesProvider';
 import { selectFeatures } from '../../store/slices/configSlice';
@@ -95,7 +96,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const mediaChoices = useMediaChoices();
   const navigateToHome = useNavigateToHome();
   const inviteCode = useInviteCode();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useIsMobile();
   const [localAudioTrack, setLocalAudioTrack] = useState<LocalAudioTrack | undefined>();
   const [mounted, setMounted] = useState(false);
   const { joinWithoutMedia } = useAppSelector(selectFeatures);

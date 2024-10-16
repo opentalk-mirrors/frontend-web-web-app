@@ -1,18 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  Button,
-  Grid,
-  List,
-  ListItem,
-  Skeleton,
-  Stack,
-  styled,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { Button, Grid, List, ListItem, Skeleton, Stack, styled, Typography } from '@mui/material';
 import { DateTime, Event, EventException, RoomId } from '@opentalk/rest-api-rtk-query';
 import { formatRFC3339 } from 'date-fns';
 import { isEmpty } from 'lodash';
@@ -26,6 +15,7 @@ import FavoriteMeetingsCard, { FavoriteMeetingProps } from '../../../components/
 import { default as DefaultJoinMeetingDialog } from '../../../components/JoinMeetingDialog';
 import MeetingCard from '../../../components/MeetingCard';
 import StartMeetingImage from '../../../components/StartMeetingImage';
+import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import { useHeader } from '../../../templates/DashboardTemplate';
 import { appendRecurringEventInstances, TimePerspectiveFilter } from '../../../utils/eventUtils';
@@ -88,8 +78,7 @@ const Home = () => {
     adhoc: false,
     timeIndependent: true,
   });
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDesktop = useIsDesktop();
 
   useEffect(() => {
     setHeader(<BannerContainer />);
