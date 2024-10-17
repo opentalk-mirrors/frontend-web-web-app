@@ -8,6 +8,7 @@ messages = Nachrichten
 dismiss = Verwerfen
 action-delete = löschen
 action-download = Download
+download-in-progress = Download läuft
 global-calendar-week = KW
 global-error = Fehler
 global-upgrade = Upgrade

@@ -9,7 +9,7 @@ import { useGetRoomAssetsQuery, useDeleteRoomAssetMutation } from '../../../../a
 import { notifications } from '../../../../commonComponents';
 import SuspenseLoading from '../../../../commonComponents/SuspenseLoading/SuspenseLoading';
 import AssetTable from '../../../../components/AssetTable';
-import { useDownloadAction } from '../../../../hooks/download';
+import { useDownloadRoomAsset, AssetDownloadBaseInfo } from '../../../../hooks/useDownloadRoomAsset';
 import { checkAssetPredicate, RecurrenceInstance } from '../../../../utils/eventUtils';
 
 interface RoomAssetTableProps {
@@ -22,7 +22,7 @@ const RoomAssetTable = ({ roomId, isMeetingCreator, recurrenceInstance }: RoomAs
   const { t } = useTranslation();
   const { data: assets, isLoading, isError } = useGetRoomAssetsQuery(roomId, { refetchOnMountOrArgChange: true });
   const [deleteRoomAsset] = useDeleteRoomAssetMutation();
-  const downloadRoomAsset = useDownloadAction();
+  const downloadRoomAsset = useDownloadRoomAsset();
 
   const filteredAssets = useMemo(() => {
     if (!recurrenceInstance) {
@@ -32,8 +32,8 @@ const RoomAssetTable = ({ roomId, isMeetingCreator, recurrenceInstance }: RoomAs
     return assets?.filter((asset) => checkAssetPredicate(asset.createdAt, recurrenceInstance));
   }, [assets]);
 
-  const handleDownload = async (assetId: AssetId, filename: string) => {
-    return downloadRoomAsset(roomId, assetId, filename);
+  const handleDownload = async ({ assetId, filename, fileSize, updateDownloadProgress }: AssetDownloadBaseInfo) => {
+    return downloadRoomAsset({ roomId, assetId, filename, fileSize, updateDownloadProgress });
   };
 
   const handleDelete = async (assetId: AssetId) => {
