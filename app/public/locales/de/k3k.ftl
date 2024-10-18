@@ -777,13 +777,15 @@ dashboard-recurrence-meeting-card-delete-dialog-cancel = Abbrechen
 dashboard-meeting-card-delete-offline-failure = Leider kann die Aktion nicht durchgeführt werden, derzeit ist keine Verbindung zu OpenTalk möglich. Bitte versuchen Sie es später noch einmal.
 
 dashboard-create-meeting-dialog-title = Bitte bestätigen
-dashboard-create-meeting-dialog-message = Sie haben bereits ein Meeting in der angegebenen Zeit: <eventTitle>{$eventTitle} <eventTime>{$eventTime}</eventTime></eventTitle> Möchten Sie dieses Meeting dennoch erstellen?
-dashboard-update-meeting-dialog-message = Sie haben bereits ein Meeting in der angegebenen Zeit: <eventTitle>{$eventTitle} <eventTime>{$eventTime}</eventTime></eventTitle> Möchten Sie dieses Meeting bearbeiten?
+dashboard-create-or-update-meeting-dialog-message = Sie haben bereits ein Meeting in der angegebenen Zeit:
+dashboard-create-meeting-dialog-prompt = Möchten Sie dieses Meeting dennoch erstellen?
+dashboard-update-meeting-dialog-prompt = Möchten Sie dieses Meeting bearbeiten?
 dashboard-create-meeting-dialog-ok = Erstellen
 dashboard-update-meeting-dialog-ok = Bearbeiten
 dashboard-create-meeting-dialog-cancel = Abbrechen
 
 dashboard-direct-meeting-title = Wen möchtest du zu deinem Meeting einladen?
+dashboard-direct-meeting-attention = Hinweis: Dies ist ein Adhoc meeting, diese werden nach 24h automatisch gelöscht und sind im Dashboard nicht sichtbar.
 dashboard-direct-meeting-label-select-participants = Teilnehmer einladen - Max. {maxParticipants} Teilnehmer pro Meeting, inkl. Ihnen
 dashboard-direct-meeting-label-select-participants-fallback = Teilnehmer einladen
 dashboard-direct-meeting-button-cancel = Abbrechen
@@ -830,7 +832,7 @@ dashboard-events-filter-by-invites = Nur Einladungen anzeigen
 dashboard-events-filter-by-favorites = Nur Favoriten anzeigen
 dashboard-events-search = Suchen
 dashboard-events-note-limited-view = Hinweis: Sie haben wiederkehrende Meetings in Ihrer Liste, wir haben die Ansicht zeitlich eingeschränkt.
-dashboard-adhoc-meeting-attention = Hinweis: Dies ist ein Adhoc meeting, diese werden nach 24h automatisch gelöscht und sind im Dashboard nicht sichtbar.
+
 
 dashbooard-event-accept-invitation-notification = Einladung für das Meeting {meetingTitle} akzeptiert
 dashbooard-event-decline-invitation-notification = Einladung für das Meeting {meetingTitle} abgelehnt

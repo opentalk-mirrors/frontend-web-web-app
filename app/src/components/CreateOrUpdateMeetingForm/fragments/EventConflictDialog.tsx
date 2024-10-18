@@ -4,7 +4,7 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
 import { RecurringEvent, SingleEvent } from '@opentalk/rest-api-rtk-query';
 import { truncate } from 'lodash';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../../assets/icons';
 import { formatDate } from '../../../utils/timeFormatUtils';
@@ -34,14 +34,12 @@ export const EventConflictDialog = ({ onConfirm, onCancel, event, isUpdate }: Ev
         </IconButton>
       </Box>
       <DialogContent>
-        <Trans
-          i18nKey={`dashboard-${isUpdate ? 'update' : 'create'}-meeting-dialog-message`}
-          values={{ eventTitle, eventTime }}
-          components={{
-            eventTitle: <Typography variant="h1" mb={2} mt={2} />,
-            eventTime: <Typography component="span" variant="h6" />,
-          }}
-        />
+        <Typography mb={1}>{t('dashboard-create-or-update-meeting-dialog-message')}</Typography>
+        <Typography component="span" variant="h1" ml={0}>
+          {eventTitle}{' '}
+        </Typography>
+        <Typography component="span">{eventTime}</Typography>
+        <Typography mt={1}>{t(`dashboard-${isUpdate ? 'update' : 'create'}-meeting-dialog-prompt`)}</Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={onConfirm} color="primary" variant="contained">

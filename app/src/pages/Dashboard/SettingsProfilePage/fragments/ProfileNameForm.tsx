@@ -59,7 +59,9 @@ const ProfileNameForm = () => {
             />
           </Grid>
           <Grid item>
-            <Typography variant="caption">{t('dashboard-settings-profile-input-hint')}</Typography>
+            <Typography variant="caption" component="p">
+              {t('dashboard-settings-profile-input-hint')}
+            </Typography>
           </Grid>
         </Grid>
         <Grid item>

@@ -77,7 +77,7 @@ const CreateDirectMeeting = () => {
     <Container>
       <Stack>
         <Typography variant="h1">{pageHeading}</Typography>
-        <AttentionMessageTypography>{t('dashboard-adhoc-meeting-attention')}</AttentionMessageTypography>
+        <AttentionMessageTypography>{t('dashboard-direct-meeting-attention')}</AttentionMessageTypography>
       </Stack>
       <InviteToMeeting
         isUpdatable={true}
