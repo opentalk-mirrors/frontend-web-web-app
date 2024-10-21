@@ -7,10 +7,12 @@ import { Event } from '@sentry/react';
 import { RootState } from '../';
 import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
+import { MenuTab } from '../../components/MenuTabs/fragments/TabPanel';
 import { ModerationTabKey } from '../../config/moderationTabs';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ChatScope, LegalVoteId, ParticipantId, PollId, SortOption, TargetId, TimerStyle } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
+import { started as automodStarted } from './automodSlice';
 import { started as legalVoteStarted } from './legalVoteSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { breakoutLeft, leave } from './participantsSlice';
@@ -63,6 +65,7 @@ interface UIState {
   haveSeenMobilePollsAndVotes: boolean;
   isDrawerOpen: boolean;
   gridViewOrder: GridViewOrder;
+  currentMenuTab: MenuTab;
 }
 
 const initialState: UIState = {
@@ -100,6 +103,7 @@ const initialState: UIState = {
   haveSeenMobilePollsAndVotes: false,
   isDrawerOpen: false,
   gridViewOrder: GridViewOrder.FirstJoined,
+  currentMenuTab: MenuTab.Chat,
 };
 
 export const uiSlice = createSlice({
@@ -196,6 +200,9 @@ export const uiSlice = createSlice({
     setIsDrawerOpen: (state, { payload }) => {
       state.isDrawerOpen = payload;
     },
+    setCurrentMenuTab: (state, { payload }: PayloadAction<MenuTab>) => {
+      state.currentMenuTab = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(leave, (state, { payload: { id } }: PayloadAction<{ id: ParticipantId }>) => {
@@ -255,6 +262,9 @@ export const uiSlice = createSlice({
         state.showCoffeeBreakCurtain = true;
       }
     });
+    builder.addCase(automodStarted, (state) => {
+      state.currentMenuTab = MenuTab.People;
+    });
   },
 });
 
@@ -282,6 +292,7 @@ export const {
   setShowErrorDialog,
   setIsDrawerOpen,
   updatedGridViewOrder,
+  setCurrentMenuTab,
 } = uiSlice.actions;
 
 export const actions = uiSlice.actions;
@@ -323,5 +334,6 @@ export const selectErrorDialogEvent = (state: RootState) => state.ui.errorDialog
 export const selectHaveSeenMobilePollsAndVotes = (state: RootState) => state.ui.haveSeenMobilePollsAndVotes;
 export const selectIsDrawerOpen = (state: RootState) => state.ui.isDrawerOpen;
 export const selectGridViewOrder = (state: RootState) => state.ui.gridViewOrder;
+export const selectCurrentMenuTab = (state: RootState) => state.ui.currentMenuTab;
 
 export default uiSlice.reducer;

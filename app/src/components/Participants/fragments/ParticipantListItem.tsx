@@ -46,9 +46,14 @@ import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { IconButton, ParticipantAvatar, notifications } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectHandUp } from '../../../store/slices/moderationSlice';
-import { chatConversationStateSet, selectParticipantsSortOption } from '../../../store/slices/uiSlice';
+import {
+  chatConversationStateSet,
+  selectParticipantsSortOption,
+  setCurrentMenuTab,
+} from '../../../store/slices/uiSlice';
 import { selectIsModerator, selectOurUuid, selectUserMeetingNotesAccess } from '../../../store/slices/userSlice';
 import { ChatScope, MeetingNotesAccess, Participant, ParticipationKind, SortOption } from '../../../types';
+import { MenuTab } from '../../MenuTabs/fragments/TabPanel';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../Toolbar/fragments/ShareScreenButton';
 import MenuPopover, { IMenuOptionItem } from './MenuPopover';
 import RenameParticipantDialog from './RenameParticipantDialog';
@@ -268,13 +273,17 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   const participantMenuOptionItems: IMenuOptionItem[] = [
     {
       i18nKey: 'participant-menu-send-message',
-      action: () =>
-        dispatch(
-          chatConversationStateSet({
-            scope: ChatScope.Private,
-            targetId: participant.id,
-          })
-        ),
+      action: () => {
+        batch(() => {
+          dispatch(
+            chatConversationStateSet({
+              scope: ChatScope.Private,
+              targetId: participant.id,
+            })
+          );
+          dispatch(setCurrentMenuTab(MenuTab.Messages));
+        });
+      },
     },
   ];
 
