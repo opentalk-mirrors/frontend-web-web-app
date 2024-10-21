@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improvements to the user experience
 
+- Make security monitor in the conference accessible ([#2084](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2084))
 - Change incorrectly used paragraphs to appropriate headings in meeting create/update/detail page ([#2097](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2097))
 - A11y: Wrap paragraphs in html p tag ([#2107](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2107))
 - Add missing aria attributes to the meetings expand/collapse list elements ([#2076](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2076))
