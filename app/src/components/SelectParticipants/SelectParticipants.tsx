@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Autocomplete, CircularProgress, InputAdornment, TextField, UseAutocompleteProps, styled } from '@mui/material';
+import { Autocomplete, CircularProgress, InputAdornment, TextField, styled } from '@mui/material';
 import { EventId, EventInvite } from '@opentalk/rest-api-rtk-query';
 import { debounce, differenceBy } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGetEventInvitesQuery, useGetMeQuery, useLazyFindUsersQuery } from '../../api/rest';
@@ -19,9 +19,8 @@ type SelectParticipantsProps = {
   label?: string;
   placeholder?: string;
   invitees?: Array<EventInvite>;
-  resetSelected?: boolean;
   selectedUsers?: Array<ParticipantOption>;
-  onChange: (selected: Array<ParticipantOption>) => void;
+  onParticipantSelect: (selectedUser: ParticipantOption) => void;
   eventId: EventId;
 };
 
@@ -36,10 +35,9 @@ const AutocompleteTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const SelectParticipants = ({
-  onChange,
+  onParticipantSelect,
   label,
   placeholder,
-  resetSelected,
   selectedUsers = [],
   eventId,
 }: SelectParticipantsProps) => {
@@ -89,34 +87,9 @@ const SelectParticipants = ({
     [debounceFindUsers]
   );
 
-  useEffect(() => {
-    resetSelected && onChange([]);
-  }, [resetSelected, onChange]);
-
-  const addSelectedUser = useCallback(
-    (user: ParticipantOption) => {
-      if (user) {
-        onChange([...selectedUsers, user]);
-      }
-      setSearchValue('');
-    },
-    [onChange, selectedUsers]
-  );
-
-  const onAutocompleteChange: UseAutocompleteProps<ParticipantOption, undefined, undefined, undefined>['onChange'] = (
-    _event,
-    value
-  ) => {
-    if (value) {
-      addSelectedUser(value);
-    }
-  };
-
-  const onInputChange: UseAutocompleteProps<ParticipantOption, undefined, undefined, undefined>['onInputChange'] = (
-    _event,
-    value
-  ) => {
-    searchEntryHandler(value || '');
+  const handleSelect = (selectedUser: ParticipantOption) => {
+    onParticipantSelect(selectedUser);
+    setSearchValue('');
   };
 
   const emailSuggestion = useMemo(() => {
@@ -131,6 +104,8 @@ const SelectParticipants = ({
     return [];
   }, [searchValue, selectedUsers, invitees]);
 
+  //Autocomplete's native behavior is like <select> where on click it sets the element as the input text.
+  //We manually override that with value={null} and using the local searchValue as the input text, which is cleared after each selection.
   return (
     <Autocomplete
       data-testid="SelectParticipants"
@@ -150,8 +125,8 @@ const SelectParticipants = ({
       inputValue={searchValue || ''}
       value={null}
       clearOnEscape={true}
-      onChange={onAutocompleteChange}
-      onInputChange={onInputChange}
+      onChange={(_, value) => value && handleSelect(value)}
+      onInputChange={(_, value) => searchEntryHandler(value || '')}
       noOptionsText={t('global-no-result')}
       loading={isLoading}
       open={!isLoading && (suggestedParticipants.length !== 0 || searchValue.length > 2)}
@@ -166,7 +141,6 @@ const SelectParticipants = ({
             startAdornment: (
               <InputAdornment position="start">
                 <SearchIcon aria-label={t('dashboard-select-participants-label-search')}>
-                  bla
                   <CopyIcon />
                 </SearchIcon>
               </InputAdornment>

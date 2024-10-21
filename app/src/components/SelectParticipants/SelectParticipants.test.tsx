@@ -39,7 +39,10 @@ describe('SelectParticipants', () => {
   const { store } = configureStore();
 
   beforeEach(async () => {
-    await render(<SelectParticipants label="Test" onChange={mockOnChange} eventId={'id' as EventId} />, store);
+    await render(
+      <SelectParticipants label="Test" onParticipantSelect={mockOnChange} eventId={'id' as EventId} />,
+      store
+    );
   });
 
   afterEach(() => cleanup());
