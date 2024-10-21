@@ -46,7 +46,6 @@ const DateTimePicker = ({
   clearable = false,
   clearButtonLabel = 'Clear',
   okButtonLabel = 'OK',
-  cancelButtonLabel = 'Cancel',
   ampm = false,
   error,
   textField,
@@ -91,12 +90,8 @@ const DateTimePicker = ({
 
   const actions: PickersActionBarAction[] = clearable ? ['clear', 'accept', 'cancel'] : ['accept', 'cancel'];
 
-  const actionButtonLabels: Pick<
-    PickersLocaleText<Date>,
-    'okButtonLabel' | 'cancelButtonLabel' | 'clearButtonLabel'
-  > = {
+  const actionButtonLabels: Pick<PickersLocaleText<Date>, 'okButtonLabel' | 'clearButtonLabel'> = {
     okButtonLabel,
-    cancelButtonLabel,
     clearButtonLabel,
   };
 
