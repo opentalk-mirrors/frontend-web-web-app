@@ -5,6 +5,7 @@ import { login } from '@opentalk/redux-oidc';
 import { Namespaces, StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import { AnyAction, Middleware, freeze } from '@reduxjs/toolkit';
 import i18next from 'i18next';
+import { kebabCase } from 'lodash';
 
 import {
   createStackedMessages,
@@ -458,6 +459,14 @@ const handleControlMessage = async (
     case 'room_deleted': {
       break;
     }
+    case 'moderator_role_granted':
+    case 'moderator_role_revoked': {
+      const { displayName } = state.participants.entities[data.target] || {};
+      notifications[data.message === 'moderator_role_granted' ? 'info' : 'warning'](
+        i18n.t(kebabCase(data.message), { displayName })
+      );
+      break;
+    }
     default: {
       const dataString = JSON.stringify(data, null, 2);
       console.error(`Unknown control message type: ${dataString}`);
@@ -470,8 +479,17 @@ const handleControlMessage = async (
  * @param dispatch AppDispatch function
  * @param data mediaMsgs Message content
  */
-const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message) => {
+const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, state: RootState) => {
   switch (data.message) {
+    case 'presenter_role_granted':
+    case 'presenter_role_revoked': {
+      const [participantId] = data.participantIds;
+      const { displayName } = state.participants.entities[participantId] || {};
+      notifications[data.message === 'presenter_role_granted' ? 'info' : 'warning'](
+        i18n.t(kebabCase(data.message), { displayName })
+      );
+      break;
+    }
     case 'error': {
       const error = data.error;
       switch (error) {
@@ -1126,7 +1144,7 @@ const onMessage =
         handleBreakoutMessage(dispatch, getState(), message.payload, message.timestamp);
         break;
       case 'media':
-        handleMediaMessage(dispatch, message.payload).catch((e) => {
+        handleMediaMessage(dispatch, message.payload, getState()).catch((e) => {
           console.error('Error in handleMediaMessage:', e);
         });
         break;

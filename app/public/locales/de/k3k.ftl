@@ -160,6 +160,10 @@ encrypted-messages = Dies ist der Anfang Ihres Chatverlaufs. Niemand hat Zugriff
 
 moderation-rights-granted = Ihnen wurden die Moderatorenrechte gewährt
 moderation-rights-revoked = Ihnen wurden die Moderatorenrechte entzogen
+moderator-role-granted = Sie haben { $displayName } Moderatorenrechte gegeben
+moderator-role-revoked = Sie haben { $displayName } die Moderatorenrechte entzogen
+presenter-role-granted = Sie haben { $displayName } die Rolle des Präsentators gegeben
+presenter-role-revoked = Sie haben { $displayName } die Rolle des Präsentators entzogen
 
 sort-label = Reihenfolge
 sort-by = Sortierung nach
