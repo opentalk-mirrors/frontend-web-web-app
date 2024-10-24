@@ -67,6 +67,7 @@ const EndOptionLabel = styled(CommonLabel)(({ theme }) => ({
 }));
 
 const RECURRING_DIALOG_LABEL_ID = 'recurrence-dialog-title';
+const DEFAULT_INTERVAL = 1;
 
 export const RecurringEventDialog = ({
   open,
@@ -104,7 +105,7 @@ export const RecurringEventDialog = ({
           freq: initialRRuleObject.options.freq,
           byweekday: initialRRuleObject.options.byweekday,
         }
-      : { freq: RRule.DAILY, interval: 1 }
+      : { freq: RRule.DAILY, interval: DEFAULT_INTERVAL }
   );
 
   /**
@@ -164,6 +165,8 @@ export const RecurringEventDialog = ({
     closeDialog();
   };
 
+  const interval: number = rruleObject.interval ?? DEFAULT_INTERVAL;
+
   return (
     <Dialog
       {...props}
@@ -185,7 +188,7 @@ export const RecurringEventDialog = ({
               <Grid item sm="auto">
                 <NumberInput
                   type="number"
-                  value={rruleObject.interval?.toString()}
+                  value={interval.toString()}
                   onChange={handleIntervalChange}
                   inputProps={{ min: 1 }}
                 />
@@ -199,7 +202,7 @@ export const RecurringEventDialog = ({
                       onClick={() => handleFrequencySelect(entry.value)}
                     >
                       {t(`dashboard-recurrence-dialog-frequency-${entry.translationKey}`, {
-                        count: rruleObject.interval,
+                        count: interval,
                       })}
                     </MenuItem>
                   ))}
