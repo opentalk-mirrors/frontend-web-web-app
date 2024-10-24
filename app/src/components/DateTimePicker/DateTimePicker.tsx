@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { ErrorFormMessage } from '../../commonComponents';
 import PickerLocalizationProvider from '../../provider/PickerLocalizationProvider';
 import { IFormikDateTimePickerPropsReturnValue } from '../../utils/formikUtils';
+import { generateUniqueId } from '../../utils/stringUtils';
 
 type PickerTextFieldProps = {
   placeholder?: string;
@@ -30,7 +31,7 @@ type DateTimePickerProps = {
   textField?: PickerTextFieldProps;
 } & Pick<IFormikDateTimePickerPropsReturnValue, 'onChange' | 'helperText' | 'error'>;
 
-const StartAdornmentTypography = styled(Typography)(({ theme }) => ({
+const StartAdornmentTypography = styled(Typography)<{ component?: string; htmlFor?: string }>(({ theme }) => ({
   paddingRight: theme.spacing(2),
   flex: '1',
   display: 'block',
@@ -58,6 +59,7 @@ const DateTimePicker = ({
     return query;
   });
   const theme = useTheme();
+  const inputId = generateUniqueId();
 
   // There are cases, when the screen height is too small to fit the popper of the desktop variant
   // Therefore we need an offset for the popper relativ to it's anchor
@@ -108,7 +110,11 @@ const DateTimePicker = ({
   // as adornment for input fields of the picker we want to have just text (no icons or such)
   const getStartAdornment = () => {
     if (startAdornment) {
-      return <StartAdornmentTypography>{startAdornment}</StartAdornmentTypography>;
+      return (
+        <StartAdornmentTypography variant="body1" component="label" htmlFor={inputId}>
+          {startAdornment}
+        </StartAdornmentTypography>
+      );
     }
     return null;
   };
@@ -134,7 +140,7 @@ const DateTimePicker = ({
               fullWidth,
               onFocus,
               onBlur,
-              InputProps: { startAdornment: getStartAdornment() },
+              InputProps: { startAdornment: getStartAdornment(), id: inputId },
             },
             actionBar: { actions },
             popper: { placement: 'bottom-start', modifiers: [getOffsetModifier()] },
