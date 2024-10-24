@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Typography, Stack, IconButton, Box, useTheme, Skeleton } from '@mui/material';
+import { styled, Typography, Stack, IconButton, Box, useTheme, Skeleton, List, ListItem } from '@mui/material';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
@@ -151,13 +151,16 @@ const EventsOverview = ({
                 <Typography>{entry.title}</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                {entry.events?.map((event) => (
-                  <MeetingCard
-                    key={`${isTimelessEvent(event) ? event.id : event.id + event.startsAt?.datetime}`}
-                    event={event}
-                    overview
-                  />
-                ))}
+                <List>
+                  {entry.events?.map((event) => (
+                    <ListItem
+                      key={`${isTimelessEvent(event) ? event.id : event.id + event.startsAt?.datetime}`}
+                      disableGutters
+                    >
+                      <MeetingCard event={event} overview />
+                    </ListItem>
+                  ))}
+                </List>
               </AccordionDetails>
             </Accordion>
           );

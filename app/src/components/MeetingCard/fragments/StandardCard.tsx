@@ -10,6 +10,7 @@ import EventTimePreview from '../../EventTimePreview';
 import MeetingPopover, { MeetingCardFragmentProps } from './MeetingPopover';
 
 const CardWrapper = styled('div')(({ theme }) => ({
+  width: '100%',
   background: theme.palette.background.paper,
   borderRadius: theme.borderRadius ? theme.borderRadius.medium : 0,
   padding: theme.spacing(3),

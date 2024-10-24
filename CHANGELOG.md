@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improvements to the user experience
 
+- Change div structure to list element in meeting overview ([#2100](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2100))
 - Change favorite meetings on home page from div to list for screen readers ([#2099](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2099))
 - Make security monitor in the conference accessible ([#2084](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2084))
 - Change incorrectly used paragraphs to appropriate headings in meeting create/update/detail page ([#2097](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2097))
