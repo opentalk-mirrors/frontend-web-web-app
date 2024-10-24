@@ -47,7 +47,7 @@ import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { IconButton, ParticipantAvatar, notifications } from '../../../commonComponents';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectModules } from '../../../store/slices/configSlice';
+import { selectEnabledModulesList } from '../../../store/slices/configSlice';
 import { selectHandUp } from '../../../store/slices/moderationSlice';
 import {
   selectIsWhisperActive,
@@ -164,7 +164,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   const ownHandRaised = useAppSelector(selectHandUp);
   const whisperRoomParticipants = useAppSelector(selectSubroomAudioParticipants);
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
-  const subroomAudioEnabled = useAppSelector(selectModules).subroomAudio;
+  const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).subroomAudio;
 
   const selectedParticipant = useRemoteParticipant(participant.id);
   const selectedParticipantCanPublishScreenShare =

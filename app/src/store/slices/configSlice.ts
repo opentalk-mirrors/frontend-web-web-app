@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { BackendFeatures, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
 import { RootState } from '../';
@@ -201,7 +201,6 @@ export const initialState: ConfigState = {
     id: '' as TariffId,
     name: '',
     quotas: {},
-    enabledModules: [],
     modules: {},
   },
   glitchtip: {
@@ -250,8 +249,9 @@ export const selectLivekitE2EESalt = (state: RootState) => state.config.livekit?
 export const selectErrorReportEmail = (state: RootState) => state.config.errorReportAddress;
 export const selectDisallowCustomDisplayName = (state: RootState) => state.config.disallowCustomDisplayName;
 export const selectChangePassword = (state: RootState) => state.config.changePassword;
-export const selectEnabledModules = (state: RootState) => state.config.tariff.enabledModules;
-export const selectModules = (state: RootState) => state.config.tariff.modules;
+export const selectEnabledModulesList = (state: RootState) => state.config.tariff.modules;
+export const selectIsFeatureEnabled = (featureKey: BackendFeatures) => (state: RootState) =>
+  Object.values(state.config.tariff.modules).some((module) => module?.features.includes(featureKey));
 export const selectAccountManagementUrl = (state: RootState) => state.config.provider.accountManagementUrl;
 export const selectImprintUrl = (state: RootState) => state.config.imprintUrl;
 export const selectIsProviderActive = (state: RootState) => state.config.provider.active;

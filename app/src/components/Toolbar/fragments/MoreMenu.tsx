@@ -11,7 +11,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { BackendModules, StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import { StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -48,9 +48,9 @@ import {
   notifications,
 } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useEnabledModules } from '../../../hooks/enabledModules';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
+import { selectIsFeatureEnabled } from '../../../store/slices/configSlice';
 import { selectMicrophonesEnabled, selectRaiseHandsEnabled } from '../../../store/slices/moderationSlice';
 import { selectWaitingRoomState } from '../../../store/slices/roomSlice';
 import {
@@ -84,8 +84,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const recording = useAppSelector(selectRecordingTarget);
   const activeStreamIds = useAppSelector(selectActiveStreamIds);
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
-  const enabledModules = useEnabledModules();
-  const hasRecordingFeatureOn = enabledModules.has(BackendModules.Recording);
+  const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled('record'));
   const fullscreenHandle = useFullscreenContext();
 
   const toggleWaitingRoomItem = isWaitingRoomActive
