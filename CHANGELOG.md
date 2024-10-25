@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improvements to the user experience
 
+- Add missing labels on lobby input fields ([#2085](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2085))
 - Change datepicker label from paragraph to label tag ([#2105](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2105))
 - Change div structure to list element in meeting overview ([#2100](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2100))
 - Change favorite meetings on home page from div to list for screen readers ([#2099](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2099))

@@ -355,7 +355,7 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               backgroundColor: mode === 'light' ? theme.palette.background.paper : theme.palette.secondary.lighter,
               color: theme.palette.primary.contrastText,
               padding: theme.spacing(0.2, 1),
-              borderRadius: '0.3rem',
+              borderRadius: theme.borderRadius.small,
             },
           }),
         },

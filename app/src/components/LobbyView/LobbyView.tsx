@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Container, IconButton, InputAdornment, Grid, styled } from '@mui/material';
+import { Button, Container, IconButton, InputAdornment, Grid, styled, ThemeProvider } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
@@ -15,7 +15,8 @@ import * as yup from 'yup';
 
 import { ApiErrorWithBody, StartRoomError, useGetMeQuery, useGetRoomEventInfoQuery } from '../../api/rest';
 import { HiddenIcon, VisibleIcon } from '../../assets/icons';
-import { CommonTextField, notifications } from '../../commonComponents';
+import { createOpenTalkTheme } from '../../assets/themes/opentalk';
+import { CommonTextField as DefaultCommonTextField, notifications } from '../../commonComponents';
 import SuspenseLoading from '../../commonComponents/SuspenseLoading/SuspenseLoading';
 import Error from '../../components/Error';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -39,6 +40,23 @@ import { ContitionalToolTip } from '../ConditionalToolTip/ContitionalToolTip';
 import ImprintContainer from '../ImprintContainer';
 import { useMediaContext } from '../MediaProvider';
 import SelfTest from '../SelfTest';
+
+const CommonTextField = styled(DefaultCommonTextField)(({ theme }) => ({
+  '& .MuiInputBase-root': {
+    '&:not(&.Mui-focused)': {
+      backgroundColor: theme.palette.text.primary,
+    },
+  },
+  '& .MuiInputLabel-root': {
+    color: theme.palette.secondary.contrastText,
+    '&.Mui-error': {
+      color: theme.palette.text.secondary,
+    },
+  },
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: theme.palette.text.primary,
+  },
+}));
 
 const CustomTextField = styled(CommonTextField)(({ theme }) => ({
   '& .MuiInputBase-input.Mui-disabled': {
@@ -229,59 +247,61 @@ const LobbyView: FC = () => {
           }
           title={roomData?.title}
         >
-          <Grid
-            container
-            item
-            spacing={1}
-            justifyContent="center"
-            flexWrap="nowrap"
-            direction="row"
-            sm={12}
-            md="auto"
-            component="form"
-            id={JOIN_FORM_ID}
-            onSubmit={formik.handleSubmit}
-          >
-            <Grid item sm={6} md="auto">
-              <ContitionalToolTip
-                showToolTip={Boolean(disableDisplayNameField)}
-                title={t('joinform-display-name-field-disabled-tooltip')}
-                children={
-                  <CustomTextField
-                    {...formikProps('name', formik)}
-                    color="secondary"
-                    placeholder={t('global-name')}
-                    autoComplete="username"
-                    disabled={disableDisplayNameField}
-                  />
-                }
-              />
-            </Grid>
-            {showPasswordField && (
+          <ThemeProvider theme={createOpenTalkTheme('dark')}>
+            <Grid
+              container
+              item
+              spacing={1}
+              justifyContent="center"
+              flexWrap="nowrap"
+              direction="row"
+              sm={12}
+              md="auto"
+              component="form"
+              id={JOIN_FORM_ID}
+              onSubmit={formik.handleSubmit}
+            >
               <Grid item sm={6} md="auto">
-                <CommonTextField
-                  {...formikProps('password', formik)}
-                  color="secondary"
-                  placeholder={t('global-password')}
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label={t('toggle-password-visibility')}
-                          onClick={handleClickShowPassword}
-                          edge="end"
-                        >
-                          {!showPassword ? <VisibleIcon /> : <HiddenIcon />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
+                <ContitionalToolTip
+                  showToolTip={Boolean(disableDisplayNameField)}
+                  title={t('joinform-display-name-field-disabled-tooltip')}
+                  children={
+                    <CustomTextField
+                      {...formikProps('name', formik)}
+                      label={t('global-name')}
+                      placeholder={t('lobby-name-placeholder')}
+                      autoComplete="username"
+                      disabled={disableDisplayNameField}
+                    />
+                  }
                 />
               </Grid>
-            )}
-          </Grid>
+              {showPasswordField && (
+                <Grid item sm={6} md="auto">
+                  <CommonTextField
+                    {...formikProps('password', formik)}
+                    label={t('global-password')}
+                    placeholder={t('lobby-password-placeholder')}
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label={t('toggle-password-visibility')}
+                            onClick={handleClickShowPassword}
+                            edge="end"
+                          >
+                            {!showPassword ? <VisibleIcon /> : <HiddenIcon />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+              )}
+            </Grid>
+          </ThemeProvider>
         </SelfTest>
       </Container>
       <ImprintContainer />
