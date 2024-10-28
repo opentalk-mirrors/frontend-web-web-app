@@ -23,12 +23,14 @@ import { selectIsModerator } from '../../../../store/slices/userSlice';
 import { DrawerButton } from './DrawerButton';
 import DrawerTab from './DrawerTab';
 
-const DrawerContentContainer = styled(Stack)(({ theme }) => ({
+const DrawerContentContainer = styled(Stack)<{ component?: string }>(({ theme }) => ({
   height: '100%',
   width: '100%',
   background: theme.palette.background.video,
   padding: theme.spacing(1, 1),
   overflow: 'auto',
+  marginTop: 'auto',
+  marginBottom: 'auto',
 }));
 
 const StyledDrawer = styled(MuiDrawer)(({ theme }) => ({
@@ -144,7 +146,7 @@ const Drawer = () => {
     <>
       <DrawerButton onClick={toggle} />
       <StyledDrawer open={isDrawerOpen} onClose={close}>
-        <DrawerContentContainer>
+        <DrawerContentContainer component="ul">
           {renderTabs(isModerator ? mobileModerationTabs : mobileParticipantTabs)}
         </DrawerContentContainer>
       </StyledDrawer>
