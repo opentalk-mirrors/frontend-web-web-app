@@ -2,21 +2,21 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  styled,
-  Typography,
-  ThemeProvider,
-  Divider as MuiDivider,
-  MenuList,
-  ListItemIcon,
-  Stack,
   Box,
+  ListItemIcon,
+  MenuList,
+  Divider as MuiDivider,
+  Stack,
+  ThemeProvider,
+  Typography,
+  styled,
 } from '@mui/material';
 import { BackendModules, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { enableChat, disableChat, clearGlobalChatMessages } from '../../../api/types/outgoing/chat';
-import { disableMicrophones, enableMicrophones } from '../../../api/types/outgoing/media';
+import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
+import { disableMicrophoneRestrictions, enableMicrophoneRestrictions } from '../../../api/types/outgoing/livekit';
 import {
   disableRaiseHands,
   disableWaitingRoom,
@@ -56,10 +56,10 @@ import {
   selectInactiveStreamIds,
   selectRecordingTarget,
 } from '../../../store/slices/streamingSlice';
-import { selectIsModerator, selectDisplayName, selectAvatarUrl, selectOurUuid } from '../../../store/slices/userSlice';
+import { selectAvatarUrl, selectDisplayName, selectIsModerator, selectOurUuid } from '../../../store/slices/userSlice';
 import { isDevMode } from '../../../utils/devMode';
 import InviteGuestDialog from './InviteGuestDialog';
-import { ToolbarMenuProps, ToolbarMenuItem, ToolbarMenu } from './ToolbarMenuUtils';
+import { ToolbarMenu, ToolbarMenuItem, ToolbarMenuProps } from './ToolbarMenuUtils';
 
 interface MenuEntry {
   label: string;
@@ -131,7 +131,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           if (participantId) {
             onClose();
             //From product - only moderator that disables the microphones can unmute
-            dispatch(disableMicrophones.action({ allowList: [participantId] }));
+            dispatch(enableMicrophoneRestrictions.action({ unrestrictedParticipants: [participantId] }));
           }
         },
         icon: <MicOffIcon />,
@@ -140,7 +140,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         label: 'more-menu-enable-microphones',
         action: () => {
           onClose();
-          dispatch(enableMicrophones.action());
+          dispatch(disableMicrophoneRestrictions.action());
         },
         icon: <MicOnIcon />,
       };
@@ -258,24 +258,24 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     },
     {
       label: 'Show Test Warning',
-      action: () => notifications.warning(`Ooops...you just triggered a warning.`),
+      action: () => notifications.warning('Ooops...you just triggered a warning.'),
       icon: <ErrorIcon />,
     },
     {
       label: 'Show Test Success',
-      action: () => notifications.info(`This is an info message.`),
+      action: () => notifications.info('This is an info message.'),
       icon: <ErrorIcon />,
     },
     {
       label: 'Show Test Info',
-      action: () => notifications.success(`You just triggered this notification. Success!`),
+      action: () => notifications.success('You just triggered this notification. Success!'),
       icon: <ErrorIcon />,
     },
     {
       label: 'Action Cancel Btn Success',
       action: () =>
         notificationAction({
-          msg: `You just triggered this notification. Success!`,
+          msg: 'You just triggered this notification. Success!',
           variant: 'success',
           cancelBtnText: 'Dismiss',
           onCancel: () => alert('Callback fnc to handle click, Action Cancel Btn Success'),

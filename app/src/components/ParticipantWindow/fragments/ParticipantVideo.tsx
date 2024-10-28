@@ -1,13 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useParticipantContext } from '@livekit/components-react';
 import { Slide, styled } from '@mui/material';
-import { useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import { Track } from 'livekit-client';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAppSelector } from '../../../hooks';
+import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/mediaSlice';
-import { selectSubscriberHasVideoById } from '../../../store/slices/mediaSubscriberSlice';
-import { MediaSessionType, ParticipantId, VideoSetting } from '../../../types';
+import { ParticipantId, VideoSetting } from '../../../types';
 import { AvatarContainer } from './AvatarContainer';
 import { PresenterVideoPosition } from './PresenterOverlay';
 import RemoteVideo from './RemoteVideo';
@@ -24,17 +26,22 @@ interface ParticipantVideoProps {
   participantId: ParticipantId;
   presenterVideoIsActive?: boolean;
   isThumbnail?: boolean;
-  mediaRef: string;
 }
 
-const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail, mediaRef }: ParticipantVideoProps) => {
-  const videoDescriptor = useMemo(() => ({ participantId, mediaType: MediaSessionType.Video }), [participantId]);
-  const screenDescriptor = useMemo(() => ({ participantId, mediaType: MediaSessionType.Screen }), [participantId]);
+const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
+  const participant = useParticipantContext();
+
+  const videoDescriptor = useMemo<MediaDescriptor>(
+    () => ({ participantId, mediaType: Track.Source.Camera }),
+    [participantId]
+  );
+  const screenDescriptor = useMemo<MediaDescriptor>(
+    () => ({ participantId, mediaType: Track.Source.ScreenShare }),
+    [participantId]
+  );
 
   const qualityCap = useAppSelector(selectQualityCap);
-  const hasCameraVideo = useAppSelector(selectSubscriberHasVideoById(videoDescriptor));
-  const showCamera = hasCameraVideo && qualityCap !== VideoSetting.Off;
-  const hasScreenVideo = useAppSelector(selectSubscriberHasVideoById(screenDescriptor));
+  const showCamera = participant.isCameraEnabled && qualityCap !== VideoSetting.Off;
 
   const containerRef = useRef(null);
   const [isVideoPinned, setIsVideoPinned] = useState<boolean>(false);
@@ -49,7 +56,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail, 
   useEffect(() => {
     const timer = setTimeout(() => setShowPresenterVideo(false), 5000);
     return () => clearTimeout(timer);
-  }, [showPresenterVideo]);
+  }, []);
 
   const displayPresenterVideo = useCallback(() => {
     !presenterVideoIsActive && setShowPresenterVideo(true);
@@ -63,10 +70,10 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail, 
     setPresenterVideoPosition(positionsArray[nextIndex]);
   };
 
-  if (hasScreenVideo) {
+  if (participant.isScreenShareEnabled) {
     return (
       <Container onMouseMove={displayPresenterVideo} data-testid="participantSreenShareVideo" ref={containerRef}>
-        <RemoteVideo descriptor={screenDescriptor} mediaRef={mediaRef} />
+        <RemoteVideo descriptor={screenDescriptor} />
         <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerRef.current}>
           <ScreenPresenterVideo
             participantId={participantId}
@@ -75,7 +82,6 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail, 
             videoPosition={presenterVideoPosition}
             changeVideoPosition={movePresenterVideo}
             isThumbnail={isThumbnail}
-            mediaRef={`${mediaRef}-screen`}
           />
         </Slide>
       </Container>
@@ -83,7 +89,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail, 
   }
 
   if (showCamera) {
-    return <RemoteVideo descriptor={videoDescriptor} mediaRef={mediaRef} />;
+    return <RemoteVideo descriptor={videoDescriptor} />;
   }
 
   return <AvatarContainer participantId={participantId} />;

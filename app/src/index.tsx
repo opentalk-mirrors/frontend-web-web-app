@@ -4,7 +4,6 @@
 import 'context-filter-polyfill';
 import { StrictMode, Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import 'webrtc-adapter';
 
 import App from './App';
 import './banner';

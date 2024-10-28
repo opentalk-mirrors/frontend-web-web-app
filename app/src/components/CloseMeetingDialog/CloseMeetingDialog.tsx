@@ -42,7 +42,6 @@ const DIALOG_TITLE_ID = 'close-meeting-dialog-label-id';
 
 export const CloseMeetingDialog = ({ open, onClose, eventData }: CloseMeetingDialogProps) => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
@@ -52,6 +51,7 @@ export const CloseMeetingDialog = ({ open, onClose, eventData }: CloseMeetingDia
   const [deleteEvent] = useDeleteEventMutation();
   const [disableLeaveAndDeleteButton, setDisableLeaveAndDeleteButton] = useState(true);
   const [deletionMode, setDeletionMode] = useState<EventDeletionType | null>(null);
+  const dispatch = useAppDispatch();
 
   const handleCheckbox = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setDisableLeaveAndDeleteButton(!event.target.checked);

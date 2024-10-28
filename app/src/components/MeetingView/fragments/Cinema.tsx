@@ -27,18 +27,17 @@ const Cinema = () => {
   const renderView = () => {
     if (fullscreenHandle.active) {
       return <FullscreenView />;
-    } else {
-      switch (userLayout) {
-        case LayoutOptions.Speaker:
-          return <SpeakerView />;
-        case LayoutOptions.Whiteboard:
-          return <WhiteboardView />;
-        case LayoutOptions.MeetingNotes:
-          return <MeetingNotesView />;
-        case LayoutOptions.Grid:
-        default:
-          return <GridView />;
-      }
+    }
+
+    switch (userLayout) {
+      case LayoutOptions.Speaker:
+        return <SpeakerView />;
+      case LayoutOptions.Whiteboard:
+        return <WhiteboardView />;
+      case LayoutOptions.MeetingNotes:
+        return <MeetingNotesView />;
+      case LayoutOptions.Grid:
+        return <GridView />;
     }
   };
 

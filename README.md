@@ -52,8 +52,7 @@ The frontend will then be available via http://localhost:8090
 | FEATURE_ADD_USER         | no       | { addUser: false}                                 | under construction |
 | JOIN_WITHOUT_MEDIA       | no       | { joinWithoutMedia: false}                        | if is set to true, it will prevent user to join conference with audio/video on |
 | VIDEO_BACKGROUNDS        | no       | [see here](#default-video-backgrounds)                                                | An array with a configuration of the background (Example: `[{ altText: 'OpenTalk', url: '/assets/videoBackgrounds/elevate-bg.png', thumb: '/assets/videoBackgrounds/thumbs/elevate-bg-thumb.png',}]`) |
-| SIGN_OUT_REDIRECT_URI    | no       | /dashboard                             | Uri to redirect the client after signing out
-frontend                                                                                                                                                                        |
+| SIGN_OUT_REDIRECT_URI    | no       | /dashboard                             | Uri to redirect the client after signing out frontend |
 | CHANGE_PASSWORD_ACTIVE           | no       | false                              | enable the reset password button in the dashboard profile settings |
 | CHANGE_PASSWORD_URL       | no       | null                               | set the reset password url for password button in dashboard profile settings |
 | FEATURE_SHARED_FOLDER           | no       | false                              | enable the shared folder feature |
@@ -62,7 +61,9 @@ frontend                                                                        
 | ACCOUNT_MANAGEMENT_URL             | no      |                                                   | The account management url for use the dashboard menu, if provider.active is true |
 | DISALLOW_CUSTOM_DISPLAY_NAME  | no  | false                                             | Disable editing of display name in profile and lobby page |
 | SENTRY_DSN  | no  |                                              | Adding a valid sentry dsn will activate error logging |
-| WAITING_ROOM_DEFAULT_VALUE | yes | Frontend { waitingRoomDefaultValue: true } | to enable waiting room switch by default                                          | Adding a valid sentry dsn will activate error logging |
+| WAITING_ROOM_DEFAULT_VALUE | yes | Frontend { waitingRoomDefaultValue: true } | to enable waiting room switch by default                                          |
+| LIVEKIT_SERVER_URL       |  yes     |                                                    | Url in which livekit server leaves |
+| LIVEKIT_E2EE_SALT        |  no      |                                                    | data added to the passphrase to make end-to-end encryption a bit more secure |
 
 ### Adding new Video Background Images
 
@@ -153,7 +154,7 @@ Run `pnpm install && pnpm build`
 
 Place the following file with correct values into app/public/config.js, without the comments
 
-```
+```javascript
 window.config = {
     // The hostname and port under which the controller is reachable, do not include http here.
     "controller": "localhost:8000",
@@ -168,9 +169,9 @@ window.config = {
     },
     provider: {
       // indicates if we are are in the provider context
-	    active: false,
+      active: false,
       // The account management url for the dashboard menu, if active is true
-	    accountManagementUrl: '${ACCOUNT_MANAGEMENT_URL}',
+      accountManagementUrl: '${ACCOUNT_MANAGEMENT_URL}',
     },
     // defaultImage for the Avatar, possible values: '404', 'mm', 'monsterid', 'wavatar', 'retro', 'robohash', 'pagan',
     "libravatarDefaultImage": 'robohash',
@@ -204,6 +205,9 @@ window.config = {
       "ndtDownloadWorkerJs": '/workers/ndt7-download-worker.js',
       // js worker file to use for the upload test
       "ndtUploadWorkerJs": '/workers/ndt7-upload-worker.js',
+    },
+    "livekit": {
+      "e2eeSalt": "e2e_salt_key",
     },
     // To enable user feedback collection configure a collection URL. (optional) & API KEY
     "userSurveyUrl":"https://your-survey.collection/endpoint",
@@ -435,4 +439,84 @@ pnpm playwright codegen
 We suggest that you begin by typing:
 ```
 pnpm playwright test
+```
+
+## Livekit: setup
+
+### Required Services
+
+- Livekit Server
+- Controller & dependent services (Keycloak, Database, ...)
+- Web
+
+### Setup
+
+#### Livekit Server
+
+[Install the CLI via](https://github.com/livekit/livekit?tab=readme-ov-file#install)
+
+##### macOS
+
+```shell
+brew install livekit
+```
+
+##### Linux
+
+```shell
+curl -sSL https://get.livekit.io | bash
+```
+
+#### Start
+
+Start via `livekit-server --dev` and copy the returned "API Key" and "API Secret", which we need for the Controller config.
+
+The output should look like:
+
+```shell
+INFO livekit server/main.go:208 starting in development mode
+INFO livekit server/main.go:211 no keys provided, using placeholder keys {"API Key": "devkey", "API Secret": "secret"}
+INFO livekit routing/interfaces.go:110 using single-node routing
+INFO livekit service/server.go:243 starting LiveKit server {"portHttp": 7880, "nodeID": "ND_SQ86Z2W79ukr", "nodeIP": "192.168.178.148", "version": "1.7.0", "bindAddresses": ["127.0.0.1", "::1"], "rtc.portTCP": 7881, "rtc.portUDP": {"Start":7882,"End":0}}
+```
+
+---
+
+#### Controller and Dependent Services
+
+##### Start Dependent Services
+
+```bash
+cd testing-environment
+docker compose up -d
+```
+
+##### Controller
+
+Add the following section to the controller config (`controller/config.toml`). The provided values are the defaults from Livekit if the server was started in dev mode. If not, take the required values from the first 4 lines of the log output.
+
+```toml
+[livekit]
+api_key = "devkey"
+api_secret = "secret"
+url = "http://localhost:7880"
+```
+
+Check out the current livekit branch and start the controller via
+
+```bash
+git checkout livekit
+cargo run
+```
+
+---
+
+#### Web
+
+Check out the current livekit branch and start the frontend via
+
+```bash
+git checkout livekit-dev
+pnpm install
+pnpm start
 ```

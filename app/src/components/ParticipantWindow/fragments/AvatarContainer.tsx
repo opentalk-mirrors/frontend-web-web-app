@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Grid } from '@mui/material';
+import { Grid, styled } from '@mui/material';
 
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';

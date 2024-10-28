@@ -7,9 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 import { sendStreamConsentSignal } from '../../../../api/types/outgoing/streaming';
 import { WarningIcon } from '../../../../assets/icons';
-import localMediaContext from '../../../../modules/Media/LocalMedia';
-import localScreenContext from '../../../../modules/Media/LocalScreen';
 import { AppDispatch } from '../../../../store';
+import { getLivekitRoom } from '../../../../store/slices/livekitSlice';
 import { CustomSnackbarContent } from '../CustomSnackbarContent';
 import { NotificationHeading } from '../NotificationHeading';
 import { notifications } from '../utils';
@@ -60,10 +59,10 @@ export const showConsentNotification = (dispatch: AppDispatch) =>
       dispatch(sendStreamConsentSignal.action({ consent }));
       notifications.close(key);
       if (!consent) {
-        localMediaContext.reconfigure({ audio: false, video: false }).catch((e) => {
-          console.error(`failed to switch off camera and mic when consent was denied: ${e}`);
-        });
-        localScreenContext.release();
+        const room = getLivekitRoom();
+        room.localParticipant.setCameraEnabled(false);
+        room.localParticipant.setMicrophoneEnabled(false);
+        room.localParticipant.setScreenShareEnabled(false);
       }
       resolve(consent);
     };

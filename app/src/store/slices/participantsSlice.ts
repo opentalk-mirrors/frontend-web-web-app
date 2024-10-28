@@ -12,6 +12,7 @@ import {
   isAnyOf,
 } from '@reduxjs/toolkit';
 import i18next from 'i18next';
+import { Participant as RemoteParticipant } from 'livekit-client';
 
 import { AppDispatch, RootState } from '../';
 import { notifications } from '../../commonComponents';
@@ -29,7 +30,7 @@ import {
 import { joinSuccess } from '../commonActions';
 import { selectCurrentBreakoutRoomId } from './breakoutSlice';
 import { received } from './chatSlice';
-import { selectAllSubscribersWithVideoOn } from './mediaSubscriberSlice';
+import { getLivekitRoom } from './livekitSlice';
 import { connectionClosed } from './roomSlice';
 import { GridViewOrder, setFocusedSpeaker } from './uiSlice';
 
@@ -58,7 +59,6 @@ export const participantsSlice = createSlice({
             participationKind,
             role,
             meetingNotesAccess,
-            isPresenter,
             isSpeaking,
             isRoomOwner,
           },
@@ -80,7 +80,6 @@ export const participantsSlice = createSlice({
         role,
         waitingState: WaitingState.Joined,
         meetingNotesAccess,
-        isPresenter,
         isSpeaking,
         isRoomOwner,
       });
@@ -116,7 +115,6 @@ export const participantsSlice = createSlice({
         lastActive: timestamp,
         waitingState: WaitingState.Joined,
         meetingNotesAccess: MeetingNotesAccess.None,
-        isPresenter: false,
         isSpeaking: false,
         isRoomOwner: false,
       };
@@ -142,7 +140,6 @@ export const participantsSlice = createSlice({
         participationKind: payload.control.participationKind,
         lastActive: payload.control.joinedAt,
         meetingNotesAccess: MeetingNotesAccess.None,
-        isPresenter: false,
         waitingState: WaitingState.Waiting,
         isSpeaking: false,
         isRoomOwner: false,
@@ -173,18 +170,7 @@ export const participantsSlice = createSlice({
     update: (
       state,
       {
-        payload: {
-          id,
-          displayName,
-          handIsUp,
-          lastActive,
-          joinedAt,
-          leftAt,
-          handUpdatedAt,
-          role,
-          isPresenter,
-          meetingNotesAccess,
-        },
+        payload: { id, displayName, handIsUp, lastActive, joinedAt, leftAt, handUpdatedAt, role, meetingNotesAccess },
       }: PayloadAction<Omit<Participant, 'breakoutRoomId' | 'groups' | 'isSpeaking'>>
     ) => {
       participantAdapter.updateOne(state, {
@@ -196,7 +182,6 @@ export const participantsSlice = createSlice({
           joinedAt,
           leftAt,
           handUpdatedAt,
-          isPresenter,
           role,
           meetingNotesAccess,
         },
@@ -282,8 +267,8 @@ export const selectAllOnlineParticipants = createSelector(
 
 export const selectSortedParticipants = (gridViewOrder: GridViewOrder) => {
   return createSelector(
-    [selectAllOnlineParticipantsInConference, selectCurrentBreakoutRoomId, selectAllSubscribersWithVideoOn],
-    (participants, currentBreakoutRoomId, videoSubscribers) => {
+    [selectAllOnlineParticipantsInConference, selectCurrentBreakoutRoomId],
+    (participants, currentBreakoutRoomId) => {
       let filteredParticipants = participants
         .filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
         .sort((a, b) => a.joinedAt.localeCompare(b.joinedAt)); // always sort by firstJoined;
@@ -294,8 +279,13 @@ export const selectSortedParticipants = (gridViewOrder: GridViewOrder) => {
         );
       }
       if (gridViewOrder === GridViewOrder.VideoFirst) {
+        const room = getLivekitRoom();
+        const videoSubscribers = Array.from(room.remoteParticipants.values() || []).filter(
+          (participant) => participant.isCameraEnabled
+        );
+
         filteredParticipants = filteredParticipants.sort((participant) =>
-          videoSubscribers.find((subscriber) => participant.id === subscriber.participantId) ? -1 : 1
+          videoSubscribers.find((subscriber) => participant.id === subscriber.identity) ? -1 : 1
         );
       }
       return filteredParticipants;
@@ -338,6 +328,20 @@ export const selectParticipationKind = (id: EntityId) => {
 
 export const selectIsParticipantSpeaking = (id: EntityId) => {
   return createSelector(selectParticipantById(id), (participant) => participant?.isSpeaking);
+};
+
+export const selectMapRemotePaticipanstDisplayName = (remoteParticipants: RemoteParticipant[]) => {
+  return createSelector([selectAllOnlineParticipants], (onlineParticipants) => {
+    return remoteParticipants.reduce(
+      (acc, remoteParticipant) => {
+        acc[remoteParticipant.identity] = onlineParticipants.find(
+          (participant) => participant.id === remoteParticipant.identity
+        )?.displayName;
+        return acc;
+      },
+      {} as Record<string, string | undefined>
+    );
+  });
 };
 
 export const participantsMiddleware = createListenerMiddleware();

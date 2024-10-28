@@ -28,7 +28,8 @@ export type Namespaces =
   | 'recording'
   | 'whiteboard'
   | 'shared_folder'
-  | 'echo';
+  | 'echo'
+  | 'livekit';
 
 export enum Tag {
   Room = 'Room',

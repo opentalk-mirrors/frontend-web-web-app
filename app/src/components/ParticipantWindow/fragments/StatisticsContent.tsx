@@ -1,15 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+// Will be addressed in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2129
+import { styled } from '@mui/material';
 
-import SuspenseLoading from '../../../commonComponents/SuspenseLoading/SuspenseLoading';
-import { useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
-import { NetworkEndpoint } from '../../../modules/WebRTC/Statistics/CandidatePairState';
-import { selectStatsById } from '../../../store/slices/connectionStatsSlice';
-import { formatBitRate } from '../../../utils/numberUtils';
 
 const ContentContainer = styled('div')(({ theme }) => ({
   display: 'grid',
@@ -17,49 +12,48 @@ const ContentContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
-export const EndpointInfo = ({ endpoint }: { endpoint?: NetworkEndpoint }) => {
-  const { t } = useTranslation();
+// export const EndpointInfo = ({ endpoint }: { endpoint?: NetworkEndpoint }) => {
+//   const { t } = useTranslation();
 
-  if (endpoint === undefined) {
-    return <span>'-'</span>;
-  }
-  const address = endpoint.address || t('statistics-value-redacted');
-  return (
-    <>
-      {`${address}:${endpoint.port} (${endpoint.protocol})`}
-      {endpoint.networkType && ` ${endpoint.networkType}`}
-    </>
-  );
-};
-
-const MILLISECONDS_PER_SECOND = 1000;
+//   if (endpoint === undefined) {
+//     return <span>'-'</span>;
+//   }
+//   const address = endpoint.address || t('statistics-value-redacted');
+//   return (
+//     <>
+//       {`${address}:${endpoint.port} (${endpoint.protocol})`}
+//       {endpoint.networkType && ` ${endpoint.networkType}`}
+//     </>
+//   );
+// };
 
 export const StatisticsContent = ({ descriptor }: { descriptor: MediaDescriptor }) => {
-  const stats = useAppSelector(selectStatsById(descriptor));
-  const { t } = useTranslation();
-  if (stats === undefined) {
-    return <SuspenseLoading />;
-  }
+  console.error('TODO: livekit - StatisticsContent: ', descriptor);
 
-  const { mediaStream, connection } = stats;
-  const { bitRate, frameRate, packetLoss, frameHeight, frameWidth, jitter, codingTime } = mediaStream;
+  // const stats = useAppSelector(selectStatsById(descriptor));
+  // if (stats === undefined) {
+  //   return <SuspenseLoading />;
+  // }
+
+  // const { mediaStream, connection } = stats;
+  // const { bitRate, frameRate, packetLoss, frameHeight, frameWidth, jitter, codingTime } = mediaStream;
 
   // The latency and jitter value may default to 0, which is invalid.
   // We use 0.5ms as threshold for validity.
   // We expect both to be a couple of milliseconds under good conditions.
-  const validJitter =
-    jitter !== undefined && jitter > 0.5 * MILLISECONDS_PER_SECOND && Math.round(jitter * MILLISECONDS_PER_SECOND);
+  // const validJitter =
+  //   jitter !== undefined && jitter > 0.5 * MILLISECONDS_PER_SECOND && Math.round(jitter * MILLISECONDS_PER_SECOND);
 
-  const validLatency =
-    connection.avgRTT !== undefined &&
-    connection.avgRTT > 0.5 * MILLISECONDS_PER_SECOND &&
-    Math.round((connection.avgRTT / 2) * MILLISECONDS_PER_SECOND);
+  // const validLatency =
+  //   connection.avgRTT !== undefined &&
+  //   connection.avgRTT > 0.5 * MILLISECONDS_PER_SECOND &&
+  //   Math.round((connection.avgRTT / 2) * MILLISECONDS_PER_SECOND);
 
-  const validPacketLoss = packetLoss !== undefined && Math.round(packetLoss * 100);
+  // const validPacketLoss = packetLoss !== undefined && Math.round(packetLoss * 100);
 
   return (
     <ContentContainer>
-      {frameHeight && frameWidth && (
+      {/* {frameHeight && frameWidth && (
         <>
           <Typography variant="body2">{`${t('statistics-video')}: `}</Typography>
           <Typography variant="body2" align="right">
@@ -102,7 +96,7 @@ export const StatisticsContent = ({ descriptor }: { descriptor: MediaDescriptor 
       <Typography variant="body2">{`${t('statistics-remote-network-endpoint')}: `}</Typography>
       <Typography variant="body2" align="left">
         <EndpointInfo endpoint={connection.remoteEndpoint} />
-      </Typography>
+      </Typography> */}
     </ContentContainer>
   );
 };

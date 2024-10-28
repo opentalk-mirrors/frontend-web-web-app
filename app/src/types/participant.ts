@@ -20,7 +20,6 @@ export interface Participant {
   role?: Role;
   waitingState: WaitingState;
   meetingNotesAccess: MeetingNotesAccess;
-  isPresenter: boolean;
   isSpeaking: boolean;
   isRoomOwner: boolean;
 }

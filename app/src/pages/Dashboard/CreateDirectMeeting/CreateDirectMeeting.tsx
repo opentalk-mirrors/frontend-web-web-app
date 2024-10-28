@@ -44,6 +44,7 @@ const CreateDirectMeeting = () => {
         isTimeIndependent: true,
         waitingRoom: false,
         isAdhoc: true,
+        e2eEncryption: false,
       }).unwrap();
     } catch (err) {
       notifications.error(t('dashboard-meeting-notification-error'));

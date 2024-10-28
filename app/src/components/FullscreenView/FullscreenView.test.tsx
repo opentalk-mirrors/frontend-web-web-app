@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { cleanup, waitFor } from '@testing-library/react';
+import { PropsWithChildren } from 'react';
 
 import { render, screen, configureStore, fireEvent } from '../../utils/testUtils';
 import FullscreenView from './FullscreenView';
@@ -28,6 +29,30 @@ jest.mock('../../hooks/useFullscreenContext.ts', () => ({
   }),
 }));
 
+jest.mock('@livekit/components-react', () => ({
+  ParticipantContext: {
+    Provider: ({ children }: PropsWithChildren) => {
+      return <div data-testid="buttomContainer"> {children}</div>;
+    },
+  },
+  useRoomContext: () => jest.fn(),
+}));
+
+jest.mock('../LocalVideo', () => ({
+  __esModule: true,
+  default: () => <div data-testid="localVideo"></div>,
+}));
+
+jest.mock('../ParticipantWindow', () => ({
+  __esModule: true,
+  default: () => <div data-testid="participantWindow"></div>,
+}));
+
+jest.mock('../Toolbar', () => ({
+  __esModule: true,
+  default: () => <div data-testid="toolbar"></div>,
+}));
+
 describe('FullscreenView', () => {
   afterEach(() => cleanup());
   const { store } = configureStore();
@@ -49,7 +74,7 @@ describe('FullscreenView', () => {
     await fireEvent.mouseMove(fullscreen);
 
     expect(screen.getByRole('button', { name: /indicator-fullscreen-close/i })).toBeInTheDocument();
-    expect(screen.getByTestId('Toolbar')).toBeInTheDocument();
+    expect(screen.getByTestId('toolbar')).toBeInTheDocument();
     expect(screen.getByTestId('fullscreenLocalVideo')).toBeInTheDocument();
   });
 

@@ -6,6 +6,7 @@ import BreakoutMessage from './breakout';
 import ChatMessage from './chat';
 import ControlMessage from './control';
 import LegalVoteMessage from './legalVote';
+import LivekitMessage from './livekit';
 import MediaMessage from './media';
 import MeetingNotesMessage from './meetingNotes';
 import ModerationMessage from './moderation';
@@ -28,6 +29,7 @@ export * as streaming from './streaming';
 export * as sharedFolder from './sharedFolder';
 export * as legalVote from './legalVote';
 export * as automod from './automod';
+export * as livekit from './livekit';
 
 export type Message =
   | AutomodMessage
@@ -42,4 +44,5 @@ export type Message =
   | TimerMessage
   | WhiteboardMessage
   | StreamingMessage
-  | SharedFolderMessage;
+  | SharedFolderMessage
+  | LivekitMessage;

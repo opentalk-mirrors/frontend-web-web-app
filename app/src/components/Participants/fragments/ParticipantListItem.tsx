@@ -1,15 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useLocalParticipant, useRemoteParticipant } from '@livekit/components-react';
 import {
-  styled,
+  Badge,
+  Box,
   ListItem as MuiListItem,
   ListItemAvatar as MuiListItemAvatar,
   ListItemText as MuiListItemText,
-  Typography,
-  Box,
-  Badge,
   ThemeProvider,
+  Typography,
+  styled,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { isEmpty } from 'lodash';
@@ -19,20 +20,24 @@ import { batch } from 'react-redux';
 
 import { Role } from '../../../api/types/incoming/control';
 import { grantModeratorRole, revokeModeratorRole } from '../../../api/types/outgoing/control';
-import { grantPresenterRole, requestMute, revokePresenterRole } from '../../../api/types/outgoing/media';
+import {
+  grantScreenSharePermission,
+  requestMute,
+  revokeScreenSharePermission,
+} from '../../../api/types/outgoing/livekit';
 import {
   banParticipant,
-  kickParticipant,
   enableWaitingRoom,
+  kickParticipant,
   sendParticipantToWaitingRoom,
 } from '../../../api/types/outgoing/moderation';
 import {
+  MeetingNotesIcon,
   MicOffIcon,
   MicOnIcon,
   ModeratorIcon,
   MoreIcon,
   PhoneIcon,
-  MeetingNotesIcon,
   RaiseHandOnIcon,
   ShareScreenOnIcon,
   TelephoneStrokeIcon,
@@ -40,19 +45,11 @@ import {
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { IconButton, ParticipantAvatar, notifications } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectAudioEnabled, selectShareScreenEnabled } from '../../../store/slices/mediaSlice';
-import { selectSubscriberStateById } from '../../../store/slices/mediaSubscriberSlice';
 import { selectHandUp } from '../../../store/slices/moderationSlice';
 import { chatConversationStateSet, selectParticipantsSortOption } from '../../../store/slices/uiSlice';
 import { selectIsModerator, selectOurUuid, selectUserMeetingNotesAccess } from '../../../store/slices/userSlice';
-import {
-  ChatScope,
-  MediaSessionType,
-  Participant,
-  ParticipationKind,
-  MeetingNotesAccess,
-  SortOption,
-} from '../../../types';
+import { ChatScope, MeetingNotesAccess, Participant, ParticipationKind, SortOption } from '../../../types';
+import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../Toolbar/fragments/ShareScreenButton';
 import MenuPopover, { IMenuOptionItem } from './MenuPopover';
 import RenameParticipantDialog from './RenameParticipantDialog';
 
@@ -138,35 +135,23 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   const dispatch = useAppDispatch();
   const open = Boolean(anchorEl);
   const ownId = useAppSelector(selectOurUuid);
-  const ownAudioEnabled = useAppSelector(selectAudioEnabled);
-  const ownScreenShareEnabled = useAppSelector(selectShareScreenEnabled);
   const userMeetingNotesAccess = useAppSelector(selectUserMeetingNotesAccess);
   const ownHandRaised = useAppSelector(selectHandUp);
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
 
+  const selectedParticipant = useRemoteParticipant(participant.id);
+  const selectedParticipantCanPublishScreenShare =
+    selectedParticipant?.permissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
+  const audioActive = selectedParticipant?.isMicrophoneEnabled || false;
+  const screenShareActive = selectedParticipant?.isScreenShareEnabled || false;
+
+  const localParticipant = useLocalParticipant();
+  const ownAudioEnabled = localParticipant.isMicrophoneEnabled;
+  const ownScreenShareEnabled = localParticipant.isScreenShareEnabled;
+
   const closePopover = () => {
     setAnchorEl(undefined);
   };
-
-  const { active: audioActive } = useAppSelector(
-    selectSubscriberStateById(
-      {
-        participantId: participant.id,
-        mediaType: MediaSessionType.Video,
-      },
-      'audio'
-    )
-  );
-
-  const { active: screenShareActive } = useAppSelector(
-    selectSubscriberStateById(
-      {
-        participantId: participant.id,
-        mediaType: MediaSessionType.Screen,
-      },
-      'video'
-    )
-  );
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -214,13 +199,13 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   };
 
   const handlePresenterRoleRight = () => {
-    participant.isPresenter
-      ? dispatch(revokePresenterRole.action({ participantIds: [participant.id] }))
-      : dispatch(grantPresenterRole.action({ participantIds: [participant.id] }));
+    selectedParticipantCanPublishScreenShare
+      ? dispatch(revokeScreenSharePermission.action({ participants: [participant.id] }))
+      : dispatch(grantScreenSharePermission.action({ participants: [participant.id] }));
   };
 
   const handleMuting = () => {
-    dispatch(requestMute.action({ targets: [participant.id], force: true }));
+    dispatch(requestMute.action({ participants: [participant.id] }));
   };
 
   const handleRenameParticipantDialog = () => {
@@ -254,7 +239,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
             action: handleModerationRight,
           },
           {
-            i18nKey: participant.isPresenter ? 'revoke-presenter-role' : 'grant-presenter-role',
+            i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
             action: handlePresenterRoleRight,
           },
           muteOption,
@@ -267,7 +252,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
             action: handleRenameParticipantDialog,
           },
           {
-            i18nKey: participant.isPresenter ? 'revoke-presenter-role' : 'grant-presenter-role',
+            i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
             action: handlePresenterRoleRight,
           },
           muteOption,
@@ -316,9 +301,11 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
 
     if (isHandRaised) {
       return <RaiseHandOnIcon />;
-    } else if (isScreenShareEnabled) {
+    }
+    if (isScreenShareEnabled) {
       return <ShareScreenOnIcon />;
-    } else if (isAudioEnabled) {
+    }
+    if (isAudioEnabled) {
       return isSipParticipant ? <PhoneIcon /> : <MicOnIcon data-testid="MicOn" />;
     }
     return isSipParticipant ? <PhoneOffIconStyled /> : <MicOffIconStyled data-testid="MicOff" />;
@@ -331,6 +318,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     ownAudioEnabled,
     ownScreenShareEnabled,
     ownHandRaised,
+    ownId,
   ]);
 
   const renderMenu = () => (
@@ -410,7 +398,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
         {participant?.displayName}
       </Avatar>
     );
-  }, [participant.role]);
+  }, [participant, isSipParticipant, t]);
 
   return (
     <ListItem style={style} isMoreMenuOpen={open}>

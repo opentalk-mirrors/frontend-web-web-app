@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useRemoteParticipant } from '@livekit/components-react';
 import { Grid, styled } from '@mui/material';
+import { ConnectionQuality, Track } from 'livekit-client';
 import { MouseEventHandler, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,11 +11,10 @@ import { FullscreenViewIcon, PinIcon } from '../../../assets/icons';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
-import { selectStatsPacketLossByDescriptor } from '../../../store/slices/connectionStatsSlice';
-import { selectIsSubscriberOnlineByDescriptor } from '../../../store/slices/mediaSubscriberSlice';
+import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
 import { pinnedParticipantIdSet, selectCinemaLayout, selectPinnedParticipantId } from '../../../store/slices/uiSlice';
-import { MediaSessionType, ParticipantId } from '../../../types';
+import { ParticipantId } from '../../../types';
 import BrokenSubscriberIndicator from './BrokenSubscriberIndicator';
 import { OverlayIconButton } from './OverlayIconButton';
 import Statistics from './Statistics';
@@ -44,14 +45,24 @@ interface VideoOverlayProps {
 const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const userLayout = useAppSelector(selectCinemaLayout);
   const dispatch = useAppDispatch();
-  const screenDescriptor = useMemo(() => ({ participantId, mediaType: MediaSessionType.Screen }), [participantId]);
-  const videoDescriptor = useMemo(() => ({ participantId, mediaType: MediaSessionType.Video }), [participantId]);
+  const screenDescriptor = useMemo<MediaDescriptor>(
+    () => ({
+      participantId,
+      mediaType: Track.Source.ScreenShare,
+    }),
+    [participantId]
+  );
+  const videoDescriptor = useMemo<MediaDescriptor>(
+    () => ({ participantId, mediaType: Track.Source.Camera }),
+    [participantId]
+  );
 
-  const hasScreen = useAppSelector(selectIsSubscriberOnlineByDescriptor(screenDescriptor));
-  const hasVideo = useAppSelector(selectIsSubscriberOnlineByDescriptor(videoDescriptor));
+  const participant = useRemoteParticipant(screenDescriptor.participantId);
+  const hasScreen = participant?.isScreenShareEnabled;
+  const hasVideo = participant?.isCameraEnabled;
   const descriptor = hasScreen ? screenDescriptor : videoDescriptor;
   const isOnline = hasScreen || hasVideo;
-  const hasPacketLoss = useAppSelector(selectStatsPacketLossByDescriptor(descriptor));
+  const hasPacketLoss = participant?.connectionQuality === ConnectionQuality.Poor;
   const displayName = useAppSelector(selectParticipantName(participantId));
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
   const { t } = useTranslation();
@@ -66,9 +77,9 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const openFullScreenView: MouseEventHandler = useCallback(
     (e) => {
       e.stopPropagation();
-      fullscreenHandle.enter(participantId);
+      fullscreenHandle.enter(participant);
     },
-    [fullscreenHandle, participantId]
+    [fullscreenHandle, participant]
   );
 
   const getOverlayButtons = () => (
@@ -81,7 +92,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
               color={pinnedParticipantId === descriptor.participantId ? 'primary' : 'secondary'}
               onClick={togglePin}
               translate="no"
-              aria-label={t(`indicator-pinned`, {
+              aria-label={t('indicator-pinned', {
                 participantName: displayName || '',
               })}
             >
@@ -97,7 +108,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
     </IndicatorContainer>
   );
 
-  return <OverlayContainer children={getOverlayButtons()} />;
+  return <OverlayContainer>{getOverlayButtons()}</OverlayContainer>;
 };
 
 export default VideoOverlay;

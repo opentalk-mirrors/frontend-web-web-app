@@ -44,7 +44,6 @@ export interface JoinSuccessInternalState {
     waitingRoomEnabled: boolean;
     waitingRoomParticipants: Array<BackendParticipant>;
   };
-  isPresenter?: boolean;
   forceMute?: ForceMute;
   recording?: StreamingState;
   serverTimeOffset: number;
@@ -55,6 +54,11 @@ export interface JoinSuccessInternalState {
   roomInfo?: RoomInfo;
   participantsReady: ParticipantId[];
   isRoomOwner: boolean;
+  livekit: {
+    room: string;
+    token: string;
+    publicUrl: string;
+  };
 }
 
 export interface JoinSuccessIncoming {
@@ -83,4 +87,10 @@ export interface JoinSuccessIncoming {
   eventInfo?: EventInfo;
   roomInfo?: RoomInfo;
   isRoomOwner: boolean;
+  livekit: {
+    room: string;
+    token: string;
+    publicUrl: string;
+    microphoneRestrictionState?: ForceMute;
+  };
 }

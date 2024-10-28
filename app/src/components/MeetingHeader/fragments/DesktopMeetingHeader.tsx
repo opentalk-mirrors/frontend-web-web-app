@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useRemoteParticipants } from '@livekit/components-react';
 import { Pagination, styled } from '@mui/material';
 import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +12,6 @@ import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectPollsAndVotingsCount } from '../../../store/selectors';
 import { selectMeetingNotesUrl } from '../../../store/slices/meetingNotesSlice';
-import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
 import { selectIsSharedFolderAvailable } from '../../../store/slices/sharedFolderSlice';
 import {
   selectCinemaLayout,
@@ -106,7 +106,7 @@ const RoomTitleContainer = styled('div')(({ theme }) => ({
 const DesktopMeetingHeader = () => {
   const dispatch = useAppDispatch();
   const selectedLayout = useAppSelector(selectCinemaLayout);
-  const participants = useAppSelector(selectAllOnlineParticipants);
+  const participants = useRemoteParticipants();
   const selectedPage = useAppSelector(selectPaginationPageState);
   const meetingNotesUrl = useAppSelector(selectMeetingNotesUrl);
   const isWhiteboardAvailable = useAppSelector(selectIsWhiteboardAvailable);

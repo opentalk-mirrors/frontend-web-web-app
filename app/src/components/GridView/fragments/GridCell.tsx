@@ -1,11 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Slide, keyframes } from '@mui/material';
+import { useParticipantContext, useSpeakingParticipants } from '@livekit/components-react';
+import { Slide, keyframes, styled } from '@mui/material';
 
-import { useAppSelector } from '../../../hooks';
-import { selectIsParticipantSpeaking } from '../../../store/slices/participantsSlice';
-import { ParticipantId } from '../../../types';
 import ParticipantWindow from '../../ParticipantWindow';
 
 const breathe = keyframes`
@@ -47,7 +45,7 @@ const CinemaCell = styled('div', {
     inset: '0',
     borderRadius: '1em',
     boxShadow: `inset 0px 0px 0px ${highlight ? 2 : 0}px ${theme.palette.primary.main}`,
-    transition: `all 300ms linear`,
+    transition: 'all 300ms linear',
     pointerEvents: 'none',
     animation: highlight ? `${breathe} 1s infinite ease-in-out alternate` : 'none',
   },
@@ -55,20 +53,20 @@ const CinemaCell = styled('div', {
 
 type GridCellProps = {
   direction: 'left' | 'right';
-  index: number;
-  participantId: ParticipantId;
   highlight: boolean;
 };
 
 const GridCell = (props: GridCellProps) => {
-  const { direction, index, participantId, highlight } = props;
-  const isParticipantSpeaking = useAppSelector(selectIsParticipantSpeaking(participantId));
-  const highlightSpeaker = highlight && (isParticipantSpeaking ?? false);
+  const participant = useParticipantContext();
+  const { direction, highlight } = props;
+  const speakingParticipants = useSpeakingParticipants();
+  const highlightSpeaker =
+    highlight && speakingParticipants.some((speaker) => speaker.identity === participant.identity);
 
   return (
-    <Slide direction={direction} key={participantId} in mountOnEnter unmountOnExit>
+    <Slide direction={direction} in mountOnEnter unmountOnExit>
       <CinemaCell data-testid="cinemaCell" highlight={highlightSpeaker}>
-        <ParticipantWindow key={participantId} participantId={participantId} mediaRef={`grid-${index}`} />
+        <ParticipantWindow />
       </CinemaCell>
     </Slide>
   );

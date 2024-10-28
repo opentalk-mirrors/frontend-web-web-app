@@ -1,26 +1,39 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useState, useMemo } from 'react';
+import { useRemoteParticipants } from '@livekit/components-react';
+import { useMemo, useState } from 'react';
 
-import { requestMute } from '../../api/types/outgoing/media';
+import { requestMute } from '../../api/types/outgoing/livekit';
 import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAndSelectParticipantsTab';
+import {
+  SelectableParticipant,
+  toSelectableParticipant,
+} from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/SelectParticipantsItem';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { selectUnmutedParticipants } from '../../store/selectors';
+import { selectMapRemotePaticipanstDisplayName } from '../../store/slices/participantsSlice';
 import { ParticipantId } from '../../types';
 
 const MuteParticipantsTab = () => {
   const dispatch = useAppDispatch();
-  const unmutedParticipants = useAppSelector(selectUnmutedParticipants);
+  const allParticipants = useRemoteParticipants();
+  const unmutedParticipants = allParticipants.filter((participant) => participant.isMicrophoneEnabled);
 
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
 
-  const participantsList = useMemo(() => {
+  const participantNames = useAppSelector(selectMapRemotePaticipanstDisplayName(unmutedParticipants));
+
+  const participantsList: SelectableParticipant[] = useMemo(() => {
     return unmutedParticipants
-      .filter((participant) => participant.displayName.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
-      .map((participant) => ({ ...participant, selected: selectedParticipants.includes(participant.id) }));
-  }, [search, unmutedParticipants, selectedParticipants]);
+      .filter((participant) => {
+        const displayName = participantNames[participant.identity];
+        return displayName?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
+      })
+      .map((participant) =>
+        toSelectableParticipant(participant, selectedParticipants.includes(participant.identity as ParticipantId))
+      );
+  }, [search, unmutedParticipants, selectedParticipants, participantNames]);
 
   const handleSelectParticipant = (checked: boolean, participantId: ParticipantId) => {
     if (checked) {
@@ -31,12 +44,12 @@ const MuteParticipantsTab = () => {
   };
 
   const muteAll = () => {
-    const unmutedParticipantIds = unmutedParticipants.map((participant) => participant.id);
-    dispatch(requestMute.action({ targets: unmutedParticipantIds, force: true }));
+    const unmutedParticipantIds = unmutedParticipants.map((participant) => participant.identity as ParticipantId);
+    dispatch(requestMute.action({ participants: unmutedParticipantIds }));
   };
 
   const muteSelected = () => {
-    dispatch(requestMute.action({ targets: selectedParticipants, force: true }));
+    dispatch(requestMute.action({ participants: selectedParticipants }));
     setSelectedParticipants([]);
   };
 

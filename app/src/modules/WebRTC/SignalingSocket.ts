@@ -24,7 +24,7 @@ const API_VERSION = '1.0';
  */
 export type SignalingState = 'connected' | 'disconnected' | 'closed';
 
-export type SignalingConnectionEvent = {
+type SignalingConnectionEvent = {
   connectionstatechange: SignalingState;
   message: IncomingMessage;
 };

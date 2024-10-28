@@ -1,17 +1,17 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
 import { RootState } from '../';
 import { Role } from '../../api/types/incoming/control';
 import { sendChatMessage } from '../../api/types/outgoing/chat';
 import { lowerHand, raiseHand } from '../../api/types/outgoing/control';
-import { GroupId, Participant, ParticipantId, ParticipationKind, MeetingNotesAccess, WaitingState } from '../../types';
+import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
 import { joinSuccess, login, startRoom } from '../commonActions';
-import { setAudioEnable, setScreenShare, setVideoEnable, setSpeakerActivity } from './mediaSlice';
+import { setSpeakerActivity } from './mediaSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { connectionClosed, fetchRoomByInviteId } from './roomSlice';
 
@@ -24,7 +24,6 @@ interface UserState {
   loggedIdToken?: string;
   lastActive?: string;
   joinedAt?: string;
-  isPresenter: boolean;
   meetingNotesAccess: MeetingNotesAccess;
   isRoomOwner: boolean;
 }
@@ -34,7 +33,6 @@ const initialState: UserState = {
   groups: [],
   displayName: '',
   role: Role.User,
-  isPresenter: false,
   meetingNotesAccess: 'none' as MeetingNotesAccess.None, // this will be fixed with the next version of the ts-jest
   isRoomOwner: false,
 };
@@ -49,11 +47,8 @@ export const userSlice = createSlice({
     updateRole: (state, { payload: role }: PayloadAction<Role>) => {
       state.role = role;
     },
-    setPresenterRole: (state) => {
-      state.isPresenter = true;
-    },
-    revokePresenterRole: (state) => {
-      state.isPresenter = false;
+    updateLastActive: (state) => {
+      state.lastActive = new Date().toISOString();
     },
   },
   extraReducers: (builder) => {
@@ -82,19 +77,15 @@ export const userSlice = createSlice({
         }
       }
     );
-    builder.addCase(
-      joinSuccess,
-      (state, { payload: { isPresenter, avatarUrl, role, participantId, groups, isRoomOwner } }) => {
-        state.role = role;
-        state.avatarUrl = avatarUrl;
-        state.uuid = participantId;
-        state.groups = groups;
-        state.joinedAt = new Date().toISOString();
-        state.lastActive = state.joinedAt;
-        state.isPresenter = isPresenter || false;
-        state.isRoomOwner = isRoomOwner;
-      }
-    );
+    builder.addCase(joinSuccess, (state, { payload: { avatarUrl, role, participantId, groups, isRoomOwner } }) => {
+      state.role = role;
+      state.avatarUrl = avatarUrl;
+      state.uuid = participantId;
+      state.groups = groups;
+      state.joinedAt = new Date().toISOString();
+      state.lastActive = state.joinedAt;
+      state.isRoomOwner = isRoomOwner;
+    });
     builder.addCase(connectionClosed, (state) => {
       state.uuid = null;
       state.joinedAt = undefined;
@@ -107,15 +98,6 @@ export const userSlice = createSlice({
       state.lastActive = new Date().toISOString();
     });
     builder.addCase(lowerHand.action, (state) => {
-      state.lastActive = new Date().toISOString();
-    });
-    builder.addCase(setAudioEnable, (state) => {
-      state.lastActive = new Date().toISOString();
-    });
-    builder.addCase(setVideoEnable, (state) => {
-      state.lastActive = new Date().toISOString();
-    });
-    builder.addCase(setScreenShare, (state) => {
       state.lastActive = new Date().toISOString();
     });
     builder.addCase(sendChatMessage.action, (state) => {
@@ -131,7 +113,7 @@ export const userSlice = createSlice({
 });
 
 export const actions = userSlice.actions;
-export const { updateRole, setPresenterRole, revokePresenterRole, setDisplayName } = actions;
+export const { updateRole, setDisplayName, updateLastActive } = actions;
 
 const userState = (state: RootState) => state.user;
 
@@ -139,7 +121,6 @@ export const selectOurUuid = createSelector(userState, (state) => state.uuid);
 export const selectGroups = createSelector(userState, (state) => state.groups);
 export const selectDisplayName = createSelector(userState, (state) => state.displayName);
 export const selectAvatarUrl = createSelector(userState, (state) => state.avatarUrl);
-export const selectIsPresenter = createSelector(userState, (state) => state.isPresenter);
 export const selectUserMeetingNotesAccess = createSelector(userState, (state) => state.meetingNotesAccess);
 export const selectIsModerator = createSelector(userState, (state) => state.role === Role.Moderator);
 export const selectIsGuest = createSelector(userState, (state) => state.role === Role.Guest);
@@ -168,7 +149,6 @@ export const selectUserAsPartialParticipant = createSelector(
       participationKind,
       waitingState: WaitingState.Joined,
       meetingNotesAccess: state.meetingNotesAccess,
-      isPresenter: state.isPresenter,
       isSpeaking: false,
       isRoomOwner,
       role,

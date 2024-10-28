@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
 import { RootState } from '../';
@@ -48,6 +48,9 @@ export interface Config {
   errorReportAddress: string;
   disallowCustomDisplayName?: boolean;
   beta: Beta;
+  livekit: {
+    e2eeSalt?: string;
+  };
   oidcConfig?: {
     clientId?: string;
     authority?: string;
@@ -102,6 +105,9 @@ export interface ConfigState {
     popupRedirectPath: string;
     scope: string;
     authority: string;
+  };
+  livekit?: {
+    e2eeSalt?: string;
   };
   changePassword: {
     active: boolean;
@@ -238,6 +244,7 @@ export const selectLibravatarDefaultImage = (state: RootState) => state.config.l
 export const selectUserSurveyUrl = (state: RootState) => state.config.userSurveyUrl;
 export const selectIsBetaRelease = (state: RootState) => state.config.beta.isBeta;
 export const selectBetaBadgeUrl = (state: RootState) => state.config.beta.badgeUrl;
+export const selectLivekitE2EESalt = (state: RootState) => state.config.livekit?.e2eeSalt;
 export const selectErrorReportEmail = (state: RootState) => state.config.errorReportAddress;
 export const selectDisallowCustomDisplayName = (state: RootState) => state.config.disallowCustomDisplayName;
 export const selectChangePassword = (state: RootState) => state.config.changePassword;

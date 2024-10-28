@@ -8,14 +8,14 @@ import {
   DateTime,
   Event,
   EventException,
-  isRecurringEvent,
-  isTimelessEvent,
   RecurrencePattern,
   RecurringEvent,
   SingleEvent,
   UpdateEventPayload,
+  isRecurringEvent,
+  isTimelessEvent,
 } from '@opentalk/rest-api-rtk-query';
-import { addMinutes, areIntervalsOverlapping, formatRFC3339, Interval } from 'date-fns';
+import { Interval, addMinutes, areIntervalsOverlapping, formatRFC3339 } from 'date-fns';
 import { useFormik } from 'formik';
 import { FormikValues } from 'formik/dist/types';
 import { isEmpty } from 'lodash';
@@ -25,11 +25,11 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import {
   useCreateEventMutation,
-  useLazyGetEventsQuery,
-  useUpdateEventMutation,
   useCreateEventSharedFolderMutation,
   useDeleteEventSharedFolderMutation,
   useGetMeTariffQuery,
+  useLazyGetEventsQuery,
+  useUpdateEventMutation,
 } from '../../api/rest';
 import { ForwardIcon } from '../../assets/icons';
 import { CommonTextField, notificationAction, notifications } from '../../commonComponents';
@@ -126,9 +126,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
         }
         return true;
       })
-      .test('is valid', t('meeting-invalid-start-date'), function (startDate) {
-        return !isInvalidDate(new Date(startDate as string));
-      })
+      .test('is valid', t('meeting-invalid-start-date'), (startDate) => !isInvalidDate(new Date(startDate as string)))
       .test('is in the future', t('dashboard-meeting-date-field-error-future'), function (startDate) {
         if (this.parent.isTimeDependent && startDate && new Date(startDate) < new Date()) {
           return false;
@@ -150,9 +148,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
         }
         return true;
       })
-      .test('is valid', t('meeting-invalid-end-date'), function (endDate) {
-        return !isInvalidDate(new Date(endDate as string));
-      })
+      .test('is valid', t('meeting-invalid-end-date'), (endDate) => !isInvalidDate(new Date(endDate as string)))
       .test('if after start date', t('dashboard-meeting-date-field-error-duration'), function (endDate) {
         if (this.parent.isTimeDependent && endDate) {
           return endDate > this.parent.startDate;
@@ -184,6 +180,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
         });
       }),
     }),
+    e2eEncryption: yup.boolean().optional(),
   });
 
   const recurrenceFrequencyOptions: Array<FrequencyOption> = [
@@ -282,6 +279,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       sharedFolder: (existingEvent?.sharedFolder && Boolean(existingEvent.sharedFolder)) || false,
       showMeetingDetails: getShowMeetingDetailsInitialValue(),
       streaming: getStreamingInitialValue(),
+      e2eEncryption: existingEvent?.room.e2EEncryption || false,
     },
     validationSchema,
     validateOnChange: false,
@@ -347,6 +345,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       isAdhoc: values.isAdhoc || false,
       hasSharedFolder: values.sharedFolder || false,
       streamingTargets: getStreamingPayload(values),
+      e2eEncryption: values.e2eEncryption || false,
     };
 
     if (values.recurrencePattern) {
@@ -515,7 +514,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       timeMax: formik.values.endDate as DateTime,
     });
 
-    if (foundEvents && foundEvents.data && !isEmpty(foundEvents.data.data)) {
+    if (foundEvents?.data && !isEmpty(foundEvents.data.data)) {
       const potentialOverlappingEvents: Array<SingleEvent | RecurringEvent> = appendRecurringEventInstances(
         foundEvents.data.data as Array<Event | EventException>
       ).filter((event) => !isTimelessEvent(event)) as Array<SingleEvent | RecurringEvent>;
@@ -577,7 +576,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
           <MeetingFormSwitch
             checked={formik.values.isTimeDependent}
             switchProps={formikMinimalProps('isTimeDependent', formik)}
-            switchValueLabel={t(`dashboard-meeting-date-and-time-switch`)}
+            switchValueLabel={t('dashboard-meeting-date-and-time-switch')}
           />
 
           <Collapse orientation="vertical" in={formik.values.isTimeDependent} unmountOnExit mountOnEnter>
@@ -640,23 +639,30 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
           <MeetingFormSwitch
             checked={formik.values.waitingRoom}
             switchProps={formikMinimalProps('waitingRoom', formik)}
-            switchValueLabel={t(`dashboard-meeting-waiting-room-switch`)}
+            switchValueLabel={t('dashboard-meeting-waiting-room-switch')}
           />
           {features.sharedFolder && (
             <MeetingFormSwitch
               checked={formik.values.sharedFolder}
               switchProps={formikMinimalProps('sharedFolder', formik)}
-              switchValueLabel={t(`dashboard-meeting-shared-folder-switch`)}
+              switchValueLabel={t('dashboard-meeting-shared-folder-switch')}
             />
           )}
           <MeetingFormSwitch
             checked={formik.values.showMeetingDetails}
             switchProps={formikMinimalProps('showMeetingDetails', formik)}
-            switchValueLabel={t(`dashboard-meeting-details-switch`)}
-            tooltipTitle={t(`dashboard-meeting-details-tooltip`)}
+            switchValueLabel={t('dashboard-meeting-details-switch')}
+            tooltipTitle={t('dashboard-meeting-details-tooltip')}
           />
 
           {isStreamingEnabled && <StreamingOptions formik={formik} />}
+
+          <MeetingFormSwitch
+            checked={formik.values.e2eEncryption}
+            switchProps={formikMinimalProps('e2eEncryption', formik)}
+            switchValueLabel={t('dashboard-meeting-e2ee-switch')}
+            tooltipTitle={t('dashboard-meeting-e2ee-tooltip')}
+          />
         </Stack>
         <Grid container item justifyContent="space-between" spacing={2}>
           <Grid item xs={12} sm="auto">

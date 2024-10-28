@@ -8,6 +8,17 @@ import { render, screen, mockedParticipant, mockedVideoMediaDescriptor, mockStor
 import { PresenterVideoPosition } from './PresenterOverlay';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
 
+jest.mock('@livekit/components-react', () => ({
+  useParticipantContext: () => mockedParticipant(0),
+  useRoomContext: () => jest.fn(),
+  useRemoteParticipant: () => mockedParticipant(0),
+}));
+
+jest.mock('./RemoteVideo', () => ({
+  __esModule: true,
+  default: () => <div data-testid="remoteVideo"></div>,
+}));
+
 const participant = mockedParticipant(0);
 const participantId = participant.id;
 
@@ -26,18 +37,17 @@ describe('ScreenPresenterVideo Component', () => {
   afterEach(() => cleanup());
 
   test('render component without crashing', async () => {
-    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} mediaRef="test" />, store);
+    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, store);
 
     expect(screen.getByTestId('sharedPresenterVideo')).toBeInTheDocument();
-    expect(screen.getByTestId(`remoteVideo-${idFromDescriptor(mockedVideoMediaDescriptor(0))}`)).toBeInTheDocument();
 
-    expect(screen.queryByTestId('participantAvatar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('participantAvatar')).toBeInTheDocument();
     expect(screen.queryByText(participant.displayName)).not.toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
   });
 
   test("mouse over presenter's video should display presenter's overlay", async () => {
-    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} mediaRef="test" />, store);
+    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, store);
     const screenShareVideo = screen.getByTestId('sharedPresenterVideo');
 
     expect(screenShareVideo).toBeInTheDocument();
@@ -47,14 +57,10 @@ describe('ScreenPresenterVideo Component', () => {
     expect(screen.getByLabelText('indicator-pinned')).toBeInTheDocument();
     expect(screen.getByLabelText('indicator-change-position')).toBeInTheDocument();
     expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
-    expect(screen.getByTestId(`remoteVideo-${idFromDescriptor(mockedVideoMediaDescriptor(0))}`)).toBeInTheDocument();
   });
 
   test("click on pinIcon in presenter's overlay should trigger togglePinVideo()", async () => {
-    await render(
-      <ScreenPresenterVideo {...ScreenPresenterVideoProps} togglePin={handleClick} mediaRef="test" />,
-      store
-    );
+    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} togglePin={handleClick} />, store);
     const screenShareVideo = screen.getByTestId('sharedPresenterVideo');
 
     expect(screenShareVideo).toBeInTheDocument();
@@ -71,10 +77,7 @@ describe('ScreenPresenterVideo Component', () => {
   });
 
   test("click on change position icon in presenter's overlay should trigger changeVideoPosition()", async () => {
-    await render(
-      <ScreenPresenterVideo {...ScreenPresenterVideoProps} changeVideoPosition={handleClick} mediaRef="test" />,
-      store
-    );
+    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} changeVideoPosition={handleClick} />, store);
     const screenShareVideo = screen.getByTestId('sharedPresenterVideo');
 
     expect(screenShareVideo).toBeInTheDocument();
@@ -83,7 +86,9 @@ describe('ScreenPresenterVideo Component', () => {
     await fireEvent.mouseEnter(screenShareVideo);
     expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
 
-    const button = screen.getByRole('button', { name: /indicator-change-position/i });
+    const button = screen.getByRole('button', {
+      name: /indicator-change-position/i,
+    });
     expect(button).toBeInTheDocument();
 
     fireEvent.click(button);
@@ -92,7 +97,7 @@ describe('ScreenPresenterVideo Component', () => {
 
   test("render component with presenter's video off should display avatar component", async () => {
     const { store } = mockStore(1, { video: false, screen: true });
-    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} mediaRef="test" />, store);
+    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, store);
 
     expect(screen.getByTestId('sharedPresenterVideo')).toBeInTheDocument();
     expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();

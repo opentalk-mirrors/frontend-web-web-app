@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, BoxProps, Stack, styled, Typography } from '@mui/material';
+import { useParticipants } from '@livekit/components-react';
+import { Box, BoxProps, Stack, Typography, styled } from '@mui/material';
 import { omit } from 'lodash';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CameraOffIcon, MicOffIcon } from '../../assets/icons';
-import { useAppSelector } from '../../hooks';
-import { selectSubscriberStateById } from '../../store/slices/mediaSubscriberSlice';
-import { MediaSessionType, ParticipantId } from '../../types';
+import { ParticipantId } from '../../types';
 
 const NameBox = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -69,15 +68,10 @@ const NameTile = ({ displayName, ...props }: NameTileProps) => {
 
   if ('participantId' in props) {
     const { participantId } = props;
-    const subscriberVideoState = useAppSelector(
-      selectSubscriberStateById({ participantId, mediaType: MediaSessionType.Video }, 'video')
-    );
-    const subscriberAudioState = useAppSelector(
-      selectSubscriberStateById({ participantId, mediaType: MediaSessionType.Video }, 'audio')
-    );
+    const participant = useParticipants().find((participant) => participant.identity === participantId);
 
-    isVideoActive.current = subscriberVideoState && subscriberVideoState.active;
-    isAudioActive.current = subscriberAudioState && subscriberAudioState.active;
+    isVideoActive.current = participant?.isCameraEnabled || false;
+    isAudioActive.current = participant?.isMicrophoneEnabled || false;
   } else {
     const { localVideoOn, localAudioOn } = props;
     isVideoActive.current = Boolean(localVideoOn);

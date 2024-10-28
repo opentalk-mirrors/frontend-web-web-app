@@ -3,147 +3,118 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { login } from '@opentalk/redux-oidc';
 import { Namespaces, StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
-import { Middleware, AnyAction, freeze } from '@reduxjs/toolkit';
+import { AnyAction, Middleware, freeze } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
 import {
-  notificationAction,
-  notifications,
   createStackedMessages,
-  setLibravatarOptions,
+  notificationAction,
   notificationPersistent,
-  startTimeLimitNotification,
+  notifications,
+  setLibravatarOptions,
   showConsentNotification,
+  startTimeLimitNotification,
 } from '../commonComponents';
 import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification/StreamUpdatedNotification';
 import LayoutOptions from '../enums/LayoutOptions';
 import i18n from '../i18n';
-import localMediaContext from '../modules/Media/LocalMedia';
-import localScreenContext from '../modules/Media/LocalScreen';
-import {
-  ConferenceRoom,
-  getCurrentConferenceRoom,
-  MediaDescriptor,
-  MediaId,
-  QualityLimit,
-  shutdownConferenceContext,
-  SubscriberStateChanged,
-  SubscriberConfig,
-  WebRtc,
-} from '../modules/WebRTC';
-import { StatsEvent } from '../modules/WebRTC/Statistics/ConnectionStats';
+import { ConferenceRoom, getCurrentConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { AppDispatch, RootState } from '../store';
 import { hangUp, joinSuccess, startRoom } from '../store/commonActions';
 import {
+  remainingUpdated as automodRemainingUpdated,
+  speakerUpdated as automodSpeakerUpdated,
   started as automodStarted,
   stopped as automodStopped,
-  remainingUpdated as automodRemainingUpdated,
-  setAsInactiveSpeaker,
   setAsActiveSpeaker,
-  speakerUpdated as automodSpeakerUpdated,
+  setAsInactiveSpeaker,
 } from '../store/slices/automodSlice';
 import * as breakoutStore from '../store/slices/breakoutSlice';
-import { clearGlobalChat, received as chatReceived, setChatSettings } from '../store/slices/chatSlice';
+import { received as chatReceived, clearGlobalChat, setChatSettings } from '../store/slices/chatSlice';
 import { selectLibravatarDefaultImage } from '../store/slices/configSlice';
-import { statsUpdated as subscriberStatsUpdate } from '../store/slices/connectionStatsSlice';
 import {
+  canceled as legalVoteCanceled,
+  initialized as legalVoteInitialized,
   started as legalVoteStarted,
   stopped as legalVoteStopped,
   updated as legalVoteUpdated,
-  canceled as legalVoteCanceled,
   voted as legalVoteVoted,
-  initialized as legalVoteInitialized,
 } from '../store/slices/legalVoteSlice';
+import { getLivekitRoom, setLivekitUnavailable } from '../store/slices/livekitSlice';
 import * as mediaStore from '../store/slices/mediaSlice';
-import { setUpstreamLimit } from '../store/slices/mediaSlice';
-import {
-  closed as subscriberClosed,
-  removed as subscriberRemoved,
-  failed as subscriberFailed,
-  limit as subscriberLimit,
-  mediaUpdated as subscriberMediaUpdated,
-  updated as subscriberUpdate,
-} from '../store/slices/mediaSubscriberSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from '../store/slices/meetingNotesSlice';
 import {
-  forceLowerHand,
   disableRaisedHands,
   enableRaisedHands,
-  loweredHand,
-  raisedHand,
+  forceLowerHand,
   forceMuteDisabled,
   forceMuteEnabled,
+  loweredHand,
+  raisedHand,
 } from '../store/slices/moderationSlice';
 import {
   breakoutJoined,
   breakoutLeft,
   join as participantsJoin,
   leave as participantsLeft,
+  rename as participantsRename,
   update as participantsUpdate,
-  waitingRoomJoined,
-  waitingRoomLeft,
   selectParticipantsTotal,
   updatedSpeaker,
-  rename as participantsRename,
+  waitingRoomJoined,
+  waitingRoomLeft,
 } from '../store/slices/participantsSlice';
 import * as pollStore from '../store/slices/pollSlice';
 import {
-  enteredWaitingRoom,
-  readyToEnter,
-  enableWaitingRoom,
-  disableWaitingRoom,
   connectionClosed,
-  selectParticipantLimit,
+  disableWaitingRoom,
+  enableWaitingRoom,
+  enteredWaitingRoom,
   joinBlocked,
+  readyToEnter,
+  selectParticipantLimit,
 } from '../store/slices/roomSlice';
 import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
 import { streamUpdated } from '../store/slices/streamingSlice';
-import { updateParticipantsReady, timerStarted, timerStopped } from '../store/slices/timerSlice';
+import { timerStarted, timerStopped, updateParticipantsReady } from '../store/slices/timerSlice';
 import { updatedCinemaLayout } from '../store/slices/uiSlice';
-import {
-  revokePresenterRole,
-  setPresenterRole,
-  updateRole,
-  selectIsModerator,
-  setDisplayName,
-} from '../store/slices/userSlice';
+import { selectIsModerator, setDisplayName, updateRole } from '../store/slices/userSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import {
+  AutomodSelectionStrategy,
   BackendParticipant,
   BreakoutRoomId,
-  GroupId,
-  Namespaced,
-  Timestamp,
-  VideoSetting,
-  matchBuilder,
-  MeetingNotesState,
   ChatMessage,
-  Participant,
-  MeetingNotesAccess,
-  WaitingState,
-  ParticipantInOtherRoom,
-  InitialChatHistory,
   ChatScope,
-  AutomodSelectionStrategy,
+  GroupId,
+  InitialChatHistory,
+  MeetingNotesAccess,
+  MeetingNotesState,
+  Namespaced,
+  Participant,
   ParticipantId,
+  ParticipantInOtherRoom,
   Speaker,
-  ForceMuteType,
+  Timestamp,
+  WaitingState,
+  matchBuilder,
 } from '../types';
 import { initSentryReportWithUser } from '../utils/glitchtipUtils';
 import { restApi } from './rest';
 import {
-  breakout,
-  control,
-  media,
   Message as IncomingMessage,
+  breakout,
+  chat,
+  control,
+  livekit,
+  media,
+  meetingNotes,
   moderation,
   poll,
-  meetingNotes,
-  whiteboard,
-  chat,
-  timer,
-  streaming,
   sharedFolder,
+  streaming,
+  timer,
+  whiteboard,
 } from './types/incoming';
 import { AutomodEventType } from './types/incoming/automod';
 import { Role } from './types/incoming/control';
@@ -201,7 +172,7 @@ const isParticipantSpeaking = (speakers: Speaker[], participantId: ParticipantId
 
 const mapToUiParticipant = (
   state: RootState,
-  { id, control, media, meetingNotes }: BackendParticipant,
+  { id, control, meetingNotes }: BackendParticipant,
   breakoutRoomId: BreakoutRoomId | null,
   waitingState: WaitingState,
   speakers?: Speaker[]
@@ -220,7 +191,6 @@ const mapToUiParticipant = (
   role: control.role,
   waitingState,
   meetingNotesAccess: mapMeetingNotesToMeetingNotesAccess(meetingNotes),
-  isPresenter: Boolean(media?.isPresenter),
   isSpeaking: speakers ? isParticipantSpeaking(speakers, id) : false,
   isRoomOwner: control.isRoomOwner,
 });
@@ -243,29 +213,9 @@ const mapBreakoutToUiParticipant = (
   lastActive: joinTime,
   waitingState: WaitingState.Joined,
   meetingNotesAccess: MeetingNotesAccess.None,
-  isPresenter: false,
   isSpeaking: false,
   isRoomOwner: false,
 });
-
-const listenWebRtc = (webRtc: WebRtc, dispatch: AppDispatch) => {
-  const updateHandler = (config: SubscriberConfig) => dispatch(subscriberUpdate(config));
-  const statsHandler = (connectionStats: Record<MediaId, StatsEvent>) =>
-    dispatch(subscriberStatsUpdate(connectionStats));
-  const closeHandler = (mediaDescriptor: MediaDescriptor) => dispatch(subscriberClosed(mediaDescriptor));
-  const removeHandler = (mediaDescriptor: MediaDescriptor) => dispatch(subscriberRemoved(mediaDescriptor));
-  const mediaChangeHandler = (mediaChange: SubscriberStateChanged) => dispatch(subscriberMediaUpdated(mediaChange));
-  const upstreamLimitHandler = (limit: VideoSetting) => dispatch(setUpstreamLimit(limit));
-  const subscriberLimitHandler = (limit: QualityLimit) => dispatch(subscriberLimit(limit));
-
-  webRtc.addEventListener('removed', removeHandler);
-  webRtc.addEventListener('subscriberchanged', updateHandler);
-  webRtc.addEventListener('statsupdated', statsHandler);
-  webRtc.addEventListener('subscriberclosed', closeHandler);
-  webRtc.addEventListener('subscriberstatechanged', mediaChangeHandler);
-  webRtc.addEventListener('upstreamLimit', upstreamLimitHandler);
-  webRtc.addEventListener('subscriberLimit', subscriberLimitHandler);
-};
 
 export const sendMessage = (message: Namespaced<OutgoingActionType | ClearGlobalMessages, Namespaces>) => {
   const conferenceContext = getCurrentConferenceRoom();
@@ -375,8 +325,7 @@ const handleControlMessage = async (
           votes: data.legalVote?.votes,
           participants: joinedParticipants,
           moderation: data.moderation,
-          isPresenter: data.media?.isPresenter,
-          forceMute: data.media?.forceMute,
+          forceMute: data.livekit?.microphoneRestrictionState,
           recording: data.recording,
           serverTimeOffset,
           tariff: data.tariff,
@@ -386,6 +335,7 @@ const handleControlMessage = async (
           eventInfo: data.eventInfo,
           roomInfo: data.roomInfo,
           isRoomOwner: data.isRoomOwner,
+          livekit: data.livekit,
         })
       );
 
@@ -409,22 +359,6 @@ const handleControlMessage = async (
       if (data.closesAt) {
         startTimeLimitNotification(data.closesAt);
       }
-
-      //Mutes the user if microphones are disabled in conference
-      if (
-        data.media?.forceMute.type === ForceMuteType.Enabled &&
-        !data.media.forceMute.allowList.includes(data.id) &&
-        localMediaContext.isAudioRunning()
-      ) {
-        await localMediaContext.reconfigure({ audio: false });
-      }
-
-      localMediaContext.updateConferenceContext(conference).catch((e: Error) => {
-        console.error('failed to attach localMediaContext to WebRTC room', e);
-      });
-      localScreenContext.updateConferenceContext(conference).catch((e: Error) => {
-        console.error('failed to attach localScreenContext to WebRTC room', e);
-      });
 
       // Notify moderator, in case he took the last position of the room and now it's full
       if (data.role === Role.Moderator) {
@@ -484,9 +418,11 @@ const handleControlMessage = async (
     case 'join_blocked':
       dispatch(joinBlocked({ reason: data.reason }));
       break;
-    case 'left':
+    case 'left': {
+      getLivekitRoom().remoteParticipants.delete(data.id);
       dispatch(participantsLeft({ id: data.id, timestamp: timestamp }));
       break;
+    }
     case 'update': {
       if (data.control !== undefined) {
         dispatch(
@@ -494,7 +430,6 @@ const handleControlMessage = async (
             id: data.id,
             lastActive: timestamp,
             waitingState: WaitingState.Joined,
-            isPresenter: Boolean(data.media?.isPresenter),
             meetingNotesAccess: mapMeetingNotesToMeetingNotesAccess(data.meetingNotes),
             ...data.control,
           })
@@ -539,56 +474,30 @@ const handleControlMessage = async (
 const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, state: RootState) => {
   // TODO: Theses two are actually a control messages -- talk to the backend
   switch (data.message) {
-    case 'presenter_granted':
-      dispatch(setPresenterRole());
-      notifications.close('control-participant-presenter-role-revoked');
-      notifications.info(i18next.t('control-participant-presenter-role-granted'), {
-        key: 'control-participant-presenter-role-granted',
-      });
-      break;
-    case 'presenter_revoked':
-      dispatch(revokePresenterRole());
-      localScreenContext.release();
-      notifications.close('control-participant-presenter-role-granted');
-      notifications.warning(i18next.t('control-participant-presenter-role-revoked'), {
-        key: 'control-participant-presenter-role-revoked',
-      });
-      break;
-    case 'force_mute_enabled':
-      dispatch(forceMuteEnabled({ allowList: data.allowList }));
-      if (state.user.uuid !== null && !data.allowList.includes(state.user.uuid)) {
-        if (localMediaContext.isAudioEnabled()) {
-          await localMediaContext.reconfigure({ audio: false });
-        }
-        notifications.info(i18next.t('microphones-disabled-notification'));
-      }
-      break;
-    case 'force_mute_disabled':
-      dispatch(forceMuteDisabled());
-      if (state.user.uuid && !state.moderation.forceMute.allowList.includes(state.user.uuid)) {
-        notifications.info(i18next.t('microphones-enabled-notification'));
-      }
-      break;
     case 'request_mute': {
-      dispatch(mediaStore.requestMute(data));
-      const participants = state.participants.entities;
-      if (data.force) {
-        await localMediaContext.reconfigure({ audio: false });
-        notifications.warning(
-          i18next.t('media-received-force-mute', { origin: participants[data.issuer]?.displayName || 'admin' })
-        );
-      } else {
-        const message = i18next.t('media-received-request-mute', {
-          origin: participants[data.issuer]?.displayName || 'admin',
-        });
-        notificationAction({
-          msg: message,
-          variant: 'warning',
-          actionBtnText: i18next.t('media-received-request-mute-ok'),
-          onAction: () => localMediaContext.reconfigure({ audio: false }),
-        });
+      {
+        const room = getLivekitRoom();
+        dispatch(mediaStore.requestMute(data));
+        const participants = state.participants.entities;
+        if (data.force) {
+          room.localParticipant.setMicrophoneEnabled(false);
+
+          notifications.warning(
+            i18next.t('media-received-force-mute', { origin: participants[data.issuer]?.displayName || 'admin' })
+          );
+        } else {
+          const message = i18next.t('media-received-request-mute', {
+            origin: participants[data.issuer]?.displayName || 'admin',
+          });
+          notificationAction({
+            msg: message,
+            variant: 'warning',
+            actionBtnText: i18next.t('media-received-request-mute-ok'),
+            onAction: () => room.localParticipant.setMicrophoneEnabled(false),
+          });
+        }
+        dispatch(mediaStore.notificationShown());
       }
-      dispatch(mediaStore.notificationShown());
       return;
     }
     case 'speaker_updated':
@@ -606,9 +515,6 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
           });
           break;
         case 'invalid_request_offer':
-          dispatch(subscriberFailed(data));
-          break;
-        // We currently don't care for these. A sepcific error handling should be added at a later point.
         case 'invalid_sdp_offer':
         case 'handle_sdp_answer':
         case 'invalid_candidate':
@@ -716,7 +622,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
       }
       break;
     }
-    case 'stopped':
+    case 'stopped': {
       notifications.close(startedId);
       notifications.close(nextId);
       notifications.close(currentId);
@@ -727,25 +633,26 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
         msg: i18next.t('talking-stick-finished'),
         variant: 'info',
       });
-      localMediaContext.reconfigure({ audio: false }).catch((error) => {
-        console.error('Failed to mute on talking stick stop:', error);
-      });
+
+      getLivekitRoom().localParticipant.setMicrophoneEnabled(false);
       break;
+    }
     // case 'start_animation':
     //   dispatch(slotStore.initLottery({ winner: data.result, pool: data.pool }));
     //   break;
     case 'remaining_updated':
       dispatch(automodRemainingUpdated(data));
       break;
-    case 'speaker_updated':
+    case 'speaker_updated': {
+      const room = getLivekitRoom();
       if (data.speaker !== state.user.uuid) {
-        localMediaContext.reconfigure({ audio: false });
+        room.localParticipant.setMicrophoneEnabled(false);
         dispatch(setAsInactiveSpeaker());
       }
       notifications.close(nextId);
       notifications.close(currentId);
       notifications.close(unmutedId);
-      if (data.remaining && data.remaining[0] && data.remaining[0] === state.user.uuid) {
+      if (data.remaining?.[0] && data.remaining[0] === state.user.uuid) {
         notificationAction({
           key: nextId,
           msg: i18next.t('talking-stick-next-announcement'),
@@ -765,13 +672,13 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           key: unmutedId,
         } as const;
 
-        if (state.media.audioEnabled) {
+        if (room.localParticipant.isMicrophoneEnabled) {
           notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
         } else {
           notifications.showTalkingStickMutedNotification({
             onUnmute: async () => {
               notifications.close(currentId);
-              await localMediaContext.reconfigure({ audio: true });
+              room.localParticipant.setMicrophoneEnabled(true);
               notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
             },
             onNext: () => {
@@ -784,6 +691,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
       }
       dispatch(automodSpeakerUpdated(data));
       break;
+    }
     case 'error':
       dispatchError(data.error.replace('_', '-'));
       break;
@@ -906,13 +814,13 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
       dispatch(hangUp());
       notifications.warning(i18next.t('meeting-notification-banned'));
       break;
-    case 'sent_to_waiting_room':
+    case 'sent_to_waiting_room': {
       dispatch(enteredWaitingRoom());
       notifications.warning(i18next.t('meeting-notification-moved-to-waiting-room'));
-      //We release user media, unsubscribing from other participants' media is handled in ConferenceRoom.ts
-      localMediaContext.release();
-      localScreenContext.release();
+      const room = getLivekitRoom();
+      room.localParticipant.setScreenShareEnabled(false);
       break;
+    }
     case 'waiting_room_enabled':
       dispatch(enableWaitingRoom());
       break;
@@ -1191,6 +1099,40 @@ const handleSharedFolderMessage = (dispatch: AppDispatch, data: sharedFolder.Mes
   }
 };
 
+const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, state: RootState) => {
+  switch (data.message) {
+    case 'microphone_restrictions_enabled':
+      dispatch(forceMuteEnabled({ unrestrictedParticipants: data.unrestrictedParticipants }));
+      if (state.user.uuid !== null && !data.unrestrictedParticipants.includes(state.user.uuid)) {
+        notifications.info(i18next.t('microphones-disabled-notification'));
+      }
+      break;
+    case 'microphone_restrictions_disabled':
+      dispatch(forceMuteDisabled());
+      if (state.user.uuid && !state.moderation.forceMute.unrestrictedParticipants.includes(state.user.uuid)) {
+        notifications.info(i18next.t('microphones-enabled-notification'));
+      }
+      break;
+    case 'error': {
+      const error = data.error;
+      switch (error) {
+        case 'livekit_unavailable':
+          dispatch(setLivekitUnavailable(true));
+          break;
+        default:
+          console.error(`Livekit Error: ${data}`);
+          throw new Error(`Livekit Error: ${error}`);
+      }
+      break;
+    }
+    default: {
+      const dataString = JSON.stringify(data, null, 2);
+      console.error(`Unknown livekit message type: ${dataString}`);
+      throw new Error(`Unknown message type: ${dataString}`);
+    }
+  }
+};
+
 /**
  * Handle incoming websocket messages, sent from the signaling server
  *
@@ -1242,6 +1184,9 @@ const onMessage =
         break;
       case 'shared_folder':
         handleSharedFolderMessage(dispatch, message.payload);
+        break;
+      case 'livekit':
+        handleLivekitMessage(dispatch, message.payload, getState());
         break;
       default: {
         const dataString = JSON.stringify(message, null, 2);
@@ -1304,7 +1249,6 @@ export const apiMiddleware: Middleware = ({
           conferenceContext.addEventListener('message', messageHandler);
           conferenceContext.addEventListener('shutdown', shutdownHandler);
 
-          listenWebRtc(conferenceContext.webRtc, dispatch);
           conferenceContext.addEventListener('connected', connectedHandler);
         }
       )
@@ -1323,6 +1267,7 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.breakout.handler(builder, dispatch))
       .addModule((builder) => outgoing.control.handler(builder, dispatch))
       .addModule((builder) => outgoing.legalVote.handler(builder, dispatch))
+      .addModule((builder) => outgoing.livekit.handler(builder, dispatch))
       .addModule((builder) => outgoing.poll.handler(builder, dispatch))
       .addModule((builder) => outgoing.media.handler(builder, dispatch))
       .addModule((builder) => outgoing.meetingNotes.handler(builder, dispatch))

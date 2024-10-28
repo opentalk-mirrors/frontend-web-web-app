@@ -1,19 +1,30 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, mockStore } from '../../utils/testUtils';
+import { PropsWithChildren } from 'react';
+
+import { render, screen, mockStore, mockedParticipant } from '../../utils/testUtils';
 import GridView from './GridView';
 
-describe('GridView', () => {
-  test('render 8 cinemaCell inside GridView', async () => {
-    const { store } = mockStore(8, {});
-    await render(<GridView />, store);
-    expect(screen.getAllByTestId('cinemaCell')).toHaveLength(8);
-  });
+jest.mock('./fragments/GridCell', () => ({
+  __esModule: true,
+  default: () => <div data-testid="gridCell"></div>,
+}));
 
-  test('If there is more than 9 participants in meeting, GridView should render max of 9 cinemaCell per page', async () => {
-    const { store } = mockStore(18, {});
+jest.mock('@livekit/components-react', () => ({
+  ParticipantContext: {
+    Provider: ({ children }: PropsWithChildren) => {
+      return <div data-testid="provider"> {children}</div>;
+    },
+  },
+  useRoomContext: () => jest.fn(),
+  useRemoteParticipants: () => [mockedParticipant(0)],
+}));
+
+describe('GridView', () => {
+  test('render GridView', async () => {
+    const { store } = mockStore(0);
     await render(<GridView />, store);
-    expect(screen.getAllByTestId('cinemaCell')).toHaveLength(9);
+    expect(screen.getByTestId('grid-container')).toBeVisible();
   });
 });

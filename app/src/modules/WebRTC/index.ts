@@ -1,13 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { VideoSetting } from '../../types';
+import { MediaSessionState, MediaSessionType, ParticipantId } from '../../types';
 import { ConferenceRoom } from './ConferenceRoom';
-import { MediaDescriptor } from './WebRTC';
 
 export { ConferenceRoom };
-export { WebRtc, idFromDescriptor, descriptorFromId } from './WebRTC';
-export type { MediaDescriptor, MediaId, SubscriberConfig, SubscriberStateChanged, QualityLimit } from './WebRTC';
 
 /* TODO: find a better place to hold the ConferenceRoom state object.
   options:
@@ -15,6 +12,23 @@ export type { MediaDescriptor, MediaId, SubscriberConfig, SubscriberStateChanged
    - in the store, but it is not serializable
    - a singleton as global state
  */
+
+export interface MediaDescriptor {
+  participantId: ParticipantId;
+  mediaType: MediaSessionType;
+}
+
+export type MediaId = string & { readonly __tag: unique symbol };
+
+export const idFromDescriptor = (descriptor: MediaDescriptor): MediaId =>
+  `${descriptor.participantId}/${descriptor.mediaType}` as MediaId;
+
+export const descriptorFromId = (id: MediaId): MediaDescriptor => {
+  const [participantId, mediaType] = id.split('/');
+  return { participantId: participantId as ParticipantId, mediaType: mediaType as MediaSessionType };
+};
+
+export type SubscriberConfig = MediaDescriptor & MediaSessionState;
 
 export const PACKET_LOSS_THRESHOLD = 0.1; //10%
 let currentConferenceRoom: ConferenceRoom | undefined = undefined;
@@ -30,23 +44,6 @@ export const setCurrentConferenceRoom = (room: ConferenceRoom) => {
 
 export const getCurrentConferenceRoom = () => {
   return currentConferenceRoom;
-};
-
-export const getMediaStream = (descriptor: MediaDescriptor) => {
-  if (currentConferenceRoom === undefined) {
-    throw new Error('can not requestVideoQuality form conferenceContext');
-  }
-  return currentConferenceRoom.webRtc.getMediaStream(descriptor);
-};
-
-export const requestVideoQuality = (descriptor: MediaDescriptor, quality: VideoSetting, mediaRef: string) => {
-  if (currentConferenceRoom === undefined) {
-    if (quality === VideoSetting.Off) {
-      return;
-    }
-    throw new Error('can not requestVideoQuality form conferenceContext');
-  }
-  currentConferenceRoom.webRtc.requestQuality(descriptor, quality, mediaRef);
 };
 
 export const shutdownConferenceContext = () => {

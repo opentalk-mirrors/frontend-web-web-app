@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Event } from '@sentry/react';
 
 import { RootState } from '../';
@@ -9,22 +9,11 @@ import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
 import { ModerationTabKey } from '../../config/moderationTabs';
 import LayoutOptions from '../../enums/LayoutOptions';
-import { MediaDescriptor } from '../../modules/WebRTC';
-import {
-  ChatScope,
-  LegalVoteId,
-  MediaSessionType,
-  ParticipantId,
-  PollId,
-  SortOption,
-  TargetId,
-  TimerStyle,
-} from '../../types';
+import { ChatScope, LegalVoteId, ParticipantId, PollId, SortOption, TargetId, TimerStyle } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
 import { started as legalVoteStarted } from './legalVoteSlice';
-import { removed } from './mediaSubscriberSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
-import { leave, breakoutLeft } from './participantsSlice';
+import { breakoutLeft, leave } from './participantsSlice';
 import { started as PollStarted } from './pollSlice';
 import { connectionClosed } from './roomSlice';
 import { timerStarted, timerStopped } from './timerSlice';
@@ -264,12 +253,6 @@ export const uiSlice = createSlice({
     builder.addCase(joinSuccess, (state, { payload: { timer } }) => {
       if (timer?.style === TimerStyle.CoffeeBreak) {
         state.showCoffeeBreakCurtain = true;
-      }
-    });
-    builder.addCase(removed, (state, { payload }: PayloadAction<MediaDescriptor>) => {
-      // unpin, if screensharing was stopped by the pinned participant
-      if (payload.mediaType === MediaSessionType.Screen && payload.participantId === state.pinnedParticipantId) {
-        state.pinnedParticipantId = undefined;
       }
     });
   },

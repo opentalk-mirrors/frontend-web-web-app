@@ -1,17 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createListenerMiddleware, createSlice, PayloadAction, TypedStartListening } from '@reduxjs/toolkit';
+import { PayloadAction, TypedStartListening, createListenerMiddleware, createSlice } from '@reduxjs/toolkit';
 import { intervalToDuration } from 'date-fns';
 import i18next from 'i18next';
 
 import { AppDispatch, RootState } from '../';
 import { ReadyToContinue } from '../../api/types/incoming/timer';
 import { notifications } from '../../commonComponents';
-import localMediaContext from '../../modules/Media/LocalMedia';
-import localScreenContext from '../../modules/Media/LocalScreen';
 import { ParticipantId, TimerKind, TimerStopKind, TimerStyle, Timestamp } from '../../types';
 import { joinSuccess } from '../commonActions';
+import { getLivekitRoom } from './livekitSlice';
 
 interface State {
   startedAt?: Timestamp;
@@ -135,19 +134,20 @@ const startAppListening = timerMiddleware.startListening as AppStartListening;
 
 startAppListening({
   actionCreator: timerStarted,
-  effect: (action, listenerApi) => {
-    const mediaState = listenerApi.getOriginalState().media;
+  effect: (action) => {
+    const room = getLivekitRoom();
 
     //Avoid sending reconfigure if both video and audio tracks are not active
-    const isAnyMediaTrackEnabled = mediaState.audioEnabled || mediaState.videoEnabled;
-    const isShareScreenEnabled = mediaState.shareScreenEnabled;
+    const isAnyMediaTrackEnabled = room.localParticipant.isMicrophoneEnabled || room.localParticipant.isCameraEnabled;
+    const isShareScreenEnabled = room.localParticipant.isScreenShareEnabled;
 
     if (action.payload.style === TimerStyle.CoffeeBreak) {
       if (isAnyMediaTrackEnabled) {
-        localMediaContext.reconfigure({ audio: false, video: false });
+        room.localParticipant.setCameraEnabled(false);
+        room.localParticipant.setMicrophoneEnabled(false);
       }
       if (isShareScreenEnabled) {
-        localScreenContext.release();
+        room.localParticipant.setScreenShareEnabled(false);
       }
     }
   },
@@ -166,7 +166,6 @@ startAppListening({
           notifications.info(i18next.t('timer-notification-stopped'));
           break;
         case TimerStopKind.CreatorLeft:
-        default:
           break;
       }
     }

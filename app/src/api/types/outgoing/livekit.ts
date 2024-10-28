@@ -1,0 +1,77 @@
+// SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
+//
+// SPDX-License-Identifier: EUPL-1.2
+import { RootState } from '../../../store';
+import { Namespaced, ParticipantId, createModule, createSignalingApiCall } from '../../../types';
+import { sendMessage } from '../../index';
+
+export interface ForceMute {
+  action: 'force_mute';
+  participants?: Array<ParticipantId>;
+}
+
+export interface GrantScreenSharePermission {
+  action: 'grant_screen_share_permission';
+  participants: Array<ParticipantId>;
+}
+
+export interface RevokeScreenSharePermission {
+  action: 'revoke_screen_share_permission';
+  participants: Array<ParticipantId>;
+}
+
+export interface EnableMicrophoneRestrictions {
+  action: 'enable_microphone_restrictions';
+  unrestrictedParticipants: Array<ParticipantId>;
+}
+
+export interface DisableMicrophoneRestrictions {
+  action: 'disable_microphone_restrictions';
+}
+
+export type Action =
+  | ForceMute
+  | GrantScreenSharePermission
+  | RevokeScreenSharePermission
+  | EnableMicrophoneRestrictions
+  | DisableMicrophoneRestrictions;
+
+export type Livekit = Namespaced<Action, 'livekit'>;
+
+export const requestMute = createSignalingApiCall<ForceMute>('livekit', 'force_mute');
+export const grantScreenSharePermission = createSignalingApiCall<GrantScreenSharePermission>(
+  'livekit',
+  'grant_screen_share_permission'
+);
+export const revokeScreenSharePermission = createSignalingApiCall<RevokeScreenSharePermission>(
+  'livekit',
+  'revoke_screen_share_permission'
+);
+export const enableMicrophoneRestrictions = createSignalingApiCall<EnableMicrophoneRestrictions>(
+  'livekit',
+  'enable_microphone_restrictions'
+);
+export const disableMicrophoneRestrictions = createSignalingApiCall<DisableMicrophoneRestrictions>(
+  'livekit',
+  'disable_microphone_restrictions'
+);
+
+export const handler = createModule<RootState>((builder) => {
+  builder.addCase(requestMute.action, (_state, action) => {
+    sendMessage(requestMute(action.payload));
+  });
+  builder.addCase(grantScreenSharePermission.action, (_state, action) => {
+    sendMessage(grantScreenSharePermission(action.payload));
+  });
+  builder.addCase(revokeScreenSharePermission.action, (_state, action) => {
+    sendMessage(revokeScreenSharePermission(action.payload));
+  });
+  builder.addCase(enableMicrophoneRestrictions.action, (_state, action) => {
+    sendMessage(enableMicrophoneRestrictions(action.payload));
+  });
+  builder.addCase(disableMicrophoneRestrictions.action, (_state, action) => {
+    sendMessage(disableMicrophoneRestrictions(action.payload));
+  });
+});
+
+export default Livekit;

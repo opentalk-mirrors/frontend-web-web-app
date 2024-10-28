@@ -79,7 +79,10 @@ window.config = {
   errorReportAddress: "${ERROR_REPORT_ADDRESS}",
   beta: {
     isBeta: ${IS_BETA_RELEASE:-true},
-    badgeUrl: "${BETA_BADGE_URL}"
+    badgeUrl: "${BETA_BADGE_URL}",
+  },
+  livekit: {
+    e2eeSalt: "${LIVEKIT_E2EE_SALT}",
   },
   libravatarDefaultImage: "${LIBRAVATAR_DEFAULT_IMAGE:-robohash}",
   disallowCustomDisplayName: ${DISALLOW_CUSTOM_DISPLAY_NAME:-false},

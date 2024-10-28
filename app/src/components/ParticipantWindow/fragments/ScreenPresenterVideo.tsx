@@ -1,13 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useParticipantContext } from '@livekit/components-react';
 import { styled } from '@mui/material';
+import { Track } from 'livekit-client';
 import React, { useState, useMemo } from 'react';
 
 import { useAppSelector } from '../../../hooks';
+import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/mediaSlice';
-import { selectSubscriberHasVideoById } from '../../../store/slices/mediaSubscriberSlice';
-import { MediaSessionType, ParticipantId, VideoSetting } from '../../../types';
+import { ParticipantId, VideoSetting } from '../../../types';
 import { AvatarContainer } from './AvatarContainer';
 import { PresenterVideoPosition } from './PresenterOverlay';
 import { PresenterOverlay } from './PresenterOverlay';
@@ -49,24 +51,26 @@ interface ScreenPresenterVideoProps {
   togglePin: () => void;
   changeVideoPosition: () => void;
   isThumbnail?: boolean;
-  mediaRef: string;
 }
 
 const ScreenPresenterVideo = React.forwardRef<HTMLDivElement, ScreenPresenterVideoProps>(
-  ({ participantId, isVideoPinned, togglePin, videoPosition, changeVideoPosition, isThumbnail, mediaRef }, ref) => {
-    const videoDescriptor = useMemo(() => ({ participantId, mediaType: MediaSessionType.Video }), [participantId]);
+  ({ participantId, isVideoPinned, togglePin, videoPosition, changeVideoPosition, isThumbnail }, ref) => {
+    const videoDescriptor = useMemo<MediaDescriptor>(
+      () => ({ participantId, mediaType: Track.Source.Camera }),
+      [participantId]
+    );
     const [mouseOver, setMouseOver] = useState<boolean>(false);
     const qualityCap = useAppSelector(selectQualityCap);
-    const hasVideo = useAppSelector(selectSubscriberHasVideoById(videoDescriptor));
-    const showVideo = hasVideo && qualityCap !== VideoSetting.Off;
+    const participant = useParticipantContext();
+    const showVideo = participant.isCameraEnabled && qualityCap !== VideoSetting.Off;
 
     const videoTile = useMemo(() => {
       return showVideo ? (
-        <RemoteVideo descriptor={videoDescriptor} mediaRef={mediaRef} />
+        <RemoteVideo descriptor={videoDescriptor} />
       ) : (
         <AvatarContainer participantId={videoDescriptor.participantId} />
       );
-    }, [showVideo, videoDescriptor, mediaRef]);
+    }, [showVideo, videoDescriptor]);
 
     return (
       <SharedPresenterVideo

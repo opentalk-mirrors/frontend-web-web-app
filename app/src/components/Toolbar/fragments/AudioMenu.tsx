@@ -1,18 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ThemeProvider, Typography, ListItemText, styled } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { ListItemText, ThemeProvider, Typography, styled } from '@mui/material';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MicOnIcon, ErrorIcon, WarningIcon } from '../../../assets/icons';
+import { ErrorIcon, MicOnIcon, WarningIcon } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
-import { notifications } from '../../../commonComponents';
-import { useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
-import { DeviceId } from '../../../modules/Media/MediaUtils';
-import { selectAudioDeviceId } from '../../../store/slices/mediaSlice';
-import { useMediaContext } from '../../MediaProvider';
+import useMediaDevice from '../../../hooks/useMediaDevice';
+import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
+import { DeviceId } from '../../../types/device';
 import DeviceList from './DeviceList';
 import { MenuSectionTitle, ToolbarMenu, ToolbarMenuProps } from './ToolbarMenuUtils';
 
@@ -22,39 +20,44 @@ const MultilineTypography = styled(Typography)({
 
 const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const { t } = useTranslation();
-  const audioIn = useAppSelector(selectAudioDeviceId);
-  const mediaContext = useMediaContext();
-  const selectedDevice = audioIn || mediaContext.defaultAudioDevice;
-  const devices = mediaContext.audioInDevices;
-  const [loadingList, setLoadingList] = useState<boolean>(false);
-  const [loadingChange, setLoadingChange] = useState<boolean>(false);
+  const mediaChoices = useMediaChoices();
+  const {
+    startMedia,
+    localDevices: devices,
+    permissionDenied,
+    loadLocalDevices,
+  } = useMediaDevice({ kind: 'audioinput' });
+
+  // Some browsers (e.g. Firefox) duplicate devices, so we need to filter them out
+  const filteredDevices = useMemo(() => {
+    const seenDeviceIds = new Set<string>();
+
+    return devices
+      .filter((device) => {
+        if (device.deviceId === '' || seenDeviceIds.has(device.deviceId)) {
+          return false;
+        }
+        seenDeviceIds.add(device.deviceId);
+        return true;
+      })
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [devices]);
+
+  const selectedDeviceId = mediaChoices?.userChoices.audioDeviceId;
 
   const fullscreenHandle = useFullscreenContext();
 
-  // todo remove this here @s.sydow
-  useEffect(() => {
-    const shouldFetchDevices =
-      open &&
-      !mediaContext.permissionDenied &&
-      (!mediaContext.hasAllAudioDetails || mediaContext.defaultAudioDevice === undefined);
-    if (!loadingList && shouldFetchDevices) {
-      setLoadingList(true);
-      mediaContext
-        .getDeviceDetails({ audio: true })
-        .catch((e) => notifications.error(`Get audio devices failed: ${e}`))
-        .finally(() => setLoadingList(false));
-    }
-  }, [loadingList, setLoadingList, mediaContext, open]);
-
-  const handleClick = (deviceId: DeviceId) => {
-    if (!loadingChange) {
-      setLoadingChange(true);
-      mediaContext
-        .changeAudioInput(deviceId)
-        .then(onClose)
-        .finally(() => setLoadingChange(false));
+  const handleClick = async (deviceId: DeviceId) => {
+    if (deviceId !== mediaChoices?.userChoices.audioDeviceId) {
+      await startMedia(false, deviceId);
     }
   };
+
+  useEffect(() => {
+    if (open) {
+      loadLocalDevices('audioinput');
+    }
+  }, [open]);
 
   // Todo show spinner while we fetch the permissions?
   return (
@@ -81,23 +84,23 @@ const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           {t('audiomenu-choose-input')}
         </MenuSectionTitle>
 
-        {mediaContext.permissionDenied && (
+        {permissionDenied === true && (
           <MenuSectionTitle>
             <ErrorIcon />
             <MultilineTypography variant="body2">{t('device-permission-denied')}</MultilineTypography>
           </MenuSectionTitle>
         )}
 
-        {devices === undefined || !mediaContext.hasAllAudioDetails ? (
+        {filteredDevices.length === 0 && permissionDenied === 'pending' ? (
           <MenuSectionTitle>
             <WarningIcon />
             <ListItemText>{t('devicemenu-wait-for-permission')}</ListItemText>
           </MenuSectionTitle>
         ) : (
           <DeviceList
-            devices={devices}
-            selectedDevice={selectedDevice}
-            onClick={(deviceId: DeviceId) => handleClick(deviceId)}
+            devices={filteredDevices}
+            selectedDevice={selectedDeviceId as DeviceId | undefined}
+            onClick={handleClick}
             ariaLabelId="audio-menu-title"
           />
         )}
@@ -105,4 +108,5 @@ const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     </ThemeProvider>
   );
 };
+
 export default AudioMenu;

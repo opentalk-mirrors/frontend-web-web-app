@@ -24,6 +24,7 @@ error-invalid-invitation-link = Dieser Einladungs-Link ist ungültig
 
 error-system-currently-unavailable = Das System ist zur Zeit nicht erreichbar, bitte versuchen sie es später nochmal.
 error-unauthorized = Sie haben leider keinen Zugriff, bitte kontaktieren Sie den Moderator des Meetings.
+error-livekit-unavailable = Livekit ist nicht verfügbar, bitte kontaktieren Sie Ihren Administrator.
 
 login-form-title = Anmeldung
 login-form-body = Bitte melden Sie sich an
@@ -69,6 +70,7 @@ audiomenu-choose-input = Audioeingabegerät auswählen
 videomenu-choose-input = Kamera auswählen
 devicemenu-wait-for-permission = Warte auf Gerätefreigabe
 device-permission-denied = Gerätefreigabe verweigert. Bitte prüfen Sie Ihre Einstellungen.
+device-unable-to-start = Ihr Mediengerät kann nicht gestartet werden. Prüfen Sie, ob es durch eine andere Anwendung belegt ist oder wählen Sie ein anderes Gerät.
 quality-cap-setting = Videoqualität
 quality-audio-only = Aus
 quality-low = Niedrig
@@ -575,6 +577,8 @@ wrong-browser-dialog-title = Ihr Browser wird nur teilweise unterstützt.
 wrong-browser-dialog-message = Bitte verwenden Sie die letzte Version von Chrome, Firefox oder Safari. Sollten Sie weitere Schwierigkeiten haben, überprüfen Sie ob Ihr Browser im Kompatibilität-oder Inkognitomodus läuft. Deaktivieren Sie diese und versuchen es noch einmal hier.
 wrong-browser-dialog-ok = Verstanden
 
+unsupported-browser-e2e-encryption-dialog-message = Ihr Browser unterstützt keine Ende-zu-Ende-Verschlüsselung. Bitte verwenden Sie z.B. Chrome(>=v86), Firefox(>=v117) oder Safari(>=v15.4).
+
 safari-warning-notification = OpenTalk ist für Safari noch nicht optimiert. Wir empfehlen derzeit Chrome, Brave, Edge oder Firefox.
 
 error-config-title = Konfiguration ist nicht korrekt
@@ -886,6 +890,8 @@ dashboard-meeting-livestream-streaming-key-required = Dies ist ein Pflichtfeld
 dashboard-meeting-waiting-room-switch = Warteraum
 dashboard-meeting-details-switch = Meetingdetails anzeigen
 dashboard-meeting-details-tooltip = Meetingdetails werden für alle Teilnehmer sichtbar und können geteilt werden (auch Passwort falls gesetzt).
+dashboard-meeting-e2ee-switch = Sehr hohes Schutzniveau aktivieren
+dashboard-meeting-e2ee-tooltip = Ende-zu-Ende Verschlüsselung für eine Videokonferenz mit sehr hohem Schutzniveau aktivieren. Hinweis: Die Telefoneinwahl, die Nutzung von Videoendgeräten/Roomkits sowie Streaming und Aufzeichnung der Konferenz sind dann nicht möglich!
 
 streaming-targets-request-error = Streaming-Ziel konnte nicht hinzugefügt werden
 
