@@ -5,67 +5,27 @@ import { AnyAction } from '@reduxjs/toolkit';
 import { RootStateOrAny } from 'react-redux';
 
 import {
-  VoteOption,
+  LegalVoteOption,
   LegalVoteId,
   Namespaced,
   MiddlewareMapBuilder,
-  ParticipantId,
   createModule,
   createSignalingApiCall,
+  LegalVoteParameters,
 } from '../../../types';
 import { sendMessage } from '../../index';
 
-export enum LegalVoteKind {
-  /**
-   * It's visible afterwards who voted what
-   */
-  RollCall = 'roll_call',
-  /**
-   * You can see in real time who voted what
-   */
-  LiveRollCall = 'live_roll_call',
-  /**
-   * You can't see who voted what
-   */
-  Pseudonymous = 'pseudonymous',
-}
-
-export interface VoteStartOutgoing {
-  name: string;
-  /**
-   * The topic that will be voted on
-   */
-  topic: string;
-  /**
-   * List of participants that are allowed to cast a vote
-   */
-  allowedParticipants: Array<ParticipantId>;
-  /**
-   * Indicates that the `Abstain` vote option is enabled
-   */
-  enableAbstain: boolean;
-  /**
-   * The vote will automatically stop when every participant voted
-   */
-  autoClose: boolean;
-  /**
-   * The vote will stop when the duration (in second) has passed
-   */
-  duration: number | null;
-  subtitle: string;
+export interface VoteStart extends LegalVoteParameters {
   action: 'start';
-  timezone: string;
-  createPdf: boolean;
-  kind: LegalVoteKind;
 }
 
-export interface VoteStopOutgoing {
+export interface VoteStop {
   action: 'stop';
   legalVoteId: LegalVoteId;
   timezone: string;
 }
 
-export interface VoteCancelOutgoing {
+export interface VoteCancel {
   action: 'cancel';
   legalVoteId: LegalVoteId;
   reason: string;
@@ -75,7 +35,7 @@ export interface VoteCancelOutgoing {
 export interface VoteOutgoing {
   action: 'vote';
   legalVoteId: LegalVoteId;
-  option: VoteOption;
+  option: LegalVoteOption;
   token: string;
   timezone: string;
 }
@@ -87,21 +47,21 @@ export enum ReportIssueKind {
   Other = 'other',
 }
 
-export interface VoteReportIssueOutgoing {
+export interface VoteReportIssue {
   action: 'report_issue';
   legal_vote_id: LegalVoteId;
   kind?: ReportIssueKind;
   description?: string;
 }
 
-export type Action = VoteStartOutgoing | VoteStopOutgoing | VoteCancelOutgoing | VoteOutgoing | VoteReportIssueOutgoing;
+export type Action = VoteStart | VoteStop | VoteCancel | VoteOutgoing | VoteReportIssue;
 export type LegalVote = Namespaced<Action, 'legal_vote'>;
 
-export const start = createSignalingApiCall<VoteStartOutgoing>('legal_vote', 'start');
-export const stop = createSignalingApiCall<VoteStopOutgoing>('legal_vote', 'stop');
-export const cancel = createSignalingApiCall<VoteCancelOutgoing>('legal_vote', 'cancel');
+export const start = createSignalingApiCall<VoteStart>('legal_vote', 'start');
+export const stop = createSignalingApiCall<VoteStop>('legal_vote', 'stop');
+export const cancel = createSignalingApiCall<VoteCancel>('legal_vote', 'cancel');
 export const vote = createSignalingApiCall<VoteOutgoing>('legal_vote', 'vote');
-export const reportIssue = createSignalingApiCall<VoteReportIssueOutgoing>('legal_vote', 'report_issue');
+export const reportIssue = createSignalingApiCall<VoteReportIssue>('legal_vote', 'report_issue');
 
 export const handler = createModule((builder: MiddlewareMapBuilder<RootStateOrAny>) => {
   builder.addCase(start.action, (_state, action: AnyAction) => {

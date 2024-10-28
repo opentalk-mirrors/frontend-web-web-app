@@ -364,7 +364,7 @@ startAppListening({
     if (!activeVote) {
       return;
     }
-    const activeVoteEntries = activeVote && votes.entities[activeVote];
+    const activeVoteEntries = activeVote && votes.entities[activeVote.id];
     const participantId = payload.id || payload.participant.id;
     const participantWasAllowedToVote = activeVoteEntries?.allowedParticipants.includes(participantId);
     const participantVoted =

@@ -7,11 +7,11 @@ import { memo } from 'react';
 import { useAppSelector } from '../../../hooks';
 import { selectUserAsParticipant } from '../../../store/selectors';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
-import { VoteOption } from '../../../types';
+import { LegalVoteOption } from '../../../types';
 
 interface VoteResultRowProps {
   participantId: string;
-  selectedVote: VoteOption;
+  selectedVote: LegalVoteOption;
   token: string;
 }
 

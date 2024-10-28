@@ -1,26 +1,35 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createEntityAdapter, createSlice, EntityId, PayloadAction } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, EntityId, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
-import { VoteCanceled, VoteStarted, VoteStopped, VoteUpdated, VotedType } from '../../api/types/incoming/legalVote';
 import {
-  LegalState,
-  LegalVoteFormValues,
+  VoteCanceled,
+  VoteStarted,
+  VoteStopped,
+  VoteSuccessType,
+  VoteUpdated,
+} from '../../api/types/incoming/legalVote';
+import {
   LegalVoteId,
-  LegalVoteType,
-  VoteCancelReasonType,
-  VoteOption,
+  LegalVoteState,
+  LegalVote,
+  SavedLegalVoteForm,
+  VoteCancelReason,
+  VotesInSlice,
+  VoteSummary,
+  UserVote,
 } from '../../types';
+import { joinSuccess } from '../commonActions';
 
-const cancelReasonFromApiType = (cancel: VoteCanceled): readonly [VoteCancelReasonType, string?] | undefined => {
-  if (cancel.reason === VoteCancelReasonType.Custom) {
-    return [VoteCancelReasonType.Custom, cancel.custom];
+const cancelReasonFromApiType = (cancel: VoteCanceled): readonly [VoteCancelReason, string?] | undefined => {
+  if (cancel.reason === VoteCancelReason.Custom) {
+    return [VoteCancelReason.Custom, cancel.custom];
   } else {
-    if (cancel.reason === VoteCancelReasonType.InitiatorLeft) {
-      return [VoteCancelReasonType.InitiatorLeft, undefined];
-    } else if (cancel.reason === VoteCancelReasonType.RoomDestroyed) {
-      return [VoteCancelReasonType.RoomDestroyed, undefined];
+    if (cancel.reason === VoteCancelReason.InitiatorLeft) {
+      return [VoteCancelReason.InitiatorLeft, undefined];
+    } else if (cancel.reason === VoteCancelReason.RoomDestroyed) {
+      return [VoteCancelReason.RoomDestroyed, undefined];
     } else {
       console.error(new Error('Invalid Cancel Reason from legal-vote Cancel'));
       return;
@@ -28,23 +37,52 @@ const cancelReasonFromApiType = (cancel: VoteCanceled): readonly [VoteCancelReas
   }
 };
 
-enum LegalVoteStates {
-  Active = 'active',
-  Finished = 'finished',
-  Canceled = 'canceled',
+interface ActiveVote {
+  id: LegalVoteId;
+  /**
+   * Directly tied to the active vote.
+   * It is cleared after vote is submit or the voting itself ends/closes.
+   * Used as a fallback after reconnecting during an active vote.
+   */
+  persistedToken?: string;
+  voteInfo?: UserVote;
 }
 
-const newLegalVoteFromApiType = ({ legalVoteId, ...other }: VoteStarted): LegalVoteType => ({
+interface State {
+  activeVote?: ActiveVote;
+  currentShownVote?: LegalVoteId;
+  votes: EntityState<LegalVote>;
+  showResultWindow: boolean;
+  savedLegalVotes: Array<SavedLegalVoteForm>;
+}
+
+const newLegalVoteFromApiType = ({ legalVoteId, ...other }: VoteStarted): LegalVote => ({
   id: legalVoteId,
   ...other,
-  localStartTime: new Date().toISOString(),
+  state: LegalVoteState.Started,
   votes: { yes: 0, no: 0, abstain: 0 },
-  state: LegalVoteStates.Active,
-  votedAt: null,
-  autoClose: false,
 });
 
-const legalVoteAdapter = createEntityAdapter<LegalVoteType>({
+const mapVoteCountToVotes = (vote: VoteSummary): VotesInSlice | undefined => {
+  switch (vote.state) {
+    case LegalVoteState.Finished:
+      return {
+        yes: vote.yes,
+        no: vote.no,
+        abstain: (vote.enableAbstain && vote.abstain) || 0,
+      };
+    case LegalVoteState.Started:
+      return {
+        yes: 0,
+        no: 0,
+        abstain: 0,
+      };
+    default:
+      return undefined;
+  }
+};
+
+const legalVoteAdapter = createEntityAdapter<LegalVote>({
   sortComparer: (a, b) => {
     const aDate = Date.parse(a.startTime);
     const bDate = Date.parse(b.startTime);
@@ -52,7 +90,7 @@ const legalVoteAdapter = createEntityAdapter<LegalVoteType>({
   },
 });
 
-const initialState: LegalState = {
+const initialState: State = {
   votes: legalVoteAdapter.getInitialState(),
   savedLegalVotes: [],
   showResultWindow: false,
@@ -71,7 +109,11 @@ export const legalVoteSlice = createSlice({
     },
     started: (state, { payload }: PayloadAction<VoteStarted>) => {
       state.currentShownVote = payload.legalVoteId;
-      state.activeVote = payload.legalVoteId;
+      state.activeVote = {
+        id: payload.legalVoteId,
+        persistedToken: payload.token,
+        voteInfo: undefined,
+      };
       state.showResultWindow = true;
       const vote = newLegalVoteFromApiType(payload);
       legalVoteAdapter.addOne(state.votes, vote);
@@ -81,8 +123,7 @@ export const legalVoteSlice = createSlice({
       legalVoteAdapter.updateOne(state.votes, {
         id: payload.legalVoteId,
         changes: {
-          localStopTime: new Date().toISOString(),
-          state: LegalVoteStates.Finished,
+          state: LegalVoteState.Finished,
           votes: {
             yes: payload.results === 'valid' ? payload.yes : 0,
             no: payload.results === 'valid' ? payload.no : 0,
@@ -113,18 +154,31 @@ export const legalVoteSlice = createSlice({
         legalVoteAdapter.updateOne(state.votes, {
           id: payload.legalVoteId,
           changes: {
-            state: LegalVoteStates.Canceled,
+            state: LegalVoteState.Canceled,
             cancelReason,
             customCancelReason,
           },
         });
       }
     },
-    voted: (state, { payload }: PayloadAction<VotedType>) => {
+    voted: (state, { payload }: PayloadAction<VoteSuccessType>) => {
+      const userVote: UserVote = {
+        votedAt: new Date().toISOString(),
+        selectedOption: payload.voteOption,
+      };
+
       legalVoteAdapter.updateOne(state.votes, {
         id: payload.legalVoteId,
-        changes: { votedAt: new Date(Date.now()).toISOString() },
+        changes: {
+          userVote,
+          //Set token as "permanent" so we can display it for the specific vote
+          token: state.activeVote?.persistedToken,
+        },
       });
+
+      if (state.activeVote) {
+        state.activeVote.voteInfo = userVote;
+      }
     },
     closed: (state, { payload }: PayloadAction<LegalVoteId>) => {
       if (state.activeVote !== undefined) {
@@ -135,12 +189,11 @@ export const legalVoteSlice = createSlice({
         state.currentShownVote = undefined;
       }
     },
-    // tmp action until UX design is done
     closedResultWindow: (state) => {
       state.showResultWindow = false;
       state.currentShownVote = undefined;
     },
-    saveLegalVoteFormValues: (state, { payload }: PayloadAction<LegalVoteFormValues>) => {
+    savedLegalVoteForm: (state, { payload }: PayloadAction<SavedLegalVoteForm>) => {
       const index = state.savedLegalVotes.findIndex((savedLegalVote) => savedLegalVote.id === payload.id);
       if (index !== -1) {
         state.savedLegalVotes[index] = {
@@ -154,15 +207,37 @@ export const legalVoteSlice = createSlice({
         ...payload,
       });
     },
-    saveSelectedOption: (
-      state,
-      { payload }: PayloadAction<{ legalVoteId: LegalVoteId; selectedOption: VoteOption }>
-    ) => {
-      legalVoteAdapter.updateOne(state.votes, {
-        id: payload.legalVoteId,
-        changes: { selectedOption: payload.selectedOption },
-      });
-    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(joinSuccess, (state, { payload: { votes } }) => {
+      if (!votes) {
+        legalVoteAdapter.removeAll(state.votes);
+        return;
+      }
+
+      const isAVoteActive = votes.find((vote) => vote.state === LegalVoteState.Started);
+
+      if (!isAVoteActive) {
+        state.activeVote = undefined;
+      } else {
+        state.currentShownVote = isAVoteActive.legalVoteId;
+      }
+
+      const newList: Array<LegalVote> = votes.map((vote) => ({
+        ...vote,
+        id: vote.legalVoteId,
+        votingRecord: (vote.state === LegalVoteState.Finished && vote.votingRecord) || undefined,
+        votes: mapVoteCountToVotes(vote),
+        cancelReason: (vote.state === LegalVoteState.Canceled && vote.reason) || undefined,
+        customCancelReason:
+          (vote.state === LegalVoteState.Canceled && vote.reason === VoteCancelReason.Custom && vote.custom) ||
+          undefined,
+        userVote: (state.activeVote?.id === vote.legalVoteId && state.activeVote.voteInfo) || undefined,
+        token: (state.activeVote?.id === vote.legalVoteId && state.activeVote.persistedToken) || undefined,
+      }));
+
+      legalVoteAdapter.setAll(state.votes, newList);
+    });
   },
 });
 
@@ -176,30 +251,29 @@ export const {
   canceled,
   closed,
   closedResultWindow,
-  saveLegalVoteFormValues,
-  saveSelectedOption,
+  savedLegalVoteForm,
 } = actions;
 
-const voteSelectors = legalVoteAdapter.getSelectors((state: { legalVote: LegalState }) => state.legalVote.votes);
+const voteSelectors = legalVoteAdapter.getSelectors((state: { legalVote: State }) => state.legalVote.votes);
 
-export const selectVoteById = (id: EntityId) => (state: { legalVote: LegalState }) =>
-  voteSelectors.selectById(state, id);
-export const selectVoteIds = (state: { legalVote: LegalState }) => voteSelectors.selectIds(state);
-export const selectAllVotes = (state: { legalVote: LegalState }) => voteSelectors.selectAll(state);
-export const selectVotes = (state: { legalVote: LegalState }) => voteSelectors.selectEntities(state);
+export const selectVoteById = (id: EntityId) => (state: { legalVote: State }) => voteSelectors.selectById(state, id);
+export const selectVoteIds = (state: { legalVote: State }) => voteSelectors.selectIds(state);
+export const selectAllVotes = (state: { legalVote: State }) => voteSelectors.selectAll(state);
+export const selectVotes = (state: { legalVote: State }) => voteSelectors.selectEntities(state);
 
-export const selectShowLegalVoteWindow = (state: { legalVote: LegalState }) => state.legalVote.showResultWindow;
+export const selectShowLegalVoteWindow = (state: { legalVote: State }) => state.legalVote.showResultWindow;
 
-export const selectCurrentShownVoteId = (state: { legalVote: LegalState }) => state.legalVote.currentShownVote;
-export const selectCurrentShownVote = (state: { legalVote: LegalState }) =>
+export const selectCurrentShownVoteId = (state: { legalVote: State }) => state.legalVote.currentShownVote;
+export const selectCurrentShownVote = (state: { legalVote: State }) =>
   state.legalVote.currentShownVote ? selectVoteById(state.legalVote.currentShownVote)(state) : undefined;
 
-export const selectActiveVoteId = (state: { legalVote: LegalState }) => state.legalVote.activeVote;
+export const selectActiveVoteId = (state: { legalVote: State }) => state.legalVote.activeVote?.id;
+export const selectPersistedToken = (state: { legalVote: State }) => state.legalVote.activeVote?.persistedToken;
 
-export const selectAllSavedLegalVotes = (state: { legalVote: LegalState }) => state.legalVote.savedLegalVotes;
-export const selectSavedLegalVotePerId = (id: number | undefined) => (state: { legalVote: LegalState }) =>
+export const selectAllSavedLegalVotes = (state: { legalVote: State }) => state.legalVote.savedLegalVotes;
+export const selectSavedLegalVotePerId = (id: number | undefined) => (state: { legalVote: State }) =>
   state.legalVote.savedLegalVotes.find((legalVote) => legalVote.id === id);
-export const selectLegalVoteId = (state: { legalVote: LegalState }) => state.legalVote.savedLegalVotes.length;
+export const selectLegalVoteId = (state: { legalVote: State }) => state.legalVote.savedLegalVotes.length;
 
 const legalVoteReducer = legalVoteSlice.reducer;
 export default legalVoteReducer;

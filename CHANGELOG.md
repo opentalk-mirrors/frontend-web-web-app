@@ -78,6 +78,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
+- Fix: Legal votes not being stored on join success ([#2024](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2024))
 - Fix: missing aria labels on poll and legal vote dialogs ([#1998](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1998))
 - Fix: Chat not being visible on certain mobile resolutions ([#1995](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1995))
 

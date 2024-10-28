@@ -29,7 +29,7 @@ function VoteResultTable(props: VoteResultTableProps) {
   const { t } = useTranslation();
   const vote = useAppSelector(selectVoteById(props.voteId));
 
-  if (!vote) {
+  if (!vote || !vote.votes) {
     return null;
   }
 

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useAppSelector } from '../../../hooks';
 import { selectOurUuid } from '../../../store/slices/userSlice';
-import { LegalVoteId, LegalVoteType, ParticipantId } from '../../../types';
+import { LegalVoteId, LegalVoteKind, LegalVoteState, LegalVote, ParticipantId } from '../../../types';
 import { fireEvent, render, screen } from '../../../utils/testUtils';
 import { LegalVoteContainer } from './LegalVoteContainer';
 
@@ -31,9 +31,9 @@ jest.mock('./VoteResultDate', () => ({
 }));
 
 describe('LegalVoteContainer', () => {
-  const legalVote: LegalVoteType = {
+  const legalVote: LegalVote = {
     id: 'test-id' as LegalVoteId,
-    state: 'active',
+    state: LegalVoteState.Started,
     startTime: new Date(Date.now()).toISOString(),
     votes: {
       yes: 0,
@@ -41,9 +41,9 @@ describe('LegalVoteContainer', () => {
       abstain: 0,
     },
     allowedParticipants: [],
-    votedAt: null,
     votingRecord: {},
-    localStartTime: '',
+    initiatorId: 'asd' as ParticipantId,
+    maxVotes: 0,
     name: 'Legal Vote Test',
     subtitle: 'Legal Vote Subtitle',
     topic: 'Legal Vote Topic',
@@ -51,15 +51,14 @@ describe('LegalVoteContainer', () => {
     autoClose: false,
     duration: 60,
     createPdf: false,
-    kind: 'roll_call',
+    kind: LegalVoteKind.RollCall,
   };
 
   it('can render', async () => {
     await render(<LegalVoteContainer legalVote={legalVote} onClose={jest.fn()} isAllowedToVote />);
     expect(screen.getByText(legalVote.name)).toBeInTheDocument();
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    expect(screen.getByText(legalVote.subtitle!)).toBeInTheDocument();
-    expect(screen.getByText(legalVote.topic)).toBeInTheDocument();
+    expect(screen.getByText(legalVote.subtitle ?? '')).toBeInTheDocument();
+    expect(screen.getByText(legalVote.topic ?? '')).toBeInTheDocument();
   });
 
   it('executes onClose callback when close button is clicked.', async () => {
@@ -70,7 +69,7 @@ describe('LegalVoteContainer', () => {
   });
 
   it('shows message to user who is not allowed to vote', async () => {
-    const vote: LegalVoteType = {
+    const vote: LegalVote = {
       ...legalVote,
       allowedParticipants: ['our-id' as ParticipantId],
     };
@@ -80,7 +79,7 @@ describe('LegalVoteContainer', () => {
 
   it('shows submit button to user who can place a vote', async () => {
     const mockedUuid = 'mocked-uuid';
-    const vote: LegalVoteType = {
+    const vote: LegalVote = {
       ...legalVote,
       allowedParticipants: [mockedUuid as ParticipantId],
     };
@@ -96,11 +95,14 @@ describe('LegalVoteContainer', () => {
 
   it('can show result table', async () => {
     const mockedUuid = 'mocked-uuid';
-    const vote: LegalVoteType = {
+    const vote: LegalVote = {
       ...legalVote,
-      kind: 'pseudonymous',
-      state: 'finished',
-      votedAt: new Date(Date.now()).toISOString(),
+      kind: LegalVoteKind.Pseudonymous,
+      state: LegalVoteState.Finished,
+      userVote: {
+        votedAt: new Date().toISOString(),
+        selectedOption: 'yes',
+      },
       votingRecord: {
         ['1' as ParticipantId]: 'yes',
         ['2' as ParticipantId]: 'no',

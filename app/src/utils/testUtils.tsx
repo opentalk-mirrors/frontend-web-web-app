@@ -59,8 +59,10 @@ import {
   VideoSetting,
   AutomodSelectionStrategy,
   PollId,
-  LegalVoteType,
+  LegalVote,
   LegalVoteId,
+  LegalVoteKind,
+  LegalVoteState,
 } from '../types';
 
 const automodState: AutomodState = {
@@ -531,11 +533,11 @@ export const mockPoll: Poll = {
   voted: false,
 };
 
-export const mockLegalVote: LegalVoteType = {
+export const mockLegalVote: LegalVote = {
   id: 'fake-poll-id' as LegalVoteId,
   duration: 60,
   startTime: new Date().toString(),
-  state: 'active',
+  state: LegalVoteState.Started,
   topic: 'This is a legal vote fake description',
   votes: {
     yes: 0,
@@ -546,8 +548,8 @@ export const mockLegalVote: LegalVoteType = {
   autoClose: false,
   createPdf: false,
   enableAbstain: true,
-  kind: 'roll_call',
-  votedAt: null,
+  kind: LegalVoteKind.RollCall,
   name: 'Fake legal vote',
-  localStartTime: new Date().toString(),
+  initiatorId: 'asd' as ParticipantId,
+  maxVotes: 0,
 };

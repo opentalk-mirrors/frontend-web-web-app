@@ -4,13 +4,12 @@
 import { Box, Button, Grid, IconButton, Typography } from '@mui/material';
 import { FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 
-import { vote as sendLegalVoteChoiceToAPI } from '../../../api/types/outgoing/legalVote';
+import { vote } from '../../../api/types/outgoing/legalVote';
 import { CloseIcon } from '../../../assets/icons';
-import { useAppDispatch, useDateFormat } from '../../../hooks';
-import { saveSelectedOption } from '../../../store/slices/legalVoteSlice';
-import { LegalVoteType, VoteOption } from '../../../types';
+import { useAppDispatch, useAppSelector, useDateFormat } from '../../../hooks';
+import { selectPersistedToken } from '../../../store/slices/legalVoteSlice';
+import { LegalVoteKind, LegalVoteState, LegalVote, LegalVoteOption } from '../../../types';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
 import LegalVoteCountdown from '../../LegalVoteCountdown';
 import { LegalVoteTokenClipboard } from '../../LegalVoteTokenClipboard';
@@ -22,7 +21,7 @@ import VoteResultDate from './VoteResultDate';
 import VoteResultTable from './VoteResultTable';
 
 type LegalVoteContainerProps = {
-  legalVote: LegalVoteType;
+  legalVote: LegalVote;
   onClose(): void;
   isAllowedToVote: boolean;
 };
@@ -33,30 +32,34 @@ type LegalVoteContainerProps = {
 
 export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onClose, isAllowedToVote }) => {
   const { t } = useTranslation();
-  const isLegalVoteActive = legalVote?.state === 'active';
+  const fallbackToken = useAppSelector(selectPersistedToken);
+  const token = legalVote.token || fallbackToken;
+  const isLegalVoteActive = legalVote.state === LegalVoteState.Started;
   const formattedTime = useDateFormat(new Date(legalVote.startTime), 'time');
   const initialSum = 0;
   const numberOfVotes = Object.values(legalVote.votes || {}).reduce(function sumVotes(sum, totalVotesForCurrentOption) {
     return sum + totalVotesForCurrentOption;
   }, initialSum);
-  const [selectedLegalVoteOption, setSelectedLegalVoteOption] = useState<VoteOption | undefined>(
-    legalVote.selectedOption
+  const [localSelectedLegalVoteOption, setLocalSelectedLegalVoteOption] = useState<LegalVoteOption | undefined>(
+    legalVote.userVote?.selectedOption
   );
-  const isOptionDisabled = Boolean(!isLegalVoteActive || !isAllowedToVote || legalVote.votedAt);
+  const isOptionDisabled = Boolean(!isLegalVoteActive || !isAllowedToVote || legalVote.userVote?.votedAt || !token);
   // you can't vote if vote is not active or you are not selected or you already voted.
   const isSubmitButtonDisabled = Boolean(
-    !isLegalVoteActive || !isAllowedToVote || legalVote.votedAt || !selectedLegalVoteOption
+    !isLegalVoteActive || !isAllowedToVote || legalVote.userVote?.votedAt || !localSelectedLegalVoteOption || !token
   );
   useEffect(
     function resetSelectedLegalVoteOptionOnLegalVoteIdChange() {
-      setSelectedLegalVoteOption(legalVote.selectedOption);
+      setLocalSelectedLegalVoteOption(legalVote.userVote?.selectedOption);
     },
-    [legalVote.id, legalVote.selectedOption]
+    [legalVote.id, legalVote.userVote?.selectedOption]
   );
   const hasVotes = Object.keys(legalVote.votingRecord || {}).length > 0;
-  const isTableHintVisible = legalVote.kind === 'pseudonymous' && isAllowedToVote && !isLegalVoteActive && hasVotes;
+  const isTableHintVisible =
+    legalVote.kind === LegalVoteKind.Pseudonymous && isAllowedToVote && !isLegalVoteActive && hasVotes;
   const [showResults, setShowResults] = useState(false);
-  const showResultTable = (legalVote.kind !== 'pseudonymous' || showResults) && isAllowedToVote && hasVotes;
+  const showResultTable = (legalVote.kind !== LegalVoteKind.Pseudonymous || showResults) && isAllowedToVote && hasVotes;
+  const showTokenClipboard = legalVote.state === LegalVoteState.Finished && isAllowedToVote && token;
   const resultsRef = useRef<HTMLDivElement>(null);
   const scrollToResults = () => {
     if (resultsRef.current) {
@@ -67,28 +70,20 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
 
   const submitLegalVoteOption = (event: FormEvent) => {
     event.preventDefault();
-    if (!legalVote || !legalVote.id || !selectedLegalVoteOption) {
+    if (!legalVote || !legalVote.id || !localSelectedLegalVoteOption) {
       return;
     }
-    batch(() => {
-      dispatch(
-        saveSelectedOption({
-          legalVoteId: legalVote.id,
-          selectedOption: selectedLegalVoteOption,
-        })
-      );
-      dispatch(
-        sendLegalVoteChoiceToAPI.action({
-          legalVoteId: legalVote.id,
-          option: selectedLegalVoteOption,
-          token: legalVote.token || '',
-          timezone: getCurrentTimezone(),
-        })
-      );
-    });
+    dispatch(
+      vote.action({
+        legalVoteId: legalVote.id,
+        option: localSelectedLegalVoteOption,
+        token: token || '',
+        timezone: getCurrentTimezone(),
+      })
+    );
   };
 
-  const calculateVotePercentage = (legalVote: LegalVoteType, voteKey: VoteOption): number => {
+  const calculateVotePercentage = (legalVote: LegalVote, voteKey: LegalVoteOption): number => {
     return legalVote.votes && legalVote.votes[voteKey] != 0 ? (legalVote.votes[voteKey] / numberOfVotes) * 100 : 0;
   };
 
@@ -99,7 +94,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
           <Box display="flex" alignItems="center" gap={1}>
             <ActiveStateChip
               size="medium"
-              label={t(`ballot-overview-panel-status-${legalVote?.state}`)}
+              label={t(`ballot-overview-panel-status-${legalVote.state}`)}
               color={isLegalVoteActive ? 'success' : 'error'}
               variant="filled"
               clickable={false}
@@ -142,28 +137,29 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
               )}
             </legend>
             <Grid item xs={12}>
-              {Object.keys(legalVote.votes).map(
-                (voteKey, index) =>
-                  (voteKey !== 'abstain' || (voteKey === 'abstain' && legalVote.enableAbstain)) && (
-                    <VoteResult
-                      key={index}
-                      title={t(`legal-vote-${voteKey}-label`)}
-                      optionIndex={index}
-                      voteType={VoteType.LegalVote}
-                      voteData={{
-                        votePercentage: calculateVotePercentage(legalVote, voteKey as VoteOption),
-                        numberOfVotes,
-                        currentVotes: legalVote.votes ? legalVote.votes[voteKey as VoteOption] : 0,
-                        isVotable: !isOptionDisabled,
-                        voteId: legalVote.id,
-                      }}
-                      isChecked={voteKey === selectedLegalVoteOption}
-                      onVote={() => {
-                        setSelectedLegalVoteOption(voteKey as VoteOption);
-                      }}
-                    />
-                  )
-              )}
+              {legalVote.votes &&
+                Object.keys(legalVote.votes).map(
+                  (voteKey, index) =>
+                    (voteKey !== 'abstain' || (voteKey === 'abstain' && legalVote.enableAbstain)) && (
+                      <VoteResult
+                        key={index}
+                        title={t(`legal-vote-${voteKey}-label`)}
+                        optionIndex={index}
+                        voteType={VoteType.LegalVote}
+                        voteData={{
+                          votePercentage: calculateVotePercentage(legalVote, voteKey as LegalVoteOption),
+                          numberOfVotes,
+                          currentVotes: legalVote.votes ? legalVote.votes[voteKey as LegalVoteOption] : 0,
+                          isVotable: !isOptionDisabled,
+                          voteId: legalVote.id,
+                        }}
+                        isChecked={voteKey === localSelectedLegalVoteOption}
+                        onVote={() => {
+                          setLocalSelectedLegalVoteOption(voteKey as LegalVoteOption);
+                        }}
+                      />
+                    )
+                )}
             </Grid>
           </Fieldset>
         </Grid>
@@ -182,27 +178,27 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
           </Grid>
         )}
       </Grid>
-      {legalVote.votedAt && isAllowedToVote && (
+      {legalVote.userVote?.votedAt && isAllowedToVote && (
         <Grid item xs={12}>
           <VoteResultDate
-            date={new Date(legalVote.votedAt)}
+            date={new Date(legalVote.userVote?.votedAt)}
             state={legalVote.state}
             showTableHint={isTableHintVisible}
             showResultsHandler={() => setShowResults(true)}
           />
         </Grid>
       )}
-      {legalVote.votedAt && legalVote.state === 'finished' && isAllowedToVote && legalVote.token && (
+      {showTokenClipboard && legalVote.userVote?.votedAt && (
         <Grid item xs={12}>
           <LegalVoteTokenClipboard
             name={legalVote.name}
-            timestamp={legalVote.votedAt}
-            token={legalVote.token}
-            vote={t(`legal-vote-${selectedLegalVoteOption}-label`) as string}
+            timestamp={legalVote.userVote?.votedAt}
+            token={token}
+            vote={t(`legal-vote-${localSelectedLegalVoteOption}-label`) as string}
           />
         </Grid>
       )}
-      {showResultTable && hasVotes && (
+      {showResultTable && (
         <Grid ref={resultsRef} item xs={12}>
           <VoteResultTable scrollToResults={scrollToResults} voteId={legalVote.id} />
         </Grid>

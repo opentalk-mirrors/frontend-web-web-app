@@ -14,15 +14,15 @@ import * as yup from 'yup';
 import { start } from '../../../api/types/outgoing/legalVote';
 import { BackIcon } from '../../../assets/icons';
 import { DurationField, CommonTextField, notifications } from '../../../commonComponents';
-import { saveLegalVoteFormValues, selectLegalVoteId } from '../../../store/slices/legalVoteSlice';
-import { LegalVoteFormValues } from '../../../types';
+import { savedLegalVoteForm, selectLegalVoteId } from '../../../store/slices/legalVoteSlice';
+import { LegalVoteFormValues, SavedLegalVoteForm } from '../../../types';
 import { formikDurationFieldProps, formikSwitchProps, formikProps } from '../../../utils/formikUtils';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
 import FormItem from './FormItem';
 import ParticipantSelector, { AllowedParticipant } from './ParticipantSelector';
 
 interface ICreateLegalVoteFormProps {
-  initialValues?: LegalVoteFormValues;
+  initialValues?: SavedLegalVoteForm;
   onClose: () => void;
   isCoffeeBreakActive: boolean;
 }
@@ -83,7 +83,7 @@ const CreateLegalVoteForm = ({
         notifications.error(t('legal-vote-save-form-error'));
       } else {
         dispatch(
-          saveLegalVoteFormValues({
+          savedLegalVoteForm({
             id: legalVoteId.current,
             ...legalVoteFormValues,
           })

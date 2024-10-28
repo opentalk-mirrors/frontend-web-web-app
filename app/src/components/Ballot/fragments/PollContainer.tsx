@@ -86,7 +86,7 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
         <Box display="flex" alignItems="center" justifyContent="space-between" flex={1} gap={1}>
           <ActiveStateChip
             size="medium"
-            label={t(`ballot-overview-panel-status-${poll?.state}`)}
+            label={t(`poll-overview-panel-status-${poll?.state}`)}
             color={isPollActive ? 'success' : 'error'}
             variant="filled"
             clickable={false}

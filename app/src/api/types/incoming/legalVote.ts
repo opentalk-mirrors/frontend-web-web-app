@@ -2,22 +2,18 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  VoteOption,
-  VoteParameters,
-  VoteCancelReasonType,
+  LegalVoteOption,
+  IncomingVote,
+  VoteCancelReason,
   ErrorStruct,
   LegalVoteId,
   NamespacedIncoming,
   ParticipantId,
+  VoteInvalidReason,
 } from '../../../types';
 
-export interface VoteStarted extends VoteParameters {
+export interface VoteStarted extends IncomingVote {
   message: 'started';
-  legalVoteId: LegalVoteId;
-  initiatorId: ParticipantId;
-  startTime: string;
-  kind: 'roll_call' | 'live_roll_call' | 'pseudonymous';
-  maxVotes: number;
 }
 
 enum VotedFailedReason {
@@ -33,8 +29,9 @@ interface BaseVoteResponse {
 
 export interface VoteSuccessType extends BaseVoteResponse {
   response: 'success';
-  voteOption: VoteOption;
+  voteOption: LegalVoteOption;
   issuer: ParticipantId;
+  consumedToken: string;
 }
 
 export interface VoteFailedType extends BaseVoteResponse {
@@ -48,7 +45,7 @@ export interface VoteResultsType {
   yes: number;
   no: number;
   abstain?: number;
-  votingRecord: Record<ParticipantId, VoteOption>;
+  votingRecord: Record<ParticipantId, LegalVoteOption>;
 }
 
 export interface VoteUpdated extends VoteResultsType {
@@ -91,10 +88,6 @@ export interface VoteStoppedValid extends BaseStopped, VoteResultsType {
   results: VoteFinalResults.Valid;
 }
 
-export enum VoteInvalidReason {
-  AbstainDisabled = 'abstain_disabled',
-  VoteCountInconsistent = 'vote_count_inconsistent',
-}
 export interface VoteStoppedInvalid extends BaseStopped {
   results: VoteFinalResults.Invalid;
   reason: VoteInvalidReason;
@@ -107,19 +100,19 @@ export type VoteStopped = VoteStoppedKind & VoteStoppedFinalResults;
 export interface VoteCanceledInitiatorLeft {
   message: 'canceled';
   legalVoteId: LegalVoteId;
-  reason: VoteCancelReasonType.InitiatorLeft;
+  reason: VoteCancelReason.InitiatorLeft;
 }
 
 export interface CanceledRoomDestroyed {
   message: 'canceled';
   legalVoteId: LegalVoteId;
-  reason: VoteCancelReasonType.RoomDestroyed;
+  reason: VoteCancelReason.RoomDestroyed;
 }
 
 export interface VoteCanceledCustom {
   message: 'canceled';
   legalVoteId: LegalVoteId;
-  reason: VoteCancelReasonType.Custom;
+  reason: VoteCancelReason.Custom;
   custom: string;
 }
 

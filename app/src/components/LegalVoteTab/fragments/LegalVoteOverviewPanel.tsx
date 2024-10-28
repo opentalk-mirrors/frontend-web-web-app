@@ -11,7 +11,7 @@ import { cancel, stop } from '../../../api/types/outgoing/legalVote';
 import { LegalBallotIcon } from '../../../assets/icons';
 import { ProgressBar } from '../../../commonComponents';
 import { useDateFormat } from '../../../hooks';
-import { LegalVoteType } from '../../../types';
+import { LegalVoteState, LegalVote } from '../../../types';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
 import LegalVoteCountdown from '../../LegalVoteCountdown';
 
@@ -26,8 +26,8 @@ const Divider = styled('div')({
   borderTop: '3px solid #193a47',
 });
 
-const VoteState = styled('div')<{ state?: 'active' | 'finished' | 'canceled' }>(({ theme, state }) => ({
-  backgroundColor: state === 'active' ? theme.palette.success.main : theme.palette.error.main,
+const VoteState = styled('div')<{ state: LegalVoteState }>(({ theme, state }) => ({
+  backgroundColor: state === LegalVoteState.Started ? theme.palette.success.main : theme.palette.error.main,
   padding: theme.spacing(0.5),
   fontWeight: 'bold',
 }));
@@ -41,18 +41,20 @@ const TopicTypography = styled(Typography)({
   wordBreak: 'break-word',
 });
 
-interface IProps {
-  vote: LegalVoteType | undefined;
+interface LegalVoteOverviewPanelProps {
+  vote: LegalVote;
 }
 
-const LegalVoteOverviewPanel = ({ vote }: IProps) => {
+const LegalVoteOverviewPanel = ({
+  vote: { id, duration, votingRecord, state, startTime, name, topic, allowedParticipants },
+}: LegalVoteOverviewPanelProps) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const [dispatchTriggered, setDispatchTriggered] = useState(false);
 
   const handleCancel = () => {
-    if (!vote?.id || dispatchTriggered) {
+    if (dispatchTriggered) {
       return;
     }
 
@@ -60,7 +62,7 @@ const LegalVoteOverviewPanel = ({ vote }: IProps) => {
 
     dispatch(
       cancel.action({
-        legalVoteId: vote?.id,
+        legalVoteId: id,
         reason: 'Testing reasons',
         timezone: getCurrentTimezone(),
       })
@@ -68,7 +70,7 @@ const LegalVoteOverviewPanel = ({ vote }: IProps) => {
   };
 
   const handleEnd = () => {
-    if (!vote?.id || dispatchTriggered) {
+    if (dispatchTriggered) {
       return;
     }
 
@@ -76,57 +78,57 @@ const LegalVoteOverviewPanel = ({ vote }: IProps) => {
 
     dispatch(
       stop.action({
-        legalVoteId: vote?.id,
+        legalVoteId: id,
         timezone: getCurrentTimezone(),
       })
     );
   };
 
-  const startTime = new Date(vote ? vote?.localStartTime : '');
-  const endTime = startTime.getTime() + (vote?.duration ? vote?.duration : 0) * 1000;
-  const formattedStartTime = useDateFormat(startTime, 'time');
-  const getVotedNumber = () => (vote?.votingRecord !== undefined ? Object.keys(vote.votingRecord).length : 0);
+  const localStartTimeAsDate = new Date(startTime);
+  const endTime = localStartTimeAsDate.getTime() + (duration ? duration : 0) * 1000;
+  const formattedStartTime = useDateFormat(localStartTimeAsDate, 'time');
+  const getVotedNumber = () => (votingRecord !== undefined ? Object.keys(votingRecord).length : 0);
   const MAX_TOPIC_LENGTH = 120;
 
   return (
     <MainContainer spacing={2}>
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box display="flex" alignItems="center">
-          <VoteState state={vote?.state}>{t(`ballot-overview-panel-status-${vote?.state}`)}</VoteState>
+          <VoteState state={state}>{t(`ballot-overview-panel-status-${state}`)}</VoteState>
           <Typography ml={1}>{`${formattedStartTime}`}</Typography>
         </Box>
-        {vote && (
+        {duration && duration > 0 && (
           <LegalVoteCountdown
-            duration={vote.duration || 0}
-            startTime={vote.startTime}
-            active={vote.state === 'active'}
+            duration={duration}
+            startTime={startTime}
+            active={state === LegalVoteState.Started}
             flex={1}
             justifyContent="flex-end"
           />
         )}
       </Box>
       <Stack spacing={1}>
-        {vote?.duration && (
+        {duration && (
           <ProgressBar
             endTime={endTime}
-            startTime={startTime.getTime()}
-            isFinished={Boolean(vote?.state !== 'active')}
+            startTime={localStartTimeAsDate.getTime()}
+            isFinished={Boolean(state !== LegalVoteState.Started)}
           />
         )}
         <Divider />
         <Typography noWrap align="center">
-          {vote?.name}
+          {name}
         </Typography>
         <TopicTypography variant="body2" align="center">
-          {truncate(vote?.topic, { length: MAX_TOPIC_LENGTH })}
+          {truncate(topic, { length: MAX_TOPIC_LENGTH })}
         </TopicTypography>
         <Box display="flex" justifyContent="center" alignItems="center">
           <LegalBallotIcon />
           <Typography ml={0.5}>
-            {getVotedNumber()}/{vote?.allowedParticipants.length || 0}
+            {getVotedNumber()}/{allowedParticipants.length || 0}
           </Typography>
         </Box>
-        {vote?.state === 'active' && (
+        {state === LegalVoteState.Started && (
           <>
             <Divider />
             <ButtonContainer>
