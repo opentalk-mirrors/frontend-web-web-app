@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createSlice, PayloadAction, createListenerMiddleware, TypedStartListening } from '@reduxjs/toolkit';
+import { PayloadAction, TypedStartListening, createListenerMiddleware, createSlice } from '@reduxjs/toolkit';
 
-import { RootState, AppDispatch } from '../';
+import { AppDispatch, RootState } from '../';
 import { RequestMute } from '../../api/types/incoming/media';
 import { updateSpeakingState } from '../../api/types/outgoing/media';
 import { getCurrentConferenceRoom } from '../../modules/WebRTC';
@@ -53,9 +53,6 @@ export const mediaSlice = createSlice({
     setSpeakerActivity: (state, { payload }: PayloadAction<boolean>) => {
       state.isUserSpeaking = payload;
     },
-    setQualityCap: (state, action: PayloadAction<VideoSetting>) => {
-      state.qualityCap = action.payload;
-    },
     setUpstreamLimit: (state, { payload }: PayloadAction<VideoSetting>) => {
       state.upstreamLimit = payload;
     },
@@ -76,7 +73,6 @@ export const {
   setBackgroundEffects,
   setBackgroundEffectsLoading,
   setSpeakerActivity,
-  setQualityCap,
   setUpstreamLimit,
   requestMute,
   notificationShown,
@@ -84,7 +80,6 @@ export const {
 
 export const selectVideoBackgroundEffects = (state: RootState) => state.media.videoBackgroundEffects;
 export const selectIsUserSpeaking = (state: RootState) => state.media.isUserSpeaking;
-export const selectQualityCap = (state: RootState) => state.media.qualityCap;
 export const selectUpstreamLimit = (state: RootState) => state.media.upstreamLimit;
 export const selectNotification = (state: RootState) => state.media.requestMuteNotification;
 

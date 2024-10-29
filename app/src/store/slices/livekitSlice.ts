@@ -8,6 +8,7 @@ import { Room } from 'livekit-client';
 
 import { AppDispatch, RootState } from '../';
 import { MediaDescriptor } from '../../modules/WebRTC';
+import { VideoSetting } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
 
 let room: Room;
@@ -39,6 +40,7 @@ interface LivekitState {
   accessToken: string | undefined;
   publicUrl: string | undefined;
   popoutStreamAccesses: PopoutStreamAccesses;
+  qualityCap: VideoSetting;
 }
 
 const initialState: LivekitState = {
@@ -46,6 +48,7 @@ const initialState: LivekitState = {
   accessToken: undefined,
   publicUrl: undefined,
   popoutStreamAccesses: [],
+  qualityCap: VideoSetting.High,
 };
 
 export const livekitSlice = createSlice({
@@ -76,6 +79,9 @@ export const livekitSlice = createSlice({
         (popoutStreamAccess) => popoutStreamAccess.token !== payload
       );
     },
+    setDisableRemoteVideos: (state, { payload }: PayloadAction<boolean>) => {
+      state.qualityCap = payload ? VideoSetting.Off : VideoSetting.High;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload }) => {
@@ -96,6 +102,7 @@ export const {
   addPopoutStreamAccess,
   setLivekitPopoutStreamAccessToken,
   deleteLivekitPopoutStreamAccessToken,
+  setDisableRemoteVideos,
 } = livekitSlice.actions;
 
 export const selectLivekitUnavailable = (state: RootState) => state.livekit.unavailable;
@@ -106,5 +113,6 @@ export const selectLivekitPopoutStreamAccessByParticipantId = (participantId: st
     (popoutStreamAccess) =>
       popoutStreamAccess.mediaDescriptor.participantId === participantId && popoutStreamAccess.token !== undefined
   );
+export const selectQualityCap = (state: RootState) => state.livekit.qualityCap;
 
 export default livekitSlice.reducer;

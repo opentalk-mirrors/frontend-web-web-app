@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useParticipantContext } from '@livekit/components-react';
 import { Slide, styled } from '@mui/material';
-import { Track } from 'livekit-client';
+import { RemoteParticipant, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
-import { selectQualityCap } from '../../../store/slices/mediaSlice';
+import { selectQualityCap } from '../../../store/slices/livekitSlice';
 import { ParticipantId, VideoSetting } from '../../../types';
 import { AvatarContainer } from './AvatarContainer';
 import { PresenterVideoPosition } from './PresenterOverlay';
@@ -29,7 +29,7 @@ interface ParticipantVideoProps {
 }
 
 const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
-  const participant = useParticipantContext();
+  const participant = useParticipantContext() as RemoteParticipant;
 
   const videoDescriptor = useMemo<MediaDescriptor>(
     () => ({ participantId, mediaType: Track.Source.Camera }),
@@ -41,7 +41,8 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
   );
 
   const qualityCap = useAppSelector(selectQualityCap);
-  const showCamera = participant.isCameraEnabled && qualityCap !== VideoSetting.Off;
+  const areParticipantVideosEnabled = qualityCap !== VideoSetting.Off;
+  const showCamera = participant.isCameraEnabled && areParticipantVideosEnabled;
 
   const containerRef = useRef(null);
   const [isVideoPinned, setIsVideoPinned] = useState<boolean>(false);
@@ -57,6 +58,16 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
     const timer = setTimeout(() => setShowPresenterVideo(false), 5000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    // Update the track subscripton state of remote videos if the config flag changes
+    participant.videoTrackPublications.forEach((publication) => {
+      const updateSubscriptionState = publication.isSubscribed !== areParticipantVideosEnabled;
+      if (updateSubscriptionState) {
+        publication.setSubscribed(areParticipantVideosEnabled);
+      }
+    });
+  }, [areParticipantVideosEnabled, participant.videoTrackPublications]);
 
   const displayPresenterVideo = useCallback(() => {
     !presenterVideoIsActive && setShowPresenterVideo(true);

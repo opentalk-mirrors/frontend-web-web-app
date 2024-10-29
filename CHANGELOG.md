@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### New Features
 
+- Add toggle to unsubscribe participant videos ([#2196](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2196))
 - Add LiveKit support ([#2043](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2043))
 
 ### Internal

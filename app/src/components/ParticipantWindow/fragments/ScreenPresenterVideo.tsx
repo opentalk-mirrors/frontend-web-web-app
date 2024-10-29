@@ -8,7 +8,7 @@ import React, { useState, useMemo } from 'react';
 
 import { useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
-import { selectQualityCap } from '../../../store/slices/mediaSlice';
+import { selectQualityCap } from '../../../store/slices/livekitSlice';
 import { ParticipantId, VideoSetting } from '../../../types';
 import { AvatarContainer } from './AvatarContainer';
 import { PresenterVideoPosition } from './PresenterOverlay';
