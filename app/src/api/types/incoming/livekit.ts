@@ -17,7 +17,12 @@ export interface MicrophoneRestrictionsDisabled {
   message: 'microphone_restrictions_disabled';
 }
 
-export type Message = MicrophoneRestrictionsEnabled | MicrophoneRestrictionsDisabled | LivekitError;
+export interface ForceMuted {
+  message: 'force_muted';
+  moderator: ParticipantId;
+}
+
+export type Message = MicrophoneRestrictionsEnabled | MicrophoneRestrictionsDisabled | ForceMuted | LivekitError;
 
 export type Livekit = NamespacedIncoming<Message, 'livekit'>;
 
