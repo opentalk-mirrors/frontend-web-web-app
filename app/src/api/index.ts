@@ -60,7 +60,6 @@ import {
   rename as participantsRename,
   update as participantsUpdate,
   selectParticipantsTotal,
-  updatedSpeaker,
   waitingRoomJoined,
   waitingRoomLeft,
 } from '../store/slices/participantsSlice';
@@ -471,40 +470,8 @@ const handleControlMessage = async (
  * @param dispatch AppDispatch function
  * @param data mediaMsgs Message content
  */
-const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, state: RootState) => {
-  // TODO: Theses two are actually a control messages -- talk to the backend
+const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message) => {
   switch (data.message) {
-    case 'request_mute': {
-      {
-        const room = getLivekitRoom();
-        dispatch(mediaStore.requestMute(data));
-        const participants = state.participants.entities;
-        if (data.force) {
-          room.localParticipant.setMicrophoneEnabled(false);
-
-          notifications.warning(
-            i18next.t('media-received-force-mute', { origin: participants[data.issuer]?.displayName || 'admin' })
-          );
-        } else {
-          const message = i18next.t('media-received-request-mute', {
-            origin: participants[data.issuer]?.displayName || 'admin',
-          });
-          notificationAction({
-            msg: message,
-            variant: 'warning',
-            actionBtnText: i18next.t('media-received-request-mute-ok'),
-            onAction: () => room.localParticipant.setMicrophoneEnabled(false),
-          });
-        }
-        dispatch(mediaStore.notificationShown());
-      }
-      return;
-    }
-    case 'speaker_updated':
-      dispatch(
-        updatedSpeaker({ participant: data.participant, isSpeaking: data.isSpeaking, updatedAt: data.updatedAt })
-      );
-      return;
     case 'error': {
       const error = data.error;
       switch (error) {
@@ -1113,6 +1080,14 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
         notifications.info(i18next.t('microphones-enabled-notification'));
       }
       break;
+    case 'force_muted': {
+      const participants = state.participants.entities;
+      notifications.warning(
+        i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
+      );
+      dispatch(mediaStore.notificationShown());
+      return;
+    }
     case 'error': {
       const error = data.error;
       switch (error) {
@@ -1151,7 +1126,7 @@ const onMessage =
         handleBreakoutMessage(dispatch, getState(), message.payload, message.timestamp);
         break;
       case 'media':
-        handleMediaMessage(dispatch, message.payload, getState()).catch((e) => {
+        handleMediaMessage(dispatch, message.payload).catch((e) => {
           console.error('Error in handleMediaMessage:', e);
         });
         break;

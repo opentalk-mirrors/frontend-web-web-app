@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improvements to the user experience
 
+- Show notification to users when they have been muted by the moderator ([#2213](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2213))
 - A11y: Time displays in dashboard now use the html time component ([#2106](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2106))
 - Provide german translations for date time pickers ([#2167](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2167))
 - Add missing labels on lobby input fields ([#2085](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2085))
