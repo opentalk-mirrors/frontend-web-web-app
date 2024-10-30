@@ -4,21 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-### Bug Fixes
-
-- Fix inviting multiple participants to a meeting ([#2147](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2147))
-- Fix joining user appearing with the avatar of an already present user issue ([#1868](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1868))
-
 ### New Features
 
 - Add LiveKit support ([#2043](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2043))
-
-### Internal
-
-- Cleanup left over parcel dependencies ([#2152](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2152)
-- Extract unrelated code / ui changes from LiveKit branch ([#2088](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2088))
-- Migrate from parcel to vite for `18next-fluent` lib ([#1957](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1957))
-- Migrate from parcel to vite for `fluent_conv` lib ([#1956](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1956))
 
 ### Improvements to the user experience
 
@@ -31,6 +19,28 @@ All notable changes to this project will be documented in this file.
 - Make security monitor in the conference accessible ([#2084](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2084))
 - Change incorrectly used paragraphs to appropriate headings in meeting create/update/detail page ([#2097](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2097))
 - A11y: Wrap paragraphs in html p tag ([#2107](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2107))
+
+## 1.22.1
+
+### Bug Fixes
+
+- Fix inviting multiple participants to a meeting ([#2147](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2147))
+
+## 1.22.0
+
+### Bug Fixes
+
+- Fix joining user appearing with the avatar of an already present user issue ([#1868](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1868))
+
+### Internal
+
+- Cleanup left over parcel dependencies ([#2152](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2152))
+- Extract unrelated code / ui changes from LiveKit branch ([#2088](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2088))
+- Migrate from parcel to vite for `18next-fluent` lib ([#1957](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1957))
+- Migrate from parcel to vite for `fluent_conv` lib ([#1956](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1956))
+
+### Improvements to the user experience
+
 - Add missing aria attributes to the meetings expand/collapse list elements ([#2076](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2076))
 - Add dynamic tab title on page change ([#2074](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2074))
 - Selected layout is now marked with the checkmark icon ([#2061](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2061))
