@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Grid, styled, useMediaQuery, useTheme } from '@mui/material';
+import { Stack, styled, useMediaQuery, useTheme } from '@mui/material';
 import { LocalAudioTrack } from 'livekit-client';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BackIcon } from '../../../assets/icons';
-import { CircularIconButton } from '../../../commonComponents';
+import { CircularIconButton as CircularIconButtonDefault } from '../../../commonComponents';
 import useNavigateToHome from '../../../hooks/useNavigateToHome';
 import browser from '../../../modules/BrowserSupport';
 import AudioButton from '../../Toolbar/fragments/AudioButton';
@@ -18,38 +18,42 @@ const BOTTOM_CONTAINER_Z_INDEX = 1;
 
 const Container = styled('nav')(({ theme }) => ({
   width: '100%',
-  padding: theme.spacing(6),
+  padding: theme.spacing(2),
   bottom: 0,
   left: 0,
   position: 'relative',
   zIndex: BOTTOM_CONTAINER_Z_INDEX,
   [theme.breakpoints.up('md')]: {
     position: 'absolute',
+    height: theme.typography.pxToRem(112),
   },
 }));
 
-const BackButtonContainer = styled(Grid)(({ theme }) => ({
-  position: 'absolute',
-  left: theme.spacing(1),
-}));
-
-const GridContainer = styled(Grid)(({ theme }) => ({
+const CircularIconButton = styled(CircularIconButtonDefault)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
-    //Removes negative margin that is default added from MUI
-    marginTop: theme.spacing(0),
-    '& .MuiGrid-root.MuiGrid-item': {
-      paddingTop: 0,
-    },
+    marginRight: 'auto !important',
+    marginTop: `${theme.typography.pxToRem(10)} !important`,
   },
 }));
+
+const ButtonStack = styled(Stack, { shouldForwardProp: (prop) => prop !== 'waitingRoom' })<{ waitingRoom?: boolean }>(
+  ({ theme, waitingRoom }) => ({
+    alignItems: 'center',
+    [theme.breakpoints.up('md')]: {
+      marginTop: `${theme.typography.pxToRem(4)} !important`,
+      marginRight: waitingRoom && 'auto !important',
+    },
+  })
+);
 
 interface ToolbarContainerProps {
   children: ReactNode;
   actionButton: ReactNode;
   localAudioTrack?: LocalAudioTrack;
+  waitingRoom?: boolean;
 }
 
-const ToolbarContainer = ({ children, actionButton, localAudioTrack }: ToolbarContainerProps) => {
+const ToolbarContainer = ({ children, actionButton, localAudioTrack, waitingRoom }: ToolbarContainerProps) => {
   const { t } = useTranslation();
   const navigateToHome = useNavigateToHome();
 
@@ -58,35 +62,25 @@ const ToolbarContainer = ({ children, actionButton, localAudioTrack }: ToolbarCo
 
   return (
     <Container>
-      <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        justifyContent="center"
+        alignItems={{ xs: 'center', md: 'flex-start' }}
+        spacing={2}
+      >
         {!isMobile && (
-          <BackButtonContainer item>
-            <CircularIconButton aria-label={t('global-back')} onClick={navigateToHome}>
-              <BackIcon />
-            </CircularIconButton>
-          </BackButtonContainer>
+          <CircularIconButton aria-label={t('global-back')} onClick={navigateToHome}>
+            <BackIcon />
+          </CircularIconButton>
         )}
         {children}
-        <GridContainer
-          container
-          item
-          direction="row"
-          spacing={2}
-          sm={12}
-          md="auto"
-          alignItems="stretch"
-          justifyContent="center"
-        >
-          <Grid container item direction="row" sm={12} md="auto" gap={2} justifyContent="center">
-            <AudioButton isLobby localAudioTrack={localAudioTrack} />
-            <VideoButton isLobby />
-            {!browser.isSafari() && !browser.isFirefox() && <BlurScreenButton isLobby />}
-          </Grid>
-          <Grid item xs={12} sm="auto" justifyItems="center" flexBasis="auto">
-            {actionButton}
-          </Grid>
-        </GridContainer>
-      </Grid>
+        <ButtonStack spacing={2} direction="row" waitingRoom={waitingRoom}>
+          <AudioButton isLobby localAudioTrack={localAudioTrack} />
+          <VideoButton isLobby />
+          {!browser.isSafari() && !browser.isFirefox() && <BlurScreenButton isLobby />}
+        </ButtonStack>
+        {actionButton}
+      </Stack>
     </Container>
   );
 };

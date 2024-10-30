@@ -43,7 +43,7 @@ const Header = styled('header')(({ theme }) => ({
   justifyContent: 'space-between',
   padding: theme.spacing(2, 2, 0),
 
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up('md')]: {
     position: 'absolute',
     width: '100%',
     zIndex: 1,
@@ -86,25 +86,23 @@ const MonitorContainer = styled('main')(({ theme }) => ({
 interface SelftestProps {
   children: ReactNode;
   actionButton?: ReactNode;
+  waitingRoom?: boolean;
 }
 
-const SelfTest = ({ children, actionButton }: SelftestProps) => {
+const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const mediaChoices = useMediaChoices();
   const navigateToHome = useNavigateToHome();
   const inviteCode = useInviteCode();
-
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [localAudioTrack, setLocalAudioTrack] = useState<LocalAudioTrack | undefined>();
   const [mounted, setMounted] = useState(false);
+  const { joinWithoutMedia } = useAppSelector(selectFeatures);
 
   useEffect(() => {
     !mounted && setMounted(true);
   });
-
-  const { joinWithoutMedia } = useAppSelector(selectFeatures);
-
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const { roomId } = useParams<'roomId' | 'breakoutRoomId'>() as {
     roomId: RoomId;
@@ -122,17 +120,19 @@ const SelfTest = ({ children, actionButton }: SelftestProps) => {
           <Logo onClick={navigateToHome} />
           <UtilitiesContainer>
             <SpeedTestDialog />
-            <Tooltip title={t('conference-quick-start-open')}>
-              <CircularIconButton
-                ref={anchorElement}
-                onClick={() => setIsQuickStartPopoverOpen((value) => !value)}
-                aria-label={
-                  isQuickStartPopoverOpen ? t('conference-quick-start-close') : t('conference-quick-start-open')
-                }
-              >
-                {isQuickStartPopoverOpen ? <CloseIcon /> : <AdjustedHelpIcon />}
-              </CircularIconButton>
-            </Tooltip>
+            {!isMobile && (
+              <Tooltip title={t('conference-quick-start-open')}>
+                <CircularIconButton
+                  ref={anchorElement}
+                  onClick={() => setIsQuickStartPopoverOpen((value) => !value)}
+                  aria-label={
+                    isQuickStartPopoverOpen ? t('conference-quick-start-close') : t('conference-quick-start-open')
+                  }
+                >
+                  {isQuickStartPopoverOpen ? <CloseIcon /> : <AdjustedHelpIcon />}
+                </CircularIconButton>
+              </Tooltip>
+            )}
           </UtilitiesContainer>
         </Header>
 
@@ -174,7 +174,7 @@ const SelfTest = ({ children, actionButton }: SelftestProps) => {
           )}
         </MonitorContainer>
 
-        <ToolbarContainer localAudioTrack={localAudioTrack} actionButton={actionButton}>
+        <ToolbarContainer localAudioTrack={localAudioTrack} actionButton={actionButton} waitingRoom={waitingRoom}>
           {children}
         </ToolbarContainer>
 
