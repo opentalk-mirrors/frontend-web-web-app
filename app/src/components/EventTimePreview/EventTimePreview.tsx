@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Typography } from '@mui/material';
 import { isSameDay } from 'date-fns';
 
 import { useDateFormat } from '../../hooks';
@@ -14,17 +13,21 @@ interface EventTimePreviewProps {
 const EventTimePreview = (props: EventTimePreviewProps) => {
   const { startDate, endDate } = props;
   const formattedStartDate = useDateFormat(startDate, 'date');
+  const attributeStartDate = useDateFormat(startDate, 'attribute-date');
   const formattedStartTime = useDateFormat(startDate, 'time');
   const formattedEndTime = useDateFormat(endDate, 'time');
 
   const isInTheSameDay = isSameDay(startDate, endDate);
 
+  const displayDate = isInTheSameDay ? formattedStartDate : null;
+
   return (
-    <Typography variant="body1" fontWeight={400}>
-      {isInTheSameDay ? formattedStartDate : null} {formattedStartTime}
+    <>
+      {displayDate && <time dateTime={attributeStartDate}>{formattedStartDate}</time>}{' '}
+      <time dateTime={formattedStartTime}>{formattedStartTime}</time>
       {' - '}
-      {formattedEndTime}
-    </Typography>
+      <time dateTime={formattedEndTime}>{formattedEndTime}</time>
+    </>
   );
 };
 

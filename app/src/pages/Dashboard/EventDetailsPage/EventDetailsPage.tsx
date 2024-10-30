@@ -120,7 +120,9 @@ const EventDetailsPage = () => {
       <Stack>
         <Stack mb={4}>
           <Typography variant="h1">{pageHeading}</Typography>
-          <Typography mt={1}>{getTimeInformationString()}</Typography>
+          <Typography variant="body1" fontWeight={400} mt={1} component="span">
+            {getTimeInformationString()}
+          </Typography>
         </Stack>
 
         {event.description && event.description !== '' && (
