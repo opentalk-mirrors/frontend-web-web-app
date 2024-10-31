@@ -26,6 +26,7 @@ import sharedFolderReducer from './slices/sharedFolderSlice';
 import slotReducer from './slices/slotSlice';
 import speedMeterReducer from './slices/speedMeterSlice';
 import streamingReducer from './slices/streamingSlice';
+import subroomAudioReducer from './slices/subroomAudioSlice';
 import timerReducer, { timerMiddleware } from './slices/timerSlice';
 import uiReducer from './slices/uiSlice';
 import userReducer from './slices/userSlice';
@@ -91,6 +92,7 @@ export const appReducers = {
   streaming: streamingReducer,
   sharedFolder: sharedFolderReducer,
   livekit: livekitReducer,
+  subroomAudio: subroomAudioReducer,
 };
 
 const store = configureStore({

@@ -31,6 +31,7 @@ import {
   kickParticipant,
   sendParticipantToWaitingRoom,
 } from '../../../api/types/outgoing/moderation';
+import { inviteToWhisperGroup, leaveWhisperGroup, requestWhisperGroup } from '../../../api/types/outgoing/subroomAudio';
 import {
   MeetingNotesIcon,
   MicOffIcon,
@@ -46,17 +47,32 @@ import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { IconButton, ParticipantAvatar, notifications } from '../../../commonComponents';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { selectModules } from '../../../store/slices/configSlice';
 import { selectHandUp } from '../../../store/slices/moderationSlice';
+import {
+  selectIsWhisperActive,
+  selectSubroomAudioParticipants,
+  selectWhisperGroupId,
+} from '../../../store/slices/subroomAudioSlice';
 import {
   chatConversationStateSet,
   selectParticipantsSortOption,
   setCurrentMenuTab,
 } from '../../../store/slices/uiSlice';
 import { selectIsModerator, selectOurUuid, selectUserMeetingNotesAccess } from '../../../store/slices/userSlice';
-import { ChatScope, MeetingNotesAccess, Participant, ParticipationKind, SortOption } from '../../../types';
+import {
+  ChatScope,
+  MeetingNotesAccess,
+  Participant,
+  ParticipantId,
+  ParticipationKind,
+  SortOption,
+  WhisperParticipantState,
+} from '../../../types';
 import { MenuTab } from '../../MenuTabs/fragments/constants';
 import MenuPopover, { IMenuOptionItem } from './MenuPopover';
 import RenameParticipantDialog from './RenameParticipantDialog';
+import WhisperStateIcon from './WhisperStateIcon';
 
 const Avatar = styled(ParticipantAvatar)({
   width: '2.25rem',
@@ -69,9 +85,9 @@ const ListItemAvatar = styled(MuiListItemAvatar)({
 });
 
 const ListItem = styled(MuiListItem, {
-  shouldForwardProp: (prop) => prop !== 'isMoreMenuOpen',
-})<{ isMoreMenuOpen?: boolean }>(({ theme, isMoreMenuOpen }) => ({
-  padding: theme.spacing(1, 1, 1, 0),
+  shouldForwardProp: (prop) => !(['isWhispering', 'isMoreMenuOpen'] as Array<PropertyKey>).includes(prop),
+})<{ isMoreMenuOpen?: boolean; isWhispering?: boolean }>(({ theme, isMoreMenuOpen, isWhispering }) => ({
+  padding: theme.spacing(1),
   '& .more-icon': {
     color: isMoreMenuOpen ? theme.palette.primary.contrastText : 'transparent',
   },
@@ -80,6 +96,9 @@ const ListItem = styled(MuiListItem, {
       color: theme.palette.primary.contrastText,
     },
   },
+  border: '1px solid',
+  borderColor: isWhispering ? theme.palette.primary.main : 'transparent',
+  borderRadius: theme.spacing(1),
 }));
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -140,9 +159,12 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   const dispatch = useAppDispatch();
   const open = Boolean(anchorEl);
   const ownId = useAppSelector(selectOurUuid);
+  const isParticipantSelf = participant.id === ownId;
   const userMeetingNotesAccess = useAppSelector(selectUserMeetingNotesAccess);
   const ownHandRaised = useAppSelector(selectHandUp);
+  const whisperRoomParticipants = useAppSelector(selectSubroomAudioParticipants);
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
+  const subroomAudioEnabled = useAppSelector(selectModules).subroomAudio;
 
   const selectedParticipant = useRemoteParticipant(participant.id);
   const selectedParticipantCanPublishScreenShare =
@@ -153,6 +175,8 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   const localParticipant = useLocalParticipant();
   const ownAudioEnabled = localParticipant.isMicrophoneEnabled;
   const ownScreenShareEnabled = localParticipant.isScreenShareEnabled;
+  const isWhisperActive = useAppSelector(selectIsWhisperActive);
+  const whisperGroupId = useAppSelector(selectWhisperGroupId);
 
   const closePopover = () => {
     setAnchorEl(undefined);
@@ -211,6 +235,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
 
   const handleMuting = () => {
     dispatch(requestMute.action({ participants: [participant.id] }));
+    closePopover();
   };
 
   const handleRenameParticipantDialog = () => {
@@ -270,6 +295,51 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     return options.filter(Boolean) as IMenuOptionItem[]; // Remove conditionally excluded menu options.
   };
 
+  const subroomAudioParticipantIds = whisperRoomParticipants.map(
+    (whisperParticipant) => whisperParticipant.participantId
+  );
+  const getParticipantInviteState = (participantId: ParticipantId | null) =>
+    whisperRoomParticipants.find((p) => p.participantId === participantId)?.state;
+
+  const participantIsInSameWhisperGroup =
+    whisperGroupId &&
+    subroomAudioParticipantIds.includes(participant.id) &&
+    getParticipantInviteState(participant.id) !== WhisperParticipantState.Invited;
+
+  const userIsInWhisperGroup = whisperGroupId && getParticipantInviteState(ownId) !== WhisperParticipantState.Invited;
+
+  const initiatedWhisperGroup = whisperGroupId && getParticipantInviteState(ownId) === WhisperParticipantState.Creator;
+
+  const subroomAudioOptions = (): IMenuOptionItem[] => {
+    if (!subroomAudioEnabled) {
+      return [];
+    }
+
+    if (!userIsInWhisperGroup) {
+      return [
+        {
+          i18nKey: 'participant-menu-start-whisper',
+          action: () => {
+            dispatch(requestWhisperGroup.action({ participantIds: [participant.id] }));
+            closePopover();
+          },
+        },
+      ];
+    }
+    if (userIsInWhisperGroup && initiatedWhisperGroup && !participantIsInSameWhisperGroup) {
+      return [
+        {
+          i18nKey: 'participant-menu-invite-whisper-partner',
+          action: () => {
+            dispatch(inviteToWhisperGroup.action({ whisperId: whisperGroupId, participantIds: [participant.id] }));
+            closePopover();
+          },
+        },
+      ];
+    }
+    return [];
+  };
+
   const participantMenuOptionItems: IMenuOptionItem[] = [
     {
       i18nKey: 'participant-menu-send-message',
@@ -285,7 +355,21 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
         });
       },
     },
+
+    ...subroomAudioOptions(),
   ];
+
+  const ownMenuOptionItems: IMenuOptionItem[] = userIsInWhisperGroup
+    ? [
+        {
+          i18nKey: 'participant-menu-leave-whisper',
+          action: () => {
+            dispatch(leaveWhisperGroup.action({ whisperId: whisperGroupId }));
+            closePopover();
+          },
+        },
+      ]
+    : [];
 
   const moderatorMenuOptionItems: IMenuOptionItem[] = [
     ...participantMenuOptionItems,
@@ -303,10 +387,9 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   ];
 
   const renderIcon = useCallback(() => {
-    const isParticipantMe = participant.id === ownId;
-    const isHandRaised = isParticipantMe ? ownHandRaised : participant.handIsUp;
-    const isScreenShareEnabled = isParticipantMe ? ownScreenShareEnabled : screenShareActive;
-    const isAudioEnabled = isParticipantMe ? ownAudioEnabled : audioActive;
+    const isHandRaised = isParticipantSelf ? ownHandRaised : participant.handIsUp;
+    const isScreenShareEnabled = isParticipantSelf ? ownScreenShareEnabled : screenShareActive;
+    const isAudioEnabled = isParticipantSelf ? ownAudioEnabled : audioActive;
 
     if (isHandRaised) {
       return <RaiseHandOnIcon />;
@@ -330,21 +413,25 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     ownId,
   ]);
 
-  const renderMenu = () => (
-    <>
-      <IconButton aria-label="open participant more menu" onClick={handleClick}>
-        <MoreIcon className="more-icon" />
-      </IconButton>
-      {open && (
-        <MenuPopover
-          open={true}
-          setAnchorEl={setAnchorEl}
-          anchorEl={anchorEl}
-          options={isCurrentUserModerator ? moderatorMenuOptionItems : participantMenuOptionItems}
-        />
-      )}
-    </>
-  );
+  const getMenuOptions = () => {
+    if (isParticipantSelf) {
+      return ownMenuOptionItems;
+    }
+    if (isCurrentUserModerator) {
+      return moderatorMenuOptionItems;
+    }
+    return participantMenuOptionItems;
+  };
+
+  const renderMenu = () =>
+    getMenuOptions().length > 0 && (
+      <>
+        <IconButton aria-label="open participant more menu" onClick={handleClick}>
+          <MoreIcon className="more-icon" />
+        </IconButton>
+        {open && <MenuPopover open={true} setAnchorEl={setAnchorEl} anchorEl={anchorEl} options={getMenuOptions()} />}
+      </>
+    );
 
   const getContextText = () => {
     switch (sortType) {
@@ -377,8 +464,8 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     }
   };
 
-  const isMeetinNotesEditor = (participant: Participant) => {
-    if (participant.id === ownId && userMeetingNotesAccess === MeetingNotesAccess.Write) {
+  const isMeetingNotesEditor = (participant: Participant) => {
+    if (isParticipantSelf && userMeetingNotesAccess === MeetingNotesAccess.Write) {
       return true;
     }
     if (participant.meetingNotesAccess && participant.meetingNotesAccess === MeetingNotesAccess.Write) {
@@ -410,7 +497,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   }, [participant, isSipParticipant, t]);
 
   return (
-    <ListItem style={style} isMoreMenuOpen={open}>
+    <ListItem style={style} isMoreMenuOpen={open} isWhispering={isWhisperActive && isParticipantSelf}>
       <Box display="flex" flexWrap="nowrap" alignItems="center" width="100%">
         <ListItemAvatar>{renderAvatar()}</ListItemAvatar>
         <ListItemText
@@ -426,13 +513,13 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
           }
         />
 
-        {participant.id !== ownId && renderMenu()}
-        {isMeetinNotesEditor(participant) && (
-          <IconsContainer>
-            <MeetingNotesIcon />
-          </IconsContainer>
-        )}
-        <IconsContainer>{renderIcon()}</IconsContainer>
+        {renderMenu()}
+
+        <IconsContainer>
+          {isMeetingNotesEditor(participant) && <MeetingNotesIcon />}
+          <WhisperStateIcon state={getParticipantInviteState(participant.id)} />
+          {renderIcon()}
+        </IconsContainer>
       </Box>
       <ThemeProvider theme={createOpenTalkTheme('light')}>
         <RenameParticipantDialog

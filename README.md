@@ -50,7 +50,8 @@ The frontend will then be available via <http://localhost:8090>
 | FEATURE_MUTE_USER        | no       | { muteUsers: true}                                | to enable moderator option to mute user / users |
 | FEATURE_RESET_HANDRAISES | no       | { resetHandraises: true}                          | to enable moderator option to reset users' raised hands |
 | FEATURE_ADD_USER         | no       | { addUser: false}                                 | under construction |
-| JOIN_WITHOUT_MEDIA       | no       | { joinWithoutMedia: false}                        | if is set to true, it will prevent user to join conference with audio/video on |
+| FEATURE_JOIN_WITHOUT_MEDIA       | no       | { joinWithoutMedia: false}                        | if is set to true, it will prevent user to join conference with audio/video on |
+| FEATURE_SHARED_FOLDER | no | { sharedFolder: false } | activates shared folders |
 | VIDEO_BACKGROUNDS        | no       | [see here](#default-video-backgrounds)                                                | An array with a configuration of the background (Example: `[{ altText: 'OpenTalk', url: '/assets/videoBackgrounds/elevate-bg.png', thumb: '/assets/videoBackgrounds/thumbs/elevate-bg-thumb.png',}]`) |
 | SIGN_OUT_REDIRECT_URI    | no       | /dashboard                             | Uri to redirect the client after signing out frontend |
 | CHANGE_PASSWORD_ACTIVE           | no       | false                              | enable the reset password button in the dashboard profile settings |
@@ -269,6 +270,7 @@ window.config = {
       "addUser": true,
       "joinWithoutMedia": false,
       "sharedFolder": false,
+      "subroomAudio": false,
     },
 	settings: {
 		waitingRoomDefaultValue: true

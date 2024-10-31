@@ -25,7 +25,7 @@ import { pinnedParticipantIdSet, pinnedRemoteScreenshare, selectPinnedParticipan
 import { updateLastActive } from '../store/slices/userSlice';
 import { ParticipantId } from '../types';
 
-const useLivekitEvents = (room: Room) => {
+const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   const { t } = useTranslation();
   const mediaChoices = useMediaChoices();
 
@@ -58,14 +58,14 @@ const useLivekitEvents = (room: Room) => {
             mediaChoices?.saveVideoInputEnabled(participant.isCameraEnabled);
             break;
           case Track.Source.Microphone:
-            mediaChoices?.saveAudioInputEnabled(participant.isMicrophoneEnabled);
+            !isWhisperRoom && mediaChoices?.saveAudioInputEnabled(participant.isMicrophoneEnabled);
             break;
           default:
             break;
         }
       }
     },
-    [mediaChoices]
+    [mediaChoices, isWhisperRoom]
   );
 
   const handleUpdateLastActive = useCallback(() => {

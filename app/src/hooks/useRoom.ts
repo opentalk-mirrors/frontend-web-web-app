@@ -7,8 +7,8 @@ import {
   E2EEOptions,
   ExternalE2EEKeyProvider,
   Room,
-  VideoPresets,
   RoomOptions,
+  VideoPresets,
 } from 'livekit-client';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,16 +22,16 @@ import useE2EE from './useE2EE';
 import useLivekitEvents from './useLivekitEvents';
 
 interface IUseRoomOptions {
-  accessToken: string | undefined;
   audioInputEnabled?: boolean;
   videoInputEnabled?: boolean;
+  isWhisperRoom?: boolean;
 }
 
 const useRoom = ({
-  accessToken,
   audioInputEnabled = false,
   videoInputEnabled = false,
-}: IUseRoomOptions): Room | undefined => {
+  isWhisperRoom = false,
+}: IUseRoomOptions = {}): Room | undefined => {
   const { t } = useTranslation();
   const keyProvider = useMemo(() => new ExternalE2EEKeyProvider(), []);
   const { worker, e2eePassphrase, e2eeEnabled } = useE2EE();
@@ -70,7 +70,7 @@ const useRoom = ({
             } as E2EEOptions)
           : undefined,
       }) as RoomOptions,
-    [keyProvider, worker, e2eeEnabled, accessToken]
+    [keyProvider, worker, e2eeEnabled]
   );
 
   const room = useMemo(() => {
@@ -120,7 +120,7 @@ const useRoom = ({
     };
   }, [room.localParticipant.trackPublications]);
 
-  useLivekitEvents(room);
+  useLivekitEvents(room, isWhisperRoom);
 
   return room;
 };

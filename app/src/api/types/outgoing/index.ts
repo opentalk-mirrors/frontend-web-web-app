@@ -25,6 +25,8 @@ import * as poll from './poll';
 import PollMessage from './poll';
 import * as recording from './streaming';
 import RecordingMessage from './streaming';
+import * as subroomAudio from './subroomAudio';
+import SubroomAudioMessage from './subroomAudio';
 import * as timer from './timer';
 import TimerMessage from './timer';
 import * as whiteboard from './whiteboard';
@@ -44,6 +46,7 @@ export * as timer from './timer';
 export * as whiteboard from './whiteboard';
 export * as recording from './streaming';
 export * as livekit from './livekit';
+export * as subroomAudio from './subroomAudio';
 
 export type Action =
   | automod.Action
@@ -59,7 +62,8 @@ export type Action =
   | timer.Action
   | whiteboard.Action
   | recording.Action
-  | livekit.Action;
+  | livekit.Action
+  | subroomAudio.Action;
 
 // we need to use type mapping, to convert `Namespaced` interface into types
 // otherwise we will have problems with `convertToCamelCase` function
@@ -106,6 +110,9 @@ type RecordingMessageMappedType = {
 type LivekitMessageMappedType = {
   [P in keyof LivekitMessage]: LivekitMessage[P];
 };
+type SubroomAudioMessageMappedType = {
+  [P in keyof SubroomAudioMessage]: SubroomAudioMessage[P];
+};
 
 export type Message =
   | AutomodMessageMappedType
@@ -121,4 +128,5 @@ export type Message =
   | TimerMessageMappedType
   | WhiteboardMessageMappedType
   | RecordingMessageMappedType
-  | LivekitMessageMappedType;
+  | LivekitMessageMappedType
+  | SubroomAudioMessageMappedType;

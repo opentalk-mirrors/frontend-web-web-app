@@ -19,6 +19,7 @@ export enum BackendModules {
   RecordingService = 'recording_service',
   Timer = 'timer',
   Whiteboard = 'whiteboard',
+  SubroomAudio = 'subroomAudio',
 }
 
 export type Modules = {
