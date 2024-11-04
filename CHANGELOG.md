@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Bug Fixes
+
+- Fix ui elements glitch in lobby ([#2214](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2214))
+- Fix inviting multiple participants to a meeting ([#2147](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2147))
+- Fix joining user appearing with the avatar of an already present user issue ([#1868](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1868))
+
 ### New Features
 
 - Add LiveKit support ([#2043](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2043))

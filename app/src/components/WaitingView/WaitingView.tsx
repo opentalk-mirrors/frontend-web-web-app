@@ -78,6 +78,7 @@ const WaitingView = () => {
               </ActionButton>
             )
           }
+          waitingRoom
         >
           <Grid container item alignItems="center" direction="column" sm={12} md="auto" mt={0}>
             <WaitingRoomText variant="body1">

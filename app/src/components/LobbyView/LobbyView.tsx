@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Container, Grid, IconButton, InputAdornment, ThemeProvider, styled } from '@mui/material';
+import { Button, Container, IconButton, InputAdornment, ThemeProvider, styled, Stack } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
@@ -60,15 +60,23 @@ const CommonTextField = styled(DefaultCommonTextField)(({ theme }) => ({
 }));
 
 const CustomTextField = styled(CommonTextField)(({ theme }) => ({
+  [theme.breakpoints.up('sm')]: {
+    minWidth: theme.typography.pxToRem(220),
+  },
   '& .MuiInputBase-input.Mui-disabled': {
     WebkitTextFillColor: theme.palette.secondary.main,
     backgroundColor: theme.palette.secondary.contrastText,
   },
 }));
 
-const ActionButton = styled(Button)({
+const ActionButton = styled(Button)(({ theme }) => ({
   height: '100%',
-});
+  [theme.breakpoints.up('md')]: {
+    marginTop: `${theme.typography.pxToRem(4)} !important`,
+    marginRight: 'auto !important',
+    alignSelf: 'flex-start',
+  },
+}));
 
 let wrongPasswordSnackBarKey: SnackbarKey | undefined = undefined;
 
@@ -263,58 +271,42 @@ const LobbyView = () => {
           }
         >
           <ThemeProvider theme={createOpenTalkTheme('dark')}>
-            <Grid
-              container
-              item
-              spacing={1}
-              justifyContent="center"
-              flexWrap="nowrap"
-              direction="row"
-              sm={12}
-              md="auto"
-              component="form"
-              id={JOIN_FORM_ID}
-              onSubmit={formik.handleSubmit}
-            >
-              <Grid item sm={6} md="auto">
-                <ContitionalToolTip
-                  showToolTip={Boolean(disableDisplayNameField)}
-                  title={t('joinform-display-name-field-disabled-tooltip')}
-                >
-                  <CustomTextField
-                    {...formikProps('name', formik)}
-                    label={t('global-name')}
-                    placeholder={t('lobby-name-placeholder')}
-                    autoComplete="username"
-                    disabled={disableDisplayNameField}
-                  />
-                </ContitionalToolTip>
-              </Grid>
+            <Stack id={JOIN_FORM_ID} direction="row" spacing={1} component="form" onSubmit={formik.handleSubmit}>
+              <ContitionalToolTip
+                showToolTip={Boolean(disableDisplayNameField)}
+                title={t('joinform-display-name-field-disabled-tooltip')}
+              >
+                <CustomTextField
+                  {...formikProps('name', formik)}
+                  label={t('global-name')}
+                  placeholder={t('lobby-name-placeholder')}
+                  autoComplete="username"
+                  disabled={disableDisplayNameField}
+                />
+              </ContitionalToolTip>
               {showPasswordField && (
-                <Grid item sm={6} md="auto">
-                  <CommonTextField
-                    {...formikProps('password', formik)}
-                    label={t('global-password')}
-                    placeholder={t('lobby-password-placeholder')}
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label={t('toggle-password-visibility')}
-                            onClick={handleClickShowPassword}
-                            edge="end"
-                          >
-                            {!showPassword ? <VisibleIcon /> : <HiddenIcon />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Grid>
+                <CommonTextField
+                  {...formikProps('password', formik)}
+                  label={t('global-password')}
+                  placeholder={t('lobby-password-placeholder')}
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label={t('toggle-password-visibility')}
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {!showPassword ? <VisibleIcon /> : <HiddenIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
               )}
-            </Grid>
+            </Stack>
           </ThemeProvider>
         </SelfTest>
       </Container>
