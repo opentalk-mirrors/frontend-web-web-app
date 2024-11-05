@@ -65,6 +65,7 @@ const lightPalette: PaletteOptions = {
     primary: '#20434F',
     secondary: '#FFF',
     disabled: '#72757B',
+    placeholder: '#53616c',
   },
   background: {
     default: '#F4F4F4',
@@ -154,6 +155,7 @@ const darkPalette: PaletteOptions = {
     primary: '#FFF',
     secondary: '#20434F',
     disabled: '#72757B',
+    placeholder: '#cccccc',
   },
   background: {
     default: '#000',

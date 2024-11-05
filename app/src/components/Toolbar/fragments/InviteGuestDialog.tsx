@@ -22,7 +22,7 @@ import * as yup from 'yup';
 
 import { useCreateRoomInviteMutation } from '../../../api/rest';
 import { CloseIcon } from '../../../assets/icons';
-import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
+import { getPalette } from '../../../assets/themes/opentalk/palette';
 import { notifications } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectCurrentBreakoutRoomId } from '../../../store/slices/breakoutSlice';
@@ -31,8 +31,6 @@ import { selectRoomId } from '../../../store/slices/roomSlice';
 import { composeInviteUrl } from '../../../utils/apiUtils';
 import { formikDateTimePickerProps } from '../../../utils/formikUtils';
 import DateTimePicker from '../../DateTimePicker';
-
-const theme = createOpenTalkTheme();
 
 const IconButton = styled(MuiIconButton)(({ theme }) => ({
   position: 'absolute',
@@ -103,18 +101,14 @@ const InviteGuestDialog = (props: Omit<DialogProps, 'children'>) => {
 
   return (
     <Dialog {...props} fullWidth PaperComponent={Paper} onClose={onClose}>
-      <DialogTitle variant="body1" style={{ color: theme.palette.secondary.dark }}>
-        {t('dialog-invite-guest-title')}
-      </DialogTitle>
+      <DialogTitle variant="body1">{t('dialog-invite-guest-title')}</DialogTitle>
       <IconButton aria-label={t('global-close-dialog')} onClick={onClose}>
         <CloseIcon />
       </IconButton>
       {inviteUrl ? (
         <Stack>
           <DialogContent>
-            <Typography style={{ color: theme.palette.secondary.dark }} gutterBottom>
-              {inviteUrl.toString()}
-            </Typography>
+            <Typography gutterBottom>{inviteUrl.toString()}</Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={copyToClipboard} color="primary">
@@ -139,6 +133,15 @@ const InviteGuestDialog = (props: Omit<DialogProps, 'children'>) => {
                 placeholder: t('dialog-invite-guest-no-expiration'),
                 startAdornment: t('dialog-invite-guest-expiration-date'),
                 fullWidth: true,
+              }}
+              InputProps={{
+                sx: {
+                  '& .MuiInputBase-input::placeholder': {
+                    // Invite dialog is a special case where we use light theme on the dialog while the datepicker is in the dark scheme
+                    // so we end up with a placeholder color that is not readable in the light dialog
+                    color: getPalette('dark').text?.placeholder,
+                  },
+                },
               }}
             />
           </DialogContent>
