@@ -789,6 +789,7 @@ dashboard-update-meeting-dialog-prompt = Möchten Sie dieses Meeting bearbeiten?
 dashboard-create-meeting-dialog-ok = Erstellen
 dashboard-update-meeting-dialog-ok = Bearbeiten
 dashboard-create-meeting-dialog-cancel = Abbrechen
+dashboard-create-or-update-required-fields-info = Pflichtfelder sind mit einem Sternchen markiert. Bitte füllen Sie diese aus.
 
 dashboard-direct-meeting-title = Wen möchtest du zu deinem Meeting einladen?
 dashboard-direct-meeting-attention = Hinweis: Dies ist ein Adhoc meeting, diese werden nach 24h automatisch gelöscht und sind im Dashboard nicht sichtbar.
@@ -799,7 +800,7 @@ dashboard-direct-meeting-button-open-room = Videoraum öffnen
 dashboard-direct-meeting-button-send-invitations = Einladung versenden
 dashboard-direct-meeting-invitations-successful = Alle von dir hinzugefügten Personen wurden erfolgreich zu deinem Meeting eingeladen.
 dashboard-direct-meeting-invitations-error = Es gab ein Problem mit dem Versandt von einer oder mehreren Einladungen. Bitte versuchen Sie es später erneut.
-dashboard-direct-meeting-password-label = Passwort - optional
+dashboard-direct-meeting-password-label = Passwort
 dashboard-direct-meeting-password-placeholder = Sicheres Passwort hat mind. 8 Zeichen
 
 dashboard-invite-to-meeting-room-link-label = Meeting-Link
@@ -845,7 +846,7 @@ dashbooard-event-decline-invitation-notification = Einladung für das Meeting {m
 
 dashboard-meeting-textfield-title = Titel
 dashboard-meeting-textfield-title-placeholder = Mein neues Meeting
-dashboard-meeting-textfield-details = Details - optional
+dashboard-meeting-textfield-details = Details
 dashboard-meeting-textfield-details-placeholder = Worum geht es im Meeting?
 dashboard-meeting-to-step = Zu Schritt {$step}
 dashboard-meeting-date-start = von

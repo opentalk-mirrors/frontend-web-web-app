@@ -61,14 +61,20 @@ const DeclineButton = styled(Button)(({ theme }) => ({
   marginRight: theme.spacing(1),
 }));
 
-const MaxWidthTypography = styled(Typography)<{ maxWidth: Property.MaxWidth }>(({ maxWidth }) => ({
+const MaxWidthTypography = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'maxWidth',
+})<{ maxWidth: Property.MaxWidth }>(({ maxWidth }) => ({
   maxWidth,
 }));
 
-const TitleTypography = styled(MaxWidthTypography)({
+// For some reason, the `maxWidth` props is causing console error when structured like styled(MaxWidthTypography)
+const TitleTypography = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'maxWidth',
+})<{ maxWidth: Property.MaxWidth }>(({ maxWidth }) => ({
+  maxWidth,
   fontSize: '1rem',
   margin: 0,
-});
+}));
 
 const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragmentProps) => {
   const { createdBy, isFavorite, title } = event;

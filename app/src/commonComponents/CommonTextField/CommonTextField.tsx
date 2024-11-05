@@ -21,7 +21,7 @@ export const keysToPropagate = ['Enter', 'Escape'];
 
 const StyledTextField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'hideLabel',
-})<{ select?: boolean; hideLabel?: boolean }>(({ select, hideLabel }) => ({
+})<{ select?: boolean; hideLabel?: boolean }>(({ select, hideLabel, theme }) => ({
   // in case text field is used as select component, we want to have a bigger arrow
   '& .MuiSvgIcon-root': {
     fontSize: select && '2rem',
@@ -29,6 +29,10 @@ const StyledTextField = styled(TextField, {
   // if we want to hide the label, we also need to hide the legend
   '& .MuiOutlinedInput-root > fieldset > legend > span': {
     display: hideLabel && 'none',
+  },
+
+  '& .MuiFormLabel-asterisk': {
+    color: theme.palette.error.main,
   },
 }));
 

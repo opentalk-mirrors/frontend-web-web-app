@@ -554,6 +554,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
             placeholder={t('dashboard-meeting-textfield-title-placeholder')}
             fullWidth
             maxCharacters={MAX_CHARACTERS_TITLE}
+            required
           />
 
           <CommonTextField
