@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { AddIcon } from '../../../../assets/icons';
-import { useIsMobile } from '../../../../hooks/useIsMobile';
+import { useIsMobile } from '../../../../hooks/useMediaQuery';
 import getReferrerRouterState from '../../../../utils/getReferrerRouterState';
 
 const CustomIconButton = styled(IconButton)(({ theme }) => ({

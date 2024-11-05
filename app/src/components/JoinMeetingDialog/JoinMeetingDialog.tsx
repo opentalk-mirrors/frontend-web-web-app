@@ -14,8 +14,6 @@ import {
   IconButton,
   InputLabel,
   styled,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
@@ -27,6 +25,7 @@ import { validate as validateUUID } from 'uuid';
 
 import { CloseIcon } from '../../assets/icons';
 import { CommonTextField } from '../../commonComponents';
+import { useIsDesktop } from '../../hooks/useMediaQuery';
 import { composeRoomPath } from '../../utils/apiUtils';
 import { formikProps } from '../../utils/formikUtils';
 import yup from '../../utils/yupUtils';
@@ -51,8 +50,7 @@ interface JoinMeetingDialogProps extends Omit<DialogProps, 'open'> {
 export const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMediumDevice = useMediaQuery(theme.breakpoints.up('md'));
+  const isDesktop = useIsDesktop();
   const [invite, setInvite] = useState<Invite>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -163,7 +161,7 @@ export const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDial
         aria-haspopup="dialog"
         aria-expanded={isDialogOpen}
       >
-        {isMediumDevice ? t('dashboard-join-meeting-button') : t('dashboard-join-meeting-button-mobile')}
+        {isDesktop ? t('dashboard-join-meeting-button') : t('dashboard-join-meeting-button-mobile')}
       </Button>
       <Dialog
         {...props}
@@ -208,7 +206,7 @@ export const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDial
         </DialogContent>
 
         <DialogActions>
-          <Button color="primary" fullWidth={isMediumDevice} type="submit">
+          <Button color="primary" fullWidth={isDesktop} type="submit">
             {t('dashboard-join-meeting-dialog-join-button')}
           </Button>
         </DialogActions>

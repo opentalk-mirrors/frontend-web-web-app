@@ -27,6 +27,10 @@ All notable changes to this project will be documented in this file.
 - Change incorrectly used paragraphs to appropriate headings in meeting create/update/detail page ([#2097](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2097))
 - A11y: Wrap paragraphs in html p tag ([#2107](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2107))
 
+### Internal
+
+- Remove unnecessary render caused by the useMediaQuery hook ([#2139](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2139))
+
 ## 1.22.1
 
 ### Bug Fixes

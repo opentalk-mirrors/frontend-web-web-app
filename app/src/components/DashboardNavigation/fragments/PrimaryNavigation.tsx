@@ -1,13 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { List as MuiList, styled, useMediaQuery, useTheme } from '@mui/material';
+import { List as MuiList, styled } from '@mui/material';
 import { selectAuthIsPending, useAuthContext } from '@opentalk/redux-oidc';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FeedbackIcon, SettingsIcon, SignOutIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
+import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import {
   selectAccountManagementUrl,
   selectDataProtectionUrl,
@@ -74,8 +75,7 @@ interface NavigationProps {
 const PrimaryNavigation = ({ submenu, routes, setActiveNavbar }: NavigationProps) => {
   const [collapsedBar, setcollapsedBar] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDesktop = useIsDesktop();
   const { t } = useTranslation();
   const userSurveyEnabled = useAppSelector(selectUserSurveyUrl);
   const accountManagementUrl = useAppSelector(selectAccountManagementUrl);

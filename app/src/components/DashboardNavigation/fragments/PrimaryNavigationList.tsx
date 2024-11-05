@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Collapse, ListItemText, useMediaQuery, useTheme } from '@mui/material';
+import { Collapse, ListItemText } from '@mui/material';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router-dom';
 
+import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import { ListItem } from './PrimaryNavigationEntry';
 import { SecondaryRoute } from './SecondaryNavigation';
 
@@ -35,8 +36,7 @@ interface NavigationProps {
 const PrimaryNavigationList = ({ collapsedBar, filter, submenu, routes, setActiveNavbar }: NavigationProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDesktop = useIsDesktop();
 
   const handleNavigation = (event: React.MouseEvent, hasSubmenu: boolean, path: string) => {
     if (hasSubmenu) {

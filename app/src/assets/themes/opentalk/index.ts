@@ -764,6 +764,11 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
           }),
         },
       },
+      MuiUseMediaQuery: {
+        defaultProps: {
+          noSsr: true,
+        },
+      },
     },
     typography: (palette) => ({
       allVariants: {
