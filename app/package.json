@@ -1,7 +1,7 @@
 {
   "name": "@opentalk/opentalk",
   "version": "999.0.0-unreleased",
-  "description": "Frontend for the k3k video chat solution",
+  "description": "Frontend for the OpenTalk video chat solution",
   "private": true,
   "scripts": {
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",

@@ -10,23 +10,23 @@ This includes:
 
 ## Dependencies
 
-You need a running controller (https://git.heinlein-video.de/heinlein-video/k3k-controller) and keycloak instance.
+You need a running controller (<https://git.opentalk.dev/opentalk/backend/services/controller>) and keycloak instance.
 
 ## Use the container image
 
 To run the container, use a command similar to:
 
 ```bash
-podman run --rm -p 8090:80 -e CONTROLLER_HOST=localhost:1234 -e BASE_URL=localhost:8090 -e OIDC_ISSUER =localhost:9101 -it git.heinlein-video.de:5050/heinlein-video/k3k-web-frontend:latest
+podman run --rm -p 8090:80 -e CONTROLLER_HOST=localhost:1234 -e BASE_URL=localhost:8090 -e OIDC_ISSUER =localhost:9101 -it git.opentalk.dev:5050/opentalk/frontend/web/web-app:latest
 ```
 
 or using docker:
 
 ```bash
-docker run --rm -p 8090:80 -e CONTROLLER_HOST=localhost:1234 -e BASE_URL=http://localhost:8090 -e OIDC_ISSUER =localhost:9101 -it git.heinlein-video.de:5050/heinlein-video/k3k-web-frontend:latest
+docker run --rm -p 8090:80 -e CONTROLLER_HOST=localhost:1234 -e BASE_URL=http://localhost:8090 -e OIDC_ISSUER =localhost:9101 -it git.opentalk.dev:5050/opentalk/frontend/web/web-app:latest
 ```
 
-The frontend will then be available via http://localhost:8090
+The frontend will then be available via <http://localhost:8090>
 
 ### Environment variables used in the container
 
@@ -180,7 +180,7 @@ window.config = {
     // OIDC Config
     "oidcConfig": {
         // Authority URL (used for discovery using AUTHORITY/.well-known/openid-configuration)
-        "authority": "https://keycloak.local/auth/realms/K3K",
+        "authority": "https://keycloak.local/auth/realms/OPENTALK",
         // Client ID for the Authorization Code flow
         "clientId": "Frontend",
         // Scope
@@ -457,13 +457,13 @@ pnpm playwright test
 
 ##### macOS
 
-```shell
+```bash
 brew install livekit
 ```
 
 ##### Linux
 
-```shell
+```bash
 curl -sSL https://get.livekit.io | bash
 ```
 
@@ -473,7 +473,7 @@ Start via `livekit-server --dev` and copy the returned "API Key" and "API Secret
 
 The output should look like:
 
-```shell
+```bash
 INFO livekit server/main.go:208 starting in development mode
 INFO livekit server/main.go:211 no keys provided, using placeholder keys {"API Key": "devkey", "API Secret": "secret"}
 INFO livekit routing/interfaces.go:110 using single-node routing
@@ -499,24 +499,12 @@ Add the following section to the controller config (`controller/config.toml`). T
 [livekit]
 api_key = "devkey"
 api_secret = "secret"
-url = "http://localhost:7880"
+public_url = "http://localhost:7880"
+service_url = "http://localhost:7880"
 ```
 
-Check out the current livekit branch and start the controller via
+Start the controller via
 
 ```bash
-git checkout livekit
 cargo run
-```
-
----
-
-#### Web
-
-Check out the current livekit branch and start the frontend via
-
-```bash
-git checkout livekit-dev
-pnpm install
-pnpm start
 ```
