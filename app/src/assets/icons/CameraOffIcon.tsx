@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as CameraOff } from './source/camera-off.svg';
+import CameraOff from './source/camera-off.svg?react';
 
 const CameraOffIcon = (props: SvgIconProps) => <SvgIcon {...props} component={CameraOff} inheritViewBox />;
 

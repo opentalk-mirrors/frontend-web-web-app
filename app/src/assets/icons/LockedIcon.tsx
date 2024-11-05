@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Locked } from './source/locked.svg';
+import Locked from './source/locked.svg?react';
 
 const LockedIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Locked} inheritViewBox />;
 

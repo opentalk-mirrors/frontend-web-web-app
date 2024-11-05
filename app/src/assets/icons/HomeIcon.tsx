@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Home } from './source/home.svg';
+import Home from './source/home.svg?react';
 
 const HomeIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Home} inheritViewBox />;
 

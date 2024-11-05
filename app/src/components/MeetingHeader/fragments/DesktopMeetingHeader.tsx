@@ -7,7 +7,7 @@ import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next';
 
 import { MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icons';
-import { ReactComponent as Logo } from '../../../assets/images/logo.svg';
+import Logo from '../../../assets/images/logo.svg?react';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectPollsAndVotingsCount } from '../../../store/selectors';

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Avatar } from './source/avatar.svg';
+import Avatar from './source/avatar.svg?react';
 
 const AvatarIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Avatar} inheritViewBox />;
 

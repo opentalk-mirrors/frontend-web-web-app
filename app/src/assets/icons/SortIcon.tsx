@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Sort } from './source/sort.svg';
+import Sort from './source/sort.svg?react';
 
 const SortIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Sort} inheritViewBox />;
 

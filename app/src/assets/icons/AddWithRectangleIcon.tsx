@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as AddPlus } from './source/rect-add-plus.svg';
+import AddPlus from './source/rect-add-plus.svg?react';
 
 const AddWithRectangleIcon = (props: SvgIconProps) => <SvgIcon {...props} component={AddPlus} inheritViewBox />;
 

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Timer } from './source/timer.svg';
+import Timer from './source/timer.svg?react';
 
 const TimerIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Timer} inheritViewBox />;
 

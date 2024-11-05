@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Invite } from './source/invite.svg';
+import Invite from './source/invite.svg?react';
 
 const InviteIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Invite} inheritViewBox />;
 

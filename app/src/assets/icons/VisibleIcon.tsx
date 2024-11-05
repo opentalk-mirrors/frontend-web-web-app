@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Visible } from './source/visible.svg';
+import Visible from './source/visible.svg?react';
 
 const VisibleIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Visible} inheritViewBox />;
 

@@ -124,7 +124,7 @@ For devops it's in the `/usr/share/nginx/html/` folder of the webapp container. 
 ]
 ```
 
-## Use yarn to build a local version
+## Use pnpm to build a local version
 
 ### Local system setup
 
@@ -298,9 +298,9 @@ Libraries, except the app, will be moved to a separate repository and released t
 
 ### Development
 
-`@opentalk` packages/libraries are not a part of the app. Therefore the default hot reload mechanism will not work for changes you make there.
-If you work on a package and want to speed-up the development by using hot reload, you need additional setup on your local system.
-For details, please refer to the `app/hotReload/Instructions.md` manual.
+`@opentalk` packages/libraries are not a part of the app. 
+The Hot Module Replacement (HMR) mechanism will not work by default on `pnpm start`.
+If you work on a package and want to speed-up the development use special HMR script `pnpm start:hot`.
 
 
 #### Commands
@@ -320,7 +320,6 @@ If you plan to modify one of the libraries in this monorepo, execute a watcher i
 ### `pnpm start:hot`
 
 Similar to `pnpm start` with extended hot reload functionality for the `@opentalk` packages.
-For details, please refer to the `app/hotReload/Instructions.md` manual.
 
 ### `pnpm test`
 
@@ -342,6 +341,13 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 Builds libraries and calls `pnpm build:profiler` in `@opentalk/opentalk`, this build
 can be used for profiling the application.
+
+## Add svg icons
+
+Refer to `createIconComponents.sh`  helper script to create React components out of svg's.
+Note: as vite has problems importing svg's as react components, we use vite-plugin-svgr, which is used for that, 
+      The plugin requires `?react` suffix for filenames, while importing an svg in a dedicated *.tsx component file.
+      If you use the script mentioned above, it will manage that for you.
 
 ## Build the container image
 

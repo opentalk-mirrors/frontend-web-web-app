@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Pin } from './source/pin.svg';
+import Pin from './source/pin.svg?react';
 
 const PinIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Pin} inheritViewBox />;
 

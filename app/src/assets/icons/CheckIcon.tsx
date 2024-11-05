@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as CameraOn } from './source/check.svg';
+import Check from './source/check.svg?react';
 
-const CheckIcon = (props: SvgIconProps) => <SvgIcon {...props} component={CameraOn} inheritViewBox />;
+const CheckIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Check} inheritViewBox />;
 
 export default CheckIcon;

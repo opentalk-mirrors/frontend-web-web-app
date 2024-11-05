@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Hidden } from './source/hidden.svg';
+import Hidden from './source/hidden.svg?react';
 
 const HiddenIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Hidden} inheritViewBox />;
 

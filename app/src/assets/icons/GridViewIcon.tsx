@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as GridView } from './source/grid-view.svg';
+import GridView from './source/grid-view.svg?react';
 
 const GridViewIcon = (props: SvgIconProps) => <SvgIcon {...props} component={GridView} inheritViewBox />;
 

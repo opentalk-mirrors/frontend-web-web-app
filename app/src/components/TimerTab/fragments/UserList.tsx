@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import styled from '@emotion/styled';
-import { List as MuiList, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
+import { List as MuiList, ListItem, ListItemAvatar, ListItemText, Stack, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, DoneIcon } from '../../../assets/icons';

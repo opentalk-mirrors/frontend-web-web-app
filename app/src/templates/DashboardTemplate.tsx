@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
 
 import { HomeIcon, SettingsIcon, MeetingsIcon, MyAccountIcon, LegalLinksIcon, HelpSquareIcon } from '../assets/icons';
-import { ReactComponent as Logo } from '../assets/images/logoGradient.svg';
+import Logo from '../assets/images/logoGradient.svg?react';
 import DashboardNavigation, { PrimaryRoute } from '../components/DashboardNavigation';
 import { useAppSelector } from '../hooks';
 import { useIsDesktop } from '../hooks/useMediaQuery';

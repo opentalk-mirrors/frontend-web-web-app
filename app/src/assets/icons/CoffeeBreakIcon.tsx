@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as CoffeeBreak } from './source/coffee-break.svg';
+import CoffeeBreak from './source/coffee-break.svg?react';
 
 const CoffeeBreakIcon = (props: SvgIconProps) => <SvgIcon {...props} component={CoffeeBreak} inheritViewBox />;
 

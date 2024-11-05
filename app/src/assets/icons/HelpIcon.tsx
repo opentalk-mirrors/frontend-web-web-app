@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Help } from './source/help.svg';
+import Help from './source/help.svg?react';
 
 const HelpIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Help} inheritViewBox />;
 

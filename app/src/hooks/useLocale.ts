@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Locale } from 'date-fns';
-import en from 'date-fns/locale/en-US/index.js';
+import enUS from 'date-fns/locale/en-US/index.js';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,19 +13,23 @@ export default function useLocale() {
 
   const loadLocale = useCallback(
     async (abortController: AbortController) => {
-      if (language === 'en') {
-        // Prevent the case of loading known unsuported locale from date-fns.
-        return en;
+      // en-US is the default and fallback locale
+      let locale = enUS;
+
+      // Dynamic imports shall be extendable for other languages in the future
+      // https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2224
+      if (language === 'de') {
+        try {
+          abortController.signal.throwIfAborted();
+          locale = await import(`date-fns/locale/de/index.js`).then((module) => module.default);
+          abortController.signal.throwIfAborted();
+          return locale;
+        } catch {
+          return enUS;
+        }
       }
 
-      try {
-        abortController.signal.throwIfAborted();
-        const locale = await import(`date-fns/locale/${language}/index.js`).then((module) => module.default);
-        abortController.signal.throwIfAborted();
-        return locale;
-      } catch {
-        return en;
-      }
+      return locale;
     },
     [language]
   );

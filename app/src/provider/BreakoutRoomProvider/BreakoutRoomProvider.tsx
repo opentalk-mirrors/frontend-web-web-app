@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { ReactComponent as BreakoutRoomIcon } from '../../assets/images/subroom-illustration.svg';
+import BreakoutRoomIcon from '../../assets/images/subroom-illustration.svg?react';
 import { notifications } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';

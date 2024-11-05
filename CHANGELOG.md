@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 
 - Show notification to users when they have been muted by the moderator ([#2213](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2213))
 
+### Internal
+
+- Migrate main app from CRA to vite ([#1957](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1957))
+
 ## 2.0.0
 
 ### New Features

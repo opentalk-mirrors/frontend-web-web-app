@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Remove } from './source/remove.svg';
+import Remove from './source/remove.svg?react';
 
 const RemoveIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Remove} inheritViewBox />;
 

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as ConnectionBad } from './source/connection-bad.svg';
+import ConnectionBad from './source/connection-bad.svg?react';
 
 const ConnectionBadIcon = (props: SvgIconProps) => <SvgIcon {...props} component={ConnectionBad} inheritViewBox />;
 

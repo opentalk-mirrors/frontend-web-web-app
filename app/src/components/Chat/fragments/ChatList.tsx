@@ -6,7 +6,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ViewportList, ViewportListRef } from 'react-viewport-list';
 
-import { ReactComponent as EncryptedMessagesImage } from '../../../assets/images/encrypted-messages-illustration.svg';
+import EncryptedMessagesImage from '../../../assets/images/encrypted-messages-illustration.svg?react';
 import { useAppSelector } from '../../../hooks';
 import { selectCombinedMessageAndEvents } from '../../../store/selectors';
 import type { RoomEvent } from '../../../store/slices/eventSlice';

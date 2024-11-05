@@ -6,7 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BackIcon, NewMessageIcon } from '../../assets/icons';
-import { ReactComponent as NoNewMessageImage } from '../../assets/images/no-messages-illustration.svg';
+import NoNewMessageImage from '../../assets/images/no-messages-illustration.svg?react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectAllPersonalChats } from '../../store/selectors';
 import { selectAllOnlineParticipants } from '../../store/slices/participantsSlice';

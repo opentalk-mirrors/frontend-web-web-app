@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { readyToContinue } from '../../api/types/outgoing/timer';
 import { CoffeeBreakIcon as CoffeeBreakIconDefault } from '../../assets/icons';
-import { ReactComponent as LogoIconDefault } from '../../assets/images/logo.svg';
+import LogoIconDefault from '../../assets/images/logo.svg?react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectCoffeeBreakTimerId, selectTimerActive } from '../../store/slices/timerSlice';
 import { setCoffeeBreakCurtainOpenFlag } from '../../store/slices/uiSlice';

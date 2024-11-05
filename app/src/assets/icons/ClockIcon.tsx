@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Clock } from './source/clock.svg';
+import Clock from './source/clock.svg?react';
 
 const ClockIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Clock} inheritViewBox />;
 

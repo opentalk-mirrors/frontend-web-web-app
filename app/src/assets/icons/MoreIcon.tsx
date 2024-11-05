@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as More } from './source/more.svg';
+import More from './source/more.svg?react';
 
 const MoreIcon = (props: SvgIconProps) => <SvgIcon {...props} component={More} inheritViewBox />;
 

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Settings } from './source/settings.svg';
+import Settings from './source/settings.svg?react';
 
 const SettingsIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Settings} inheritViewBox />;
 

@@ -1,7 +1,6 @@
 dist
 build
 .*
-craco.config.js
 README.md
 CHANGELOG.md
 tsconfig.json

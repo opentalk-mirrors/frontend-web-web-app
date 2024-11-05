@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as RaiseHandOff } from './source/raise-hand-off.svg';
+import RaiseHandOff from './source/raise-hand-off.svg?react';
 
 const RaiseHandOffIcon = (props: SvgIconProps) => <SvgIcon {...props} component={RaiseHandOff} inheritViewBox />;
 

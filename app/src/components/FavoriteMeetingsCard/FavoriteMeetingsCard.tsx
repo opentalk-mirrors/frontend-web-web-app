@@ -51,11 +51,11 @@ const FavoriteEntry = styled(ListItem)(({ theme }) => ({
   whiteSpace: 'nowrap',
   flex: `0 0 auto`,
 
-  '&:not(:first-child):not(:last-child)': {
+  '&:not(:first-of-type):not(:last-child)': {
     padding: theme.spacing(2, 0, 2, 0),
   },
 
-  '&:first-child': {
+  '&:first-of-type': {
     padding: theme.spacing(0, 0, 2, 0),
   },
 

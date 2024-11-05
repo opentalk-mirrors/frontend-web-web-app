@@ -10,8 +10,7 @@
   "scripts": {
     "watch": "rollup -c --watch",
     "build": "rollup -c",
-    "lint": "eslint src/**/*.ts",
-    "hot-reload:remove-build": "node -e \"if (require('fs').readFileSync('../../app/hotReload/packages.tsconfig.json', {encoding: 'utf8'}).includes('@opentalk/rest-api-rtk-query')){process.exit(1)}\" || shx rm -rf ./dist"
+    "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
     "camelcase-keys": "^7.0.2",
@@ -37,7 +36,6 @@
     "rollup": "^2.79.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts": "^3.0.2",
-    "shx": "^0.3.4",
     "type-fest": "^2.19.0",
     "typescript": "^4.8.3",
     "uuid": "^9.0.1",

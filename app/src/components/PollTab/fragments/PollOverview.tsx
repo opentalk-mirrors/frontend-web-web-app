@@ -14,7 +14,7 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ReactComponent as NoPollsIcon } from '../../../assets/images/no-poll-illustration.svg';
+import NoPollsIcon from '../../../assets/images/no-poll-illustration.svg?react';
 import { AccordionItem } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectAllPolls, selectAllSavedPolls } from '../../../store/slices/pollSlice';
