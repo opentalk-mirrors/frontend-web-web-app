@@ -133,7 +133,9 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
   useEffect(() => {
     return () => {
       if (ProcessorWrapper.isSupported) {
-        localVideoTrack?.stopProcessor();
+        localVideoTrack?.stopProcessor().then(() => {
+          localVideoTrack.mediaStreamTrack.stop();
+        });
       }
     };
   }, [localVideoTrack]);
