@@ -61,3 +61,8 @@ Copyright:
  2020 Jan Mühlemann <jan.muehlemann@gmail.com>
  2022 OpenTalk GmbH <mail@opentalk.eu>
 License: LicenseRef-MIT-fluent_conv
+
+Files: packages/track-processors-js-main/*
+Copyright:
+ Copyright 2023 LiveKit, Inc.
+License: Apache-2.0
