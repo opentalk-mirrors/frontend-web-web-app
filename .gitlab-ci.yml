@@ -9,6 +9,7 @@ default:
 stages:
   - analyze
   - lint
+  - trigger
   - test
   - prepare-artifact
   - build
@@ -87,7 +88,6 @@ lint:audit:
 
 lint:commit:
   stage: lint
-  allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   before_script:
@@ -95,6 +95,19 @@ lint:commit:
     - npm install -g @commitlint/cli @commitlint/config-conventional
   script:
     - npx commitlint --from $CI_MERGE_REQUEST_DIFF_BASE_SHA --to HEAD --verbose
+
+trigger_changelog_preview:
+  stage: trigger
+  needs: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  variables:
+    # We need to hard code the target repository since the pipeline is running in the forked repository
+    PIPELINE_PROJECT_PATH: opentalk/frontend/web/web-app
+    PIPELINE_MERGE_REQUEST_PROJECT_PATH: $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
+    PIPELINE_MERGE_REQUEST_SOURCE_BRANCH_NAME: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+    PIPELINE_MERGE_REQUEST_IID: $CI_MERGE_REQUEST_IID
+  trigger: opentalk/tools/check-changelog
 
 test:unit-tests:
   stage: test
@@ -179,7 +192,6 @@ prepare-artifact:upload-sourcemaps:
       - dist/*
     expire_in: 1 days
 
-
 build:container:
   stage: build
   dependencies:
@@ -250,7 +262,6 @@ build:container-profiling:
       --destination $CI_REGISTRY_IMAGE:profiling
       --build-arg DIST_FOLDER=dist-profiler
       --force
-
 
 deploy:review-app:
   stage: deploy
@@ -337,8 +348,8 @@ cleanup:review-app:
   rules:
     - if: $CI_MERGE_REQUEST_EVENT_TYPE == "close"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH &&
-          $CI_PROJECT_ROOT_NAMESPACE == 'opentalk' &&
-          $CI_PIPELINE_SOURCE == 'push'
+        $CI_PROJECT_ROOT_NAMESPACE == 'opentalk' &&
+        $CI_PIPELINE_SOURCE == 'push'
   allow_failure: true
   image:
     name: alpine/helm:3.10.2
