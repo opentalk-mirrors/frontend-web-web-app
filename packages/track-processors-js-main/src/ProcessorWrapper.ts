@@ -7,7 +7,8 @@ export default class ProcessorWrapper<TransformerOptions extends Record<string, 
   static get isSupported() {
     return (
       typeof MediaStreamTrackGenerator !== 'undefined' &&
-      typeof MediaStreamTrackProcessor !== 'undefined'
+      typeof MediaStreamTrackProcessor !== 'undefined' &&
+      typeof VideoFrame !== 'undefined'
     );
   }
 
@@ -32,6 +33,7 @@ export default class ProcessorWrapper<TransformerOptions extends Record<string, 
   constructor(transformer: TrackTransformer<TransformerOptions>, name: string) {
     this.name = name;
     this.transformer = transformer;
+    // eslint-disable-next-line  @typescript-eslint/no-unused-expressions
     this.transformer.restart;
   }
 

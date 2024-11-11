@@ -47,6 +47,7 @@ export default class MediaPipeHolisticTrackerTransformer extends VideoTransforme
     await this.holistic?.close();
   }
 
+  // eslint-disable-next-line  @typescript-eslint/no-empty-function
   async update() {}
 
   async transform(): Promise<void> {

@@ -18,6 +18,7 @@ COPY packages/i18next-fluent/tsconfig.json ./packages/i18next-fluent/tsconfig.js
 COPY packages/rtk-rest-api/package.json ./packages/rtk-rest-api/package.json
 COPY packages/rtk-rest-api/tsconfig.json ./packages/rtk-rest-api/tsconfig.json
 COPY packages/rtk-rest-api/example/package.json ./packages/rtk-rest-api/example/package.json
+COPY packages/track-processors-js-main/package.json ./packages/track-processors-js-main/package.json
 
 RUN yarn install --silent
 COPY app ./app

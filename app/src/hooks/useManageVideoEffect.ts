@@ -11,7 +11,6 @@ import { ConnectionState, LocalVideoTrack, VideoCaptureOptions } from 'livekit-c
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '.';
-import { BackgroundBlur } from '../modules/Media/BackgroundBlur';
 import { useMediaChoices } from '../provider/MediaChoicesProvider';
 import { selectVideoBackgroundEffects, setBackgroundEffectsLoading } from '../store/slices/mediaSlice';
 
@@ -24,7 +23,6 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
   const backgroundEffects = useAppSelector(selectVideoBackgroundEffects);
 
   const [localVideoTrack, setLocalVideoTrack] = useState<LocalVideoTrack | undefined>(videoTrack);
-  const [fallbackBlurProcessor, setFallbackBlurProcessor] = useState<BackgroundBlur | null>(null);
 
   const isBlurred = backgroundEffects.style === 'blur';
   const virtualBackgroundActive = backgroundEffects.style === 'image';
@@ -120,66 +118,12 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
     dispatch,
   ]);
 
-  const getTrack = useCallback(async () => {
-    let usedTrack = localVideoTrack?.mediaStreamTrack;
-
-    if (!usedTrack?.getSettings()?.width) {
-      const newTrack = await room?.localParticipant.createTracks({ video: { deviceId } });
-      // The `createTracks` function returns an array of tracks, from which we just need the video track
-      // Since it's not possible to request a single track directly, we extract the first one from the array
-      usedTrack = newTrack?.[0].mediaStreamTrack;
-    }
-
-    return usedTrack;
-  }, [localVideoTrack?.mediaStreamTrack, room?.localParticipant, deviceId]);
-
-  const handleFallbackBackgroundEffect = useCallback(async () => {
-    try {
-      dispatch(setBackgroundEffectsLoading(true));
-      if ((isBlurred || virtualBackgroundActive) && localVideoTrackIsSet) {
-        fallbackBlurProcessor?.stop();
-        const blurProcessor = await BackgroundBlur.create();
-        setFallbackBlurProcessor(blurProcessor);
-
-        const usedTrack = await getTrack();
-
-        const blurredTrack = usedTrack && (await blurProcessor.start(usedTrack, backgroundEffects));
-        if (blurredTrack && localVideoTrack?.sender) {
-          await localVideoTrack.replaceTrack(blurredTrack);
-        } else {
-          console.warn('Track is unpublished, unable to replace the track');
-        }
-      } else if (backgroundEffects.style === 'off') {
-        const newTrack = await room?.localParticipant.createTracks({ video: { deviceId } });
-        if (newTrack && newTrack.length > 0) localVideoTrack?.replaceTrack(newTrack[0].mediaStreamTrack);
-        fallbackBlurProcessor?.stop();
-        setFallbackBlurProcessor(null);
-      }
-    } catch (error) {
-      console.error('Error applying background effect:', error);
-    } finally {
-      dispatch(setBackgroundEffectsLoading(false));
-    }
-  }, [
-    backgroundEffects,
-    isBlurred,
-    fallbackBlurProcessor,
-    virtualBackgroundActive,
-    deviceId,
-    getTrack,
-    localVideoTrack?.replaceTrack,
-    localVideoTrack?.sender,
-    localVideoTrackIsSet,
-  ]);
-
   useEffect(() => {
     const handleBackgroundEffect = async () => {
       if (!localVideoTrackIsSet) return;
 
       if (ProcessorWrapper.isSupported) {
         await applyBackgroundEffect();
-      } else {
-        await handleFallbackBackgroundEffect();
       }
     };
 
@@ -190,9 +134,6 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
     return () => {
       if (ProcessorWrapper.isSupported) {
         localVideoTrack?.stopProcessor();
-      } else {
-        fallbackBlurProcessor?.stop();
-        setFallbackBlurProcessor(null);
       }
     };
   }, [localVideoTrack]);

@@ -3,6 +3,14 @@ import BackgroundTransformer, {
   BackgroundOptions,
   SegmenterOptions,
 } from './transformers/BackgroundTransformer';
+import { isFirefoxBrowser } from './utils';
+
+// Polyfilling for now work only for Firefox (above v130).
+// Check theImageSegmenter.baseOption.delegate for adding segmentation to CPU to work on Firefox in BackgroundTransform.ts.
+if (isFirefoxBrowser) {
+  require('../polyfills/mediastreamtrackgenerator');
+  require('../polyfills/mediastreamtrackprocessor');
+}
 
 export * from './transformers/types';
 export { default as VideoTransformer } from './transformers/VideoTransformer';

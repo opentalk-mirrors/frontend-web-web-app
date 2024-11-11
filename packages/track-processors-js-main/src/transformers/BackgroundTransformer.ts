@@ -1,5 +1,6 @@
 import * as vision from '@mediapipe/tasks-vision';
 import { dependencies } from '../../package.json';
+import { isChromiumBasedBrowser } from '../utils';
 import VideoTransformer from './VideoTransformer';
 import { VideoTransformerInitOptions } from './types';
 
@@ -48,7 +49,7 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
         modelAssetPath:
           this.options.assetPaths?.modelAssetPath ??
           'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite',
-        delegate: 'GPU',
+        delegate: isChromiumBasedBrowser ? 'GPU' : 'CPU', // make GPU exepction - CPU default
         ...this.options.segmenterOptions,
       },
       runningMode: 'VIDEO',
@@ -96,7 +97,7 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
       this.imageSegmenter?.segmentForVideo(
         this.inputVideo!,
         startTimeMs,
-        (result) => (this.segmentationResults = result),
+        (result: vision.ImageSegmenterResult | undefined) => (this.segmentationResults = result),
       );
 
       if (this.blurRadius) {
