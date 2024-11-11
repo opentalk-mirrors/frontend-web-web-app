@@ -7,7 +7,6 @@
   "scripts": {
     "build": "shx rm -rf ./dist && rollup -c",
     "build-ts": "rm -rf /lib && pnpm build:esm && pnpm build:cjs",
-    "hot-reload:remove-build": "node -e \"if (require('fs').readFileSync('../../app/hotReload/packages.tsconfig.json', {encoding: 'utf8'}).includes('@opentalk/redux-oidc')){process.exit(1)}\" || shx rm -rf ./dist",
     "build:esm": "tsc",
     "build:cjs": "tsc --module commonjs --outDir dist/cjs",
     "lint": "eslint src/ test/ --ext .ts,.tsx"
@@ -23,7 +22,6 @@
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/rollup-plugin-peer-deps-external": "^2",
     "eslint": "^8.43.0",
-    "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "react-redux": "^7.2.8",
     "react-router-dom": "^6.4.0",

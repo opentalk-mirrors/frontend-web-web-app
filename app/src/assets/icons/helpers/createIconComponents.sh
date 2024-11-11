@@ -6,6 +6,9 @@
 
 #generate from the icons/source folder or whatever the location of the SVG's is
 
+# Vite has problems importing svg's as react components. 
+# vite-plugin-svgr, which is used for that, requires `?react` suffix for filenames
+
 for f in *.svg; do
 
     componentName=$(echo "${f%.*}" | perl -pe 's/(^|-)./uc($&)/ge;s/-//g')
@@ -15,9 +18,8 @@ cat > "${componentName}Icon.tsx" << EOF
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
-import React from 'react';
 
-import { ReactComponent as ${componentName} } from './source/${f}';
+import ${componentName} from './source/${f}?react';
 
 const ${componentName}Icon = (props: SvgIconProps) => <SvgIcon {...props} component={${componentName}} inheritViewBox />;
 

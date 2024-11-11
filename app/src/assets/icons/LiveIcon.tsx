@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Live } from './source/live.svg';
+import Live from './source/live.svg?react';
 
 const LiveIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Live} inheritViewBox />;
 

@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import '@emotion/styled';
 import { ThemeProvider } from '@mui/material';
 import '@mui/material';
 import { ftl2js } from '@opentalk/fluent_conv';

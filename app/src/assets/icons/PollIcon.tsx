@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Poll } from './source/poll.svg';
+import Poll from './source/poll.svg?react';
 
 const PollIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Poll} inheritViewBox />;
 

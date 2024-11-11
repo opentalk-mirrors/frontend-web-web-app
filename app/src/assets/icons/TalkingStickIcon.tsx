@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as TalkingStick } from './source/talking-stick.svg';
+import TalkingStick from './source/talking-stick.svg?react';
 
 const TalkingStickIcon = (props: SvgIconProps) => <SvgIcon {...props} component={TalkingStick} inheritViewBox />;
 

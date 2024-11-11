@@ -92,7 +92,7 @@ export class BackgroundBlur {
 
     // For model card refer to:
     // https://storage.googleapis.com/mediapipe-assets/Model%20Card%20MediaPipe%20Selfie%20Segmentation.pdf
-    const modelResponse = await fetch(`${process.env.PUBLIC_URL}/models/selfie_segmentation_landscape_05185647.tflite`);
+    const modelResponse = await fetch(`/models/selfie_segmentation_landscape_05185647.tflite`);
     const model = await modelResponse.arrayBuffer();
 
     const modelBufferOffset = tfLite._getModelBufferMemoryOffset();

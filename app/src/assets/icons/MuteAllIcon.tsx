@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as MuteAll } from './source/mute-all.svg';
+import MuteAll from './source/mute-all.svg?react';
 
 const MuteAllIcon = (props: SvgIconProps) => <SvgIcon {...props} component={MuteAll} inheritViewBox />;
 

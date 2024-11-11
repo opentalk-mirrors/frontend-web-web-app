@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Phone } from './source/phone.svg';
+import Phone from './source/phone.svg?react';
 
 const PhoneIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Phone} inheritViewBox />;
 

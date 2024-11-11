@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Feedback } from './source/feedback.svg';
+import Feedback from './source/feedback.svg?react';
 
 const FeedbackIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Feedback} inheritViewBox />;
 

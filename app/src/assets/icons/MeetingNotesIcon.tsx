@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Protocol } from './source/protocol.svg';
+import Protocol from './source/protocol.svg?react';
 
 const MeetingNotesIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Protocol} inheritViewBox />;
 

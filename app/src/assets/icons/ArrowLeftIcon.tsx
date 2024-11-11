@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as ArrowLeft } from './source/arrow-left.svg';
+import ArrowLeft from './source/arrow-left.svg?react';
 
 const ArrowLeftIcon = (props: SvgIconProps) => <SvgIcon {...props} component={ArrowLeft} inheritViewBox />;
 

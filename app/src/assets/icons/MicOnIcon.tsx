@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as MicOn } from './source/mic-on.svg';
+import MicOn from './source/mic-on.svg?react';
 
 const MicOnIcon = (props: SvgIconProps) => <SvgIcon {...props} component={MicOn} inheritViewBox />;
 

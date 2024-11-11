@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as SpeedTest } from './source/speed-test.svg';
+import SpeedTest from './source/speed-test.svg?react';
 
 const SpeedTestIcon = (props: SvgIconProps) => <SvgIcon {...props} component={SpeedTest} inheritViewBox />;
 

@@ -8,8 +8,7 @@
     "fmt": "pnpm prettier --write \"./*.{tsx,ts}\" \"./**/*.{tsx,ts}\"",
     "fmt:ci": "pnpm prettier --check \"./*.{tsx,ts}\" \"./**/*.{tsx,ts}\"",
     "start": "pnpm build:libs && pnpm --filter '@opentalk/opentalk' start",
-    "start:hot": "pnpm build:libs && pnpm --filter './packages/**' run hot-reload:remove-build && pnpm --filter '@opentalk/opentalk' start:hot",
-    "analyze": "pnpm build:libs && pnpm --filter '@opentalk/opentalk' analyze",
+    "start:hot": "pnpm build:libs && pnpm --filter '@opentalk/opentalk' start:hot",
     "watch": "pnpm run -r watch",
     "build": "pnpm run -r build",
     "build:libs": "pnpm --filter './packages/**' run build",
@@ -55,15 +54,5 @@
     "ts-loader": "^9.4.2",
     "typescript": "~4.7.3"
   },
-  "packageManager": "pnpm@9.12.1",
-  "resolutions": {
-    "glob-parent": "5.1.2",
-    "minimatch": "3.0.5",
-    "nth-check": "2.0.1",
-    "yaml": "^2.5.1",
-    "semver": "^7.5.2",
-    "optionator": "^0.9.3",
-    "@babel/traverse": "^7.23.2",
-    "ws": "^8.17.1"
-  }
+  "packageManager": "pnpm@9.12.3"
 }

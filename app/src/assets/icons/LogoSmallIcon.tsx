@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as LogoSmall } from './source/logo-small.svg';
+import LogoSmall from './source/logo-small.svg?react';
 
 const LogoSmallIcon = (props: SvgIconProps) => <SvgIcon {...props} component={LogoSmall} inheritViewBox />;
 

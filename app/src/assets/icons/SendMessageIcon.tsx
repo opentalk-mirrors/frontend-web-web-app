@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as SendMessage } from './source/send-message.svg';
+import SendMessage from './source/send-message.svg?react';
 
 const SendMessageIcon = (props: SvgIconProps) => <SvgIcon {...props} component={SendMessage} inheritViewBox />;
 

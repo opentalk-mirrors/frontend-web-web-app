@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as AddUser } from './source/add-user.svg';
+import AddUser from './source/add-user.svg?react';
 
 const AddUserIcon = (props: SvgIconProps) => <SvgIcon {...props} component={AddUser} inheritViewBox />;
 

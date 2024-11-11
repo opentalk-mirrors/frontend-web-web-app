@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Warning } from './source/warning.svg';
+import Warning from './source/warning.svg?react';
 
 const WarningIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Warning} inheritViewBox />;
 

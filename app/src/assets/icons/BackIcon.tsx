@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Back } from './source/back.svg';
+import Back from './source/back.svg?react';
 
 const BackIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Back} inheritViewBox />;
 

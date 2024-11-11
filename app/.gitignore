@@ -2,8 +2,4 @@
 #
 # SPDX-License-Identifier: EUPL-1.2
 
-#tsconfig.json will be created automaticly based on enviorment from
-#tsconfig.hot.json and tsconfig.dev.json
-
 tsconfig.json
-hotReload/packages.tsconfig.json

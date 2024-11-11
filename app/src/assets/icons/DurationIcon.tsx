@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Duration } from './source/duration.svg';
+import Duration from './source/duration.svg?react';
 
 const DurationIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Duration} inheritViewBox />;
 

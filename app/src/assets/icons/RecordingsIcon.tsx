@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Recordings } from './source/recordings.svg';
+import Recordings from './source/recordings.svg?react';
 
 const RecordingsIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Recordings} inheritViewBox />;
 

@@ -4,7 +4,7 @@
 import { keyframes, styled } from '@mui/material';
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as Illustration } from '../../assets/images/start-meeting-illustration.svg';
+import Illustration from '../../assets/images/start-meeting-illustration.svg?react';
 
 const Svg = (props: SvgIconProps) => <SvgIcon {...props} component={Illustration} inheritViewBox aria-hidden />;
 

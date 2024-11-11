@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as NoOfRooms } from './source/no-of-rooms.svg';
+import NoOfRooms from './source/no-of-rooms.svg?react';
 
 const NoOfRoomsIcon = (props: SvgIconProps) => <SvgIcon {...props} component={NoOfRooms} inheritViewBox />;
 

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { styled, SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent as MicOff } from './source/mic-off.svg';
+import MicOff from './source/mic-off.svg?react';
 
 interface MicOffIconExtraProps extends SvgIconProps {
   disabled?: boolean;
