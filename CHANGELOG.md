@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
+- Fix crash caused by saving a meeting with incorrect end date in custom meeting repetition ([#2025](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2025))
 - Fix direct messaging sometimes doesn't open up a chat ([#2083](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2083))
 - Fix missing error message for poll topic minimum character length ([#1837](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1837))
 - Fix ui elements glitch in lobby ([#2214](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2214))
