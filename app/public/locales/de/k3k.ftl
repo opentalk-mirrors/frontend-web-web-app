@@ -508,6 +508,7 @@ poll-topic-label = Thema
 poll-topic-placeholder = Worum geht es in der Umfrage?
 poll-input-choices = Antwort hinzufügen
 poll-form-input-error-max = Die maximal zulässige Anzahl von Zeichen beträgt {$max}
+poll-form-input-error-min = Überschrift mit min. {$min} Zeichen benötigt
 poll-form-input-required = Pflichtfeld
 poll-form-input-error-number = Nur positive Zahlen
 poll-form-input-error-choices = Es müssen mindestens 2 Antworten erstellt werden

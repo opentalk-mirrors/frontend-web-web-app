@@ -508,6 +508,7 @@ poll-topic-label = Topic
 poll-topic-placeholder = What is your poll about?
 poll-input-choices = Add Answer
 poll-form-input-error-max = Max {$max} characters
+poll-form-input-error-min = Topic required with min. {$min} letters
 poll-form-input-required = Required field
 poll-form-input-error-number = Only enter numbers
 poll-form-input-error-choices = Minimal created answers are 2
