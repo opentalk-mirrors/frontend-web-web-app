@@ -783,12 +783,13 @@ dashboard-recurrence-meeting-card-delete-dialog-all = The entire meeting series
 dashboard-recurrence-meeting-card-delete-dialog-cancel = Cancel
 
 dashboard-create-meeting-dialog-title = Please confirm
-dashboard-create-or-update-meeting-dialog-message = You already have a meeting scheduled for this time: 
+dashboard-create-or-update-meeting-dialog-message = You already have a meeting scheduled for this time:
 dashboard-create-meeting-dialog-prompt = Are you sure you want to create a new one?
 dashboard-update-meeting-dialog-prompt = Are you sure you want to update?
 dashboard-create-meeting-dialog-ok = Create
 dashboard-update-meeting-dialog-ok = Update
 dashboard-create-meeting-dialog-cancel = Cancel
+dashboard-create-or-update-required-fields-info = Required fields are marked with an asterisk. Please fill them out.
 
 dashboard-direct-meeting-title = Who do you want to invite to your meeting?
 dashboard-direct-meeting-attention = Attention: This is an adhoc meeting, it will be automatically deleted after 24h and not shown in the dashboard.
@@ -799,7 +800,7 @@ dashboard-direct-meeting-button-open-room = Open Video Room
 dashboard-direct-meeting-button-send-invitations = Send Invitations
 dashboard-direct-meeting-invitations-successful = All the people you added have been successfully invited to your meeting.
 dashboard-direct-meeting-invitations-error = There was a problem sending one or more invitations. Please try again later.
-dashboard-direct-meeting-password-label = Password - optional
+dashboard-direct-meeting-password-label = Password
 dashboard-direct-meeting-password-placeholder = Strong password has at least 8 characters
 
 dashboard-invite-to-meeting-room-link-label = Meeting-Link
@@ -845,7 +846,7 @@ dashbooard-event-decline-invitation-notification = Invite declined for meeting {
 
 dashboard-meeting-textfield-title = Title
 dashboard-meeting-textfield-title-placeholder = My new Meeting
-dashboard-meeting-textfield-details = Details - optional
+dashboard-meeting-textfield-details = Details
 dashboard-meeting-textfield-details-placeholder = What is your meeting about?
 dashboard-meeting-to-step = To step {$step}
 dashboard-meeting-date-start = from

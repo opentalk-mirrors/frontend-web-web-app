@@ -11,7 +11,7 @@ import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 const Container = styled(Box)(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1fr',
-  gridTemplateRows: 'auto auto 1fr',
+  gridTemplateRows: 'auto auto auto 1fr',
   height: '100%',
   overflow: 'hidden auto',
   gap: theme.spacing(2),
@@ -50,6 +50,10 @@ const CreateEventsPage = () => {
     <Container>
       <Typography component="h1">{pageHeading}</Typography>
       <StepperHeader />
+      <Typography>
+        <span role="presentation">*</span>
+        {t('dashboard-create-or-update-required-fields-info')}
+      </Typography>
       {activeStep === 0 && <CreateOrUpdateMeetingForm onForwardButtonClick={() => setActiveStep(1)} />}
     </Container>
   );

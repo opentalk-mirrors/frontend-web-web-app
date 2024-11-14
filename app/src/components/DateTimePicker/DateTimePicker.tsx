@@ -18,6 +18,7 @@ type PickerTextFieldProps = {
   id?: string;
   startAdornment?: string;
   fullWidth?: boolean;
+  required?: boolean;
 };
 
 type DateTimePickerProps = {
@@ -36,6 +37,10 @@ const StartAdornmentTypography = styled(Typography)<{ component?: string; htmlFo
   flex: '1',
   display: 'block',
   whiteSpace: 'nowrap',
+
+  '& .MuiFormLabel-asterisk': {
+    color: theme.palette.error.main,
+  },
 }));
 
 const DateTimePicker = ({
@@ -50,7 +55,7 @@ const DateTimePicker = ({
   error,
   textField,
 }: DateTimePickerProps) => {
-  const { placeholder, id, startAdornment, fullWidth } = textField || {};
+  const { placeholder, id, startAdornment, fullWidth, required } = textField || {};
   const [focused, setFocused] = useState(false);
   const [opened, setOpened] = useState(false);
   const isScreenHeightTooSmall = useMediaQuery((theme: Theme) => {
@@ -108,6 +113,11 @@ const DateTimePicker = ({
       return (
         <StartAdornmentTypography variant="body1" component="label" htmlFor={inputId}>
           {startAdornment}
+          {required && (
+            <span aria-hidden={true} className="MuiFormLabel-asterisk MuiInputLabel-asterisk">
+              &nbsp;*
+            </span>
+          )}
         </StartAdornmentTypography>
       );
     }
@@ -136,6 +146,7 @@ const DateTimePicker = ({
               onFocus,
               onBlur,
               InputProps: { startAdornment: getStartAdornment(), id: inputId },
+              required,
             },
             actionBar: { actions },
             popper: { placement: 'bottom-start', modifiers: [getOffsetModifier()] },

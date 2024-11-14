@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improvements to the user experience
 
+- Proper marking of required input fields ([#2193](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2193))
 - Show notification to users when they have been muted by the moderator ([#2213](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2213))
 
 ### Internal

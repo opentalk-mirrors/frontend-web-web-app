@@ -51,6 +51,7 @@ export const DashboardDateTimePicker = (props: DashboardDateTimePickerProps) => 
         textField={{
           id: id,
           startAdornment: t(`dashboard-meeting-date-${props.type}`),
+          required: true,
         }}
       />
     </Stack>
