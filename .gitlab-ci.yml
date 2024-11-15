@@ -272,23 +272,37 @@ deploy:review-app:
     - kubernetes
   before_script:
     - helm repo add --username gitlab-ci-token --password ${CI_JOB_TOKEN}
-      opentalk https://git.opentalk.dev/api/v4/projects/218/packages/helm/stable
+      opentalk https://git.opentalk.dev/api/v4/projects/649/packages/helm/stable
   script:
     - helm uninstall frontend-$CI_MERGE_REQUEST_IID -n review-latest || true
-    - helm upgrade --version 0.1.0 --install --force frontend-$CI_MERGE_REQUEST_IID opentalk/ot-web-frontend-helm
-      --set image.repository=$CI_REGISTRY_IMAGE
-      --set image.tag=${CI_MERGE_REQUEST_IID}_${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
-      --set ingress.tls[0].secretName=frontend-$CI_MERGE_REQUEST_IID-tls
-      --set ot_frontend_url=www.$CI_MERGE_REQUEST_IID.review-latest.kube.opentalk.run
-      --set ot_keycloak_domain=accounts.review-latest.kube.opentalk.run
-      --set ot_backend_url=controller.review-latest.kube.opentalk.run
-      --set ot_feature_shared_folder="true"
-      --set ot_sentry_dsn=$SENTRY_DSN_TESTING
-      --set-string 'ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod'
-      --set-string 'ingress.annotations.kubernetes\.io/ingress\.class=traefik'
+    - >
+      helm upgrade --version 2.1.1 --install --force frontend-$CI_MERGE_REQUEST_IID opentalk/ot-helm
+      --set tags.standard=false
+      --set tags.webapp=true
+      --set webapp.image.registry=$CI_REGISTRY
+      --set webapp.image.repository=$CI_PROJECT_PATH
+      --set webapp.image.tag=${CI_MERGE_REQUEST_IID}_${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+      --set webapp.imagePullSecrets[0].name=git
+      --set webapp.ingress.enabled=true
+      --set webapp.ingress.className=traefik
+      --set webapp.ingress.tls[0].secretName=frontend-$CI_MERGE_REQUEST_IID-tls
+      --set global.defaultWebServiceProtocol=https
+      --set global.webapp.domain=www.$CI_MERGE_REQUEST_IID.review-latest.kube.opentalk.run
+      --set global.oidc.baseUrl=https://accounts.review-latest.kube.opentalk.run/auth
+      --set global.oidc.realm=opentalk
+      --set global.oidc.webapp.clientId=Webapp
+      --set global.backend.domain=controller.review-latest.kube.opentalk.run
+      --set webapp.ndtDomain=ndt.mailbox.org
+      --set webapp.errorReportDomain=opentalk.eu
+      --set webapp.feature.sharedFolder="true"
+      --set webapp.imprintUrl=https://opentalk.eu/en/terms-of-use
+      --set webapp.dataProtectionUrl=https://opentalk.eu/en/data-protection
+      --set webapp.helpdeskUrl=https://opentalk.eu/docs/user/
+      --set webapp.sentryDsn=$SENTRY_DSN_TESTING
+      --set webapp.livekit.domain=livekit.review-latest.kube.opentalk.run
       --set-string
-      'ingress.annotations.traefik\.ingress\.kubernetes\.io/router\.middlewares=review-latest-auth@kubernetescrd'
-      -n review-latest --create-namespace --wait
+      'webapp.ingress.annotations.traefik\.ingress\.kubernetes\.io/router\.middlewares=review-latest-auth@kubernetescrd'
+      -n review-latest --wait
     - echo "https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@www.${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run"
 
 e2e:test:
