@@ -4,7 +4,7 @@
 import { useRemoteParticipant } from '@livekit/components-react';
 import { Grid, styled } from '@mui/material';
 import { ConnectionQuality, Track } from 'livekit-client';
-import { MouseEventHandler, useCallback, useEffect, useMemo } from 'react';
+import { MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
 import { v4 as uuid } from 'uuid';
@@ -53,6 +53,7 @@ interface VideoOverlayProps {
 
 const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const userLayout = useAppSelector(selectCinemaLayout);
+  const [channelId, setChannelId] = useState<string | undefined>();
   const dispatch = useAppDispatch();
   const screenDescriptor = useMemo<MediaDescriptor>(
     () => ({
@@ -80,8 +81,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const livekitUrl = useAppSelector(selectLivekitPublicUrl);
 
   useEffect(() => {
-    if (popoutStreamAccess && popoutStreamAccess.token) {
-      const channelId = uuid();
+    if (channelId && popoutStreamAccess && popoutStreamAccess.token) {
       const url = new URL(`${window.location.origin}/room/extended/${channelId}`);
       const channel = new BroadcastChannel(channelId);
       channel.onmessage = (event) => {
@@ -98,6 +98,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
               },
             });
             if (popoutStreamAccess.token) {
+              setChannelId(undefined);
               dispatch(deleteLivekitPopoutStreamAccessToken(popoutStreamAccess.token));
             }
           }
@@ -123,6 +124,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const openInNewTab: MouseEventHandler = (event) => {
     event.stopPropagation();
     batch(() => {
+      setChannelId(uuid());
       dispatch(addPopoutStreamAccess(descriptor));
       dispatch(requestPopoutStreamAccessToken.action());
     });

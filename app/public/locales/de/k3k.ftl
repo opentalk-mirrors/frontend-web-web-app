@@ -710,6 +710,7 @@ dashboard-quick-start-title = Kurzanleitung für das OpenTalk-Dashboard
 conference-quick-start-title = Kurzanleitung für die OpenTalk-Konferenz
 conference-quick-start-open = Kurzanleitung öffnen
 conference-quick-start-close = Kurzanleitung schließen
+conference-go-home = Link zum Dashboard
 
 quick-start-loading = Kurzanleitung wird geladen
 quick-start-error = Kurzanleitung konnte nicht geladen werden

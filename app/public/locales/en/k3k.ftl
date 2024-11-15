@@ -710,6 +710,7 @@ dashboard-quick-start-title = OpenTalk Dashboard Quick Guide
 conference-quick-start-title = OpenTalk Conference Quick Guide
 conference-quick-start-open = Open quick guide
 conference-quick-start-close = Close quick guide
+conference-go-home = Go to dashboard
 
 quick-start-loading = Loading the quick guide
 quick-start-error = Couldn't load the quick guide

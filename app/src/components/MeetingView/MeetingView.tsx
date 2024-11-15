@@ -6,6 +6,7 @@ import { styled } from '@mui/material';
 import { memo, useRef } from 'react';
 
 import { useAppSelector } from '../../hooks';
+import { useHotkeys } from '../../hooks/useHotkeys';
 import useRoom from '../../hooks/useRoom';
 import { selectLivekitAccessToken, selectLivekitPublicUrl } from '../../store/slices/livekitSlice';
 import { selectShowCoffeeBreakCurtain } from '../../store/slices/uiSlice';
@@ -48,7 +49,7 @@ const MeetingView = () => {
   const enableAudio = isModerator || !showCoffeeBreakCurtain;
   const livekitAccessToken = useAppSelector(selectLivekitAccessToken);
   const publicUrl = useAppSelector(selectLivekitPublicUrl);
-
+  useHotkeys();
   const room = useRoom({ accessToken: livekitAccessToken });
 
   return (
