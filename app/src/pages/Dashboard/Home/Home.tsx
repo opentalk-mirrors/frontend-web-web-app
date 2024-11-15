@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { useGetEventsQuery } from '../../../api/rest';
-import { AddIcon, AddWithRectangleIcon, CameraOnIcon } from '../../../assets/icons';
+import { AddIcon, RectAddPlusIcon, CameraOnIcon } from '../../../assets/icons';
 import FavoriteMeetingsCard, { FavoriteMeetingProps } from '../../../components/FavoriteMeetingsCard';
 import { default as DefaultJoinMeetingDialog } from '../../../components/JoinMeetingDialog';
 import MeetingCard from '../../../components/MeetingCard';
@@ -206,7 +206,7 @@ const Home = () => {
     <DefaultJoinMeetingDialog
       openButtonProps={{
         size: 'large',
-        startIcon: <AddWithRectangleIcon />,
+        startIcon: <RectAddPlusIcon />,
         fullWidth: isDesktop,
       }}
     />

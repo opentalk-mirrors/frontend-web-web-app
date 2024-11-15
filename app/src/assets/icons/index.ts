@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import AddIcon from './AddIcon';
 import AddUserIcon from './AddUserIcon';
-import AddWithRectangleIcon from './AddWithRectangleIcon';
 import ArrowDownIcon from './ArrowDownIcon';
 import ArrowLeftIcon from './ArrowLeftIcon';
 import ArrowRightIcon from './ArrowRightIcon';
@@ -46,10 +45,9 @@ import InfoIcon from './InfoIcon';
 import InfoOutlinedIcon from './InfoOutlinedIcon';
 import InviteIcon from './InviteIcon';
 import LegalBallotIcon from './LegalBallotIcon';
-import LegalLinksIcon from './LegalLinksIcon';
 import LiveIcon from './LiveIcon';
 import LockedIcon from './LockedIcon';
-import Logo from './Logo';
+import LogoIcon from './LogoIcon';
 import LogoSmallIcon from './LogoSmallIcon';
 import MeetingNotesIcon from './MeetingNotesIcon';
 import MeetingsIcon from './MeetingsIcon';
@@ -70,6 +68,7 @@ import PollIcon from './PollIcon';
 import RaiseHandOffIcon from './RaiseHandOffIcon';
 import RaiseHandOnIcon from './RaiseHandOnIcon';
 import RecordingsIcon from './RecordingsIcon';
+import RectAddPlusIcon from './RectAddPlusIcon';
 import RemoveIcon from './RemoveIcon';
 import SearchIcon from './SearchIcon';
 import SecureIcon from './SecureIcon';
@@ -97,7 +96,6 @@ import WoolBallIcon from './WoolBallIcon';
 export {
   AddIcon,
   AddUserIcon,
-  AddWithRectangleIcon,
   ArrowDownIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -107,6 +105,7 @@ export {
   BackIcon,
   BreakroomsIcon,
   BugIcon,
+  BurgermenuIcon,
   CameraOffIcon,
   CameraOnIcon,
   CheckIcon,
@@ -139,16 +138,18 @@ export {
   InfoOutlinedIcon,
   InviteIcon,
   LegalBallotIcon,
-  LegalLinksIcon,
-  Logo,
   LiveIcon,
   LockedIcon,
+  LogoIcon,
+  LogoSmallIcon,
+  MeetingNotesIcon,
   MeetingsIcon,
   MicOffIcon,
   MicOnIcon,
   ModeratorIcon,
   MoreIcon,
   MuteAllIcon,
+  MyAccountIcon,
   NewMessageIcon,
   NoOfParticipantsIcon,
   NoOfRoomsIcon,
@@ -157,24 +158,25 @@ export {
   PictureIcon,
   PinIcon,
   PollIcon,
-  MeetingNotesIcon,
   RaiseHandOffIcon,
   RaiseHandOnIcon,
   RecordingsIcon,
+  RectAddPlusIcon,
   RemoveIcon,
   SearchIcon,
   SecureIcon,
   SendMessageIcon,
   SettingsIcon,
-  SharedFolderIcon,
   ShareScreenOffIcon,
   ShareScreenOnIcon,
+  SharedFolderIcon,
   SignOutIcon,
   SortIcon,
   SpeakerQueueIcon,
   SpeakerViewIcon,
   SpeedTestIcon,
   TalkingStickIcon,
+  TelephoneStrokeIcon,
   TimerIcon,
   TrashIcon,
   UnlockedIcon,
@@ -183,8 +185,4 @@ export {
   WheelOfNamesIcon,
   WhiteboardIcon,
   WoolBallIcon,
-  TelephoneStrokeIcon,
-  MyAccountIcon,
-  LogoSmallIcon,
-  BurgermenuIcon,
 };

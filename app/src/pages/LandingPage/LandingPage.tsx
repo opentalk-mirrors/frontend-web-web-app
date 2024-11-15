@@ -5,7 +5,7 @@ import { Button, Stack, styled } from '@mui/material';
 import { useAuthContext } from '@opentalk/redux-oidc';
 import { useTranslation } from 'react-i18next';
 
-import { Logo } from '../../assets/icons';
+import { LogoIcon } from '../../assets/icons';
 import ImprintContainer from '../../components/ImprintContainer';
 import JoinMeetingDialog from '../../components/JoinMeetingDialog';
 
@@ -37,7 +37,7 @@ export const LandingPage = () => {
   return (
     <>
       <Container spacing={1}>
-        <Logo width="15em" height="5em" />
+        <LogoIcon width="15em" height="5em" />
         <ButtonGroup spacing={2}>
           <JoinMeetingDialog />
           <Button onClick={handleSignIn} disabled={!auth}>

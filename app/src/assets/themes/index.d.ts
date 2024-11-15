@@ -5,6 +5,12 @@ import '@mui/material/ButtonBase';
 import '@mui/material/InputBase';
 import '@mui/material/styles/createTheme';
 
+type MicOffIconClassKey = 'root' | 'disabled';
+
+interface MicOffIconExtraProps extends SvgIconProps {
+  disabled?: boolean;
+}
+
 declare module '@mui/material/InputBase' {
   interface InputBaseProps {
     checked?: boolean;
@@ -65,6 +71,10 @@ type NotistackPalette = {
 };
 
 declare module '@mui/material/styles' {
+  interface SvgIconProps {
+    disabled?: boolean;
+  }
+
   interface TypeBackground {
     overlay?: string;
     defaultGradient?: string;

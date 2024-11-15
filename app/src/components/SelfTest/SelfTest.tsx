@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { useGetRoomEventInfoQuery } from '../../api/rest';
-import { BackIcon, CloseIcon, HelpIcon, Logo } from '../../assets/icons';
+import { BackIcon, CloseIcon, HelpIcon, LogoIcon } from '../../assets/icons';
 import arrowImage from '../../assets/images/arrow-illustration.png';
 import { CircularIconButton } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
@@ -118,7 +118,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
     <Container>
       <InnerContainer>
         <Header>
-          <Logo onClick={navigateToHome} />
+          <LogoIcon onClick={navigateToHome} />
           <UtilitiesContainer>
             <SpeedTestDialog />
             {!isMobile && (

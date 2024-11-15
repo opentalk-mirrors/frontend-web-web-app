@@ -38,7 +38,7 @@ This will create a bunch of components in `assets/icons`.
 
 **Run `cd ${projectPath}/src/assets/icons`** to go to where the `index.ts` lives.
 
-From there **run `./helpers/createIconComponents.sh`.**
+From there **run `./helpers/createIconIndex.sh`.**
 
 ## 3. Formatting
 

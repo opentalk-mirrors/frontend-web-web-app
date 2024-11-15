@@ -6,7 +6,14 @@ import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import React, { useState } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
 
-import { HomeIcon, SettingsIcon, MeetingsIcon, MyAccountIcon, LegalLinksIcon, HelpSquareIcon } from '../assets/icons';
+import {
+  HomeIcon,
+  SettingsIcon,
+  MeetingsIcon,
+  MyAccountIcon,
+  DashboardLegalIcon,
+  HelpSquareIcon,
+} from '../assets/icons';
 import Logo from '../assets/images/logoGradient.svg?react';
 import DashboardNavigation, { PrimaryRoute } from '../components/DashboardNavigation';
 import { useAppSelector } from '../hooks';
@@ -135,7 +142,7 @@ const getRoutes = (useProviderSettings: boolean) => {
   }
 
   const legalLinks = {
-    icon: <LegalLinksIcon />,
+    icon: <DashboardLegalIcon />,
     path: 'legal',
     name: 'dashboard-legal',
     childRoutes: [
