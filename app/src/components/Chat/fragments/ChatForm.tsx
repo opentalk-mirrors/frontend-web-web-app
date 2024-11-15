@@ -12,7 +12,16 @@ import Picker, {
   Categories,
 } from 'emoji-picker-react';
 import { useFormik } from 'formik';
-import { FocusEvent, KeyboardEvent, KeyboardEventHandler, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  FocusEvent,
+  KeyboardEvent,
+  KeyboardEventHandler,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { sendChatMessage } from '../../../api/types/outgoing/chat';
@@ -107,6 +116,12 @@ const ChatForm = ({ scope, targetId, autoFocusMessageInput }: ChatFormProps) => 
     },
     [autoFocusMessageInput]
   );
+
+  useEffect(() => {
+    if (!isChatEnabled && openPicker) {
+      setOpenPicker(false);
+    }
+  }, [isChatEnabled]);
 
   const emojiPickerCategories = useMemo(() => {
     return Object.values(Categories).reduce(
