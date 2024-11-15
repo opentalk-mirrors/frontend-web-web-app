@@ -31,6 +31,7 @@ import EditIcon from './EditIcon';
 import EmojiIcon from './EmojiIcon';
 import EndCallIcon from './EndCallIcon';
 import ErrorIcon from './ErrorIcon';
+import ExtendToTabIcon from './ExtendToTabIcon';
 import FavoriteIcon from './FavoriteIcon';
 import FeedbackIcon from './FeedbackIcon';
 import ForwardIcon from './ForwardIcon';
@@ -124,6 +125,7 @@ export {
   EmojiIcon,
   EndCallIcon,
   ErrorIcon,
+  ExtendToTabIcon,
   FavoriteIcon,
   FeedbackIcon,
   ForwardIcon,

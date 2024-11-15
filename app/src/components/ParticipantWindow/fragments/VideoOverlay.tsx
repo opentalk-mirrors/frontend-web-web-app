@@ -4,14 +4,23 @@
 import { useRemoteParticipant } from '@livekit/components-react';
 import { Grid, styled } from '@mui/material';
 import { ConnectionQuality, Track } from 'livekit-client';
-import { MouseEventHandler, useCallback, useMemo } from 'react';
+import { MouseEventHandler, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { batch } from 'react-redux';
+import { v4 as uuid } from 'uuid';
 
-import { FullscreenViewIcon, PinIcon } from '../../../assets/icons';
+import { requestPopoutStreamAccessToken } from '../../../api/types/outgoing/livekit';
+import { ExtendToTabIcon, FullscreenViewIcon, PinIcon } from '../../../assets/icons';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { MediaDescriptor } from '../../../modules/WebRTC';
+import {
+  deleteLivekitPopoutStreamAccessToken,
+  selectLivekitPopoutStreamAccessByParticipantId,
+  selectLivekitPublicUrl,
+  addPopoutStreamAccess,
+} from '../../../store/slices/livekitSlice';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
 import { pinnedParticipantIdSet, selectCinemaLayout, selectPinnedParticipantId } from '../../../store/slices/uiSlice';
 import { ParticipantId } from '../../../types';
@@ -65,9 +74,38 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const hasPacketLoss = participant?.connectionQuality === ConnectionQuality.Poor;
   const displayName = useAppSelector(selectParticipantName(participantId));
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
+  const popoutStreamAccess = useAppSelector(selectLivekitPopoutStreamAccessByParticipantId(participantId));
   const { t } = useTranslation();
-
   const fullscreenHandle = useFullscreenContext();
+  const livekitUrl = useAppSelector(selectLivekitPublicUrl);
+
+  useEffect(() => {
+    if (popoutStreamAccess && popoutStreamAccess.token) {
+      const channelId = uuid();
+      const url = new URL(`${window.location.origin}/room/extended/${channelId}`);
+      const channel = new BroadcastChannel(channelId);
+      channel.onmessage = (event) => {
+        if (event.data.namespace === 'extended_tab') {
+          if (event.data.payload.action === 'request_livekit_data') {
+            channel.postMessage({
+              namespace: 'extended_tab',
+              payload: {
+                action: 'livekit_data',
+                accessToken: popoutStreamAccess.token,
+                mediaType: popoutStreamAccess.mediaDescriptor.mediaType,
+                participantId: popoutStreamAccess.mediaDescriptor.participantId,
+                livekitUrl,
+              },
+            });
+            if (popoutStreamAccess.token) {
+              dispatch(deleteLivekitPopoutStreamAccessToken(popoutStreamAccess.token));
+            }
+          }
+        }
+      };
+      window.open(url.toString(), '_blank');
+    }
+  }, [popoutStreamAccess]);
 
   const togglePin = useCallback(() => {
     const updatePinnedId = pinnedParticipantId === participantId ? undefined : participantId;
@@ -81,6 +119,14 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
     },
     [fullscreenHandle, participant]
   );
+
+  const openInNewTab: MouseEventHandler = (event) => {
+    event.stopPropagation();
+    batch(() => {
+      dispatch(addPopoutStreamAccess(descriptor));
+      dispatch(requestPopoutStreamAccessToken.action());
+    });
+  };
 
   const getOverlayButtons = () => (
     <IndicatorContainer item>
@@ -101,6 +147,9 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
           )}
           <OverlayIconButton aria-label={t('indicator-fullscreen-open')} onClick={openFullScreenView} color="secondary">
             <FullscreenViewIcon />
+          </OverlayIconButton>
+          <OverlayIconButton aria-label={t('indicator-extend-new-tab')} color="secondary" onClick={openInNewTab}>
+            <ExtendToTabIcon />
           </OverlayIconButton>
         </>
       )}

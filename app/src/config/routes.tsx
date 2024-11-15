@@ -34,6 +34,7 @@ import DashboardTemplate from '../templates/DashboardTemplate';
 import LobbyTemplate from '../templates/LobbyTemplate';
 
 const InvitePage = React.lazy(() => import('../pages/InvitePage'));
+const ExtendedTabPage = React.lazy(() => import('../pages/ExtendedTabPage'));
 
 type RouteValue = {
   path: string;
@@ -124,6 +125,11 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
           { index: true, element: <RoomPage /> },
           { path: ':breakoutRoomId', element: <RoomPage />, key: 'breakoutRoom' },
         ],
+      },
+      {
+        path: '/room/extended/:channelId',
+        key: 'room',
+        element: <ExtendedTabPage />,
       },
     ],
   },

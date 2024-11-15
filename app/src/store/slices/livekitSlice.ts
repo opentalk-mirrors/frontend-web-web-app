@@ -7,6 +7,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Room } from 'livekit-client';
 
 import { AppDispatch, RootState } from '../';
+import { MediaDescriptor } from '../../modules/WebRTC';
 import { hangUp, joinSuccess } from '../commonActions';
 
 let room: Room;
@@ -26,16 +27,25 @@ export const getLivekitRoom = (dispatch?: AppDispatch): Room => {
   return room;
 };
 
+type PopoutStreamAccess = {
+  mediaDescriptor: MediaDescriptor;
+  token: string | undefined;
+};
+
+type PopoutStreamAccesses = Array<PopoutStreamAccess>;
+
 interface LivekitState {
   unavailable: boolean;
   accessToken: string | undefined;
   publicUrl: string | undefined;
+  popoutStreamAccesses: PopoutStreamAccesses;
 }
 
 const initialState: LivekitState = {
   unavailable: false,
   accessToken: undefined,
   publicUrl: undefined,
+  popoutStreamAccesses: [],
 };
 
 export const livekitSlice = createSlice({
@@ -44,6 +54,27 @@ export const livekitSlice = createSlice({
   reducers: {
     setLivekitUnavailable: (state, { payload }: PayloadAction<boolean>) => {
       state.unavailable = payload;
+    },
+    addPopoutStreamAccess: (state, { payload }: PayloadAction<MediaDescriptor>) => {
+      state.popoutStreamAccesses.push({
+        mediaDescriptor: payload,
+        token: undefined,
+      });
+    },
+    setLivekitPopoutStreamAccessToken: (state, { payload }: PayloadAction<string>) => {
+      const popoutStreamAccess = state.popoutStreamAccesses.find(
+        (popoutStreamAccess) => popoutStreamAccess.token === undefined
+      );
+      if (popoutStreamAccess) {
+        popoutStreamAccess.token = payload;
+      } else {
+        console.warn('cant find popoutStreamAccess to add token');
+      }
+    },
+    deleteLivekitPopoutStreamAccessToken: (state, { payload }: PayloadAction<string>) => {
+      state.popoutStreamAccesses = state.popoutStreamAccesses.filter(
+        (popoutStreamAccess) => popoutStreamAccess.token !== payload
+      );
     },
   },
   extraReducers: (builder) => {
@@ -60,10 +91,20 @@ export const livekitSlice = createSlice({
   },
 });
 
-export const { setLivekitUnavailable } = livekitSlice.actions;
+export const {
+  setLivekitUnavailable,
+  addPopoutStreamAccess,
+  setLivekitPopoutStreamAccessToken,
+  deleteLivekitPopoutStreamAccessToken,
+} = livekitSlice.actions;
 
 export const selectLivekitUnavailable = (state: RootState) => state.livekit.unavailable;
 export const selectLivekitAccessToken = (state: RootState) => state.livekit.accessToken;
 export const selectLivekitPublicUrl = (state: RootState) => state.livekit.publicUrl;
+export const selectLivekitPopoutStreamAccessByParticipantId = (participantId: string) => (state: RootState) =>
+  state.livekit.popoutStreamAccesses.find(
+    (popoutStreamAccess) =>
+      popoutStreamAccess.mediaDescriptor.participantId === participantId && popoutStreamAccess.token !== undefined
+  );
 
 export default livekitSlice.reducer;

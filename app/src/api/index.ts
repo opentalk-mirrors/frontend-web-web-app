@@ -41,7 +41,7 @@ import {
   updated as legalVoteUpdated,
   voted as legalVoteVoted,
 } from '../store/slices/legalVoteSlice';
-import { getLivekitRoom, setLivekitUnavailable } from '../store/slices/livekitSlice';
+import { getLivekitRoom, setLivekitPopoutStreamAccessToken, setLivekitUnavailable } from '../store/slices/livekitSlice';
 import * as mediaStore from '../store/slices/mediaSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from '../store/slices/meetingNotesSlice';
 import {
@@ -1104,6 +1104,10 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
         i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
       );
       dispatch(mediaStore.notificationShown());
+      return;
+    }
+    case 'popout_stream_access_token': {
+      dispatch(setLivekitPopoutStreamAccessToken(data.token));
       return;
     }
     case 'error': {

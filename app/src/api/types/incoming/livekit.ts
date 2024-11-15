@@ -22,7 +22,17 @@ export interface ForceMuted {
   moderator: ParticipantId;
 }
 
-export type Message = MicrophoneRestrictionsEnabled | MicrophoneRestrictionsDisabled | ForceMuted | LivekitError;
+export interface PopoutStreamAccessToken {
+  message: 'popout_stream_access_token';
+  token: string;
+}
+
+export type Message =
+  | MicrophoneRestrictionsEnabled
+  | MicrophoneRestrictionsDisabled
+  | ForceMuted
+  | PopoutStreamAccessToken
+  | LivekitError;
 
 export type Livekit = NamespacedIncoming<Message, 'livekit'>;
 

@@ -574,6 +574,7 @@ indicator-pinned = {$participantName} ist im Fokus
 indicator-fullscreen-open = Vollbild öffnen
 indicator-fullscreen-close = Vollbild schließen
 indicator-change-position = Position ändern
+indicator-extend-new-tab = In neuem Tab öffnen
 
 wrong-browser-dialog-title = Ihr Browser wird nur teilweise unterstützt.
 wrong-browser-dialog-message = Bitte verwenden Sie die letzte Version von Chrome, Firefox oder Safari. Sollten Sie weitere Schwierigkeiten haben, überprüfen Sie ob Ihr Browser im Kompatibilität-oder Inkognitomodus läuft. Deaktivieren Sie diese und versuchen es noch einmal hier.

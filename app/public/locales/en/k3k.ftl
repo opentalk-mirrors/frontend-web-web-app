@@ -574,6 +574,7 @@ indicator-pinned = {$participantName} is pinned
 indicator-fullscreen-open = open fullscreen
 indicator-fullscreen-close = close fullscreen
 indicator-change-position = change position
+indicator-extend-new-tab = open in new tab
 
 wrong-browser-dialog-title = Your browser is only partially supported.
 wrong-browser-dialog-message = Please use the latest version of Chrome, Firefox or Safari. If you have further difficulties, check whether your browser is running in compatibility or incognito mode. Disable them and try again here.
