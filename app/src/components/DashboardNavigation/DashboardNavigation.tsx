@@ -98,7 +98,13 @@ const DashboardNavigation = ({ routes }: DashboardProps) => {
       )}
       <NavContainer active={activeNavbar}>
         <PrimaryNavigation submenu={activeMenu} setActiveNavbar={(e: boolean) => setActiveNavbar(e)} routes={routes} />
-        <Collapse orientation="horizontal" in={containsChildrens(activeRoutes)} unmountOnExit mountOnEnter>
+        <Collapse
+          orientation="horizontal"
+          in={containsChildrens(activeRoutes)}
+          unmountOnExit
+          mountOnEnter
+          id="secondary-navigation-dashboard"
+        >
           <SecondaryNavigation
             label={`dashboard-${activeMenu}`}
             setActiveNavbar={(e: boolean) => setActiveNavbar(e)}

@@ -218,7 +218,7 @@ const DashboardTemplate = () => {
       <Container maxWidth={false} disableGutters>
         <Stack direction={{ xs: 'column', md: 'row' }} height="100%">
           <DashboardNavigation routes={getRoutes(isProviderActive)} />
-          <MainStack component={Main} spacing={{ xs: 2, md: 5 }}>
+          <MainStack component={Main} spacing={{ xs: 2, md: 5 }} id="main-content-dashboard">
             {isDesktop && (
               <Grid spacing={2} container direction="row" alignItems="center" justifyContent="space-between">
                 <Grid item alignSelf="flex-end">
