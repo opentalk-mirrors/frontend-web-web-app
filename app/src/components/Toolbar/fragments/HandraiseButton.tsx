@@ -5,12 +5,11 @@ import { useTranslation } from 'react-i18next';
 
 import { lowerHand, raiseHand } from '../../../api/types/outgoing/control';
 import { RaiseHandOffIcon, RaiseHandOnIcon } from '../../../assets/icons';
+import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectRaiseHandsEnabled, selectHandUp } from '../../../store/slices/moderationSlice';
-import { ToolbarButtonIds } from '../Toolbar';
 import ToolbarButton from './ToolbarButton';
 
-export const TOOLBAR_HANDRAISE_BUTTON_ID = 'toolbar-handraise-button';
 const HandraiseButton = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();

@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import '@testing-library/jest-dom';
 
-import { fireEvent, render, screen } from '../../../../utils/testUtils';
-import { ConsentNotification } from './ConsentNotification';
+import { fireEvent, render, screen } from '../../../../../utils/testUtils';
+import ConsentNotification from './ConsentNotification';
 
-jest.mock('../utils', () => ({
+jest.mock('../../utils', () => ({
   notifications: { consent: () => jest.fn(), close: () => jest.fn() },
 }));
 

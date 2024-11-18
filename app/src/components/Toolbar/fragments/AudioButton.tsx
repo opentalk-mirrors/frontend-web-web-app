@@ -9,11 +9,11 @@ import { useTranslation } from 'react-i18next';
 
 import { MicOffIcon, MicOnIcon } from '../../../assets/icons';
 import { SuspenseLoading, showConsentNotification } from '../../../commonComponents';
+import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
-import { ToolbarButtonIds } from '../Toolbar';
 import AudioIndicator from './AudioIndicator';
 import AudioMenu from './AudioMenu';
 import ToolbarButton from './ToolbarButton';

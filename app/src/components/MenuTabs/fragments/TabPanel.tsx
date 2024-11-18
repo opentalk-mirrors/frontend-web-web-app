@@ -5,12 +5,7 @@ import { Box } from '@mui/material';
 import React from 'react';
 
 import { useIsMobile } from '../../../hooks/useMediaQuery';
-
-export enum MenuTab {
-  Chat = 'chat',
-  People = 'people',
-  Messages = 'messages',
-}
+import { MenuTab } from './constants';
 
 interface TabPanelProps {
   children?: React.ReactNode;

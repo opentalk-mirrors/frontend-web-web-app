@@ -6,8 +6,7 @@ import { visuallyHidden } from '@mui/utils';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const LAST_SECONDS_OF_A_MINUTE = 5;
-export const LAST_SECONDS_OF_TOTAL_TIME = 10;
+import { LAST_SECONDS_OF_A_MINUTE, LAST_SECONDS_OF_TOTAL_TIME } from './constants';
 
 interface AccessibleTimerProps {
   remainingTime: Duration;

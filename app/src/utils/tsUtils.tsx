@@ -3,12 +3,18 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { ErrorStruct } from '../types';
 
+// ignore the rule, as it's not relevant for HMR
+// eslint-disable-next-line react-refresh/only-export-components
 declare const UnitSymbol: unique symbol;
 export type Unit<S> = number & { [UnitSymbol]: S };
 
+// ignore the rule, as it's not relevant for HMR
+// eslint-disable-next-line react-refresh/only-export-components
 declare const MilliSecondsSymbol: unique symbol;
 export type MilliSeconds = Unit<typeof MilliSecondsSymbol>;
 
+// ignore the rule, as it's not relevant for HMR
+// eslint-disable-next-line react-refresh/only-export-components
 declare const SecondsSymbol: unique symbol;
 export type Seconds = Unit<typeof SecondsSymbol>;
 

@@ -21,13 +21,6 @@ export interface SelectableParticipant extends RemoteParticipant {
   selected: boolean;
 }
 
-// This helper preserves the methods and prototype chain of the RemoteParticipant object
-// The spread operator only copies properties, whereas Object.assign with Object.create
-// ensures the full object structure, including methods, is maintained
-export const toSelectableParticipant = (participant: RemoteParticipant, isSelected: boolean): SelectableParticipant => {
-  return Object.assign(Object.create(participant), participant, { selected: isSelected });
-};
-
 type SelectParticipantsItemProps = {
   participant: SelectableParticipant;
   onCheck: (checked: boolean) => void;

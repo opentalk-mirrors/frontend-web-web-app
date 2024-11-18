@@ -5,11 +5,8 @@ import userEvent from '@testing-library/user-event';
 
 import { useGetMeQuery, useGetMeTariffQuery } from '../../../../api/rest';
 import { configureStore, render, screen } from '../../../../utils/testUtils';
-import {
-  StorageAlmostFullBanner,
-  CRITICAL_STORAGE_CAPACITY_IN_PERCENT,
-  STORAGE_SECTION_PATH,
-} from './StorageAlmostFullBanner';
+import { StorageAlmostFullBanner } from './StorageAlmostFullBanner';
+import { STORAGE_SECTION_PATH, CRITICAL_STORAGE_CAPACITY_IN_PERCENT } from './constants';
 
 const MAX_LIMITED_STORAGE_IN_MB = 100;
 const CRITICAL_USED_STORAGE_IN_MB = (MAX_LIMITED_STORAGE_IN_MB * CRITICAL_STORAGE_CAPACITY_IN_PERCENT) / 100;

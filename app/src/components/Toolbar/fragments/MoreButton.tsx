@@ -5,8 +5,8 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MoreIcon } from '../../../assets/icons';
+import { ToolbarButtonIds } from '../../../constants';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
-import { ToolbarButtonIds } from '../Toolbar';
 import MoreMenu from './MoreMenu';
 import ToolbarButton from './ToolbarButton';
 

@@ -128,6 +128,8 @@ export const configureStore = (options?: ConfigureStoreOptions['preloadedState']
   return { store };
 };
 
+// ignore the rule, as it's not relevant for HMR
+// eslint-disable-next-line react-refresh/only-export-components
 export * from '@testing-library/react';
 
 export const render = async (ui: React.ReactElement, store?: Store, options?: RenderOptions): Promise<RenderResult> => {

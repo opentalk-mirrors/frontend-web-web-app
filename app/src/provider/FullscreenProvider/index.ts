@@ -4,6 +4,6 @@
 import FullscreenProvider from './FullscreenProvider';
 
 export { useFullscreenContext } from '../../hooks/useFullscreenContext';
-export type { ExtendedFullScreenHandle } from './FullscreenProvider';
+export type { ExtendedFullScreenHandle } from './FullscreenContext';
 
 export default FullscreenProvider;

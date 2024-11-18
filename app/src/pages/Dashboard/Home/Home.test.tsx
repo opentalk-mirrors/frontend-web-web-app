@@ -24,7 +24,7 @@ jest.mock('../../../api/rest', () => ({
   }),
 }));
 
-jest.mock('../../../templates/DashboardTemplate', () => ({
+jest.mock('../../../hooks/useHeader', () => ({
   useHeader: () => ({
     setHeader: jest.fn(),
   }),

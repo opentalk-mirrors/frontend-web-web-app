@@ -5,13 +5,9 @@ import { Box, Button, Stack } from '@mui/material';
 import { CSSProperties, ForwardedRef, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { sendStreamConsentSignal } from '../../../../api/types/outgoing/streaming';
-import { WarningIcon } from '../../../../assets/icons';
-import { AppDispatch } from '../../../../store';
-import { getLivekitRoom } from '../../../../store/slices/livekitSlice';
-import { CustomSnackbarContent } from '../CustomSnackbarContent';
-import { NotificationHeading } from '../NotificationHeading';
-import { notifications } from '../utils';
+import { WarningIcon } from '../../../../../assets/icons';
+import { CustomSnackbarContent } from '../../CustomSnackbarContent';
+import { NotificationHeading } from '../../NotificationHeading';
 
 interface ConsentOptionsProps {
   style: CSSProperties;
@@ -19,7 +15,7 @@ interface ConsentOptionsProps {
   onDeclineButton: () => void;
 }
 
-export const ConsentNotification = forwardRef(
+const ConsentNotification = forwardRef(
   ({ onAcceptButton, onDeclineButton, style }: ConsentOptionsProps, ref: ForwardedRef<HTMLDivElement>) => {
     const { t } = useTranslation();
 
@@ -51,25 +47,4 @@ export const ConsentNotification = forwardRef(
   }
 );
 
-export const showConsentNotification = (dispatch: AppDispatch) =>
-  new Promise((resolve) => {
-    const key = 'consent-alert-dialog';
-
-    const setRecordingConsent = (consent: boolean) => {
-      dispatch(sendStreamConsentSignal.action({ consent }));
-      notifications.close(key);
-      if (!consent) {
-        const room = getLivekitRoom();
-        room.localParticipant.setCameraEnabled(false);
-        room.localParticipant.setMicrophoneEnabled(false);
-        room.localParticipant.setScreenShareEnabled(false);
-      }
-      resolve(consent);
-    };
-
-    notifications.consent({
-      onAcceptButton: () => setRecordingConsent(true),
-      onDeclineButton: () => setRecordingConsent(false),
-      key,
-    });
-  });
+export default ConsentNotification;

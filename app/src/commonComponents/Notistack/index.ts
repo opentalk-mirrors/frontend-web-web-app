@@ -7,7 +7,6 @@ export {
   notificationAction,
   notificationPersistent,
   notifications,
-  StackedMessages,
   createStackedMessages,
   startTimeLimitNotification,
   stopTimeLimitNotification,

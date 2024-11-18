@@ -4,7 +4,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TextEncoder, TextDecoder } from 'util';
 
-import CommonTextField, { keysToPropagate } from './CommonTextField';
+import CommonTextField from './CommonTextField';
+import { KEYS_TO_PROPAGATE } from './constants';
 
 // https://stackoverflow.com/questions/68468203/why-am-i-getting-textencoder-is-not-defined-in-jest
 Object.assign(global, { TextDecoder, TextEncoder });
@@ -78,7 +79,7 @@ describe('CommonTextField', () => {
     const label = screen.getByText(LABEL, { selector: 'label' });
     expect(label).toHaveAttribute('data-shrink', 'true');
   });
-  it('propagates only keys defined in keysToPropagate', async () => {
+  it('propagates only keys defined in KEYS_TO_PROPAGATE', async () => {
     const onKeyboard = jest.fn();
     render(
       //role="presentation resolves jsx-a11y/no-static-element-interactions restriction"
@@ -91,7 +92,7 @@ describe('CommonTextField', () => {
     expect(onKeyboard).not.toHaveBeenCalled();
     fireEvent.keyDown(textField, { key: 'm' });
     expect(onKeyboard).not.toHaveBeenCalled();
-    keysToPropagate.forEach((key) => {
+    KEYS_TO_PROPAGATE.forEach((key) => {
       fireEvent.keyDown(textField, { key });
       expect(onKeyboard).toHaveBeenCalled();
     });

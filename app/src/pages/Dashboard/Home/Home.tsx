@@ -15,9 +15,9 @@ import FavoriteMeetingsCard, { FavoriteMeetingProps } from '../../../components/
 import { default as DefaultJoinMeetingDialog } from '../../../components/JoinMeetingDialog';
 import MeetingCard from '../../../components/MeetingCard';
 import StartMeetingImage from '../../../components/StartMeetingImage';
+import { useHeader } from '../../../hooks/useHeader';
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
-import { useHeader } from '../../../templates/DashboardTemplate';
 import { appendRecurringEventInstances, TimePerspectiveFilter } from '../../../utils/eventUtils';
 import getReferrerRouterState from '../../../utils/getReferrerRouterState';
 import { BannerContainer } from './fragments/BannerContainer';

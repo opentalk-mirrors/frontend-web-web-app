@@ -8,11 +8,8 @@ import { useAppSelector } from '../../../hooks';
 import { selectCurrentShownVote } from '../../../store/slices/legalVoteSlice';
 import { selectPollToShow } from '../../../store/slices/pollSlice';
 import { PollId, LegalVoteId } from '../../../types';
+import { VoteType } from './constants';
 
-export enum VoteType {
-  Poll = 'Poll',
-  LegalVote = 'LegalVote',
-}
 export interface IVoteData {
   numberOfVotes: number;
   votePercentage: number;

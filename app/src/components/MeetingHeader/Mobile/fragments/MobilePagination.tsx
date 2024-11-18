@@ -4,13 +4,12 @@
 import { Popover, Stack, styled } from '@mui/material';
 import { useMemo, useEffect, useState } from 'react';
 
+import { MAX_GRID_TILES_MOBILE } from '../../../../constants';
 import LayoutOptions from '../../../../enums/LayoutOptions';
 import { useAppSelector, useAppDispatch } from '../../../../hooks';
 import { selectAllOnlineParticipants } from '../../../../store/slices/participantsSlice';
 import { setPaginationPage, selectCinemaLayout, selectPaginationPageState } from '../../../../store/slices/uiSlice';
 import PageIndex from './PageIndex';
-
-const MAX_GRID_TILES_MOBILE = 9;
 
 const Container = styled(Stack, {
   shouldForwardProp: (prop) => prop !== 'isVisible',

@@ -18,8 +18,9 @@ import {
 import FeedbackDialog from '../../FeedbackDialog/FeedbackDialog';
 import CollapseRow from './CollapseRow';
 import PrimaryNavigationEntry from './PrimaryNavigationEntry';
-import PrimaryNavigationList, { FilterMode, PrimaryRoute } from './PrimaryNavigationList';
+import PrimaryNavigationList, { PrimaryRoute } from './PrimaryNavigationList';
 import ProfileChip from './ProfileChip';
+import { FilterMode } from './constants';
 
 const Container = styled('div')(({ theme }) => ({
   display: 'grid',

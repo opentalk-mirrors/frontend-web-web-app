@@ -9,13 +9,13 @@ import { useParams } from 'react-router-dom';
 
 import { useGetEventQuery, useGetMeQuery, useGetRoomQuery } from '../../../api/rest';
 import { EndCallIcon } from '../../../assets/icons';
+import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { hangUp } from '../../../store/commonActions';
 import { selectEventInfo } from '../../../store/slices/roomSlice';
 import { isRegisteredUser } from '../../../utils/typeGuardUtils';
 import CloseMeetingDialog from '../../CloseMeetingDialog';
-import { ToolbarButtonIds } from '../Toolbar';
 import ToolbarButton from './ToolbarButton';
 
 const EndCallButton = () => {

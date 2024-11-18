@@ -6,6 +6,7 @@ import { CircularProgress, Grid, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
 import { useMemo, useRef } from 'react';
 
+import { MAX_GRID_TILES_DESKTOP } from '../../constants';
 import { useAppSelector } from '../../hooks';
 import { selectParticipantsTotal, selectSlicedParticipants } from '../../store/slices/participantsSlice';
 import { selectGridViewOrder, selectPaginationPageState } from '../../store/slices/uiSlice';
@@ -25,12 +26,12 @@ const GridContainer = styled('div', {
   },
 }));
 
-export const MAX_GRID_TILES = 9;
-
 const GridView = () => {
   const selectedPage = useAppSelector(selectPaginationPageState);
   const gridViewOrder = useAppSelector(selectGridViewOrder);
-  const slicedParticipants = useAppSelector(selectSlicedParticipants(selectedPage, MAX_GRID_TILES, gridViewOrder));
+  const slicedParticipants = useAppSelector(
+    selectSlicedParticipants(selectedPage, MAX_GRID_TILES_DESKTOP, gridViewOrder)
+  );
   const remoteParticipants = useRemoteParticipants();
   const totalParticipants = useAppSelector(selectParticipantsTotal);
 

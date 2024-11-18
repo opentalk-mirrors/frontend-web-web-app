@@ -9,10 +9,7 @@ import { useGetMeTariffQuery, useGetMeQuery } from '../../../../api/rest';
 import { useAppSelector } from '../../../../hooks';
 import { selectAccountManagementUrl } from '../../../../store/slices/configSlice';
 import { AlertBanner } from './AlertBanner';
-
-// show banner, when data size reaches this percentage of storage capacity
-export const CRITICAL_STORAGE_CAPACITY_IN_PERCENT = 90;
-export const STORAGE_SECTION_PATH = '/dashboard/settings/storage';
+import { STORAGE_SECTION_PATH, CRITICAL_STORAGE_CAPACITY_IN_PERCENT } from './constants';
 
 const AlertActions = () => {
   const { t } = useTranslation();

@@ -15,7 +15,8 @@ import { ActiveStateChip } from './ActiveStateChip';
 import { Fieldset } from './Fieldset';
 import { LegendTitle } from './LegendTitle';
 import { LiveIndicator } from './LiveIndicator';
-import VoteResult, { VoteType } from './VoteResult';
+import VoteResult from './VoteResult';
+import { VoteType } from './constants';
 
 type PollContainerProps = {
   poll: Poll;

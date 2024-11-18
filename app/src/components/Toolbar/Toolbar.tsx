@@ -6,6 +6,7 @@ import { styled } from '@mui/material';
 import { Track } from 'livekit-client';
 import { useTranslation } from 'react-i18next';
 
+import { LIVEKIT_AUDIO_PERMISSION_NUMBER } from '../../constants';
 import AudioButton from './fragments/AudioButton';
 import EndCallButton from './fragments/EndCallButton';
 import HandraiseButton from './fragments/HandraiseButton';
@@ -14,14 +15,7 @@ import ShareScreenButton from './fragments/ShareScreenButton';
 import VideoButton from './fragments/VideoButton';
 
 type LayoutTypes = 'fullscreen';
-export enum ToolbarButtonIds {
-  Handraise = 'toolbar-handraise',
-  ShareScreen = 'toolbar-share-screen',
-  Audio = 'toolbar-audio',
-  Video = 'toolbar-video',
-  More = 'toolbar-more',
-  EndCall = 'toolbar-endcall',
-}
+
 const MainContainer = styled('aside')(({ theme }) => ({
   display: 'flex',
   background: 'transparent',
@@ -41,8 +35,6 @@ const MainContainer = styled('aside')(({ theme }) => ({
     background: theme.palette.background.paper,
   },
 }));
-
-export const LIVEKIT_AUDIO_PERMISSION_NUMBER = 2;
 
 const Toolbar = ({ layout }: { layout?: LayoutTypes }) => {
   const { t } = useTranslation();

@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { render, screen, fireEvent, waitFor, createStore, cleanup } from '../../../utils/testUtils';
-import SearchTextField, { items } from './SearchTextField';
+import SearchTextField from './SearchTextField';
+import { items } from './constants';
 
 describe('SearchTextField', () => {
   const { store, dispatch } = createStore();

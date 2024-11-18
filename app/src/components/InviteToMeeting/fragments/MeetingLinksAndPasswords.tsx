@@ -9,7 +9,8 @@ import { useCreateRoomInviteMutation, useGetMeQuery, useGetRoomInvitesQuery } fr
 import { useAppSelector } from '../../../hooks';
 import { selectBaseUrl, selectFeatures } from '../../../store/slices/configSlice';
 import { composeInviteUrl } from '../../../utils/apiUtils';
-import MeetingLinkField, { FieldKeys } from './MeetingLinkField';
+import MeetingLinkField from './MeetingLinkField';
+import { FieldKeys } from './constants';
 
 interface MeetingLinksAndPasswordsProps {
   event: Event;
