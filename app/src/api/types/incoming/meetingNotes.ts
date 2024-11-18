@@ -19,6 +19,8 @@ export enum MeetingNotesError {
   InsufficientPermissions = 'insufficient_permissions',
   CurrentlyInitializing = 'currently_initializing',
   FailedInitialization = 'failed_initialization',
+  NotInitialized = 'not_initialized',
+  StorageExceeded = 'storage_exceeded',
 }
 
 export const isError = isEnumErrorStruct(MeetingNotesError);

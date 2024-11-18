@@ -350,7 +350,11 @@ legal-vote-overview-created-legal-votes = Erstellte Abstimmungen
 legal-vote-canceled = Abstimmung wurde abgebrochen
 legal-vote-stopped = Abstimmung ist beendet
 legal-vote-error = Ihre Stimme konnte nicht gewertet werden, es ist ein Fehler aufgetreten.
-legal-vote-active-error = Eine Abstimmung ist bereits gestartet.
+vote-already-active-error = Eine Abstimmung ist bereits gestartet.
+no-vote-active-error = Momentan ist leider kein Abstimmung aktiv. Bitte überprüfen Sie die Abstimmungs-Zeit oder kontaktieren Sie den Moderator.
+invalid-vote-id-error = Es scheint, als hätten Sie eine ungültige Abstimmungs-ID. Bitte versuchen Sie es erneut. Falls Sie weiterhin Probleme haben, kontaktieren Sie den Moderator.
+ineligible-error = Es tut uns leid, aber Sie sind für dieses Abstimmung nicht teilnahmeberechtigt. Bitte überprüfen Sie die Voraussetzungen für die Teilnahme. Falls Sie weiterhin Probleme haben, kontaktieren Sie den Moderator.
+internal-error = Es ist ein interner Fehler aufgetreten. Bitte versuchen Sie es in ein paar Minuten noch einmal. Sollte das Problem weiterhin bestehen, wenden Sie sich bitte an den Moderator.
 
 legal-vote-form-input-error-number = Nur Eingabenummern
 legal-vote-form-input-error-max = Die maximal zulässige Anzahl von Zeichen beträgt {$maxCharacters}
