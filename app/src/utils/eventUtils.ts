@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { RRule } from '@heinlein-video/rrule';
 import {
+  DateTime,
   DateTimeWithTimezone,
   Event,
   EventException,
@@ -14,7 +15,7 @@ import {
   isTimelessEvent,
   RecurringEvent,
 } from '@opentalk/rest-api-rtk-query';
-import { addMonths, subMonths } from 'date-fns';
+import { addMonths, isWithinInterval, subMonths } from 'date-fns';
 import { cloneDeep, findIndex, orderBy } from 'lodash';
 
 import { getISOStringWithoutMilliseconds } from './timeUtils';
@@ -172,4 +173,64 @@ export const generateInstanceId = (startTime: DateTimeWithTimezone): EventInstan
   const dateString = `${year}${month}${day}T`;
 
   return `${dateString}${timeString}` as EventInstanceId;
+};
+
+//Creates interval so it covers the following cases:
+//First instance and asset is after end, but still in interval
+//Last instance and asset is before start, but still in interval
+//Default case of having previous and next instance to calculate off of
+const calculateInterval = (
+  start: number,
+  end: number,
+  prevInstanceTime?: number,
+  nextInstanceTime?: number
+): Interval => {
+  const middlePoint = (start + end) / 2;
+
+  const startOfInterval = prevInstanceTime
+    ? middlePoint - (start - prevInstanceTime) / 2
+    : start - (nextInstanceTime ? (nextInstanceTime - end) / 2 : 0);
+
+  const endOfInterval = nextInstanceTime
+    ? middlePoint + (nextInstanceTime - end) / 2
+    : end + (prevInstanceTime ? (start - prevInstanceTime) / 2 : 0);
+
+  return { start: new Date(startOfInterval), end: new Date(endOfInterval) };
+};
+
+export interface RecurrenceInstance {
+  start: string;
+  end: string;
+  originalStart: string;
+  recurrencePattern: string;
+}
+
+/**
+ * Checks if asset belongs to a specific recurring event instance by calculating an interval based on the previous and next instances
+ */
+export const checkAssetPredicate = (assetCreatedAt: DateTime, recurrenceInstance: RecurrenceInstance) => {
+  const assetDate = new Date(assetCreatedAt);
+  const assetDateInMs = assetDate.getTime();
+  const { start, end, originalStart, recurrencePattern } = recurrenceInstance;
+
+  const recurrence = RRule.parseString(recurrencePattern);
+  const rrule = new RRule({ ...recurrence, dtstart: new Date(originalStart) });
+
+  const startInMs = new Date(start).getTime();
+  const endInMs = new Date(end).getTime();
+
+  // Type assertion necessary, since the library's return type definition is not accurate
+  const prevInstance = rrule.before(new Date(start)) as Date | null;
+  const nextInstance = rrule.after(new Date(end)) as Date | null;
+
+  // No previous instance, and asset is before the current instance end
+  if (!prevInstance && assetDateInMs < endInMs) return true;
+
+  // No next instance, and asset is after the current instance start
+  if (!nextInstance && assetDateInMs > startInMs) return true;
+
+  const interval = calculateInterval(startInMs, endInMs, prevInstance?.getTime(), nextInstance?.getTime());
+
+  // Check if asset date is within the interval of the current instance
+  return interval ? isWithinInterval(assetDate, interval) : false;
 };

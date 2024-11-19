@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Grid, styled, Typography, Collapse, Stack, Tooltip, Hidden } from '@mui/material';
-import { Event, EventId, isTimelessEvent, isEventException } from '@opentalk/rest-api-rtk-query';
+import { Event, EventId, isTimelessEvent, isEventException, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import { Property } from 'csstype';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -191,14 +191,18 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
     };
   };
 
-  const onMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.preventDefault();
+  const onMouseUp = (mouseEvent: React.MouseEvent<HTMLDivElement>) => {
+    mouseEvent.preventDefault();
+    const isRecurring = isRecurringEvent(event);
+    // Recurring event instance details are passed as search params to specify instance
+    const recurringEventDetails = isRecurring ? `?start=${event.startsAt.datetime}&end=${event.endsAt.datetime}` : '';
+
     if (
       Date.now() - mouseValues.current.holdTime < 200 &&
-      mouseValues.current.x === event.nativeEvent.x &&
-      mouseValues.current.y === event.nativeEvent.y
+      mouseValues.current.x === mouseEvent.nativeEvent.x &&
+      mouseValues.current.y === mouseEvent.nativeEvent.y
     ) {
-      navigate(`/dashboard/meetings/${eventId}`, {
+      navigate(`/dashboard/meetings/${eventId}${recurringEventDetails}`, {
         state: {
           ...getReferrerRouterState(window.location),
         },

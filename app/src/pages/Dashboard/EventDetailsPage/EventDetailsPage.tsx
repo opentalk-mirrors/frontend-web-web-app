@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled, Box, Button, Stack, Typography, useTheme } from '@mui/material';
-import { EventId, InviteStatus } from '@opentalk/rest-api-rtk-query';
+import { EventId, InviteStatus, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -21,6 +21,7 @@ import EventTimePreview from '../../../components/EventTimePreview';
 import InviteToMeeting from '../../../components/InviteToMeeting/InviteToMeeting';
 import InvitedParticipants from '../../../components/InvitedParticipants';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
+import { RecurrenceInstance } from '../../../utils/eventUtils';
 import ButtonBack from './fragments/ButtonBack';
 import RoomAssetTable from './fragments/RoomAssetTable';
 
@@ -41,6 +42,20 @@ const EventDetailsPage = () => {
   const { eventId } = useParams<'eventId'>() as { eventId: EventId };
   const { data: event, isLoading, isError, isFetching } = useGetEventQuery({ eventId, inviteesMax: 20 });
   const { data: me } = useGetMeQuery();
+
+  const [searchParams] = useSearchParams();
+  const eventInstanceStart = searchParams.get('start');
+  const eventInstanceEnd = searchParams.get('end');
+  const recurrenceInstance: RecurrenceInstance | undefined =
+    eventInstanceStart && eventInstanceEnd && event && isRecurringEvent(event)
+      ? {
+          start: eventInstanceStart,
+          end: eventInstanceEnd,
+          originalStart: event.startsAt.datetime,
+          recurrencePattern: event.recurrencePattern[0],
+        }
+      : undefined;
+
   const isMeetingCreator = me?.id === event?.createdBy.id;
   const { data: tariff } = useGetRoomTariffQuery(event?.room.id ?? skipToken);
   const roomParticipantLimit = tariff?.quotas.roomParticipantLimit;
@@ -63,12 +78,12 @@ const EventDetailsPage = () => {
     if (event.isTimeIndependent) {
       return t('dashboard-meeting-details-page-timeindependent');
     }
-    const startDate = new Date(event.startsAt.datetime);
     if (event.isAllDay) {
       return t('dashboard-meeting-details-page-all-day');
     }
 
-    const endDate = new Date(event.endsAt.datetime);
+    const startDate = new Date(eventInstanceStart ?? event.startsAt.datetime);
+    const endDate = new Date(eventInstanceEnd ?? event.endsAt.datetime);
     return <EventTimePreview startDate={startDate} endDate={endDate} />;
   };
 
@@ -145,7 +160,11 @@ const EventDetailsPage = () => {
 
         {event.invitees && event.invitees.length > 0 && <InvitedParticipants eventId={event.id} isUpdatable={false} />}
 
-        <RoomAssetTable roomId={event.room.id} isMeetingCreator={isMeetingCreator} />
+        <RoomAssetTable
+          roomId={event.room.id}
+          isMeetingCreator={isMeetingCreator}
+          recurrenceInstance={recurrenceInstance}
+        />
       </Stack>
 
       <ButtonContainer>
