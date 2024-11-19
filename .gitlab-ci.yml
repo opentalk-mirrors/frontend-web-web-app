@@ -279,6 +279,7 @@ deploy:review-app:
       helm upgrade --version 2.1.1 --install --force frontend-$CI_MERGE_REQUEST_IID opentalk/ot-helm
       --set tags.standard=false
       --set tags.webapp=true
+      --set webapp.image.pullPolicy=Always
       --set webapp.image.registry=$CI_REGISTRY
       --set webapp.image.repository=$CI_PROJECT_PATH
       --set webapp.image.tag=${CI_MERGE_REQUEST_IID}_${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
