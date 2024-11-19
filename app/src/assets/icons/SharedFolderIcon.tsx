@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import SharedFolderSVG from './source/shared-folder.svg?react';
+import SharedFolder from './source/shared-folder.svg?react';
 
-const SharedFolderIcon = (props: SvgIconProps) => <SvgIcon {...props} component={SharedFolderSVG} inheritViewBox />;
+const SharedFolderIcon = (props: SvgIconProps) => <SvgIcon {...props} component={SharedFolder} inheritViewBox />;
 
 export default SharedFolderIcon;

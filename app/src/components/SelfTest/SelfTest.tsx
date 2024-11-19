@@ -9,9 +9,9 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { useGetRoomEventInfoQuery } from '../../api/rest';
-import { BackIcon, CloseIcon, HelpIcon, Logo } from '../../assets/icons';
+import { BackIcon, CloseIcon, HelpIcon, LogoIcon } from '../../assets/icons';
 import arrowImage from '../../assets/images/arrow-illustration.png';
-import { CircularIconButton } from '../../commonComponents';
+import { CircularIconButton, IconButton as MuiIconButton } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { useIsMobile } from '../../hooks/useMediaQuery';
@@ -84,6 +84,14 @@ const MonitorContainer = styled('main')(({ theme }) => ({
   },
 }));
 
+const IconButton = styled(MuiIconButton)(({ theme }) => ({
+  color: theme.palette.secondary.contrastText,
+  '& > .MuiSvgIcon-root': {
+    height: '2rem',
+    width: 'auto',
+  },
+}));
+
 interface SelftestProps {
   children: ReactNode;
   actionButton?: ReactNode;
@@ -118,7 +126,9 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
     <Container>
       <InnerContainer>
         <Header>
-          <Logo onClick={navigateToHome} />
+          <IconButton onClick={navigateToHome} aria-label={t('conference-go-home')}>
+            <LogoIcon />
+          </IconButton>
           <UtilitiesContainer>
             <SpeedTestDialog />
             {!isMobile && (

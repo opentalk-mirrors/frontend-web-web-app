@@ -29,12 +29,17 @@ export interface DisableMicrophoneRestrictions {
   action: 'disable_microphone_restrictions';
 }
 
+export interface RequestPopoutStreamAccessToken {
+  action: 'request_popout_stream_access_token';
+}
+
 export type Action =
   | ForceMute
   | GrantScreenSharePermission
   | RevokeScreenSharePermission
   | EnableMicrophoneRestrictions
-  | DisableMicrophoneRestrictions;
+  | DisableMicrophoneRestrictions
+  | RequestPopoutStreamAccessToken;
 
 export type Livekit = Namespaced<Action, 'livekit'>;
 
@@ -56,6 +61,11 @@ export const disableMicrophoneRestrictions = createSignalingApiCall<DisableMicro
   'disable_microphone_restrictions'
 );
 
+export const requestPopoutStreamAccessToken = createSignalingApiCall<RequestPopoutStreamAccessToken>(
+  'livekit',
+  'request_popout_stream_access_token'
+);
+
 export const handler = createModule<RootState>((builder) => {
   builder.addCase(requestMute.action, (_state, action) => {
     sendMessage(requestMute(action.payload));
@@ -71,6 +81,9 @@ export const handler = createModule<RootState>((builder) => {
   });
   builder.addCase(disableMicrophoneRestrictions.action, (_state, action) => {
     sendMessage(disableMicrophoneRestrictions(action.payload));
+  });
+  builder.addCase(requestPopoutStreamAccessToken.action, (_state, action) => {
+    sendMessage(requestPopoutStreamAccessToken(action.payload));
   });
 });
 

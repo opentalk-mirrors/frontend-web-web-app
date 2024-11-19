@@ -574,6 +574,7 @@ indicator-pinned = {$participantName} is pinned
 indicator-fullscreen-open = open fullscreen
 indicator-fullscreen-close = close fullscreen
 indicator-change-position = change position
+indicator-extend-new-tab = open in new tab
 
 wrong-browser-dialog-title = Your browser is only partially supported.
 wrong-browser-dialog-message = Please use the latest version of Chrome, Firefox or Safari. If you have further difficulties, check whether your browser is running in compatibility or incognito mode. Disable them and try again here.
@@ -709,6 +710,7 @@ dashboard-quick-start-title = OpenTalk Dashboard Quick Guide
 conference-quick-start-title = OpenTalk Conference Quick Guide
 conference-quick-start-open = Open quick guide
 conference-quick-start-close = Close quick guide
+conference-go-home = Go to dashboard
 
 quick-start-loading = Loading the quick guide
 quick-start-error = Couldn't load the quick guide

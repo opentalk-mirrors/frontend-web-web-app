@@ -574,6 +574,7 @@ indicator-pinned = {$participantName} ist im Fokus
 indicator-fullscreen-open = Vollbild öffnen
 indicator-fullscreen-close = Vollbild schließen
 indicator-change-position = Position ändern
+indicator-extend-new-tab = In neuem Tab öffnen
 
 wrong-browser-dialog-title = Ihr Browser wird nur teilweise unterstützt.
 wrong-browser-dialog-message = Bitte verwenden Sie die letzte Version von Chrome, Firefox oder Safari. Sollten Sie weitere Schwierigkeiten haben, überprüfen Sie ob Ihr Browser im Kompatibilität-oder Inkognitomodus läuft. Deaktivieren Sie diese und versuchen es noch einmal hier.
@@ -709,6 +710,7 @@ dashboard-quick-start-title = Kurzanleitung für das OpenTalk-Dashboard
 conference-quick-start-title = Kurzanleitung für die OpenTalk-Konferenz
 conference-quick-start-open = Kurzanleitung öffnen
 conference-quick-start-close = Kurzanleitung schließen
+conference-go-home = Link zum Dashboard
 
 quick-start-loading = Kurzanleitung wird geladen
 quick-start-error = Kurzanleitung konnte nicht geladen werden

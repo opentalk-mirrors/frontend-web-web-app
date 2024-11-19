@@ -65,6 +65,12 @@ type NotistackPalette = {
 };
 
 declare module '@mui/material/styles' {
+  interface SvgIconProps {
+    disabled?: boolean;
+    width?: ResponsiveStyleValue<string | number>;
+    height?: ResponsiveStyleValue<string | number>;
+  }
+
   interface TypeBackground {
     overlay?: string;
     defaultGradient?: string;

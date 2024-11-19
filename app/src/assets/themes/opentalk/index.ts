@@ -145,6 +145,15 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
           },
         },
       },
+      MuiSvgIcon: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            '& .mic-off-line': {
+              fill: theme.palette.warning.main,
+            },
+          }),
+        },
+      },
       MuiIconButton: {
         styleOverrides: {
           sizeMedium: ({ theme }) => ({
@@ -188,6 +197,9 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               '& svg': {
                 fill: theme.palette.common.white,
               },
+              '& .mic-off-line': {
+                fill: theme.palette.warning.main,
+              },
               '& > .MuiSvgIcon-root': {
                 fontSize: theme.typography.pxToRem(18),
                 [theme.breakpoints.down('md')]: {
@@ -197,6 +209,10 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               ':disabled': {
                 opacity: 0.5,
                 backgroundColor: theme.palette.secondary.main,
+                fill: theme.palette.text.disabled,
+                '& .mic-off-line': {
+                  fill: theme.palette.text.disabled,
+                },
               },
             }),
             ...(ownerState.color === 'error' && {
