@@ -1,7 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Theme, useMediaQuery, Typography, styled } from '@mui/material';
+import {
+  Theme,
+  useMediaQuery,
+  Typography,
+  styled,
+  FilledInputProps,
+  OutlinedInputProps,
+  InputProps,
+} from '@mui/material';
 import { useTheme } from '@mui/material';
 import { DateTimePicker as MuiDateTimePicker, PickersActionBarAction, PickersLocaleText } from '@mui/x-date-pickers';
 import { isSameDay } from 'date-fns';
@@ -30,6 +38,7 @@ type DateTimePickerProps = {
   okButtonLabel?: string;
   cancelButtonLabel?: string;
   textField?: PickerTextFieldProps;
+  InputProps?: Partial<FilledInputProps> | Partial<OutlinedInputProps> | Partial<InputProps> | undefined;
 } & Pick<IFormikDateTimePickerPropsReturnValue, 'onChange' | 'helperText' | 'error'>;
 
 const StartAdornmentTypography = styled(Typography)<{ component?: string; htmlFor?: string }>(({ theme }) => ({
@@ -54,6 +63,7 @@ const DateTimePicker = ({
   ampm = false,
   error,
   textField,
+  InputProps,
 }: DateTimePickerProps) => {
   const { placeholder, id, startAdornment, fullWidth, required } = textField || {};
   const [focused, setFocused] = useState(false);
@@ -114,7 +124,7 @@ const DateTimePicker = ({
         <StartAdornmentTypography variant="body1" component="label" htmlFor={inputId}>
           {startAdornment}
           {required && (
-            <span aria-hidden={true} className="MuiFormLabel-asterisk MuiInputLabel-asterisk">
+            <span aria-hidden="true" className="MuiFormLabel-asterisk MuiInputLabel-asterisk">
               &nbsp;*
             </span>
           )}
@@ -145,7 +155,11 @@ const DateTimePicker = ({
               fullWidth,
               onFocus,
               onBlur,
-              InputProps: { startAdornment: getStartAdornment(), id: inputId },
+              InputProps: {
+                ...InputProps,
+                startAdornment: getStartAdornment(),
+                id: inputId,
+              },
               required,
             },
             actionBar: { actions },

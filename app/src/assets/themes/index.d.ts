@@ -99,4 +99,8 @@ declare module '@mui/material/styles' {
   interface ZIndex {
     jumpLink: number;
   }
+
+  interface TypeText {
+    placeholder: string;
+  }
 }

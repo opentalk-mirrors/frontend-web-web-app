@@ -30,7 +30,7 @@ const EventNameTypography = styled(Typography)(({ theme }) => ({
 }));
 
 const EventMessageTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.disabled,
+  color: theme.palette.text.placeholder,
   display: 'inline-block',
 }));
 
@@ -42,7 +42,7 @@ const NameTypography = styled(Typography, {
 }));
 
 const TimeTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.disabled,
+  color: theme.palette.text.placeholder,
   whiteSpace: 'nowrap',
 }));
 

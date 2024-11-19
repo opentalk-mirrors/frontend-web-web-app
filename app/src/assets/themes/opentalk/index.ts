@@ -443,6 +443,9 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               color: theme.palette.primary.contrastText,
               WebkitTextFillColor: theme.palette.primary.contrastText,
             },
+            '&::placeholder': {
+              color: theme.palette.text.placeholder,
+            },
           }),
           multiline: {
             padding: 0,
