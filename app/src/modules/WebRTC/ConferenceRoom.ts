@@ -137,7 +137,13 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
       case 'media': {
         const subType = payload.message;
         // TODO: Theses are actually a control messages -- talk to the backend
-        if (subType === 'error' || subType === 'request_mute' || subType === 'speaker_updated') {
+        if (
+          subType === 'error' ||
+          subType === 'request_mute' ||
+          subType === 'speaker_updated' ||
+          subType === 'presenter_role_granted' ||
+          subType === 'presenter_role_revoked'
+        ) {
           break;
         }
         // do not propagate WebRTC messages

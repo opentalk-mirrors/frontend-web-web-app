@@ -68,6 +68,16 @@ export interface SpeakerUpdated extends SpeakingState {
   participant: ParticipantId;
 }
 
+export interface PresenterRoleGranted {
+  message: 'presenter_role_granted';
+  participantIds: ParticipantId[];
+}
+
+export interface PresenterRoleRevoked {
+  message: 'presenter_role_revoked';
+  participantIds: ParticipantId[];
+}
+
 export type Message =
   | SdpAnswer
   | SdpOffer
@@ -77,7 +87,9 @@ export type Message =
   | WebRtcDown
   | WebRtcSlow
   | RequestMute
-  | SpeakerUpdated;
+  | SpeakerUpdated
+  | PresenterRoleGranted
+  | PresenterRoleRevoked;
 
 export type Media = NamespacedIncoming<Message, 'media'>;
 

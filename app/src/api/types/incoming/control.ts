@@ -58,6 +58,16 @@ export interface RoomDeleted {
   message: 'room_deleted';
 }
 
+export interface ModeratorRoleGranted {
+  message: 'moderator_role_granted';
+  target: ParticipantId;
+}
+
+export interface ModeratorRoleRevoked {
+  message: 'moderator_role_revoked';
+  target: ParticipantId;
+}
+
 // Currently this is a string
 export type ControlError = string;
 
@@ -74,7 +84,9 @@ export type Message =
   | ErrorStruct<ControlError>
   | HandRaised
   | HandLowered
-  | RoomDeleted;
+  | RoomDeleted
+  | ModeratorRoleGranted
+  | ModeratorRoleRevoked;
 export type Control = NamespacedIncoming<Message, 'control'>;
 
 export default Control;
