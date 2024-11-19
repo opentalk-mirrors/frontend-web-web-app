@@ -45,11 +45,15 @@ const Form = styled('form')(({ theme }) => ({
   gap: theme.spacing(1), // Spacing between form fields and buttons
 }));
 
+const TOPIC_MIN_LENGTH = 3;
+const TOPIC_MAX_LENGTH = 500;
+
 const validationSchema = yup.object({
   topic: yup
     .string()
     .trim()
-    .max(500, i18next.t('poll-form-input-error-max', { max: 500 }))
+    .min(TOPIC_MIN_LENGTH, i18next.t('poll-form-input-error-min', { min: TOPIC_MIN_LENGTH }))
+    .max(TOPIC_MAX_LENGTH, i18next.t('poll-form-input-error-max', { max: TOPIC_MAX_LENGTH }))
     .required(i18next.t('legal-vote-input-topic-required')),
   duration: yup.number().positive().nullable(true).typeError(i18next.t('poll-form-input-error-number')),
   choices: yup
