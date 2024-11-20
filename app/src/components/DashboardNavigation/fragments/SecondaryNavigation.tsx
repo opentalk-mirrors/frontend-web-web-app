@@ -121,7 +121,12 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
           .filter((route) => showSubmenuEntry(route.path))
           .map(({ path, name }) => (
             <ListItem key={path}>
-              <NavItem to={`${submenu}/${path}`} onClick={() => handleNavigation(path)} data-testid="SecondaryNavItem">
+              <NavItem
+                to={`${submenu}/${path}`}
+                onClick={() => handleNavigation(path)}
+                data-testid="SecondaryNavItem"
+                aria-controls="main-content-dashboard"
+              >
                 <ListItemText>{t(name)}</ListItemText>
               </NavItem>
             </ListItem>
