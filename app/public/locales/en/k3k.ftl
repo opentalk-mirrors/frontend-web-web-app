@@ -350,7 +350,11 @@ legal-vote-overview-created-legal-votes = created voting
 legal-vote-canceled = Voting is canceled
 legal-vote-stopped = Voting is stopped
 legal-vote-error = Your vote could not be evaluated, an error has occurred
-legal-vote-active-error = A vote is already running.
+vote-already-active-error = A vote is already running.
+no-vote-active-error = Unfortunately, there is no active voting session at the moment. Please check the voting schedule or contact the moderator.
+invalid-vote-id-error = It seems you've entered an invalid voting ID. Please try again. If the issue persists, please contact the moderator.
+ineligible-error = We’re sorry, but you are not eligible to participate in this voting. Please check the eligibility requirements. If you continue to experience issues, please contact the moderator.
+internal-error = An internal error has occurred. Please try again in a few minutes. If the problem persists, please contact the moderator.
 
 legal-vote-form-input-error-number = Only enter numbers
 legal-vote-form-input-error-max = Maximum number of allowed characters is {$maxCharacters}

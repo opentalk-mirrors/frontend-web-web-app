@@ -100,6 +100,7 @@ import {
   matchBuilder,
 } from '../types';
 import { initSentryReportWithUser } from '../utils/glitchtipUtils';
+import { isStringEnum } from '../utils/tsUtils';
 import { restApi } from './rest';
 import {
   Message as IncomingMessage,
@@ -118,7 +119,7 @@ import {
 } from './types/incoming';
 import { AutomodEventType } from './types/incoming/automod';
 import { Role } from './types/incoming/control';
-import { LegalVoteMessageType, VoteFinalResults } from './types/incoming/legalVote';
+import { LegalVoteError, LegalVoteMessageType, VoteFinalResults } from './types/incoming/legalVote';
 import { Action as OutgoingActionType, automod } from './types/outgoing';
 import * as outgoing from './types/outgoing';
 import { ClearGlobalMessages } from './types/outgoing/chat';
@@ -225,14 +226,17 @@ export const sendMessage = (message: Namespaced<OutgoingActionType | ClearGlobal
   conferenceContext.sendMessage(message as outgoing.Message /*TODO remove conversion*/);
 };
 
-const dispatchError = (message: string) => {
-  switch (message) {
-    case 'vote-already_active':
-      notifications.error(i18next.t('legal-vote-active-error'));
-      break;
-    default:
-      notifications.error(message);
+//TODO: improve to a more general solution with proper typing as part of #2251(https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2251)
+const showErrorNotification = (message: string) => {
+  const errorMessage = message.replaceAll('_', '-');
+
+  const isLegalVoteError = isStringEnum(LegalVoteError)(message);
+  if (isLegalVoteError) {
+    notifications.error(i18next.t(`${errorMessage}-error`));
+    return;
   }
+
+  notifications.error(i18next.t('internal-error'));
 };
 
 /**
@@ -556,7 +560,7 @@ const handleBreakoutMessage = (
       dispatch(breakoutLeft({ id: data.id, timestamp }));
       break;
     case 'error':
-      dispatchError(data.error.replace('_', '-'));
+      showErrorNotification(data.error);
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
@@ -678,7 +682,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
       break;
     }
     case 'error':
-      dispatchError(data.error.replace('_', '-'));
+      showErrorNotification(data.error);
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
@@ -745,7 +749,7 @@ const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMessageTyp
       break;
     }
     case 'error':
-      dispatchError(data.error.replace('_', '-'));
+      showErrorNotification(data.error);
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
@@ -936,7 +940,7 @@ const handleMeetingNotesMessage = (
       dispatch(setMeetingNotesReadUrl(data.url.toString()));
       break;
     case 'error':
-      dispatchError(data.error.replace('_', '-'));
+      showErrorNotification(data.error);
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);

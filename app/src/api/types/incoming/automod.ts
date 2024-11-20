@@ -36,11 +36,9 @@ export interface Error {
 }
 
 export enum AutomodError {
-  VoteAlreadyActive = 'vote_already_active',
-  NoVoteActive = 'no_vote_active',
-  InvalidVoteId = 'invalid_vote_id',
-  Ineligible = 'ineligible',
-  Internal = 'internal',
+  InvalidSelection = 'invalid_selection',
+  InsufficientPermissions = 'insufficient_permissions',
+  SessionAlreadyRunning = 'session_already_running',
 }
 
 export const isError = isEnumErrorStruct(AutomodError);
