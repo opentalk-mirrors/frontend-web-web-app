@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '.';
 import { notifications } from '../commonComponents';
-import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../components/Toolbar/fragments/ShareScreenButton';
+import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../constants';
 import { useMediaChoices } from '../provider/MediaChoicesProvider';
 import { pinnedParticipantIdSet, pinnedRemoteScreenshare, selectPinnedParticipantId } from '../store/slices/uiSlice';
 import { updateLastActive } from '../store/slices/userSlice';

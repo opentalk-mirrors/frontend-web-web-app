@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icons';
 import Logo from '../../../assets/images/logo.svg?react';
+import { MAX_GRID_TILES_DESKTOP } from '../../../constants';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectPollsAndVotingsCount } from '../../../store/selectors';
@@ -23,7 +24,6 @@ import {
 } from '../../../store/slices/uiSlice';
 import { selectIsCurrentWhiteboardHighlighted } from '../../../store/slices/uiSlice';
 import { selectIsWhiteboardAvailable } from '../../../store/slices/whiteboardSlice';
-import { MAX_GRID_TILES } from '../../GridView/GridView';
 import LayoutSelection from './LayoutSelection';
 import { MeetingHeaderButton } from './MeetingHeaderButton';
 import MeetingUtilsSection from './MeetingUtilsSection';
@@ -142,7 +142,7 @@ const DesktopMeetingHeader = () => {
   }, [dispatch, clickCount]);
 
   const pageCount = useMemo(() => {
-    return Math.ceil(participants.length / MAX_GRID_TILES);
+    return Math.ceil(participants.length / MAX_GRID_TILES_DESKTOP);
   }, [participants]);
 
   useEffect(() => {

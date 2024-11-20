@@ -21,7 +21,8 @@ import { spliceIntoChunks } from '../../../utils/arrayUtils';
 import { Seconds } from '../../../utils/tsUtils';
 import CreateByParticipantsForm from './CreateByParticipantsForm';
 import CreateByRoomsForm from './CreateByRoomsForm';
-import ParticipantsSelector, { BreakoutRoomWithFullParticipants, AccordionOptions } from './ParticipantsSelector';
+import ParticipantsSelector, { BreakoutRoomWithFullParticipants } from './ParticipantsSelector';
+import { AccordionOptions } from './constants';
 
 type Expanded = string | false;
 

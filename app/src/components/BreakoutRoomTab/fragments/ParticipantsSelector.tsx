@@ -13,13 +13,7 @@ import { useAppSelector } from '../../../hooks';
 import { selectCombinedParticipantsAndUser } from '../../../store/selectors';
 import { Participant } from '../../../types';
 import ParticipantsEditor from './ParticipantsEditor';
-
-export enum AccordionOptions {
-  Rooms = 'rooms',
-  Participants = 'participants',
-  Groups = 'groups',
-  Moderators = 'Moderators',
-}
+import { AccordionOptions } from './constants';
 
 const UserNameContainer = styled('div')(({ theme }) => ({
   '& > *': {

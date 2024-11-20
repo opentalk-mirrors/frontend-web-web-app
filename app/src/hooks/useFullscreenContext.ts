@@ -4,7 +4,7 @@
 import { useContext } from 'react';
 
 import type { ExtendedFullScreenHandle } from '../provider/FullscreenProvider';
-import { FullscreenContext } from '../provider/FullscreenProvider/FullscreenProvider';
+import { FullscreenContext } from '../provider/FullscreenProvider/FullscreenContext';
 
 export const useFullscreenContext = (): ExtendedFullScreenHandle => {
   const contextValue = useContext(FullscreenContext);

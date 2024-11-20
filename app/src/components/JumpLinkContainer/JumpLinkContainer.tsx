@@ -5,11 +5,9 @@ import { styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { ModerationTabKey } from '../../config/moderationTabs';
+import { MY_MEETING_MENU_BUTTON_ID, CHAT_INPUT_ID, ToolbarButtonIds } from '../../constants';
 import { useAppSelector } from '../../hooks';
 import { selectIsModerator } from '../../store/slices/userSlice';
-import { CHAT_INPUT_ID } from '../Chat/fragments/ChatForm';
-import { MY_MEETING_MENU_BUTTON_ID } from '../MeetingHeader/fragments/MyMeetingMenu';
-import { ToolbarButtonIds } from '../Toolbar/Toolbar';
 import { JumpLink } from './fragments/JumpLink';
 
 const Nav = styled('nav')(() => ({

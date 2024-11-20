@@ -4,8 +4,9 @@
 import { DateTime } from '@opentalk/rest-api-rtk-query';
 
 import { configureStore, render, screen, cleanup, eventMockedData } from '../../../utils/testUtils';
-import EventsPage, { filterByTimePeriod } from './EventsOverviewPage';
+import EventsPage from './EventsOverviewPage';
 import { TimeFilter } from './fragments/EventsPageHeader';
+import { filterByTimePeriod } from './fragments/utils';
 
 const createMockEvent = () => ({
   title: 'some title',

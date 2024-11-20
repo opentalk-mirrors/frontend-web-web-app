@@ -31,17 +31,18 @@ import { useAppSelector } from '../hooks';
 import { FeaturesKeys } from '../store/slices/configSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { RoomMode, TimerStyle } from '../types';
-
-const MenuTabs = React.lazy(() => import('../components/MenuTabs'));
-const BreakoutRoomTab = React.lazy(() => import('../components/BreakoutRoomTab'));
-const LegalVoteTab = React.lazy(() => import('../components/LegalVoteTab'));
-const TalkingStickTabPanel = React.lazy(() => import('../components/TalkingStickTabPanel/TalkingStickTabPanel'));
-const PollTab = React.lazy(() => import('../components/PollTab'));
-const MuteParticipantsTab = React.lazy(() => import('../components/MuteParticipantsTab'));
-const MeetingNotesTab = React.lazy(() => import('../components/MeetingNotesTab'));
-const ResetHandraisesTab = React.lazy(() => import('../components/ResetHandraisesTab'));
-const TimerTab = React.lazy(() => import('../components/TimerTab'));
-const WhiteboardTab = React.lazy(() => import('../components/WhiteboardTab'));
+import {
+  MenuTabs,
+  BreakoutRoomTab,
+  LegalVoteTab,
+  TalkingStickTabPanel,
+  PollTab,
+  MuteParticipantsTab,
+  MeetingNotesTab,
+  ResetHandraisesTab,
+  TimerTab,
+  WhiteboardTab,
+} from './fragments/lazyTabs';
 
 export enum ModerationTabKey {
   Home = 'tab-home',

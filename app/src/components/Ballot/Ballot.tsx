@@ -19,9 +19,9 @@ import {
 import { selectVoteOrPollIdToShow, setVoteOrPollIdToShow } from '../../store/slices/uiSlice';
 import { selectOurUuid } from '../../store/slices/userSlice';
 import { LegalVoteContainer } from './fragments/LegalVoteContainer';
-import { LEGEND_TITLE_ID } from './fragments/LegendTitle';
 import { PollContainer } from './fragments/PollContainer';
 import { ReportSection } from './fragments/ReportSection';
+import { LEGEND_TITLE_ID } from './fragments/constants';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   borderRadius: '1rem',

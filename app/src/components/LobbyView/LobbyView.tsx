@@ -93,7 +93,7 @@ const showWrongPasswordNotification = () => {
   });
 };
 
-export const JOIN_FORM_ID = 'join-form';
+const JOIN_FORM_ID = 'join-form';
 
 const LobbyView = () => {
   const { t } = useTranslation();

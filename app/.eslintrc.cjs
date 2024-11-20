@@ -10,6 +10,7 @@ module.exports = {
   plugins: [
     'jsx-a11y',
     'react',
+    'react-refresh'
   ],
   extends: [
     'plugin:jsx-a11y/recommended',
@@ -22,6 +23,7 @@ module.exports = {
         "no-var": "off",
         "react/react-in-jsx-scope": "off",
         "react/jsx-curly-brace-presence": ["error", "never"],
+        "react-refresh/only-export-components": "warn",
       }
     }
   ]

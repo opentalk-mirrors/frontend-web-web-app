@@ -6,10 +6,8 @@ import { useMemo, useState } from 'react';
 
 import { requestMute } from '../../api/types/outgoing/livekit';
 import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAndSelectParticipantsTab';
-import {
-  SelectableParticipant,
-  toSelectableParticipant,
-} from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/SelectParticipantsItem';
+import { SelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/SelectParticipantsItem';
+import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectMapRemotePaticipanstDisplayName } from '../../store/slices/participantsSlice';
 import { ParticipantId } from '../../types';

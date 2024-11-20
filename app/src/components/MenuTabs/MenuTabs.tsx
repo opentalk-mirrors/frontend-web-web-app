@@ -14,7 +14,8 @@ import { ChatScope } from '../../types';
 import Chat from '../Chat';
 import ChatOverview from '../ChatOverview';
 import Participants from '../Participants';
-import TabPanel, { MenuTab } from './fragments/TabPanel';
+import TabPanel from './fragments/TabPanel';
+import { MenuTab } from './fragments/constants';
 
 const MessagesBadge = styled(Badge)(({ theme }) => ({
   right: -4,

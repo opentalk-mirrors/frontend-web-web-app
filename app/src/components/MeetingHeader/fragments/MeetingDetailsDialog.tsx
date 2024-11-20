@@ -25,7 +25,7 @@ import { selectCurrentBreakoutRoomId } from '../../../store/slices/breakoutSlice
 import { selectBaseUrl } from '../../../store/slices/configSlice';
 import { RoomInfo } from '../../../types';
 import { composeInviteUrl } from '../../../utils/apiUtils';
-import { FieldKeys } from '../../InviteToMeeting/fragments/MeetingLinkField';
+import { FieldKeys } from '../../InviteToMeeting/fragments/constants';
 
 export type MeetingDetailsDialogProps = {
   eventInfo: EventInfo;

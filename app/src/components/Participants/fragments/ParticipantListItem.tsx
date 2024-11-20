@@ -44,6 +44,7 @@ import {
 } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { IconButton, ParticipantAvatar, notifications } from '../../../commonComponents';
+import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectHandUp } from '../../../store/slices/moderationSlice';
 import {
@@ -53,8 +54,7 @@ import {
 } from '../../../store/slices/uiSlice';
 import { selectIsModerator, selectOurUuid, selectUserMeetingNotesAccess } from '../../../store/slices/userSlice';
 import { ChatScope, MeetingNotesAccess, Participant, ParticipationKind, SortOption } from '../../../types';
-import { MenuTab } from '../../MenuTabs/fragments/TabPanel';
-import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../Toolbar/fragments/ShareScreenButton';
+import { MenuTab } from '../../MenuTabs/fragments/constants';
 import MenuPopover, { IMenuOptionItem } from './MenuPopover';
 import RenameParticipantDialog from './RenameParticipantDialog';
 

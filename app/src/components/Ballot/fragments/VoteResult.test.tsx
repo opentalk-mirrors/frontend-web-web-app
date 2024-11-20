@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { LegalVoteId, PollId } from '../../../types';
 import { configureStore, render, screen, cleanup, fireEvent } from '../../../utils/testUtils';
-import VoteResult, { IVoteData, IVoteResult, VoteType } from './VoteResult';
+import VoteResult, { IVoteData, IVoteResult } from './VoteResult';
+import { VoteType } from './constants';
 
 describe('testing vote results', () => {
   const { store } = configureStore();

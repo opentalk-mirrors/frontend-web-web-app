@@ -16,7 +16,7 @@ import {
   showConsentNotification,
   startTimeLimitNotification,
 } from '../commonComponents';
-import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification/StreamUpdatedNotification';
+import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification';
 import LayoutOptions from '../enums/LayoutOptions';
 import i18n from '../i18n';
 import { ConferenceRoom, getCurrentConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';

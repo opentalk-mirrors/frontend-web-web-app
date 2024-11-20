@@ -5,7 +5,8 @@ import userEvent from '@testing-library/user-event';
 import { truncate } from 'lodash';
 
 import { screen, render, createStore } from '../../../utils/testUtils';
-import RoomTitle, { ROOM_TITLE_MAX_LENGTH } from './RoomTitle';
+import RoomTitle from './RoomTitle';
+import { ROOM_TITLE_MAX_LENGTH } from './constants';
 
 describe('Room title', () => {
   test('should display the whole name in the title and in the tooltip', async () => {

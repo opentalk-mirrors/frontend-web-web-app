@@ -9,7 +9,8 @@ import { SearchIcon, SortIcon } from '../../../assets/icons';
 import { AdornmentIconButton, CommonTextField, SortPopoverMenu } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectParticipantsSortOption, setParticipantsSortOption } from '../../../store/slices/uiSlice';
-import { SortItem, SortOption } from '../../../types';
+import { SortOption } from '../../../types';
+import { items } from './constants';
 
 interface SearchFieldProps {
   onSearch: (search: string) => void;
@@ -17,33 +18,6 @@ interface SearchFieldProps {
   showSort?: boolean;
   searchValue?: string;
 }
-
-export const items: SortItem[] = [
-  {
-    type: SortOption.NameASC,
-    i18nKey: 'sort-name-asc',
-  },
-  {
-    type: SortOption.NameDESC,
-    i18nKey: 'sort-name-dsc',
-  },
-  {
-    type: SortOption.FirstJoin,
-    i18nKey: 'sort-first-join',
-  },
-  {
-    type: SortOption.LastJoin,
-    i18nKey: 'sort-last-join',
-  },
-  {
-    type: SortOption.LastActive,
-    i18nKey: 'sort-last-active',
-  },
-  {
-    type: SortOption.RaisedHandFirst,
-    i18nKey: 'sort-raised-hand',
-  },
-];
 
 const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: SearchFieldProps) => {
   const id = 'sort-search-participants';

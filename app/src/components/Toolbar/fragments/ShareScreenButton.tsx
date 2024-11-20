@@ -7,12 +7,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ShareScreenOffIcon, ShareScreenOnIcon } from '../../../assets/icons';
+import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
+import { ToolbarButtonIds } from '../../../constants';
 import { useAppSelector } from '../../../hooks';
 import { selectIsModerator } from '../../../store/slices/userSlice';
-import { ToolbarButtonIds } from '../Toolbar';
 import ToolbarButton from './ToolbarButton';
-
-export const LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER = 3;
 
 const ShareScreenButton = () => {
   const { toggle, enabled, pending } = useTrackToggle({ source: Track.Source.ScreenShare });

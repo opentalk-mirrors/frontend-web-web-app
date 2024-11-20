@@ -5,17 +5,7 @@ import { Grid, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { CopyTextField } from '../../../commonComponents';
-
-export enum FieldKeys {
-  InviteLink = 'invite-link',
-  RoomLink = 'room-link',
-  SipLink = 'sip-link',
-  GuestLink = 'guest-link',
-  RoomPassword = 'room-password',
-  SharedFolderLink = 'shared-folder-link',
-  SharedFolderPassword = 'shared-folder-password',
-  LivestreamLink = 'livestream-link',
-}
+import { FieldKeys } from './constants';
 
 interface MeetingLinkFieldProps {
   fieldKey: FieldKeys;

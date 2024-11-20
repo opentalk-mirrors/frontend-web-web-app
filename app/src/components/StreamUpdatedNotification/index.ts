@@ -1,6 +1,4 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createStreamUpdatedNotification } from './StreamUpdatedNotification';
-
-export { createStreamUpdatedNotification };
+export { createStreamUpdatedNotification } from './utils';

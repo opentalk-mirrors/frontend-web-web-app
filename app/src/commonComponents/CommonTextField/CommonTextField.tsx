@@ -6,6 +6,7 @@ import React, { KeyboardEvent, useState, useEffect, FocusEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { generateUniqueId } from '../../utils/stringUtils';
+import { KEYS_TO_PROPAGATE } from './constants';
 
 type ComposedTextFieldProps = TextFieldProps & {
   maxCharacters?: number;
@@ -14,10 +15,6 @@ type ComposedTextFieldProps = TextFieldProps & {
   label?: string; // label MUST be provided to ensure the accessibility (https://mui.com/material-ui/react-text-field/#accessibility)
   hideLabel?: boolean;
 };
-
-// Here are explicitly keys, which we propagate to the parent element,
-// keys that are not specified here we don't want to propagate because of the app shortkeys (like press-to-talk for instance)
-export const keysToPropagate = ['Enter', 'Escape'];
 
 const StyledTextField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'hideLabel',
@@ -92,7 +89,7 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
     };
 
     const handlePropagation = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      if (!keysToPropagate.includes(event.key)) {
+      if (!KEYS_TO_PROPAGATE.includes(event.key)) {
         event.stopPropagation();
       }
     };

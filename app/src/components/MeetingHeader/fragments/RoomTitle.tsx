@@ -12,8 +12,7 @@ import { useAppSelector } from '../../../hooks';
 import { selectRoomTitle } from '../../../store/selectors';
 import { selectEventInfo, selectRoomInfo } from '../../../store/slices/roomSlice';
 import MeetingDetailsDialog from './MeetingDetailsDialog';
-
-export const ROOM_TITLE_MAX_LENGTH = 17;
+import { ROOM_TITLE_MAX_LENGTH } from './constants';
 
 //Container is needed in order to limit text from overflowing
 const Container = styled(Stack)(({ theme }) => ({

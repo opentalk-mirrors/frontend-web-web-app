@@ -18,13 +18,12 @@ import { useTranslation } from 'react-i18next';
 import { BurgermenuIcon, HelpIcon, MeetingNotesIcon, HelpSquareIcon, BugIcon } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { IconButton } from '../../../commonComponents';
+import { MY_MEETING_MENU_BUTTON_ID } from '../../../constants';
 import { useAppSelector } from '../../../hooks';
 import { selectIsGlitchtipConfigured } from '../../../store/slices/configSlice';
 import { triggerGlitchtipManually } from '../../../utils/glitchtipUtils';
 import QuickStartPopover from '../../QuickStartPopover/QuickStartPopover';
 import ShortcutListDialog from '../../Toolbar/fragments/ShortcutListDialog';
-
-export const MY_MEETING_MENU_BUTTON_ID = 'my-meeting-menu-button';
 
 const ViewPopperContainer = styled(Stack)(({ theme }) => ({
   position: 'relative',

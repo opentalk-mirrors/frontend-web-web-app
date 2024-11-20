@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { render, screen } from '@testing-library/react';
 
-import AccessibleTimer, { LAST_SECONDS_OF_A_MINUTE, LAST_SECONDS_OF_TOTAL_TIME } from './AccessibleTimer';
+import AccessibleTimer from './AccessibleTimer';
+import { LAST_SECONDS_OF_A_MINUTE, LAST_SECONDS_OF_TOTAL_TIME } from './constants';
 
 jest.mock('react-i18next', () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown

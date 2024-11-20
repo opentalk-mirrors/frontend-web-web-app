@@ -5,7 +5,7 @@ import SnackbarProvider from './SnackbarProvider';
 
 export { notificationAction, notificationPersistent, notifications } from './utils';
 export type { ISnackActionsProps, ISnackbarPersistentProps, ISnackbarActionButtonProps } from './utils';
-export * from './StackedMessages';
+export { createStackedMessages } from './StackedMessages';
 export {
   getNotistackComponents,
   startTimeLimitNotification,

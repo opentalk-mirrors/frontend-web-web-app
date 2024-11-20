@@ -9,11 +9,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import { ListItem } from './PrimaryNavigationEntry';
 import { SecondaryRoute } from './SecondaryNavigation';
-
-export enum FilterMode {
-  Include = 'include',
-  Exclude = 'exclude',
-}
+import { FilterMode } from './constants';
 
 export interface PrimaryRoute {
   icon: ReactNode;

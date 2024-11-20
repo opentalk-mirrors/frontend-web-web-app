@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 
 import { resetRaisedHands } from '../../api/types/outgoing/moderation';
 import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAndSelectParticipantsTab';
-import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/SelectParticipantsItem';
+import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectParticipantsWithRaisedHands } from '../../store/selectors';
 import { selectMapRemotePaticipanstDisplayName } from '../../store/slices/participantsSlice';

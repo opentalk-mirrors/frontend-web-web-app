@@ -9,8 +9,7 @@ import {
   InviteStatus,
   isTimelessEvent,
 } from '@opentalk/rest-api-rtk-query';
-import { endOfISOWeek, formatRFC3339, getWeek, startOfISOWeek } from 'date-fns';
-import i18n, { t } from 'i18next';
+import { formatRFC3339 } from 'date-fns';
 import { groupBy } from 'lodash';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,36 +22,13 @@ import {
   orderEventsByDate,
   TimePerspectiveFilter,
 } from '../../../utils/eventUtils';
-import { formatDate } from '../../../utils/timeFormatUtils';
 import EventsOverview from './fragments/EventsOverview';
 import EventsPageHeader from './fragments/EventsPageHeader';
+import { filterByTimePeriod } from './fragments/utils';
 import { DashboardEventsFilters, FilterChangeCallbackType, MeetingsProp, TimeFilter } from './types';
 
 const EMPTY_MEETING_PROP_ARRAY: Array<MeetingsProp> = [];
 const CachedEventsPageHeader = memo(EventsPageHeader);
-
-export const filterByTimePeriod = (timePeriod: DashboardEventsFilters['timePeriod'], date: DateTime) => {
-  const createDate = new Date(date);
-
-  switch (timePeriod) {
-    case TimeFilter.Month:
-      return new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric' }).format(createDate);
-    case TimeFilter.Day:
-      return new Intl.DateTimeFormat(i18n.language, { day: 'numeric', month: 'long', year: 'numeric' }).format(
-        createDate
-      );
-    case TimeFilter.Week:
-    default: {
-      //Gets the week number with weeks starting on a Monday (1) as ISO standard, since every first week contains a Thursday (4)
-      const weekNumber = getWeek(createDate, { weekStartsOn: 1, firstWeekContainsDate: 4 });
-
-      const startDate = formatDate(startOfISOWeek(createDate)).getDateString();
-      const endDate = formatDate(endOfISOWeek(createDate)).getDateString();
-
-      return `${t('global-calendar-week')}: ${weekNumber} (${startDate} - ${endDate})`;
-    }
-  }
-};
 
 const EVENTS_PER_REQUEST = 100;
 

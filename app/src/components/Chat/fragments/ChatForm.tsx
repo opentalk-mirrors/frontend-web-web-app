@@ -27,14 +27,13 @@ import { useTranslation } from 'react-i18next';
 import { sendChatMessage } from '../../../api/types/outgoing/chat';
 import { EmojiIcon, SendMessageIcon } from '../../../assets/icons';
 import { AdornmentIconButton, CommonTextField, VisuallyHiddenTitle } from '../../../commonComponents';
+import { CHAT_INPUT_ID } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
 import { saveDefaultChatMessage, selectDefaultChatMessage } from '../../../store/slices/uiSlice';
 import { ChatScope, GroupId, ParticipantId, TargetId } from '../../../types';
 import { formikGetValue, formikProps } from '../../../utils/formikUtils';
 import yup from '../../../utils/yupUtils';
-
-export const CHAT_INPUT_ID = 'chat-input';
 
 const Form = styled('form')({
   position: 'relative',

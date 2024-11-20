@@ -1,17 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { AuthCallbackComponent, selectAuthIsPending } from '@opentalk/redux-oidc';
-import { useAuthContext, selectIsAuthenticated } from '@opentalk/redux-oidc';
 import i18next from 'i18next';
-import React, { PropsWithChildren, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { To, RouteObject, useNavigate, Outlet, useParams } from 'react-router-dom';
+import { RouteObject, Outlet } from 'react-router-dom';
 
-import { notifications } from '../commonComponents';
-import Error from '../components/Error';
-import { useAppSelector } from '../hooks';
-import { useInviteCode } from '../hooks/useInviteCode';
 import {
   SettingsProfilePage,
   SettingsGeneralPage,
@@ -32,9 +24,14 @@ import SupportPage from '../pages/SupportPage';
 import DashboardSettingsTemplate from '../templates/DashboardSettingsTemplate';
 import DashboardTemplate from '../templates/DashboardTemplate';
 import LobbyTemplate from '../templates/LobbyTemplate';
-
-const InvitePage = React.lazy(() => import('../pages/InvitePage'));
-const ExtendedTabPage = React.lazy(() => import('../pages/ExtendedTabPage'));
+import {
+  ProtectedRoute,
+  Redirect,
+  InvitePage,
+  ExtendedTabPage,
+  RouteNotFound,
+  AuthRedirect,
+} from './fragments/routesFragments';
 
 type RouteValue = {
   path: string;
@@ -43,55 +40,6 @@ type RouteValue = {
 
 export type Routes = {
   [key: string]: RouteValue;
-};
-
-type ProtectedRouteProps = PropsWithChildren;
-
-const AuthRedirect = ({ label }: { label: string }) => {
-  return (
-    <AuthCallbackComponent>
-      <p>{label}</p>
-    </AuthCallbackComponent>
-  );
-};
-
-const RouteNotFound = () => {
-  const { t } = useTranslation();
-  return <Error title={t('route-not-found')} />;
-};
-
-const Redirect = ({ to }: { to: To }) => {
-  const navigate = useNavigate();
-  const { roomId } = useParams();
-
-  useEffect(() => {
-    roomId ? navigate(`${to}/${roomId}`) : navigate(to);
-  }, [navigate, to, roomId]);
-  return null;
-};
-
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const auth = useAuthContext();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const isAuthPending = useAppSelector(selectAuthIsPending);
-  const inviteCode = useInviteCode();
-
-  if (isAuthPending) {
-    return null;
-  }
-
-  if (!isAuthenticated && !inviteCode) {
-    auth?.signIn().catch((error) => {
-      console.error('failed to signIn:', error);
-      notifications.error(i18next.t('error-general'));
-    });
-    return null;
-  }
-
-  if (children !== undefined) {
-    return <>{children}</>;
-  }
-  return <Outlet />;
 };
 
 type CreateRoutes = (redirectUri: string, popUpRedirect: string) => RouteObject[];

@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
+// SPDX-License-Identifier: EUPL-1.2
 import TimeLimitNotification from './TimeLimitNotification';
 
-// SPDX-License-Identifier: EUPL-1.2
-export { startTimeLimitNotification, stopTimeLimitNotification } from './TimeLimitNotification';
+export { startTimeLimitNotification, stopTimeLimitNotification } from './utils';
 
 export default TimeLimitNotification;

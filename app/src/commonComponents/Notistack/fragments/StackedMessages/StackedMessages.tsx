@@ -7,7 +7,7 @@ interface StackedMessagesProps {
   messages: string[];
 }
 
-export const StackedMessages = ({ messages }: StackedMessagesProps) => {
+const StackedMessages = ({ messages }: StackedMessagesProps) => {
   return (
     <Stack spacing={1}>
       {messages.map((message, index) => (
@@ -17,6 +17,4 @@ export const StackedMessages = ({ messages }: StackedMessagesProps) => {
   );
 };
 
-export const createStackedMessages = (messages: string[]) => {
-  return <StackedMessages messages={messages} />;
-};
+export default StackedMessages;

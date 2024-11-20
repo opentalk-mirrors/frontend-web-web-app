@@ -16,9 +16,10 @@ import { LegalVoteTokenClipboard } from '../../LegalVoteTokenClipboard';
 import { ActiveStateChip } from './ActiveStateChip';
 import { Fieldset } from './Fieldset';
 import { LegendTitle } from './LegendTitle';
-import VoteResult, { VoteType } from './VoteResult';
+import VoteResult from './VoteResult';
 import VoteResultDate from './VoteResultDate';
 import VoteResultTable from './VoteResultTable';
+import { VoteType } from './constants';
 
 type LegalVoteContainerProps = {
   legalVote: LegalVote;

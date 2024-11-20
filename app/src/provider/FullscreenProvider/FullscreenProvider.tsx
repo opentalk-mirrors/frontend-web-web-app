@@ -4,23 +4,10 @@
 import { sortParticipants } from '@livekit/components-core';
 import fscreen from 'fscreen';
 import { Participant, RemoteParticipant } from 'livekit-client';
-import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import { getLivekitRoom } from '../../store/slices/livekitSlice';
-
-export interface ExtendedFullScreenHandle {
-  node: React.MutableRefObject<HTMLDivElement | null>;
-  active: boolean;
-  enter: (participant?: RemoteParticipant) => void;
-  exit: () => void;
-  fullscreenParticipant: Participant | undefined;
-  hasActiveOverlay: boolean;
-  setHasActiveOverlay: (hasActiveOverlay: boolean) => void;
-  rootElement: HTMLElement | null;
-  setRootElement: (element: HTMLElement | null) => void;
-}
-
-export const FullscreenContext = createContext<ExtendedFullScreenHandle | null>(null);
+import { FullscreenContext } from './FullscreenContext';
 
 const FullscreenProvider = ({ children }: { children: ReactNode }) => {
   const node = useRef<HTMLDivElement | null>(null);

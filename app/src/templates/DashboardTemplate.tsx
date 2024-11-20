@@ -4,7 +4,7 @@
 import { Container as MuiContainer, Grid, Paper, Skeleton, Stack, styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import React, { useState } from 'react';
-import { Outlet, useOutletContext } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 import {
   HomeIcon,
@@ -62,15 +62,6 @@ const MainStack = styled(Stack)(({ theme }) => ({
     height: '100%',
   },
 })) as typeof Stack;
-
-type DashboardTemplateContext = {
-  header: React.ReactNode;
-  setHeader: (header: React.ReactNode) => void;
-};
-
-export const useHeader = () => {
-  return useOutletContext<DashboardTemplateContext>();
-};
 
 const getRoutes = (useProviderSettings: boolean) => {
   const routes: Array<PrimaryRoute> = [
