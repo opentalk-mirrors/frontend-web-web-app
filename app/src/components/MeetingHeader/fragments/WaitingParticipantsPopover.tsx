@@ -35,10 +35,10 @@ const WaitingParticipantsPopoverRoot = styled(Popover)(({ theme }) => ({
 
 const WaitingParticipantsPopover = () => {
   const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(null);
-  const isPopoverOpen = Boolean(anchorElement);
 
   const participantsInWaitingRoomCount = useAppSelector(selectParticipantsWaitingCount);
   const isWaitingRoomEmpty = participantsInWaitingRoomCount === 0;
+  const isExpanded = Boolean(anchorElement);
 
   //onClose is not called when participants reach 0 so we explicitly reset the anchor
   useEffect(() => {
@@ -61,7 +61,8 @@ const WaitingParticipantsPopover = () => {
     >
       <WaitingListButton
         aria-controls="waiting-list-popover"
-        aria-expanded={isPopoverOpen ? 'true' : undefined}
+        aria-haspopup="true"
+        aria-expanded={isExpanded}
         onClick={(event) => setAnchorElement(event.currentTarget)}
       >
         <SpeakerQueueIcon />

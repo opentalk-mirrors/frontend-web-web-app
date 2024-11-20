@@ -50,7 +50,7 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
   const { t } = useTranslation();
   const theme = useTheme();
   const anchorEl = useRef(null);
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [hasFocus, setFocus] = useState<boolean>(false);
   const sortType = useAppSelector(selectParticipantsSortOption);
   const dispatch = useAppDispatch();
@@ -60,7 +60,7 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
   };
 
   const handleClick = () => {
-    setExpanded((expanded) => !expanded);
+    setIsExpanded((expanded) => !expanded);
   };
 
   const handleSortSelected = (sort: string) => {
@@ -103,7 +103,7 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
               onClick={handleClick}
               edge="end"
               aria-label={t('sort-by')}
-              aria-expanded={expanded}
+              aria-expanded={isExpanded}
               aria-controls={id}
               aria-haspopup="menu"
               onKeyDown={(event) => event.stopPropagation()}
@@ -112,7 +112,7 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
             >
               <SortIcon />
             </AdornmentIconButton>
-            {anchorEl.current && expanded && (
+            {anchorEl.current && isExpanded && (
               <SortPopoverMenu
                 id={id}
                 anchorEl={anchorEl.current}
@@ -120,7 +120,7 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
                 items={items}
                 selectedOptionType={sortType}
                 onChange={handleSortSelected}
-                onClose={() => setExpanded(false)}
+                onClose={() => setIsExpanded(false)}
               />
             )}
           </InputAdornment>

@@ -75,7 +75,7 @@ const MobilePagination = () => {
     <Container isVisible={pageCount > 1}>
       <PageIndex
         aria-controls="page-selection-popover"
-        aria-expanded={isPopoverOpen ? 'true' : undefined}
+        aria-expanded={isPopoverOpen}
         index={selectedPage}
         highlighted
         handleClick={(event) => setAnchorElement(event.currentTarget)}

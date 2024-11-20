@@ -132,7 +132,7 @@ const LayoutSelection = () => {
   return (
     <ViewPopperContainer>
       <IconButton
-        aria-expanded={isViewPopoverOpen ? 'true' : undefined}
+        aria-expanded={isViewPopoverOpen}
         aria-haspopup="true"
         aria-controls={isViewPopoverOpen ? 'view-popover-menu' : undefined}
         aria-label={t('conference-view-trigger-button')}

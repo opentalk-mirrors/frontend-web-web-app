@@ -22,6 +22,7 @@ export const SharedFolderPopover = () => {
   const sharedFolderPassword = useAppSelector(selectSharedFolderPassword);
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const isExpanded = Boolean(anchorElement);
 
   return (
     <>
@@ -29,7 +30,7 @@ export const SharedFolderPopover = () => {
         active={!isSharedFolderOpened}
         onClick={(event) => setAnchorElement(event.currentTarget)}
         aria-label={t('shared-folder-open-label')}
-        aria-expanded={Boolean(anchorElement)}
+        aria-expanded={isExpanded}
       >
         <SharedFolderIcon />
       </MeetingHeaderButton>
