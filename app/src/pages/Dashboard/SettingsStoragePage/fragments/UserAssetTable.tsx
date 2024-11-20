@@ -8,14 +8,14 @@ import { useGetUserOwnedAssetsQuery, useDeleteRoomAssetMutation } from '../../..
 import { notifications } from '../../../../commonComponents';
 import SuspenseLoading from '../../../../commonComponents/SuspenseLoading/SuspenseLoading';
 import AssetTable from '../../../../components/AssetTable';
-import { useDownloadAction } from '../../../../hooks/download';
+import { AssetDownloadBaseInfo, useDownloadRoomAsset } from '../../../../hooks/useDownloadRoomAsset';
 
 export const UserAssetTable = () => {
   const { t } = useTranslation();
   const { data, isLoading, isError } = useGetUserOwnedAssetsQuery(undefined, { refetchOnMountOrArgChange: true });
   const userAssets = data?.ownedAssets;
   const [deleteRoomAsset] = useDeleteRoomAssetMutation();
-  const downloadRoomAsset = useDownloadAction();
+  const downloadRoomAsset = useDownloadRoomAsset();
 
   const mapUserOwnedAssetToBaseAsset = ({
     id,
@@ -35,10 +35,10 @@ export const UserAssetTable = () => {
     }
   };
 
-  const handleDownload = async (assetId: AssetId, filename: string) => {
+  const handleDownload = async ({ assetId, filename, fileSize, updateDownloadProgress }: AssetDownloadBaseInfo) => {
     const roomId = getRoomId(assetId);
     if (roomId) {
-      return downloadRoomAsset(roomId, assetId, filename);
+      return downloadRoomAsset({ roomId, assetId, filename, fileSize, updateDownloadProgress });
     }
   };
 

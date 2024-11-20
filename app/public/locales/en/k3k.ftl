@@ -8,6 +8,7 @@ messages = Messages
 dismiss = Dismiss
 action-delete = Delete
 action-download = Download
+download-in-progress = Downloading
 global-calendar-week = CW
 global-error = Error
 global-upgrade = Upgrade
