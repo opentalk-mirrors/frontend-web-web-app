@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, fireEvent, configureStore, waitFor } from '../../utils/testUtils';
+import { render, screen, fireEvent, configureStore, waitFor, act } from '../../utils/testUtils';
 import MenuTabs from './MenuTabs';
 
 describe('MenuTabs Component', () => {
-  const { store } = configureStore();
-
   test('render MenuTabs component without crashing and initialy Chat Tab is selected', async () => {
+    const { store } = configureStore();
     await render(<MenuTabs />, store);
 
     const tablist = screen.getByRole('tablist');
@@ -35,6 +34,7 @@ describe('MenuTabs Component', () => {
   });
 
   test('click on MessageTab should mark tab as selected', async () => {
+    const { store } = configureStore();
     await render(<MenuTabs />, store);
 
     const chatTab = screen.getByRole('tab', { name: /menutabs-chat/i });
@@ -46,14 +46,19 @@ describe('MenuTabs Component', () => {
     expect(messageTab).toBeInTheDocument();
     expect(messageTab).toHaveAttribute('aria-selected', 'false');
 
-    fireEvent.click(messageTab);
+    act(() => {
+      fireEvent.click(messageTab);
+    });
+
     await waitFor(() => {
       expect(messageTab).toHaveAttribute('aria-selected', 'true');
     });
+
     expect(chatTab).toHaveAttribute('aria-selected', 'false');
   });
 
   test('click on PeopleTab should mark tab as selected', async () => {
+    const { store } = configureStore();
     await render(<MenuTabs />, store);
 
     const chatTab = screen.getByRole('tab', { name: /menutabs-chat/i });
@@ -65,10 +70,14 @@ describe('MenuTabs Component', () => {
     expect(peopleTab).toBeInTheDocument();
     expect(peopleTab).toHaveAttribute('aria-selected', 'false');
 
-    fireEvent.click(peopleTab);
+    act(() => {
+      fireEvent.click(peopleTab);
+    });
+
     await waitFor(() => {
       expect(peopleTab).toHaveAttribute('aria-selected', 'true');
     });
+
     expect(chatTab).toHaveAttribute('aria-selected', 'false');
   });
 });
