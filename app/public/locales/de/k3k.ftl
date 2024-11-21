@@ -797,7 +797,7 @@ dashboard-update-meeting-dialog-prompt = Möchten Sie dieses Meeting bearbeiten?
 dashboard-create-meeting-dialog-ok = Erstellen
 dashboard-update-meeting-dialog-ok = Bearbeiten
 dashboard-create-meeting-dialog-cancel = Abbrechen
-dashboard-create-or-update-required-fields-info = Pflichtfelder sind mit einem Sternchen markiert. Bitte füllen Sie diese aus.
+global-required-fields-info = Pflichtfelder sind mit einem Sternchen markiert. Bitte füllen Sie diese aus.
 
 dashboard-direct-meeting-title = Wen möchtest du zu deinem Meeting einladen?
 dashboard-direct-meeting-attention = Hinweis: Dies ist ein Adhoc meeting, diese werden nach 24h automatisch gelöscht und sind im Dashboard nicht sichtbar.

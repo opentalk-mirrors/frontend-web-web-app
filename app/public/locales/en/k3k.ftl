@@ -796,7 +796,7 @@ dashboard-update-meeting-dialog-prompt = Are you sure you want to update?
 dashboard-create-meeting-dialog-ok = Create
 dashboard-update-meeting-dialog-ok = Update
 dashboard-create-meeting-dialog-cancel = Cancel
-dashboard-create-or-update-required-fields-info = Required fields are marked with an asterisk. Please fill them out.
+global-required-fields-info = Required fields are marked with an asterisk. Please fill them out.
 
 dashboard-direct-meeting-title = Who do you want to invite to your meeting?
 dashboard-direct-meeting-attention = Attention: This is an adhoc meeting, it will be automatically deleted after 24h and not shown in the dashboard.

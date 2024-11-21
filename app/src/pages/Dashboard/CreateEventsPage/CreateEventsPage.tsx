@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CreateOrUpdateMeetingForm from '../../../components/CreateOrUpdateMeetingForm';
+import { RequiredFieldsInfo } from '../../../components/RequiredFieldsInfo';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
 const Container = styled(Box)(({ theme }) => ({
@@ -50,10 +51,7 @@ const CreateEventsPage = () => {
     <Container>
       <Typography component="h1">{pageHeading}</Typography>
       <StepperHeader />
-      <Typography>
-        <span role="presentation">*</span>
-        {t('dashboard-create-or-update-required-fields-info')}
-      </Typography>
+      <RequiredFieldsInfo />
       {activeStep === 0 && <CreateOrUpdateMeetingForm onForwardButtonClick={() => setActiveStep(1)} />}
     </Container>
   );
