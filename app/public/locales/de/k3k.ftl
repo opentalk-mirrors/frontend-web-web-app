@@ -184,6 +184,10 @@ revoke-presenter-role = Widerrufen Sie die Rolle des Präsentators
 menutabs-area-hidden-heading = Zusatzfunktionen
 menutabs-chat = Chat
 menutabs-people = Teilnehmer
+menutabs-people-complementary = { $count ->
+    [one] Du bist der einzige Teilnehmende in der Konferenz.
+   *[other] Es gibt {$count} Teilnehmer in der Konferenz.
+}
 menutabs-messages = Nachrichten
 participant-list-hidden-heading = Teilnehmerliste
 chatroom-hidden-heading = Chatraum
