@@ -16,6 +16,7 @@ import {
   styled,
 } from '@mui/material';
 import { RecurrencePattern } from '@opentalk/rest-api-rtk-query';
+import { isValid as isValidDate } from 'date-fns';
 import { ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -167,6 +168,16 @@ export const RecurringEventDialog = ({
 
   const interval: number = rruleObject.interval ?? DEFAULT_INTERVAL;
 
+  const isInvalidUntil = () => {
+    if (rruleObject.until === undefined) {
+      return false;
+    }
+    if (rruleObject.until !== null && isValidDate(rruleObject.until)) {
+      return rruleObject.until < recurrenceStartDate;
+    }
+    return true;
+  };
+
   return (
     <Dialog
       {...props}
@@ -237,7 +248,7 @@ export const RecurringEventDialog = ({
         <Button variant="contained" color="secondary" onClick={closeDialog}>
           {t('dashboard-recurrence-dialog-close-button')}
         </Button>
-        <Button variant="contained" onClick={handleSelectRRule}>
+        <Button variant="contained" onClick={handleSelectRRule} disabled={isInvalidUntil()}>
           {t('dashboard-recurrence-dialog-save-button')}
         </Button>
       </DialogActions>
