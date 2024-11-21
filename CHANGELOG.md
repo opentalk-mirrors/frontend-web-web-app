@@ -2,27 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### Bug Fixes
+## 2.1.0 - 2024-11-21
 
-- Fix crash caused by saving a meeting with incorrect end date in custom meeting repetition ([#2025](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2025))
-- Fix direct messaging sometimes doesn't open up a chat ([#2083](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2083))
-- Fix missing error message for poll topic minimum character length ([#1837](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1837))
-- Fix ui elements glitch in lobby ([#2214](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2214))
-- Fix inviting multiple participants to a meeting ([#2147](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2147))
-- Fix joining user appearing with the avatar of an already present user issue ([#1868](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1868))
+### 🚀 New features
 
-### Improvements to the user experience
+- (popout media) Popout media streams into tabs ([!1484](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1484))
 
-- Moderator receives confirmation notification on moderator grant/revoke and presenter role grant/revoke actions ([#1905](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1905))
-- Adjusted color contrast of informational text in text inputs and chat ([#2155](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2155))
-- Proper marking of required input fields ([#2193](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2193))
-- Show notification to users when they have been muted by the moderator ([#2213](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2213))
+### 🥰 User experience
 
-### Internal
+- Moderator receives confirmation notification on moderator grant/revoke and presenter role grant/revoke actions ([!1459](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1459), [#1905](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1905))
+- Show notification to users when they have been muted by the moderator ([!1469](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1469), [#2213](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2213))
+- (ux) Add download progress to assets ([!1449](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1449), [#2049](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2049))
+- Adjusted color contrast of informational text in text inputs and chat ([!1480](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1480), [#2155](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2155))
+- Proper marking of required input fields ([!1479](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1479), [#2193](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2193))
 
-- Migrate main app from CRA to vite ([#1957](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1957))
+### 🐛 Bug fixes
+
+- Ui elements glitch in lobby ([!1473](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1473), [#2214](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2214))
+- Remove unnecessary render caused by useMediaQuery hook ([!1447](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1447))
+- (dashboard) Don't crash when loading recurrence rules without INTERVAL field ([!1461](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1461), [#2205](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2205))
+- Missing error message on poll topic min char length ([!1488](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1488), [#1837](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1837))
+- Close emoji picker when the moderator disables the chat ([!1494](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1494), [#2026](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2026))
+- (tooling) Always pulling images for review apps ([!1498](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1498))
+- Separate assets for recurring events ([!1485](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1485), [#1292](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1292))
+- (script) Icons are created as expected and cleanup the icon set ([!1484](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1484))
+- (conference) Logo size in lobby and onClick handler ([!1484](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1484))
+- Direct messaging sometimes doesn't open up a chat ([!1457](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1457), [#2083](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2083))
+- Legal vote error handling ([!1497](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1497), [#2227](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2227))
+- Invalid end date crash in custom meeting repetition dialog ([!1487](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1487))
+
+### ⚙ Miscellaneous
+
+- Remove k3k refs & update livekit setup in README/package.json ([!1475](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1475))
+- Sync changelog ([!1474](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1474))
+- (app) Migrate to vite ([!1393](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1393), [#2067](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2067), [#2057](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2057), [#1438](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1438))
+- (a11y) Add aria-controls to dashboard navigation ([!1495](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1495), [#2185](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2185))
+- Fix hot module replacement for development ([!1496](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1496), [#2250](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2250))
+
+### Ci
+
+- Cleanup mechanism for review app ([!1482](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1482), [#2090](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2090))
+- Introduce changelog bot ([!1483](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1483))
+- Update review deployment to new helm chart and livekit ([!1493](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1493))
 
 ## 2.0.0
 
@@ -33,7 +57,7 @@ All notable changes to this project will be documented in this file.
 ### Internal
 
 - Refactor aria-expanded attribute logic ([#2075](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2075))
-- Cleanup left over parcel dependencies ([#2152](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2152)
+- Cleanup left over parcel dependencies ([#2152](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2152))
 - Extract unrelated code / ui changes from LiveKit branch ([#2088](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2088))
 - Migrate from parcel to vite for `18next-fluent` lib ([#1957](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1957))
 - Migrate from parcel to vite for `fluent_conv` lib ([#1956](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1956))
