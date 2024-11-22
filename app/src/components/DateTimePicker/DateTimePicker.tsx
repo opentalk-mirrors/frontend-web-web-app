@@ -159,6 +159,7 @@ const DateTimePicker = ({
                 ...InputProps,
                 startAdornment: getStartAdornment(),
                 id: inputId,
+                'aria-describedby': error ? `${inputId}-error` : undefined,
               },
               required,
             },
@@ -177,7 +178,7 @@ const DateTimePicker = ({
           }}
         />
       </PickerLocalizationProvider>
-      {error && <ErrorFormMessage helperText={helperText} />}
+      {error && <ErrorFormMessage id={`${inputId}-error`} helperText={helperText} />}
     </>
   );
 };
