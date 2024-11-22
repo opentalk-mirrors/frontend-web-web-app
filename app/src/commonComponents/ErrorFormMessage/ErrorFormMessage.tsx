@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 type ErrorFormMessageProps = {
   helperText?: string;
+  id?: string;
 };
 
 const Container = styled(FormHelperText)(({ theme }) => ({
@@ -26,11 +27,11 @@ const Container = styled(FormHelperText)(({ theme }) => ({
   },
 }));
 
-export const ErrorFormMessage: FC<ErrorFormMessageProps> = ({ helperText }) => {
+export const ErrorFormMessage: FC<ErrorFormMessageProps> = ({ helperText, id }) => {
   const { t } = useTranslation();
 
   return (
-    <Container error>
+    <Container error id={id}>
       <span>{t('global-error')}</span>:&nbsp;<span>{helperText}</span>
     </Container>
   );
