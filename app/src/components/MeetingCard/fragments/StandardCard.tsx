@@ -90,7 +90,7 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
             {renderTimeString()}
 
             <Tooltip translate="no" title={title || ''} describeChild placement="bottom-start">
-              <Typography variant="h1" component="h2" fontWeight={600} noWrap>
+              <Typography variant="h1" component="h3" fontWeight={600} noWrap>
                 {title}
               </Typography>
             </Tooltip>

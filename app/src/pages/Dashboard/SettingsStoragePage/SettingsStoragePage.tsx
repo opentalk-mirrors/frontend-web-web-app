@@ -17,7 +17,7 @@ const SettingsStoragePage = () => {
 
   return (
     <>
-      <VisuallyHiddenTitle label={pageHeading} component="h1" />
+      <VisuallyHiddenTitle label={pageHeading} component="h2" />
       <Stack spacing={5}>
         <StorageSection />
         <AssetSection />

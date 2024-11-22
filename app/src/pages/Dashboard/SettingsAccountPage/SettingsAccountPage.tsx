@@ -20,7 +20,7 @@ const SettingsAccountPage = () => {
 
   return (
     <>
-      <VisuallyHiddenTitle label={pageHeading} component="h1" />
+      <VisuallyHiddenTitle label={pageHeading} component="h2" />
       <Grid container spacing={5} direction="column">
         <Grid item container spacing={3}>
           <Grid xs={12} item>

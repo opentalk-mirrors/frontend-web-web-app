@@ -12,5 +12,5 @@ export const SupportPage = () => {
 
   useUpdateDocumentTitle(pageHeading);
 
-  return <VisuallyHiddenTitle component="h1" label={pageHeading} />;
+  return <VisuallyHiddenTitle component="h2" label={pageHeading} />;
 };

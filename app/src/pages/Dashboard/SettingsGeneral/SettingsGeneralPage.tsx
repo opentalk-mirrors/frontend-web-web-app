@@ -17,7 +17,7 @@ const SettingsGeneralPage = () => {
 
   return (
     <>
-      <VisuallyHiddenTitle label={pageHeading} component="h1" />
+      <VisuallyHiddenTitle label={pageHeading} component="h2" />
       <Grid container direction="column" data-testid="dashboardSettingsGeneral" spacing={5}>
         <Grid item>
           <LanguageSelector />
