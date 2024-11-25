@@ -80,6 +80,7 @@ const PrimaryNavigationEntry = (props: NavigationProps) => {
         disabled={props.disabled}
         disableRipple
         target={props.target}
+        aria-label={props.label}
       >
         {props.Icon}
         <Collapse orientation="horizontal" in={!props.collapsedBar}>
