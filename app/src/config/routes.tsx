@@ -15,7 +15,7 @@ import {
   CreateDirectMeeting,
   EventsOverviewPage,
   EventDetailsPage,
-  DocumentationPage,
+  UserManualPage,
 } from '../pages/Dashboard';
 import DataProtectionPage from '../pages/DataProtectionPage';
 import ImprintPage from '../pages/ImprintPage';
@@ -143,7 +143,7 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
       {
         path: 'help',
         children: [
-          { path: 'documentation', element: <DocumentationPage /> },
+          { path: 'user-manual', element: <UserManualPage /> },
           { path: 'support', element: <SupportPage /> },
         ],
       },

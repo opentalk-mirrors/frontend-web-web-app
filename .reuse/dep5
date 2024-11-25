@@ -38,8 +38,6 @@ Files:
  app/src/assets/images/*.png
  app/src/assets/icons/source/*.svg
  app/public/assets/background.svg
- app/public/assets/quick_start/de/*.svg
- app/public/assets/quick_start/en/*.svg
  app/src/assets/icons/*.svg
  e2e/tests/e2e/help-quick-guide.spec.ts-snapshots/*.png
 Copyright: OpenTalk GmbH <mail@opentalk.eu>

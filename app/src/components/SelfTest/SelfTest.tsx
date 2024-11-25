@@ -4,12 +4,12 @@
 import { Container, Stack, Tooltip, Typography, styled, useTheme } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { LocalAudioTrack } from 'livekit-client';
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { useGetRoomEventInfoQuery } from '../../api/rest';
-import { BackIcon, CloseIcon, HelpIcon, LogoIcon } from '../../assets/icons';
+import { BackIcon, HelpIcon, LogoIcon } from '../../assets/icons';
 import arrowImage from '../../assets/images/arrow-illustration.png';
 import { CircularIconButton, IconButton as MuiIconButton } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
@@ -19,7 +19,7 @@ import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useMediaChoices } from '../../provider/MediaChoicesProvider';
 import { selectFeatures } from '../../store/slices/configSlice';
 import { BreakoutRoomId } from '../../types';
-import QuickStartPopover from '../QuickStartPopover';
+import { openUserManual } from '../../utils/apiUtils';
 import SpeedTestDialog from '../SpeedTestDialog';
 import EchoPlayBack from './fragments/EchoPlayback';
 import ToolbarContainer from './fragments/ToolbarContainer';
@@ -119,9 +119,6 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   };
   const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
 
-  const [isQuickStartPopoverOpen, setIsQuickStartPopoverOpen] = useState(false);
-  const anchorElement = useRef<HTMLButtonElement>(null);
-
   return (
     <Container>
       <InnerContainer>
@@ -132,15 +129,9 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
           <UtilitiesContainer>
             <SpeedTestDialog />
             {!isMobile && (
-              <Tooltip title={t('conference-quick-start-open')}>
-                <CircularIconButton
-                  ref={anchorElement}
-                  onClick={() => setIsQuickStartPopoverOpen((value) => !value)}
-                  aria-label={
-                    isQuickStartPopoverOpen ? t('conference-quick-start-close') : t('conference-quick-start-open')
-                  }
-                >
-                  {isQuickStartPopoverOpen ? <CloseIcon /> : <AdjustedHelpIcon />}
+              <Tooltip title={t('user-manual-open')}>
+                <CircularIconButton onClick={openUserManual} aria-label={t('user-manual-open')}>
+                  <AdjustedHelpIcon />
                 </CircularIconButton>
               </Tooltip>
             )}
@@ -194,13 +185,6 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
             <BackIcon />
           </MobileBackButton>
         )}
-
-        <QuickStartPopover
-          open={isQuickStartPopoverOpen}
-          anchorEl={anchorElement.current}
-          onClose={() => setIsQuickStartPopoverOpen(false)}
-          variant="lobby"
-        />
       </InnerContainer>
     </Container>
   );
