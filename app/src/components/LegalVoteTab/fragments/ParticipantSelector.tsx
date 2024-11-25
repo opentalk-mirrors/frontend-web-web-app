@@ -199,7 +199,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
 
   return (
     <Container disableGutters>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} padding={1}>
         {renderErrors}
         {renderSearchUser}
         {renderAllUsersButton}

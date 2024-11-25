@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Chip as MuiChip, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { styled, Chip as MuiChip, MenuItem, ListItemIcon, ListItemText, MenuItemProps } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { LegalBallotIcon, PollIcon } from '../../../assets/icons';
@@ -15,6 +15,10 @@ const Chip = styled(MuiChip)(({ theme }) => ({
   marginRight: 0,
   borderRadius: 0,
   borderColor: 'transparent',
+  //Chip is only visual, we want to keep the color
+  '&.Mui-disabled': {
+    opacity: 1,
+  },
   '& .MuiChip-label': {
     paddingRight: 0,
     '&:first-letter': {
@@ -30,11 +34,13 @@ const CustomMenuItem = styled(MenuItem)(() => ({
   },
 }));
 
-interface ResultsItemProps {
+interface ResultsItemProps extends MenuItemProps {
   item: LegalVote | Poll;
 }
 
-const ResultsItem = ({ item }: ResultsItemProps) => {
+//Props are passed for accessibility reasons, autofocus doesn't get recognized otherwise and we cannot navigate into the list.
+//I assume this is because it is an outside component and it is only inferred if declared inline.
+const ResultsItem = ({ item, ...props }: ResultsItemProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const openItem = (item: LegalVote | Poll) => {
@@ -44,7 +50,7 @@ const ResultsItem = ({ item }: ResultsItemProps) => {
   const label = Object.hasOwn(item, 'name') ? (item as LegalVote).name : (item as Poll).topic;
 
   return (
-    <CustomMenuItem key={item.id} onClick={() => openItem(item)}>
+    <CustomMenuItem {...props} onClick={() => openItem(item)} role="menuitemradio">
       <ListItemIcon>{Object.hasOwn(item, 'choices') ? <PollIcon /> : <LegalBallotIcon />}</ListItemIcon>
       <ListItemText primaryTypographyProps={{ noWrap: true }} primary={label} />
       <Chip
@@ -52,7 +58,7 @@ const ResultsItem = ({ item }: ResultsItemProps) => {
         label={t(`global-state-${item.state}`)}
         color={item.state === 'active' || item.state === LegalVoteState.Started ? 'success' : 'error'}
         variant="filled"
-        clickable={false}
+        disabled
       />
     </CustomMenuItem>
   );

@@ -77,7 +77,8 @@ const BackgroundImageItem = styled(MenuItem)(({ theme }) => ({
   padding: 0,
   '&.Mui-focusVisible': {
     '& > .MuiAvatar-root': {
-      outline: `solid ${theme.palette.primary.main}`,
+      outline: theme.palette.focus.outline,
+      outlineOffset: theme.palette.focus.outlineOffset,
     },
   },
 }));

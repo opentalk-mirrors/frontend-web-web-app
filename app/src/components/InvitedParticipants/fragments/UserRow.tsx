@@ -30,6 +30,9 @@ const StyledChip = styled(Chip)({
 const ModeratorIcon = styled(CommonModeratorIcon, { shouldForwardProp: (prop) => prop !== 'visible' })<{
   visible: boolean;
 }>(({ visible }) => ({
+  '&.MuiSvgIcon-root': {
+    fontSize: '1.25rem',
+  },
   visibility: !visible ? 'hidden' : 'unset',
 }));
 
@@ -132,9 +135,7 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
           {isHovered && isUpdatable && isCreator && eventInvite.status !== InviteStatus.Added ? (
             renderMoreIcon(eventInvite.profile)
           ) : (
-            <IconButton size="large" sx={{ cursor: 'auto' }} disableFocusRipple disableRipple>
-              <ModeratorIcon color="secondary" visible={isModerator(eventInvite.profile)} />
-            </IconButton>
+            <ModeratorIcon color="secondary" visible={isModerator(eventInvite.profile)} />
           )}
         </Stack>
       );

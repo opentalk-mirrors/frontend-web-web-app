@@ -27,6 +27,7 @@ const Container = styled('div')(({ theme }) => ({
   gap: theme.spacing(13),
   background: theme.palette.secondary.lightest,
   padding: theme.spacing(4, 0),
+  marginRight: theme.spacing(0.5),
   height: '100%',
 
   [theme.breakpoints.down('md')]: {
@@ -75,6 +76,10 @@ const NavItem = styled(NavLink)(({ theme }) => ({
     '&::after': {
       opacity: 1,
     },
+  },
+
+  '&:focus-visible': {
+    outline: theme.palette.focus.outline,
   },
 }));
 

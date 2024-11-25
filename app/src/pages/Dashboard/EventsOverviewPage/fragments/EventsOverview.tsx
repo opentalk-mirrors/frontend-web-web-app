@@ -59,8 +59,9 @@ const ArrowDownButton = styled(IconButton, { shouldForwardProp: (prop) => prop !
   active?: boolean;
 }>(({ active }) => ({
   position: 'absolute',
-  top: 0,
-  right: 0,
+  top: 5,
+  right: 5,
+  padding: 5,
   background: 'transparent',
   zIndex: 1,
   svg: {

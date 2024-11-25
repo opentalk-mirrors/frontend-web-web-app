@@ -45,6 +45,9 @@ const Tabs = styled(MuiTabs)(({ theme }) => ({
   '& .MuiTabs-indicator': {
     display: 'none',
   },
+  '& .MuiTabs-scroller': {
+    padding: theme.typography.pxToRem(2),
+  },
 }));
 
 const Tab = styled(MuiTab)(({ theme }) => ({

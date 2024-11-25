@@ -21,6 +21,22 @@ const List = styled(MuiList)({
   overflow: 'auto',
 });
 
+const Container = styled(Stack)(({ theme }) => ({
+  flex: 1,
+  width: '100%',
+  paddingTop: theme.typography.pxToRem(4),
+}));
+
+/**
+ * Added margin to avoid outline being cut off
+ */
+const AdjustedButton = styled(Button)(({ theme }) => ({
+  //Overrides some MuiStack-root>:not(style):not(style) class that applies margin 0
+  '&&.MuiButton-root': {
+    marginLeft: theme.typography.pxToRem(4),
+  },
+}));
+
 const ChatOverview = () => {
   const chatConversationState = useAppSelector(selectChatConversationState);
   const { t } = useTranslation();
@@ -71,10 +87,16 @@ const ChatOverview = () => {
 
   if (chatConversationState.scope !== undefined && chatConversationState.targetId !== undefined)
     return (
-      <Stack flex={1} width="100%" alignItems="flex-start" spacing={1}>
-        <Button size="small" startIcon={<BackIcon />} variant="text" color="secondary" onClick={resetSelectedChat}>
+      <Container alignItems="flex-start" spacing={1}>
+        <AdjustedButton
+          size="small"
+          startIcon={<BackIcon />}
+          variant="text"
+          color="secondary"
+          onClick={resetSelectedChat}
+        >
           {t('button-back-messages')}
-        </Button>
+        </AdjustedButton>
         <Chat
           scope={chatConversationState.scope}
           target={chatConversationState.targetId}
@@ -82,15 +104,15 @@ const ChatOverview = () => {
           // which are the ones containing `targetId`.
           autoFocusMessageInput={Boolean(chatConversationState.targetId)}
         />
-      </Stack>
+      </Container>
     );
 
   const open = Boolean(anchorEl);
 
   return (
-    <Stack flex={1} width="100%" spacing={1} overflow="hidden">
+    <Container spacing={1} overflow="hidden">
       <Box>
-        <Button
+        <AdjustedButton
           size="small"
           disabled={participants.length === 0}
           onClick={newMessageClickHandler}
@@ -99,11 +121,11 @@ const ChatOverview = () => {
           startIcon={<NewMessageIcon />}
         >
           {t('button-new-message')}
-        </Button>
+        </AdjustedButton>
       </Box>
       <NewMessagePopover open={open} setAnchorEl={setAnchorEl} anchorEl={anchorEl} />
       {renderChats()}
-    </Stack>
+    </Container>
   );
 };
 

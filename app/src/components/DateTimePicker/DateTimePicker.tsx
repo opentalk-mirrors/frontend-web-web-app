@@ -176,6 +176,21 @@ const DateTimePicker = ({
                 },
               },
             },
+            calendarHeader: {
+              sx: {
+                '& .MuiPickersCalendarHeader-labelContainer': {
+                  //Prevents year selection button outline from being cut off
+                  overflow: 'visible',
+                },
+              },
+            },
+            day: {
+              sx: {
+                '&:focus': {
+                  outline: theme.palette.focus.outline,
+                },
+              },
+            },
           }}
         />
       </PickerLocalizationProvider>

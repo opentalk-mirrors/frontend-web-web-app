@@ -29,6 +29,7 @@ const ButtonContainer = styled(Stack)(({ theme }) => ({
   gap: theme.spacing(3),
   flexDirection: 'row',
   justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1, 1, 0),
 }));
 
 const ParticipantLimitTypography = styled(Typography)(({ theme }) => ({

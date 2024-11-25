@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Menu, styled } from '@mui/material';
-import { useState, useRef } from 'react';
+import { Popover } from '@mui/material';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PollIcon } from '../../../assets/icons';
@@ -12,22 +12,16 @@ import { generateUniqueId } from '../../../utils/stringUtils';
 import { MeetingHeaderButton } from './MeetingHeaderButton';
 import ResultsList from './ResultsList';
 
-const CustomMenu = styled(Menu)({
-  maxWidth: 420,
-});
-
 const VotesAndPollsResultsPopover = () => {
   const id = generateUniqueId();
-  const anchorEl = useRef<HTMLButtonElement>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const votingsAndPollsCount = useAppSelector(selectPollsAndVotingsCount);
   const hasVotingsOrPolls = votingsAndPollsCount > 0;
   const activeVotesOrPolls = useAppSelector(selectActivePollsAndVotingsCount);
   const hasActiveVotesOrPolls = activeVotesOrPolls > 0;
   const { t } = useTranslation();
 
-  const showDialog = () => setIsExpanded(true);
-  const closeDialog = () => setIsExpanded(false);
+  const isPopoverOpen = Boolean(anchorElement);
 
   if (!hasVotingsOrPolls) {
     return null;
@@ -36,21 +30,20 @@ const VotesAndPollsResultsPopover = () => {
   return (
     <>
       <MeetingHeaderButton
-        ref={anchorEl}
-        onClick={showDialog}
+        aria-expanded={isPopoverOpen}
         aria-controls={id}
         aria-haspopup="menu"
-        aria-expanded={isExpanded}
         aria-label={t('votes-poll-button-show')}
+        onClick={(event) => setAnchorElement(event.currentTarget)}
         active={hasActiveVotesOrPolls}
       >
-        <PollIcon fontSize="medium" />
+        <PollIcon />
       </MeetingHeaderButton>
-      <CustomMenu
+      <Popover
         id={id}
-        open={isExpanded}
-        onClose={closeDialog}
-        anchorEl={anchorEl.current}
+        open={isPopoverOpen}
+        onClose={() => setAnchorElement(null)}
+        anchorEl={anchorElement}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
@@ -59,9 +52,10 @@ const VotesAndPollsResultsPopover = () => {
           vertical: 'top',
           horizontal: 'center',
         }}
+        disablePortal
       >
         <ResultsList />
-      </CustomMenu>
+      </Popover>
     </>
   );
 };

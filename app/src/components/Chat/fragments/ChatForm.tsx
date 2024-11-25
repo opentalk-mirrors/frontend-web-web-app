@@ -39,9 +39,11 @@ const Form = styled('form')({
   position: 'relative',
 });
 
-const SendMessageButton = styled(AdornmentIconButton)({
-  fontSize: '1rem',
-});
+//we make the button smaller so it fits inside the input field
+const SendMessageButton = styled(AdornmentIconButton)(({ theme }) => ({
+  width: theme.typography.pxToRem(36),
+  height: theme.typography.pxToRem(36),
+}));
 
 /**
  * We have to adjust here because there is no glyphicon in this button

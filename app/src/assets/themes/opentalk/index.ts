@@ -59,6 +59,10 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             ':disabled': {
               opacity: 0.5,
             },
+            '&.Mui-focusVisible': {
+              outline: theme.palette.focus.outline,
+              outlineOffset: theme.palette.focus.outlineOffset,
+            },
           }),
           sizeSmall: ({ theme }) => ({
             fontSize: theme.typography.pxToRem(12),
@@ -191,6 +195,10 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
                 fontSize: theme.typography.pxToRem(12),
               },
             },
+            '&.Mui-focusVisible': {
+              outline: theme.palette.focus.outline,
+              outlineOffset: theme.palette.focus.outlineOffset,
+            },
             ...(ownerState.variant === 'adornment' && {
               padding: theme.typography.pxToRem(12),
               '& .MuiTouchRipple-child': {
@@ -293,7 +301,7 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               },
             },
             '&.Mui-focusVisible': {
-              backgroundColor: theme.palette.primary.main,
+              backgroundColor: theme.palette.focus.contrastColor,
               transitionDuration: '100ms',
             },
           }),
@@ -395,6 +403,11 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             '& > fieldset > legend': {
               fontSize: `calc(0.7 * ${theme.typography.pxToRem(18)})`,
             },
+            '&.Mui-focused': {
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: theme.palette.focus.color,
+              },
+            },
           }),
         },
       },
@@ -421,7 +434,6 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             '&.Mui-focused': {
               backgroundColor: mode === 'light' ? theme.palette.common.white : theme.palette.text.secondary,
               color: theme.palette.primary.contrastText,
-              border: `1px ${theme.palette.primary.main}`,
               '& .MuiSvgIcon-root': {
                 color: theme.palette.primary.contrastText,
               },
@@ -463,6 +475,10 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
                 },
               },
             }),
+            '& .MuiButtonBase-root.MuiIconButton-root.Mui-focusVisible': {
+              outline: theme.palette.focus.contrastOutline,
+              outlineOffset: '-2px',
+            },
           }),
           input: ({ theme }) => ({
             padding: theme.spacing(1.5, 2),
@@ -641,14 +657,20 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             '&.Mui-selected, &.Mui-selected:hover': {
               background: theme.palette.secondary.lightest,
             },
+            '&.Mui-focusVisible': {
+              outline: theme.palette.focus.outline,
+              //Prevents outline from being covered if selected option is below focused option
+              zIndex: 1,
+            },
           }),
         },
       },
       MuiList: {
         styleOverrides: {
-          root: {
-            padding: 0,
-          },
+          root: ({ theme }) => ({
+            //Added so the focus outline is visible, otherwise it gets cut out
+            padding: theme.spacing(0.3),
+          }),
         },
       },
       MuiChip: {
@@ -664,6 +686,10 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             },
             ':hover': {
               background: mode === 'light' ? theme.palette.common.white : theme.palette.secondary.contrastText,
+            },
+            '&.Mui-focusVisible': {
+              outline: theme.palette.focus.outline,
+              outlineOffset: theme.palette.focus.outlineOffset,
             },
           }),
           label: ({ theme }) => ({
@@ -694,6 +720,9 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
         styleOverrides: {
           root: ({ theme }) => ({
             color: theme.palette.common.white,
+            '&.Mui-focusVisible': {
+              outline: theme.palette.focus.outline,
+            },
           }),
         },
       },
@@ -707,10 +736,27 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
           }),
         },
       },
+      MuiListItemButton: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            '&.Mui-focusVisible ': {
+              outline: theme.palette.focus.outline,
+              backgroundColor: theme.palette.background.light,
+              '& .MuiTypography-root': {
+                color: theme.palette.text.primary,
+              },
+            },
+          }),
+        },
+      },
       MuiCheckbox: {
         styleOverrides: {
           root: ({ theme }) => ({
             color: theme.palette.primary.contrastText,
+            marginRight: theme.spacing(0.5),
+            '&.Mui-focusVisible': {
+              outline: theme.palette.focus.outline,
+            },
           }),
         },
       },
@@ -736,6 +782,13 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               color: theme.palette.secondary.main,
               '&.Mui-checked': {
                 color: theme.palette.secondary.main,
+              },
+            },
+            '&.MuiButtonBase-root.MuiRadio-root': {
+              marginRight: theme.spacing(0.5),
+              '&.Mui-focusVisible': {
+                outline: theme.palette.focus.outline,
+                outlineOffset: theme.palette.focus.outlineOffset,
               },
             },
           }),

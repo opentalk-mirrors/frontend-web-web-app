@@ -35,6 +35,9 @@ const ToolbarIconButton = styled(IconButton, {
   width: '2.5rem',
   height: '2.08rem',
   ...keyboardFocusStyle(theme, isActive),
+  '&.Mui-focusVisible': {
+    outline: theme.palette.focus.contrastOutline,
+  },
   '& .MuiSvgIcon-root': {
     [theme.breakpoints.down('sm')]: {
       fontSize: '1.4rem',
@@ -71,6 +74,9 @@ const ToggleButton = styled(IconButton, {
   bottom: '-0.25em',
   right: '-0.25em',
   ...keyboardFocusStyle(theme, isActive),
+  '&.Mui-focusVisible': {
+    outline: theme.palette.focus.contrastOutline,
+  },
   '& .MuiSvgIcon-root': {
     [theme.breakpoints.down('sm')]: {
       fontSize: '1.3rem',

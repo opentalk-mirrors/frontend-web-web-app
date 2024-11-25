@@ -77,9 +77,9 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
           savedPolls: !prevState.savedPolls,
         }))
       }
-      option={t('poll-overview-saved-legal-votes')}
+      option={t('poll-overview-saved-polls')}
       expanded={accordionState.savedPolls}
-      summaryText={t('poll-overview-saved-legal-votes')}
+      summaryText={t('poll-overview-saved-polls')}
     >
       <List>
         {savedPolls.map((savedPoll, index: number) => (

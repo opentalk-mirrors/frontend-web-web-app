@@ -19,12 +19,16 @@ const TabTitle = styled(Typography)(({ theme }) => ({
   margin: 0,
 }));
 
-const TabContainer = styled('div')({
+const TabContainer = styled('div')(({ theme }) => ({
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
-});
+  //Applies padding to immediate child container to avoid cutting off outline
+  '& > .MuiStack-root': {
+    padding: theme.spacing(0.5),
+  },
+}));
 
 const SideTabPanel = forwardRef<unknown, SideTabPanelProps>(({ children, value, hidden, tabTitle }, ref) => {
   return (
