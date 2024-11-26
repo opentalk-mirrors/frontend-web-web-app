@@ -1,10 +1,9 @@
 module.exports = {
-    presets: [
-        ['@babel/preset-env', {targets: {node: 'current'}}],
-        '@babel/preset-typescript',
-        '@babel/preset-react'
-    ],
-    plugins: [
-        'inline-react-svg'
-    ]
+  presets: [
+    ['@babel/preset-env', { targets: { node: 'current' } }],
+    '@babel/preset-typescript',
+    '@babel/preset-react',
+    'babel-preset-vite',
+  ],
+  plugins: ['inline-react-svg'],
 };

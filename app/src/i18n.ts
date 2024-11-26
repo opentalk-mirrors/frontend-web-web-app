@@ -58,4 +58,12 @@ i18n.on('loaded', function () {
   document.documentElement.setAttribute('lang', i18n.language);
 });
 
+if (import.meta.hot) {
+  import.meta.hot.on('locales-update', () => {
+    i18n.reloadResources().then(() => {
+      i18n.changeLanguage(i18n.language);
+    });
+  });
+}
+
 export default i18n;

@@ -28,6 +28,21 @@ const packagesHmrPlugin = () => ({
   }),
 });
 
+// Found here https://stackoverflow.com/questions/69626090/how-to-watch-public-directory-in-vite-project-for-hot-reload
+// `handleHotUpdate` hook will be deprecated in the future in favor of `hotUpdate`
+const i18nHotReloadPlugin = () => ({
+  name: 'i18n-hot-reload-pliugin',
+  handleHotUpdate: ({ file, server }) => {
+    if (file.includes('locales') && file.endsWith('.ftl')) {
+      console.log('Locale file updated');
+      server.ws.send({
+        type: 'custom',
+        event: 'locales-update',
+      });
+    }
+  },
+});
+
 // Currently vite has some problems with sourcemaps of particular libraries (such as mui)
 // It's a known issue https://github.com/vitejs/vite/issues/15012
 // A workaround is to mute this warnings
@@ -90,6 +105,7 @@ export default defineConfig(({ command }) => {
     logLevel: 'info',
     plugins: [
       hmr && packagesHmrPlugin(),
+      i18nHotReloadPlugin(),
       replace({
         VITE_APP_VERSION: getAppVersion(),
         preventAssignment: true,
