@@ -123,10 +123,11 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
     setFieldValue(name, getSelectedParticipants(newStateParticipants));
   };
 
-  const checkParticipantHandler = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const checkParticipantHandler = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
     const newStateParticipants = allowedParticipants;
+    const participantIndex = newStateParticipants.findIndex((participant) => participant.id === id);
 
-    newStateParticipants[index].isSelected = e.target.checked;
+    newStateParticipants[participantIndex].isSelected = e.target.checked;
 
     setAlloedParticipants(newStateParticipants);
 
@@ -167,8 +168,8 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
     </Grid>
   );
 
-  const renderParticipant = (participant: AllowedParticipant, index: number) => (
-    <ListItem key={index}>
+  const renderParticipant = (participant: AllowedParticipant) => (
+    <ListItem key={participant.id}>
       <Grid container spacing={2} direction="row" wrap="nowrap">
         <Grid item>
           <ListItemAvatar>
@@ -182,7 +183,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
           <Checkbox
             checked={isSelectedParticipant(allowedParticipants, participant.id)}
             id={participant.id}
-            onChange={(e) => checkParticipantHandler(e, index)}
+            onChange={(e) => checkParticipantHandler(e, participant.id)}
             color="primary"
           />
         </Grid>
