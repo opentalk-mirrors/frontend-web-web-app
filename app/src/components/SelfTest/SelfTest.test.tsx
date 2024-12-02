@@ -2,11 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Typography } from '@mui/material';
+import userEvent from '@testing-library/user-event';
 import { PropsWithChildren } from 'react';
 
 import { CommonTextField } from '../../commonComponents';
+import * as apiUtils from '../../utils/apiUtils';
 import { render, screen, configureStore } from '../../utils/testUtils';
 import SelfTest from './SelfTest';
+
+jest.mock('../../utils/apiUtils');
 
 jest.mock('@livekit/components-react', () => ({
   useRoomContext: () => jest.fn(),
@@ -48,7 +52,7 @@ describe('SelfTest', () => {
     expect(screen.queryByTestId('toolbarMenuButton')).not.toBeInTheDocument();
     expect(screen.queryByTestId('toolbarEndCallButton')).not.toBeInTheDocument();
 
-    expect(screen.getByRole('button', { name: 'conference-quick-start-open' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'user-manual-open' })).toBeInTheDocument();
   });
   test('render SelfTest header as h2', async () => {
     await render(
@@ -74,5 +78,21 @@ describe('SelfTest', () => {
     const titleElement = screen.getByText('joinform-room-title');
     expect(titleElement).toBeInTheDocument();
     expect(titleElement.tagName).toBe('H1');
+  });
+  test('open user manual', async () => {
+    const openUserManualSpy = jest.spyOn(apiUtils, 'openUserManual');
+
+    await render(
+      <SelfTest>
+        <div />
+      </SelfTest>,
+      store
+    );
+
+    const userManualButton = screen.getByRole('button', { name: 'user-manual-open' });
+    await userEvent.click(userManualButton);
+
+    expect(openUserManualSpy).toHaveBeenCalled();
+    openUserManualSpy.mockRestore();
   });
 });

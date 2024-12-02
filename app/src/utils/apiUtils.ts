@@ -101,3 +101,14 @@ export const addParameterToLibravatarUrl = (
 ) => {
   return `${url}?d=${defaultImage}&s=${size}`;
 };
+
+/**
+ * Open user manual in a new tab
+ * The URL is language-independent, as the docs server
+ * should recognize user language and re-direct appropriately.
+ *
+ */
+export const USER_MANUAL_URL = 'https://docs.opentalk.eu/user/manual/';
+export const openUserManual = () => {
+  window.open(USER_MANUAL_URL, '_blank');
+};

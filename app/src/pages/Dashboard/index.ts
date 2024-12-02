@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import CreateDirectMeeting from './CreateDirectMeeting';
 import CreateEventsPage from './CreateEventsPage';
-import DocumentationPage from './DocumentationPage';
 import EditEventsPage from './EditEventsPage';
 import EventDetailsPage from './EventDetailsPage';
 import EventsOverviewPage from './EventsOverviewPage';
@@ -12,6 +11,7 @@ import SettingsAccountPage from './SettingsAccountPage';
 import SettingsGeneralPage from './SettingsGeneral';
 import SettingsProfilePage from './SettingsProfilePage';
 import SettingsStoragePage from './SettingsStoragePage';
+import UserManualPage from './UserManualPage';
 
 export {
   SettingsAccountPage,
@@ -24,5 +24,5 @@ export {
   EventsOverviewPage,
   EditEventsPage,
   CreateEventsPage,
-  DocumentationPage,
+  UserManualPage,
 };

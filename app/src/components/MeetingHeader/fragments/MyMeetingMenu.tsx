@@ -21,8 +21,8 @@ import { IconButton } from '../../../commonComponents';
 import { MY_MEETING_MENU_BUTTON_ID } from '../../../constants';
 import { useAppSelector } from '../../../hooks';
 import { selectIsGlitchtipConfigured } from '../../../store/slices/configSlice';
+import { openUserManual } from '../../../utils/apiUtils';
 import { triggerGlitchtipManually } from '../../../utils/glitchtipUtils';
-import QuickStartPopover from '../../QuickStartPopover/QuickStartPopover';
 import ShortcutListDialog from '../../Toolbar/fragments/ShortcutListDialog';
 
 const ViewPopperContainer = styled(Stack)(({ theme }) => ({
@@ -77,7 +77,7 @@ const MenuItem = styled(MuiMenuItem, {
 }));
 
 enum MenuItemsKey {
-  QuickStart = 'quick-start',
+  UserManual = 'user-manual',
   KeyboardShortcuts = 'keyboard-shortcuts',
   GlitchtipTrigger = 'glitchtip-trigger',
 }
@@ -104,12 +104,13 @@ const MyMeetingMenu = () => {
   const menuItems: Array<MenuItemProps> = useMemo(() => {
     const items: Array<MenuItemProps> = [
       {
-        key: MenuItemsKey.QuickStart,
-        name: 'my-meeting-menu-quick-guide',
+        key: MenuItemsKey.UserManual,
+        name: 'my-meeting-menu-user-manual',
         icon: <HelpIcon />,
         onClick: () => {
           setAnchorElement(null);
-          setActiveMenu(MenuItemsKey.QuickStart);
+          setActiveMenu(MenuItemsKey.UserManual);
+          openUserManual();
         },
       },
       {
@@ -202,12 +203,6 @@ const MyMeetingMenu = () => {
       </ViewPopperContainer>
       <ThemeProvider theme={createOpenTalkTheme()}>
         <ShortcutListDialog open={activeMenu === MenuItemsKey.KeyboardShortcuts} onClose={() => setActiveMenu(null)} />
-        <QuickStartPopover
-          onClose={() => setActiveMenu(null)}
-          open={activeMenu === MenuItemsKey.QuickStart}
-          variant="room"
-          anchorEl={myMeetingMenuRef.current}
-        />
       </ThemeProvider>
     </>
   );

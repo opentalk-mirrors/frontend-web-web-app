@@ -8,6 +8,7 @@ import { NavLink } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import { selectDataProtectionUrl, selectImprintUrl, selectHelpdeskUrl } from '../../../store/slices/configSlice';
+import { openUserManual } from '../../../utils/apiUtils';
 
 export interface SecondaryRoute {
   path: string;
@@ -94,6 +95,9 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
         break;
       case 'support':
         window.open(helpdeskUrl, '_blank');
+        break;
+      case 'user-manual':
+        openUserManual();
         break;
     }
     if (!isDesktop) {

@@ -709,17 +709,12 @@ dashboard-legal = Rechtliches
 dashboard-legal-imprint = Impressum
 dashboard-legal-data-protection = Datenschutzhinweise
 dashboard-help = Hilfe
-dashboard-help-documentation = Dokumentation
+dashboard-help-user-manual = Handbuch
 dashboard-help-support = Support
 
-dashboard-quick-start-title = Kurzanleitung für das OpenTalk-Dashboard
-conference-quick-start-title = Kurzanleitung für die OpenTalk-Konferenz
-conference-quick-start-open = Kurzanleitung öffnen
-conference-quick-start-close = Kurzanleitung schließen
+user-manual-dashboard-title = Handbuch
+user-manual-open = Handbuch öffnen
 conference-go-home = Link zum Dashboard
-
-quick-start-loading = Kurzanleitung wird geladen
-quick-start-error = Kurzanleitung konnte nicht geladen werden
 
 dashboard-close-navbar= Navigation schließen
 dashboard-open-navbar = Navigation aufklappen
@@ -1139,7 +1134,7 @@ landmark-complementary-toolbar = Persönliche Kontrollleiste
 
 my-meeting-menu = Mein Meeting
 my-meeting-menu-keyboard-shortcuts = Tastaturkürzel
-my-meeting-menu-quick-guide = Kurzanleitung
+my-meeting-menu-user-manual = Handbuch
 my-meeting-menu-glitchtip-trigger = Fehler melden
 
 control-participant-presenter-role-revoked = Ihnen wurden die Rolle des Präsentators entzogen

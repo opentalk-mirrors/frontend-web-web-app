@@ -81,8 +81,8 @@ const getRoutes = (useProviderSettings: boolean) => {
       name: 'dashboard-help',
       childRoutes: [
         {
-          path: 'documentation',
-          name: 'dashboard-help-documentation',
+          path: 'user-manual',
+          name: 'dashboard-help-user-manual',
         },
         {
           path: 'support',
