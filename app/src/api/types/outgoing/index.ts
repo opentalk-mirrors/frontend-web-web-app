@@ -17,6 +17,8 @@ import * as media from './media';
 import MediaMessage from './media';
 import * as meetingNotes from './meetingNotes';
 import MeetingNotesMessage from './meetingNotes';
+import * as meetingReport from './meetingReport';
+import MeetingReportMessage from './meetingReport';
 import * as moderation from './moderation';
 import ModerationMessage from './moderation';
 import * as poll from './poll';
@@ -37,6 +39,7 @@ export * as chat from './chat';
 export * as poll from './poll';
 export * as media from './media';
 export * as meetingNotes from './meetingNotes';
+export * as meetingReport from './meetingReport';
 export * as timer from './timer';
 export * as whiteboard from './whiteboard';
 export * as recording from './streaming';
@@ -52,6 +55,7 @@ export type Action =
   | media.Action
   | poll.Action
   | meetingNotes.Action
+  | meetingReport.Action
   | timer.Action
   | whiteboard.Action
   | recording.Action
@@ -87,6 +91,9 @@ type PollMessageMappedType = {
 type MeetingNotesMessageMappedType = {
   [P in keyof MeetingNotesMessage]: MeetingNotesMessage[P];
 };
+type MeetingReportMessageMappedType = {
+  [P in keyof MeetingReportMessage]: MeetingReportMessage[P];
+};
 type TimerMessageMappedType = {
   [P in keyof TimerMessage]: TimerMessage[P];
 };
@@ -110,6 +117,7 @@ export type Message =
   | MediaMessageMappedType
   | PollMessageMappedType
   | MeetingNotesMessageMappedType
+  | MeetingReportMessageMappedType
   | TimerMessageMappedType
   | WhiteboardMessageMappedType
   | RecordingMessageMappedType

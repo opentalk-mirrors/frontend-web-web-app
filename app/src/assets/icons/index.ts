@@ -7,6 +7,7 @@ import ArrowDownIcon from './ArrowDownIcon';
 import ArrowLeftIcon from './ArrowLeftIcon';
 import ArrowRightIcon from './ArrowRightIcon';
 import ArrowUpIcon from './ArrowUpIcon';
+import AttendanceReportIcon from './AttendanceReportIcon';
 import AudioIcon from './AudioIcon';
 import AvatarIcon from './AvatarIcon';
 import BackIcon from './BackIcon';
@@ -125,6 +126,7 @@ export {
   EmojiIcon,
   EndCallIcon,
   ErrorIcon,
+  AttendanceReportIcon,
   ExtendToTabIcon,
   FavoriteIcon,
   FeedbackIcon,

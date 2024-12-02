@@ -258,6 +258,7 @@ chat-disabled-message = Chat was disabled by moderator
 chat-disabled-tooltip = The Chat is deactivated by the moderator
 more-menu-start-streaming = Start livestream
 more-menu-stop-streaming = Stop livestream
+more-menu-export-attendance-report = Export attendance report
 
 microphones-enabled-notification = Microphones were enabled by the moderator
 microphones-disabled-notification = Microphones were disabled by the moderator
@@ -996,6 +997,8 @@ meeting-notes-hide = Hide meeting notes
 meeting-notes-open = Open meeting notes
 meeting-notes-tab-title = Create meeting notes
 meeting-notes-button-show = Show meeting notes
+
+meeting-report-pdf-asset-message = <messageContainer>The attendance report was exported. The corresponding file is located in the dashboard under <messageLink>meeting details</messageLink>.</messageContainer>
 
 beta-flag-tooltip-text = You are using the <demoLink>beta version</demoLink> of OpenTalk. We are continuously developing new features and provide them as an early preview in our demo environment. Please note that there may be restrictions in using this version. Please feel free to send us any criticism, ideas or bugs to <reportEmailLink>{$reportEmail}</reportEmailLink>.<br /><br />Say Hello to OpenTalk!
 

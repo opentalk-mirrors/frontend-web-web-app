@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
+import { InviteCode, RoomId, EventId } from '@opentalk/rest-api-rtk-query';
 
 import { ConfigState, DefaultAvatarImage } from '../store/slices/configSlice';
 import { BreakoutRoomId } from '../types';
@@ -38,6 +38,11 @@ export const composeInviteUrl = (
 ) => {
   const roomString = composeRoomPath(roomId, inviteCode, breakoutRoomId);
   return new URL(roomString, baseUrl);
+};
+
+export const composeMeetingDetailsUrl = (baseUrl: string, eventId: EventId) => {
+  const meetingDetailsPath = `/dashboard/meetings/${eventId}`;
+  return new URL(meetingDetailsPath, baseUrl);
 };
 
 const fetchWrapper = (
