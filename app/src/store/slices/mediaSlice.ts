@@ -6,9 +6,14 @@ import { createSlice, PayloadAction, createListenerMiddleware, TypedStartListeni
 import { RootState, AppDispatch } from '../';
 import { RequestMute } from '../../api/types/incoming/media';
 import { updateSpeakingState } from '../../api/types/outgoing/media';
-import { BackgroundConfig } from '../../modules/Media/BackgroundBlur';
 import { getCurrentConferenceRoom } from '../../modules/WebRTC';
 import { ParticipantId, VideoSetting } from '../../types';
+
+export interface BackgroundConfig {
+  style: 'blur' | 'color' | 'image' | 'off';
+  color?: string;
+  imageUrl?: string;
+}
 
 export enum NotificationKind {
   ForceMute = 'forceMute',

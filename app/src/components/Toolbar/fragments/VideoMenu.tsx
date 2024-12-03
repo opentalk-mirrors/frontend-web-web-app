@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { ProcessorWrapper } from '@livekit/track-processors';
 import {
   Avatar,
   Divider,
@@ -23,7 +24,6 @@ import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import useMediaDevice from '../../../hooks/useMediaDevice';
-import browser from '../../../modules/BrowserSupport';
 import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
 import { selectVideoBackgrounds } from '../../../store/slices/configSlice';
 import { selectVideoBackgroundEffects, setBackgroundEffects } from '../../../store/slices/mediaSlice';
@@ -92,7 +92,7 @@ interface VideoMenuProps extends ToolbarMenuProps {
   isLobby: boolean;
 }
 
-const VideoMenu = ({ anchorEl, onClose, open, isLobby }: VideoMenuProps) => {
+const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const fullscreenHandle = useFullscreenContext();
@@ -126,7 +126,7 @@ const VideoMenu = ({ anchorEl, onClose, open, isLobby }: VideoMenuProps) => {
 
   const selectedDeviceId = mediaChoices?.userChoices.videoDeviceId;
 
-  const isBrowserSafariOrFireFox = browser.isSafari() || (browser.isFirefox() && isLobby);
+  const isBackgroundAndBlurringSupported = ProcessorWrapper.isSupported;
 
   const isBlurred = backgroundEffects.style === 'blur';
 
@@ -198,7 +198,7 @@ const VideoMenu = ({ anchorEl, onClose, open, isLobby }: VideoMenuProps) => {
         <MenuSectionTitle>{t('videomenu-background')}</MenuSectionTitle>
         <FormGroup>
           <BackgroundOptionsContainer spacing={1}>
-            {!isBrowserSafariOrFireFox && (
+            {isBackgroundAndBlurringSupported && (
               <FormControlLabel
                 control={<Switch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />}
                 label={
@@ -222,7 +222,7 @@ const VideoMenu = ({ anchorEl, onClose, open, isLobby }: VideoMenuProps) => {
           </BackgroundOptionsContainer>
         </FormGroup>
 
-        {!isBrowserSafariOrFireFox && videoBackgrounds.length > 0 && (
+        {isBackgroundAndBlurringSupported && videoBackgrounds.length > 0 && (
           <>
             <Divider variant="middle" />
             <Typography fontWeight="normal" id="background-images-title" sx={{ px: 2 }}>
