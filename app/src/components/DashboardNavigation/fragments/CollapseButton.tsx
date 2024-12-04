@@ -37,6 +37,7 @@ const CollapseButton = (props: CollapseButtonProps) => {
       collapsed={props.collapsed}
       onClick={props.onClick.bind(null, !props.collapsed)}
       aria-label={t(`dashboard-${props.collapsed ? 'open' : 'close'}-navbar`)}
+      aria-expanded={!props.collapsed}
     >
       {props.collapsed ? <ForwardIcon /> : <BackIcon />}
     </CustomButton>

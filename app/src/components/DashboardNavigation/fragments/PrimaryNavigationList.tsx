@@ -61,6 +61,7 @@ const PrimaryNavigationList = ({ collapsedBar, filter, submenu, routes, setActiv
           data-testid="PrimaryNavItem"
           className={path.includes(submenu) ? 'active-link' : ''}
           aria-controls={hasSubmenu ? 'secondary-navigation-dashboard' : 'main-content-dashboard'}
+          aria-label={t(name)}
         >
           {icon}
           <Collapse orientation="horizontal" in={!collapsedBar}>
