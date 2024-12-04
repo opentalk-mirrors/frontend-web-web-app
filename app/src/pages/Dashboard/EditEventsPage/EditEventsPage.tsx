@@ -11,6 +11,7 @@ import { useLazyGetEventQuery } from '../../../api/rest';
 import { EditIcon } from '../../../assets/icons';
 import CreateOrUpdateMeetingForm from '../../../components/CreateOrUpdateMeetingForm';
 import InviteToMeeting from '../../../components/InviteToMeeting/InviteToMeeting';
+import { RequiredFieldsInfo } from '../../../components/RequiredFieldsInfo';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
 const steps = [
@@ -112,10 +113,7 @@ const EditEventsPage = () => {
     <Container>
       <Typography component="h1">{pageHeading}</Typography>
       <StepperHeader />
-      <Typography>
-        <span role="presentation">*</span>
-        {t('dashboard-create-or-update-required-fields-info')}
-      </Typography>
+      <RequiredFieldsInfo />
       {activeStep === 0 && (
         <CreateOrUpdateMeetingForm existingEvent={event} onForwardButtonClick={() => setActiveStep(1)} />
       )}

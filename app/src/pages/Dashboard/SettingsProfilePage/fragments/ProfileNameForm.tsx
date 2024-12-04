@@ -56,6 +56,7 @@ const ProfileNameForm = () => {
               autoComplete={!disallowCustomDisplayName ? 'name' : undefined}
               label={t('dashboard-settings-profile-name-label')}
               placeholder={t('global-name-placeholder')}
+              required
             />
           </Grid>
           <Grid item>
