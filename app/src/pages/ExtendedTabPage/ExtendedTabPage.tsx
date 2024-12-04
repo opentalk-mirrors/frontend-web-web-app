@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { LiveKitRoom } from '@livekit/components-react';
-import { styled, CircularProgress } from '@mui/material';
+import { CircularProgress, styled } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 import useRoom from '../../hooks/useRoom';
@@ -19,7 +19,7 @@ const RoomContainer = styled(LiveKitRoom)({
 const ExtendedTabPage = () => {
   const { channelId } = useParams();
   const { accessToken, mediaType, participantId, livekitUrl } = useBroadcastChannel(channelId);
-  const room = useRoom();
+  const room = useRoom({ accessToken, audioInputEnabled: false, videoInputEnabled: false });
 
   if (room === undefined || mediaType === undefined || participantId === undefined) {
     return <CircularProgress />;

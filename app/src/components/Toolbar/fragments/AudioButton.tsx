@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MicOffIcon, MicOnIcon } from '../../../assets/icons';
 import { SuspenseLoading, showConsentNotification } from '../../../commonComponents';
-import { ToolbarButtonIds } from '../../../constants';
+import { LIVEKIT_AUDIO_PERMISSION_NUMBER, ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
@@ -25,10 +25,9 @@ const MicOnStyled = styled(MicOnIcon)({
 interface AudioButtonProps {
   localAudioTrack?: LocalAudioTrack;
   isLobby?: boolean;
-  canPublishAudio?: boolean;
 }
 
-const AudioButton = ({ localAudioTrack, isLobby = false, canPublishAudio = true }: AudioButtonProps) => {
+const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => {
   const { t } = useTranslation();
   const askConsent = useAppSelector(selectNeedRecordingConsent);
   const dispatch = useAppDispatch();
@@ -38,6 +37,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false, canPublishAudio = true 
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [canPublishAudio, setCanPublishAudio] = useState(true);
 
   const { startMedia, permissionDenied, devices } = useMediaDevice({
     kind: 'audioinput',
@@ -67,7 +67,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false, canPublishAudio = true 
   const pendingPermission = permissionDenied === 'pending';
 
   const indicator = useMemo(() => {
-    if (pendingPermission) {
+    if (pendingPermission || (!localAudioTrack && microphoneEnabled)) {
       return <SuspenseLoading size="1rem" />;
     }
 
@@ -94,10 +94,18 @@ const AudioButton = ({ localAudioTrack, isLobby = false, canPublishAudio = true 
   };
 
   useEffect(() => {
-    if (!canPublishAudio && microphoneEnabled) {
-      mediaChoices?.saveAudioInputEnabled(false);
+    if (!isLobby) {
+      const localParticipantPermissions = room?.localParticipant.permissions;
+      const canPublishAudio = localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_AUDIO_PERMISSION_NUMBER);
+
+      if (canPublishAudio !== undefined) {
+        setCanPublishAudio(canPublishAudio);
+        if (!canPublishAudio && microphoneEnabled) {
+          mediaChoices?.saveAudioInputEnabled(false);
+        }
+      }
     }
-  }, [canPublishAudio, microphoneEnabled, mediaChoices?.saveAudioInputEnabled]);
+  }, [isLobby, room?.localParticipant.permissions, microphoneEnabled, mediaChoices?.saveAudioInputEnabled]);
 
   return (
     <div ref={menuRef}>
@@ -108,7 +116,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false, canPublishAudio = true 
         contextDisabled={pendingPermission || devices.length === 0}
         disabled={!canPublishAudio || pendingPermission || devices.length === 0}
         openMenu={() => setShowMenu(true)}
-        active={microphoneEnabled}
+        active={Boolean(microphoneEnabled && localAudioTrack)}
         isLobby={isLobby}
         data-testid="toolbarAudioButton"
         contextTitle={t('toolbar-button-audio-context-title')}
