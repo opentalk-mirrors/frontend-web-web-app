@@ -184,6 +184,10 @@ revoke-presenter-role = Revoke presenter role
 menutabs-area-hidden-heading = Additional Functions
 menutabs-chat = Chat
 menutabs-people = People
+menutabs-people-complementary = { $count ->
+    [one] You are the only participant in the conference.
+   *[other] There are {$count} participants in the conference.
+}
 menutabs-messages = Messages
 participant-list-hidden-heading = Participant List
 chatroom-hidden-heading = Chat Room

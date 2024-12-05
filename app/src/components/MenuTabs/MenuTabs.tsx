@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Tabs as MuiTabs, styled, Typography, Badge, Tab as MuiTab } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -80,6 +81,9 @@ const MenuTabs = () => {
   return (
     <>
       <VisuallyHiddenTitle component="h2" label="menutabs-area-hidden-heading" />
+      <Typography id="menutabs-people-complementary" component="span" sx={visuallyHidden}>
+        {t('menutabs-people-complementary', { count: totalParticipants })}
+      </Typography>
       <Tabs value={currentMenuTab} onChange={handleChange} variant="fullWidth">
         <Tab
           id={`tab-${MenuTab.Chat}`}
@@ -92,10 +96,15 @@ const MenuTabs = () => {
         <Tab
           id={`tab-${MenuTab.People}`}
           label={t('menutabs-people')}
-          icon={<Typography variant="caption">({totalParticipants})</Typography>}
+          icon={
+            <Typography variant="caption" aria-hidden="true">
+              ({totalParticipants})
+            </Typography>
+          }
           iconPosition="end"
           value={MenuTab.People}
           aria-controls={`tabpanel-${MenuTab.People}`}
+          aria-describedby="menutabs-people-complementary"
         />
         <Tab
           id={`tab-${MenuTab.Messages}`}
