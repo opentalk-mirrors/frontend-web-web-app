@@ -155,6 +155,10 @@ participant-menu-accepted-participant-mobile = Accepted
 participant-menu-mute = Mute participant
 participant-menu-rename = Rename participant
 participant-menu-rename-new-name = New name
+participant-menu-start-whisper = Mark as whisper partner
+participant-menu-leave-whisper = Leave whisper group
+participant-menu-remove-whisper-partner = Remove from whisper group
+participant-menu-invite-whisper-partner = Invite to whisper group
 button-new-message = New Message
 empty-messages = You have no messages at the moment. Create one to start a private conversation with a person or a group.
 encrypted-messages = This is the beginning of your chat history. Nobody has access to the content of your chat except for the people inside the chat.
@@ -1157,3 +1161,7 @@ legal-vote-stopped-invalid-results-notification = Unfortunately something went w
 
 display-name-change-notification = Moderator {moderatorName} changed the display name of {oldName} to {newName}
 display-name-character-limit-error = name must be at most { $limit } characters
+
+whisper-invite-notification = {displayName} invited you to a whisper group.
+whisper-invite-decline-notification = {displayName} declined your invitation to a whisper group.
+whisper-invite-accept-notification = {displayName} accepted your whisper group invitation. Press and hold the W key to whisper.

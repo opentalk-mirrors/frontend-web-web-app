@@ -92,6 +92,8 @@ import UnlockedIcon from './UnlockedIcon';
 import VisibleIcon from './VisibleIcon';
 import WarningIcon from './WarningIcon';
 import WheelOfNamesIcon from './WheelOfNamesIcon';
+import WhisperEmptyIcon from './WhisperEmptyIcon';
+import WhisperFullIcon from './WhisperFullIcon';
 import WhiteboardIcon from './WhiteboardIcon';
 import WoolBallIcon from './WoolBallIcon';
 
@@ -187,6 +189,8 @@ export {
   VisibleIcon,
   WarningIcon,
   WheelOfNamesIcon,
+  WhisperFullIcon,
+  WhisperEmptyIcon,
   WhiteboardIcon,
   WoolBallIcon,
 };

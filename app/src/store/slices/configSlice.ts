@@ -32,6 +32,7 @@ export enum FeaturesKeys {
   JoinWithoutMedia = 'joinWithoutMedia',
   Debriefing = 'debriefing',
   SharedFolder = 'sharedFolder',
+  SubroomAudio = 'subroomAudio',
 }
 
 type Features = {
@@ -238,6 +239,7 @@ export const selectWsController = (state: RootState) => state.config.insecure;
 export const selectOidcConfig = (state: RootState) => state.config.oidcConfig;
 export const selectSpeedTestConfig = (state: RootState) => state.config.speedTest;
 export const selectFeatures = (state: RootState) => state.config.features;
+export const selectSubroomAudioFeature = (state: RootState) => state.config.features.subroomAudio;
 export const selectVideoBackgrounds = (state: RootState) => state.config.videoBackgrounds;
 export const selectMaxVideoBandwidth = (state: RootState) => state.config.maxVideoBandwidth;
 export const selectLibravatarDefaultImage = (state: RootState) => state.config.libravatarDefaultImage;

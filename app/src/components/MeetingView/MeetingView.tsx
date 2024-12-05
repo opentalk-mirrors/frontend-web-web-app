@@ -9,6 +9,7 @@ import { useAppSelector } from '../../hooks';
 import { useHotkeys } from '../../hooks/useHotkeys';
 import useRoom from '../../hooks/useRoom';
 import { selectLivekitAccessToken, selectLivekitPublicUrl } from '../../store/slices/livekitSlice';
+import { selectSubroomAudioToken } from '../../store/slices/subroomAudioSlice';
 import { selectShowCoffeeBreakCurtain } from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import { CoffeeBreakView } from '../CoffeeBreakView/CoffeeBreakView';
@@ -39,6 +40,12 @@ const RoomContainer = styled(LiveKitRoom)(() => {
   };
 });
 
+const WhisperContext = styled(LiveKitRoom)(() => {
+  return {
+    display: 'none',
+  };
+});
+
 const CachedTimerPopover = memo(TimerPopover);
 const CachedInnerLayout = memo(InnerLayout);
 
@@ -49,25 +56,35 @@ const MeetingView = () => {
   const enableAudio = isModerator || !showCoffeeBreakCurtain;
   const livekitAccessToken = useAppSelector(selectLivekitAccessToken);
   const publicUrl = useAppSelector(selectLivekitPublicUrl);
-  useHotkeys();
-  const room = useRoom({ accessToken: livekitAccessToken });
+  const whisperToken = useAppSelector(selectSubroomAudioToken);
+
+  const room = useRoom();
+  const whisperRoom = useRoom({ videoInputEnabled: false, isWhisperRoom: true });
+  useHotkeys(room, whisperRoom);
 
   return (
-    <RoomContainer room={room} token={livekitAccessToken} serverUrl={publicUrl} video={false} audio={false}>
-      <Container ref={containerRef}>
-        {showCoffeeBreakCurtain && !isModerator ? (
-          <CoffeeBreakView />
-        ) : (
-          <>
-            {enableAudio && <RoomAudioRenderer />}
+    <>
+      {whisperToken && (
+        <WhisperContext token={whisperToken} room={whisperRoom} serverUrl={publicUrl} video={false} audio={false}>
+          <RoomAudioRenderer />
+        </WhisperContext>
+      )}
+      <RoomContainer room={room} token={livekitAccessToken} serverUrl={publicUrl} video={false} audio={false}>
+        <Container ref={containerRef}>
+          {showCoffeeBreakCurtain && !isModerator ? (
+            <CoffeeBreakView />
+          ) : (
+            <>
+              {enableAudio && <RoomAudioRenderer />}
 
-            {!showCoffeeBreakCurtain && <CachedTimerPopover />}
+              {!showCoffeeBreakCurtain && <CachedTimerPopover />}
 
-            <CachedInnerLayout />
-          </>
-        )}
-      </Container>
-    </RoomContainer>
+              <CachedInnerLayout />
+            </>
+          )}
+        </Container>
+      </RoomContainer>
+    </>
   );
 };
 

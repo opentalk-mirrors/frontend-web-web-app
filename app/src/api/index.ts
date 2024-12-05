@@ -65,6 +65,7 @@ import {
   waitingRoomJoined,
   waitingRoomLeft,
 } from '../store/slices/participantsSlice';
+import { selectParticipantById } from '../store/slices/participantsSlice';
 import * as pollStore from '../store/slices/pollSlice';
 import {
   connectionClosed,
@@ -77,9 +78,18 @@ import {
 } from '../store/slices/roomSlice';
 import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
 import { streamUpdated } from '../store/slices/streamingSlice';
+import {
+  updateParticipantInviteState,
+  removeParticipant,
+  resetSubroomAudioData,
+  selectSubroomAudioState,
+  setSubroomAudioData,
+  inviteParticipants,
+} from '../store/slices/subroomAudioSlice';
+import { selectWhisperGroupId } from '../store/slices/subroomAudioSlice';
 import { timerStarted, timerStopped, updateParticipantsReady } from '../store/slices/timerSlice';
 import { updatedCinemaLayout } from '../store/slices/uiSlice';
-import { selectIsModerator, setDisplayName, updateRole } from '../store/slices/userSlice';
+import { selectIsModerator, selectOurUuid, setDisplayName, updateRole } from '../store/slices/userSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import {
   AutomodSelectionStrategy,
@@ -98,6 +108,7 @@ import {
   Speaker,
   Timestamp,
   WaitingState,
+  WhisperParticipantState,
   matchBuilder,
 } from '../types';
 import { composeMeetingDetailsUrl } from '../utils/apiUtils';
@@ -117,6 +128,7 @@ import {
   poll,
   sharedFolder,
   streaming,
+  subroomAudio,
   timer,
   whiteboard,
 } from './types/incoming';
@@ -126,6 +138,7 @@ import { LegalVoteError, LegalVoteMessageType, VoteFinalResults } from './types/
 import { Action as OutgoingActionType, automod } from './types/outgoing';
 import * as outgoing from './types/outgoing';
 import { ClearGlobalMessages } from './types/outgoing/chat';
+import { acceptWhisperInvite, declineWhisperInvite } from './types/outgoing/subroomAudio';
 
 /**
  * Transforms the dictionary of group chat histories into a list of groupIds and a flat list
@@ -426,8 +439,12 @@ const handleControlMessage = async (
       dispatch(joinBlocked({ reason: data.reason }));
       break;
     case 'left': {
+      const whisperId = selectWhisperGroupId(state);
       getLivekitRoom().remoteParticipants.delete(data.id);
       dispatch(participantsLeft({ id: data.id, timestamp: timestamp }));
+      if (whisperId) {
+        dispatch(removeParticipant({ whisperId, participantId: data.id }));
+      }
       break;
     }
     case 'update': {
@@ -1165,6 +1182,100 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
   }
 };
 
+const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Message, state: RootState) => {
+  switch (data.message) {
+    case 'whisper_group_created':
+      dispatch(
+        setSubroomAudioData({
+          whisperId: data.whisperId,
+          token: data.token,
+          participants: data.participants,
+        })
+      );
+      break;
+    case 'whisper_invite': {
+      const isAlreadyInWhisperGroup = selectSubroomAudioState(state).whisperId;
+      if (isAlreadyInWhisperGroup) {
+        dispatch(declineWhisperInvite.action({ whisperId: data.whisperId }));
+        break;
+      }
+      dispatch(setSubroomAudioData({ whisperId: data.whisperId, participants: data.participants }));
+
+      const displayName = selectParticipantById(data.issuer)(state)?.displayName;
+      notificationAction({
+        msg: i18next.t('whisper-invite-notification', { displayName }),
+        variant: 'info',
+        actionBtnText: i18next.t('global-accept'),
+        cancelBtnText: i18next.t('global-decline'),
+        persist: true,
+        onAction: () => {
+          dispatch(acceptWhisperInvite.action({ whisperId: data.whisperId }));
+        },
+        onCancel: () => {
+          dispatch(declineWhisperInvite.action({ whisperId: data.whisperId }));
+          dispatch(resetSubroomAudioData());
+        },
+      });
+      break;
+    }
+    case 'whisper_token': {
+      const subroomAudioState = selectSubroomAudioState(state);
+      const myOwnParticipantId = selectOurUuid(state);
+      const updatedParticipants = subroomAudioState.participants.map((p) =>
+        p.participantId === myOwnParticipantId ? { ...p, state: WhisperParticipantState.Accepted } : p
+      );
+      dispatch(
+        setSubroomAudioData({ whisperId: data.whisperId, token: data.token, participants: updatedParticipants })
+      );
+      break;
+    }
+    case 'participants_invited':
+      dispatch(inviteParticipants({ participants: data.participantIds }));
+      break;
+    case 'whisper_invite_accepted': {
+      const displayName = selectParticipantById(data.participantId)(state)?.displayName;
+      notificationAction({
+        msg: i18next.t('whisper-invite-accept-notification', { displayName }),
+        variant: 'info',
+      });
+      dispatch(
+        updateParticipantInviteState({
+          participantId: data.participantId,
+          participantState: WhisperParticipantState.Accepted,
+        })
+      );
+      break;
+    }
+    case 'whisper_invite_declined': {
+      const displayName = selectParticipantById(data.participantId)(state)?.displayName;
+      dispatch(removeParticipant({ participantId: data.participantId }));
+      notificationAction({
+        msg: `${displayName} declined your invitation`,
+        variant: 'error',
+      });
+      break;
+    }
+    case 'left_whisper_group':
+      dispatch(removeParticipant({ participantId: data.participantId }));
+      break;
+    case 'whisper_group_disbanded':
+      dispatch(resetSubroomAudioData());
+      break;
+    case 'error': {
+      const error = data.error;
+      switch (error) {
+        default:
+          console.error(`Livekit Error: ${data}`);
+          throw new Error(`Livekit Error: ${error}`);
+      }
+    }
+    default: {
+      const dataString = JSON.stringify(data, null, 2);
+      console.error(`Unknown subroom audio message type: ${dataString}`);
+    }
+  }
+};
+
 /**
  * Handle incoming websocket messages, sent from the signaling server
  *
@@ -1222,6 +1333,9 @@ const onMessage =
         break;
       case 'livekit':
         handleLivekitMessage(dispatch, message.payload, getState());
+        break;
+      case 'subroom_audio':
+        handleSubroomAudioMessage(dispatch, message.payload, getState());
         break;
       default: {
         const dataString = JSON.stringify(message, null, 2);
@@ -1308,6 +1422,7 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.meetingNotes.handler(builder, dispatch))
       .addModule((builder) => outgoing.meetingReport.handler(builder, dispatch))
       .addModule((builder) => outgoing.moderation.handler(builder, dispatch))
+      .addModule((builder) => outgoing.subroomAudio.handler(builder, dispatch))
       .addModule((builder) => outgoing.timer.handler(builder, dispatch))
       .addModule((builder) => outgoing.whiteboard.handler(builder, dispatch))
       .addModule((builder) => outgoing.recording.handler(builder, dispatch));

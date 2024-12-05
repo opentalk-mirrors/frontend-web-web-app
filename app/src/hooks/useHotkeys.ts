@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useMediaDeviceSelect } from '@livekit/components-react';
+import { Room } from 'livekit-client';
 import { debounce } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -12,20 +13,35 @@ import { useFullscreenContext } from '../hooks/useFullscreenContext';
 import { useMediaChoices } from '../provider/MediaChoicesProvider';
 import { selectIsUserMicDisabled } from '../store/selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker } from '../store/slices/automodSlice';
-import { getLivekitRoom } from '../store/slices/livekitSlice';
+import { selectModules } from '../store/slices/configSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
+import { selectSubroomAudioState, setIsWhisperActive } from '../store/slices/subroomAudioSlice';
 import { selectTimerStyle } from '../store/slices/timerSlice';
 import { selectHotkeysEnabled } from '../store/slices/uiSlice';
 import { RoomMode, TimerStyle } from '../types';
 import useMediaDevice from './useMediaDevice';
 
 export const HOTKEY_MICROPHONE = 'm';
+export const HOTKEY_WHISPERGROUP = 'w';
 export const HOTKEY_VIDEO = 'v';
 export const HOTKEY_FULLSCREEN = 'f';
 export const HOTKEY_PUSH_TO_TALK = ' ';
 export const HOTKEY_NEXT_SPEAKER = 'n';
-const HOTKEYS = [HOTKEY_VIDEO, HOTKEY_MICROPHONE, HOTKEY_FULLSCREEN, HOTKEY_PUSH_TO_TALK, HOTKEY_NEXT_SPEAKER];
+const HOTKEYS = [
+  HOTKEY_VIDEO,
+  HOTKEY_MICROPHONE,
+  HOTKEY_FULLSCREEN,
+  HOTKEY_PUSH_TO_TALK,
+  HOTKEY_NEXT_SPEAKER,
+  HOTKEY_WHISPERGROUP,
+];
 const HOTKEY_DEBOUNCE_TIME = 100; //ms
+
+enum PushToTalkState {
+  Whisper = 'whisper',
+  Conference = 'conference',
+  Inactive = 'inactve',
+}
 
 export const useHotkeysActive = (): boolean => {
   const hotkeysEnabled = useAppSelector(selectHotkeysEnabled);
@@ -34,7 +50,7 @@ export const useHotkeysActive = (): boolean => {
   return hotkeysEnabled && timerStyle !== TimerStyle.CoffeeBreak;
 };
 
-export const useHotkeys = () => {
+export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   const fullscreenContext = useFullscreenContext();
   const roomMode = useAppSelector(selectCurrentRoomMode);
   const speakerState = useAppSelector(selectSpeakerState);
@@ -43,10 +59,12 @@ export const useHotkeys = () => {
 
   const startingAudio = useRef<Promise<void> | undefined>();
   const stoppingAudio = useRef<Promise<void> | undefined>();
-  const [isInPushedToTalkMode, setIsInPushedToTalkMode] = useState(false);
+  const [pushToTalkState, setPushToTalkState] = useState(PushToTalkState.Inactive);
 
   const hotkeysEnabled = useAppSelector(selectHotkeysEnabled);
   const timerStyle = useAppSelector(selectTimerStyle);
+  const subroomAudioEnabled = useAppSelector(selectModules).subroomAudio;
+  const isWhisperingPossible = useAppSelector(selectSubroomAudioState);
 
   const hotkeysActive = hotkeysEnabled && timerStyle !== TimerStyle.CoffeeBreak;
 
@@ -62,17 +80,44 @@ export const useHotkeys = () => {
 
   const toggleAudio = useCallback(
     async (forcedState?: boolean) => {
-      const room = getLivekitRoom();
       if (forcedState || !audioEnabled) {
         await startMedia(true);
-        room.localParticipant.setMicrophoneEnabled(true);
+        room?.localParticipant.setMicrophoneEnabled(true);
       } else {
         mediaChoices?.saveAudioInputEnabled(false);
-        room.localParticipant.setMicrophoneEnabled(false);
+        room?.localParticipant.setMicrophoneEnabled(false);
       }
     },
-    [audioEnabled, startMedia, mediaChoices?.saveAudioInputEnabled]
+    [room, audioEnabled, startMedia, mediaChoices?.saveAudioInputEnabled]
   );
+
+  const pushToWhisper = useCallback(
+    (type: 'keyup' | 'keydown') => {
+      if (!isWhisperingPossible.whisperId) {
+        return;
+      }
+      switch (type) {
+        case 'keydown': {
+          if (pushToTalkState === PushToTalkState.Inactive) {
+            dispatch(setIsWhisperActive(true));
+            whisperRoom?.localParticipant.setMicrophoneEnabled(true);
+            setPushToTalkState(PushToTalkState.Whisper);
+          }
+          break;
+        }
+        case 'keyup': {
+          if (pushToTalkState === PushToTalkState.Whisper) {
+            dispatch(setIsWhisperActive(false));
+            whisperRoom?.localParticipant.setMicrophoneEnabled(false);
+            setPushToTalkState(PushToTalkState.Inactive);
+          }
+          break;
+        }
+      }
+    },
+    [whisperRoom, isWhisperingPossible, pushToTalkState, dispatch]
+  );
+
   const toggleVideo = useCallback(
     () => mediaChoices?.saveVideoInputEnabled(!mediaChoices?.userChoices.videoEnabled),
     [mediaChoices?.saveVideoInputEnabled, mediaChoices?.userChoices.videoEnabled]
@@ -101,7 +146,8 @@ export const useHotkeys = () => {
 
       switch (type) {
         case 'keydown':
-          if (!audioEnabled) {
+          if (!audioEnabled && pushToTalkState === PushToTalkState.Inactive) {
+            setPushToTalkState(PushToTalkState.Conference);
             if (startingAudio.current === undefined) {
               if (stoppingAudio.current === undefined) {
                 startingAudio.current = startAudio();
@@ -109,11 +155,11 @@ export const useHotkeys = () => {
                 startingAudio.current = stoppingAudio.current.then(() => startAudio());
               }
             }
-            setIsInPushedToTalkMode(true);
           }
           break;
         case 'keyup':
-          if (isInPushedToTalkMode) {
+          if (pushToTalkState === PushToTalkState.Conference) {
+            setPushToTalkState(PushToTalkState.Inactive);
             if (stoppingAudio.current === undefined) {
               if (startingAudio.current === undefined) {
                 stoppingAudio.current = stopAudio();
@@ -121,12 +167,11 @@ export const useHotkeys = () => {
                 stoppingAudio.current = startingAudio.current.then(() => stopAudio());
               }
             }
-            setIsInPushedToTalkMode(false);
           }
           break;
       }
     },
-    [audioEnabled, hasMicrophoneDisabledByModerator, toggleAudio, isInPushedToTalkMode]
+    [audioEnabled, hasMicrophoneDisabledByModerator, toggleAudio, pushToTalkState, stoppingAudio]
   );
 
   const toggleFullscreenView = useCallback(() => {
@@ -149,6 +194,10 @@ export const useHotkeys = () => {
             if (type === 'keyup' && audioDevices.length > 0 && !hasMicrophoneDisabledByModerator) {
               toggleAudio();
             }
+            break;
+          case HOTKEY_WHISPERGROUP:
+            subroomAudioEnabled && pushToWhisper(type);
+
             break;
           case HOTKEY_VIDEO:
             if (type === 'keyup' && videoDevices.length > 0) {
@@ -184,6 +233,7 @@ export const useHotkeys = () => {
       pushToTalk,
       hotkeysActive,
       toggleAudio,
+      pushToWhisper,
       toggleVideo,
       toggleFullscreenView,
       roomMode,

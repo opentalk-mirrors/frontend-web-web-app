@@ -5,6 +5,7 @@ import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { InviteCode } from '@opentalk/rest-api-rtk-query/src/types';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import convertToCamelCase from 'camelcase-keys';
+import { Room } from 'livekit-client';
 import convertToSnakeCase from 'snakecase-keys';
 
 import { notifications, stopTimeLimitNotification } from '../commonComponents';
@@ -51,6 +52,13 @@ export const startRoom = createAsyncThunk<
   return ConferenceRoom.create(credentials, config, credentials.roomId === roomId ? resumptionToken : undefined);
 });
 
+const stopTrackPublications = (room: Room) => {
+  room.localParticipant.trackPublications.forEach((publication) => {
+    publication.track?.mediaStreamTrack.stop();
+    publication.track?.stop();
+  });
+};
+
 export const hangUp = createAsyncThunk<void, void, { state: RootState }>('room/hangup', async () => {
   // This ensures that all notifications visible to the user prior to hanging up
   // and being redirected to the lobby room are cleared up. If you need to show
@@ -64,10 +72,7 @@ export const hangUp = createAsyncThunk<void, void, { state: RootState }>('room/h
 
   shutdownConferenceContext();
 
-  room.localParticipant.trackPublications.forEach((publication) => {
-    publication.track?.mediaStreamTrack.stop();
-    publication.track?.stop();
-  });
+  stopTrackPublications(room);
   return room.disconnect();
 });
 

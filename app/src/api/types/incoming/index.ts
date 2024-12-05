@@ -14,6 +14,7 @@ import ModerationMessage from './moderation';
 import PollMessage from './poll';
 import SharedFolderMessage from './sharedFolder';
 import StreamingMessage from './streaming';
+import SubroomAudioMessage from './subroomAudio';
 import TimerMessage from './timer';
 import WhiteboardMessage from './whiteboard';
 
@@ -32,6 +33,7 @@ export * as sharedFolder from './sharedFolder';
 export * as legalVote from './legalVote';
 export * as automod from './automod';
 export * as livekit from './livekit';
+export * as subroomAudio from './subroomAudio';
 
 export type Message =
   | AutomodMessage
@@ -48,4 +50,5 @@ export type Message =
   | WhiteboardMessage
   | StreamingMessage
   | SharedFolderMessage
-  | LivekitMessage;
+  | LivekitMessage
+  | SubroomAudioMessage;

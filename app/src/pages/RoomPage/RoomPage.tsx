@@ -32,7 +32,8 @@ const RoomPage = () => {
     return <LobbyView />;
   }
 
-  console.log('connectionState: ', connectionState);
+  console.debug('connection: ', connectionState);
+
   switch (connectionState) {
     // Regular state machine flow
     case ConnectionState.Initial:

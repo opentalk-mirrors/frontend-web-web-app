@@ -155,6 +155,10 @@ participant-menu-accepted-participant-mobile = Aufgenommen
 participant-menu-mute = Teilnehmer stummschalten
 participant-menu-rename = Teilnehmer umbenennen
 participant-menu-rename-new-name = Neuer Name
+participant-menu-start-whisper = Zum Flüsterpartner ernennen
+participant-menu-leave-whisper = Flüstergruppe verlassen
+participant-menu-remove-whisper-partner = Von Flüstergruppe entfernen
+participant-menu-invite-whisper-partner = In die Flüstergruppe einladen
 button-new-message = Neue Nachricht
 empty-messages = Sie haben zur Zeit keine Nachrichten. Erstellen Sie eine und starten Sie eine Private- oder Gruppenkonversation.
 encrypted-messages = Dies ist der Anfang Ihres Chatverlaufs. Niemand hat Zugriff auf den Inhalt Ihres Chats außer den Personen, die im Chat sind.
@@ -1158,3 +1162,7 @@ legal-vote-stopped-invalid-results-notification = Leider ist beim Abstimmen etwa
 
 display-name-change-notification = Der Moderator {moderatorName} hat den Namen von {oldName} in {newName} geändert.
 display-name-character-limit-error = Der Name darf maximal { $limit } Zeichen umfassen.
+
+whisper-invite-notification = {displayName} hat Sie zu einer Flüstergruppe eingeladen.
+whisper-invite-decline-notification = {displayName} hat Ihre Einladung zur Flüstergruppe abgelehnt.
+whisper-invite-accept-notification = {displayName} hat Ihre Einladung zur Flüstergruppe angenommen. Drücken und halten Sie die Taste W zum flüstern.

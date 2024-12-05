@@ -19,7 +19,7 @@ const RoomContainer = styled(LiveKitRoom)({
 const ExtendedTabPage = () => {
   const { channelId } = useParams();
   const { accessToken, mediaType, participantId, livekitUrl } = useBroadcastChannel(channelId);
-  const room = useRoom({ accessToken });
+  const room = useRoom();
 
   if (room === undefined || mediaType === undefined || participantId === undefined) {
     return <CircularProgress />;

@@ -30,7 +30,8 @@ export type Namespaces =
   | 'whiteboard'
   | 'shared_folder'
   | 'echo'
-  | 'livekit';
+  | 'livekit'
+  | 'subroom_audio';
 
 export enum Tag {
   Room = 'Room',
