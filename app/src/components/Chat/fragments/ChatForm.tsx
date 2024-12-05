@@ -70,12 +70,16 @@ const PickerContainer = styled('div')(({ theme }) => ({
     '--epr-focus-bg-color': theme.palette.background.paper,
   },
 
-  '.EmojiPickerReact .epr-search-container input.epr-search:focus': {
-    '--epr-search-input-text-color': theme.palette.secondary.main,
+  '.EmojiPickerReact .epr-search-container input[aria-controls="epr-search-id"]:focus': {
+    '--epr-search-input-text-color': theme.palette.text.primary,
   },
 
   '.EmojiPickerReact .epr-category-nav': {
     display: 'none',
+  },
+
+  '.EmojiPickerReact .epr-search-container [role="status"]+div': {
+    'background-position-y': 0,
   },
 }));
 
