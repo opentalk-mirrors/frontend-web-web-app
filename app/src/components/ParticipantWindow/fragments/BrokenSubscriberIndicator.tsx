@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { CameraOnIcon, ConnectionGoodIcon, MicOnIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
-import { selectQualityCap } from '../../../store/slices/mediaSlice';
+import { selectQualityCap } from '../../../store/slices/livekitSlice';
 import { VideoSetting } from '../../../types';
 import { FailureBadge } from './FailureBadge';
 

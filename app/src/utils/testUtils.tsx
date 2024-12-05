@@ -30,7 +30,12 @@ import {
 } from '@reduxjs/toolkit';
 import { RenderOptions, RenderResult, act, render as rtlRender } from '@testing-library/react';
 import i18n from 'i18next';
-import { Participant as LivekitParticipant, LocalTrackPublication, Track } from 'livekit-client';
+import {
+  Participant as LivekitParticipant,
+  LocalTrackPublication,
+  RemoteTrackPublication,
+  Track,
+} from 'livekit-client';
 import { range } from 'lodash';
 import fs from 'node:fs';
 import React from 'react';
@@ -266,6 +271,7 @@ export const mockedParticipant = (
   identity: string;
   getTrackPublication: () => LocalTrackPublication | undefined;
   setMicrophoneEnabled: (enabled: boolean) => LocalTrackPublication | undefined;
+  videoTrackPublications: Map<string, RemoteTrackPublication>;
 } => ({
   id: `00000000-e6b4-4759-00${index}` as ParticipantId,
   identity: `00000000-e6b4-4759-00${index}`, //some components while using livekit participants require identity as id -> TODO: map old participants type to Livekit Participant
@@ -284,6 +290,7 @@ export const mockedParticipant = (
   isRoomOwner: false,
   getTrackPublication: () => undefined,
   setMicrophoneEnabled: () => undefined,
+  videoTrackPublications: new Map(),
 });
 
 export const mockedLivekitParticipant = (index: number) => {

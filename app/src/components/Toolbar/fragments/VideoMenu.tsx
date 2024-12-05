@@ -19,15 +19,17 @@ import {
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CameraOnIcon, CloseIcon, ErrorIcon, WarningIcon } from '../../../assets/icons';
+import { CameraOnIcon, CloseIcon, ErrorIcon, SettingsIcon, WarningIcon } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
 import { selectVideoBackgrounds } from '../../../store/slices/configSlice';
+import { selectQualityCap, setDisableRemoteVideos } from '../../../store/slices/livekitSlice';
 import { selectVideoBackgroundEffects, setBackgroundEffects } from '../../../store/slices/mediaSlice';
 import { mirroredVideoSet, selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
+import { VideoSetting } from '../../../types';
 import { DeviceId } from '../../../types/device';
 import DeviceList from './DeviceList';
 import { MenuSectionTitle, ToolbarMenu, ToolbarMenuProps } from './ToolbarMenuUtils';
@@ -101,6 +103,9 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
   const backgroundEffects = useAppSelector(selectVideoBackgroundEffects);
   const mirroringEnabled = useAppSelector(selectMirroredVideoEnabled);
   const videoBackgrounds = useAppSelector(selectVideoBackgrounds);
+  const qualityCap = useAppSelector(selectQualityCap);
+
+  const areParticipantVideosEnabled = qualityCap !== VideoSetting.Off;
 
   const {
     startMedia,
@@ -195,28 +200,42 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
           />
         )}
         <Divider variant="middle" />
+
+        <MenuSectionTitle>
+          <SettingsIcon />
+          {t('videomenu-settings')}
+        </MenuSectionTitle>
+        <FormGroup>
+          <BackgroundOptionsContainer spacing={1}>
+            <FormControlLabel
+              control={
+                <Switch
+                  onChange={(_, enabled) => dispatch(setDisableRemoteVideos(!enabled))}
+                  value={areParticipantVideosEnabled}
+                  checked={areParticipantVideosEnabled}
+                />
+              }
+              label={<Typography fontWeight="normal">{t('videomenu-participant-videos')}</Typography>}
+              labelPlacement="start"
+            />
+          </BackgroundOptionsContainer>
+        </FormGroup>
+
+        <Divider variant="middle" />
         <MenuSectionTitle>{t('videomenu-background')}</MenuSectionTitle>
         <FormGroup>
           <BackgroundOptionsContainer spacing={1}>
             {isBackgroundAndBlurringSupported && (
               <FormControlLabel
                 control={<Switch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />}
-                label={
-                  <Typography fontWeight="normal">
-                    {t(isBlurred ? 'videomenu-blur-on' : 'videomenu-blur-off')}
-                  </Typography>
-                }
+                label={<Typography fontWeight="normal">{t('videomenu-blur')}</Typography>}
                 labelPlacement="start"
                 disabled={backgroundEffects.loading}
               />
             )}
             <FormControlLabel
               control={<Switch onChange={toggleMirroring} value={mirroringEnabled} checked={mirroringEnabled} />}
-              label={
-                <Typography fontWeight="normal">
-                  {t(mirroringEnabled ? 'videomenu-mirroring-on' : 'videomenu-mirroring-off')}
-                </Typography>
-              }
+              label={<Typography fontWeight="normal">{t('videomenu-mirroring')}</Typography>}
               labelPlacement="start"
             />
           </BackgroundOptionsContainer>
