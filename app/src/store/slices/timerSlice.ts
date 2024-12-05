@@ -9,7 +9,7 @@ import { AppDispatch, RootState } from '../';
 import { ReadyToContinue } from '../../api/types/incoming/timer';
 import { notifications } from '../../commonComponents';
 import { ParticipantId, TimerKind, TimerStopKind, TimerStyle, Timestamp } from '../../types';
-import { joinSuccess } from '../commonActions';
+import { hangUp, joinSuccess } from '../commonActions';
 import { getLivekitRoom } from './livekitSlice';
 
 interface State {
@@ -105,6 +105,7 @@ export const timerSlice = createSlice({
         state.timerStopKind = undefined;
       }
     });
+    builder.addCase(hangUp.fulfilled, () => initialState);
   },
 });
 
