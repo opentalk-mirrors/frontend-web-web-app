@@ -80,13 +80,12 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
 
   const toggleAudio = useCallback(
     async (forcedState?: boolean) => {
-      if (forcedState || !audioEnabled) {
-        await startMedia(true);
-        room?.localParticipant.setMicrophoneEnabled(true);
-      } else {
-        mediaChoices?.saveAudioInputEnabled(false);
-        room?.localParticipant.setMicrophoneEnabled(false);
-      }
+      const shouldEnable =
+        forcedState !== undefined ? forcedState : !(audioEnabled || room?.localParticipant.isMicrophoneEnabled);
+
+      await startMedia(shouldEnable);
+      mediaChoices?.saveAudioInputEnabled(shouldEnable);
+      room?.localParticipant.setMicrophoneEnabled(shouldEnable);
     },
     [room, audioEnabled, startMedia, mediaChoices?.saveAudioInputEnabled]
   );
