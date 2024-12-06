@@ -141,7 +141,7 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
   return (
     <Container data-testid="SecondaryNavigation">
       {isDesktop && (
-        <Typography variant="h1" variantMapping={{ h1: 'h2' }} color="secondary" ml={4} mr={4}>
+        <Typography variant="h1" color="secondary" ml={4} mr={4}>
           {t(label)}
         </Typography>
       )}

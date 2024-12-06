@@ -18,10 +18,10 @@ const SettingsProfilePage = () => {
 
   return (
     <>
-      <VisuallyHiddenTitle label={pageHeading} component="h1" />
+      <VisuallyHiddenTitle label={pageHeading} component="h2" />
       <Stack spacing={5}>
         <Stack spacing={3}>
-          <Typography variant="h1" component="h2">
+          <Typography variant="h1" component="h3">
             {t('dashboard-settings-profile-picture')}
           </Typography>
           <RequiredFieldsInfo />
