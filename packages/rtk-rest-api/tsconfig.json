@@ -3,6 +3,7 @@
   "include": ["src/**/*.ts", "index.ts"],
   "compilerOptions": {
     "declaration": true,
+    "declarationDir": "types",
     "target": "es6",
     "moduleResolution": "node",
     "isolatedModules": true,

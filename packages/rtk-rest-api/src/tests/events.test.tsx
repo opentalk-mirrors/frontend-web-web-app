@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { act } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, waitFor, renderHook } from '@testing-library/react';
 import { setupServer } from 'msw/node';
 
 import { createOpenTalkApiWithReactHooks } from '../endpoints';
@@ -31,29 +30,40 @@ afterAll(() => server.close());
 describe('Event Endpoints', () => {
   describe('GET', () => {
     test('should return multiple events', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useGetEventsQuery({}), {
+      const { result } = renderHook(() => useGetEventsQuery({}), {
         wrapper: storeRef.wrapper,
       });
-      await waitForNextUpdate();
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toBe(false);
+      });
+
       const { data: event } = result.current;
       expect(event?.data).toContainEqual(camelcaseKeysDeep(generateMockEvent(1, 'untimed')));
     });
 
     test('should be paginated', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useGetEventsQuery({}), {
+      const { result } = renderHook(() => useGetEventsQuery({}), {
         wrapper: storeRef.wrapper,
       });
-      await waitForNextUpdate();
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toBe(false);
+      });
+
       const { data: events } = result.current;
       expect(events?.after).toBeDefined();
     });
 
     test('should accept after cursor', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useGetEventsQuery({ after: '1' }), {
+      const { result } = renderHook(() => useGetEventsQuery({ after: '1' }), {
         wrapper: storeRef.wrapper,
       });
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isFetching).toBe(false);
+      });
+
       const { data: events } = result.current;
       expect(events?.after).toBeDefined();
     });
@@ -61,7 +71,7 @@ describe('Event Endpoints', () => {
 
   describe('DELETE', () => {
     test('success useDeleteEventMutation', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useDeleteEventMutation(), {
+      const { result } = renderHook(() => useDeleteEventMutation(), {
         wrapper: storeRef.wrapper,
       });
       const [deleteEvent] = result.current;
@@ -70,16 +80,17 @@ describe('Event Endpoints', () => {
         deleteEvent('SUCCESS' as EventId);
       });
 
-      await waitForNextUpdate();
-      const [, data] = result.current;
+      await waitFor(() => {
+        expect(result.current[1].isSuccess).toBeTruthy();
+      });
 
-      expect(data.isSuccess).toBeTruthy();
+      const [, data] = result.current;
       expect(data.isError).toBeFalsy();
       expect(data.endpointName).toEqual('deleteEvent');
     });
 
     test('failing useDeleteEventMutation', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useDeleteEventMutation(), {
+      const { result } = renderHook(() => useDeleteEventMutation(), {
         wrapper: storeRef.wrapper,
       });
       const [deleteEvent] = result.current;
@@ -88,11 +99,12 @@ describe('Event Endpoints', () => {
         deleteEvent('NOT_FOUND' as EventId);
       });
 
-      await waitForNextUpdate();
-      const [, data] = result.current;
+      await waitFor(() => {
+        expect(result.current[1].isError).toBeTruthy();
+      });
 
+      const [, data] = result.current;
       expect(data.isSuccess).toBeFalsy();
-      expect(data.isError).toBeTruthy();
       expect(data.endpointName).toEqual('deleteEvent');
       expect(data.error).toEqual({ status: 404, data: null });
     });

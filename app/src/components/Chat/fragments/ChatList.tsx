@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, List, ListItem, styled, Typography, Stack } from '@mui/material';
+import { Box, List, ListItem, Stack, Typography, styled } from '@mui/material';
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ViewportList, ViewportListRef } from 'react-viewport-list';
@@ -11,7 +11,7 @@ import { useAppSelector } from '../../../hooks';
 import { selectCombinedMessageAndEvents } from '../../../store/selectors';
 import type { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectChatSearchValue } from '../../../store/slices/uiSlice';
-import { ParticipantId, TargetId, ChatScope, ChatMessage as ChatMessageType } from '../../../types';
+import { ChatMessage as ChatMessageType, ChatScope, ParticipantId, TargetId } from '../../../types';
 import ChatMessage from './ChatMessage';
 import NoSearchResult from './NoSearchResult';
 
@@ -35,11 +35,7 @@ type ChatListProps = {
   onReset?: () => void;
 };
 
-const defaultProps: ChatListProps = {
-  scope: ChatScope.Global,
-};
-
-const ChatList = ({ scope, targetId, onReset }: ChatListProps) => {
+const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps) => {
   // Everytime selectCombinedMessageAndEvents is called new array is returned regardless of changes.
   const combinedMessageAndEvents = useAppSelector(selectCombinedMessageAndEvents(scope, targetId));
   const { t } = useTranslation();
@@ -163,7 +159,5 @@ const ChatList = ({ scope, targetId, onReset }: ChatListProps) => {
     </Stack>
   );
 };
-
-ChatList.defaultProps = defaultProps;
 
 export default ChatList;

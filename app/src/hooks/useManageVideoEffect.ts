@@ -45,7 +45,6 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
   useEffect(() => {
     const isRoomConnected = room?.state === ConnectionState.Connected;
     const processor = localVideoTrack?.getProcessor();
-    let dismounted = false;
 
     let videoCaptureOptions: VideoCaptureOptions = {
       deviceId,
@@ -67,17 +66,9 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
 
     if (!isLobby && isRoomConnected) {
       room.localParticipant.setCameraEnabled(isUserVideoEnabled, videoCaptureOptions).then((publication) => {
-        if (dismounted) {
-          room.localParticipant.setCameraEnabled(false);
-          return;
-        }
-
         setLocalVideoTrack(publication?.videoTrack);
       });
     }
-    return () => {
-      dismounted = true;
-    };
   }, [
     deviceId,
     isLobby,

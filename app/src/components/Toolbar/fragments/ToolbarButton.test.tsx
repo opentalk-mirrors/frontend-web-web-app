@@ -28,9 +28,9 @@ describe('<ToolbarButton />', () => {
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    expect(screen.getByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
     expect(screen.getByTestId('toolbarChildrenTest')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'toolbarToggleButton' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'toolbarToggleButton' })).toBeInTheDocument();
   });
 
   test('render ToolbarButton without context', async () => {
@@ -39,7 +39,7 @@ describe('<ToolbarButton />', () => {
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    expect(screen.getByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
     expect(screen.getByTestId('toolbarChildrenTest')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'toolbarToggleButton' })).not.toBeInTheDocument();
   });
@@ -50,7 +50,7 @@ describe('<ToolbarButton />', () => {
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    const button = screen.getByRole('button', { name: 'toolbarMainButton' });
+    const button = await screen.findByRole('button', { name: 'toolbarMainButton' });
 
     expect(button).toBeInTheDocument();
     fireEvent.click(button);
@@ -63,7 +63,7 @@ describe('<ToolbarButton />', () => {
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    const button = screen.getByRole('button', { name: 'toolbarMainButton' });
+    const button = await screen.findByRole('button', { name: 'toolbarMainButton' });
 
     expect(button).toBeInTheDocument();
     expect(button).toBeDisabled();
@@ -77,7 +77,7 @@ describe('<ToolbarButton />', () => {
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    const toggleButton = screen.getByRole('button', { name: 'toolbarToggleButton' });
+    const toggleButton = await screen.findByRole('button', { name: 'toolbarToggleButton' });
     expect(toggleButton).toBeInTheDocument();
     fireEvent.click(toggleButton);
     expect(handleClick).toHaveBeenCalledTimes(1);

@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { act } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, waitFor, renderHook } from '@testing-library/react';
 import { setupServer } from 'msw/node';
 
 import { createOpenTalkApiWithReactHooks } from '../endpoints';
@@ -29,23 +28,23 @@ beforeAll(() => {
 });
 
 // Reset any request handlers that we may add during the tests,
-
 // so they don't affect other tests.
-
 afterEach(() => server.resetHandlers());
 
 // Clean up after the tests are finished.
-
 afterAll(() => server.close());
 
 describe('', () => {
   describe('useGetMeQuery', () => {
     test('should return event', async () => {
       const { useGetMeQuery } = api;
-      const { result, waitForNextUpdate } = renderHook(() => useGetMeQuery(), {
+      const { result } = renderHook(() => useGetMeQuery(), {
         wrapper: storeRef.wrapper,
       });
-      await waitForNextUpdate();
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toBe(false);
+      });
 
       const { data: me } = result.current;
       expect(me).toEqual(camelcaseKeysDeep({ ...generateMockUser(1), theme: 'string', language: 'string' }));
@@ -55,10 +54,13 @@ describe('', () => {
   describe('useFindUsersQuery', () => {
     test('should return users', async () => {
       const { useFindUsersQuery } = api;
-      const { result, waitForNextUpdate } = renderHook(() => useFindUsersQuery({ q: 'Number 2' }), {
+      const { result } = renderHook(() => useFindUsersQuery({ q: 'Number 2' }), {
         wrapper: storeRef.wrapper,
       });
-      await waitForNextUpdate();
+
+      await waitFor(() => {
+        expect(result.current.isFetching).toBe(false);
+      });
 
       const { data: users } = result.current;
       expect(users).toContainEqual(camelcaseKeysDeep({ ...generateMockUser(2) }));
@@ -68,7 +70,7 @@ describe('', () => {
   describe('useMarkFavoriteEventMutation', () => {
     test('mark event successful', async () => {
       const { useMarkFavoriteEventMutation } = api;
-      const { result, waitForNextUpdate } = renderHook(() => useMarkFavoriteEventMutation(), {
+      const { result } = renderHook(() => useMarkFavoriteEventMutation(), {
         wrapper: storeRef.wrapper,
       });
       const [markEvent] = result.current;
@@ -77,17 +79,18 @@ describe('', () => {
         markEvent('SUCCESS' as EventId);
       });
 
-      await waitForNextUpdate();
-      const [, data] = result.current;
+      await waitFor(() => {
+        expect(result.current[1].isSuccess).toBeTruthy();
+      });
 
-      expect(data.isSuccess).toBeTruthy();
+      const [, data] = result.current;
       expect(data.isError).toBeFalsy();
       expect(data.endpointName).toEqual('markFavoriteEvent');
     });
 
     test('mark event unsuccessful', async () => {
       const { useMarkFavoriteEventMutation } = api;
-      const { result, waitForNextUpdate } = renderHook(() => useMarkFavoriteEventMutation(), {
+      const { result } = renderHook(() => useMarkFavoriteEventMutation(), {
         wrapper: storeRef.wrapper,
       });
       const [markEvent] = result.current;
@@ -96,11 +99,12 @@ describe('', () => {
         markEvent('NOT_FOUND' as EventId);
       });
 
-      await waitForNextUpdate();
-      const [, data] = result.current;
+      await waitFor(() => {
+        expect(result.current[1].isError).toBeTruthy();
+      });
 
+      const [, data] = result.current;
       expect(data.isSuccess).toBeFalsy();
-      expect(data.isError).toBeTruthy();
       expect(data.endpointName).toEqual('markFavoriteEvent');
       expect(data.error).toEqual({ status: 404, data: null });
     });
@@ -109,7 +113,7 @@ describe('', () => {
   describe('useUnmarkFavoriteEventMutation', () => {
     test('mark event successful', async () => {
       const { useUnmarkFavoriteEventMutation } = api;
-      const { result, waitForNextUpdate } = renderHook(() => useUnmarkFavoriteEventMutation(), {
+      const { result } = renderHook(() => useUnmarkFavoriteEventMutation(), {
         wrapper: storeRef.wrapper,
       });
       const [unmarkEvent] = result.current;
@@ -118,17 +122,18 @@ describe('', () => {
         unmarkEvent('SUCCESS' as EventId);
       });
 
-      await waitForNextUpdate();
-      const [, data] = result.current;
+      await waitFor(() => {
+        expect(result.current[1].isSuccess).toBeTruthy();
+      });
 
-      expect(data.isSuccess).toBeTruthy();
+      const [, data] = result.current;
       expect(data.isError).toBeFalsy();
       expect(data.endpointName).toEqual('unmarkFavoriteEvent');
     });
 
     test('mark event unsuccessful', async () => {
       const { useUnmarkFavoriteEventMutation } = api;
-      const { result, waitForNextUpdate } = renderHook(() => useUnmarkFavoriteEventMutation(), {
+      const { result } = renderHook(() => useUnmarkFavoriteEventMutation(), {
         wrapper: storeRef.wrapper,
       });
       const [unmarkEvent] = result.current;
@@ -137,11 +142,12 @@ describe('', () => {
         unmarkEvent('NOT_FOUND' as EventId);
       });
 
-      await waitForNextUpdate();
-      const [, data] = result.current;
+      await waitFor(() => {
+        expect(result.current[1].isError).toBeTruthy();
+      });
 
+      const [, data] = result.current;
       expect(data.isSuccess).toBeFalsy();
-      expect(data.isError).toBeTruthy();
       expect(data.endpointName).toEqual('unmarkFavoriteEvent');
       expect(data.error).toEqual({ status: 404, data: null });
     });

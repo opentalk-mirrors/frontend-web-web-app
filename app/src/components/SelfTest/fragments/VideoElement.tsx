@@ -53,14 +53,9 @@ const VideoElement = () => {
   const [videoTrack, setLocalVideoTrack] = useState<LocalVideoTrack | undefined>();
 
   useEffect(() => {
-    let dismounted = false;
     mediaChoices?.userChoices.videoEnabled &&
       createLocalVideoTrack({ deviceId: mediaChoices?.userChoices.videoDeviceId })
         .then((videoTrack) => {
-          if (dismounted) {
-            return;
-          }
-
           setLocalVideoTrack(videoTrack);
         })
         .catch((err) => {
@@ -69,9 +64,6 @@ const VideoElement = () => {
             console.error('Error while publishing video track: ', err);
           }
         });
-    return () => {
-      dismounted = true;
-    };
   }, [
     mediaChoices?.userChoices.videoDeviceId,
     mediaChoices?.userChoices.videoEnabled,

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { ParticipationKind } from '../../types';
@@ -26,15 +27,21 @@ describe('<SecurityBadge />', () => {
   it('should close popover if its opened and button is clicked again', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
     await render(<SecurityBadge />, store);
-
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
     await act(async () => {
       await userEvent.click(button);
+    });
+
+    expect(screen.getByRole('heading', { name: 'secure-connection-title' })).toBeInTheDocument();
+
+    await act(async () => {
       await userEvent.click(button);
     });
 
-    const popoverTitle = screen.queryByRole('heading', { name: 'secure-connection-title' });
-    expect(popoverTitle).not.toBeInTheDocument();
+    await waitFor(() => {
+      const popoverTitle = screen.queryByRole('heading', { name: 'secure-connection-title' });
+      expect(popoverTitle).not.toBeInTheDocument();
+    });
   });
   it('should open popover if button is focused and "Enter" pressed', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
@@ -99,7 +106,10 @@ describe('<SecurityBadge />', () => {
     await act(async () => {
       await userEvent.keyboard('[Escape]');
     });
-    expect(popoverTitle).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(popoverTitle).not.toBeInTheDocument();
+    });
   });
   it('should show the guest participant popover message when a guest is present', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, { participantKinds: [ParticipationKind.Guest] });
@@ -117,7 +127,9 @@ describe('<SecurityBadge />', () => {
     await act(async () => {
       await userEvent.click(button);
     });
-    expect(screen.queryByText('secure-connection-guests')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText('secure-connection-guests')).not.toBeInTheDocument();
+    });
   });
   it('should show the sip participant popover message when a sip user is present', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, { participantKinds: [ParticipationKind.Sip] });
@@ -137,7 +149,9 @@ describe('<SecurityBadge />', () => {
       await userEvent.click(button);
     });
 
-    expect(screen.queryByText('secure-connection-sip')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText('secure-connection-sip')).not.toBeInTheDocument();
+    });
   });
   it('should show the mixed popover message when a sip user and a guest user is present', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {
@@ -159,7 +173,8 @@ describe('<SecurityBadge />', () => {
     await act(async () => {
       await userEvent.click(button);
     });
-
-    expect(screen.queryByText('secure-connection-contaminated')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText('secure-connection-contaminated')).not.toBeInTheDocument();
+    });
   });
 });
