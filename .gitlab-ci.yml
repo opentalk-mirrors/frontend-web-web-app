@@ -64,7 +64,7 @@ lint:compliance:
     - *setup-pnpm
     - pnpm install
   script:
-    - pnpm dlx licensee --production --errors-only
+    - pnpm licensee --production --errors-only
 
 lint:licensing:
   stage: lint
