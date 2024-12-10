@@ -27,11 +27,7 @@ interface IUseRoomOptions {
   isWhisperRoom?: boolean;
 }
 
-const useRoom = ({
-  audioInputEnabled = false,
-  videoInputEnabled = false,
-  isWhisperRoom = false,
-}: IUseRoomOptions = {}): Room | undefined => {
+const useRoom = ({ audioInputEnabled, videoInputEnabled, isWhisperRoom }: IUseRoomOptions): Room | undefined => {
   const { t } = useTranslation();
   const keyProvider = useMemo(() => new ExternalE2EEKeyProvider(), []);
   const { worker, e2eePassphrase, e2eeEnabled } = useE2EE();
@@ -39,9 +35,9 @@ const useRoom = ({
   const mediaChoices = useMediaChoices();
 
   useEffect(() => {
-    mediaChoices?.saveAudioInputEnabled(audioInputEnabled);
-    mediaChoices?.saveVideoInputEnabled(videoInputEnabled);
-  }, [mediaChoices?.saveAudioInputEnabled, mediaChoices?.saveVideoInputEnabled]);
+    audioInputEnabled && mediaChoices?.saveAudioInputEnabled(audioInputEnabled);
+    videoInputEnabled && mediaChoices?.saveVideoInputEnabled(videoInputEnabled);
+  }, [mediaChoices?.saveAudioInputEnabled, mediaChoices?.saveVideoInputEnabled, audioInputEnabled, videoInputEnabled]);
 
   const roomOptions = useMemo(
     () =>

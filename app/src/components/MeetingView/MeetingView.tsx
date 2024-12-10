@@ -58,7 +58,7 @@ const MeetingView = () => {
   const publicUrl = useAppSelector(selectLivekitPublicUrl);
   const whisperToken = useAppSelector(selectSubroomAudioToken);
 
-  const room = useRoom();
+  const room = useRoom({});
   const whisperRoom = useRoom({ videoInputEnabled: false, isWhisperRoom: true });
   useHotkeys(room, whisperRoom);
 
