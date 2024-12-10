@@ -35,8 +35,8 @@ const useRoom = ({ audioInputEnabled, videoInputEnabled, isWhisperRoom }: IUseRo
   const mediaChoices = useMediaChoices();
 
   useEffect(() => {
-    audioInputEnabled && mediaChoices?.saveAudioInputEnabled(audioInputEnabled);
-    videoInputEnabled && mediaChoices?.saveVideoInputEnabled(videoInputEnabled);
+    audioInputEnabled !== undefined && mediaChoices?.saveAudioInputEnabled(audioInputEnabled);
+    videoInputEnabled !== undefined && mediaChoices?.saveVideoInputEnabled(videoInputEnabled);
   }, [mediaChoices?.saveAudioInputEnabled, mediaChoices?.saveVideoInputEnabled, audioInputEnabled, videoInputEnabled]);
 
   const roomOptions = useMemo(
