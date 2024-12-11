@@ -621,6 +621,7 @@ selftest-body = You might want to turn on your camera and microphone here and te
 selftest-body-do-test = Camera and microphone can be tested here.
 lobby-name-placeholder = Your name please
 lobby-password-placeholder = Password please
+lobby-name-max-error = Max. {$max} characters
 dashboard-home-join = Start
 dashboard-home-created-by = Created by {$author}
 global-state-active = active

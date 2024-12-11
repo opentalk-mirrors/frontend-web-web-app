@@ -621,6 +621,7 @@ selftest-body = Kamera und Mikrofon können hier aktiviert und getestet werden.
 selftest-body-do-test = Kamera und Mikrofon können hier getestet werden.
 lobby-name-placeholder = Bitte Name eingeben
 lobby-password-placeholder = Passwort bitte
+lobby-name-max-error = Max. {$max} Buchstaben
 dashboard-home-join = Starten
 dashboard-home-created-by = Erstellt von {$author}
 global-state-active = aktiv

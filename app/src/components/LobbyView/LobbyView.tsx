@@ -60,6 +60,7 @@ const CommonTextField = styled(DefaultCommonTextField)(({ theme }) => ({
 }));
 
 const CustomTextField = styled(CommonTextField)(({ theme }) => ({
+  maxWidth: theme.typography.pxToRem(235),
   [theme.breakpoints.up('sm')]: {
     minWidth: theme.typography.pxToRem(220),
   },
@@ -94,6 +95,7 @@ const showWrongPasswordNotification = () => {
 };
 
 const JOIN_FORM_ID = 'join-form';
+const DISPLAY_NAME_MAX_CHARACTERS = 100;
 
 const LobbyView = () => {
   const { t } = useTranslation();
@@ -163,6 +165,7 @@ const LobbyView = () => {
         name: yup
           .string()
           .trim()
+          .max(DISPLAY_NAME_MAX_CHARACTERS, t('lobby-name-max-error', { max: DISPLAY_NAME_MAX_CHARACTERS }))
           .required(t('field-error-required', { fieldName: 'Name' })),
       }),
     [t]
