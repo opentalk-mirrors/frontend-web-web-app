@@ -29,7 +29,7 @@ const useE2EE = () => {
 
   useEffect(() => {
     if (roomData?.e2EEncryption && !worker && e2eePassphrase) {
-      const newWorker = new Worker(new URL('livekit-client/e2ee-worker', `file://${__filename}`));
+      const newWorker = new Worker(new URL('livekit-client/e2ee-worker', import.meta.url));
       setWorker(newWorker);
     }
     return () => {
