@@ -80,7 +80,11 @@ const ShortcutListDialog = (props: ShortcutListDialogProps) => {
             id={switchId}
             checked={hotkeysEnabled}
             onChange={() => dispatch(setHotkeysEnabled(!hotkeysEnabled))}
-            onKeyDown={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.code === 'Space') {
+                e.stopPropagation();
+              }
+            }}
             onKeyUp={(e) => e.stopPropagation()}
             /* eslint-disable jsx-a11y/no-autofocus */
             // We want screen reader to jump to the first interactive element

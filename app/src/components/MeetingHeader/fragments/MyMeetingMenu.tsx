@@ -108,7 +108,6 @@ const MyMeetingMenu = () => {
         name: 'my-meeting-menu-user-manual',
         icon: <HelpIcon />,
         onClick: () => {
-          setAnchorElement(null);
           setActiveMenu(MenuItemsKey.UserManual);
           openUserManual();
         },
@@ -118,7 +117,6 @@ const MyMeetingMenu = () => {
         name: 'my-meeting-menu-keyboard-shortcuts',
         icon: <HelpSquareIcon />,
         onClick: () => {
-          setAnchorElement(null);
           setActiveMenu(MenuItemsKey.KeyboardShortcuts);
         },
       },
@@ -130,7 +128,6 @@ const MyMeetingMenu = () => {
         name: 'my-meeting-menu-glitchtip-trigger',
         icon: <BugIcon />,
         onClick: () => {
-          setAnchorElement(null);
           triggerGlitchtipManually();
         },
       });
