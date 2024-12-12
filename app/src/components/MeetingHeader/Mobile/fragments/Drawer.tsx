@@ -20,6 +20,7 @@ import {
   setIsDrawerOpen,
 } from '../../../../store/slices/uiSlice';
 import { selectIsModerator } from '../../../../store/slices/userSlice';
+import { generateUniqueId } from '../../../../utils/stringUtils';
 import { DrawerButton } from './DrawerButton';
 import DrawerTab from './DrawerTab';
 
@@ -58,6 +59,8 @@ const Drawer = () => {
   const handleSetActiveTab = (tabKey: ModerationTabKey) => dispatch(setActiveTab(tabKey));
 
   const { t } = useTranslation();
+
+  const drawerId = generateUniqueId();
 
   const getTabTitle = (tab: Tab) => {
     if (tab.titleKey) {
@@ -144,8 +147,8 @@ const Drawer = () => {
 
   return (
     <>
-      <DrawerButton onClick={toggle} />
-      <StyledDrawer open={isDrawerOpen} onClose={close}>
+      <DrawerButton onClick={toggle} expanded={isDrawerOpen} controls={drawerId} />
+      <StyledDrawer open={isDrawerOpen} onClose={close} id={drawerId}>
         <DrawerContentContainer component="ul">
           {renderTabs(isModerator ? mobileModerationTabs : mobileParticipantTabs)}
         </DrawerContentContainer>

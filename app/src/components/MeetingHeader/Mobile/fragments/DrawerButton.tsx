@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { LogoSmallIcon } from '../../../../assets/icons';
 import { IconButton as DefaultIconButton } from '../../../../commonComponents';
@@ -37,9 +38,11 @@ const ButtonIndicator = styled(Indicator)({
 
 type DrawerButtonProps = {
   onClick(): void;
+  expanded?: boolean;
+  controls?: string;
 };
 
-export const DrawerButton = ({ onClick }: DrawerButtonProps) => {
+export const DrawerButton = ({ onClick, expanded, controls }: DrawerButtonProps) => {
   const isModerator = useAppSelector(selectIsModerator);
   const unreadGlobalMessageCount = useAppSelector(selectUnreadGlobalMessageCount);
   const unreadPersonalMessageCount = useAppSelector(selectUnreadPersonalMessageCount);
@@ -52,6 +55,7 @@ export const DrawerButton = ({ onClick }: DrawerButtonProps) => {
   const haveSeenMobilePollsAndVotes = useAppSelector(selectHaveSeenMobilePollsAndVotes);
   const showWaitingRoomIndicator = isModerator && hasParticipantsWaiting;
   const showPollAndVoteIndicator = !isModerator && voteAndPollCount > 0 && !haveSeenMobilePollsAndVotes;
+  const { t } = useTranslation();
 
   const showIndicator =
     hasUnreadMessages ||
@@ -61,7 +65,13 @@ export const DrawerButton = ({ onClick }: DrawerButtonProps) => {
     showPollAndVoteIndicator;
 
   return (
-    <IconButton onClick={onClick}>
+    <IconButton
+      onClick={onClick}
+      aria-expanded={expanded}
+      aria-controls={controls}
+      onKeyDown={(event) => event.stopPropagation()}
+      aria-label={t('mobile-drawer-button-label')}
+    >
       <LogoSmallIcon />
       {showIndicator && <ButtonIndicator />}
     </IconButton>
