@@ -53,8 +53,8 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
         ...this.options.segmenterOptions,
       },
       runningMode: 'VIDEO',
-      outputCategoryMask: true,
-      outputConfidenceMasks: false,
+      outputCategoryMask: false,
+      outputConfidenceMasks: true,
     });
 
     // Skip loading the image here if update already loaded the image below
@@ -125,19 +125,15 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
 
   async drawVirtualBackground(frame: VideoFrame) {
     if (!this.canvas || !this.ctx || !this.segmentationResults || !this.inputVideo) return;
-    // this.ctx.save();
-    // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    if (this.segmentationResults?.categoryMask) {
-      this.ctx.filter = 'blur(10px)';
-      this.ctx.globalCompositeOperation = 'copy';
-      const bitmap = await maskToBitmap(
-        this.segmentationResults.categoryMask,
-        this.segmentationResults.categoryMask.width,
-        this.segmentationResults.categoryMask.height,
-      );
-      this.ctx.drawImage(bitmap, 0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.save();
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.segmentationResults?.confidenceMasks) {
       this.ctx.filter = 'none';
-      this.ctx.globalCompositeOperation = 'source-in';
+      this.ctx.globalCompositeOperation = 'source-out';
+
+      const alphabitmap = await alphaCorrection(this.segmentationResults.confidenceMasks);
+      this.ctx?.drawImage(alphabitmap, 0, 0, this.canvas.width, this.canvas.height);
+
       if (this.backgroundImage) {
         this.ctx.drawImage(
           this.backgroundImage,
@@ -158,53 +154,58 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
       this.ctx.globalCompositeOperation = 'destination-over';
     }
     this.ctx.drawImage(frame, 0, 0, this.canvas.width, this.canvas.height);
-    // this.ctx.restore();
+    this.ctx.restore();
   }
 
   async blurBackground(frame: VideoFrame) {
     if (
       !this.ctx ||
       !this.canvas ||
-      !this.segmentationResults?.categoryMask?.canvas ||
+      !this.segmentationResults?.confidenceMasks ||
       !this.inputVideo
     ) {
       return;
     }
 
     this.ctx.save();
-    this.ctx.globalCompositeOperation = 'copy';
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.segmentationResults?.confidenceMasks) {
+      this.ctx.filter = 'none';
+      this.ctx.globalCompositeOperation = 'source-out';
 
-    const bitmap = await maskToBitmap(
-      this.segmentationResults.categoryMask,
-      this.segmentationResults.categoryMask.width,
-      this.segmentationResults.categoryMask.height,
-    );
-
-    this.ctx.filter = 'blur(3px)';
-    this.ctx.globalCompositeOperation = 'copy';
-    this.ctx.drawImage(bitmap, 0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.filter = 'none';
-    this.ctx.globalCompositeOperation = 'source-out';
-    this.ctx.drawImage(frame, 0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.globalCompositeOperation = 'destination-over';
-    this.ctx.filter = `blur(${this.blurRadius}px)`;
-    this.ctx.drawImage(frame, 0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.restore();
+      const alphabitmap = await alphaCorrection(this.segmentationResults.confidenceMasks);
+      this.ctx?.drawImage(alphabitmap, 0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.globalCompositeOperation = 'source-in';
+      this.ctx.drawImage(frame, 0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.globalCompositeOperation = 'destination-over';
+      this.ctx.filter = `blur(${this.blurRadius}px)`;
+      this.ctx.drawImage(frame, 0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.restore();
+    }
   }
 }
 
-function maskToBitmap(
-  mask: vision.MPMask,
-  videoWidth: number,
-  videoHeight: number,
-): Promise<ImageBitmap> {
+function alphaCorrection(confidenceMasks: vision.MPMask[]): Promise<ImageBitmap> {
+  const result = confidenceMasks[0].getAsUint8Array();
+  const videoHeight = confidenceMasks[0].height;
+  const videoWidth = confidenceMasks[0].width;
   const dataArray: Uint8ClampedArray = new Uint8ClampedArray(videoWidth * videoHeight * 4);
-  const result = mask.getAsUint8Array();
-  for (let i = 0; i < result.length; i += 1) {
-    dataArray[i * 4] = result[i];
-    dataArray[i * 4 + 1] = result[i];
-    dataArray[i * 4 + 2] = result[i];
-    dataArray[i * 4 + 3] = result[i];
+  const minConfidence = 0.3;
+  const maxConfidence = 0.8;
+  const confidenceRange = maxConfidence - minConfidence;
+  const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, min), max);
+
+  for (let i = 0; i < result.length; i++) {
+    const confidence = result[i];
+    const index = i * 4;
+    dataArray[index] = confidence;
+    dataArray[index + 1] = confidence;
+    dataArray[index + 2] = confidence;
+    // Aplha blending in the edge area to smooth the mask corners
+    const edgeAlpha = (confidence - minConfidence) / confidenceRange;
+    const alpha = clamp(edgeAlpha, 0, 1);
+
+    dataArray[index + 3] = confidence * alpha; // set mask alpha value
   }
   const dataNew = new ImageData(dataArray, videoWidth, videoHeight);
 
