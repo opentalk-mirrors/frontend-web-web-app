@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2024-12-12
+
+### 🚀 New features
+
+- Meeting attendance report ([!1436](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1436), [#1534](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1534))
+- (user manual) Replace quickguide with user manual ([!1508](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1508), [#2240](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2240), [#2241](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2241), [#2242](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2242))
+- Add optional id prop to ErrorFormMessage component ([!1506](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1506))
+- Enhance DateTimePicker accessibility with aria-describedby and error message id ([!1506](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1506))
+- Improve navigation accessibility with aria-label and aria-expanded attributes ([!1509](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1509))
+- (subroom audio) Introduce subroom audio ([!1503](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1503), [#2259](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2259))
+- Add option to unsubscribe remote videos ([!1470](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1470))
+
+### 🥰 User experience
+
+- (ux) A11y correct description of People tab ([!1504](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1504))
+- (ux) A11y: improve headline structure ([!1507](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1507))
+
+### 🐛 Bug fixes
+
+- Add blurring for Firefox to track-processor ([!1486](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1486))
+- (Profile) Add missing required field indicator ([!1505](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1505))
+- (LegalVote) Update participant selection to use id over index ([!1512](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1512))
+- Update focus styles for emoji picker search input ([!1514](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1514))
+- Reset timer state on hang up action ([!1513](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1513))
+- (ci) Compliance job by using local version of licensee ([!1522](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1522))
+- Set active grid page when joining after 9th participant ([!1520](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1520))
+- Preserve media choices when joining the conference ([!1518](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1518))
+- Worker creation for e2e encryption ([!1523](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1523))
+- (auth) Stuck on page after email verification ([!1510](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1510))
+- (lobby) Add max character limit for display name ([!1515](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1515))
+
+### ⚙ Miscellaneous
+
+- Introduce hot reload for translation files in dev mode ([!1511](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1511), [#2269](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2269))
+- Added track-processor package in the app ([!1486](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1486))
+
 ## 2.1.0 - 2024-11-21
 
 ### 🚀 New features
