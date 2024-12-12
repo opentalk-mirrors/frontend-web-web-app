@@ -8,6 +8,7 @@ import {
   Participant,
   ParticipantEvent,
   RemoteParticipant,
+  RemoteTrack,
   RemoteTrackPublication,
   Room,
   RoomEvent,
@@ -137,6 +138,15 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
     room.engine,
   ]);
 
+  const handleTrackSubscribed = useCallback(
+    (_: RemoteTrack, publication: RemoteTrackPublication, participant: RemoteParticipant) => {
+      if (publication.isEncrypted) {
+        console.debug(`subscribed encrypted ${publication.kind} stream from user with ID:`, participant.identity);
+      }
+    },
+    []
+  );
+
   useEffect(() => {
     room.on(RoomEvent.Connected, handleRoomConnected);
     room.on(RoomEvent.TrackPublished, handleTrackPublished);
@@ -144,6 +154,7 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
     room.on(RoomEvent.LocalTrackPublished, handleTrackMuteState);
     room.on(RoomEvent.TrackMuted, handleTrackMuteState);
     room.on(RoomEvent.TrackUnmuted, handleTrackMuteState);
+    room.on(RoomEvent.TrackSubscribed, handleTrackSubscribed);
     localParticipant?.on(ParticipantEvent.TrackMuted, handleUpdateLastActive);
     localParticipant?.on(ParticipantEvent.TrackUnmuted, handleUpdateLastActive);
     localParticipant?.on(ParticipantEvent.LocalTrackPublished, handleUpdateLastActive);
@@ -157,6 +168,7 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
       room.off(RoomEvent.LocalTrackPublished, handleTrackMuteState);
       room.off(RoomEvent.TrackMuted, handleTrackMuteState);
       room.off(RoomEvent.TrackUnmuted, handleTrackMuteState);
+      room.off(RoomEvent.TrackSubscribed, handleTrackSubscribed);
       localParticipant?.off(ParticipantEvent.TrackMuted, handleUpdateLastActive);
       localParticipant?.off(ParticipantEvent.TrackUnmuted, handleUpdateLastActive);
       localParticipant?.off(ParticipantEvent.LocalTrackPublished, handleUpdateLastActive);
@@ -174,6 +186,7 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
     handleUpdateLastActive,
     handlePermissionChanged,
     handleRoomConnected,
+    handleTrackSubscribed,
   ]);
 };
 

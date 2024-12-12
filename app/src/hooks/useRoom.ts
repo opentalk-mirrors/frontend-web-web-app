@@ -18,19 +18,25 @@ import { useMediaChoices } from '../provider/MediaChoicesProvider';
 import { setLivekitRoom } from '../store/slices/livekitSlice';
 import { selectShouldForceMuted } from '../store/slices/moderationSlice';
 import { useAppSelector } from './index';
-import useE2EE from './useE2EE';
+import { E2EEData } from './useE2EE';
 import useLivekitEvents from './useLivekitEvents';
 
 interface IUseRoomOptions {
+  e2eeData: E2EEData;
   audioInputEnabled?: boolean;
   videoInputEnabled?: boolean;
   isWhisperRoom?: boolean;
 }
 
-const useRoom = ({ audioInputEnabled, videoInputEnabled, isWhisperRoom }: IUseRoomOptions): Room | undefined => {
+const useRoom = ({
+  e2eeData,
+  audioInputEnabled,
+  videoInputEnabled,
+  isWhisperRoom,
+}: IUseRoomOptions): Room | undefined => {
   const { t } = useTranslation();
   const keyProvider = useMemo(() => new ExternalE2EEKeyProvider(), []);
-  const { worker, e2eePassphrase, e2eeEnabled } = useE2EE();
+  const { mainWorker, whisperWorker, e2eePassphrase, e2eeEnabled } = e2eeData;
   const shouldForceMuted = useAppSelector(selectShouldForceMuted);
   const mediaChoices = useMediaChoices();
 
@@ -38,6 +44,8 @@ const useRoom = ({ audioInputEnabled, videoInputEnabled, isWhisperRoom }: IUseRo
     audioInputEnabled !== undefined && mediaChoices?.saveAudioInputEnabled(audioInputEnabled);
     videoInputEnabled !== undefined && mediaChoices?.saveVideoInputEnabled(videoInputEnabled);
   }, [mediaChoices?.saveAudioInputEnabled, mediaChoices?.saveVideoInputEnabled, audioInputEnabled, videoInputEnabled]);
+
+  const worker = isWhisperRoom ? whisperWorker : mainWorker;
 
   const roomOptions = useMemo(
     () =>

@@ -5,6 +5,7 @@ import { LiveKitRoom } from '@livekit/components-react';
 import { CircularProgress, styled } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
+import useE2EE from '../../hooks/useE2EE';
 import useRoom from '../../hooks/useRoom';
 import Video from './fragments/Video';
 import { useBroadcastChannel } from './hooks/useBroadcastChannel';
@@ -18,8 +19,9 @@ const RoomContainer = styled(LiveKitRoom)({
 
 const ExtendedTabPage = () => {
   const { channelId } = useParams();
-  const { accessToken, mediaType, participantId, livekitUrl } = useBroadcastChannel(channelId);
-  const room = useRoom({ accessToken, audioInputEnabled: false, videoInputEnabled: false });
+  const { accessToken, mediaType, participantId, livekitUrl, roomId } = useBroadcastChannel(channelId);
+  const e2eeData = useE2EE(roomId);
+  const room = useRoom({ e2eeData, audioInputEnabled: false, videoInputEnabled: false });
 
   if (room === undefined || mediaType === undefined || participantId === undefined) {
     return <CircularProgress />;
