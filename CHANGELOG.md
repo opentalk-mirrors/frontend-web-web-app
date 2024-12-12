@@ -19,8 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🥰 User experience
 
-- (ux) A11y correct description of People tab ([!1504](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1504))
-- (ux) A11y: improve headline structure ([!1507](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1507))
+- A11y correct description of People tab ([!1504](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1504))
+- A11y: improve headline structure ([!1507](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1507))
 
 ### 🐛 Bug fixes
 
