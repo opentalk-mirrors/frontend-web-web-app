@@ -1,6 +1,6 @@
 {
   "name": "@opentalk/monorepo",
-  "version": "2.2.0-alpha",
+  "version": "2.3.0-alpha",
   "description": "OpenTalk Monorepo",
   "private": true,
   "scripts": {
