@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
-import { Grid, styled, Tooltip } from '@mui/material';
+import { Grid, Tooltip, styled } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
-import { ConnectionQuality, Track } from 'livekit-client';
+import { Track } from 'livekit-client';
 import { MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
@@ -28,7 +28,6 @@ import { pinnedParticipantIdSet, selectCinemaLayout, selectPinnedParticipantId }
 import { ParticipantId } from '../../../types';
 import BrokenSubscriberIndicator from './BrokenSubscriberIndicator';
 import { OverlayIconButton } from './OverlayIconButton';
-import Statistics from './Statistics';
 
 const OverlayContainer = styled(Grid)(({ theme }) => ({
   position: 'absolute',
@@ -74,7 +73,6 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const isVideoActive = participant?.isCameraEnabled;
   const isScreenShareOrVideoActive = isScreenShareActive || isVideoActive;
   const descriptor = isScreenShareActive ? screenDescriptor : videoDescriptor;
-  const hasPacketLoss = participant?.connectionQuality === ConnectionQuality.Poor;
   const displayName = useAppSelector(selectParticipantName(participantId));
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
   const popoutStreamAccess = useAppSelector(selectLivekitPopoutStreamAccessByParticipantId(participantId));
@@ -138,7 +136,6 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
 
   const getOverlayButtons = () => (
     <IndicatorContainer item>
-      {isScreenShareOrVideoActive && (active || hasPacketLoss) && <Statistics descriptor={descriptor} />}
       {active && (
         <>
           {userLayout === LayoutOptions.Speaker && (

@@ -4,22 +4,18 @@
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import OpentalkError from '../../components/Error';
 import LobbyView from '../../components/LobbyView';
 import { useAppSelector } from '../../hooks';
 import useE2EE from '../../hooks/useE2EE';
 import { useInviteCode } from '../../hooks/useInviteCode';
-import { selectLivekitUnavailable } from '../../store/slices/livekitSlice';
 import { ConnectionState, selectRoomConnectionState } from '../../store/slices/roomSlice';
 import RoomLoadingView from './fragments/RoomLoadingView';
 
 const MeetingView = React.lazy(() => import('../../components/MeetingView'));
 const WaitingView = React.lazy(() => import('../../components/WaitingView'));
 const RoomPage = () => {
-  const { t } = useTranslation();
   const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
   };
@@ -28,11 +24,6 @@ const RoomPage = () => {
   const inviteCode = useInviteCode();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const connectionState: ConnectionState = useAppSelector(selectRoomConnectionState);
-  const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
-
-  if (isLivekitUnavailable) {
-    return <OpentalkError title={t('error-livekit-unavailable')} />;
-  }
 
   if (!isAuthenticated && !inviteCode) {
     console.warn('meeting page - not logged in - redirect');

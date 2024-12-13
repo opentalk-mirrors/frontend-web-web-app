@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Container as MuiContainer, Stack, styled, CircularProgress, Typography } from '@mui/material';
+import { CircularProgress, Container as MuiContainer, Stack, Typography, styled } from '@mui/material';
 import { useMemo } from 'react';
 import { Trans } from 'react-i18next';
 

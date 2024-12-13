@@ -7,7 +7,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { merge } from 'lodash';
 
 import { apiMiddleware } from '../api';
-import { restApi, rtkQueryErrorLoggerMiddlware } from '../api/rest';
+import { restApi, rtkQueryErrorLoggerMiddleware } from '../api/rest';
 import automodReducer from './slices/automodSlice';
 import breakoutReducer from './slices/breakoutSlice';
 import chatReducer from './slices/chatSlice';
@@ -15,7 +15,7 @@ import { initialState as initialConfig } from './slices/configSlice';
 import configReducer from './slices/configSlice';
 import eventReducer from './slices/eventSlice';
 import legalVoteReducer from './slices/legalVoteSlice';
-import livekitReducer from './slices/livekitSlice';
+import livekitReducer, { livekitMiddleware } from './slices/livekitSlice';
 import mediaReducer, {
   mediaMiddleware,
   initialState as InitialMediaState,
@@ -39,11 +39,13 @@ import whiteboardReducer from './slices/whiteboardSlice';
 export const middleware: Array<Middleware> = [
   apiMiddleware,
   restApi.middleware,
-  rtkQueryErrorLoggerMiddlware,
+  rtkQueryErrorLoggerMiddleware,
+  mediaMiddleware.middleware,
   timerMiddleware.middleware,
   roomMiddleware.middleware,
   participantsMiddleware.middleware,
   mediaMiddleware.middleware,
+  livekitMiddleware.middleware,
 ];
 
 const logger = () => (next: Dispatch) => (action: AnyAction) => {

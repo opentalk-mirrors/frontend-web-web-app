@@ -344,7 +344,7 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
   const { displayName } = state.user;
   const { assignment: breakoutRoomId } = state.breakout;
 
-  if (error === StartRoomError.Unathorized) {
+  if (error === StartRoomError.Unauthorized) {
     listenerApi.dispatch(
       authError({ status: 401, name: AuthTypeError.SessionExpired, message: AuthTypeError.SessionExpired })
     );
@@ -404,9 +404,9 @@ roomMiddleware.startListening({
   effect: async (_, listenerApi) => {
     try {
       const room = getLivekitRoom();
-      room.localParticipant.setCameraEnabled(false);
-      room.localParticipant.setMicrophoneEnabled(false);
-      room.localParticipant.setScreenShareEnabled(false);
+      await room.localParticipant.setCameraEnabled(false);
+      await room.localParticipant.setMicrophoneEnabled(false);
+      await room.localParticipant.setScreenShareEnabled(false);
     } catch (error) {
       console.debug('Error while turning mic/cam off while entering the waiting room', error);
     } finally {

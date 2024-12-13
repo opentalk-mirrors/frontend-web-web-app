@@ -1141,6 +1141,8 @@ dev-version = (preview)
 
 reconnection-loop-dialogbox-title = Reconnecting to the room
 reconnection-loop-abort-button = Abort
+reconnection-media-title = Reconnecting to the Media Server
+reconnection-media-description = You can continue using the chat while we restore the connection.
 
 glitchtip-crash-report-title=  Oh, it looks like we're having issues.
 glitchtip-crash-report-subtitle = If you’d like to help, tell us what happened below. These fields are not required for sending an error report.

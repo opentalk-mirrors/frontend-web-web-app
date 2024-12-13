@@ -9,6 +9,7 @@ import { SuspenseLoading, showConsentNotification } from '../../../commonCompone
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
+import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { selectVideoEnabled, setVideoEnabled } from '../../../store/slices/mediaSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import ToolbarButton from './ToolbarButton';
@@ -21,8 +22,10 @@ interface VideoButtonProps {
 const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
   const { t } = useTranslation();
   const askConsent = useAppSelector(selectNeedRecordingConsent);
+  const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const dispatch = useAppDispatch();
   const videoEnabled = useAppSelector(selectVideoEnabled);
+  const cameraEnabled = (videoEnabled || false) && !isLivekitUnavailable;
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -31,17 +34,21 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
   });
 
   const onClick = async () => {
-    if (askConsent && !videoEnabled) {
+    if (askConsent && !cameraEnabled) {
       const consent = await showConsentNotification(dispatch);
       if (!consent) {
         return;
       }
     }
 
-    if (videoEnabled) {
+    if (cameraEnabled) {
       dispatch(setVideoEnabled(false));
     } else {
-      await startMedia(true);
+      try {
+        await startMedia(true);
+      } catch (e) {
+        console.error('Unable to start video: ', e);
+      }
     }
   };
 
@@ -49,7 +56,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
     if (permissionDenied === true) {
       return t('device-permission-denied');
     }
-    if (videoEnabled) {
+    if (cameraEnabled) {
       return t('toolbar-button-video-turn-off-tooltip-title');
     }
     return t('toolbar-button-video-turn-on-tooltip-title');
@@ -61,7 +68,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
     if (pendingPermission) {
       return <SuspenseLoading size="1rem" />;
     }
-    return videoEnabled ? <CameraOnIcon /> : <CameraOffIcon />;
+    return cameraEnabled ? <CameraOnIcon /> : <CameraOffIcon />;
   };
 
   return (
@@ -74,8 +81,8 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
         contextTitle={t('toolbar-button-video-context-title')}
         contextMenuId="video-context-menu"
         contextMenuExpanded={showMenu}
-        disabled={pendingPermission || devices.length === 0}
-        active={videoEnabled}
+        disabled={pendingPermission || devices.length === 0 || isLivekitUnavailable}
+        active={cameraEnabled}
         openMenu={() => {
           setShowMenu(true);
         }}
@@ -91,7 +98,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
           setShowMenu(false);
         }}
         open={showMenu}
-        videoEnabled={videoEnabled}
+        videoEnabled={cameraEnabled}
         isLobby={isLobby}
       />
     </div>

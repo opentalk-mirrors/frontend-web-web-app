@@ -35,6 +35,7 @@ declare module '@mui/system' {
       medium: number | string;
       large: number | string;
       circle: string;
+      card: number | string;
     };
   }
 
@@ -44,6 +45,7 @@ declare module '@mui/system' {
       medium: number | string;
       large: number | string;
       circle: string;
+      card: number | string;
     };
   }
 }

@@ -4,9 +4,12 @@
 // Redux has limitations with non-serializable data, like the LiveKit room object, as it can cause issues with state persistence.
 // We've decided to use a separate slice and declare an exception in the store for now.
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { AnyAction, ListenerEffectAPI, createListenerMiddleware } from '@reduxjs/toolkit';
 import { Room } from 'livekit-client';
 
 import { AppDispatch, RootState } from '../';
+import { Credentials } from '../../api/types/incoming/livekit';
+import { createNewAccessToken } from '../../api/types/outgoing/livekit';
 import { MediaDescriptor } from '../../modules/WebRTC';
 import { VideoSetting } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
@@ -64,6 +67,10 @@ export const livekitSlice = createSlice({
         token: undefined,
       });
     },
+    setNewAccessToken: (state, { payload }: PayloadAction<Credentials>) => {
+      state.accessToken = payload.token;
+      state.publicUrl = payload.publicUrl;
+    },
     setLivekitPopoutStreamAccessToken: (state, { payload }: PayloadAction<string>) => {
       const popoutStreamAccess = state.popoutStreamAccesses.find(
         (popoutStreamAccess) => popoutStreamAccess.token === undefined
@@ -90,6 +97,7 @@ export const livekitSlice = createSlice({
     });
     builder.addCase(hangUp.fulfilled, (state) => {
       state.accessToken = undefined;
+      state.unavailable = false;
     });
     builder.addCase(hangUp.rejected, (state) => {
       state.accessToken = undefined;
@@ -103,6 +111,7 @@ export const {
   setLivekitPopoutStreamAccessToken,
   deleteLivekitPopoutStreamAccessToken,
   setDisableRemoteVideos,
+  setNewAccessToken,
 } = livekitSlice.actions;
 
 export const selectLivekitUnavailable = (state: RootState) => state.livekit.unavailable;
@@ -116,3 +125,44 @@ export const selectLivekitPopoutStreamAccessByParticipantId = (participantId: st
 export const selectQualityCap = (state: RootState) => state.livekit.qualityCap;
 
 export default livekitSlice.reducer;
+
+export const livekitMiddleware = createListenerMiddleware<RootState, AppDispatch>();
+
+const BASE_RETRY_DELAY = 500;
+const MAX_RETRY_DELAY = 20000;
+const RECONNECT_INDICATOR_THRESHOLD = 0;
+
+function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
+  let attempt = 0;
+  const calculateDelay = (attempt: number) => Math.min(BASE_RETRY_DELAY * 2 ** attempt, MAX_RETRY_DELAY);
+
+  async function tryReconnect() {
+    while (room.state === 'disconnected') {
+      if (attempt === RECONNECT_INDICATOR_THRESHOLD) {
+        listenerApi.dispatch(setLivekitUnavailable(true));
+      }
+      if (attempt > RECONNECT_INDICATOR_THRESHOLD) {
+        listenerApi.dispatch(createNewAccessToken.action());
+      }
+
+      attempt++;
+      const delay = calculateDelay(attempt);
+
+      console.debug(`Trying to reconnect to LiveKit room, attempt ${attempt}, delay ${delay}`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+
+    listenerApi.dispatch(setLivekitUnavailable(false));
+  }
+
+  tryReconnect().catch((error) => {
+    console.error('Failed to reconnect to LiveKit:', error);
+  });
+}
+
+livekitMiddleware.startListening({
+  type: 'livekit/triggerReconnect',
+  effect: (_action: AnyAction, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+    reconnect(listenerApi);
+  },
+});
