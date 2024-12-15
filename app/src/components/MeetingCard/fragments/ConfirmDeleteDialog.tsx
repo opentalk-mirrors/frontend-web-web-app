@@ -78,6 +78,7 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
           notificationAction({
             msg: t('dashboard-meeting-shared-folder-delete-error-message'),
             variant: 'error',
+            ariaLive: 'assertive',
             actionBtnText: t('dashboard-meeting-shared-folder-error-retry-button'),
             cancelBtnText: t('dashboard-meeting-shared-folder-error-cancel-button'),
             persist: true,

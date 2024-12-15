@@ -6,6 +6,7 @@ import { SnackbarKey } from 'notistack';
 import { notifications } from '../../../..';
 import { MINUTE_MS } from '../../../../../utils/timeFormatUtils';
 import { sleep } from '../../../../../utils/timeUtils';
+import { DEFAULT_AUTO_HIDE_DURATION } from '../../utils';
 
 let showFirstNotificationTimer: ReturnType<typeof setTimeout>;
 let triggerFollowingNotificationTimer: ReturnType<typeof setInterval>;
@@ -37,7 +38,13 @@ export const startTimeLimitNotification = (conferenceEndTimestamp: string) => {
       await sleep(DELAY_BETWEEN_SNACKBARS);
     }
 
-    timeLimitSnackBarKey = notifications.toast('', { variant: 'timeLimit', persist: true, minutes });
+    timeLimitSnackBarKey = notifications.toast('', {
+      variant: 'timeLimit',
+      ariaLive: 'polite',
+      persist: true,
+      minutes,
+      autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
+    });
   };
 
   const handleMinutesUpdate = () => {

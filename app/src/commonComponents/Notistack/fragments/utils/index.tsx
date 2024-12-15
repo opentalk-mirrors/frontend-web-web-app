@@ -51,6 +51,7 @@ export const notificationAction = ({
 
   enqueueSnackbar(msg, {
     variant,
+    autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
     ...options,
     action: (key: SnackbarKey) => (
       <SnackbarActionButtons
@@ -75,18 +76,35 @@ export const notificationPersistent = ({ msg, variant, ...options }: ISnackbarPe
   });
 };
 
+export const DEFAULT_AUTO_HIDE_DURATION = 7000; // 7 seconds
+
 export const notifications = {
   success(msg: string, options: OptionsObject = {}): void {
-    this.toast(msg, { ...options, variant: 'success' });
+    this.toast(msg, {
+      autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
+      ...options,
+      variant: 'success',
+      ariaLive: 'polite',
+    });
   },
   warning(msg: string, options: OptionsObject = {}): void {
-    this.toast(msg, { ...options, variant: 'warning' });
+    this.toast(msg, {
+      autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
+      ...options,
+      variant: 'warning',
+      ariaLive: 'polite',
+    });
   },
   info(msg: string, options: OptionsObject = {}): void {
-    this.toast(msg, { ...options, variant: 'info' });
+    this.toast(msg, { autoHideDuration: DEFAULT_AUTO_HIDE_DURATION, ...options, variant: 'info', ariaLive: 'polite' });
   },
   error(msg: string, options: OptionsObject = {}): void {
-    this.toast(msg, { ...options, variant: 'error' });
+    this.toast(msg, {
+      autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
+      ...options,
+      variant: 'error',
+      ariaLive: 'assertive',
+    });
   },
   toast(msg: SnackbarMessage, options: OptionsObject = {}): SnackbarKey {
     return enqueueSnackbar(msg, options);
@@ -105,6 +123,7 @@ export const notifications = {
     } = {}
   ) => {
     return enqueueSnackbar({
+      autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
       ...options,
       message,
       variant: 'binaryAction',

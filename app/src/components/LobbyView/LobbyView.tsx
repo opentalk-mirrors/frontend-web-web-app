@@ -87,6 +87,7 @@ const showWrongPasswordNotification = () => {
     //Unique key is used to guarantee we will show a notification if user repeatedly inputs a wrong password
     key: uniqueId(),
     variant: 'error',
+    ariaLive: 'assertive',
     persist: true,
     onClose: () => {
       wrongPasswordSnackBarKey = undefined;

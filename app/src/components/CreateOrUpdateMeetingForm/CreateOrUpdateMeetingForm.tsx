@@ -428,6 +428,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
         notificationAction({
           msg: t('dashboard-meeting-shared-folder-create-error-message'),
           variant: 'error',
+          ariaLive: 'assertive',
           actionBtnText: t('dashboard-meeting-shared-folder-error-retry-button'),
           cancelBtnText: t('dashboard-meeting-shared-folder-error-cancel-button'),
           persist: true,
@@ -463,6 +464,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
         notificationAction({
           msg: t('dashboard-meeting-shared-folder-delete-error-message'),
           variant: 'error',
+          ariaLive: 'assertive',
           actionBtnText: t('dashboard-meeting-shared-folder-error-retry-button'),
           cancelBtnText: t('dashboard-meeting-shared-folder-error-cancel-button'),
           persist: true,

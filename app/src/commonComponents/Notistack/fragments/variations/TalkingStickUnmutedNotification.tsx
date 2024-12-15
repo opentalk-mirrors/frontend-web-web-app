@@ -22,7 +22,7 @@ export const TalkingStickUnmutedNotification = forwardRef(
     const messageId = generateUniqueId();
 
     return (
-      <CustomSnackbarContent role="alertdialog" aria-describedby={messageId} ref={ref} style={style}>
+      <CustomSnackbarContent role="alertdialog" aria-live="polite" aria-describedby={messageId} ref={ref} style={style}>
         <Stack spacing={1}>
           <NotificationHeading id={messageId} as="h3">
             <DoneIcon aria-hidden="true" />

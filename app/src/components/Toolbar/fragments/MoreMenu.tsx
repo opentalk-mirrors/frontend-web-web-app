@@ -287,6 +287,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         notificationAction({
           msg: 'You just triggered this notification. Success!',
           variant: 'success',
+          ariaLive: 'polite',
           cancelBtnText: 'Dismiss',
           onCancel: () => alert('Callback fnc to handle click, Action Cancel Btn Success'),
         }),
@@ -298,6 +299,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         notificationAction({
           msg: 'Ooops...you just triggered a warning.',
           variant: 'warning',
+          ariaLive: 'polite',
           actionBtnText: 'Next',
           cancelBtnText: 'Dismiss',
           onAction: () => alert('Callback fnc to handle click, User Agree'),
@@ -307,7 +309,8 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     },
     {
       label: 'Persistent error',
-      action: () => notificationPersistent({ msg: "This is an error that won't go away", variant: 'error' }),
+      action: () =>
+        notificationPersistent({ msg: "This is an error that won't go away", variant: 'error', ariaLive: 'assertive' }),
       icon: <ErrorIcon />,
     },
     {
