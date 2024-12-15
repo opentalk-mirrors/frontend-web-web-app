@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { CallIn, EventInfo } from '@opentalk/rest-api-rtk-query';
 import { StreamingLink } from '@opentalk/rest-api-rtk-query/src/types';
+import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../../assets/icons';
@@ -115,6 +116,8 @@ ${
           value={streamingLink.url}
           ariaLabel={getAriaLabelText(FieldKeys.LivestreamLink, streamingLink.name)}
           notificationText={getNotificationText(FieldKeys.LivestreamLink)}
+          checked={inviteUrl ? copiedUrl === streamingLink.url : false}
+          onClick={() => setCopiedUrl(streamingLink.url)}
         />
       ))}
     </>
@@ -133,7 +136,16 @@ ${
   const getNotificationText = (fieldKey: FieldKeys) => t(`meeting-details-dialog-copy-${fieldKey}-success`);
   const getLabelText = (fieldKey: FieldKeys) => t(`meeting-details-dialog-label-${fieldKey}`);
   const getAriaLabelText = (fieldKey: FieldKeys, name?: string) =>
-    t(`meeting-details-dialog-aria-label-${fieldKey}`, { name });
+    t(`meeting-details-dialog-aria-label-${fieldKey}`, { name, eventTitle: title });
+
+  const [copiedUrl, setCopiedUrl] = useState<string | undefined>('');
+
+  useEffect(() => {
+    if (open) {
+      // Workaround to fix a visual glitch while closing the dialog
+      setCopiedUrl('');
+    }
+  }, [open]);
 
   return (
     <Dialog
@@ -160,12 +172,16 @@ ${
             value={inviteUrl?.toString()}
             ariaLabel={getAriaLabelText(FieldKeys.InviteLink)}
             notificationText={getNotificationText(FieldKeys.InviteLink)}
+            checked={inviteUrl ? copiedUrl === inviteUrl.toString() : false}
+            onClick={() => setCopiedUrl(inviteUrl?.toString())}
           />
           <CopyTextField
             label={getLabelText(FieldKeys.SipLink)}
             value={sipLink}
             ariaLabel={getAriaLabelText(FieldKeys.SipLink)}
             notificationText={getNotificationText(FieldKeys.SipLink)}
+            checked={inviteUrl ? copiedUrl === sipLink : false}
+            onClick={() => setCopiedUrl(sipLink)}
           />
           {roomPassword && (
             <CopyTextField
@@ -173,6 +189,8 @@ ${
               value={roomPassword}
               ariaLabel={getAriaLabelText(FieldKeys.RoomPassword)}
               notificationText={getNotificationText(FieldKeys.RoomPassword)}
+              checked={inviteUrl ? copiedUrl === roomPassword : false}
+              onClick={() => setCopiedUrl(roomPassword)}
             />
           )}
           {streamingLinksExist && renderStreamingLinks(meetingDetails.streamingLinks)}

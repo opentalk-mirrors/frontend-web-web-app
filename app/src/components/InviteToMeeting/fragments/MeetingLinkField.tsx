@@ -14,6 +14,7 @@ interface MeetingLinkFieldProps {
   setHighlightedField: (value: FieldKeys) => void;
   tooltip?: string;
   isLoading?: boolean;
+  eventTitle?: string;
 }
 
 const MeetingLinkField = ({
@@ -23,6 +24,7 @@ const MeetingLinkField = ({
   setHighlightedField,
   tooltip,
   isLoading,
+  eventTitle = '',
 }: MeetingLinkFieldProps) => {
   const { t } = useTranslation();
 
@@ -31,7 +33,7 @@ const MeetingLinkField = ({
       <Tooltip title={tooltip ?? ''}>
         <CopyTextField
           label={t(`dashboard-invite-to-meeting-${fieldKey}-label`)}
-          ariaLabel={t(`dashboard-invite-to-meeting-copy-${fieldKey}-aria-label`)}
+          ariaLabel={t(`dashboard-invite-to-meeting-copy-${fieldKey}-aria-label`, { eventTitle })}
           isLoading={isLoading}
           onClick={() => setHighlightedField(fieldKey)}
           notificationText={t(`dashboard-invite-to-meeting-copy-${fieldKey}-success`)}
