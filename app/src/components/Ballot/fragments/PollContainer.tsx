@@ -143,7 +143,12 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
           </Fieldset>
         </Grid>
         <Grid item xs={12} my={1} container justifyContent="stretch">
-          <Button type="submit" disabled={isSubmitButtonDisabled} fullWidth>
+          <Button
+            type="submit"
+            disabled={isSubmitButtonDisabled}
+            variant={isSubmitButtonDisabled ? 'conference-inactive' : 'contained'}
+            fullWidth
+          >
             {t('global-submit')}
           </Button>
         </Grid>

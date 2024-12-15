@@ -73,7 +73,11 @@ const WaitingView = () => {
         <SelfTest
           actionButton={
             !isAutoJoinEnabled && (
-              <ActionButton onClick={moveToRoom} disabled={!readyToEnter}>
+              <ActionButton
+                onClick={moveToRoom}
+                disabled={!readyToEnter}
+                variant={readyToEnter ? 'contained' : 'conference-inactive'}
+              >
                 {readyToEnter ? t('joinform-enter-now') : t('joinform-waiting-room-enter')}
               </ActionButton>
             )
