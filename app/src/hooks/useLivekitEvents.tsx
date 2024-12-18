@@ -52,20 +52,35 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
 
   const handleTrackMuteState = useCallback(
     (pub: TrackPublication | LocalTrackPublication, participant: Participant | LocalParticipant) => {
-      if (participant.isLocal) {
-        switch (pub.source) {
-          case Track.Source.Camera:
-            mediaChoices?.saveVideoInputEnabled(participant.isCameraEnabled);
-            break;
-          case Track.Source.Microphone:
-            !isWhisperRoom && mediaChoices?.saveAudioInputEnabled(participant.isMicrophoneEnabled);
-            break;
-          default:
-            break;
+      if (!participant.isLocal) return;
+
+      switch (pub.source) {
+        case Track.Source.Camera:
+          mediaChoices?.saveVideoInputEnabled(participant.isCameraEnabled);
+          break;
+
+        case Track.Source.Microphone: {
+          if (!isWhisperRoom) {
+            let isMicrophoneEnabled = participant.isMicrophoneEnabled;
+            const audioEnabledByUserChoice = mediaChoices?.userChoices?.audioEnabled;
+
+            // If user explicitly disabled audio, override the participant's microphone state
+            if (audioEnabledByUserChoice !== undefined && !audioEnabledByUserChoice) {
+              isMicrophoneEnabled = false;
+              room.localParticipant.setMicrophoneEnabled(false);
+            }
+
+            mediaChoices?.saveAudioInputEnabled(isMicrophoneEnabled);
+          }
+          break;
         }
+
+        default:
+          console.debug(`Unhandled track source: ${pub.source}`);
+          break;
       }
     },
-    [mediaChoices, isWhisperRoom]
+    [mediaChoices, isWhisperRoom, room.localParticipant.setMicrophoneEnabled]
   );
 
   const handleUpdateLastActive = useCallback(() => {
