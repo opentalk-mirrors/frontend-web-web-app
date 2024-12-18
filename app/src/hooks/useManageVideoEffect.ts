@@ -91,14 +91,19 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
   ]);
 
   const applyBackgroundEffect = useCallback(async () => {
-    const processor = localVideoTrack?.getProcessor();
+    const processor = localVideoTrack?.getProcessor() as ProcessorWrapper<Record<string, unknown>>;
     try {
       dispatch(setBackgroundEffectsLoading(true));
       if (isBlurred && (!processor || processor?.name !== 'background-blur')) {
         const blurProcessor = BackgroundProcessor({ assetPaths, blurRadius: BLUR_RADIUS }, 'background-blur');
         await localVideoTrack?.setProcessor(blurProcessor);
       } else if (virtualBackgroundActive && imagePath) {
-        await localVideoTrack?.setProcessor(BackgroundProcessor({ assetPaths, imagePath }, 'virtual-background'));
+        //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        const previousImagePath = processor?.transformer?.options?.imagePath;
+        if (previousImagePath !== imagePath) {
+          await localVideoTrack?.setProcessor(BackgroundProcessor({ assetPaths, imagePath }, 'virtual-background'));
+        }
       } else if (backgroundEffects.style === 'off' && processor?.name) {
         await localVideoTrack?.stopProcessor();
       }
@@ -129,14 +134,4 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
 
     if (!localVideoTrack?.isMuted) handleBackgroundEffect();
   }, [localVideoTrack?.isMuted, localVideoTrackIsSet, backgroundEffects.style, backgroundEffects.imageUrl]);
-
-  useEffect(() => {
-    return () => {
-      if (ProcessorWrapper.isSupported) {
-        localVideoTrack?.stopProcessor().then(() => {
-          localVideoTrack.mediaStreamTrack.stop();
-        });
-      }
-    };
-  }, [localVideoTrack]);
 };
