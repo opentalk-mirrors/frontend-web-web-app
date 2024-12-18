@@ -1,22 +1,22 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '.';
 import { ModerationTabKey, Tab, tabs as initialTabs } from '../config/moderationTabs';
-import { selectFeatures } from '../store/slices/configSlice';
+import { selectEnabledModulesList, selectFeatures } from '../store/slices/configSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { selectTimerStyle } from '../store/slices/timerSlice';
 import { selectActiveTab, setActiveTab } from '../store/slices/uiSlice';
 import { selectIsModerator } from '../store/slices/userSlice';
 import { RoomMode, TimerStyle } from '../types';
-import { useEnabledModules } from './enabledModules';
 
 const useTabs = () => {
   const [tabs, setTabs] = useState<Tab[]>([]);
   const features = useAppSelector(selectFeatures);
-  const enabledModules = useEnabledModules();
+  const enabledModulesList = useAppSelector(selectEnabledModulesList);
+  const enabledModules = useMemo(() => Object.keys(enabledModulesList).map((module) => module), [enabledModulesList]);
   const timerStyle = useAppSelector(selectTimerStyle);
   const currentRoomMode = useAppSelector(selectCurrentRoomMode);
   const isModerator = useAppSelector(selectIsModerator);
@@ -29,7 +29,7 @@ const useTabs = () => {
       (tab) =>
         tab.divider ||
         (tab.featureKey && features[tab.featureKey]) ||
-        (tab.moduleKey ? enabledModules.has(tab.moduleKey) : false)
+        (tab.moduleKey ? enabledModules.includes(tab.moduleKey) : false)
     );
     setTabs(tabsFirstFilter);
   }, [enabledModules, features]);

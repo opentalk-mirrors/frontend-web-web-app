@@ -34,11 +34,11 @@ import {
 import { ForwardIcon } from '../../assets/icons';
 import { CommonTextField, notificationAction, notifications } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
-import { isFeatureInModulesPredicate } from '../../hooks/enabledModules';
 import { selectFeatures, selectWaitingRoomDefault } from '../../store/slices/configSlice';
 import { appendRecurringEventInstances } from '../../utils/eventUtils';
 import { formikMinimalProps, formikProps } from '../../utils/formikUtils';
 import getReferrerRouterState from '../../utils/getReferrerRouterState';
+import { isFeatureEnabledPredicate } from '../../utils/moduleUtils';
 import roundToUpper30 from '../../utils/roundToUpper30';
 import { CommonFrequencies, FrequencyOption, getRRuleText } from '../../utils/rruleUtils';
 import { isInvalidDate } from '../../utils/typeGuardUtils';
@@ -85,7 +85,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
   const waitingRoomInitialValue = existingEvent?.room.waitingRoom ?? isWaitingRoomEnabledByDefault;
 
   const { data: tariff } = useGetMeTariffQuery();
-  const isStreamingEnabled = tariff && isFeatureInModulesPredicate('stream', tariff.modules);
+  const isStreamingEnabled = tariff && isFeatureEnabledPredicate('stream', tariff.modules);
 
   const navigate = useNavigate();
 

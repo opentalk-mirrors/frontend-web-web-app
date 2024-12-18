@@ -13,7 +13,7 @@ import { useFullscreenContext } from '../hooks/useFullscreenContext';
 import { useMediaChoices } from '../provider/MediaChoicesProvider';
 import { selectIsUserMicDisabled } from '../store/selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker } from '../store/slices/automodSlice';
-import { selectModules } from '../store/slices/configSlice';
+import { selectEnabledModulesList } from '../store/slices/configSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { selectSubroomAudioState, setIsWhisperActive } from '../store/slices/subroomAudioSlice';
 import { selectTimerStyle } from '../store/slices/timerSlice';
@@ -63,7 +63,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
 
   const hotkeysEnabled = useAppSelector(selectHotkeysEnabled);
   const timerStyle = useAppSelector(selectTimerStyle);
-  const subroomAudioEnabled = useAppSelector(selectModules).subroomAudio;
+  const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).subroomAudio;
   const isWhisperingPossible = useAppSelector(selectSubroomAudioState);
 
   const hotkeysActive = hotkeysEnabled && timerStyle !== TimerStyle.CoffeeBreak;

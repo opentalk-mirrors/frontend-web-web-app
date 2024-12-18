@@ -36,7 +36,6 @@ const config = {
     id: '' as TariffId,
     name: '',
     quotas: {},
-    enabledModules: [],
     modules: {},
   },
   beta: {
