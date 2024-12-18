@@ -44,9 +44,9 @@ const StyledPopover = styled(Popover)(() => ({
 }));
 
 const BurgerIconButton = styled(IconButton)(({ theme }) => ({
-  padding: theme.spacing(1, 1, 0, 2),
+  padding: theme.spacing(1),
   '& .MuiSvgIcon-root': {
-    fontSize: theme.typography.pxToRem(30),
+    fontSize: theme.typography.pxToRem(24),
   },
 }));
 
@@ -160,11 +160,11 @@ const MyMeetingMenu = () => {
           anchorEl={anchorElement}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'left',
+            horizontal: 'right',
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'left',
+            horizontal: 'right',
           }}
           onClose={() => setAnchorElement(null)}
         >
