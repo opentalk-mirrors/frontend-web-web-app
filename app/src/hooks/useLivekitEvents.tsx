@@ -89,18 +89,17 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   }, [dispatch]);
 
   const localParticipant = room.localParticipant;
-  const localParticipantPermissions = room.localParticipant.permissions;
 
   const handlePermissionChanged = useCallback(
-    (previousPermissions: ParticipantPermission | undefined) => {
-      if (previousPermissions) {
-        const changed = localParticipantPermissions?.canPublishSources.filter(
-          (item) => previousPermissions.canPublishSources.indexOf(item) < 0
-        );
+    (previousPermissions: ParticipantPermission | undefined, participant: RemoteParticipant | LocalParticipant) => {
+      if (!participant.isLocal) return;
+
+      const currentPermissions = participant.permissions?.canPublishSources;
+      if (previousPermissions && currentPermissions) {
+        const changed = currentPermissions?.filter((item) => previousPermissions.canPublishSources.indexOf(item) < 0);
 
         const hadScreenShare = previousPermissions.canPublishSources.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER);
-        const hasScreenShare =
-          localParticipantPermissions?.canPublishSources.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
+        const hasScreenShare = currentPermissions?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
 
         if (changed?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER)) {
           notifications.close('control-participant-presenter-role-revoked');
@@ -116,7 +115,7 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
         }
       }
     },
-    [t, localParticipant.setScreenShareEnabled, localParticipantPermissions]
+    [t, localParticipant.setScreenShareEnabled]
   );
 
   // Listener to maintain camera and microphone state between room transitions (layout-meetingView, meetingView-breakoutrooms)
@@ -155,11 +154,11 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
     room.on(RoomEvent.TrackMuted, handleTrackMuteState);
     room.on(RoomEvent.TrackUnmuted, handleTrackMuteState);
     room.on(RoomEvent.TrackSubscribed, handleTrackSubscribed);
+    room?.on(RoomEvent.ParticipantPermissionsChanged, handlePermissionChanged);
     localParticipant?.on(ParticipantEvent.TrackMuted, handleUpdateLastActive);
     localParticipant?.on(ParticipantEvent.TrackUnmuted, handleUpdateLastActive);
     localParticipant?.on(ParticipantEvent.LocalTrackPublished, handleUpdateLastActive);
     localParticipant?.on(ParticipantEvent.LocalTrackUnpublished, handleUpdateLastActive);
-    localParticipant?.on(ParticipantEvent.ParticipantPermissionsChanged, handlePermissionChanged);
 
     return () => {
       room.off(RoomEvent.Connected, handleRoomConnected);
@@ -169,11 +168,11 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
       room.off(RoomEvent.TrackMuted, handleTrackMuteState);
       room.off(RoomEvent.TrackUnmuted, handleTrackMuteState);
       room.off(RoomEvent.TrackSubscribed, handleTrackSubscribed);
+      room?.off(RoomEvent.ParticipantPermissionsChanged, handlePermissionChanged);
       localParticipant?.off(ParticipantEvent.TrackMuted, handleUpdateLastActive);
       localParticipant?.off(ParticipantEvent.TrackUnmuted, handleUpdateLastActive);
       localParticipant?.off(ParticipantEvent.LocalTrackPublished, handleUpdateLastActive);
       localParticipant?.off(ParticipantEvent.LocalTrackUnpublished, handleUpdateLastActive);
-      localParticipant?.off(ParticipantEvent.ParticipantPermissionsChanged, handlePermissionChanged);
     };
   }, [
     room.on,

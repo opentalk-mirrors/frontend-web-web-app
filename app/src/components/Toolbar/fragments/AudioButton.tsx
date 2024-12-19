@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useMaybeRoomContext } from '@livekit/components-react';
+import { useLocalParticipantPermissions, useMaybeRoomContext } from '@livekit/components-react';
 import { styled } from '@mui/material';
 import { LocalAudioTrack } from 'livekit-client';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -33,6 +33,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
   const dispatch = useAppDispatch();
   const room = useMaybeRoomContext();
   const mediaChoices = useMediaChoices();
+  const localParticipantPermissions = (!isLobby && useLocalParticipantPermissions()) || undefined;
   const microphoneEnabled = mediaChoices?.userChoices.audioEnabled || false;
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -96,7 +97,6 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
 
   useEffect(() => {
     if (!isLobby) {
-      const localParticipantPermissions = room?.localParticipant.permissions;
       const canPublishAudio = localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_AUDIO_PERMISSION_NUMBER);
 
       if (canPublishAudio !== undefined) {
@@ -106,7 +106,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
         }
       }
     }
-  }, [isLobby, room?.localParticipant.permissions, microphoneEnabled, mediaChoices?.saveAudioInputEnabled]);
+  }, [isLobby, localParticipantPermissions, microphoneEnabled, mediaChoices?.saveAudioInputEnabled]);
 
   return (
     <div ref={menuRef}>
