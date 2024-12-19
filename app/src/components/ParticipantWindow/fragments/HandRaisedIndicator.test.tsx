@@ -22,16 +22,11 @@ const { store } = configureStore({
 describe('HandRaisedIndicator', () => {
   test('render without crashing with flag handIsUp = false,, should have scale(0)', async () => {
     await render(<HandRaisedIndicator participantId={participant1.id} />, store);
-
-    expect(screen.getByLabelText('raise-hand-icon')).toBeInTheDocument();
-    expect(screen.getByLabelText('indicator-has-raised-hand')).toBeInTheDocument();
-    expect(screen.getByLabelText('indicator-has-raised-hand')).toHaveStyle('transform: scale(0);');
+    expect(screen.queryByLabelText('indicator-has-raised-hand')).not.toBeInTheDocument();
   });
 
   test('render for handIsUp = true, should have scalse(1)', async () => {
     await render(<HandRaisedIndicator participantId={participantHandUp.id} />, store);
-
-    expect(screen.getByLabelText('raise-hand-icon')).toBeInTheDocument();
     expect(screen.getByLabelText('indicator-has-raised-hand')).toBeInTheDocument();
     expect(screen.getByLabelText('indicator-has-raised-hand')).toHaveStyle('transform: scale(1);');
   });

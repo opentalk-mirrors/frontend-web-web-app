@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { keyframes, styled } from '@mui/material';
+import { keyframes, styled, Box as MuiBox } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { RaiseHandOnIcon } from '../../../assets/icons';
@@ -36,23 +36,32 @@ const HandIconContainer = styled('div', {
   },
 }));
 
+const HandRaisedBox = styled(MuiBox)({
+  position: 'absolute',
+  right: 5,
+  bottom: 5,
+  display: 'flex',
+  alignItems: 'flex-end',
+  justifyContent: 'flex-end',
+});
+
 const HandRaisedIndicator = ({ participantId }: { participantId: ParticipantId }) => {
   const { t } = useTranslation();
 
   const participant = useAppSelector(selectParticipantById(participantId));
 
-  if (participant === undefined) {
-    return <></>;
-  }
-
   return (
-    <HandIconContainer
-      display={participant.handIsUp}
-      translate="no"
-      aria-label={t('indicator-has-raised-hand', { participantName: participant.displayName || '' })}
-    >
-      <RaiseHandOnIcon aria-label="raise-hand-icon" />
-    </HandIconContainer>
+    <HandRaisedBox role="alert" aria-live="assertive">
+      {participant && participant.handIsUp && participant.handUpdatedAt && (
+        <HandIconContainer
+          display
+          translate="no"
+          aria-label={t('indicator-has-raised-hand', { participantName: participant.displayName || '' })}
+        >
+          <RaiseHandOnIcon type="decorative" />
+        </HandIconContainer>
+      )}
+    </HandRaisedBox>
   );
 };
 
