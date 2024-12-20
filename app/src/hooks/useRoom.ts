@@ -71,7 +71,7 @@ const useRoom = ({ audioInputEnabled, videoInputEnabled, isWhisperRoom }: IUseRo
 
   const room = useMemo(() => {
     const roomInstance = new Room(roomOptions);
-    setLivekitRoom(roomInstance);
+    !isWhisperRoom && setLivekitRoom(roomInstance);
 
     // Mutes the user if microphones are disabled in conference
     if (shouldForceMuted && mediaChoices?.userChoices.audioEnabled) {
