@@ -15,10 +15,10 @@ import Toolbar from '../Toolbar';
 import SideTabPanel from './fragments/SideTabPanel';
 
 const SideBar = styled('aside')(({ theme }) => ({
+  gridArea: 'sidebar',
   display: 'flex',
   background: theme.palette.background.paper,
   borderRadius: theme.borderRadius.medium,
-  gridRow: 'span 2',
   flex: 1,
 }));
 

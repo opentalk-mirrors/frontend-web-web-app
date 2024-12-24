@@ -21,10 +21,16 @@ const InnerContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2),
   gap: theme.spacing(2),
   minHeight: 0,
-  gridTemplate: 'auto 1fr / auto 1fr',
+  gridTemplateRows: 'auto 1fr',
+  gridTemplateColumns: 'auto 1fr',
+  gridTemplateAreas: `
+    'sidebar header'
+    'sidebar main'
+  `,
 }));
 
 const CircularProgressBar = styled(CircularProgress)({
+  gridArea: 'main',
   margin: 'auto',
 });
 
@@ -36,13 +42,11 @@ const DesktopInnerLayout = () => {
   return (
     <InnerContainer>
       <JumpLinkContainer />
-      <MeetingSidebar />
-
+      <MeetingHeader />
       {showCoffeeBreakCurtain && isModerator ? (
         <CoffeeBreakView roundBorders />
       ) : (
         <>
-          <MeetingHeader />
           {connectionState === ConnectionState.Leaving || connectionState === ConnectionState.Starting ? (
             <CircularProgressBar />
           ) : (
@@ -53,6 +57,7 @@ const DesktopInnerLayout = () => {
           )}
         </>
       )}
+      <MeetingSidebar />
     </InnerContainer>
   );
 };

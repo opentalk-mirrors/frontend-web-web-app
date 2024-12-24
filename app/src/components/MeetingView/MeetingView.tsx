@@ -82,9 +82,9 @@ const MeetingView = ({ e2eeData }: MeetingViewProps) => {
             <>
               {enableAudio && <RoomAudioRenderer />}
 
-              {!showCoffeeBreakCurtain && <CachedTimerPopover />}
-
               <CachedInnerLayout />
+
+              {!showCoffeeBreakCurtain && <CachedTimerPopover />}
             </>
           )}
         </Container>
