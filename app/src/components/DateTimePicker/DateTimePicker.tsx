@@ -147,6 +147,7 @@ const DateTimePicker = ({
           ampm={ampm}
           minDate={minTimeDate}
           minTime={minTime}
+          closeOnSelect={false}
           slotProps={{
             textField: {
               placeholder,
