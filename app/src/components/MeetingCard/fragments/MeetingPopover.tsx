@@ -214,6 +214,8 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
         onMouseDown={openPopupMenu}
         onClick={openPopupMenu}
         ref={moreButtonRef}
+        aria-expanded={popoverOpen}
+        aria-haspopup="menu"
       >
         <MoreIcon />
       </MoreButton>
