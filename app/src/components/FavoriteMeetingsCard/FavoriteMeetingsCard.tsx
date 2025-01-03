@@ -21,6 +21,8 @@ const FavoritesWrapper = styled(Box)(({ theme }) => ({
 
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(2.5, 0, 1, 2),
+    overflow: 'auto',
+    maxHeight: '25rem',
   },
 }));
 
