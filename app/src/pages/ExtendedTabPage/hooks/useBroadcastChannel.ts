@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useEffect, useState } from 'react';
 
 import { MediaSessionType, ParticipantId } from '../../../types';
@@ -10,6 +11,7 @@ type IUseBroadcastChannel = {
   mediaType?: MediaSessionType;
   participantId?: ParticipantId;
   livekitUrl?: string;
+  roomId?: RoomId;
 };
 
 const useBroadcastChannel = (channelId: string | undefined): IUseBroadcastChannel => {
@@ -27,13 +29,14 @@ const useBroadcastChannel = (channelId: string | undefined): IUseBroadcastChanne
         }
       };
     }
-  }, []);
+  }, [channelId]);
 
   return {
     accessToken: livekitData?.accessToken,
     mediaType: livekitData?.mediaType,
     participantId: livekitData?.participantId,
     livekitUrl: livekitData?.livekitUrl,
+    roomId: livekitData?.roomId,
   };
 };
 

@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
 import { Grid, styled } from '@mui/material';
+import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { ConnectionQuality, Track } from 'livekit-client';
 import { MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 
 import { requestPopoutStreamAccessToken } from '../../../api/types/outgoing/livekit';
@@ -16,10 +18,10 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import {
+  addPopoutStreamAccess,
   deleteLivekitPopoutStreamAccessToken,
   selectLivekitPopoutStreamAccessByParticipantId,
   selectLivekitPublicUrl,
-  addPopoutStreamAccess,
 } from '../../../store/slices/livekitSlice';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
 import { pinnedParticipantIdSet, selectCinemaLayout, selectPinnedParticipantId } from '../../../store/slices/uiSlice';
@@ -79,6 +81,9 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const { t } = useTranslation();
   const fullscreenHandle = useFullscreenContext();
   const livekitUrl = useAppSelector(selectLivekitPublicUrl);
+  const { roomId } = useParams<'roomId'>() as {
+    roomId: RoomId;
+  };
 
   useEffect(() => {
     if (channelId && popoutStreamAccess && popoutStreamAccess.token) {
@@ -95,6 +100,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
                 mediaType: popoutStreamAccess.mediaDescriptor.mediaType,
                 participantId: popoutStreamAccess.mediaDescriptor.participantId,
                 livekitUrl,
+                roomId,
               },
             });
             if (popoutStreamAccess.token) {

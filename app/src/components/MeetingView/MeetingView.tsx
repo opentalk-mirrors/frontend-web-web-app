@@ -6,6 +6,7 @@ import { styled } from '@mui/material';
 import { memo, useRef } from 'react';
 
 import { useAppSelector } from '../../hooks';
+import { E2EEData } from '../../hooks/useE2EE';
 import { useHotkeys } from '../../hooks/useHotkeys';
 import useRoom from '../../hooks/useRoom';
 import { selectLivekitAccessToken, selectLivekitPublicUrl } from '../../store/slices/livekitSlice';
@@ -49,7 +50,11 @@ const WhisperContext = styled(LiveKitRoom)(() => {
 const CachedTimerPopover = memo(TimerPopover);
 const CachedInnerLayout = memo(InnerLayout);
 
-const MeetingView = () => {
+interface MeetingViewProps {
+  e2eeData: E2EEData;
+}
+
+const MeetingView = ({ e2eeData }: MeetingViewProps) => {
   const showCoffeeBreakCurtain = useAppSelector(selectShowCoffeeBreakCurtain);
   const isModerator = useAppSelector(selectIsModerator);
   const containerRef = useRef(null);
@@ -58,8 +63,8 @@ const MeetingView = () => {
   const publicUrl = useAppSelector(selectLivekitPublicUrl);
   const whisperToken = useAppSelector(selectSubroomAudioToken);
 
-  const room = useRoom({});
-  const whisperRoom = useRoom({ videoInputEnabled: false, isWhisperRoom: true });
+  const room = useRoom({ e2eeData });
+  const whisperRoom = useRoom({ e2eeData, videoInputEnabled: false, isWhisperRoom: true });
   useHotkeys(room, whisperRoom);
 
   return (
