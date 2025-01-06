@@ -58,6 +58,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
       }
     } else {
       if (!isLobby && !room?.localParticipant.isMicrophoneEnabled) {
+        mediaChoices?.saveAudioInputEnabled(true);
         await room?.localParticipant.setMicrophoneEnabled(true);
       }
       await startMedia(true);
