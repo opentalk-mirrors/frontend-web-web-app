@@ -90,7 +90,7 @@ export const DurationField = ({
 
   const renderButtonText = () => (value ? `${value} min` : t('field-duration-unlimited-time'));
   const getButtonAriaLabel = () =>
-    `${t('global-duration')} ${value ? `${value} minute` : t('field-duration-unlimited-time')}`;
+    `${t('global-duration')} ${value ? `${value} min` : t('field-duration-unlimited-time')}`;
 
   const getChipLabel = (duration: DurationValueOptions) => {
     switch (duration) {
@@ -103,6 +103,17 @@ export const DurationField = ({
     }
   };
 
+  const getChipAriaLabel = (duration: DurationValueOptions) => {
+    switch (duration) {
+      case 'custom':
+        return t('field-duration-custom-label');
+      case null:
+        return t('field-duration-unlimited-time-label');
+      default:
+        return t('field-duration-chip-label', { duration });
+    }
+  };
+
   const renderDurationOptions = () => (
     <Stack spacing={1} flexDirection="row" flexWrap="wrap" justifyContent="space-between" alignItems="baseline">
       {durationOptions.map((duration, index) => {
@@ -111,6 +122,8 @@ export const DurationField = ({
             label={getChipLabel(duration)}
             onClick={() => setSelectedChip(duration)}
             variant={selectedChip === duration ? 'filled' : 'outlined'}
+            aria-selected={selectedChip === duration}
+            aria-label={getChipAriaLabel(duration)}
             key={index}
           />
         );
