@@ -165,7 +165,7 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
     ...((event as Event).inviteStatus !== InviteStatus.Declined && !isMeetingCreator
       ? [
           {
-            i18nKey: 'global-decline',
+            i18nKey: 'dashboard-meeting-card-popover-decline',
             action: declineInvite,
           },
         ]
@@ -196,7 +196,12 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
   const options = isMeetingCreator ? creatorMeetingOptionItems : meetingOptionItems;
   const renderMenuOptionItems = () =>
     options.map((option) => (
-      <MenuItem disabled={option.disabled} key={option.i18nKey} onClick={option.action} aria-label={t(option.i18nKey)}>
+      <MenuItem
+        disabled={option.disabled}
+        key={option.i18nKey}
+        onClick={option.action}
+        aria-label={t(`${option.i18nKey}-label`, { title })}
+      >
         {t(option.i18nKey)}
       </MenuItem>
     ));
@@ -243,6 +248,7 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
         component={NavLink}
         target="_blank"
         onMouseDown={stopPropagation}
+        aria-label={t('dashboard-home-join-label', { title })}
       >
         {t('dashboard-home-join')}
       </Button>
