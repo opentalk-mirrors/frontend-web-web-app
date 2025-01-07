@@ -79,12 +79,12 @@ import {
 import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
 import { streamUpdated } from '../store/slices/streamingSlice';
 import {
-  updateParticipantInviteState,
+  inviteParticipants,
   removeParticipant,
   resetSubroomAudioData,
   selectSubroomAudioState,
   setSubroomAudioData,
-  inviteParticipants,
+  updateParticipantInviteState,
 } from '../store/slices/subroomAudioSlice';
 import { selectWhisperGroupId } from '../store/slices/subroomAudioSlice';
 import { timerStarted, timerStopped, updateParticipantsReady } from '../store/slices/timerSlice';
@@ -629,6 +629,8 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           dispatch(automod.selectNext.action());
         }
       }
+
+      getLivekitRoom().localParticipant.setMicrophoneEnabled(false);
       break;
     }
     case 'stopped': {

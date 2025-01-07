@@ -5,7 +5,6 @@ import { ParticipantPermission } from '@livekit/protocol';
 import {
   LocalParticipant,
   LocalTrackPublication,
-  Participant,
   ParticipantEvent,
   RemoteParticipant,
   RemoteTrack,
@@ -51,19 +50,20 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
     [dispatch, pinnedParticipantId]
   );
 
-  const handleTrackMuteState = useCallback(
-    (pub: TrackPublication | LocalTrackPublication, participant: Participant | LocalParticipant) => {
-      if (!participant.isLocal) return;
+  const handleTrackState = useCallback(
+    (pub: TrackPublication | LocalTrackPublication, enableAudio: boolean) => {
+      dispatch(updateLastActive());
 
       switch (pub.source) {
         case Track.Source.Camera:
-          mediaChoices?.saveVideoInputEnabled(participant.isCameraEnabled);
+          mediaChoices?.saveVideoInputEnabled(room.localParticipant.isCameraEnabled);
           break;
 
         case Track.Source.Microphone: {
           if (!isWhisperRoom) {
-            let isMicrophoneEnabled = participant.isMicrophoneEnabled;
-            const audioEnabledByUserChoice = mediaChoices?.userChoices?.audioEnabled;
+            let isMicrophoneEnabled = room.localParticipant.isMicrophoneEnabled;
+            // Participants are only set at unmute events
+            const audioEnabledByUserChoice = mediaChoices?.userChoices?.audioEnabled || enableAudio;
 
             // If user explicitly disabled audio, override the participant's microphone state
             if (audioEnabledByUserChoice !== undefined && !audioEnabledByUserChoice) {
@@ -81,12 +81,8 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
           break;
       }
     },
-    [mediaChoices, isWhisperRoom, room.localParticipant.setMicrophoneEnabled]
+    [mediaChoices, isWhisperRoom, room.localParticipant, dispatch]
   );
-
-  const handleUpdateLastActive = useCallback(() => {
-    dispatch(updateLastActive());
-  }, [dispatch]);
 
   const localParticipant = room.localParticipant;
 
@@ -147,45 +143,41 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   );
 
   useEffect(() => {
+    const handleUnmuteEventListener = (pub: TrackPublication | LocalTrackPublication) => handleTrackState(pub, true);
+    const handleMuteEventListener = (pub: TrackPublication | LocalTrackPublication) => handleTrackState(pub, false);
+
     room.on(RoomEvent.Connected, handleRoomConnected);
     room.on(RoomEvent.TrackPublished, handleTrackPublished);
     room.on(RoomEvent.TrackUnpublished, handleTrackUnpublished);
-    room.on(RoomEvent.LocalTrackPublished, handleTrackMuteState);
-    room.on(RoomEvent.TrackMuted, handleTrackMuteState);
-    room.on(RoomEvent.TrackUnmuted, handleTrackMuteState);
     room.on(RoomEvent.TrackSubscribed, handleTrackSubscribed);
-    room?.on(RoomEvent.ParticipantPermissionsChanged, handlePermissionChanged);
-    localParticipant?.on(ParticipantEvent.TrackMuted, handleUpdateLastActive);
-    localParticipant?.on(ParticipantEvent.TrackUnmuted, handleUpdateLastActive);
-    localParticipant?.on(ParticipantEvent.LocalTrackPublished, handleUpdateLastActive);
-    localParticipant?.on(ParticipantEvent.LocalTrackUnpublished, handleUpdateLastActive);
+    room.on(RoomEvent.ParticipantPermissionsChanged, handlePermissionChanged);
+    localParticipant.on(ParticipantEvent.TrackUnmuted, handleUnmuteEventListener);
+    localParticipant.on(ParticipantEvent.LocalTrackPublished, handleUnmuteEventListener);
+    localParticipant.on(ParticipantEvent.TrackMuted, handleMuteEventListener);
+    localParticipant.on(ParticipantEvent.LocalTrackUnpublished, handleMuteEventListener);
 
     return () => {
       room.off(RoomEvent.Connected, handleRoomConnected);
       room.off(RoomEvent.TrackPublished, handleTrackPublished);
       room.off(RoomEvent.TrackUnpublished, handleTrackUnpublished);
-      room.off(RoomEvent.LocalTrackPublished, handleTrackMuteState);
-      room.off(RoomEvent.TrackMuted, handleTrackMuteState);
-      room.off(RoomEvent.TrackUnmuted, handleTrackMuteState);
       room.off(RoomEvent.TrackSubscribed, handleTrackSubscribed);
-      room?.off(RoomEvent.ParticipantPermissionsChanged, handlePermissionChanged);
-      localParticipant?.off(ParticipantEvent.TrackMuted, handleUpdateLastActive);
-      localParticipant?.off(ParticipantEvent.TrackUnmuted, handleUpdateLastActive);
-      localParticipant?.off(ParticipantEvent.LocalTrackPublished, handleUpdateLastActive);
-      localParticipant?.off(ParticipantEvent.LocalTrackUnpublished, handleUpdateLastActive);
+      room.off(RoomEvent.ParticipantPermissionsChanged, handlePermissionChanged);
+      localParticipant.off(ParticipantEvent.TrackUnmuted, handleUnmuteEventListener);
+      localParticipant.off(ParticipantEvent.LocalTrackPublished, handleUnmuteEventListener);
+      localParticipant.off(ParticipantEvent.TrackMuted, handleMuteEventListener);
+      localParticipant.off(ParticipantEvent.LocalTrackUnpublished, handleMuteEventListener);
     };
   }, [
     room.on,
     room.off,
     localParticipant.on,
     localParticipant.off,
-    handleTrackMuteState,
-    handleTrackPublished,
-    handleTrackUnpublished,
-    handleUpdateLastActive,
     handlePermissionChanged,
     handleRoomConnected,
+    handleTrackPublished,
+    handleTrackState,
     handleTrackSubscribed,
+    handleTrackUnpublished,
   ]);
 };
 
