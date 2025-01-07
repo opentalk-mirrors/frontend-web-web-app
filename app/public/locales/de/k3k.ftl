@@ -137,6 +137,7 @@ chat-close-emoji-picker = emoji picker schließen
 chat-submit-button = Chat Nachricht absenden
 chat-search-label = Im Chat suchen
 chat-search-placeholder = Einen Suchbegriff eingeben
+chat-live-message-announcemenet = Eine neue Nachricht von {$name} im öffentlichen Chat.
 
 participant-search-label = Teilnehmer suchen
 
@@ -641,6 +642,7 @@ global-minute = { $count ->
     [one] Minute
     *[other] Minuten
 }
+global-participant = Teilnehmer
 global-participants = Teilnehmer
 global-save = Speichern
 global-save-changes = Änderungen speichern

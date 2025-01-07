@@ -169,7 +169,11 @@ export const selectLastSeenTimestamps = (state: RootState) =>
 export const selectChatEnabledState = (state: RootState) => state.chat.enabled;
 const chatMessagesSelectors = messagesAdapter.getSelectors<RootState>((state) => state.chat.messages);
 
-export const selectAllChatMessages = (state: RootState) => chatMessagesSelectors.selectAll(state);
+// For some reason in unit tests selectAll method returned array with undefined messages inside
+// therefore we filter them out, as it doesn't hurt in production as well
+export const selectAllChatMessages = (state: RootState) =>
+  chatMessagesSelectors.selectAll(state).filter((message) => message !== undefined);
+
 export const selectChatMessagesById = (id: EntityId) => (state: RootState) =>
   chatMessagesSelectors.selectById(state, id);
 

@@ -13,6 +13,7 @@ import { selectChatSearchValue, setChatSearchValue } from '../../store/slices/ui
 import { ChatScope, TargetId } from '../../types';
 import ChatForm from './fragments/ChatForm';
 import ChatList from './fragments/ChatList';
+import ChatLiveRegion from './fragments/ChatLiveRegion';
 import ChatSearch from './fragments/ChatSearch';
 
 const Container = styled(Stack)({
@@ -68,6 +69,8 @@ const Chat = ({ target, scope = ChatScope.Global, autoFocusMessageInput }: ChatP
       <ChatSearch value={searchValue} onChange={onChangeMiddleware} ref={chatSearchInputReference} />
       <ChatList scope={scope} targetId={target} onReset={resetSearch} />
       <ChatForm scope={scope} targetId={target} autoFocusMessageInput={autoFocusMessageInput} />
+      {/* Currently we want to announce only global chat messages */}
+      {scope === ChatScope.Global && <ChatLiveRegion />}
     </Container>
   );
 };
