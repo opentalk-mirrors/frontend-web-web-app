@@ -276,7 +276,7 @@ deploy:review-app:
   stage: deploy
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  image: alpine/helm:3.10.2
+  image: alpine/helm:3.16.4
   tags:
     - kubernetes
   before_script:
@@ -357,13 +357,14 @@ cleanup:review-app:
         $CI_PIPELINE_SOURCE == 'push'
   allow_failure: true
   image:
-    name: alpine/helm:3.10.2
+    name: alpine/helm:3.16.4
     entrypoint: ['']
   tags:
     - kubernetes
   before_script:
     - apk add --no-cache --update curl
     - apk add --no-cache jq
+    - apk add --no-cache kubectl
   script:
     - API_MR_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests"
     - |
