@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { LiveKitRoom } from '@livekit/components-react';
 import { CircularProgress, styled } from '@mui/material';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import useE2EE from '../../hooks/useE2EE';
+import { useMediaChoices } from '../../hooks/useMediaChoices';
 import useRoom from '../../hooks/useRoom';
 import Video from './fragments/Video';
 import { useBroadcastChannel } from './hooks/useBroadcastChannel';
@@ -21,7 +23,13 @@ const ExtendedTabPage = () => {
   const { channelId } = useParams();
   const { accessToken, mediaType, participantId, livekitUrl, roomId } = useBroadcastChannel(channelId);
   const e2eeData = useE2EE(roomId);
-  const room = useRoom({ e2eeData, audioInputEnabled: false, videoInputEnabled: false });
+  const room = useRoom({ e2eeData });
+  const mediaChoices = useMediaChoices();
+
+  useEffect(() => {
+    mediaChoices?.saveVideoInputEnabled(false);
+    mediaChoices?.saveAudioInputEnabled(false);
+  }, [mediaChoices?.saveVideoInputEnabled, mediaChoices?.saveAudioInputEnabled]);
 
   if (room === undefined || mediaType === undefined || participantId === undefined) {
     return <CircularProgress />;
