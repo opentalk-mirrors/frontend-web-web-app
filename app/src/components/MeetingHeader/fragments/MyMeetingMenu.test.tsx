@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import * as apiUtils from '../../../utils/apiUtils';
-import { configureStore, fireEvent, render, screen } from '../../../utils/testUtils';
+import { configureStore, fireEvent, render, screen, waitFor } from '../../../utils/testUtils';
 import MyMeetingMenu from './MyMeetingMenu';
 
 jest.mock('../../../utils/apiUtils');
@@ -17,15 +17,18 @@ describe('My Meeting Menu', () => {
 
     fireEvent.click(menuButton);
 
-    const menu = screen.getByRole('menu', { name: 'my-meeting-menu' });
-    expect(menu).toBeInTheDocument();
+    await waitFor(() => {
+      const menu = screen.getByRole('menu', { name: 'my-meeting-menu' });
+      expect(menu).toBeInTheDocument();
 
-    const userManualMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
-    expect(userManualMenuItem).toBeInTheDocument();
+      const userManualMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
+      expect(userManualMenuItem).toBeInTheDocument();
 
-    const shortcutsMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-keyboard-shortcuts' });
-    expect(shortcutsMenuItem).toBeInTheDocument();
+      const shortcutsMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-keyboard-shortcuts' });
+      expect(shortcutsMenuItem).toBeInTheDocument();
+    });
   });
+
   test('Report error button is not visible if glitchtip is not configured', async () => {
     const { store } = configureStore({
       initialState: {
@@ -40,9 +43,12 @@ describe('My Meeting Menu', () => {
     const menuButton = screen.getByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
 
-    const reportBugMenuItem = screen.queryByRole('menuitem', { name: 'my-meeting-menu-glitchtip-trigger' });
-    expect(reportBugMenuItem).not.toBeInTheDocument();
+    await waitFor(() => {
+      const reportBugMenuItem = screen.queryByRole('menuitem', { name: 'my-meeting-menu-glitchtip-trigger' });
+      expect(reportBugMenuItem).not.toBeInTheDocument();
+    });
   });
+
   test('Report error button is visible when glitchtip dsn is configured', async () => {
     const { store } = configureStore({
       initialState: {
@@ -58,9 +64,12 @@ describe('My Meeting Menu', () => {
     const menuButton = screen.getByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
 
-    const reportBugMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-glitchtip-trigger' });
-    expect(reportBugMenuItem).toBeInTheDocument();
+    await waitFor(() => {
+      const reportBugMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-glitchtip-trigger' });
+      expect(reportBugMenuItem).toBeInTheDocument();
+    });
   });
+
   test('click on User Manual option opens user manual', async () => {
     const openUserManualSpy = jest.spyOn(apiUtils, 'openUserManual');
 
@@ -70,10 +79,12 @@ describe('My Meeting Menu', () => {
     const menuButton = screen.getByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
 
-    const userManualMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
-    fireEvent.click(userManualMenuItem);
+    await waitFor(() => {
+      const userManualMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
+      fireEvent.click(userManualMenuItem);
 
-    expect(openUserManualSpy).toHaveBeenCalled();
-    openUserManualSpy.mockRestore();
+      expect(openUserManualSpy).toHaveBeenCalled();
+      openUserManualSpy.mockRestore();
+    });
   });
 });

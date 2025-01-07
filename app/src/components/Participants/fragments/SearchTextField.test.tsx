@@ -31,8 +31,11 @@ describe('SearchTextField', () => {
     expect(searchInput).toHaveValue('');
 
     fireEvent.change(searchInput, { target: { value: 'testing...' } });
-    expect(mockOnSearch).toBeCalledWith('testing...');
-    expect(mockOnSearch).toBeCalledTimes(1);
+
+    await waitFor(() => {
+      expect(mockOnSearch).toBeCalledWith('testing...');
+      expect(mockOnSearch).toBeCalledTimes(1);
+    });
   });
 
   test('click on sortButton should open menu with list of sortOptionItems', async () => {
@@ -51,11 +54,14 @@ describe('SearchTextField', () => {
     const sortButton = screen.getByRole('button', { name: /sort-by/i });
     expect(sortButton).toBeInTheDocument();
 
-    await fireEvent.click(sortButton);
-    const raisedHandButton = screen.getByRole('menuitem', { name: 'sort-raised-hand' });
-    expect(raisedHandButton).toBeInTheDocument();
+    fireEvent.click(sortButton);
+    let raisedHandButton = null;
+    await waitFor(() => {
+      raisedHandButton = screen.getByRole('menuitem', { name: 'sort-raised-hand' });
+      expect(raisedHandButton).toBeInTheDocument();
+    });
 
-    fireEvent.click(raisedHandButton);
+    raisedHandButton && fireEvent.click(raisedHandButton);
     await waitFor(() => {
       expect(dispatch.mock.calls).toContainEqual([
         { payload: 'raisedHandFirst', type: 'ui/setParticipantsSortOption' },

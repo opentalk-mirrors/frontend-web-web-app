@@ -45,11 +45,11 @@ describe('Dashboard HomePage', () => {
     expect(screen.getAllByText('dashboard-home-created-by')).toHaveLength(4);
   });
 
-  // documented out because MUI <Hidden> will not working well with jest in v5
+  // useMediaQuery doesn't work with jsdom because window.matchMedia is not implemented and must be mocked
   xtest('new meeting button is rendered', async () => {
     const { store } = configureStore();
     await render(<Home />, store);
 
-    expect(screen.getByText('dashboard-meeting-card-button-new-meeting')).toBeInTheDocument();
+    expect(screen.getByText('dashboard-plan-new-meeting')).toBeInTheDocument();
   });
 });

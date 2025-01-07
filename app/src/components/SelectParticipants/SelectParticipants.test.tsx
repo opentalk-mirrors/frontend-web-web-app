@@ -2,9 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { UserId, EventId } from '@opentalk/rest-api-rtk-query';
-import { fireEvent, waitFor, within } from '@testing-library/react';
 
-import { cleanup, configureStore, render, screen } from '../../utils/testUtils';
+import { cleanup, configureStore, render, screen, fireEvent, waitFor, within } from '../../utils/testUtils';
 import SelectParticipants from './SelectParticipants';
 
 const mockOnChange = jest.fn();
@@ -53,12 +52,12 @@ describe('SelectParticipants', () => {
 
   test('sends API request after delay when typed more than 3 characters.', async () => {
     const autocomplete = screen.getByTestId('SelectParticipants');
-    const input = await within(autocomplete).findByLabelText('Test');
+    const input = within(autocomplete).getByLabelText('Test');
 
-    await fireEvent.change(input, { target: { value: 'test' } });
+    fireEvent.change(input, { target: { value: 'test' } });
     waitFor(
       () => {
-        expect(mockFindLazyUsersQuery).toBeCalled();
+        expect(mockFindLazyUsersQuery).toHaveBeenCalled();
       },
       { timeout: 500 }
     );
@@ -66,15 +65,15 @@ describe('SelectParticipants', () => {
 
   test('click on suggested participant will move him to added list', async () => {
     const autocomplete = screen.getByTestId('SelectParticipants');
-    const input = await within(autocomplete).findByLabelText('Test');
+    const input = within(autocomplete).getByLabelText('Test');
     expect(screen.queryByTestId('SelectedParticipant')).not.toBeInTheDocument();
-    await fireEvent.change(input, { target: { value: 'test' } });
+    fireEvent.change(input, { target: { value: 'test' } });
     waitFor(
       async () => {
         const listbox = screen.getByRole('listbox');
-        const firstOption = await within(listbox).findByRole('option');
-        await fireEvent.click(firstOption);
-        expect(screen.findByTestId('SelectedParticipant')).not.toBeEmptyDOMElement();
+        const firstOption = within(listbox).getByRole('option');
+        fireEvent.click(firstOption);
+        expect(screen.getByTestId('SelectedParticipant')).not.toBeEmptyDOMElement();
       },
       { timeout: 500 }
     );
@@ -82,16 +81,16 @@ describe('SelectParticipants', () => {
 
   test('click on delete will move the user back to the suggested list', async () => {
     const autocomplete = screen.getByTestId('SelectParticipants');
-    const input = await within(autocomplete).findByLabelText('Test');
-    await fireEvent.change(input, { target: { value: 'test' } });
+    const input = within(autocomplete).getByLabelText('Test');
+    fireEvent.change(input, { target: { value: 'test' } });
     waitFor(
       async () => {
         const listbox = screen.getByRole('listbox');
-        const firstOption = await within(listbox).findByRole('option');
-        await fireEvent.click(firstOption);
-        const selectedContainer = await screen.findByTestId('SelectedParticipant');
-        const firstChipDeleteButton = await within(selectedContainer).findByTestId('SelectedParticipants-deleteButton');
-        await fireEvent.click(firstChipDeleteButton);
+        const firstOption = within(listbox).getByRole('option');
+        fireEvent.click(firstOption);
+        const selectedContainer = screen.getByTestId('SelectedParticipant');
+        const firstChipDeleteButton = within(selectedContainer).getByTestId('SelectedParticipants-deleteButton');
+        fireEvent.click(firstChipDeleteButton);
         expect(screen.queryByTestId('SelectedParticipant')).not.toBeInTheDocument();
       },
       { timeout: 500 }

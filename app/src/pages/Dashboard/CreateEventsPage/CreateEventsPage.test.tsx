@@ -1,15 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { act, fireEvent, render, screen } from '@testing-library/react';
-
+import { fireEvent, render, screen, waitFor } from '../../../utils/testUtils';
 import CreateEventsPage from './CreateEventsPage';
-
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
 
 jest.mock('../../../components/CreateOrUpdateMeetingForm', () => ({
   __esModule: true,
@@ -19,21 +12,22 @@ jest.mock('../../../components/CreateOrUpdateMeetingForm', () => ({
 }));
 
 describe('CreateEventsPage', () => {
-  it('renders <h1 />', () => {
-    render(<CreateEventsPage />);
+  it('renders <h1 />', async () => {
+    await render(<CreateEventsPage />);
     expect(screen.getByText('dashboard-meetings-create-title')).toHaveProperty('tagName', 'H1');
   });
 
-  it('renders CreateOrUpdateMeetingForm when active step is 0', () => {
-    render(<CreateEventsPage />);
+  it('renders CreateOrUpdateMeetingForm when active step is 0', async () => {
+    await render(<CreateEventsPage />);
     expect(screen.getByTestId('CreateOrUpdateMeetingForm')).toBeInTheDocument();
   });
 
-  it('hides CreateOrUpdateMeetingForm when active step is 1', () => {
-    render(<CreateEventsPage />);
-    act(() => {
-      fireEvent.click(screen.getByTestId('CreateOrUpdateMeetingForm'));
+  it('hides CreateOrUpdateMeetingForm when active step is 1', async () => {
+    await render(<CreateEventsPage />);
+    fireEvent.click(screen.getByTestId('CreateOrUpdateMeetingForm'));
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('CreateOrUpdateMeetingForm')).not.toBeInTheDocument();
     });
-    expect(screen.queryByTestId('CreateOrUpdateMeetingForm')).not.toBeInTheDocument();
   });
 });

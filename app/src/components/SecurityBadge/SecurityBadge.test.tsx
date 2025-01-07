@@ -4,7 +4,7 @@
 import userEvent from '@testing-library/user-event';
 
 import { ParticipationKind } from '../../types';
-import { screen, render, mockStore, waitFor } from '../../utils/testUtils';
+import { screen, render, mockStore, act } from '../../utils/testUtils';
 import SecurityBadge from './SecurityBadge';
 
 const NUMBER_OF_PARTICIPANTS = 2;
@@ -14,23 +14,24 @@ describe('<SecurityBadge />', () => {
     await render(<SecurityBadge />, store);
 
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
-    await waitFor(() => {
-      expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
+    expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
+
+    await act(async () => {
+      await userEvent.click(button);
     });
-    await userEvent.click(button);
 
     const popoverTitle = screen.getByRole('heading', { name: 'secure-connection-title' });
-    await waitFor(() => {
-      expect(popoverTitle).toBeInTheDocument();
-    });
+    expect(popoverTitle).toBeInTheDocument();
   });
   it('should close popover if its opened and button is clicked again', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
     await render(<SecurityBadge />, store);
 
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
-    await userEvent.click(button);
-    await userEvent.click(button);
+    await act(async () => {
+      await userEvent.click(button);
+      await userEvent.click(button);
+    });
 
     const popoverTitle = screen.queryByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).not.toBeInTheDocument();
@@ -42,9 +43,15 @@ describe('<SecurityBadge />', () => {
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
     expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
 
-    await userEvent.tab();
+    await act(async () => {
+      await userEvent.tab();
+    });
+
     expect(button).toHaveFocus();
-    await userEvent.keyboard('[Enter]');
+
+    await act(async () => {
+      await userEvent.keyboard('[Enter]');
+    });
 
     const popoverTitle = screen.getByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).toBeInTheDocument();
@@ -56,9 +63,15 @@ describe('<SecurityBadge />', () => {
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
     expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
 
-    await userEvent.tab();
+    await act(async () => {
+      await userEvent.tab();
+    });
+
     expect(button).toHaveFocus();
-    await userEvent.keyboard('[Space]');
+
+    await act(async () => {
+      await userEvent.keyboard('[Space]');
+    });
 
     const popoverTitle = screen.getByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).toBeInTheDocument();
@@ -70,14 +83,22 @@ describe('<SecurityBadge />', () => {
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
     expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
 
-    await userEvent.tab();
+    await act(async () => {
+      await userEvent.tab();
+    });
+
     expect(button).toHaveFocus();
-    await userEvent.keyboard('[Enter]');
+
+    await act(async () => {
+      await userEvent.keyboard('[Enter]');
+    });
 
     const popoverTitle = screen.getByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).toBeInTheDocument();
 
-    await userEvent.keyboard('[Escape]');
+    await act(async () => {
+      await userEvent.keyboard('[Escape]');
+    });
     expect(popoverTitle).not.toBeInTheDocument();
   });
   it('should show the guest participant popover message when a guest is present', async () => {
@@ -86,10 +107,16 @@ describe('<SecurityBadge />', () => {
 
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
     expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
-    await userEvent.click(button);
+
+    await act(async () => {
+      await userEvent.click(button);
+    });
+
     expect(screen.getByText('secure-connection-guests')).toBeInTheDocument();
 
-    await userEvent.click(button);
+    await act(async () => {
+      await userEvent.click(button);
+    });
     expect(screen.queryByText('secure-connection-guests')).not.toBeInTheDocument();
   });
   it('should show the sip participant popover message when a sip user is present', async () => {
@@ -98,12 +125,18 @@ describe('<SecurityBadge />', () => {
 
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
     expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
-    await userEvent.click(button);
+
+    await act(async () => {
+      await userEvent.click(button);
+    });
 
     expect(screen.getByText('secure-connection-sip')).toBeInTheDocument();
     expect(screen.queryByText('secure-connection-guests')).not.toBeInTheDocument();
 
-    await userEvent.click(button);
+    await act(async () => {
+      await userEvent.click(button);
+    });
+
     expect(screen.queryByText('secure-connection-sip')).not.toBeInTheDocument();
   });
   it('should show the mixed popover message when a sip user and a guest user is present', async () => {
@@ -114,13 +147,19 @@ describe('<SecurityBadge />', () => {
 
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
     expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
-    await userEvent.click(button);
+
+    await act(async () => {
+      await userEvent.click(button);
+    });
 
     expect(screen.getByText('secure-connection-contaminated')).toBeInTheDocument();
     expect(screen.queryByText('secure-connection-guests')).not.toBeInTheDocument();
     expect(screen.queryByText('secure-connection-sip')).not.toBeInTheDocument();
 
-    await userEvent.click(button);
+    await act(async () => {
+      await userEvent.click(button);
+    });
+
     expect(screen.queryByText('secure-connection-contaminated')).not.toBeInTheDocument();
   });
 });

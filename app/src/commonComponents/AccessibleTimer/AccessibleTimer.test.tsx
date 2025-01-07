@@ -1,56 +1,43 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen } from '@testing-library/react';
-
+import { render, screen } from '../../utils/testUtils';
 import AccessibleTimer from './AccessibleTimer';
 import { LAST_SECONDS_OF_A_MINUTE, LAST_SECONDS_OF_TOTAL_TIME } from './constants';
 
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str,
-    };
-  },
-  initReactI18next: {
-    type: '3rdParty',
-  },
-}));
-
 describe('Accessible Timer', () => {
-  it('announces remaining time as "more than "x" minutes left" on first render and ""x" minutes left" on the next minute update', () => {
+  it('announces remaining time as "more than "x" minutes left" on first render and ""x" minutes left" on the next minute update', async () => {
     let remainingTime: Duration = { minutes: 4, seconds: 59 };
-    const { rerender } = render(<AccessibleTimer remainingTime={remainingTime} />);
+    const { rerender } = await render(<AccessibleTimer remainingTime={remainingTime} />);
     expect(screen.getByText('timer-more-than-message')).toBeInTheDocument();
 
     remainingTime = { minutes: 3, seconds: 59 };
     rerender(<AccessibleTimer remainingTime={remainingTime} />);
     expect(screen.getByText('timer-update-message')).toBeInTheDocument();
   });
-  it('doesn"t announces remaining time, if renders in the last seconds of a minute, but will announce next minute update ', () => {
+  it('doesn"t announces remaining time, if renders in the last seconds of a minute, but will announce next minute update ', async () => {
     let remainingTime: Duration = { minutes: 4, seconds: LAST_SECONDS_OF_A_MINUTE - 1 };
-    const { rerender } = render(<AccessibleTimer remainingTime={remainingTime} />);
+    const { rerender } = await render(<AccessibleTimer remainingTime={remainingTime} />);
     expect(screen.queryByText(/./)).not.toBeInTheDocument();
 
     remainingTime = { minutes: 3, seconds: 59 };
     rerender(<AccessibleTimer remainingTime={remainingTime} />);
     expect(screen.getByText('timer-update-message')).toBeInTheDocument();
   });
-  it('announces "less than one minute left" ', () => {
+  it('announces "less than one minute left" ', async () => {
     const remainingTime: Duration = { minutes: 0, seconds: 59 };
-    render(<AccessibleTimer remainingTime={remainingTime} />);
+    await render(<AccessibleTimer remainingTime={remainingTime} />);
     expect(screen.getByText('timer-less-than-message')).toBeInTheDocument();
   });
-  it('announces last seconds of the total time ', () => {
+  it('announces last seconds of the total time ', async () => {
     const remainingTime: Duration = { minutes: 0, seconds: LAST_SECONDS_OF_TOTAL_TIME - 1 };
-    render(<AccessibleTimer remainingTime={remainingTime} />);
+    await render(<AccessibleTimer remainingTime={remainingTime} />);
     expect(screen.getByText('timer-last-seconds-message')).toBeInTheDocument();
   });
-  it('adds feature name to the announcement', () => {
+  it('adds feature name to the announcement', async () => {
     const remainingTime: Duration = { minutes: 4, seconds: 59 };
     const feature = 'Coffee break';
-    render(<AccessibleTimer remainingTime={remainingTime} feature={feature} />);
+    await render(<AccessibleTimer remainingTime={remainingTime} feature={feature} />);
     expect(screen.getByText(`${feature}. timer-more-than-message`)).toBeInTheDocument();
   });
 });

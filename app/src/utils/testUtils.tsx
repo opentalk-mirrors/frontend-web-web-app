@@ -106,10 +106,21 @@ export const loadLanguage = async (lng: string) => {
 i18n.use(initReactI18next).init({
   lng: 'en',
   fallbackLng: 'en',
+
   // have a common namespace used around the full app
-  ns: ['translations'],
-  defaultNS: 'translations',
-  resources: { en: { translations: {} } },
+  ns: ['translationsNS'],
+  defaultNS: 'translationsNS',
+
+  debug: false,
+
+  interpolation: {
+    escapeValue: false, // not needed for react!!
+  },
+
+  resources: {
+    en: {},
+    de: {},
+  },
 });
 
 export const createStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined) => {

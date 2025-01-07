@@ -74,26 +74,34 @@ describe('ThumbsRow', () => {
 
     // we are in the middle (thumbs index 5 - 10 is shown)
     // left- and navigate-to-right appear
-    expect(screen.getByLabelText('navigate-to-left')).toBeInTheDocument();
-    expect(screen.getByLabelText('navigate-to-right')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText('navigate-to-left')).toBeInTheDocument();
+      expect(screen.getByLabelText('navigate-to-right')).toBeInTheDocument();
+    });
 
     // we are on the end of the thumbs (thumbs index 7 - 12 is shown)
     // navigate-to-left appears, navigate-to-right disappears
     fireEvent.click(screen.getByLabelText('navigate-to-right'));
-    expect(screen.getByLabelText('navigate-to-left')).toBeInTheDocument();
-    expect(screen.queryByLabelText('navigate-to-right')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText('navigate-to-left')).toBeInTheDocument();
+      expect(screen.queryByLabelText('navigate-to-right')).not.toBeInTheDocument();
+    });
 
     // we are in the middle (thumbs index 5 - 10 is shown)
     // left- and navigate-to-right appear
     fireEvent.click(screen.getByLabelText('navigate-to-left'));
-    expect(screen.getByLabelText('navigate-to-left')).toBeInTheDocument();
-    expect(screen.getByLabelText('navigate-to-right')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText('navigate-to-left')).toBeInTheDocument();
+      expect(screen.getByLabelText('navigate-to-right')).toBeInTheDocument();
+    });
 
     // we are in the beginning (thumbs index 0 - 5 is shown)
     // navigate-to-left disappear, navigate-to-right appears
     fireEvent.click(screen.getByLabelText('navigate-to-left'));
-    expect(screen.queryByLabelText('navigate-to-left')).not.toBeInTheDocument();
-    expect(screen.getByLabelText('navigate-to-right')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByLabelText('navigate-to-left')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('navigate-to-right')).toBeInTheDocument();
+    });
   });
 
   // TODO: move this tests to Thumbnail component

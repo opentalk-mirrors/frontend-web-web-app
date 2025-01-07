@@ -7,7 +7,7 @@ import { PropsWithChildren } from 'react';
 
 import { CommonTextField } from '../../commonComponents';
 import * as apiUtils from '../../utils/apiUtils';
-import { render, screen, configureStore } from '../../utils/testUtils';
+import { render, screen, configureStore, act } from '../../utils/testUtils';
 import SelfTest from './SelfTest';
 
 jest.mock('../../utils/apiUtils');
@@ -54,6 +54,7 @@ describe('SelfTest', () => {
 
     expect(screen.getByRole('button', { name: 'user-manual-open' })).toBeInTheDocument();
   });
+
   test('render SelfTest header as h2', async () => {
     await render(
       <SelfTest>
@@ -65,6 +66,7 @@ describe('SelfTest', () => {
     expect(headerElement).toBeInTheDocument();
     expect(headerElement.tagName).toBe('H2');
   });
+
   test('render room title as h1', async () => {
     await render(
       <SelfTest>
@@ -79,6 +81,7 @@ describe('SelfTest', () => {
     expect(titleElement).toBeInTheDocument();
     expect(titleElement.tagName).toBe('H1');
   });
+
   test('open user manual', async () => {
     const openUserManualSpy = jest.spyOn(apiUtils, 'openUserManual');
 
@@ -90,7 +93,9 @@ describe('SelfTest', () => {
     );
 
     const userManualButton = screen.getByRole('button', { name: 'user-manual-open' });
-    await userEvent.click(userManualButton);
+    await act(async () => {
+      await userEvent.click(userManualButton);
+    });
 
     expect(openUserManualSpy).toHaveBeenCalled();
     openUserManualSpy.mockRestore();

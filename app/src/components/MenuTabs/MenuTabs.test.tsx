@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, fireEvent, configureStore, waitFor, act } from '../../utils/testUtils';
+import { render, screen, fireEvent, configureStore, waitFor } from '../../utils/testUtils';
 import MenuTabs from './MenuTabs';
 
 describe('MenuTabs Component', () => {
@@ -46,15 +46,12 @@ describe('MenuTabs Component', () => {
     expect(messageTab).toBeInTheDocument();
     expect(messageTab).toHaveAttribute('aria-selected', 'false');
 
-    act(() => {
-      fireEvent.click(messageTab);
-    });
+    fireEvent.click(messageTab);
 
     await waitFor(() => {
       expect(messageTab).toHaveAttribute('aria-selected', 'true');
+      expect(chatTab).toHaveAttribute('aria-selected', 'false');
     });
-
-    expect(chatTab).toHaveAttribute('aria-selected', 'false');
   });
 
   test('click on PeopleTab should mark tab as selected', async () => {
@@ -70,14 +67,11 @@ describe('MenuTabs Component', () => {
     expect(peopleTab).toBeInTheDocument();
     expect(peopleTab).toHaveAttribute('aria-selected', 'false');
 
-    act(() => {
-      fireEvent.click(peopleTab);
-    });
+    fireEvent.click(peopleTab);
 
     await waitFor(() => {
       expect(peopleTab).toHaveAttribute('aria-selected', 'true');
+      expect(chatTab).toHaveAttribute('aria-selected', 'false');
     });
-
-    expect(chatTab).toHaveAttribute('aria-selected', 'false');
   });
 });

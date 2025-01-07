@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { UserId } from '@opentalk/rest-api-rtk-query';
 
-import { render, screen, configureStore, fireEvent } from '../../../utils/testUtils';
+import { render, screen, configureStore, fireEvent, waitFor } from '../../../utils/testUtils';
 import EndCallButton from './EndCallButton';
 
 jest.mock('../../../api/rest', () => ({
@@ -43,11 +43,13 @@ describe('<EndCallButton />', () => {
 
     fireEvent.click(endButton);
 
-    const closeMeetingButton = screen.getByText('meeting-delete-metadata-button-leave-and-delete');
+    await waitFor(() => {
+      const closeMeetingButton = screen.getByText('meeting-delete-metadata-button-leave-and-delete');
 
-    expect(screen.getByLabelText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
-    expect(closeMeetingButton).toBeInTheDocument();
-    expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
+      expect(screen.getByLabelText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
+      expect(closeMeetingButton).toBeInTheDocument();
+      expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
+    });
   });
 
   test('should dispatch leave by clicking on leaveWithoutDeletingButton', async () => {
@@ -57,14 +59,18 @@ describe('<EndCallButton />', () => {
 
     fireEvent.click(endButton);
 
-    const leaveWithoutDeletingButton = screen.getByText('meeting-delete-metadata-button-leave-and-delete');
+    let leaveWithoutDeletingButton = null;
+    await waitFor(() => {
+      leaveWithoutDeletingButton = screen.getByText('meeting-delete-metadata-button-leave-and-delete');
 
-    expect(leaveWithoutDeletingButton).toBeInTheDocument();
-    expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
+      expect(leaveWithoutDeletingButton).toBeInTheDocument();
+      expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
+    });
+
+    /* TODO the hangup ('room/hangup/pending') async thunks is undefined here
 
     fireEvent.click(leaveWithoutDeletingButton);
 
-    /* TODO the hangup ('room/hangup/pending') async thunks is undefined here
     await waitFor(() => {
       expect(dispatch.mock.calls).toMatchObject([
         [{ payload: undefined, type: 'auth/loaded' }],
@@ -76,16 +82,21 @@ describe('<EndCallButton />', () => {
   test('should dispatch delete and leave by clicking on deleteMeeting button', async () => {
     await render(<EndCallButton />, store);
     const endButton = screen.getByTestId('toolbarEndCallButton');
-    expect(endButton).toBeInTheDocument();
-    await fireEvent.click(endButton);
 
-    const deleteMeeting = screen.getByText('meeting-delete-metadata-button-leave-without-delete');
-    expect(screen.getByText('meeting-delete-metadata-button-leave-and-delete')).toBeInTheDocument();
-    expect(deleteMeeting).toBeInTheDocument();
+    expect(endButton).toBeInTheDocument();
+
+    fireEvent.click(endButton);
+
+    await waitFor(() => {
+      const deleteMeeting = screen.getByText('meeting-delete-metadata-button-leave-without-delete');
+      expect(screen.getByText('meeting-delete-metadata-button-leave-and-delete')).toBeInTheDocument();
+      expect(deleteMeeting).toBeInTheDocument();
+    });
+
+    /* TODO the hangup ('room/hangup/pending') async thunks is undefined here
 
     fireEvent.click(deleteMeeting);
 
-    /* TODO the hangup ('room/hangup/pending') async thunks is undefined here
     await waitFor(() => {
       expect(dispatch.mock.calls).toEqual(
         expect.arrayContaining([

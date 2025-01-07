@@ -4,7 +4,7 @@
 import userEvent from '@testing-library/user-event';
 import { truncate } from 'lodash';
 
-import { screen, render, createStore } from '../../../utils/testUtils';
+import { screen, render, createStore, act } from '../../../utils/testUtils';
 import RoomTitle from './RoomTitle';
 import { ROOM_TITLE_MAX_LENGTH } from './constants';
 
@@ -26,7 +26,9 @@ describe('Room title', () => {
     expect(screen.getByText(allowedLengthName)).toBeInTheDocument();
 
     const title = screen.getByTitle(allowedLengthName);
-    await userEvent.hover(title);
+    act(() => {
+      userEvent.hover(title);
+    });
     const tooltip = await screen.findByRole('tooltip');
     expect(tooltip).toHaveTextContent(allowedLengthName);
   });
@@ -49,7 +51,9 @@ describe('Room title', () => {
     expect(screen.getByText(/.../i)).toBeInTheDocument();
 
     const title = screen.getByTitle(exceedingMaxLengthName);
-    await userEvent.hover(title);
+    act(() => {
+      userEvent.hover(title);
+    });
     const tooltip = await screen.findByRole('tooltip');
     expect(tooltip).toHaveTextContent(exceedingMaxLengthName);
   });
@@ -107,7 +111,9 @@ describe('Room title', () => {
     expect(screen.getByText(truncatedFallbackTitle)).toBeInTheDocument();
 
     const title = screen.getByTitle('fallback-room-title');
-    await userEvent.hover(title);
+    act(() => {
+      userEvent.hover(title);
+    });
     const tooltip = await screen.findByRole('tooltip');
     expect(tooltip).toHaveTextContent('fallback-room-title');
   });
