@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useMediaDeviceSelect } from '@livekit/components-react';
 import { Room } from 'livekit-client';
-import { debounce } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -35,12 +34,11 @@ const HOTKEYS = [
   HOTKEY_NEXT_SPEAKER,
   HOTKEY_WHISPERGROUP,
 ];
-const HOTKEY_DEBOUNCE_TIME = 100; //ms
 
 enum PushToTalkState {
   Whisper = 'whisper',
   Conference = 'conference',
-  Inactive = 'inactve',
+  Inactive = 'inactive',
 }
 
 export const useHotkeysActive = (): boolean => {
@@ -97,6 +95,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
       }
       switch (type) {
         case 'keydown': {
+          toggleAudio(false);
           if (pushToTalkState === PushToTalkState.Inactive) {
             dispatch(setIsWhisperActive(true));
             whisperRoom?.localParticipant.setMicrophoneEnabled(true);
@@ -114,7 +113,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
         }
       }
     },
-    [whisperRoom, isWhisperingPossible, pushToTalkState, dispatch]
+    [whisperRoom, isWhisperingPossible, pushToTalkState, dispatch, toggleAudio]
   );
 
   const toggleVideo = useCallback(
@@ -170,20 +169,32 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
           break;
       }
     },
-    [audioEnabled, hasMicrophoneDisabledByModerator, toggleAudio, pushToTalkState, stoppingAudio]
+    [audioEnabled, hasMicrophoneDisabledByModerator, toggleAudio, pushToTalkState]
   );
 
   const toggleFullscreenView = useCallback(() => {
     fullscreenContext[fullscreenContext.active ? 'exit' : 'enter']();
   }, [fullscreenContext]);
 
+  const pressedKeys = new Set<string>();
+
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      if (!hotkeysActive) {
+      if (!hotkeysActive || !HOTKEYS.includes(event.key)) {
         return;
       }
 
       const { type, repeat, key } = event;
+
+      // Track pressed keys to prevent redundant calls
+      if (type === 'keydown') {
+        if (pressedKeys.has(key)) {
+          return;
+        }
+        pressedKeys.add(key);
+      } else if (type === 'keyup') {
+        pressedKeys.delete(key);
+      }
 
       if (HOTKEYS.includes(key) && (type === 'keyup' || type === 'keydown')) {
         event.preventDefault();
@@ -241,18 +252,18 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
       audioDevices,
       videoDevices,
       hasMicrophoneDisabledByModerator,
+      subroomAudioEnabled,
+      pressedKeys,
     ]
   );
 
   useEffect(() => {
-    const debouncedHandleKeypress = debounce(handleKeyPress, HOTKEY_DEBOUNCE_TIME);
-
-    window.addEventListener('keydown', debouncedHandleKeypress);
-    window.addEventListener('keyup', debouncedHandleKeypress);
+    window.addEventListener('keydown', handleKeyPress);
+    window.addEventListener('keyup', handleKeyPress);
 
     return () => {
-      window.removeEventListener('keydown', debouncedHandleKeypress);
-      window.removeEventListener('keyup', debouncedHandleKeypress);
+      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener('keyup', handleKeyPress);
     };
   }, [handleKeyPress]);
 };
