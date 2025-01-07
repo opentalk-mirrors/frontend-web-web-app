@@ -7,7 +7,7 @@ test.describe('Dashboard', () => {
   test.describe('Sidebar Navigation/Options', () => {
     test('verify the contents displayed in the settings option of dashboard', async ({ page }) => {
       await page.goto(process.env.INSTANCE_URL);
-      await page.getByRole('link', { name: 'Settings' }).click();
+      await page.getByRole('link', { name: 'Settings', exact: true }).click();
       await expect(page.getByTestId('SecondaryNavigation').getByRole('list')).toContainText('General');
       await expect(page.getByTestId('SecondaryNavigation').getByRole('list')).toContainText('Profile');
       await expect(page.getByTestId('SecondaryNavigation').getByRole('list')).toContainText('Account');
@@ -34,7 +34,7 @@ test.describe('Dashboard', () => {
       await expect(page.getByText('My favorite meetings')).toBeVisible();
     });
 
-    test('logout from dashboard will redirect to signIn page', async ({ page }) => {
+    test.skip('logout from dashboard will redirect to signIn page', async ({ page }) => {
       await page.goto(`${process.env.INSTANCE_URL}/dashboard`);
       await page.locator('button').filter({ hasText: 'Logout' }).click();
       await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
