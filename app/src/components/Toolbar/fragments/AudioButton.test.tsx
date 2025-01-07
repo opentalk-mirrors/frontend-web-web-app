@@ -9,6 +9,7 @@ const MOCK_USER_ID = '06ff9aeb-21d6-4016-8e74-486ff78d70af';
 
 jest.mock('@livekit/components-react', () => ({
   useRoomContext: () => jest.fn(),
+  useLocalParticipantPermissions: () => jest.fn(),
   useMaybeRoomContext: () => ({ localParticipant: mockedParticipant(0) }),
   useMediaDeviceSelect: () => ({
     devices: [
