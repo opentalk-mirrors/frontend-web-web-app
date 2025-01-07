@@ -63,7 +63,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
     // Update the track subscripton state of remote videos if the config flag changes
     participant.videoTrackPublications.forEach((publication) => {
       const updateSubscriptionState = publication.isSubscribed !== areParticipantVideosEnabled;
-      if (updateSubscriptionState) {
+      if (updateSubscriptionState && publication.source !== Track.Source.ScreenShare) {
         publication.setSubscribed(areParticipantVideosEnabled);
       }
     });
