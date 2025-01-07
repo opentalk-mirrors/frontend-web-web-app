@@ -55,7 +55,7 @@ i18n.on('languageChanged', function (nextLanguage) {
 });
 
 i18n.on('loaded', function () {
-  document.documentElement.setAttribute('lang', i18n.language);
+  //document.documentElement.setAttribute('lang', i18n.language);
 });
 
 if (import.meta.hot) {

@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render } from '@testing-library/react';
-
 import { notificationAction } from '../../commonComponents';
 import browser from '../../modules/BrowserSupport';
+import { render } from '../../utils/testUtils';
 import { screen } from '../../utils/testUtils';
 import BrowserCompatibilityInfo from './BrowserCompatibilityInfo';
 
@@ -18,11 +17,11 @@ jest.mock('../../components/ConfirmBrowserDialog/ConfirmBrowserDialog', () => ({
 }));
 
 describe('BrowserCompatibilityInfo', () => {
-  test('render children', () => {
+  test('render children', async () => {
     (browser.isBrowserConfirmed as jest.Mock).mockReturnValue(true);
 
     const TestChild = () => <div role="contentinfo" />;
-    render(
+    await render(
       <BrowserCompatibilityInfo>
         <TestChild />
       </BrowserCompatibilityInfo>
@@ -30,11 +29,11 @@ describe('BrowserCompatibilityInfo', () => {
 
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
   });
-  test('render ConfirmBrowserDialog', () => {
+  test('render ConfirmBrowserDialog', async () => {
     (browser.isBrowserConfirmed as jest.Mock).mockReturnValue(false);
 
     const TestChild = () => <div role="contentinfo" />;
-    render(
+    await render(
       <BrowserCompatibilityInfo>
         <TestChild />
       </BrowserCompatibilityInfo>
@@ -42,15 +41,15 @@ describe('BrowserCompatibilityInfo', () => {
 
     expect(screen.getByRole('document')).toBeInTheDocument();
   });
-  test('notification will be shown for safari', () => {
+  test('notification will be shown for safari', async () => {
     (browser.isSafari as jest.Mock).mockReturnValue(true);
-    render(<BrowserCompatibilityInfo />);
+    await render(<BrowserCompatibilityInfo />);
 
     expect(notificationAction).toHaveBeenCalledTimes(1);
   });
-  test('notification will be not shown for non-safari', () => {
+  test('notification will be not shown for non-safari', async () => {
     (browser.isSafari as jest.Mock).mockReturnValue(false);
-    render(<BrowserCompatibilityInfo />);
+    await render(<BrowserCompatibilityInfo />);
 
     expect(notificationAction).not.toHaveBeenCalled();
   });

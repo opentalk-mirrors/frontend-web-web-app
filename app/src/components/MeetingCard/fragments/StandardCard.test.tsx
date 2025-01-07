@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 
 import store from '../../../store';
-import { screen, render, eventMockedData, fireEvent } from '../../../utils/testUtils';
+import { screen, render, eventMockedData, fireEvent, waitFor } from '../../../utils/testUtils';
 import StandardCard from './StandardCard';
 
 const dummyMeetingCardData = {
@@ -87,10 +87,12 @@ describe('Standard Card', () => {
     expect(MoreMenu).toBeInTheDocument();
     fireEvent.mouseDown(MoreMenu);
 
-    expect(screen.getByLabelText('dashboard-meeting-card-popover-update')).toBeInTheDocument();
-    expect(screen.getByLabelText('dashboard-meeting-card-popover-remove')).toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-add')).not.toBeInTheDocument();
-    expect(screen.getByLabelText('dashboard-meeting-card-popover-delete')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-update')).toBeInTheDocument();
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-remove')).toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-add')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-delete')).toBeInTheDocument();
+    });
   });
 
   test('when user is not creator, meeting is marked as fav, click on more menu should display popup with remove favorite option', async () => {
@@ -105,10 +107,12 @@ describe('Standard Card', () => {
     expect(MoreMenu).toBeInTheDocument();
     fireEvent.mouseDown(MoreMenu);
 
-    expect(screen.getByLabelText('dashboard-meeting-card-popover-remove')).toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-add')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-update')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-remove')).toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-add')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-update')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete')).not.toBeInTheDocument();
+    });
   });
 
   test('when user is not creator, meeting is not marked as fav, click on more menu should display popup with add favorite option', async () => {
@@ -127,9 +131,11 @@ describe('Standard Card', () => {
     expect(MoreMenu).toBeInTheDocument();
     fireEvent.mouseDown(MoreMenu);
 
-    expect(screen.getByLabelText('dashboard-meeting-card-popover-add')).toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-remove')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-update')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-add')).toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-remove')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-update')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete')).not.toBeInTheDocument();
+    });
   });
 });

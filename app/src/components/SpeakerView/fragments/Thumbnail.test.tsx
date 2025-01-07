@@ -22,11 +22,11 @@ jest.mock('../../ParticipantWindow', () => ({
   default: () => <div data-testid="participantWindow"></div>,
 }));
 
-afterEach(() => {
-  cleanup();
-});
-
 describe('Thumbnail', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   test('ThumbnailContainer rendered width one participant', async () => {
     const { store } = mockStore(1);
 

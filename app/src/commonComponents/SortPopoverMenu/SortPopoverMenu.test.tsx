@@ -1,21 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen } from '@testing-library/react';
-
+import { fireEvent, render, screen, waitFor } from '../../utils/testUtils';
 import SortPopoverMenu from './SortPopoverMenu';
-
-jest.mock('react-i18next', () => ({
-  // this mock makes sure any components using the translate hook can use it without a warning being shown
-  useTranslation: () => {
-    return {
-      t: (str: string) => str,
-    };
-  },
-  initReactI18next: {
-    type: '3rdParty',
-  },
-}));
 
 describe('<SortPopoverMenu />', () => {
   const DEFAULT_PROPS = {
@@ -35,27 +22,34 @@ describe('<SortPopoverMenu />', () => {
     DEFAULT_PROPS.onClose.mockClear();
   });
 
-  it('should render with mandatory properties.', () => {
-    render(<SortPopoverMenu {...DEFAULT_PROPS} />);
+  it('should render with mandatory properties.', async () => {
+    await render(<SortPopoverMenu {...DEFAULT_PROPS} />);
   });
 
-  it('should render given items.', () => {
+  it('should render given items.', async () => {
     const items = [
       { i18nKey: 'option-1', type: 'Option 1' },
       { i18nKey: 'option-2', type: 'Option 2' },
     ];
     const props = { ...DEFAULT_PROPS, items };
-    render(<SortPopoverMenu {...props} />);
+    await render(<SortPopoverMenu {...props} />);
+
     const container = screen.getByRole('menu');
+
     expect(container).toContainElement(screen.getByText(items[0].i18nKey));
     expect(container).toContainElement(screen.getByText(items[1].i18nKey));
   });
 
-  it('should execute onChange callback when option is selected.', () => {
+  it('should execute onChange callback when option is selected.', async () => {
     const items = [{ i18nKey: 'option-1', type: 'Option 1' }];
     const props = { ...DEFAULT_PROPS, items };
-    render(<SortPopoverMenu {...props} />);
+
+    await render(<SortPopoverMenu {...props} />);
+
     fireEvent.click(screen.getByText(items[0].i18nKey));
-    expect(DEFAULT_PROPS.onChange).toBeCalledWith(items[0].type);
+
+    await waitFor(() => {
+      expect(DEFAULT_PROPS.onChange).toBeCalledWith(items[0].type);
+    });
   });
 });

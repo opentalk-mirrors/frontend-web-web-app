@@ -47,7 +47,7 @@ interface JoinMeetingDialogProps extends Omit<DialogProps, 'open'> {
   openButtonProps?: ButtonProps;
 }
 
-export const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps) => {
+const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
@@ -214,3 +214,5 @@ export const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDial
     </>
   );
 };
+
+export default JoinMeetingDialog;

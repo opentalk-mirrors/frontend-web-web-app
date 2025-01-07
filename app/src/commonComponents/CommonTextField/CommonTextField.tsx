@@ -42,7 +42,7 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
 
     const id = props.id || generateUniqueId();
 
-    // By default, labels are always shrinked if text fields have start adornments
+    // By default, labels are always shrunk if text fields have start adornments
     // Therefore we need this workaround, to establish a floating label behaviour for
     // text fields with start adornments
     useEffect(() => {

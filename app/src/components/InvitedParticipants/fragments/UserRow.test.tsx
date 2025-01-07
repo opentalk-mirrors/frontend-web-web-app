@@ -6,7 +6,7 @@ import { fireEvent } from '@testing-library/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useGetEventQuery, useGetMeQuery, useUpdateEventInviteMutation } from '../../../api/rest';
-import { cleanup, configureStore, render, screen } from '../../../utils/testUtils';
+import { cleanup, configureStore, render, screen, waitFor } from '../../../utils/testUtils';
 import UserRow from './UserRow';
 
 const mockUseGetEventQuery = useGetEventQuery as jest.Mock;
@@ -100,7 +100,9 @@ describe('UserRow', () => {
       store
     );
     fireEvent.mouseEnter(screen.getByTestId('UserRow'));
-    expect(screen.getByTestId('MoreIconButton')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('MoreIconButton')).toBeInTheDocument();
+    });
   });
 
   test('will not render more menu if user is not creator', async () => {
@@ -123,7 +125,9 @@ describe('UserRow', () => {
       store
     );
     fireEvent.mouseEnter(screen.getByTestId('UserRow'));
-    expect(screen.queryByTestId('MoreIconButton')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByTestId('MoreIconButton')).not.toBeInTheDocument();
+    });
   });
 
   test('click on more button will open menu', async () => {
@@ -139,7 +143,9 @@ describe('UserRow', () => {
     );
     fireEvent.mouseEnter(screen.getByTestId('UserRow'));
     fireEvent.click(screen.getByTestId('MoreIconButton'));
-    expect(screen.getByTestId('MoreMenu')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('MoreMenu')).toBeInTheDocument();
+    });
   });
 
   test('more menu renders grant moderator menu item and calls update event with grant parameter', async () => {
@@ -155,12 +161,16 @@ describe('UserRow', () => {
     );
     fireEvent.mouseEnter(screen.getByTestId('UserRow'));
     fireEvent.click(screen.getByTestId('MoreIconButton'));
-    expect(screen.getByText('dashboard-meeting-grant-moderator-rights')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('dashboard-meeting-grant-moderator-rights')).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText('dashboard-meeting-grant-moderator-rights'));
-    expect(mockUseUpdateEventInviteMutation).toHaveBeenCalledWith({
-      userId: eventInviteRoleUser.profile.id,
-      eventId: 'SOME_EVENT_ID',
-      role: UserRole.MODERATOR,
+    await waitFor(() => {
+      expect(mockUseUpdateEventInviteMutation).toHaveBeenCalledWith({
+        userId: eventInviteRoleUser.profile.id,
+        eventId: 'SOME_EVENT_ID',
+        role: UserRole.MODERATOR,
+      });
     });
   });
 
@@ -177,12 +187,16 @@ describe('UserRow', () => {
     );
     fireEvent.mouseEnter(screen.getByTestId('UserRow'));
     fireEvent.click(screen.getByTestId('MoreIconButton'));
-    expect(screen.getByText('dashboard-meeting-revoke-moderator-rights')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('dashboard-meeting-revoke-moderator-rights')).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText('dashboard-meeting-revoke-moderator-rights'));
-    expect(mockUseUpdateEventInviteMutation).toHaveBeenCalledWith({
-      userId: eventInviteRoleModerator.profile.id,
-      eventId: 'SOME_EVENT_ID',
-      role: UserRole.USER,
+    await waitFor(() => {
+      expect(mockUseUpdateEventInviteMutation).toHaveBeenCalledWith({
+        userId: eventInviteRoleModerator.profile.id,
+        eventId: 'SOME_EVENT_ID',
+        role: UserRole.USER,
+      });
     });
   });
 });

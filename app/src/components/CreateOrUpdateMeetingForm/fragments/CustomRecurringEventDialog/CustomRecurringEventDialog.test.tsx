@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen } from '../../../../utils/testUtils';
+import { fireEvent, render, screen, waitFor } from '../../../../utils/testUtils';
 import { RecurringEventDialog, RecurringEventDialogProps } from './CustomRecurringEventDialog';
 
 const mockDialogProps: RecurringEventDialogProps = {
@@ -42,10 +42,13 @@ describe('Custom Recurrence Dialog', () => {
     expect(listbox).toBeInTheDocument();
 
     const monthOption = screen.getByRole('option', { name: 'dashboard-recurrence-dialog-frequency-month' });
+
     fireEvent.click(monthOption);
 
-    const select = screen.getByTestId('frequency-select');
-    expect(select.textContent).toBe('dashboard-recurrence-dialog-frequency-month​');
+    await waitFor(() => {
+      const select = screen.getByTestId('frequency-select');
+      expect(select.textContent).toBe('dashboard-recurrence-dialog-frequency-month​');
+    });
 
     const selectButtonsAfterMonthSelection = screen.getAllByRole('combobox');
     const monthSelectButton = selectButtonsAfterMonthSelection.find((button) =>
@@ -69,13 +72,15 @@ describe('Custom Recurrence Dialog', () => {
     expect(listbox).toBeInTheDocument();
 
     const weekOption = screen.getByRole('option', { name: 'dashboard-recurrence-dialog-frequency-week' });
+
     fireEvent.click(weekOption);
 
-    //There is an unidentified char (Unicode 8203) added at the end of the value so we use the regex to remove it
-    const select = screen.getByTestId('frequency-select').textContent?.replace(/\u200B/g, '');
-    expect(select).toBe('dashboard-recurrence-dialog-frequency-week');
-
-    expect(screen.getByTestId('weekly-options')).toBeInTheDocument();
+    await waitFor(() => {
+      //There is an unidentified char (Unicode 8203) added at the end of the value, so we use the regex to remove it
+      const select = screen.getByTestId('frequency-select').textContent?.replace(/\u200B/g, '');
+      expect(select).toBe('dashboard-recurrence-dialog-frequency-week');
+      expect(screen.getByTestId('weekly-options')).toBeInTheDocument();
+    });
   });
 
   test('Date selection is enabled after selecting option "On"', async () => {
@@ -88,6 +93,8 @@ describe('Custom Recurrence Dialog', () => {
 
     fireEvent.click(optionOn);
 
-    expect(datePickerInput).not.toBeDisabled();
+    await waitFor(() => {
+      expect(datePickerInput).not.toBeDisabled();
+    });
   });
 });

@@ -7,12 +7,13 @@
 // learn more: https://github.com/testing-library/jest-dom
 import { TariffId } from '@opentalk/rest-api-rtk-query';
 import '@testing-library/jest-dom';
+import 'cross-fetch/polyfill';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { TextDecoder, TextEncoder } from 'node:util';
 import React from 'react';
 
-import { DefaultAvatarImage } from '../src/store/slices/configSlice';
+import { DefaultAvatarImage } from './store/slices/configSlice';
 
 global.React = React;
 
@@ -80,7 +81,7 @@ const config = {
     recording: true,
   },
   provider: {
-    active: false, // indicates if we are are in the provider context
+    active: false, // indicates if we are in the provider context
     accountManagementUrl: '',
   },
   videoBackgrounds: [

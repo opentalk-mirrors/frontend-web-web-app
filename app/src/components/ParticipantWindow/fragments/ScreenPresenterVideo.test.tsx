@@ -1,10 +1,17 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, cleanup } from '@testing-library/react';
-
 import { idFromDescriptor } from '../../../modules/WebRTC';
-import { render, screen, mockedParticipant, mockedVideoMediaDescriptor, mockStore } from '../../../utils/testUtils';
+import {
+  render,
+  screen,
+  mockedParticipant,
+  mockedVideoMediaDescriptor,
+  mockStore,
+  fireEvent,
+  cleanup,
+  waitFor,
+} from '../../../utils/testUtils';
 import { PresenterVideoPosition } from './PresenterOverlay';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
 
@@ -53,10 +60,12 @@ describe('ScreenPresenterVideo Component', () => {
     expect(screenShareVideo).toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
 
-    await fireEvent.mouseEnter(screenShareVideo);
-    expect(screen.getByLabelText('indicator-pinned')).toBeInTheDocument();
-    expect(screen.getByLabelText('indicator-change-position')).toBeInTheDocument();
-    expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
+    fireEvent.mouseEnter(screenShareVideo);
+    await waitFor(() => {
+      expect(screen.getByLabelText('indicator-pinned')).toBeInTheDocument();
+      expect(screen.getByLabelText('indicator-change-position')).toBeInTheDocument();
+      expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
+    });
   });
 
   test("click on pinIcon in presenter's overlay should trigger togglePinVideo()", async () => {
@@ -66,14 +75,19 @@ describe('ScreenPresenterVideo Component', () => {
     expect(screenShareVideo).toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
 
-    await fireEvent.mouseEnter(screenShareVideo);
-    expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
+    fireEvent.mouseEnter(screenShareVideo);
+    await waitFor(() => {
+      expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
+    });
 
     const pinButton = screen.getByRole('button', { name: /indicator-pinned/i });
     expect(pinButton).toBeInTheDocument();
 
     fireEvent.click(pinButton);
-    expect(handleClick).toHaveBeenCalledTimes(1);
+
+    await waitFor(() => {
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
   });
 
   test("click on change position icon in presenter's overlay should trigger changeVideoPosition()", async () => {
@@ -83,8 +97,10 @@ describe('ScreenPresenterVideo Component', () => {
     expect(screenShareVideo).toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
 
-    await fireEvent.mouseEnter(screenShareVideo);
-    expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
+    fireEvent.mouseEnter(screenShareVideo);
+    await waitFor(() => {
+      expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
+    });
 
     const button = screen.getByRole('button', {
       name: /indicator-change-position/i,
@@ -92,7 +108,9 @@ describe('ScreenPresenterVideo Component', () => {
     expect(button).toBeInTheDocument();
 
     fireEvent.click(button);
-    expect(handleClick).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
   });
 
   test("render component with presenter's video off should display avatar component", async () => {

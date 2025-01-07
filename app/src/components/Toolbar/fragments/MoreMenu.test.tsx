@@ -1,34 +1,33 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { waitFor } from '@testing-library/dom';
-
-import { render, screen, configureStore, fireEvent } from '../../../utils/testUtils';
+import { render, screen, configureStore, fireEvent, waitFor } from '../../../utils/testUtils';
 import MenuButton from './MoreButton';
 import MoreMenu from './MoreMenu';
 
 describe('<MoreButton />', () => {
   const { store } = configureStore();
 
-  test('render MoreMenuButton component', async () => {
+  it('render MoreMenuButton component', async () => {
     await render(<MenuButton />, store);
     expect(screen.getByTestId('toolbarMenuButton')).toBeInTheDocument();
     expect(screen.queryByTestId('moreMenu')).not.toBeInTheDocument();
   });
 
-  test('render moreMenu after clicking on MoreMenuButton', async () => {
+  it('render moreMenu after clicking on MoreMenuButton', async () => {
     await render(<MenuButton />, store);
     const button = screen.getByTestId('toolbarMenuButton');
     expect(button).toBeInTheDocument();
 
     fireEvent.click(button);
-    expect(screen.getByTestId('moreMenu')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('moreMenu')).toBeInTheDocument();
+    });
   });
 
-  describe.only('additional development options', () => {
+  describe('additional development options', () => {
     beforeEach(() => {
-      jest.spyOn(Storage.prototype, 'getItem');
-      (Storage.prototype.getItem as jest.Mock).mockReturnValue('true');
+      window.localStorage.setItem('devMode', 'true');
     });
 
     it('shows success notification when show test info option is clicked', async () => {
