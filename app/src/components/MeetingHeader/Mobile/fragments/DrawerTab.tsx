@@ -74,7 +74,7 @@ const TabIndicator = styled(Indicator)({
 
 const DrawerTab = ({ children, tabTitle, active, disabled, handleClick, showIndicator }: DrawerTabProps) => {
   return (
-    <Stack direction="column" component="li">
+    <Stack direction="column" component="li" aria-label={tabTitle}>
       {disabled ? (
         <DisabledHeader>
           <Typography>{tabTitle}</Typography>

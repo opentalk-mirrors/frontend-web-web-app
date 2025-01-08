@@ -5,7 +5,7 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { HOTKEY_FULLSCREEN, HOTKEY_MICROPHONE, HOTKEY_NEXT_SPEAKER, HOTKEY_VIDEO } from '../../../hooks/useHotkeys';
+import { HOTKEY_FULLSCREEN, HOTKEY_MICROPHONE, HOTKEY_NEXT_SPEAKER, HOTKEY_VIDEO } from '../../../constants';
 
 export const ShortcutTable = () => {
   const { t } = useTranslation();

@@ -6,7 +6,13 @@ import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
 
-import { ModerationTabKey, PollsAndVotesMobileTab, Tab, WaitingRoomMobileTab } from '../../../../config/moderationTabs';
+import {
+  BurgerMenuMobileTab,
+  ModerationTabKey,
+  PollsAndVotesMobileTab,
+  Tab,
+  WaitingRoomMobileTab,
+} from '../../../../config/moderationTabs';
 import { useAppDispatch, useAppSelector, useTabs } from '../../../../hooks';
 import { selectActivePollsAndVotingsCount, selectPollsAndVotingsCount } from '../../../../store/selectors';
 import { selectUnreadGlobalMessageCount, selectUnreadPersonalMessageCount } from '../../../../store/slices/chatSlice';
@@ -78,6 +84,8 @@ const Drawer = () => {
     mobileParticipantTabs.unshift(PollsAndVotesMobileTab);
   }
 
+  mobileParticipantTabs.push(BurgerMenuMobileTab);
+
   const mobileModerationTabs = tabs.slice();
   if (isWaitingRoomEnabled && isModerator) {
     /**
@@ -87,6 +95,8 @@ const Drawer = () => {
      */
     mobileModerationTabs.unshift(WaitingRoomMobileTab);
   }
+
+  mobileModerationTabs.push(BurgerMenuMobileTab);
 
   const open = () => {
     batch(() => {

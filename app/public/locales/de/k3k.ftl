@@ -1187,3 +1187,5 @@ whisper-invite-decline-notification = {displayName} hat Ihre Einladung zur Flüs
 whisper-invite-accept-notification = {displayName} hat Ihre Einladung zur Flüstergruppe angenommen. Drücken und halten Sie die Taste W zum flüstern.
 
 mobile-drawer-button-label = Schublade öffnen
+
+burger-menu-tab-title = Information & Support

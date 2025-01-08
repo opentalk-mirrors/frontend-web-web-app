@@ -134,7 +134,7 @@ const MyMeetingMenu = () => {
     }
 
     return items;
-  }, []);
+  }, [isGlitchtipConfigured]);
 
   return (
     <>
