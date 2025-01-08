@@ -23,27 +23,15 @@ import useLivekitEvents from './useLivekitEvents';
 
 interface IUseRoomOptions {
   e2eeData: E2EEData;
-  audioInputEnabled?: boolean;
-  videoInputEnabled?: boolean;
   isWhisperRoom?: boolean;
 }
 
-const useRoom = ({
-  e2eeData,
-  audioInputEnabled,
-  videoInputEnabled,
-  isWhisperRoom,
-}: IUseRoomOptions): Room | undefined => {
+const useRoom = ({ e2eeData, isWhisperRoom }: IUseRoomOptions): Room | undefined => {
   const { t } = useTranslation();
   const keyProvider = useMemo(() => new ExternalE2EEKeyProvider(), []);
   const { mainWorker, whisperWorker, e2eePassphrase, e2eeEnabled } = e2eeData;
   const shouldForceMuted = useAppSelector(selectShouldForceMuted);
   const mediaChoices = useMediaChoices();
-
-  useEffect(() => {
-    audioInputEnabled !== undefined && mediaChoices?.saveAudioInputEnabled(audioInputEnabled);
-    videoInputEnabled !== undefined && mediaChoices?.saveVideoInputEnabled(videoInputEnabled);
-  }, [mediaChoices?.saveAudioInputEnabled, mediaChoices?.saveVideoInputEnabled, audioInputEnabled, videoInputEnabled]);
 
   const worker = isWhisperRoom ? whisperWorker : mainWorker;
 

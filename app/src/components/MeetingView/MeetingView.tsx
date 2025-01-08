@@ -64,7 +64,7 @@ const MeetingView = ({ e2eeData }: MeetingViewProps) => {
   const whisperToken = useAppSelector(selectSubroomAudioToken);
 
   const room = useRoom({ e2eeData });
-  const whisperRoom = useRoom({ e2eeData, videoInputEnabled: false, isWhisperRoom: true });
+  const whisperRoom = useRoom({ e2eeData, isWhisperRoom: true });
   useHotkeys(room, whisperRoom);
 
   return (
