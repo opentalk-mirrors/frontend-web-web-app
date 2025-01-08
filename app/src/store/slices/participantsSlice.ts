@@ -284,9 +284,11 @@ export const selectSortedParticipants = (gridViewOrder: GridViewOrder) => {
           (participant) => participant.isCameraEnabled
         );
 
-        filteredParticipants = filteredParticipants.sort((participant) =>
-          videoSubscribers.find((subscriber) => participant.id === subscriber.identity) ? -1 : 1
-        );
+        filteredParticipants = filteredParticipants
+          .sort((a, b) => Date.parse(b.lastActive) - Date.parse(a.lastActive))
+          .sort((participant) =>
+            videoSubscribers.find((subscriber) => participant.id === subscriber.identity) ? -1 : 1
+          );
       }
       return filteredParticipants;
     }
