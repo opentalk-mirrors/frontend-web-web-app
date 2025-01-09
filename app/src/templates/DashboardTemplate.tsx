@@ -24,16 +24,17 @@ import BrowserCompatibilityInfo from './fragments/BrowserCompatibilityInfo';
 const DashboardLogo = styled(Logo)({
   gridArea: 'Logo',
   height: '1.685em',
-  width: '100%',
+  width: 'max-content',
 });
 
 const Main = styled('main')(({ theme }) => ({
   height: '100%',
   flex: 1,
   padding: theme.spacing(3, 5),
-
+  overflowX: 'auto',
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(3, 2),
+    overflowX: 'unset',
   },
 }));
 
@@ -186,18 +187,12 @@ const DashboardTemplate = () => {
               </LoadingNavbarContainer>
             )}
             <Main>
-              <Grid container spacing={4}>
-                <Grid item>
-                  <DashboardLogo />
-                </Grid>
-              </Grid>
-              <div>
-                <Stack spacing={2}>
-                  <Skeleton variant="text" />
-                  <Skeleton />
-                  <Skeleton variant="rectangular" width="100%" height={400} />
-                </Stack>
-              </div>
+              <DashboardLogo />
+              <Stack spacing={2}>
+                <Skeleton variant="text" />
+                <Skeleton />
+                <Skeleton variant="rectangular" width="100%" height={400} />
+              </Stack>
             </Main>
           </Stack>
         </Container>
@@ -211,14 +206,10 @@ const DashboardTemplate = () => {
           <DashboardNavigation routes={getRoutes(isProviderActive)} />
           <MainStack component={Main} spacing={{ xs: 2, md: 5 }} id="main-content-dashboard">
             {isDesktop && (
-              <Grid spacing={2} container direction="row" alignItems="center" justifyContent="space-between">
-                <Grid item alignSelf="flex-end">
-                  <DashboardLogo />
-                </Grid>
-                <Grid item xs>
-                  {header}
-                </Grid>
-              </Grid>
+              <>
+                <DashboardLogo />
+                {header}
+              </>
             )}
             <Outlet context={{ setHeader }} />
           </MainStack>

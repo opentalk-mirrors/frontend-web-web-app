@@ -23,7 +23,6 @@ const NavigationContainer = styled('div')(({ theme }) => ({
     display: 'grid',
     gridAutoFlow: 'column',
     gridTemplateColumns: `1fr auto`,
-    transition: 'all 300ms ease-out',
     alignItems: 'stretch',
     width: 'auto',
   },
@@ -35,7 +34,6 @@ const NavContainer = styled('nav', {
   display: 'grid',
   gridAutoFlow: 'column',
   gridTemplateColumns: `1fr auto`,
-  transition: 'all 300ms ease-out',
   height: '100%',
 
   [theme.breakpoints.down('md')]: {
