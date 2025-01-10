@@ -8,12 +8,14 @@ import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '.';
 import { pass } from '../api/types/outgoing/automod';
+import { showConsentNotification } from '../commonComponents';
 import { useFullscreenContext } from '../hooks/useFullscreenContext';
 import { useMediaChoices } from '../provider/MediaChoicesProvider';
 import { selectIsUserMicDisabled } from '../store/selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker } from '../store/slices/automodSlice';
 import { selectEnabledModulesList } from '../store/slices/configSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
+import { selectNeedRecordingConsent } from '../store/slices/streamingSlice';
 import { selectSubroomAudioState, setIsWhisperActive } from '../store/slices/subroomAudioSlice';
 import { selectTimerStyle } from '../store/slices/timerSlice';
 import { selectHotkeysEnabled } from '../store/slices/uiSlice';
@@ -53,6 +55,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   const roomMode = useAppSelector(selectCurrentRoomMode);
   const speakerState = useAppSelector(selectSpeakerState);
   const hasMicrophoneDisabledByModerator = useAppSelector(selectIsUserMicDisabled);
+  const askConsent = useAppSelector(selectNeedRecordingConsent);
   const dispatch = useDispatch();
 
   const startingAudio = useRef<Promise<void> | undefined>();
@@ -78,6 +81,13 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
 
   const toggleAudio = useCallback(
     async (forcedState?: boolean) => {
+      if (askConsent && !mediaChoices?.userChoices.audioEnabled) {
+        const consent = await showConsentNotification(dispatch);
+        if (!consent) {
+          return;
+        }
+      }
+
       const shouldEnable =
         forcedState !== undefined ? forcedState : !(audioEnabled || room?.localParticipant.isMicrophoneEnabled);
 
@@ -85,7 +95,15 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
       mediaChoices?.saveAudioInputEnabled(shouldEnable);
       room?.localParticipant.setMicrophoneEnabled(shouldEnable);
     },
-    [room, audioEnabled, startMedia, mediaChoices?.saveAudioInputEnabled]
+    [
+      askConsent,
+      audioEnabled,
+      dispatch,
+      mediaChoices?.saveAudioInputEnabled,
+      mediaChoices?.userChoices.audioEnabled,
+      room,
+      startMedia,
+    ]
   );
 
   const pushToWhisper = useCallback(
@@ -116,10 +134,16 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
     [whisperRoom, isWhisperingPossible, pushToTalkState, dispatch, toggleAudio]
   );
 
-  const toggleVideo = useCallback(
-    () => mediaChoices?.saveVideoInputEnabled(!mediaChoices?.userChoices.videoEnabled),
-    [mediaChoices?.saveVideoInputEnabled, mediaChoices?.userChoices.videoEnabled]
-  );
+  const toggleVideo = useCallback(async () => {
+    if (askConsent && !mediaChoices?.userChoices.videoEnabled) {
+      const consent = await showConsentNotification(dispatch);
+      if (!consent) {
+        return;
+      }
+    }
+
+    mediaChoices?.saveVideoInputEnabled(!mediaChoices?.userChoices.videoEnabled);
+  }, [mediaChoices?.saveVideoInputEnabled, mediaChoices?.userChoices.videoEnabled, askConsent, dispatch]);
 
   // Push-to-talk function shall work ONLY if the user is muted (audio is disabled)
   // On keydown we start the push-to-talk mode and unmute the user,
