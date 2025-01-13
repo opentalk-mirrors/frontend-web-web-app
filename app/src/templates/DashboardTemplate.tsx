@@ -14,18 +14,12 @@ import {
   DashboardLegalIcon,
   HelpSquareIcon,
 } from '../assets/icons';
-import Logo from '../assets/images/logoGradient.svg?react';
 import DashboardNavigation, { PrimaryRoute } from '../components/DashboardNavigation';
 import { useAppSelector } from '../hooks';
 import { useIsDesktop } from '../hooks/useMediaQuery';
 import { selectIsProviderActive } from '../store/slices/configSlice';
 import BrowserCompatibilityInfo from './fragments/BrowserCompatibilityInfo';
-
-const DashboardLogo = styled(Logo)({
-  gridArea: 'Logo',
-  height: '1.685em',
-  width: 'max-content',
-});
+import DashboardLogo from './fragments/DashboardLogo';
 
 const Main = styled('main')(({ theme }) => ({
   height: '100%',

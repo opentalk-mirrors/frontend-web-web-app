@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import Clock from './source/clock.svg?react';
 
-const ClockIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Clock} inheritViewBox />;
+const ClockIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={Clock} />;
 
 export default ClockIcon;

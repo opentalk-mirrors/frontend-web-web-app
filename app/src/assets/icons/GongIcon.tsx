@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import Gong from './source/gong.svg?react';
 
-const GongIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Gong} inheritViewBox />;
+const GongIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={Gong} />;
 
 export default GongIcon;

@@ -26,5 +26,4 @@ do
 done
 echo "};" >> _index_tmp.ts
 
-cat index.ts >> _index_tmp.ts
 mv _index_tmp.ts index.ts

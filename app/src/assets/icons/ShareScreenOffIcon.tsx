@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import ShareScreenOff from './source/share-screen-off.svg?react';
 
-const ShareScreenOffIcon = (props: SvgIconProps) => <SvgIcon {...props} component={ShareScreenOff} inheritViewBox />;
+const ShareScreenOffIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={ShareScreenOff} />;
 
 export default ShareScreenOffIcon;

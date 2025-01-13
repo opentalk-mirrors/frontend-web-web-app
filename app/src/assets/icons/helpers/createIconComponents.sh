@@ -17,11 +17,12 @@ cat > "${componentName}Icon.tsx" << EOF
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import ${componentName} from './source/${f}?react';
 
-const ${componentName}Icon = (props: SvgIconProps) => <SvgIcon {...props} component={${componentName}} inheritViewBox />;
+const ${componentName}Icon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={${componentName}} />;
 
 export default ${componentName}Icon;
 EOF

@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import Forward from './source/forward.svg?react';
 
-const ForwardIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Forward} inheritViewBox />;
+const ForwardIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={Forward} />;
 
 export default ForwardIcon;

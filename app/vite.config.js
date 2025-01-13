@@ -118,7 +118,11 @@ export default defineConfig(({ command, mode }) => {
       }),
       muteWarningsPlugin(WARNINGS_TO_IGNORE),
       react(),
-      svgr(),
+      svgr({
+        svgrOptions: {
+          titleProp: true,
+        },
+      }),
     ],
     server: {
       open: true,

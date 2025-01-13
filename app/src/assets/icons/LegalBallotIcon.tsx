@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import LegalBallot from './source/legal-ballot.svg?react';
 
-const LegalBallotIcon = (props: SvgIconProps) => <SvgIcon {...props} component={LegalBallot} inheritViewBox />;
+const LegalBallotIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={LegalBallot} />;
 
 export default LegalBallotIcon;

@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import WhisperEmpty from './source/whisper-empty.svg?react';
 
-const WhisperEmptyIcon = (props: SvgIconProps) => <SvgIcon {...props} component={WhisperEmpty} inheritViewBox />;
+const WhisperEmptyIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={WhisperEmpty} />;
 
 export default WhisperEmptyIcon;

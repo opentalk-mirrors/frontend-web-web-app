@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import Close from './source/close.svg?react';
 
-const CloseIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Close} inheritViewBox />;
+const CloseIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={Close} />;
 
 export default CloseIcon;

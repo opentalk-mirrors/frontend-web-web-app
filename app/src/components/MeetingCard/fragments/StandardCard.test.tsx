@@ -58,9 +58,9 @@ describe('Standard Card', () => {
       </BrowserRouter>
     );
     expect(screen.getByRole('link', { name: 'dashboard-home-join' })).toBeInTheDocument();
-    expect(screen.getByLabelText('global-favorite')).toBeInTheDocument();
     expect(screen.getByLabelText('toolbar-button-more-tooltip-title')).toBeInTheDocument();
     expect(screen.getByTestId('favorite-icon-visible')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'global-favorite' })).toBeInTheDocument();
   });
 
   test('card is not marked as favorite with flag favorite={false}, svg fav should not be in document', async () => {
@@ -72,6 +72,7 @@ describe('Standard Card', () => {
       </BrowserRouter>
     );
     expect(screen.queryByTestId('favorite-icon-visible')).not.toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: 'global-favorite' })).not.toBeInTheDocument();
   });
 
   test('click on more menu should display popup with edit, fav and delete option for meeting creator', async () => {

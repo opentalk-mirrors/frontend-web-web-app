@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import ExtendToTab from './source/extend-to-tab.svg?react';
 
-const ExtendToTabIcon = (props: SvgIconProps) => <SvgIcon {...props} component={ExtendToTab} inheritViewBox />;
+const ExtendToTabIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={ExtendToTab} />;
 
 export default ExtendToTabIcon;

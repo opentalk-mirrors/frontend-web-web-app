@@ -91,6 +91,7 @@ describe('OverviewCard', () => {
     );
 
     expect(screen.getByTestId('MeetingOverviewCard')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'global-favorite' })).toBeInTheDocument();
   });
 
   test('component is not marked as favorite', async () => {
@@ -102,6 +103,7 @@ describe('OverviewCard', () => {
       </BrowserRouter>
     );
     expect(screen.queryByTestId('favorite-icon-visible')).not.toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: 'global-favorite' })).not.toBeInTheDocument();
   });
 
   test('pending invite displays right action buttons', async () => {

@@ -696,6 +696,7 @@ global-meeting = { $count ->
     *[other] Meetings
 }
 
+dashboard-logo-title = OpenTalk Logo
 dashboard-home = Startseite
 dashboard-meetings = Meetings
 dashboard-meetings-create = Meeting erstellen

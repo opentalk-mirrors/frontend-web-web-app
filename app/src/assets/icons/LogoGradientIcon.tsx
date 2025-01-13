@@ -4,8 +4,8 @@
 import { SvgIconProps } from '@mui/material';
 
 import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
-import Favorite from './source/favorite.svg?react';
+import LogoGradient from './source/logoGradient.svg?react';
 
-const FavoriteIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={Favorite} />;
+const LogoGradientIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={LogoGradient} />;
 
-export default FavoriteIcon;
+export default LogoGradientIcon;
