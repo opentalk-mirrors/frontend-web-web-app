@@ -91,7 +91,7 @@ interface ChatFormProps {
 
 const MAX_CHAT_CHARS = 4000;
 
-const ChatForm = ({ scope, targetId, autoFocusMessageInput }: ChatFormProps) => {
+const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }: ChatFormProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useAppDispatch();
@@ -350,10 +350,6 @@ const ChatForm = ({ scope, targetId, autoFocusMessageInput }: ChatFormProps) => 
   }
 
   return renderForm;
-};
-
-ChatForm.defaultProps = {
-  scope: ChatScope.Global,
 };
 
 export default ChatForm;

@@ -47,14 +47,10 @@ const CoffeeBreakTimer = () => {
       timerTurnsRedOnMinute = 4;
     }
 
-    if (remainingTime.duration.minutes <= timerTurnsRedOnMinute) {
+    if (remainingTime.duration.minutes <= timerTurnsRedOnMinute && !isTimerRed) {
       setIsTimerRed(true);
     }
-
-    return () => {
-      setIsTimerRed(false);
-    };
-  }, [totalDuration, remainingTime]);
+  }, [totalDuration, remainingTime, isTimerRed]);
 
   return (
     <>

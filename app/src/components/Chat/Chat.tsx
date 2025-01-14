@@ -27,7 +27,7 @@ interface ChatProps {
   autoFocusMessageInput?: boolean;
 }
 
-const Chat = ({ target, scope, autoFocusMessageInput }: ChatProps) => {
+const Chat = ({ target, scope = ChatScope.Global, autoFocusMessageInput }: ChatProps) => {
   // Default value is used when we switch tabs and component remounts.
   const defaultChatValue = useAppSelector(selectChatSearchValue);
   const [searchValue, setSearchValue] = useState<string>(defaultChatValue);
@@ -70,10 +70,6 @@ const Chat = ({ target, scope, autoFocusMessageInput }: ChatProps) => {
       <ChatForm scope={scope} targetId={target} autoFocusMessageInput={autoFocusMessageInput} />
     </Container>
   );
-};
-
-Chat.defaultProps = {
-  scope: ChatScope.Global,
 };
 
 export default Chat;

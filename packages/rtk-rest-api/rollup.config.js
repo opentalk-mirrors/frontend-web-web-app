@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import cjs from '@rollup/plugin-commonjs';
+import commonjs from '@rollup/plugin-commonjs';
+import terser from '@rollup/plugin-terser';
+import typescript from '@rollup/plugin-typescript';
 import { builtinModules } from 'module';
-import { terser } from 'rollup-plugin-terser';
-import ts from 'rollup-plugin-ts';
 
 import pkg from './package.json';
 
@@ -18,10 +18,10 @@ export default [
   {
     input: 'index.ts',
     plugins: [
-      ts({
-        transpiler: 'swc',
+      typescript({
+        tsconfig: './tsconfig.json',
       }),
-      cjs(),
+      commonjs(),
       terser(),
     ],
     output: [
@@ -30,9 +30,9 @@ export default [
     ],
     external: [
       ...builtinModules,
-      ...(pkg.dependencies == null ? [] : Object.keys(pkg.dependencies)),
-      ...(pkg.devDependencies == null ? [] : Object.keys(pkg.devDependencies)),
-      ...(pkg.peerDependencies == null ? [] : Object.keys(pkg.peerDependencies)),
+      ...(pkg.dependencies ? Object.keys(pkg.dependencies) : []),
+      ...(pkg.devDependencies ? Object.keys(pkg.devDependencies) : []),
+      ...(pkg.peerDependencies ? Object.keys(pkg.peerDependencies) : []),
       '@reduxjs/toolkit/query',
       '@reduxjs/toolkit/query/react',
     ],

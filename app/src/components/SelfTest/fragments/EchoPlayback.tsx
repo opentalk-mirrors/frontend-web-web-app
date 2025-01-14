@@ -50,16 +50,12 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
   );
 
   useEffect(() => {
-    let dismounted = false;
     if (
       mediaChoices &&
       (mediaChoices?.userChoices.audioEnabled || activeDeviceId !== mediaChoices?.userChoices.audioDeviceId)
     ) {
       createLocalAudioTrack({ deviceId: mediaChoices.userChoices.audioDeviceId })
         .then((audioTrack) => {
-          if (dismounted) {
-            return;
-          }
           setLocalAudioTrack(audioTrack);
           const usedDeviceId = audioTrack.constraints.deviceId as string;
           if (usedDeviceId !== mediaChoices.userChoices.audioDeviceId) {
@@ -73,9 +69,6 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
           }
         });
     }
-    return () => {
-      dismounted = true;
-    };
   }, [mediaChoices, setLocalAudioTrack, activeDeviceId]);
 
   useEffect(() => {
