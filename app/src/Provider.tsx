@@ -9,7 +9,6 @@ import { SnackbarProvider } from './commonComponents';
 import { useAppSelector } from './hooks';
 import BreakoutRoomProvider from './provider/BreakoutRoomProvider';
 import FullscreenProvider from './provider/FullscreenProvider';
-import MediaChoicesProvider from './provider/MediaChoicesProvider';
 import { selectBaseUrl, selectControllerUrl, selectOidcConfig } from './store/slices/configSlice';
 import { ConnectionState, selectRoomConnectionState } from './store/slices/roomSlice';
 
@@ -40,9 +39,7 @@ const Provider = ({ children }: ProviderProps) => {
           <CssBaseline />
           <BreakoutRoomProvider>
             <FullscreenProvider>
-              <SnackbarProvider>
-                <MediaChoicesProvider>{children}</MediaChoicesProvider>
-              </SnackbarProvider>
+              <SnackbarProvider>{children}</SnackbarProvider>
             </FullscreenProvider>
           </BreakoutRoomProvider>
         </ThemeProvider>

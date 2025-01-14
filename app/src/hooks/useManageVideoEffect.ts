@@ -11,24 +11,29 @@ import { ConnectionState, LocalVideoTrack, VideoCaptureOptions } from 'livekit-c
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '.';
-import { useMediaChoices } from '../provider/MediaChoicesProvider';
-import { selectVideoBackgroundEffects, setBackgroundEffectsLoading } from '../store/slices/mediaSlice';
+import {
+  selectVideoBackgroundEffects,
+  selectVideoEnabled,
+  selectVideoDeviceId,
+  setBackgroundEffectsLoading,
+} from '../store/slices/mediaSlice';
 
 export const BLUR_RADIUS = 10;
 
 export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoTrack) => {
   const dispatch = useAppDispatch();
-  const mediaChoices = useMediaChoices();
+  const videoEnabled = useAppSelector(selectVideoEnabled);
+  const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
+  const videoDeviceId = useAppSelector(selectVideoDeviceId);
+
   const room = useMaybeRoomContext();
-  const backgroundEffects = useAppSelector(selectVideoBackgroundEffects);
 
   const [localVideoTrack, setLocalVideoTrack] = useState<LocalVideoTrack | undefined>(videoTrack);
 
-  const isBlurred = backgroundEffects.style === 'blur';
-  const virtualBackgroundActive = backgroundEffects.style === 'image';
-  const imagePath = backgroundEffects.imageUrl;
-  const isUserVideoEnabled = mediaChoices?.userChoices.videoEnabled || false;
-  const deviceId = mediaChoices?.userChoices.videoDeviceId;
+  const isBlurred = videoBackgroundEffects.style === 'blur';
+  const virtualBackgroundActive = videoBackgroundEffects.style === 'image';
+  const imagePath = videoBackgroundEffects.imageUrl;
+  const isUserVideoEnabled = videoEnabled || false;
 
   const localVideoTrackIsSet = localVideoTrack !== undefined;
 
@@ -47,7 +52,7 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
     const processor = localVideoTrack?.getProcessor();
 
     let videoCaptureOptions: VideoCaptureOptions = {
-      deviceId,
+      deviceId: videoDeviceId,
     };
 
     if (ProcessorWrapper.isSupported) {
@@ -70,7 +75,7 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
       });
     }
   }, [
-    deviceId,
+    videoDeviceId,
     isLobby,
     isUserVideoEnabled,
     room?.localParticipant.setCameraEnabled,
@@ -95,7 +100,7 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
         if (previousImagePath !== imagePath) {
           await localVideoTrack?.setProcessor(BackgroundProcessor({ assetPaths, imagePath }, 'virtual-background'));
         }
-      } else if (backgroundEffects.style === 'off' && processor?.name) {
+      } else if (videoBackgroundEffects.style === 'off' && processor?.name) {
         await localVideoTrack?.stopProcessor();
       }
     } catch (error) {
@@ -106,7 +111,7 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
   }, [
     isBlurred,
     imagePath,
-    backgroundEffects.style,
+    videoBackgroundEffects.style,
     virtualBackgroundActive,
     localVideoTrack?.setProcessor,
     localVideoTrack?.getProcessor,
@@ -124,5 +129,5 @@ export const useManageVideoEffect = (isLobby?: boolean, videoTrack?: LocalVideoT
     };
 
     if (!localVideoTrack?.isMuted) handleBackgroundEffect();
-  }, [localVideoTrack?.isMuted, localVideoTrackIsSet, backgroundEffects.style, backgroundEffects.imageUrl]);
+  }, [localVideoTrack?.isMuted, localVideoTrackIsSet, videoBackgroundEffects.style, videoBackgroundEffects.imageUrl]);
 };

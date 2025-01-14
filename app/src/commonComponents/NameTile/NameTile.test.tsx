@@ -10,10 +10,6 @@ jest.mock('@livekit/components-react', () => ({
   useRoomContext: () => jest.fn(),
 }));
 
-jest.mock('../../provider/MediaChoicesProvider', () => ({
-  usePersistentUserChoices: () => jest.fn(),
-}));
-
 describe('render <NameTile />', () => {
   const participant = mockedParticipant(0);
   const displayName = participant.displayName;

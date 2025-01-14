@@ -10,7 +10,7 @@ import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useManageVideoEffect } from '../../../hooks/useManageVideoEffect';
 import useMediaDevice from '../../../hooks/useMediaDevice';
-import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
+import { selectVideoEnabled, setVideoEnabled } from '../../../store/slices/mediaSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import ToolbarButton from './ToolbarButton';
 import VideoMenu from './VideoMenu';
@@ -23,8 +23,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
   const { t } = useTranslation();
   const askConsent = useAppSelector(selectNeedRecordingConsent);
   const dispatch = useAppDispatch();
-  const mediaChoices = useMediaChoices();
-  const videoEnabled = mediaChoices?.userChoices.videoEnabled || false;
+  const videoEnabled = useAppSelector(selectVideoEnabled);
 
   !isLobby && useManageVideoEffect();
 
@@ -35,15 +34,15 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
   });
 
   const onClick = async () => {
-    if (askConsent && !mediaChoices?.userChoices.videoEnabled) {
+    if (askConsent && !videoEnabled) {
       const consent = await showConsentNotification(dispatch);
       if (!consent) {
         return;
       }
     }
 
-    if (mediaChoices?.userChoices.videoEnabled) {
-      mediaChoices.saveVideoInputEnabled(false);
+    if (videoEnabled) {
+      dispatch(setVideoEnabled(false));
     } else {
       await startMedia(true);
     }

@@ -6,9 +6,9 @@ import { LocalVideoTrack, createLocalVideoTrack } from 'livekit-client';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../../hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useManageVideoEffect } from '../../../hooks/useManageVideoEffect';
-import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
+import { selectVideoDeviceId, selectVideoEnabled, setVideoEnabled } from '../../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
 
 const Container = styled(Grid)({
@@ -47,34 +47,32 @@ const Video = styled('video', {
 
 const VideoElement = () => {
   const { t } = useTranslation();
-  const mediaChoices = useMediaChoices();
+  const videoEnabled = useAppSelector(selectVideoEnabled);
+  const videoDeviceId = useAppSelector(selectVideoDeviceId);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const dispatch = useAppDispatch();
 
   const [videoTrack, setLocalVideoTrack] = useState<LocalVideoTrack | undefined>();
 
   useEffect(() => {
-    mediaChoices?.userChoices.videoEnabled &&
-      createLocalVideoTrack({ deviceId: mediaChoices?.userChoices.videoDeviceId })
+    videoEnabled &&
+      createLocalVideoTrack({ deviceId: videoDeviceId })
         .then((videoTrack) => {
           setLocalVideoTrack(videoTrack);
         })
         .catch((err) => {
-          mediaChoices?.saveVideoInputEnabled(false);
+          dispatch(setVideoEnabled(false));
           if (err.name !== 'NotAllowedError') {
             console.error('Error while publishing video track: ', err);
           }
         });
-  }, [
-    mediaChoices?.userChoices.videoDeviceId,
-    mediaChoices?.userChoices.videoEnabled,
-    mediaChoices?.saveVideoInputEnabled,
-  ]);
+  }, [videoDeviceId, videoEnabled]);
 
   useManageVideoEffect(true, videoTrack);
 
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
 
-  const isVideoMissing = mediaChoices?.userChoices.videoEnabled && videoTrack?.isMuted;
+  const isVideoMissing = videoEnabled && videoTrack?.isMuted;
 
   useEffect(() => {
     if (videoRef.current && videoTrack) {

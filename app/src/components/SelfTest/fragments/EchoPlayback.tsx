@@ -7,8 +7,14 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../../../commonComponents';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { EchoTest, EchoTestState } from '../../../modules/WebRTC/EchoTest';
-import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
+import {
+  selectAudioEnabled,
+  selectAudioDeviceId,
+  setAudioDeviceId,
+  setAudioEnabled,
+} from '../../../store/slices/mediaSlice';
 
 interface EchoPlayBackProps {
   localAudioTrack?: LocalAudioTrack;
@@ -17,8 +23,11 @@ interface EchoPlayBackProps {
 
 const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps) => {
   const { t } = useTranslation();
-  const mediaChoices = useMediaChoices();
+  const audioEnabled = useAppSelector(selectAudioEnabled);
+  const audioDeviceId = useAppSelector(selectAudioDeviceId);
+
   const audioRef = useRef<HTMLAudioElement>(null);
+  const dispatch = useAppDispatch();
 
   const { activeDeviceId } = useMediaDeviceSelect({
     kind: 'audioinput',
@@ -50,26 +59,23 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
   );
 
   useEffect(() => {
-    if (
-      mediaChoices &&
-      (mediaChoices?.userChoices.audioEnabled || activeDeviceId !== mediaChoices?.userChoices.audioDeviceId)
-    ) {
-      createLocalAudioTrack({ deviceId: mediaChoices.userChoices.audioDeviceId })
+    if (audioEnabled || activeDeviceId !== audioDeviceId) {
+      createLocalAudioTrack({ deviceId: audioDeviceId })
         .then((audioTrack) => {
           setLocalAudioTrack(audioTrack);
           const usedDeviceId = audioTrack.constraints.deviceId as string;
-          if (usedDeviceId !== mediaChoices.userChoices.audioDeviceId) {
-            mediaChoices.saveAudioInputDeviceId(usedDeviceId);
+          if (usedDeviceId !== audioDeviceId) {
+            dispatch(setAudioDeviceId(usedDeviceId));
           }
         })
         .catch((err) => {
-          mediaChoices?.saveAudioInputEnabled(false);
+          dispatch(setAudioEnabled(false));
           if (err.name !== 'NotAllowedError') {
             console.error('Error while publishing audio track: ', err);
           }
         });
     }
-  }, [mediaChoices, setLocalAudioTrack, activeDeviceId]);
+  }, [setLocalAudioTrack, activeDeviceId, audioDeviceId]);
 
   useEffect(() => {
     if (!localAudioTrack?.mediaStreamTrack) {

@@ -18,8 +18,8 @@ import { useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
-import { useMediaChoices } from '../../provider/MediaChoicesProvider';
 import { selectFeatures } from '../../store/slices/configSlice';
+import { selectVideoEnabled, selectAudioEnabled } from '../../store/slices/mediaSlice';
 import { BreakoutRoomId } from '../../types';
 import MyMeetingMenu from '../MeetingHeader/fragments/MyMeetingMenu';
 import SpeedTestDialog from '../SpeedTestDialog';
@@ -111,13 +111,14 @@ interface SelftestProps {
 const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const mediaChoices = useMediaChoices();
   const navigateToHome = useNavigateToHome();
   const inviteCode = useInviteCode();
   const isMobile = useIsMobile();
   const [localAudioTrack, setLocalAudioTrack] = useState<LocalAudioTrack | undefined>();
   const [mounted, setMounted] = useState(false);
   const { joinWithoutMedia } = useAppSelector(selectFeatures);
+  const videoEnabled = useAppSelector(selectVideoEnabled);
+  const audioEnabled = useAppSelector(selectAudioEnabled);
 
   useEffect(() => {
     !mounted && setMounted(true);
@@ -147,7 +148,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
         </Header>
 
         <MonitorContainer>
-          {mounted && mediaChoices?.userChoices.videoEnabled ? (
+          {mounted && videoEnabled ? (
             <VideoElement />
           ) : (
             <>
@@ -179,7 +180,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
               </Typography>
             </>
           )}
-          {mounted && mediaChoices?.userChoices.audioEnabled && (
+          {mounted && audioEnabled && (
             <EchoPlayBack localAudioTrack={localAudioTrack} setLocalAudioTrack={setLocalAudioTrack} />
           )}
         </MonitorContainer>

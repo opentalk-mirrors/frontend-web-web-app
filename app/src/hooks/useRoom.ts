@@ -14,10 +14,10 @@ import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../commonComponents';
-import { useMediaChoices } from '../provider/MediaChoicesProvider';
 import { setLivekitRoom } from '../store/slices/livekitSlice';
+import { selectAudioEnabled, setAudioEnabled } from '../store/slices/mediaSlice';
 import { selectShouldForceMuted } from '../store/slices/moderationSlice';
-import { useAppSelector } from './index';
+import { useAppDispatch, useAppSelector } from './index';
 import { E2EEData } from './useE2EE';
 import useLivekitEvents from './useLivekitEvents';
 
@@ -31,7 +31,8 @@ const useRoom = ({ e2eeData, isWhisperRoom }: IUseRoomOptions): Room | undefined
   const keyProvider = useMemo(() => new ExternalE2EEKeyProvider(), []);
   const { mainWorker, whisperWorker, e2eePassphrase, e2eeEnabled } = e2eeData;
   const shouldForceMuted = useAppSelector(selectShouldForceMuted);
-  const mediaChoices = useMediaChoices();
+  const dispatch = useAppDispatch();
+  const audioEnabled = useAppSelector(selectAudioEnabled);
 
   const worker = isWhisperRoom ? whisperWorker : mainWorker;
 
@@ -70,9 +71,9 @@ const useRoom = ({ e2eeData, isWhisperRoom }: IUseRoomOptions): Room | undefined
     !isWhisperRoom && setLivekitRoom(roomInstance);
 
     // Mutes the user if microphones are disabled in conference
-    if (shouldForceMuted && mediaChoices?.userChoices.audioEnabled) {
+    if (shouldForceMuted && audioEnabled) {
       roomInstance.localParticipant.setMicrophoneEnabled(false);
-      mediaChoices?.saveAudioInputEnabled(false);
+      dispatch(setAudioEnabled(false));
     }
 
     return roomInstance;

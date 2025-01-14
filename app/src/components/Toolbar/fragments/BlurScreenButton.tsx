@@ -7,14 +7,14 @@ import { useTranslation } from 'react-i18next';
 
 import { PictureIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectVideoBackgroundEffects, setBackgroundEffects } from '../../../store/slices/mediaSlice';
+import { setBackgroundEffects, selectVideoBackgroundEffects } from '../../../store/slices/mediaSlice';
 import ToolbarButton from './ToolbarButton';
 
 const BlurScreenButton = ({ isLobby }: { isLobby?: boolean }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const backgroundEffects = useAppSelector(selectVideoBackgroundEffects);
-  const isBlurred = backgroundEffects?.style === 'blur' || false;
+  const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
+  const isBlurred = videoBackgroundEffects?.style === 'blur' || false;
   const { pending: isLoadingMedia } = useTrackToggle({
     source: Track.Source.Camera,
   });

@@ -5,23 +5,22 @@ import { useMaybeRoomContext } from '@livekit/components-react';
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDispatch } from '../../hooks';
-import { useMediaChoices } from '../../provider/MediaChoicesProvider';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/mediaSlice';
 import { abortedReconnection } from '../../store/slices/roomSlice';
 
 const ReconnectionDialog = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const room = useMaybeRoomContext();
-  const mediaChoices = useMediaChoices();
+  const videoEnabled = useAppSelector(selectVideoEnabled);
+  const audioEnabled = useAppSelector(selectAudioEnabled);
 
   const disableMedia = async () => {
-    if (mediaChoices?.userChoices.audioEnabled) {
-      mediaChoices?.saveAudioInputEnabled(true);
+    if (audioEnabled) {
       room?.localParticipant.setMicrophoneEnabled(false);
     }
-    if (mediaChoices?.userChoices.videoEnabled) {
-      mediaChoices?.saveVideoInputEnabled(true);
+    if (videoEnabled) {
       room?.localParticipant.setCameraEnabled(false);
     }
   };

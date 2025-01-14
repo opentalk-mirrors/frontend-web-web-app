@@ -16,7 +16,11 @@ import configReducer from './slices/configSlice';
 import eventReducer from './slices/eventSlice';
 import legalVoteReducer from './slices/legalVoteSlice';
 import livekitReducer from './slices/livekitSlice';
-import mediaReducer, { mediaMiddleware } from './slices/mediaSlice';
+import mediaReducer, {
+  mediaMiddleware,
+  initialState as InitialMediaState,
+  reHydrateSlice as mediaRehydrateSlice,
+} from './slices/mediaSlice';
 import meetingNotesReducer from './slices/meetingNotesSlice';
 import moderationReducer from './slices/moderationSlice';
 import participantsReducer, { participantsMiddleware } from './slices/participantsSlice';
@@ -107,6 +111,7 @@ const store = configureStore({
     }).concat(middleware),
   preloadedState: {
     config: merge({}, initialConfig, window.config),
+    media: merge({}, InitialMediaState, mediaRehydrateSlice()),
   },
 });
 

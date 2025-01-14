@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next';
 
 import { enterRoom } from '../../api/types/outgoing/control';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useMediaChoices } from '../../provider/MediaChoicesProvider';
 import { selectFeatures } from '../../store/slices/configSlice';
+import { setAudioAndVideoEnabled } from '../../store/slices/mediaSlice';
 import { ConnectionState, selectRoomConnectionState } from '../../store/slices/roomSlice';
 import ImprintContainer from '../ImprintContainer';
 import SelfTest from '../SelfTest';
@@ -47,7 +47,6 @@ const WaitingView = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { joinWithoutMedia } = useAppSelector(selectFeatures);
-  const mediaChoices = useMediaChoices();
 
   const [isAutoJoinEnabled, setIsAutoJoinEnabled] = useState(true);
 
@@ -55,11 +54,10 @@ const WaitingView = () => {
 
   const moveToRoom = useCallback(async () => {
     if (joinWithoutMedia) {
-      mediaChoices?.saveAudioInputEnabled(false);
-      mediaChoices?.saveVideoInputEnabled(false);
+      setAudioAndVideoEnabled({ audio: false, video: false });
     }
     dispatch(enterRoom.action());
-  }, [dispatch, joinWithoutMedia, mediaChoices]);
+  }, [dispatch, joinWithoutMedia]);
 
   useEffect(() => {
     if (readyToEnter && isAutoJoinEnabled) {
