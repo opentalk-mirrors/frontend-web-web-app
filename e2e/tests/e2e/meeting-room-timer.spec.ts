@@ -23,7 +23,7 @@ const openModeratorMeeting = async (page) => {
   await moderatorPage.waitForLoadState();
 
   //We need to wait for the username to appear here because otherwise the tests will be flaky (see issue #1692)
-  await expect(moderatorPage.getByPlaceholder('Please enter your name')).not.toHaveValue('');
+  await expect(moderatorPage.getByRole('textbox', { name: 'Name' })).toBeVisible();
 
   await moderatorPage.getByRole('button', { name: 'Enter now' }).click();
   return { moderatorPage, meetingLink };
@@ -33,8 +33,8 @@ const openParticipantMeeting = async (context, meetingLink) => {
   const participantPage = await context.newPage();
   await participantPage.goto(meetingLink);
   //We need to wait for the username to appear here because otherwise the tests will be flaky (see issue #1692)
-  const userInputField = participantPage.getByPlaceholder('Please enter your name');
-  await expect(userInputField).not.toHaveValue('');
+  const userInputField = participantPage.getByRole('textbox', { name: 'Name' });
+  await expect(userInputField).toBeVisible();
   const participantUserName = (await userInputField.inputValue()) + '1';
   userInputField.fill(participantUserName);
 

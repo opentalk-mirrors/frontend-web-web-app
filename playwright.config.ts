@@ -45,6 +45,9 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         storageState: '.auth/user.json',
+        contextOptions: {
+          permissions: ['clipboard-read', 'clipboard-write'],
+        },
       },
       dependencies: ['setup'],
     },
@@ -63,6 +66,9 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
         storageState: '.auth/user.json',
+        contextOptions: {
+          permissions: ['clipboard-read'],
+        },
       },
       dependencies: ['setup'],
     },
