@@ -11,6 +11,8 @@ import svgr from 'vite-plugin-svgr';
 const DEFAULT_BUILD_PATH = '../dist';
 const WARNINGS_TO_IGNORE = [['SOURCEMAP_ERROR', "Can't resolve original location of error"]];
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 // This plugin is only for development.
 // Enables Hot Module Replacement for the libs in the monorepo to speed up their development
 const packagesHmrPlugin = () => ({
@@ -89,7 +91,7 @@ const muteWarningsPlugin = (warningsToIgnore) => {
   };
 };
 
-export default defineConfig(({ command }) => {
+export default defineConfig(({ command, mode }) => {
   const hmr = process.env.HMR === 'true';
   const buildPath = process.env.BUILD_PATH ?? DEFAULT_BUILD_PATH;
 
@@ -99,6 +101,10 @@ export default defineConfig(({ command }) => {
       return gitCommitHash;
     }
     return 'dev';
+  };
+
+  const profiling = isProduction && mode === 'profiler' && {
+    'react-dom/client': 'react-dom/profiling',
   };
 
   return {
@@ -126,5 +132,13 @@ export default defineConfig(({ command }) => {
         external: ['/config.js'],
       },
     },
+    esbuild: {
+      minifyIdentifiers: false,
+    },
+    resolve: {
+      alias: {
+        ...profiling
+      }
+    }
   };
 });
