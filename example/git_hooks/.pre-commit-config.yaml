@@ -5,6 +5,10 @@
 ---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.1.0
@@ -17,31 +21,46 @@ repos:
         stages: [commit]
       - id: check-added-large-files
         stages: [commit]
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    # Use the sha or tag you want to point at
-    rev: v2.5.1
+
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.0.0
     hooks:
-      - id: prettier
-        name: Run Prettier
-        types_or: [javascript, ts, tsx]
-        additional_dependencies:
-          - prettier@2.5.1
-          - '@trivago/prettier-plugin-sort-imports@3.1.1'
+      # Check commit message
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [--verbose]
+
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v5.0.2
+    # Check licensing of the staged files
+    hooks:
+      - id: reuse-lint-file
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        name: YAML Lint
+        entry: yamllint
+        language: python
+        types: [yaml]
+        args: [--strict]
+
   - repo: local
     hooks:
-      - id: jest
-        name: Run Jest tests
-        always_run: true
-        stages: [push]
-        entry: pnpm test --watchAll=false --ci
-        pass_filenames: false
-        language: system
-        types_or: [javascript, ts, tsx]
+      # Lint staged files
       - id: eslint
-        name: Run eslint
-        # *.js, *.jsx, *.ts and *.tsx
-        files: \.[jt]sx?$
-        types: [file]
-        language: system
-        entry: pnpm lint
-        pass_filenames: false
+        name: Run ESLint
+        entry: pnpm exec eslint --max-warnings=0
+        language: node
+        files: \.js(x?)$|\.ts(x?)$
+        pass_filenames: true
+
+      # Check formatting of the staged files
+      - id: prettier
+        name: Run Prettier
+        entry: pnpm exec prettier --check
+        language: node
+        files: \.js(x?)$|\.ts(x?)$|\.json$|\.md$
+        pass_filenames: true
