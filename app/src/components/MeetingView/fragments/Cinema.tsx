@@ -15,6 +15,7 @@ import SpeakerView from '../../SpeakerView';
 import WhiteboardView from '../../Whiteboard';
 
 const Container = styled('main')({
+  gridArea: 'main',
   height: '100%',
   overflow: 'hidden',
   display: 'flex',

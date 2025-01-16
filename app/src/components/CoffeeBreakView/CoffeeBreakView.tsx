@@ -20,7 +20,6 @@ import CoffeeBreakTimer from './fragments/CoffeeBreakTimer';
 const BackgroundCover = styled(Box)({
   background: `url('/assets/background.svg') no-repeat`,
   backgroundSize: 'cover',
-  gridRow: 'span 2',
 });
 
 const InnerContainer = styled(Box, {
@@ -87,7 +86,7 @@ export const CoffeeBreakView = memo(({ roundBorders }: CoffeeBreakViewProps) => 
         <Content>
           <CoffeeBreakIcon />
 
-          <Typography variant="h3">
+          <Typography component="h2" variant="h3">
             {isTimerActive ? t('coffee-break-layer-title') : t('coffee-break-stopped-title')}
           </Typography>
 

@@ -85,6 +85,7 @@ const LogoContainer = styled(HeaderContainer)(({ theme }) => ({
 }));
 
 const Content = styled('header')(({ theme }) => ({
+  gridArea: 'header',
   display: 'flex',
   gap: theme.spacing(1),
   justifyContent: 'space-between',
