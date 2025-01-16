@@ -15,6 +15,10 @@ declare module '@mui/material/Button' {
   interface ButtonPropsColorOverrides {
     custom: true;
   }
+
+  interface ButtonPropsVariantOverrides {
+    'conference-inactive': true;
+  }
 }
 declare module '@mui/material/Box' {
   interface ButtonPropsColorOverrides {

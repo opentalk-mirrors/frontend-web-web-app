@@ -80,8 +80,9 @@ const ToolbarContainer = ({ children, actionButton, localAudioTrack, waitingRoom
           <AudioButton isLobby localAudioTrack={localAudioTrack} />
           <VideoButton isLobby />
           {isBackgroundAndBlurringSupported && <BlurScreenButton isLobby />}
+          {waitingRoom && actionButton}
         </ButtonStack>
-        {actionButton}
+        {!waitingRoom && actionButton}
       </Stack>
     </Container>
   );

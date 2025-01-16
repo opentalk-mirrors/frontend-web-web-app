@@ -173,7 +173,12 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
         )}
         {isAllowedToVote && (
           <Grid item xs={12} my={1} container justifyContent="stretch">
-            <Button type="submit" disabled={isSubmitButtonDisabled} fullWidth>
+            <Button
+              type="submit"
+              disabled={isSubmitButtonDisabled}
+              variant={isSubmitButtonDisabled ? 'conference-inactive' : 'contained'}
+              fullWidth
+            >
               {t('global-submit')}
             </Button>
           </Grid>

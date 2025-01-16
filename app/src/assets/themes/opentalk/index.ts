@@ -144,6 +144,18 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             },
           },
         },
+        variants: [
+          {
+            props: { variant: 'conference-inactive', disabled: true },
+            style: () => ({
+              '&.Mui-disabled': {
+                color: '#c8c8c8', // TODO: As this color was only declared for the dark theme, we don't have a counterpart for the light theme so we have to hard code it here for now.
+                border: '2px solid currentColor',
+                opacity: 1,
+              },
+            }),
+          },
+        ],
       },
       MuiSvgIcon: {
         styleOverrides: {
