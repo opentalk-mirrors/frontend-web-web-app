@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
+  Divider,
   ListItemIcon,
   MenuList,
   MenuItem as MuiMenuItem,
@@ -31,7 +32,6 @@ import {
   updatedCinemaLayout,
   updatedGridViewOrder,
 } from '../../../store/slices/uiSlice';
-import TextWithDivider from '../../TextWithDivider';
 import { Indicator } from './Indicator';
 
 const ViewPopperContainer = styled(Stack)(({ theme }) => ({
@@ -81,6 +81,12 @@ const ButtonIndicator = styled(Indicator)({
   position: 'absolute',
   top: '0.1rem',
   right: '0.1rem',
+});
+
+const StyledDivider = styled(Divider)<{ component: string }>({
+  '&:before, &:after': {
+    backgroundColor: '#385865',
+  },
 });
 
 const LayoutSelection = () => {
@@ -160,7 +166,11 @@ const LayoutSelection = () => {
         disablePortal
       >
         <PopoverContainer id="view-popover-menu" autoFocusItem={isViewPopoverOpen}>
-          <MenuItem role="menuitemradio" onClick={() => handleSelectedView(LayoutOptions.Grid)}>
+          <MenuItem
+            role="menuitemradio"
+            aria-checked={selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.FirstJoined}
+            onClick={() => handleSelectedView(LayoutOptions.Grid)}
+          >
             <ListItemIcon>
               {selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.FirstJoined && (
                 <CheckIcon />
@@ -171,14 +181,18 @@ const LayoutSelection = () => {
             </ListItemIcon>
             {t('conference-view-grid')}
           </MenuItem>
-          <MenuItem role="menuitemradio" onClick={() => handleSelectedView(LayoutOptions.Speaker)}>
+          <MenuItem
+            role="menuitemradio"
+            aria-checked={selectedLayout === LayoutOptions.Speaker}
+            onClick={() => handleSelectedView(LayoutOptions.Speaker)}
+          >
             <ListItemIcon>{selectedLayout === LayoutOptions.Speaker && <CheckIcon />}</ListItemIcon>
             <ListItemIcon aria-hidden={true}>
               <SpeakerViewIcon />
             </ListItemIcon>
             {t('conference-view-speaker')}
           </MenuItem>
-          <MenuItem role="menuitemradio" onClick={openFullscreenView}>
+          <MenuItem role="menuitemradio" aria-checked={fullscreenHandle.active} onClick={openFullscreenView}>
             <ListItemIcon>{fullscreenHandle.active && <CheckIcon />}</ListItemIcon>
             <ListItemIcon aria-hidden={true}>
               <FullscreenViewIcon />
@@ -190,6 +204,7 @@ const LayoutSelection = () => {
               onClick={() => handleSelectedView(LayoutOptions.MeetingNotes)}
               hasIndicator={isCurrentMeetingNotesHighlighted}
               role="menuitemradio"
+              aria-checked={selectedLayout === LayoutOptions.MeetingNotes}
             >
               <ListItemIcon>{selectedLayout === LayoutOptions.MeetingNotes && <CheckIcon />}</ListItemIcon>
               <ListItemIcon aria-hidden={true}>
@@ -198,10 +213,15 @@ const LayoutSelection = () => {
               {t('moderationbar-button-meeting-notes-tooltip')}
             </MenuItem>
           )}
-          <TextWithDivider variant="caption">{t('conference-view-sorting')}</TextWithDivider>
+          <StyledDivider component="li">
+            <Typography variant="caption" component="span">
+              {t('conference-view-sorting')}
+            </Typography>
+          </StyledDivider>
           <MenuItem
             role="menuitemradio"
             onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.VideoFirst)}
+            aria-checked={selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.VideoFirst}
           >
             <ListItemIcon>
               {selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.VideoFirst && (
@@ -216,6 +236,9 @@ const LayoutSelection = () => {
           <MenuItem
             role="menuitemradio"
             onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.ModeratorsFirst)}
+            aria-checked={
+              selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.ModeratorsFirst
+            }
           >
             <ListItemIcon>
               {selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.ModeratorsFirst && (

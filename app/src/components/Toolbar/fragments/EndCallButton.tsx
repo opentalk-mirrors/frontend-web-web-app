@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { EventId, RoomId } from '@opentalk/rest-api-rtk-query';
 import { useCallback, useState } from 'react';
@@ -17,6 +18,23 @@ import { selectEventInfo } from '../../../store/slices/roomSlice';
 import { isRegisteredUser } from '../../../utils/typeGuardUtils';
 import CloseMeetingDialog from '../../CloseMeetingDialog';
 import ToolbarButton from './ToolbarButton';
+
+const HangupButton = styled(ToolbarButton)(({ theme }) => ({
+  // We should always use theme.palette.error.main instead of hard-coding '#fe5f60'
+  // but currently we wrap conference toolbar buttons into
+  // light mode instead of dark for some reason. Therefore the palette color do not match.
+  // Should be fixed during https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2096
+  background: '#fe5f60',
+  svg: {
+    fill: theme.palette.common.white,
+  },
+  ':hover': {
+    background: theme.palette.common.white,
+    svg: {
+      fill: '#fe5f60',
+    },
+  },
+}));
 
 const EndCallButton = () => {
   const { t } = useTranslation();
@@ -50,16 +68,15 @@ const EndCallButton = () => {
 
   return (
     <>
-      <ToolbarButton
+      <HangupButton
         tooltipTitle={t('toolbar-button-end-call-tooltip-title')}
         onClick={handleEndCall}
         active={false}
         data-testid="toolbarEndCallButton"
-        color="error"
         id={ToolbarButtonIds.EndCall}
       >
         <EndCallIcon />
-      </ToolbarButton>
+      </HangupButton>
 
       {isConfirmDialogVisible && (
         <CloseMeetingDialog

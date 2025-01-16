@@ -6,6 +6,7 @@ import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import { isTimelessEvent } from '@opentalk/rest-api-rtk-query';
+import { kebabCase } from 'lodash';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -155,8 +156,8 @@ const EventsOverview = ({
               }}
             >
               <AccordionSummary
-                aria-controls={`${entry.title}-control`}
-                id={`${entry.title}-panel`}
+                aria-controls={`${kebabCase(entry.title)}-control`}
+                id={`${kebabCase(entry.title)}-panel`}
                 aria-label={t(`global-${isExpanded ? 'collapse' : 'expand'}`, { target: entry.title })}
                 aria-expanded={undefined}
               >

@@ -36,13 +36,13 @@
 	<defs>
 		<linearGradient id="a-encrypted-message" x1="69.5" y1="98.5" x2="46.693" y2="28.963"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#061C28" />
+			<stop offset="0" stop-color="#061C28" />
 			<stop offset=".653" stop-color="#334B58" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
 		<linearGradient id="b-encrypted-message" x1="79.451" y1="68.864" x2="42.179" y2="39.456"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#465F6C" />
+			<stop offset="0" stop-color="#465F6C" />
 			<stop offset=".411" stop-color="#334B58" />
 			<stop offset="1" stop-color="#102834" />
 		</linearGradient>
@@ -54,25 +54,25 @@
 		</linearGradient>
 		<linearGradient id="d-encrypted-message" x1="49.425" y1="54.057" x2="45.711" y2="51.126"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#324B58" />
+			<stop offset="0" stop-color="#324B58" />
 			<stop offset=".603" stop-color="#1F3744" />
 			<stop offset="1" stop-color="#102834" />
 		</linearGradient>
 		<linearGradient id="e-encrypted-message" x1="60.685" y1="54.057" x2="56.97" y2="51.126"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#324B58" />
+			<stop offset="0" stop-color="#324B58" />
 			<stop offset=".603" stop-color="#1F3744" />
 			<stop offset="1" stop-color="#102834" />
 		</linearGradient>
 		<linearGradient id="f-encrypted-message" x1="71.944" y1="54.057" x2="68.229" y2="51.126"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#324B58" />
+			<stop offset="0" stop-color="#324B58" />
 			<stop offset=".603" stop-color="#1F3744" />
 			<stop offset="1" stop-color="#102834" />
 		</linearGradient>
 		<linearGradient id="g-encrypted-message" x1="82.316" y1="69.645" x2="91.951" y2="59.917"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#EAF874" />
+			<stop offset="0" stop-color="#EAF874" />
 			<stop offset=".274" stop-color="#E6F470" />
 			<stop offset=".562" stop-color="#D9E766" />
 			<stop offset=".856" stop-color="#C4D255" />
@@ -80,7 +80,7 @@
 		</linearGradient>
 		<linearGradient id="h-encrypted-message" x1="82.562" y1="69.401" x2="92.318" y2="59.55"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".144" stop-color="#C4D255" />
 			<stop offset=".438" stop-color="#D9E766" />
 			<stop offset=".727" stop-color="#E6F470" />
@@ -88,7 +88,7 @@
 		</linearGradient>
 		<linearGradient id="i-encrypted-message" x1="74.671" y1="79.392" x2="106.103" y2="79.392"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".144" stop-color="#C4D255" />
 			<stop offset=".438" stop-color="#D9E766" />
 			<stop offset=".727" stop-color="#E6F470" />
@@ -96,7 +96,7 @@
 		</linearGradient>
 		<linearGradient id="j-encrypted-message" x1="73.885" y1="79.392" x2="95.556" y2="79.392"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#EAF874" />
+			<stop offset="0" stop-color="#EAF874" />
 			<stop offset=".274" stop-color="#E6F470" />
 			<stop offset=".562" stop-color="#D9E766" />
 			<stop offset=".856" stop-color="#C4D255" />
@@ -104,7 +104,7 @@
 		</linearGradient>
 		<linearGradient id="k-encrypted-message" x1="74.411" y1="79.392" x2="95.03" y2="79.392"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".144" stop-color="#C4D255" />
 			<stop offset=".438" stop-color="#D9E766" />
 			<stop offset=".727" stop-color="#E6F470" />
@@ -112,7 +112,7 @@
 		</linearGradient>
 		<linearGradient id="l-encrypted-message" x1="83.902" y1="78.303" x2="86.694" y2="78.518"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#102834" />
+			<stop offset="0" stop-color="#102834" />
 			<stop offset=".589" stop-color="#334B58" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>

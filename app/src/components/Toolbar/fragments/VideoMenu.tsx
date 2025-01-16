@@ -218,11 +218,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
                 />
               }
               label={
-                <Typography
-                  sx={{
-                    fontWeight: 'normal',
-                  }}
-                >
+                <Typography fontWeight="normal" component="span">
                   {t('videomenu-participant-videos')}
                 </Typography>
               }
@@ -239,11 +235,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
               <FormControlLabel
                 control={<Switch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />}
                 label={
-                  <Typography
-                    sx={{
-                      fontWeight: 'normal',
-                    }}
-                  >
+                  <Typography fontWeight="normal" component="span">
                     {t('videomenu-blur')}
                   </Typography>
                 }
@@ -254,11 +246,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
             <FormControlLabel
               control={<Switch onChange={toggleMirroring} value={mirroringEnabled} checked={mirroringEnabled} />}
               label={
-                <Typography
-                  sx={{
-                    fontWeight: 'normal',
-                  }}
-                >
+                <Typography fontWeight="normal" component="span">
                   {t('videomenu-mirroring')}
                 </Typography>
               }

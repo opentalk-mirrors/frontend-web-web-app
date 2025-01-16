@@ -53,14 +53,15 @@ const PrimaryNavigationList = ({ collapsedBar, filter, submenu, routes, setActiv
 
   const getNavitaionList = list.map(({ path, name, icon, childRoutes }) => {
     const hasSubmenu = childRoutes ? childRoutes.length > 0 : false;
+    const isSubmenuOpen = path.includes(submenu) && hasSubmenu;
     return (
-      <ListItem key={path} isSubmenuOpen={path.includes(submenu) && hasSubmenu}>
+      <ListItem key={path} isSubmenuOpen={isSubmenuOpen}>
         <NavLink
           onClick={(event) => handleNavigation(event, hasSubmenu, path)}
           to={path}
           data-testid="PrimaryNavItem"
           className={path.includes(submenu) ? 'active-link' : ''}
-          aria-controls={hasSubmenu ? 'secondary-navigation-dashboard' : 'main-content-dashboard'}
+          aria-controls={isSubmenuOpen ? 'secondary-navigation-dashboard' : 'main-content-dashboard'}
           aria-label={t(name)}
         >
           {icon}

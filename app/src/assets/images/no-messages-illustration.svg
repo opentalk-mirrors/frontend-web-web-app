@@ -29,41 +29,41 @@
 	<defs>
 		<linearGradient id="a-no-message" x1="44.526" y1="69.265" x2="63.391" y2="44.487"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#465F6C" />
+			<stop offset="0" stop-color="#465F6C" />
 			<stop offset=".316" stop-color="#354D5A" />
 			<stop offset=".947" stop-color="#0A202C" />
 			<stop offset="1" stop-color="#061C28" />
 		</linearGradient>
 		<linearGradient id="b-no-message" x1="77.531" y1="71.871" x2="77.531" y2="37.935"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#102834" />
+			<stop offset="0" stop-color="#102834" />
 			<stop offset=".589" stop-color="#334B58" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
 		<linearGradient id="c-no-message" x1="72.403" y1="46.135" x2="96.617" y2="38.11" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#fff" stop-opacity=".4" />
+			<stop offset="0" stop-color="#fff" stop-opacity=".4" />
 			<stop offset="1" stop-color="#fff" stop-opacity="0" />
 		</linearGradient>
 		<linearGradient id="d-no-message" x1="70.484" y1="40.343" x2="94.698" y2="32.318"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#fff" stop-opacity=".4" />
+			<stop offset="0" stop-color="#fff" stop-opacity=".4" />
 			<stop offset="1" stop-color="#fff" stop-opacity="0" />
 		</linearGradient>
 		<linearGradient id="e-no-message" x1="70.767" y1="73.35" x2="70.767" y2="99.236" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#061C28" />
+			<stop offset="0" stop-color="#061C28" />
 			<stop offset=".653" stop-color="#334B58" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
 		<linearGradient id="f-no-message" x1="66.192" y1="63.545" x2="66.192" y2="90.226"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#061C28" />
+			<stop offset="0" stop-color="#061C28" />
 			<stop offset=".053" stop-color="#0A202C" />
 			<stop offset=".684" stop-color="#354D5A" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
 		<linearGradient id="g-no-message" x1="70.767" y1="68.708" x2="70.767" y2="195.846"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#061C28" />
+			<stop offset="0" stop-color="#061C28" />
 			<stop offset=".653" stop-color="#334B58" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
@@ -74,12 +74,12 @@
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
 		<linearGradient id="i-no-message" x1="-6.288" y1="69.83" x2="39.388" y2="69.83" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#102834" />
+			<stop offset="0" stop-color="#102834" />
 			<stop offset=".589" stop-color="#334B58" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
 		<linearGradient id="j-no-message" x1="38.31" y1="55.183" x2="29.031" y2="32.927" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".144" stop-color="#C4D255" />
 			<stop offset=".438" stop-color="#D9E766" />
 			<stop offset=".727" stop-color="#E6F470" />
@@ -87,21 +87,21 @@
 		</linearGradient>
 		<linearGradient id="k-no-message" x1="27.416" y1="55.474" x2="39.695" y2="29.613"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".144" stop-color="#C4D255" />
 			<stop offset=".438" stop-color="#D9E766" />
 			<stop offset=".727" stop-color="#E6F470" />
 			<stop offset="1" stop-color="#EAF874" />
 		</linearGradient>
 		<linearGradient id="l-no-message" x1="51.975" y1="60.726" x2="48.417" y2="56.61" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".258" stop-color="#BDCB4F" />
 			<stop offset=".608" stop-color="#CEDC5D" />
 			<stop offset="1" stop-color="#EAF874" />
 		</linearGradient>
 		<linearGradient id="m-no-message" x1="58.589" y1="61.377" x2="56.973" y2="59.508"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".258" stop-color="#BDCB4F" />
 			<stop offset=".608" stop-color="#CEDC5D" />
 			<stop offset="1" stop-color="#EAF874" />

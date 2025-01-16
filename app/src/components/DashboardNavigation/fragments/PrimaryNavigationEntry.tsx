@@ -80,12 +80,13 @@ const PrimaryNavigationEntry = (props: NavigationProps) => {
   return (
     <ListItem isSubmenuOpen={props.isSubmenuOpen}>
       <Button
-        onClick={props.onClick}
-        href={props.href || ''}
+        onClick={props.href ? undefined : props.onClick}
         disabled={props.disabled}
         disableRipple
-        target={props.target}
         aria-label={props.label}
+        component={props.href ? 'a' : 'button'}
+        target={props.href && props.target ? props.target : undefined}
+        href={props.href ? props.href : undefined}
       >
         {props.Icon}
         <Collapse orientation="horizontal" in={!props.collapsedBar}>

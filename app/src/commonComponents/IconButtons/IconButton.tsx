@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { IconButtonTypeMap, IconButton as MuiIconButton } from '@mui/material';
-import { ExtendButtonBase } from '@mui/material/ButtonBase';
+import { IconButton as MuiIconButton } from '@mui/material';
 
 /**
  * IconButton with variant re-export
@@ -11,6 +10,6 @@ import { ExtendButtonBase } from '@mui/material/ButtonBase';
  * IconButtonVariantOverrides interface
  */
 
-const IconButton: ExtendButtonBase<IconButtonTypeMap<{ variant?: 'toolbar' | 'adornment' }>> = MuiIconButton;
+const IconButton = MuiIconButton;
 
 export default IconButton;

@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Tooltip, ThemeProvider, Theme, IconButtonProps } from '@mui/material';
+import { styled, Tooltip, ThemeProvider, Theme, IconButtonProps, IconButton } from '@mui/material';
 import { MouseEvent, ReactNode } from 'react';
 
 import { ArrowDownIcon } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
-import { IconButton } from '../../../commonComponents';
 
 interface IButtonProps {
   isActive?: boolean;
@@ -34,13 +33,39 @@ const ToolbarIconButton = styled(IconButton, {
   minWidth: 0,
   width: '2.5rem',
   height: '2.08rem',
+  backgroundColor: theme.palette.secondary.main,
+  borderRadius: theme.borderRadius.large,
+  '&:hover': {
+    background: theme.palette.secondary.lightest,
+    '& > svg': {
+      fill: theme.palette.secondary.main,
+    },
+  },
+  '& svg': {
+    fill: theme.palette.common.white,
+  },
+  '& .mic-off-line': {
+    fill: theme.palette.warning.main,
+  },
   ...keyboardFocusStyle(theme, isActive),
   '&.Mui-focusVisible': {
     outline: theme.palette.focus.contrastOutline,
   },
   '& .MuiSvgIcon-root': {
+    fontSize: theme.typography.pxToRem(18),
+    [theme.breakpoints.down('md')]: {
+      fontSize: theme.typography.pxToRem(16),
+    },
     [theme.breakpoints.down('sm')]: {
       fontSize: '1.4rem',
+    },
+  },
+  ':disabled': {
+    opacity: 0.5,
+    backgroundColor: theme.palette.secondary.main,
+    fill: theme.palette.text.disabled,
+    '& .mic-off-line': {
+      fill: theme.palette.text.disabled,
     },
   },
   [theme.breakpoints.down('sm')]: {
@@ -152,7 +177,6 @@ const ToolbarButton = ({
     <Tooltip placement="top" title={tooltipTitle}>
       <ButtonContainer>
         <ToolbarIconButton
-          variant="toolbar"
           isActive={active}
           disabled={disabled || undefined}
           aria-label={tooltipTitle}

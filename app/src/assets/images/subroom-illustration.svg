@@ -23,19 +23,19 @@
 		fill="url(#e-subroom)" />
 	<defs>
 		<linearGradient id="a-subroom" x1="13.468" y1="50.736" x2="46.355" y2="9.487" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#102834" />
+			<stop offset="0" stop-color="#102834" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
 		<linearGradient id="b-subroom" x1="14.819" y1="49.04" x2="45.017" y2="11.165" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#465F6C" />
+			<stop offset="0" stop-color="#465F6C" />
 			<stop offset="1" stop-color="#102834" />
 		</linearGradient>
 		<linearGradient id="c-subroom" x1="30.062" y1="28.026" x2="29.906" y2="28.772" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#7A78FF" />
+			<stop offset="0" stop-color="#7A78FF" />
 			<stop offset=".999" stop-color="#4644C9" />
 		</linearGradient>
 		<linearGradient id="d-subroom" x1="23.341" y1="39.588" x2="33.894" y2="12.641" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#EAF874" />
+			<stop offset="0" stop-color="#EAF874" />
 			<stop offset=".133" stop-color="#EBF87B" />
 			<stop offset=".324" stop-color="#EEF98E" />
 			<stop offset=".549" stop-color="#F3FBAC" />
@@ -43,7 +43,7 @@
 			<stop offset="1" stop-color="#fff" />
 		</linearGradient>
 		<linearGradient id="e-subroom" x1="31.187" y1="28.274" x2="31.031" y2="29.02" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#465F6C" />
+			<stop offset="0" stop-color="#465F6C" />
 			<stop offset="1" stop-color="#102834" />
 		</linearGradient>
 	</defs>
