@@ -6,7 +6,7 @@ import { Stack } from '@mui/material';
 import { PaymentStatusBanner } from './PaymentStatusBanner';
 import { StorageAlmostFullBanner } from './StorageAlmostFullBanner';
 
-export const BannerContainer = () => {
+const BannerContainer = () => {
   return (
     <Stack direction="column" gap={1}>
       <PaymentStatusBanner />
@@ -14,3 +14,5 @@ export const BannerContainer = () => {
     </Stack>
   );
 };
+
+export default BannerContainer;
