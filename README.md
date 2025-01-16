@@ -1,3 +1,5 @@
+[TOC]
+
 # OpenTalk-Web Monorepo
 
 This includes:
@@ -12,21 +14,9 @@ This includes:
 
 You need a running controller (<https://git.opentalk.dev/opentalk/backend/services/controller>) and keycloak instance.
 
-## Use the container image
+## Docker
 
-To run the container, use a command similar to:
-
-```bash
-podman run --rm -p 8090:80 -e CONTROLLER_HOST=localhost:1234 -e BASE_URL=localhost:8090 -e OIDC_ISSUER =localhost:9101 -it git.opentalk.dev:5050/opentalk/frontend/web/web-app:latest
-```
-
-or using docker:
-
-```bash
-docker run --rm -p 8090:80 -e CONTROLLER_HOST=localhost:1234 -e BASE_URL=http://localhost:8090 -e OIDC_ISSUER =localhost:9101 -it git.opentalk.dev:5050/opentalk/frontend/web/web-app:latest
-```
-
-The frontend will then be available via <http://localhost:8090>
+see [docker docs](./ci/README.md)
 
 ### Environment variables used in the container
 
@@ -339,9 +329,9 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `pnpm build:profiler`
+### `pnpm build:profiling`
 
-Builds libraries and calls `pnpm build:profiler` in `@opentalk/opentalk`, this build
+Builds libraries and calls `pnpm build:profiling` in `@opentalk/opentalk`, this build
 can be used for profiling the application.
 
 ## Add svg icons
