@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, Stack, styled, Switch, Typography, FormControlLabel as MuiFormControlLabel } from '@mui/material';
+import { Box, Button, Stack, Switch, Typography } from '@mui/material';
 import { memo, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,11 +14,7 @@ import { sortParticipantsWithConfig } from '../../utils/sortParticipants';
 import { TalkingStickParticipantList } from '../TalkingStickParticipantList';
 import { TalkingStickSortButton } from '../TalkingStickSortButton';
 
-const FormControlLabel = styled(MuiFormControlLabel)({
-  flex: 1,
-  margin: 0,
-  justifyContent: 'space-between',
-});
+const INCLUDE_MODERATOR_ID = 'include-moderator-label';
 
 const TalkingStickTabPanel = () => {
   const dispatch = useAppDispatch();
@@ -81,17 +77,15 @@ const TalkingStickTabPanel = () => {
             />
           </Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <FormControlLabel
-              control={
-                <Switch
-                  onChange={() => setIncludeTalkingStickCreator(!includeTalkingStickCreator)}
-                  value={includeTalkingStickCreator}
-                  checked={includeTalkingStickCreator}
-                  color="primary"
-                />
-              }
-              label={<Typography fontWeight="normal">{t('talking-stick-include-moderator-switch')}</Typography>}
-              labelPlacement="start"
+            <Typography id={INCLUDE_MODERATOR_ID} fontWeight="normal" component="span" sx={{ marginRight: 1 }}>
+              {t('talking-stick-include-moderator-switch')}
+            </Typography>
+            <Switch
+              onChange={() => setIncludeTalkingStickCreator(!includeTalkingStickCreator)}
+              value={includeTalkingStickCreator}
+              checked={includeTalkingStickCreator}
+              color="primary"
+              inputProps={{ 'aria-labelledby': INCLUDE_MODERATOR_ID }}
             />
           </Box>
         </Stack>
