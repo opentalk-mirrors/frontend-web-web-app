@@ -76,7 +76,7 @@ SPDX-FileCopyrightText = [
     "2020 Jan Mühlemann <jan.muehlemann@gmail.com>",
     "2022 OpenTalk GmbH <mail@opentalk.eu>",
 ]
-SPDX-License-Identifier = "LicenseRef-MIT-fluent_conv"
+SPDX-License-Identifier = "LicenseRef-MIT-fluent-conv"
 
 [[annotations]]
 path = "packages/track-processors-js-main/**"
