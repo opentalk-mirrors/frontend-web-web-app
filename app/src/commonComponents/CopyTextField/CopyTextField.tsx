@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { InputAdornment, CircularProgress, styled } from '@mui/material';
+import { InputAdornment, CircularProgress, styled, Button } from '@mui/material';
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { CopyIcon } from '../../assets/icons';
 import CommonTextField from '../CommonTextField';
-import { AdornmentIconButton } from '../IconButtons';
 import { notifications } from '../Notistack';
 
 export interface LinkFieldProps {
@@ -29,8 +28,22 @@ const LoadingSpinner = styled(CircularProgress)(({ theme }) => ({
   right: 5,
 }));
 
+const StyledCommonTextField = styled(CommonTextField)({
+  '.MuiInputAdornment-root': {
+    position: 'relative',
+    left: 0,
+    right: 0,
+  },
+  '.MuiInputBase-input.MuiOutlinedInput-input': {
+    paddingRight: 0,
+    textOverflow: 'ellipsis',
+  },
+});
+
 const CopyTextField = forwardRef<HTMLInputElement, LinkFieldProps>(
   ({ label, checked, value, onClick, ariaLabel, isLoading, notificationText, ...remainingProps }, ref) => {
+    const { t } = useTranslation();
+
     const handleClick = () => {
       if (value) {
         navigator.clipboard.writeText(value.toString()).then(() => {
@@ -53,22 +66,29 @@ const CopyTextField = forwardRef<HTMLInputElement, LinkFieldProps>(
 
       return (
         <InputAdornment position="end">
-          <AdornmentIconButton aria-label={ariaLabel} onClick={handleClick} edge="end" disabled={!value} parentDisabled>
-            <CopyIcon />
-          </AdornmentIconButton>
+          <Button
+            aria-label={ariaLabel}
+            onClick={handleClick}
+            variant="contained"
+            disabled={!value}
+            color={checked ? 'primary' : 'secondary'}
+            size="small"
+          >
+            {t(checked ? 'global-copied' : 'global-copy')}
+          </Button>
         </InputAdornment>
       );
     };
 
     return (
-      <CommonTextField
+      <StyledCommonTextField
         ref={ref}
         {...remainingProps}
         label={label}
         fullWidth
         value={value ? value.toString() : '-'}
         disabled
-        InputProps={{ endAdornment: renderEndAdornment(), checked: checked }}
+        InputProps={{ endAdornment: renderEndAdornment() }}
       />
     );
   }

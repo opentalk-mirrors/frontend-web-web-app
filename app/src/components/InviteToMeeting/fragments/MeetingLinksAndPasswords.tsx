@@ -22,6 +22,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
   const [highlightedField, setHighlightedField] = useState<FieldKeys>();
 
   const roomURL = useMemo(() => new URL(`/room/${event.room.id}`, baseURL), [baseURL, event]);
+  const eventTitle = event?.title || t('fallback-room-title') || '';
 
   const roomSharedFolderURL = event.sharedFolder?.readWrite?.url;
   const roomSharedFolderPassword = event.sharedFolder?.readWrite?.password;
@@ -82,6 +83,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
         value={roomURL}
         setHighlightedField={setHighlightedField}
         tooltip={t('dashboard-invite-to-meeting-room-link-tooltip')}
+        eventTitle={eventTitle}
       />
       {callInDetails && sipLink && (
         <MeetingLinkField
@@ -89,6 +91,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
           checked={highlightedField === FieldKeys.SipLink}
           value={sipLink}
           setHighlightedField={setHighlightedField}
+          eventTitle={eventTitle}
         />
       )}
       <MeetingLinkField
@@ -98,6 +101,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
         setHighlightedField={setHighlightedField}
         tooltip={t('dashboard-invite-to-meeting-guest-link-tooltip')}
         isLoading={isLoading || isFetching}
+        eventTitle={eventTitle}
       />
       <MeetingLinkField
         fieldKey={FieldKeys.RoomPassword}
@@ -105,6 +109,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
         value={roomPassword}
         setHighlightedField={setHighlightedField}
         tooltip={t('dashboard-invite-to-meeting-room-password-tooltip')}
+        eventTitle={eventTitle}
       />
       {features.sharedFolder && roomSharedFolderURL && (
         <>
@@ -113,12 +118,14 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
             checked={highlightedField === FieldKeys.SharedFolderLink}
             value={roomSharedFolderURL}
             setHighlightedField={setHighlightedField}
+            eventTitle={eventTitle}
           />
           <MeetingLinkField
             fieldKey={FieldKeys.SharedFolderPassword}
             checked={highlightedField === FieldKeys.SharedFolderPassword}
             value={roomSharedFolderPassword}
             setHighlightedField={setHighlightedField}
+            eventTitle={eventTitle}
           />
         </>
       )}
@@ -128,6 +135,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
           checked={highlightedField === FieldKeys.LivestreamLink}
           value={streamingTargetURL}
           setHighlightedField={setHighlightedField}
+          eventTitle={eventTitle}
         />
       )}
     </>
