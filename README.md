@@ -351,24 +351,15 @@ To build the image, execute in the root of the repository:
  docker build -f ci/Dockerfile . --tag <your tag>
 ```
 
-## Git Hooks and Continuous Integration
+## Git Hooks 
 
-In `example/git_hooks/` there are pre-commit git hooks that mimic the projects CI-pipeline.
+By default, the git hooks configuration of the projects is being managed via [husky](https://typicode.github.io/husky/).
 
-There are two flavors:
+They need to be activated once, via `pnpm prepare` script. 
 
-- **Fancy** -- Install the [pre-commit tool](https://pre-commit.com) and use it with our CI config:
+If, after activation, you want to skip git hooks for some reason, refer to [Skipping Git Hooks](https://typicode.github.io/husky/how-to.html#skipping-git-hooks).
 
-```bash
-cp example/git_hooks/.pre-commit-config.yaml ./
-pre-commit install
-```
-
-- **Old School** -- Activate it by copying
-
-```bash
-cp example/git_hooks/pre-commit .git/hooks/
-```
+If you need more granularity or miss some particular checks, you can refer to `example/git_hooks/Instuctions.md`.
 
 ## E2E Tests
 

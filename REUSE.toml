@@ -6,6 +6,8 @@ SPDX-PackageDownloadLocation = "https://git.opentalk.dev/opentalk/k3k-web-fronte
 [[annotations]]
 path = [
     ".commitlintrc.json",
+    ".lintstagedrc.json",
+    ".husky/*",
     ".parcelrc.js",
     ".parcelrc",
     ".prettierrc.js",
