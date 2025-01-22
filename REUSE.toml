@@ -1,0 +1,85 @@
+version = 1
+SPDX-PackageName = "OpenTalk Frontend"
+SPDX-PackageSupplier = "OpenTalk GmbH <mail@opentalk.eu>"
+SPDX-PackageDownloadLocation = "https://git.opentalk.dev/opentalk/k3k-web-frontend/"
+
+[[annotations]]
+path = [
+    ".commitlintrc.json",
+    ".parcelrc.js",
+    ".parcelrc",
+    ".prettierrc.js",
+    "babel.config.js",
+    "jest.config.js",
+    "README.md",
+    "ci/README.md",
+    "CHANGELOG.md",
+    "package.json",
+    "tsconfig.base.json",
+    "tsconfig.json",
+    "mocks/fileMock.js",
+    "app/tsconfig.dev.json",
+    "app/package.json",
+    "app/tsconfig.json",
+    "app/README.md",
+    "app/.depcheckrc",
+    "e2e/README.md",
+    "e2e/.env-example",
+    "packages/**/**.snap",
+    "pnpm-lock.yaml",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "OpenTalk GmbH <mail@opentalk.eu>"
+SPDX-License-Identifier = "EUPL-1.2"
+
+[[annotations]]
+path = [
+    "app/public/assets/fonts/opentalk**",
+    "app/public/assets/videoBackgrounds/**",
+    "app/public/favicon.png",
+    "app/public/icon-**.png",
+    "app/src/assets/backgrounds/elevate_background.svg",
+    "app/src/assets/images/**.svg",
+    "app/src/assets/images/**.png",
+    "app/src/assets/icons/source/**.svg",
+    "app/public/assets/background.svg",
+    "app/src/assets/icons/**.svg",
+    "e2e/tests/e2e/help-quick-guide.spec.ts-snapshots/**.png",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "OpenTalk GmbH <mail@opentalk.eu>"
+SPDX-License-Identifier = "CC-BY-NC-ND-4.0"
+
+[[annotations]]
+path = "packages/i18next-fluent/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+    "2018 i18next",
+    "2020 Jan Mühlemann <jan.muehlemann@gmail.com>",
+    "2022 OpenTalk GmbH <mail@opentalk.eu>",
+]
+SPDX-License-Identifier = "LicenseRef-MIT-i18next-fluent"
+
+[[annotations]]
+path = "packages/redux-oidc/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+    "2022 Daniél Kerkmann",
+    "2022 OpenTalk GmbH <development@opentalk.eu>",
+]
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "packages/fluent_conv/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+    "2020 Jan Mühlemann <jan.muehlemann@gmail.com>",
+    "2022 OpenTalk GmbH <mail@opentalk.eu>",
+]
+SPDX-License-Identifier = "LicenseRef-MIT-fluent-conv"
+
+[[annotations]]
+path = "packages/track-processors-js-main/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["Copyright 2023 LiveKit, Inc."]
+SPDX-License-Identifier = "Apache-2.0"
