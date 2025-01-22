@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { BackendFeatures, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
 import { RootState } from '../';
@@ -33,6 +33,7 @@ export enum FeaturesKeys {
   Debriefing = 'debriefing',
   SharedFolder = 'sharedFolder',
   SubroomAudio = 'subroomAudio',
+  E2eEncryption = 'e2eEncryption',
 }
 
 type Features = {

@@ -10,6 +10,7 @@ ACTIVE_FEATURES="{
     addUser: ${FEATURE_ADD_USER:-false},
     joinWithoutMedia: ${FEATURE_JOIN_WITHOUT_MEDIA:-false},
     sharedFolder: ${FEATURE_SHARED_FOLDER:-false},
+    e2eEncryption: ${FEATURE_E2E_ENCRYPTION:-false},
 }"
 
 DEFAULT_VIDEO_BACKGROUNDS="[

@@ -79,6 +79,7 @@ const config = {
     wheelOfNames: false,
     recorder: true,
     recording: true,
+    e2eEncryption: false,
   },
   provider: {
     active: false, // indicates if we are in the provider context
