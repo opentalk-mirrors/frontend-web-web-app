@@ -39,7 +39,7 @@ const ListItemButton = styled(MuiListItemButton)(({ theme }) => ({
   },
 }));
 
-const NoVoteImage = styled(NoVotesIcon)({
+const StyledNoVotesIcon = styled(NoVotesIcon)({
   width: '7.5rem',
   height: '7.5rem',
 });
@@ -65,7 +65,7 @@ const LegalVoteOverview = ({ onClickItem }: ILegalVoteOverviewProps) => {
         }}
       >
         <Box>
-          <NoVoteImage />
+          <StyledNoVotesIcon />
         </Box>
         <Typography align="center" variant="body2">
           {t('no-votes-in-conference')}

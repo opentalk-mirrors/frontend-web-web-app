@@ -88,7 +88,11 @@ const ParticipantListItem = ({
             }
           />
         </Grid>
-        {isActiveSpeaker ? <MicOnIcon /> : <MicOffIcon />}
+        {isActiveSpeaker ? (
+          <MicOnIcon type="functional" title={t('active-speaker-icon-title')} titleId="active-speaker-icon-title-id" />
+        ) : (
+          <MicOffIcon type="decorative" />
+        )}
       </Grid>
     </StyledListItem>
   );

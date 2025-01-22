@@ -5,8 +5,7 @@ import { Box, Button, List as MuiList, styled, Typography, Stack } from '@mui/ma
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { BackIcon, NewMessageIcon } from '../../assets/icons';
-import NoNewMessageImage from '../../assets/images/no-messages-illustration.svg?react';
+import { BackIcon, NewMessageIcon, NoMessagesIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectAllPersonalChats } from '../../store/selectors';
 import { selectAllOnlineParticipants } from '../../store/slices/participantsSlice';
@@ -15,6 +14,13 @@ import { ChatScope, TargetId } from '../../types';
 import Chat from '../Chat';
 import ChatOverviewItem from './fragments/ChatOverviewItem';
 import NewMessagePopover from './fragments/NewMessagePopover';
+
+const StyledNoMessagesIcon = styled(NoMessagesIcon)({
+  '&.MuiSvgIcon-root': {
+    width: '5em',
+    height: '5em',
+  },
+});
 
 const List = styled(MuiList)({
   flex: 1,
@@ -85,7 +91,7 @@ const ChatOverview = () => {
           alignItems: 'center',
         }}
       >
-        <NoNewMessageImage width="7em" height="7em" />
+        <StyledNoMessagesIcon type="decorative" />
         <Typography align="center" variant="body2">
           {t('empty-messages')}
         </Typography>

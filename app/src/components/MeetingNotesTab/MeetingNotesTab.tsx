@@ -17,7 +17,7 @@ import {
   Stack,
   Grid,
 } from '@mui/material';
-import { cloneDeep, isEmpty, some, differenceBy } from 'lodash';
+import { cloneDeep, isEmpty, some, differenceBy, uniqueId } from 'lodash';
 import { unionBy, intersectionBy } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -202,7 +202,12 @@ const MeetingNotesTab = () => {
                 </Typography>
               }
             />
-            <DoneIcon color="success" />
+            <DoneIcon
+              color="success"
+              type="functional"
+              title={t('meeting-notes-writer-selected-title')}
+              titleId={uniqueId('meeting-notes-writer-selected-')}
+            />
           </ListItem>
         ))}
     </SelectedParticipantsList>

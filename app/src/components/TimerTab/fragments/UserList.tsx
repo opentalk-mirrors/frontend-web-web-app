@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { List as MuiList, ListItem, ListItemAvatar, ListItemText, Stack, Typography, styled } from '@mui/material';
+import { uniqueId } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, DoneIcon } from '../../../assets/icons';
@@ -20,7 +21,23 @@ const UserList = () => {
   const { t } = useTranslation();
 
   const renderReadyStatus = (isReady: boolean) =>
-    isReady ? <DoneIcon fontSize="small" color="primary" /> : <CloseIcon fontSize="small" color="warning" />;
+    isReady ? (
+      <DoneIcon
+        fontSize="small"
+        color="primary"
+        type="functional"
+        title={t('timer-done-icon-title')}
+        titleId={uniqueId('timer-done-icon-title-')}
+      />
+    ) : (
+      <CloseIcon
+        fontSize="small"
+        color="warning"
+        type="functional"
+        title={t('timer-not-done-icon-title')}
+        titleId={uniqueId('timer-not-done-icon-title-')}
+      />
+    );
 
   const renderUsers = () => {
     return participants.map((participant) => {

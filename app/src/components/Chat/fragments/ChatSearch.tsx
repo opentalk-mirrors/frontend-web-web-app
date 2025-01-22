@@ -32,7 +32,7 @@ const SearchField = styled(CommonTextField)({
 
 const startAdornment = (
   <InputAdornment position="start">
-    <SearchIcon />
+    <SearchIcon type="decorative" />
   </InputAdornment>
 );
 

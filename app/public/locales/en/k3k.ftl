@@ -1194,3 +1194,13 @@ video-overlay-tooltip-fullscreen = Fullscreen
 video-overlay-tooltip-pin-video = Pin video
 video-overlay-tooltip-connection-info = Connection info
 video-overlay-tooltip-separate-window = Open video in a separate window
+
+moderator-icon-title = Moderator
+mic-on-icon-title = Microphone is on
+mic-off-icon-title = Microphone is off
+screenshare-icon-title = Screenshare is on
+handraise-icon-title = Raised hand
+active-speaker-icon-title = Active speaker
+meeting-notes-writer-selected-title = Minute-taker
+timer-done-icon-title = Done
+timer-not-done-icon-title = Not done

@@ -4,6 +4,7 @@
 import { Box, Stack, Typography, styled, useTheme } from '@mui/material';
 import { format } from 'date-fns';
 import Linkify from 'linkify-react';
+import { uniqueId } from 'lodash';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -184,7 +185,14 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       >
         {displayName}
       </NameTypography>
-      {isModerator && <ModeratorIcon color="primary" />}
+      {isModerator && (
+        <ModeratorIcon
+          color="primary"
+          type="functional"
+          title={t('moderator-icon-title')}
+          titleId={uniqueId('moderator-icon-title-')}
+        />
+      )}
       <TimeTypography variant="caption">{formattedTime}</TimeTypography>
     </Box>
   );
