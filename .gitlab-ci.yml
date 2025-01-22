@@ -157,7 +157,7 @@ prepare-artifact:build:
       - dist/*
     expire_in: 1 days
 
-prepare-artifact:build-profiler:
+prepare-artifact:build-profiling:
   stage: prepare-artifact
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -168,11 +168,11 @@ prepare-artifact:build-profiler:
     - *setup-pnpm
     - pnpm install
   script:
-    - pnpm build:profiler
-    - jq -r '.version' ./app/package.json > ./dist-profiler/FRONTEND_VERSION
+    - pnpm build:profiling
+    - jq -r '.version' ./app/package.json > ./dist-profiling/FRONTEND_VERSION
   artifacts:
     paths:
-      - dist-profiler/*
+      - dist-profiling/*
     expire_in: 1 days
 
 # Upload Source Maps to our glitchtip instance when a tag is created and pushed to main
@@ -241,14 +241,14 @@ build:container:
       /kaniko/executor
       --registry-mirror=mirror.gcr.io
       --context $CI_PROJECT_DIR
-      --dockerfile $CI_PROJECT_DIR/ci/DockerfileCI
+      --dockerfile $CI_PROJECT_DIR/ci/Dockerfile
       $IMAGE_DESTINATION_ARGS
       --force
 
 build:container-profiling:
   stage: build
   dependencies:
-    - prepare-artifact:build-profiler
+    - prepare-artifact:build-profiling
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: ['']
@@ -266,10 +266,10 @@ build:container-profiling:
       /kaniko/executor
       --registry-mirror=mirror.gcr.io
       --context $CI_PROJECT_DIR
-      --dockerfile $CI_PROJECT_DIR/ci/DockerfileCI
+      --dockerfile $CI_PROJECT_DIR/ci/Dockerfile
       --destination $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG:+$CI_COMMIT_TAG-}profiling
       --destination $CI_REGISTRY_IMAGE:profiling
-      --build-arg DIST_FOLDER=dist-profiler
+      --build-arg DIST_FOLDER=dist-profiling
       --force
 
 deploy:review-app:

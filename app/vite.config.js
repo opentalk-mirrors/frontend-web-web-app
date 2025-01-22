@@ -103,7 +103,7 @@ export default defineConfig(({ command, mode }) => {
     return 'dev';
   };
 
-  const profiling = isProduction && mode === 'profiler' && {
+  const profiling = isProduction && mode === 'profiling' && {
     'react-dom/client': 'react-dom/profiling',
   };
 
