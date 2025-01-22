@@ -1,31 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Grid, Typography, Popover, styled, Theme, IconButton } from '@mui/material';
+import { Grid, Theme, Typography, styled } from '@mui/material';
 import { uniq } from 'lodash';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SecureIcon as DefaultSecureIcon, DoneIcon } from '../../assets/icons';
-import { VisuallyHiddenTitle } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
 import { selectCombinedParticipantsAndUser } from '../../store/selectors';
 import { Participant, ParticipationKind } from '../../types';
-
-const POPOVER_TITLE_ID = 'secure-connection-title-id';
+import PopoverButton from '../PopoverButton.tsx/PopoverButton';
 
 const getColor = (theme: Theme, warning?: boolean) =>
   warning ? theme.palette.warning.main : theme.palette.primary.main;
-
-const isParticipantUnsafe = (participant: Participant) =>
-  participant.participationKind === ParticipationKind.Guest || participant.participationKind === ParticipationKind.Sip;
-
-const SecureIconButton = styled(IconButton)(({ theme }) => ({
-  padding: theme.spacing(0.8),
-  '& .MuiSvgIcon-root': {
-    fontSize: theme.typography.pxToRem(25),
-  },
-}));
 
 const SecureIconSmall = styled(DefaultSecureIcon, { shouldForwardProp: (prop) => prop !== 'warning' })<{
   warning?: boolean;
@@ -45,23 +33,11 @@ const SecureIconBig = styled(DefaultSecureIcon, { shouldForwardProp: (prop) => p
   padding: theme.spacing(1),
 }));
 
-const CheckmarkIconBig = styled(DoneIcon, { shouldForwardProp: (prop) => prop !== 'warning' })<{ warning?: boolean }>(
-  ({ theme, warning }) => ({
-    color: getColor(theme, warning),
-    width: '3rem',
-    height: '3rem',
-    padding: theme.spacing(1),
-  })
-);
-
-const SecureConnectionPopover = styled(Popover)(({ theme }) => ({
-  '& .MuiPopover-paper': {
-    backgroundColor: theme.palette.background.voteResult,
-    padding: theme.spacing(1),
-  },
-  '& .MuiTypography-root': {
-    pointerEvents: 'none',
-  },
+const CheckmarkIconBig = styled(DoneIcon)<{ warning?: boolean }>(({ theme, warning }) => ({
+  color: getColor(theme, warning),
+  width: '3rem',
+  height: '3rem',
+  padding: theme.spacing(1),
 }));
 
 const PopoverParagraph = styled(Typography)(({ theme }) => ({
@@ -71,6 +47,9 @@ const PopoverParagraph = styled(Typography)(({ theme }) => ({
 
 const CenteredGrid = styled(Grid)(() => ({ textAlign: 'center' }));
 
+const isParticipantUnsafe = (participant: Participant) =>
+  participant.participationKind === ParticipationKind.Guest || participant.participationKind === ParticipationKind.Sip;
+
 const SecurityBadge = () => {
   const allParticipants = useAppSelector(selectCombinedParticipantsAndUser);
   const unsafeParticipantKinds = useMemo(
@@ -78,8 +57,6 @@ const SecurityBadge = () => {
     [allParticipants]
   );
   const isUnsafeParticipantConnected = unsafeParticipantKinds.length > 0;
-
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { t } = useTranslation();
 
   const getBadgeTranslationKey = () => {
@@ -98,20 +75,6 @@ const SecurityBadge = () => {
     //ideally this case should not be reached, ever
     return '';
   };
-
-  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key === ' ') event.stopPropagation();
-  };
-
-  const open = Boolean(anchorEl);
 
   const renderWarningPopoverContent = () => (
     <Grid
@@ -163,28 +126,13 @@ const SecurityBadge = () => {
   );
 
   return (
-    <>
-      <SecureIconButton
-        onClick={open ? handlePopoverClose : handlePopoverOpen}
-        aria-label={t('secure-connection-button-label')}
-        onKeyDown={handleKeyDown}
-      >
-        <SecureIconSmall warning={isUnsafeParticipantConnected} />
-      </SecureIconButton>
-      <SecureConnectionPopover
-        aria-labelledby={POPOVER_TITLE_ID}
-        open={open}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        onClose={handlePopoverClose}
-      >
-        <VisuallyHiddenTitle label="secure-connection-title" component="h1" id={POPOVER_TITLE_ID} />
-        {isUnsafeParticipantConnected ? renderWarningPopoverContent() : renderSecurePopoverContent()}
-      </SecureConnectionPopover>
-    </>
+    <PopoverButton
+      icon={<SecureIconSmall warning={isUnsafeParticipantConnected} />}
+      content={isUnsafeParticipantConnected ? renderWarningPopoverContent() : renderSecurePopoverContent()}
+      buttonLabel={t('secure-connection-button-label')}
+      titleLabel="secure-connection-title"
+      popoverTitleId="secure-connection-title-id"
+    />
   );
 };
 
