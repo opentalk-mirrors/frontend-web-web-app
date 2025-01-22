@@ -42,18 +42,17 @@ see [docker docs](./ci/README.md)
 | FEATURE_ADD_USER         | no       | { addUser: false}                                 | under construction |
 | FEATURE_JOIN_WITHOUT_MEDIA       | no       | { joinWithoutMedia: false}                        | if is set to true, it will prevent user to join conference with audio/video on |
 | FEATURE_SHARED_FOLDER | no | { sharedFolder: false } | activates shared folders |
+| FEATURE_E2E_ENCRYPTION | no | { e2eEncryption: false } | to enable e2e encryption option when creating a meeting |
 | VIDEO_BACKGROUNDS        | no       | [see here](#default-video-backgrounds)                                                | An array with a configuration of the background (Example: `[{ altText: 'OpenTalk', url: '/assets/videoBackgrounds/elevate-bg.png', thumb: '/assets/videoBackgrounds/thumbs/elevate-bg-thumb.png',}]`) |
 | SIGN_OUT_REDIRECT_URI    | no       | /dashboard                             | Uri to redirect the client after signing out frontend |
 | CHANGE_PASSWORD_ACTIVE           | no       | false                              | enable the reset password button in the dashboard profile settings |
 | CHANGE_PASSWORD_URL       | no       | null                               | set the reset password url for password button in dashboard profile settings |
-| FEATURE_SHARED_FOLDER           | no       | false                              | enable the shared folder feature |
 | IMPRINT_URL             | no      |                                                   | The URL to the imprint page |
 | DATA_PROTECTION_URL             | no      |                                                   | The URL to the data protection page |
 | ACCOUNT_MANAGEMENT_URL             | no      |                                                   | The account management url for use the dashboard menu, if provider.active is true |
 | DISALLOW_CUSTOM_DISPLAY_NAME  | no  | false                                             | Disable editing of display name in profile and lobby page |
 | SENTRY_DSN  | no  |                                              | Adding a valid sentry dsn will activate error logging |
 | WAITING_ROOM_DEFAULT_VALUE | yes | Frontend { waitingRoomDefaultValue: true } | to enable waiting room switch by default                                          |
-| LIVEKIT_SERVER_URL       |  yes     |                                                    | Url in which livekit server leaves |
 | LIVEKIT_E2EE_SALT        |  no      |                                                    | data added to the passphrase to make end-to-end encryption a bit more secure |
 
 ### Adding new Video Background Images
@@ -261,6 +260,7 @@ window.config = {
       "joinWithoutMedia": false,
       "sharedFolder": false,
       "subroomAudio": false,
+      "e2eEncryption": false,
     },
 	settings: {
 		waitingRoomDefaultValue: true
@@ -290,7 +290,7 @@ Libraries, except the app, will be moved to a separate repository and released t
 
 ### Development
 
-`@opentalk` packages/libraries are not a part of the app. 
+`@opentalk` packages/libraries are not a part of the app.
 The Hot Module Replacement (HMR) mechanism will not work by default on `pnpm start`.
 If you work on a package and want to speed-up the development use special HMR script `pnpm start:hot`.
 
@@ -337,7 +337,7 @@ can be used for profiling the application.
 ## Add svg icons
 
 Refer to `createIconComponents.sh`  helper script to create React components out of svg's.
-Note: as vite has problems importing svg's as react components, we use vite-plugin-svgr, which is used for that, 
+Note: as vite has problems importing svg's as react components, we use vite-plugin-svgr, which is used for that,
       The plugin requires `?react` suffix for filenames, while importing an svg in a dedicated *.tsx component file.
       If you use the script mentioned above, it will manage that for you.
 

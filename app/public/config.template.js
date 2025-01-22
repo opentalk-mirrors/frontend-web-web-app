@@ -48,6 +48,7 @@ window.config = {
     addUser: false,
     joinWithoutMedia: false,
     sharedFolder: false,
+    e2eEncryption: false,
   },
   settings: {
     waitingRoomDefaultValue: true,

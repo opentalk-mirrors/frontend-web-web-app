@@ -658,12 +658,14 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
 
           {isStreamingEnabled && <StreamingOptions formik={formik} />}
 
-          <MeetingFormSwitch
-            checked={formik.values.e2eEncryption}
-            switchProps={formikMinimalProps('e2eEncryption', formik)}
-            switchValueLabel={t('dashboard-meeting-e2ee-switch')}
-            tooltipTitle={t('dashboard-meeting-e2ee-tooltip')}
-          />
+          {features.e2eEncryption && (
+            <MeetingFormSwitch
+              checked={formik.values.e2eEncryption}
+              switchProps={formikMinimalProps('e2eEncryption', formik)}
+              switchValueLabel={t('dashboard-meeting-e2ee-switch')}
+              tooltipTitle={t('dashboard-meeting-e2ee-tooltip')}
+            />
+          )}
         </Stack>
         <Grid container item justifyContent="space-between" spacing={2}>
           <Grid item xs={12} sm="auto">
