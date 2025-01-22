@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import LogoSmall from './source/logo-small.svg?react';
 
-const LogoSmallIcon = (props: SvgIconProps) => <SvgIcon {...props} component={LogoSmall} inheritViewBox />;
+const LogoSmallIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={LogoSmall} />;
 
 export default LogoSmallIcon;

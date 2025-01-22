@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import '@mui/material';
 import '@mui/material/ButtonBase';
 import '@mui/material/InputBase';
+import { SvgIconProps as OriginalSvgProps } from '@mui/material/SvgIcon';
 import '@mui/material/styles/createTheme';
 
 declare module '@mui/material/InputBase' {
@@ -68,13 +70,27 @@ type NotistackPalette = {
   secondary: NotificationVariant;
 };
 
-declare module '@mui/material/styles' {
-  interface SvgIconProps {
+declare module '@mui/material' {
+  type AccessibleSvgType = 'functional' | 'decorative' | undefined;
+  interface BaseSvgIconProps extends OriginalSvgProps {
     disabled?: boolean;
     width?: ResponsiveStyleValue<string | number>;
     height?: ResponsiveStyleValue<string | number>;
+    type?: AccessibleSvgType;
+  }
+  interface FunctionalSvgIconProps extends BaseSvgIconProps {
+    type?: 'functional';
+    title: string;
+    titleId: string;
+  }
+  interface DecorativeSvgIconProps extends BaseSvgIconProps {
+    type?: 'decorative' | undefined;
   }
 
+  type SvgIconProps = FunctionalSvgIconProps | DecorativeSvgIconProps;
+}
+
+declare module '@mui/material/styles' {
   interface TypeBackground {
     overlay?: string;
     defaultGradient?: string;

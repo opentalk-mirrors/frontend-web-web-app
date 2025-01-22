@@ -4,6 +4,7 @@
 import { Button, Grid, styled, Typography, Collapse, Stack, Tooltip, Hidden } from '@mui/material';
 import { Event, EventId, isTimelessEvent, isEventException, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import { Property } from 'csstype';
+import { uniqueId } from 'lodash';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -164,13 +165,18 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
     if ((event as Event).inviteStatus === 'pending') {
       return (
         <InviteContainer>
-          <InviteIcon aria-label={t('global-invite')} />
+          <InviteIcon type="functional" title={t('global-invite')} titleId={uniqueId('invite-icon-')} />
         </InviteContainer>
       );
     }
     return (
       <Collapse in={isFavorite} data-testid={`favorite-icon${isFavorite ? '-visible' : ''}`}>
-        <FavoriteIcon className="favoriteIcon" aria-label={t('global-favorite')} />
+        <FavoriteIcon
+          type="functional"
+          className="favoriteIcon"
+          title={t('global-favorite')}
+          titleId={uniqueId('favorite-icon-')}
+        />
       </Collapse>
     );
   };

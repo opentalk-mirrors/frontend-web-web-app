@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import Unlocked from './source/unlocked.svg?react';
 
-const UnlockedIcon = (props: SvgIconProps) => <SvgIcon {...props} component={Unlocked} inheritViewBox />;
+const UnlockedIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={Unlocked} />;
 
 export default UnlockedIcon;

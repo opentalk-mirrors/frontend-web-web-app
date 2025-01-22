@@ -49,6 +49,7 @@ import InviteIcon from './InviteIcon';
 import LegalBallotIcon from './LegalBallotIcon';
 import LiveIcon from './LiveIcon';
 import LockedIcon from './LockedIcon';
+import LogoGradientIcon from './LogoGradientIcon';
 import LogoIcon from './LogoIcon';
 import LogoSmallIcon from './LogoSmallIcon';
 import MeetingNotesIcon from './MeetingNotesIcon';
@@ -104,6 +105,7 @@ export {
   ArrowLeftIcon,
   ArrowRightIcon,
   ArrowUpIcon,
+  AttendanceReportIcon,
   AudioIcon,
   AvatarIcon,
   BackIcon,
@@ -128,7 +130,6 @@ export {
   EmojiIcon,
   EndCallIcon,
   ErrorIcon,
-  AttendanceReportIcon,
   ExtendToTabIcon,
   FavoriteIcon,
   FeedbackIcon,
@@ -146,6 +147,7 @@ export {
   LegalBallotIcon,
   LiveIcon,
   LockedIcon,
+  LogoGradientIcon,
   LogoIcon,
   LogoSmallIcon,
   MeetingNotesIcon,
@@ -173,9 +175,9 @@ export {
   SecureIcon,
   SendMessageIcon,
   SettingsIcon,
+  SharedFolderIcon,
   ShareScreenOffIcon,
   ShareScreenOnIcon,
-  SharedFolderIcon,
   SignOutIcon,
   SortIcon,
   SpeakerQueueIcon,
@@ -189,8 +191,8 @@ export {
   VisibleIcon,
   WarningIcon,
   WheelOfNamesIcon,
-  WhisperFullIcon,
   WhisperEmptyIcon,
+  WhisperFullIcon,
   WhiteboardIcon,
   WoolBallIcon,
 };

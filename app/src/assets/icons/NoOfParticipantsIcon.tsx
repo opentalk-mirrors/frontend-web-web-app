@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 
+import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
 import NoOfParticipants from './source/no-of-participants.svg?react';
 
-const NoOfParticipantsIcon = (props: SvgIconProps) => (
-  <SvgIcon {...props} component={NoOfParticipants} inheritViewBox />
-);
+const NoOfParticipantsIcon = (props: SvgIconProps) => <AccessibleSvgIcon {...props} component={NoOfParticipants} />;
 
 export default NoOfParticipantsIcon;

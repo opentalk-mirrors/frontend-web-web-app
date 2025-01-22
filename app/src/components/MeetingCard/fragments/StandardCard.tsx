@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Collapse as MuiCollapse, Grid, Stack, styled, Tooltip, Typography } from '@mui/material';
 import { isTimelessEvent } from '@opentalk/rest-api-rtk-query';
+import { uniqueId } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { FavoriteIcon } from '../../../assets/icons';
+import { FavoriteIcon as OriginalFavoriteIcon } from '../../../assets/icons';
 import EventTimePreview from '../../EventTimePreview';
 import MeetingPopover, { MeetingCardFragmentProps } from './MeetingPopover';
 
@@ -28,7 +29,7 @@ const Collapse = styled(MuiCollapse)(({ theme }) => ({
   right: theme.spacing(6),
 }));
 
-const Favorite = styled(FavoriteIcon)(({ theme }) => ({
+const FavoriteIcon = styled(OriginalFavoriteIcon)(({ theme }) => ({
   width: 20,
   height: 20,
 
@@ -82,7 +83,7 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
   return (
     <CardWrapper>
       <Collapse in={isFavorite} data-testid={`favorite-icon${isFavorite ? '-visible' : ''}`}>
-        <Favorite aria-label={t('global-favorite')} />
+        <FavoriteIcon type="functional" title={t('global-favorite')} titleId={uniqueId('favorite-icon-')} />
       </Collapse>
       <Grid container alignItems="flex-end" justifyContent="space-between" spacing={2}>
         <Grid item>
