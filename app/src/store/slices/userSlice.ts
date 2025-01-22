@@ -11,7 +11,6 @@ import { lowerHand, raiseHand } from '../../api/types/outgoing/control';
 import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
 import { joinSuccess, login, startRoom } from '../commonActions';
-import { setSpeakerActivity } from './mediaSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { connectionClosed, fetchRoomByInviteId } from './roomSlice';
 
@@ -91,9 +90,6 @@ export const userSlice = createSlice({
       state.joinedAt = undefined;
     });
 
-    builder.addCase(setSpeakerActivity, (state) => {
-      state.lastActive = new Date().toISOString();
-    });
     builder.addCase(raiseHand.action, (state) => {
       state.lastActive = new Date().toISOString();
     });
@@ -149,7 +145,6 @@ export const selectUserAsPartialParticipant = createSelector(
       participationKind,
       waitingState: WaitingState.Joined,
       meetingNotesAccess: state.meetingNotesAccess,
-      isSpeaking: false,
       isRoomOwner,
       role,
     };

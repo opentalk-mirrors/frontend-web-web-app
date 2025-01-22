@@ -105,7 +105,6 @@ import {
   Participant,
   ParticipantId,
   ParticipantInOtherRoom,
-  Speaker,
   Timestamp,
   WaitingState,
   WhisperParticipantState,
@@ -178,21 +177,11 @@ const mapMeetingNotesToMeetingNotesAccess = (meetingNotes?: MeetingNotesState) =
   return MeetingNotesAccess.Write;
 };
 
-const isParticipantSpeaking = (speakers: Speaker[], participantId: ParticipantId) => {
-  let isSpeaking = false;
-  const speakerWithSameId = speakers.find((speaker) => participantId === speaker.participant);
-  if (speakerWithSameId?.isSpeaking) {
-    isSpeaking = true;
-  }
-  return isSpeaking;
-};
-
 const mapToUiParticipant = (
   state: RootState,
   { id, control, meetingNotes }: BackendParticipant,
   breakoutRoomId: BreakoutRoomId | null,
-  waitingState: WaitingState,
-  speakers?: Speaker[]
+  waitingState: WaitingState
 ): Participant => ({
   id,
   groups: [],
@@ -208,7 +197,6 @@ const mapToUiParticipant = (
   role: control.role,
   waitingState,
   meetingNotesAccess: mapMeetingNotesToMeetingNotesAccess(meetingNotes),
-  isSpeaking: speakers ? isParticipantSpeaking(speakers, id) : false,
   isRoomOwner: control.isRoomOwner,
 });
 
@@ -230,7 +218,6 @@ const mapBreakoutToUiParticipant = (
   lastActive: joinTime,
   waitingState: WaitingState.Joined,
   meetingNotesAccess: MeetingNotesAccess.None,
-  isSpeaking: false,
   isRoomOwner: false,
 });
 
@@ -287,13 +274,7 @@ const handleControlMessage = async (
 
       let joinedParticipants: Participant[];
       joinedParticipants = data.participants.map((participant) => {
-        return mapToUiParticipant(
-          state,
-          participant,
-          data.breakout?.current || null,
-          WaitingState.Joined,
-          data.media?.speakers
-        );
+        return mapToUiParticipant(state, participant, data.breakout?.current || null, WaitingState.Joined);
       });
 
       if (data.moderation?.waitingRoomEnabled && data.moderation.waitingRoomParticipants.length > 0) {
@@ -307,13 +288,7 @@ const handleControlMessage = async (
             joinedParticipants.splice(duplicateParticipantIndex, 1);
           }
           //TODO the backend should provide a waitingState: 'waiting' | 'approved', change when implemented
-          return mapToUiParticipant(
-            state,
-            waitingParticipant,
-            data.breakout?.current || null,
-            WaitingState.Waiting,
-            data.media?.speakers
-          );
+          return mapToUiParticipant(state, waitingParticipant, data.breakout?.current || null, WaitingState.Waiting);
         });
 
         joinedParticipants = joinedParticipants.concat(waitingParticipants);
@@ -1431,7 +1406,6 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.legalVote.handler(builder, dispatch))
       .addModule((builder) => outgoing.livekit.handler(builder, dispatch))
       .addModule((builder) => outgoing.poll.handler(builder, dispatch))
-      .addModule((builder) => outgoing.media.handler(builder, dispatch))
       .addModule((builder) => outgoing.meetingNotes.handler(builder, dispatch))
       .addModule((builder) => outgoing.meetingReport.handler(builder, dispatch))
       .addModule((builder) => outgoing.moderation.handler(builder, dispatch))

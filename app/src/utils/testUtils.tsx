@@ -297,7 +297,6 @@ export const mockedParticipant = (
   lastActive: '2022-03-23T12:32:30Z',
   waitingState: WaitingState.Joined,
   meetingNotesAccess: MeetingNotesAccess.None,
-  isSpeaking: false,
   isRoomOwner: false,
   getTrackPublication: () => undefined,
   setMicrophoneEnabled: () => undefined,

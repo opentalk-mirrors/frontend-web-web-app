@@ -44,15 +44,6 @@ export interface MediaSessionState {
   videoSettings: VideoSetting;
 }
 
-export interface SpeakingState {
-  isSpeaking: boolean;
-  updatedAt: string;
-}
-
-export interface Speaker extends SpeakingState {
-  participant: ParticipantId;
-}
-
 export interface TrickleCandidate {
   sdpMid: string;
   sdpMLineIndex: number;
@@ -90,7 +81,6 @@ export interface ForceMute {
 export type ParticipantMediaState = {
   screen?: MediaSessionState;
   video?: MediaSessionState;
-  speakers?: Speaker[];
   forceMute: ForceMute;
 };
 
