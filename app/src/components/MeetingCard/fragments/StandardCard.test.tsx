@@ -57,7 +57,7 @@ describe('Standard Card', () => {
         </Provider>
       </BrowserRouter>
     );
-    expect(screen.getByRole('link', { name: 'dashboard-home-join' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'dashboard-home-join-label' })).toBeInTheDocument();
     expect(screen.getByLabelText('toolbar-button-more-tooltip-title')).toBeInTheDocument();
     expect(screen.getByTestId('favorite-icon-visible')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'global-favorite' })).toBeInTheDocument();
@@ -89,10 +89,10 @@ describe('Standard Card', () => {
     fireEvent.mouseDown(MoreMenu);
 
     await waitFor(() => {
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-update')).toBeInTheDocument();
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-remove')).toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-add')).not.toBeInTheDocument();
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-delete')).toBeInTheDocument();
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-update-label')).toBeInTheDocument();
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-remove-label')).toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-add-label')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-delete-label')).toBeInTheDocument();
     });
   });
 
@@ -109,10 +109,10 @@ describe('Standard Card', () => {
     fireEvent.mouseDown(MoreMenu);
 
     await waitFor(() => {
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-remove')).toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-add')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-update')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-remove-label')).toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-add-label')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-update-label')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete-label')).not.toBeInTheDocument();
     });
   });
 
@@ -133,10 +133,10 @@ describe('Standard Card', () => {
     fireEvent.mouseDown(MoreMenu);
 
     await waitFor(() => {
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-add')).toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-remove')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-update')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('dashboard-meeting-card-popover-add-label')).toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-remove-label')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-update-label')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete-label')).not.toBeInTheDocument();
     });
   });
 });
