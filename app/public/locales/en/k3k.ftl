@@ -461,11 +461,14 @@ breakout-room-assignable-participants-per-rooms = Assign {$participantsPerRoom} 
 breakout-room-room-overview-participant-list-me = (me)
 
 field-duration-unlimited-time = Unlimited Time
+field-duration-unlimited-time-label = Unlimited duration
 field-duration-button-text = Session Duration
 field-duration-button-close = Close
 field-duration-button-save = Save
 field-duration-custom = Custom
+field-duration-custom-label = Custom duration
 field-duration-input-label = Enter custom duration (min)
+field-duration-chip-label = Duration {$duration} min
 
 user-selection-button-back = back
 user-selection-button-cancel = Cancel
