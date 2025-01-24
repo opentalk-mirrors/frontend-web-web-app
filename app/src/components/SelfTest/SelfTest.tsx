@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Container, Stack, Tooltip, Typography, styled, useTheme } from '@mui/material';
+import { Container, Stack, ThemeProvider, Typography, styled, useTheme } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { LocalAudioTrack } from 'livekit-client';
 import { ReactNode, useEffect, useState } from 'react';
@@ -9,9 +9,11 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { useGetRoomEventInfoQuery } from '../../api/rest';
-import { BackIcon, HelpIcon, LogoIcon } from '../../assets/icons';
+import { BackIcon, LogoIcon } from '../../assets/icons';
 import arrowImage from '../../assets/images/arrow-illustration.png';
+import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { CircularIconButton, IconButton as MuiIconButton } from '../../commonComponents';
+import { CircularIconButtonStyles } from '../../commonComponents/IconButtons/CircularIconButton';
 import { useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { useIsMobile } from '../../hooks/useMediaQuery';
@@ -19,7 +21,7 @@ import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useMediaChoices } from '../../provider/MediaChoicesProvider';
 import { selectFeatures } from '../../store/slices/configSlice';
 import { BreakoutRoomId } from '../../types';
-import { openUserManual } from '../../utils/apiUtils';
+import MyMeetingMenu from '../MeetingHeader/fragments/MyMeetingMenu';
 import SpeedTestDialog from '../SpeedTestDialog';
 import EchoPlayBack from './fragments/EchoPlayback';
 import ToolbarContainer from './fragments/ToolbarContainer';
@@ -54,13 +56,21 @@ const Header = styled('header')(({ theme }) => ({
 const UtilitiesContainer = styled(Stack)(({ theme }) => ({
   flexDirection: 'row',
   gap: theme.spacing(1),
-}));
-
-//Upscale and add margin to help icon, since the svg is just smaller than others and is offcenter.
-//Should move into icon definition if it is also required elsewhere.
-const AdjustedHelpIcon = styled(HelpIcon)(({ theme }) => ({
-  transform: 'scale(1.3)',
-  marginLeft: theme.typography.pxToRem(2),
+  '& div:has(#my-meeting-menu-button)': {
+    backgroundColor: 'transparent',
+    alignSelf: 'start',
+  },
+  '& #my-meeting-menu-button': {
+    ...CircularIconButtonStyles(theme),
+    '& .MuiSvgIcon-root': {
+      fontSize: '1em',
+      transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    },
+    '&:hover, &:focus, &[aria-expanded="true"]': {
+      background: theme.palette.secondary.lightest,
+      color: theme.palette.text.primary,
+    },
+  },
 }));
 
 const MOBILE_BACK_BUTTON_Z_INDEX = 1;
@@ -129,11 +139,9 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
           <UtilitiesContainer>
             <SpeedTestDialog />
             {!isMobile && (
-              <Tooltip title={t('user-manual-open')}>
-                <CircularIconButton onClick={openUserManual} aria-label={t('user-manual-open')}>
-                  <AdjustedHelpIcon />
-                </CircularIconButton>
-              </Tooltip>
+              <ThemeProvider theme={createOpenTalkTheme('dark')}>
+                <MyMeetingMenu />
+              </ThemeProvider>
             )}
           </UtilitiesContainer>
         </Header>
