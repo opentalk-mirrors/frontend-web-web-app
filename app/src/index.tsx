@@ -9,11 +9,14 @@ import App from './App';
 import './banner';
 import './glitchtip';
 import './i18n';
+import { exposeSetLogLevel } from './logger';
 import SplashScreenPage from './pages/SplashScreenPage';
 import reportWebVitals from './reportWebVitals';
 
 const container = document.getElementById('root');
-const root = createRoot(container);
+const root = createRoot(container as HTMLElement);
+
+exposeSetLogLevel();
 
 root.render(
   <StrictMode>

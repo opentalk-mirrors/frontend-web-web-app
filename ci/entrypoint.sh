@@ -63,6 +63,7 @@ fi
 
 cat >/usr/share/nginx/html/config.js << EOF
 window.config = {
+  logLevel: "${LOG_LEVEL:-info}",
   controller: "${CONTROLLER_HOST}",
   insecure: ${INSECURE:-false},
   baseUrl: "${BASE_URL}",
