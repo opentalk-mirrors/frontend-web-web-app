@@ -34,16 +34,20 @@ const SideTabPanel = forwardRef<unknown, SideTabPanelProps>(({ children, value, 
   return (
     <Box
       {...ref}
-      flex={1}
-      display={hidden ? 'none' : 'flex'}
       role="tabpanel"
       aria-hidden={hidden}
       id={`tabpanel-${value}`}
       aria-labelledby={value}
-      flexDirection="column"
-      maxWidth="100%"
-      maxHeight="100%"
-      overflow="hidden"
+      sx={[
+        {
+          flex: 1,
+          display: hidden ? 'none' : 'flex',
+          flexDirection: 'column',
+          maxWidth: '100%',
+          maxHeight: '100%',
+          overflow: 'hidden',
+        },
+      ]}
     >
       {tabTitle && <TabTitle variant="h3">{tabTitle}</TabTitle>}
       {!hidden && <TabContainer>{children}</TabContainer>}

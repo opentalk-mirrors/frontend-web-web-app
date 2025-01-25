@@ -72,13 +72,29 @@ const BreakoutRoomNotification = React.forwardRef<HTMLDivElement, IJoinNotificat
     return (
       <StyledSnackbarContent ref={ref} role="alertdialog" aria-describedby={messageId}>
         <Stack spacing={1}>
-          <Box display="flex" alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
             <Icon width="2rem" height="2rem" />
-            <Typography variant="h3" ml={2} id={messageId}>
+            <Typography
+              variant="h3"
+              id={messageId}
+              sx={{
+                ml: 2,
+              }}
+            >
               {message}
             </Typography>
           </Box>
-          <Box display="flex" pl={6}>
+          <Box
+            sx={{
+              display: 'flex',
+              pl: 6,
+            }}
+          >
             {renderActions()}
             {!isEmpty(countdown) && (
               <Countdown duration={countdown?.duration} onCountdownEnds={handleCountdownEnds} ml={1.5} />

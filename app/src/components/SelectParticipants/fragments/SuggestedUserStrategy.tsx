@@ -20,8 +20,22 @@ export const SuggestedUserStrategy = {
     (props: React.HTMLAttributes<HTMLLIElement>, option: ParticipantOption) => {
       if ('firstname' in option) {
         return (
-          <Box key={option.email} component="li" display="flex" {...props}>
-            <Box mr={1}>
+          <Box
+            key={option.email}
+            component="li"
+            {...props}
+            sx={[
+              {
+                display: 'flex',
+              },
+              ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
+            ]}
+          >
+            <Box
+              sx={{
+                mr: 1,
+              }}
+            >
               <ParticipantAvatar
                 src={setLibravatarOptions(option.avatarUrl, { defaultImage })}
               >{`${option.firstname} ${option.lastname}`}</ParticipantAvatar>

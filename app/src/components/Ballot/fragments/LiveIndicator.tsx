@@ -24,7 +24,11 @@ export const LiveIndicator: FC<LiveIndicatorProps> = ({ isLive }) => {
   const notLiveTooltip = t('live-indicator-not-live-tooltip');
 
   return (
-    <Box mt={1}>
+    <Box
+      sx={{
+        mt: 1,
+      }}
+    >
       <Tooltip title={isLive ? liveTooltip : notLiveTooltip}>
         <TooltipIcon color={isLive ? 'green' : 'red'} />
       </Tooltip>

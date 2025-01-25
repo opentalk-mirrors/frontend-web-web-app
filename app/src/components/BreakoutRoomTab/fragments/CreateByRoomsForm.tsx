@@ -44,7 +44,13 @@ const CreateByRoomsForm = ({ handleNext, formName }: ICreateByRoomsFormProps) =>
   const ariaId = generateUniqueId();
 
   return (
-    <Stack spacing={2} direction="column" justifyContent="flex-start">
+    <Stack
+      spacing={2}
+      direction="column"
+      sx={{
+        justifyContent: 'flex-start',
+      }}
+    >
       <DurationFieldWrapper>
         <DurationField
           {...formikDurationFieldProps(getFormName('duration'), formik, 0)}

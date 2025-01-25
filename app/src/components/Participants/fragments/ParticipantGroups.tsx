@@ -56,7 +56,13 @@ const ParticipantGroups = (props: StackProps) => {
           />
           <Typography variant="caption">{groupId}</Typography>
         </AccordionButton>
-        <Box id={groupId} overflow="hidden" flex={isExpanded ? 1 : 0}>
+        <Box
+          id={groupId}
+          sx={{
+            overflow: 'hidden',
+            flex: isExpanded ? 1 : 0,
+          }}
+        >
           <ParticipantSimpleList participants={participants} />
         </Box>
       </Fragment>
@@ -66,7 +72,15 @@ const ParticipantGroups = (props: StackProps) => {
   }, [] as JSX.Element[]);
 
   return (
-    <Stack overflow="hidden" {...props}>
+    <Stack
+      {...props}
+      sx={[
+        {
+          overflow: 'hidden',
+        },
+        ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
+      ]}
+    >
       {Groups}
     </Stack>
   );

@@ -54,8 +54,22 @@ const DesktopHome = (props: DesktopHomeProps) => {
         </Typography>
         <NewMeetingButton />
       </HeaderContainer>
-      <Stack flexDirection="column" flex={1} spacing={12.5} justifyContent="space-between">
-        <Stack justifyContent="center" alignItems="center" spacing={1} paddingLeft={1}>
+      <Stack
+        spacing={12.5}
+        sx={{
+          flexDirection: 'column',
+          flex: 1,
+          justifyContent: 'space-between',
+        }}
+      >
+        <Stack
+          spacing={1}
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingLeft: 1,
+          }}
+        >
           <StartMeetingImage animated={animation} width={146} height={140} />
           <AdhocMeetingButton onHover={setAnimation} />
           <DesktopJoinMeetingDialog />

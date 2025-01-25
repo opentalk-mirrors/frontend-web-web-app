@@ -89,10 +89,30 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
   };
 
   return (
-    <Grid container rowSpacing={1.4} width="100%">
+    <Grid
+      container
+      rowSpacing={1.4}
+      sx={{
+        width: '100%',
+      }}
+    >
       <Grid item xs={12} style={{ scrollBehavior: 'smooth' }}>
-        <Box display="flex" alignItems="center" justifyContent="space-between" flex={1} gap={1}>
-          <Box display="flex" alignItems="center" gap={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flex: 1,
+            gap: 1,
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
             <ActiveStateChip
               size="medium"
               label={t(`ballot-overview-panel-status-${legalVote.state}`)}
@@ -165,14 +185,35 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
           </Fieldset>
         </Grid>
         {!isAllowedToVote && legalVote.allowedParticipants.length && (
-          <Grid item xs={12} container justifyContent="flex-start" mt={1}>
-            <Typography color="primary" textAlign="center">
+          <Grid
+            item
+            xs={12}
+            container
+            sx={{
+              justifyContent: 'flex-start',
+              mt: 1,
+            }}
+          >
+            <Typography
+              color="primary"
+              sx={{
+                textAlign: 'center',
+              }}
+            >
               {t('legal-vote-not-selected')}
             </Typography>
           </Grid>
         )}
         {isAllowedToVote && (
-          <Grid item xs={12} my={1} container justifyContent="stretch">
+          <Grid
+            item
+            xs={12}
+            container
+            sx={{
+              my: 1,
+              justifyContent: 'stretch',
+            }}
+          >
             <Button
               type="submit"
               disabled={isSubmitButtonDisabled}

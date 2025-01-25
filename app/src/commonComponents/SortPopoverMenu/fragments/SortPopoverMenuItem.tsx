@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MenuItemUnstyledProps } from '@mui/base';
-import { MenuItem, styled, Typography, SvgIcon } from '@mui/material';
+import { MenuItem, MenuItemOwnProps, styled, Typography, SvgIcon } from '@mui/material';
 import { KeyboardEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +21,7 @@ const DoneIconStyledWrapper = styled(SvgIcon, {
   '& svg': { fill: isActive ? theme.palette.primary.light : 'transparent' },
 }));
 
-interface SortPopoverMenuItemProps extends Omit<MenuItemUnstyledProps, 'onSelect'> {
+interface SortPopoverMenuItemProps extends Omit<MenuItemOwnProps, 'onSelect'> {
   i18nKey: string;
   selected?: boolean;
   value: string;

@@ -100,7 +100,14 @@ const NameTile = ({ displayName, ...props }: NameTileProps) => {
   return (
     <NameBox data-testid="nameTile" {...boxProps}>
       {renderIconBox()}
-      <Typography variant="body2" noWrap py={0} translate="no">
+      <Typography
+        variant="body2"
+        noWrap
+        translate="no"
+        sx={{
+          py: 0,
+        }}
+      >
         {displayName}
       </Typography>
     </NameBox>

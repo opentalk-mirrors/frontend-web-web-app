@@ -20,7 +20,13 @@ const GridItem = styled(Grid)({
 
 const Controls = ({ currentStepIndex, stepCount, handleNext, handlePrev }: IControlProps) => {
   return (
-    <Grid container spacing={1} justifyContent="space-between">
+    <Grid
+      container
+      spacing={1}
+      sx={{
+        justifyContent: 'space-between',
+      }}
+    >
       {!isFirstStep(currentStepIndex) && (
         <Grid item>
           <Button variant="text" size="small" onClick={handlePrev}>

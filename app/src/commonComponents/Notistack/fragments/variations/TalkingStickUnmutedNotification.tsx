@@ -32,7 +32,12 @@ export const TalkingStickUnmutedNotification = forwardRef(
                 : 'talking-stick-unmuted-notification'
             )}
           </NotificationHeading>
-          <Box display="flex" justifyContent="flex-end">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}
+          >
             {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
             <Button onClick={onNext} variant="contained" color="primary" autoFocus>
               {t('talking-stick-notification-next-speaker')}

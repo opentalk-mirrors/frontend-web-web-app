@@ -157,11 +157,22 @@ const DashboardTemplate = () => {
     return (
       <BrowserCompatibilityInfo>
         <Container maxWidth={false} disableGutters>
-          <Stack direction={{ xs: 'column', md: 'row' }} height="100%">
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            sx={{
+              height: '100%',
+            }}
+          >
             {isDesktop && (
               <LoadingNavbarContainer elevation={0}>
                 <Stack spacing={12}>
-                  <Grid container spacing={1} alignItems="center">
+                  <Grid
+                    container
+                    spacing={1}
+                    sx={{
+                      alignItems: 'center',
+                    }}
+                  >
                     <Grid item>
                       <Skeleton variant="circular" width={40} height={40} />
                     </Grid>
@@ -196,7 +207,12 @@ const DashboardTemplate = () => {
   return (
     <BrowserCompatibilityInfo>
       <Container maxWidth={false} disableGutters>
-        <Stack direction={{ xs: 'column', md: 'row' }} height="100%">
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          sx={{
+            height: '100%',
+          }}
+        >
           <DashboardNavigation routes={getRoutes(isProviderActive)} />
           <MainStack component={Main} spacing={{ xs: 2, md: 5 }} id="main-content-dashboard">
             {isDesktop && (

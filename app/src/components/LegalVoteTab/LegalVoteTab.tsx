@@ -34,7 +34,14 @@ const LegalVoteTab = ({ currentRoomMode }: ILegalVoteParams) => {
 
   const renderLegalVoteOverview = () => {
     return (
-      <Stack flex={1} spacing={1} padding={1} overflow="hidden">
+      <Stack
+        spacing={1}
+        sx={{
+          flex: 1,
+          overflow: 'hidden',
+          padding: 1,
+        }}
+      >
         <LegalVoteOverview onClickItem={handleOnClickSavedLegalVoteItem} />
         <Button onClick={() => setShowLegalVoteForm(true)}>{t('legal-vote-overview-button-create-vote')}</Button>
       </Stack>

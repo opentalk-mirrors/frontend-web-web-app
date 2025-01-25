@@ -498,11 +498,25 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
 
   return (
     <ListItem style={style} isMoreMenuOpen={open} isWhispering={isWhisperActive && isParticipantSelf}>
-      <Box display="flex" flexWrap="nowrap" alignItems="center" width="100%">
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'nowrap',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
         <ListItemAvatar>{renderAvatar()}</ListItemAvatar>
         <ListItemText
           primary={
-            <Typography variant="body1" noWrap translate="no" mb={0.5}>
+            <Typography
+              variant="body1"
+              noWrap
+              translate="no"
+              sx={{
+                mb: 0.5,
+              }}
+            >
               {participant?.displayName}
             </Typography>
           }

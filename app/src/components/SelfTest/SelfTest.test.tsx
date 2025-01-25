@@ -67,7 +67,13 @@ describe('SelfTest', () => {
     await render(
       <SelfTest>
         <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />
-        <Typography variant="h2" textAlign="center" component="h1">
+        <Typography
+          variant="h2"
+          component="h1"
+          sx={{
+            textAlign: 'center',
+          }}
+        >
           joinform-room-title
         </Typography>
       </SelfTest>,

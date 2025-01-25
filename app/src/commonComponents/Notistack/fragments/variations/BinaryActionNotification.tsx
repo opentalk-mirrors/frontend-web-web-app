@@ -96,21 +96,49 @@ const BinaryActionNotification = React.forwardRef<HTMLDivElement, BinaryActionNo
     return (
       <SnackbarContent ref={ref} role="alert" className={className} style={style}>
         <AlertBox type={type}>
-          <Box display="flex" gap={1} flex={1}>
-            <Box display="flex" flexDirection="column" flex={1}>
-              <Typography component="p" pt={1.5}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              flex: 1,
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+              }}
+            >
+              <Typography
+                component="p"
+                sx={{
+                  pt: 1.5,
+                }}
+              >
                 {message}
               </Typography>
             </Box>
             {closable && (
-              <Box alignSelf="end">
+              <Box
+                sx={{
+                  alignSelf: 'end',
+                }}
+              >
                 <IconButton aria-label={t('global-close')} onClick={() => closeSnackbar(id)}>
                   <CloseIcon />
                 </IconButton>
               </Box>
             )}
           </Box>
-          <Box display="flex" alignSelf="end" gap={1} pr={2}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignSelf: 'end',
+              gap: 1,
+              pr: 2,
+            }}
+          >
             {typeof onPrimary === 'function' && (
               <CustomButton
                 variant="contained"

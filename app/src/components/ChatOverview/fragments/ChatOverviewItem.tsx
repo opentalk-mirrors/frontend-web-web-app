@@ -60,7 +60,14 @@ const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
   const renderPrimaryText = () => (
     <Grid container direction="row" spacing={1}>
       <Grid item zeroMinWidth xs>
-        <Typography fontWeight={fontWeight} variant="body1" noWrap translate="no">
+        <Typography
+          variant="body1"
+          noWrap
+          translate="no"
+          sx={{
+            fontWeight: fontWeight,
+          }}
+        >
           {getDisplayName()}
         </Typography>
       </Grid>
@@ -73,7 +80,13 @@ const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
   );
 
   const renderSecondaryText = () => (
-    <Typography fontWeight={fontWeight} variant="body1" noWrap>
+    <Typography
+      variant="body1"
+      noWrap
+      sx={{
+        fontWeight: fontWeight,
+      }}
+    >
       {chat.lastMessage?.content || ''}
     </Typography>
   );

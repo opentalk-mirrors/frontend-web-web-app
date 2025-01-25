@@ -41,7 +41,11 @@ function AnimationTimerDown() {
   const currentOffset = initialOffset - (time * initialOffset) / 60;
 
   return (
-    <Box position="relative">
+    <Box
+      sx={{
+        position: 'relative',
+      }}
+    >
       <Time>{time}s</Time>
       <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
         <Circle

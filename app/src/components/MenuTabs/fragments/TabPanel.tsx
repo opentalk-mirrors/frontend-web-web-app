@@ -18,15 +18,17 @@ const TabPanel = ({ children, value, hidden }: TabPanelProps) => {
 
   return (
     <Box
-      flex={1}
-      display={hidden ? 'none' : 'flex'}
       role="tabpanel"
       id={`tabpanel-${value}`}
       aria-hidden={hidden}
       aria-labelledby={`tab-${value}`}
-      overflow="hidden"
-      mt={2}
-      minHeight={isMobile ? '60vh' : undefined}
+      sx={{
+        flex: 1,
+        display: hidden ? 'none' : 'flex',
+        overflow: 'hidden',
+        mt: 2,
+        minHeight: isMobile ? '60vh' : undefined,
+      }}
     >
       {!hidden && children}
     </Box>

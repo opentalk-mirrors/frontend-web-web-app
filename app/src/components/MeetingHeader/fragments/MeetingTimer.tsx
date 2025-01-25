@@ -52,7 +52,9 @@ const MeetingTimer = () => {
     <Container>
       <Typography
         variant="body2"
-        minWidth={renderedTime.length > MEETING_TIMER_UNDER_HOUR_FORMAT_LENGTH ? '5.5em' : '3.5em'}
+        sx={{
+          minWidth: renderedTime.length > MEETING_TIMER_UNDER_HOUR_FORMAT_LENGTH ? '5.5em' : '3.5em',
+        }}
       >
         {renderedTime}
       </Typography>

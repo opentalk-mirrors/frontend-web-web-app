@@ -92,10 +92,25 @@ const LegalVoteOverviewPanel = ({
 
   return (
     <MainContainer spacing={2}>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Box display="flex" alignItems="center">
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
           <VoteState state={state}>{t(`ballot-overview-panel-status-${state}`)}</VoteState>
-          <Typography ml={1}>{`${formattedStartTime}`}</Typography>
+          <Typography
+            sx={{
+              ml: 1,
+            }}
+          >{`${formattedStartTime}`}</Typography>
         </Box>
         {duration && duration > 0 && (
           <LegalVoteCountdown
@@ -122,9 +137,19 @@ const LegalVoteOverviewPanel = ({
         <TopicTypography variant="body2" align="center">
           {truncate(topic, { length: MAX_TOPIC_LENGTH })}
         </TopicTypography>
-        <Box display="flex" justifyContent="center" alignItems="center">
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <LegalBallotIcon />
-          <Typography ml={0.5}>
+          <Typography
+            sx={{
+              ml: 0.5,
+            }}
+          >
             {getVotedNumber()}/{allowedParticipants.length || 0}
           </Typography>
         </Box>

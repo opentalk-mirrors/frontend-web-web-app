@@ -28,7 +28,12 @@ export const TalkingStickMutedNotification = forwardRef(
             <DoneIcon aria-hidden="true" />
             {t('talking-stick-speaker-announcement')}
           </NotificationHeading>
-          <Box display="flex" gap={1}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+            }}
+          >
             {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
             <Button onClick={onUnmute} variant="contained" color="primary" fullWidth autoFocus>
               {t('talking-stick-notification-unmute')}

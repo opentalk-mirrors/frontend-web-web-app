@@ -167,7 +167,14 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   const displayName = ownMessage ? ownDisplayName : sender?.displayName;
   const isModerator = sender?.role === Role.Moderator;
   const renderNameAndTime = () => (
-    <Box display="flex" flexDirection={ownMessage ? 'row-reverse' : 'row'} alignItems="center" gap={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: ownMessage ? 'row-reverse' : 'row',
+        alignItems: 'center',
+        gap: 1,
+      }}
+    >
       <NameTypography
         noWrap
         isModerator={isModerator}
@@ -183,9 +190,23 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   );
 
   return (
-    <Box display="flex" flexDirection={ownMessage ? 'row-reverse' : 'row'} flex={1} gap={1} width="100%">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: ownMessage ? 'row-reverse' : 'row',
+        flex: 1,
+        gap: 1,
+        width: '100%',
+      }}
+    >
       <Avatar src={ownMessage ? ownAvatarUrl : sender?.avatarUrl}>{displayName}</Avatar>
-      <Stack gap={1} py={1} width="85%">
+      <Stack
+        sx={{
+          gap: 1,
+          py: 1,
+          width: '85%',
+        }}
+      >
         {renderNameAndTime()}
         <ContentTypography singleEmoji={isItSingleEmojiMessage()} variant="body2" align={ownMessage ? 'right' : 'left'}>
           <Linkify options={options}>{message.content}</Linkify>

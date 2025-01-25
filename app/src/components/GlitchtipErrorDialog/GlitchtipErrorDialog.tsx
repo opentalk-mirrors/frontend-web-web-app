@@ -147,7 +147,14 @@ const GlitchtipErrorDialog = () => {
 
   const renderFormContent = () => (
     <>
-      <Box display="flex" justifyContent="space-between" alignItems="center" pr={2.5}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          pr: 2.5,
+        }}
+      >
         <DialogTitle>{t('glitchtip-crash-report-title')}</DialogTitle>
         <IconButton aria-label={t('global-close-dialog')} onClick={handleCloseDialog}>
           <CloseIcon />
@@ -172,7 +179,12 @@ const GlitchtipErrorDialog = () => {
 
   const renderDataHasSentContent = () => (
     <>
-      <Box display="flex" justifyContent="space-between">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <DialogTitle>{t('glitchtip-crash-report-send-successful-title')}</DialogTitle>
         <IconButton aria-label={t('global-close-dialog')} onClick={handleCloseDialog}>
           <CloseIcon />
@@ -190,21 +202,22 @@ const GlitchtipErrorDialog = () => {
   return (
     <ThemeProvider theme={createOpenTalkTheme('light')}>
       <Dialog
-        TransitionProps={{
-          onExited: () => setDataHasBeenSent(false),
-        }}
-        open={showErrorDialog}
-        onBackdropClick={handleCloseDialog}
-        onClose={handleCloseDialog}
-        PaperProps={{
-          component: 'form',
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            formik.handleSubmit(event);
+        slotProps={{
+          transition: {
+            onExited: () => setDataHasBeenSent(false),
+          },
+          paper: {
+            component: 'form',
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+              event.preventDefault();
+              formik.handleSubmit(event);
+            },
           },
         }}
+        open={showErrorDialog}
+        onClose={handleCloseDialog}
         fullWidth
         maxWidth="md"
       >

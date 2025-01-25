@@ -37,7 +37,7 @@ export const ShortcutTable = () => {
 
   return (
     <TableContainer component={Paper}>
-      <Table padding="normal" summary={t('shortcut-table-summary')} tabIndex={0}>
+      <Table padding="normal" tabIndex={0}>
         <TableHead>
           <TableRow>
             <TableCell scope="col" id="shortcut-key">
@@ -55,7 +55,13 @@ export const ShortcutTable = () => {
                 <code>{shortcut.key}</code>
               </TableCell>
               <TableCell headers="shortcut-description">
-                <Typography fontWeight={300}>{shortcut.description}</Typography>
+                <Typography
+                  sx={{
+                    fontWeight: 300,
+                  }}
+                >
+                  {shortcut.description}
+                </Typography>
               </TableCell>
             </TableRow>
           ))}

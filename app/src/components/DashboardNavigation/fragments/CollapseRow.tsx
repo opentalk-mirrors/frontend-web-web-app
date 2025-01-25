@@ -13,7 +13,14 @@ interface CollapseRowProps {
 
 const CollapseRow = (props: CollapseRowProps) => {
   return (
-    <Box display="flex" justifyContent="space-between" paddingX={3} marginTop={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        paddingX: 3,
+        marginTop: 1,
+      }}
+    >
       <VersionBadge collapsed={props.collapsed} />
       <CollapseButton collapsed={props.collapsed} onClick={props.onChange} />
     </Box>

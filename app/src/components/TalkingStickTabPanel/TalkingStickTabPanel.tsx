@@ -64,10 +64,22 @@ const TalkingStickTabPanel = () => {
   };
 
   return (
-    <Stack spacing={2} flex={1} overflow="hidden">
+    <Stack
+      spacing={2}
+      sx={{
+        flex: 1,
+        overflow: 'hidden',
+      }}
+    >
       {!isAutomodActive && (
         <Stack spacing={2}>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography>{t('sort-label')}</Typography>
             {/* Component auto closes when selected sort type changes. */}
             <TalkingStickSortButton
@@ -76,8 +88,21 @@ const TalkingStickTabPanel = () => {
               onChange={setSelectedSortType}
             />
           </Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography id={INCLUDE_MODERATOR_ID} fontWeight="normal" component="span" sx={{ marginRight: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Typography
+              id={INCLUDE_MODERATOR_ID}
+              component="span"
+              sx={{
+                fontWeight: 'normal',
+                marginRight: 1,
+              }}
+            >
               {t('talking-stick-include-moderator-switch')}
             </Typography>
             <Switch
@@ -90,7 +115,12 @@ const TalkingStickTabPanel = () => {
           </Box>
         </Stack>
       )}
-      <Stack overflow="hidden" flex={1}>
+      <Stack
+        sx={{
+          overflow: 'hidden',
+          flex: 1,
+        }}
+      >
         <TalkingStickParticipantList participants={isAutomodActive ? activeParticipants : sortedParticipants} />
       </Stack>
       <Stack>
@@ -99,7 +129,12 @@ const TalkingStickTabPanel = () => {
             {t('global-start-now')}
           </Button>
         ) : (
-          <Stack flexDirection="column" spacing={1}>
+          <Stack
+            spacing={1}
+            sx={{
+              flexDirection: 'column',
+            }}
+          >
             <Button type="button" onClick={handleSkipSpeaker}>
               {t('talking-stick-skip-speaker')}
             </Button>

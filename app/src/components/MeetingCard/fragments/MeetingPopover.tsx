@@ -211,7 +211,11 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
   };
 
   return (
-    <Stack flexDirection="row">
+    <Stack
+      sx={{
+        flexDirection: 'row',
+      }}
+    >
       <MoreButton
         color="inherit"
         aria-label={t('toolbar-button-more-tooltip-title')}

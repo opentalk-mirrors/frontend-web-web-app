@@ -29,8 +29,20 @@ function SearchAndSelectParticipantsTab({
   const { t } = useTranslation();
 
   return (
-    <Stack flex={1} spacing={2} overflow="hidden">
-      <Box display="flex" justifyContent="space-between" gap={2}>
+    <Stack
+      spacing={2}
+      sx={{
+        flex: 1,
+        overflow: 'hidden',
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: 2,
+        }}
+      >
         <Button onClick={handleAllClick} fullWidth>
           {t('global-all')}
         </Button>
@@ -39,7 +51,11 @@ function SearchAndSelectParticipantsTab({
         </Button>
       </Box>
       <SearchInput searchValue={searchValue} onSearch={handleSearchChange} />
-      <Box overflow="auto">
+      <Box
+        sx={{
+          overflow: 'auto',
+        }}
+      >
         <SelectParticipantsList participantsList={participantsList} onCheck={handleSelectParticipant} />
       </Box>
     </Stack>

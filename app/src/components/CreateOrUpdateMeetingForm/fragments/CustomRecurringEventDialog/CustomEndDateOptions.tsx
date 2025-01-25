@@ -62,7 +62,14 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
           onClick={() => handleClick(EndOption.Never)}
         />
       </Grid>
-      <Grid container item alignItems="center" flexWrap="nowrap">
+      <Grid
+        container
+        item
+        sx={{
+          alignItems: 'center',
+          flexWrap: 'nowrap',
+        }}
+      >
         <Grid item>
           <FormControlLabel
             value={EndOption.OnDate}
@@ -71,7 +78,12 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
             onClick={() => handleClick(EndOption.OnDate)}
           />
         </Grid>
-        <Grid item flexShrink={1}>
+        <Grid
+          item
+          sx={{
+            flexShrink: 1,
+          }}
+        >
           <PickerLocalizationProvider>
             <DatePicker
               value={rRuleObject.until ?? minDate}

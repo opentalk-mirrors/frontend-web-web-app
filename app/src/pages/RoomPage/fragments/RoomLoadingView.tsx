@@ -46,7 +46,12 @@ const RoomLoadingView = () => {
 
   return (
     <Container>
-      <Stack spacing={2} alignItems="center">
+      <Stack
+        spacing={2}
+        sx={{
+          alignItems: 'center',
+        }}
+      >
         {connectionState === ConnectionState.Failed ? (
           <ReconnectionDialog />
         ) : (

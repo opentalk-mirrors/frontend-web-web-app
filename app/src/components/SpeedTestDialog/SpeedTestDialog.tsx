@@ -272,7 +272,12 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
         aria-labelledby="speed-meter-title"
         open={isDialogOpen}
       >
-        <Box display="flex" justifyContent="space-between">
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
           <DialogTitle id="speed-meter-title">{t('speed-meter-title')}</DialogTitle>
 
           <CloseIconButton aria-label={t('global-close-dialog')} onClick={handleCloseDialog} size="small">
@@ -281,7 +286,14 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
         </Box>
 
         <Grid container>
-          <Grid container direction="column" alignItems="center" spacing={2}>
+          <Grid
+            container
+            direction="column"
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <IconContainer
               item
               container

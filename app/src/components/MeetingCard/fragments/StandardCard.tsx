@@ -85,13 +85,28 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
       <Collapse in={isFavorite} data-testid={`favorite-icon${isFavorite ? '-visible' : ''}`}>
         <FavoriteIcon type="functional" title={t('global-favorite')} titleId={uniqueId('favorite-icon-')} />
       </Collapse>
-      <Grid container alignItems="flex-end" justifyContent="space-between" spacing={2}>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+        }}
+      >
         <Grid item>
           <Stack spacing={2}>
             {renderTimeString()}
 
             <Tooltip translate="no" title={title || ''} describeChild placement="bottom-start">
-              <Typography variant="h1" component="h3" fontWeight={600} noWrap whiteSpace="normal">
+              <Typography
+                variant="h1"
+                component="h3"
+                noWrap
+                sx={{
+                  fontWeight: 600,
+                  whiteSpace: 'normal',
+                }}
+              >
                 {title}
               </Typography>
             </Tooltip>

@@ -42,7 +42,12 @@ const TimeLimitNotification = forwardRef<HTMLDivElement, TimeLimitNotificationPr
   return (
     <SnackbarContent ref={ref} role="alert">
       <BoxContent>
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
           <FeedbackIcon />
         </Box>
         <BoxInteractive>

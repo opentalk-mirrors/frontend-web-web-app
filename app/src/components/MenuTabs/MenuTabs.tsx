@@ -64,7 +64,7 @@ const Tab = styled(MuiTab)(({ theme }) => ({
     backgroundColor: theme.palette.secondary.main,
     color: theme.palette.text.secondary,
   },
-  '& .MuiTab-iconWrapper': {
+  '& .MuiTab-icon': {
     marginLeft: theme.spacing(0.2),
   },
 }));

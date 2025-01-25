@@ -92,7 +92,16 @@ const InviteToMeeting = ({
     : t('dashboard-direct-meeting-label-select-participants-fallback');
 
   return (
-    <Grid container justifyContent="space-between" direction="column" spacing={2} overflow="auto" wrap="nowrap">
+    <Grid
+      container
+      direction="column"
+      spacing={2}
+      wrap="nowrap"
+      sx={{
+        justifyContent: 'space-between',
+        overflow: 'auto',
+      }}
+    >
       <Grid container item spacing={3} direction="row">
         <MeetingLinksAndPasswords event={existingEvent} />
         {!showOnlyLinkFields && features.userSearch && (
@@ -122,7 +131,14 @@ const InviteToMeeting = ({
         )}
       </Grid>
       {!showOnlyLinkFields && (
-        <Grid container item spacing={2} justifyContent={{ xs: 'center', sm: 'space-between' }}>
+        <Grid
+          container
+          item
+          spacing={2}
+          sx={{
+            justifyContent: { xs: 'center', sm: 'space-between' },
+          }}
+        >
           <Grid item xs={12} sm="auto">
             {onBackButtonClick && (
               <StepButton variant="text" color="secondary" startIcon={<BackIcon />} onClick={onBackButtonClick}>
@@ -136,8 +152,10 @@ const InviteToMeeting = ({
             xs={12}
             sm="auto"
             spacing={3}
-            flexDirection={{ xs: 'column-reverse', sm: 'row' }}
-            padding={1}
+            sx={{
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+              padding: 1,
+            }}
           >
             <Grid item>
               <Button fullWidth color="secondary" variant="outlined" onClick={handleCancelMeetingPress}>

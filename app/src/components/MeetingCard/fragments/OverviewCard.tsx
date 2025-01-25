@@ -126,14 +126,24 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
       const endDate = new Date(event.endsAt.datetime);
 
       return (
-        <Typography variant="body1" fontWeight={400}>
+        <Typography
+          variant="body1"
+          sx={{
+            fontWeight: 400,
+          }}
+        >
           <EventTimePreview startDate={startDate} endDate={endDate} />
         </Typography>
       );
     }
 
     return (
-      <Typography variant="body1" fontWeight={400}>
+      <Typography
+        variant="body1"
+        sx={{
+          fontWeight: 400,
+        }}
+      >
         {t('dashboard-meeting-card-time-independent')}
       </Typography>
     );
@@ -142,7 +152,11 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
   const getActionButtons = () => {
     if ((event as Event).inviteStatus === 'pending') {
       return (
-        <Stack flexDirection="row">
+        <Stack
+          sx={{
+            flexDirection: 'row',
+          }}
+        >
           <DeclineButton
             color="secondary"
             variant="outlined"
@@ -224,21 +238,49 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
     >
-      <Grid item margin="auto" xs="auto" sm={1}>
+      <Grid
+        item
+        xs="auto"
+        sm={1}
+        sx={{
+          margin: 'auto',
+        }}
+      >
         {getIcons()}
       </Grid>
-      <Grid item margin="auto" xs={12} sm={3}>
+      <Grid
+        item
+        xs={12}
+        sm={3}
+        sx={{
+          margin: 'auto',
+        }}
+      >
         {getTimePreview()}
       </Grid>
-      <Grid item margin="auto" xs={16} sm={3}>
+      <Grid
+        item
+        xs={16}
+        sm={3}
+        sx={{
+          margin: 'auto',
+        }}
+      >
         <Tooltip translate="no" title={title || ''} describeChild placement="bottom-start">
-          <TitleTypography maxWidth="50ch" variant="body1" noWrap as="h2">
+          <TitleTypography maxWidth="50ch" variant="body1" noWrap as="h3">
             {title}
           </TitleTypography>
         </Tooltip>
       </Grid>
       <Hidden xsDown>
-        <Grid item margin="auto" xs={16} sm={3}>
+        <Grid
+          item
+          xs={16}
+          sm={3}
+          sx={{
+            margin: 'auto',
+          }}
+        >
           <MaxWidthTypography maxWidth="50ch" variant="body1" fontWeight={400} noWrap translate="no">
             {t('dashboard-home-created-by', { author: createdBy.displayName })}
           </MaxWidthTypography>
@@ -248,12 +290,14 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
         item
         xs={16}
         sm={4}
-        display="flex"
-        alignItems="center"
-        gap={2}
-        justifyContent="flex-end"
-        paddingRight={0}
-        textAlign="end"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          justifyContent: 'flex-end',
+          paddingRight: 0,
+          textAlign: 'end',
+        }}
       >
         {getActionButtons()}
       </Grid>
