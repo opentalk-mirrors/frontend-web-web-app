@@ -28,6 +28,10 @@ interface MuteNotification {
   origin: ParticipantId;
 }
 
+export interface BackgroundEffect extends BackgroundConfig {
+  loading?: boolean;
+}
+
 interface MediaState {
   qualityCap: VideoSetting;
   upstreamLimit: VideoSetting;
@@ -37,7 +41,7 @@ interface MediaState {
   videoDeviceId?: string;
   audioEnabled: boolean;
   audioDeviceId?: string;
-  videoBackgroundEffects: BackgroundConfig & { loading?: boolean };
+  videoBackgroundEffects: BackgroundEffect;
 }
 
 export const initialState: MediaState = {

@@ -8,7 +8,6 @@ import { CameraOffIcon, CameraOnIcon } from '../../../assets/icons';
 import { SuspenseLoading, showConsentNotification } from '../../../commonComponents';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useManageVideoEffect } from '../../../hooks/useManageVideoEffect';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { selectVideoEnabled, setVideoEnabled } from '../../../store/slices/mediaSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
@@ -24,8 +23,6 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
   const askConsent = useAppSelector(selectNeedRecordingConsent);
   const dispatch = useAppDispatch();
   const videoEnabled = useAppSelector(selectVideoEnabled);
-
-  !isLobby && useManageVideoEffect();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);

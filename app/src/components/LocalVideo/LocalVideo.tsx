@@ -1,19 +1,25 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { VideoTrack, useTracks } from '@livekit/components-react';
+import { VideoTrack, useRoomContext, useTracks } from '@livekit/components-react';
 import { CircularProgress, Grid, Typography, styled } from '@mui/material';
-import { Track } from 'livekit-client';
+import { ConnectionState, LocalVideoTrack, Track } from 'livekit-client';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PinIcon } from '../../assets/icons';
 import { NameTile } from '../../commonComponents';
-import { useAppSelector } from '../../hooks';
-import { selectAudioEnabled, selectVideoEnabled, selectVideoBackgroundEffects } from '../../store/slices/mediaSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import {
+  selectAudioEnabled,
+  selectVideoEnabled,
+  selectVideoBackgroundEffects,
+  selectVideoDeviceId,
+} from '../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
 import { selectDisplayName } from '../../store/slices/userSlice';
+import { applyBackgroundEffectToTrack } from '../../utils/applyBackgroundEffect';
 import { OverlayIconButton } from '../ParticipantWindow/fragments/OverlayIconButton';
 
 type PropsType = VideoHTMLAttributes<HTMLVideoElement>;
@@ -79,10 +85,12 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   const videoEnabled = useAppSelector(selectVideoEnabled);
   const audioEnabled = useAppSelector(selectAudioEnabled);
   const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
-
+  const videoDeviceId = useAppSelector(selectVideoDeviceId);
   const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoThumbnailRef = useRef<HTMLVideoElement>(null);
+  const room = useRoomContext();
+  const dispatch = useAppDispatch();
 
   const displayName = useAppSelector(selectDisplayName);
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
@@ -111,6 +119,24 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
       refObject.current.playsInline = true;
     }
   }, []);
+
+  useEffect(() => {
+    if (room?.state === ConnectionState.Connected) {
+      room?.localParticipant.setCameraEnabled(videoEnabled);
+      applyBackgroundEffectToTrack(
+        videoTrackRef?.publication.videoTrack as LocalVideoTrack,
+        videoBackgroundEffects,
+        dispatch
+      );
+    }
+  }, [
+    room?.state,
+    videoEnabled,
+    videoTrackRef?.publication.videoTrack,
+    videoBackgroundEffects.style,
+    videoBackgroundEffects.imageUrl,
+    videoDeviceId,
+  ]);
 
   const detachVideo = useCallback((refObject: RefObject<HTMLVideoElement>) => {
     if (refObject.current !== null) {
