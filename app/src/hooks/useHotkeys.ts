@@ -10,10 +10,10 @@ import { useAppSelector } from '.';
 import { pass } from '../api/types/outgoing/automod';
 import { showConsentNotification } from '../commonComponents';
 import { useFullscreenContext } from '../hooks/useFullscreenContext';
-import { useMediaChoices } from '../provider/MediaChoicesProvider';
 import { selectIsUserMicDisabled } from '../store/selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker } from '../store/slices/automodSlice';
 import { selectEnabledModulesList } from '../store/slices/configSlice';
+import { selectAudioEnabled, selectVideoEnabled, setAudioEnabled, setVideoEnabled } from '../store/slices/mediaSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../store/slices/streamingSlice';
 import { selectSubroomAudioState, setIsWhisperActive } from '../store/slices/subroomAudioSlice';
@@ -72,8 +72,8 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   const { devices: audioDevices } = useMediaDeviceSelect({ kind: 'audioinput', requestPermissions: false });
   const { devices: videoDevices } = useMediaDeviceSelect({ kind: 'videoinput', requestPermissions: false });
 
-  const mediaChoices = useMediaChoices();
-  const audioEnabled = mediaChoices?.userChoices.audioEnabled || false;
+  const audioEnabled = useAppSelector(selectAudioEnabled);
+  const videoEnabled = useAppSelector(selectVideoEnabled);
 
   const { startMedia } = useMediaDevice({
     kind: 'audioinput',
@@ -81,7 +81,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
 
   const toggleAudio = useCallback(
     async (forcedState?: boolean) => {
-      if (askConsent && !mediaChoices?.userChoices.audioEnabled) {
+      if (askConsent && !audioEnabled) {
         const consent = await showConsentNotification(dispatch);
         if (!consent) {
           return;
@@ -92,18 +92,10 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
         forcedState !== undefined ? forcedState : !(audioEnabled || room?.localParticipant.isMicrophoneEnabled);
 
       await startMedia(shouldEnable);
-      mediaChoices?.saveAudioInputEnabled(shouldEnable);
+      dispatch(setAudioEnabled(shouldEnable));
       room?.localParticipant.setMicrophoneEnabled(shouldEnable);
     },
-    [
-      askConsent,
-      audioEnabled,
-      dispatch,
-      mediaChoices?.saveAudioInputEnabled,
-      mediaChoices?.userChoices.audioEnabled,
-      room,
-      startMedia,
-    ]
+    [askConsent, audioEnabled, dispatch, room, startMedia]
   );
 
   const pushToWhisper = useCallback(
@@ -135,15 +127,14 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   );
 
   const toggleVideo = useCallback(async () => {
-    if (askConsent && !mediaChoices?.userChoices.videoEnabled) {
+    if (askConsent && !videoEnabled) {
       const consent = await showConsentNotification(dispatch);
       if (!consent) {
         return;
       }
     }
-
-    mediaChoices?.saveVideoInputEnabled(!mediaChoices?.userChoices.videoEnabled);
-  }, [mediaChoices?.saveVideoInputEnabled, mediaChoices?.userChoices.videoEnabled, askConsent, dispatch]);
+    dispatch(setVideoEnabled(!videoEnabled));
+  }, [videoEnabled, askConsent, dispatch]);
 
   // Push-to-talk function shall work ONLY if the user is muted (audio is disabled)
   // On keydown we start the push-to-talk mode and unmute the user,

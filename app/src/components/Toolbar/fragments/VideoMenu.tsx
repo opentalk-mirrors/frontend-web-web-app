@@ -24,10 +24,13 @@ import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import useMediaDevice from '../../../hooks/useMediaDevice';
-import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
 import { selectVideoBackgrounds } from '../../../store/slices/configSlice';
 import { selectQualityCap, setDisableRemoteVideos } from '../../../store/slices/livekitSlice';
-import { selectVideoBackgroundEffects, setBackgroundEffects } from '../../../store/slices/mediaSlice';
+import {
+  selectVideoBackgroundEffects,
+  selectVideoDeviceId,
+  setBackgroundEffects,
+} from '../../../store/slices/mediaSlice';
 import { mirroredVideoSet, selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
 import { VideoSetting } from '../../../types';
 import { DeviceId } from '../../../types/device';
@@ -98,9 +101,9 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const fullscreenHandle = useFullscreenContext();
-  const mediaChoices = useMediaChoices();
 
-  const backgroundEffects = useAppSelector(selectVideoBackgroundEffects);
+  const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
+  const videoDeviceId = useAppSelector(selectVideoDeviceId);
   const mirroringEnabled = useAppSelector(selectMirroredVideoEnabled);
   const videoBackgrounds = useAppSelector(selectVideoBackgrounds);
   const qualityCap = useAppSelector(selectQualityCap);
@@ -129,11 +132,9 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [devices]);
 
-  const selectedDeviceId = mediaChoices?.userChoices.videoDeviceId;
-
   const isBackgroundAndBlurringSupported = ProcessorWrapper.isSupported;
 
-  const isBlurred = backgroundEffects.style === 'blur';
+  const isBlurred = videoBackgroundEffects.style === 'blur';
 
   const setBlur = (enabled: boolean) => {
     dispatch(setBackgroundEffects({ style: enabled ? 'blur' : 'off' }));
@@ -144,7 +145,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
   const toggleMirroring = () => dispatch(mirroredVideoSet(!mirroringEnabled));
 
   const handleClick = async (deviceId: DeviceId) => {
-    if (deviceId !== mediaChoices?.userChoices.videoDeviceId) {
+    if (deviceId !== videoDeviceId) {
       await startMedia(false, deviceId);
     }
   };
@@ -194,7 +195,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
         ) : (
           <DeviceList
             devices={sortedDevices}
-            selectedDevice={selectedDeviceId as DeviceId | undefined}
+            selectedDevice={videoDeviceId as DeviceId | undefined}
             onClick={handleClick}
             ariaLabelId="video-menu-title"
           />
@@ -230,7 +231,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
                 control={<Switch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />}
                 label={<Typography fontWeight="normal">{t('videomenu-blur')}</Typography>}
                 labelPlacement="start"
-                disabled={backgroundEffects.loading}
+                disabled={videoBackgroundEffects.loading}
               />
             )}
             <FormControlLabel
@@ -249,22 +250,22 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
             </Typography>
             <BackgroundImageList aria-labelledby="background-images-title" role="listbox">
               <BackgroundImageItem
-                disabled={backgroundEffects.loading}
+                disabled={videoBackgroundEffects.loading}
                 onClick={() => setBlur(false)}
                 aria-label={t('videomenu-background-no-image')}
               >
-                <ClearBackground variant="square" active={backgroundEffects.style === 'off'}>
+                <ClearBackground variant="square" active={videoBackgroundEffects.style === 'off'}>
                   <CloseIcon />
                 </ClearBackground>
               </BackgroundImageItem>
               {videoBackgrounds.map((image) => {
-                const selectedEnabled = backgroundEffects.imageUrl === image.url;
+                const selectedEnabled = videoBackgroundEffects.imageUrl === image.url;
                 return (
                   <BackgroundImageItem
                     key={image.url}
                     onClick={() => (!selectedEnabled ? setImageBackground(image.url) : setBlur(false))}
                     aria-label={image.altText}
-                    disabled={backgroundEffects.loading}
+                    disabled={videoBackgroundEffects.loading}
                   >
                     <VideoBackgroundImage
                       src={image.thumb}

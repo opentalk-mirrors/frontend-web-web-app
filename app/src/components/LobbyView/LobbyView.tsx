@@ -23,9 +23,9 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
-import { useMediaChoices } from '../../provider/MediaChoicesProvider';
 import { startRoom } from '../../store/commonActions';
 import { selectDisallowCustomDisplayName, selectFeatures } from '../../store/slices/configSlice';
+import { setAudioAndVideoEnabled } from '../../store/slices/mediaSlice';
 import {
   ConnectionState,
   InviteCodeErrorEnum,
@@ -99,7 +99,6 @@ const DISPLAY_NAME_MAX_CHARACTERS = 100;
 
 const LobbyView = () => {
   const { t } = useTranslation();
-  const mediaChoices = useMediaChoices();
 
   const dispatch = useAppDispatch();
   const inviteState = useAppSelector(selectInviteState);
@@ -141,11 +140,6 @@ const LobbyView = () => {
     }
   }, [inviteCode]);
 
-  useEffect(() => {
-    mediaChoices?.saveAudioInputEnabled(false);
-    mediaChoices?.saveVideoInputEnabled(false);
-  }, [mediaChoices?.saveAudioInputEnabled, mediaChoices?.saveVideoInputEnabled]);
-
   //Cleans up wrong password notification on dismount
   useEffect(() => {
     return () => {
@@ -174,8 +168,7 @@ const LobbyView = () => {
   const enterRoom = useCallback(
     async (displayName: string, password: string) => {
       if (joinWithoutMedia) {
-        mediaChoices?.saveAudioInputEnabled(false);
-        mediaChoices?.saveVideoInputEnabled(false);
+        dispatch(setAudioAndVideoEnabled({ audio: false, video: false }));
       }
 
       return dispatch(
@@ -227,7 +220,7 @@ const LobbyView = () => {
           }
         });
     },
-    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, mediaChoices, joinWithoutMedia]
+    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia]
   );
 
   const formik = useFormik({

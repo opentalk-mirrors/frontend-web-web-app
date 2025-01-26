@@ -6,9 +6,20 @@ import { useMaybeRoomContext, useMediaDeviceSelect } from '@livekit/components-r
 import { Room } from 'livekit-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { batch } from 'react-redux';
 
+import { useAppDispatch, useAppSelector } from '.';
 import { notifications } from '../commonComponents';
-import { useMediaChoices } from '../provider/MediaChoicesProvider';
+import {
+  selectAudioEnabled,
+  selectVideoEnabled,
+  selectVideoDeviceId,
+  selectAudioDeviceId,
+  setAudioDeviceId,
+  setAudioEnabled,
+  setVideoDeviceId,
+  setVideoEnabled,
+} from '../store/slices/mediaSlice';
 
 interface MediaPermissionsConstraints {
   kind: MediaDeviceKind;
@@ -20,11 +31,15 @@ media permissions for a specific kind of media device (audio input or video inpu
 utilizes the `navigator.mediaDevices.getUserMedia` method to request access to the user's
 media devices based on the specified constraints. */
 const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
-  const mediaChoices = useMediaChoices();
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const [permissionDenied, setPermissionDenied] = useState<boolean | 'pending'>(false);
   const [localDevices, setLocalDevices] = useState<MediaDeviceInfo[]>([]);
   const room = useMaybeRoomContext();
+  const audioEnabled = useAppSelector(selectAudioEnabled);
+  const videoEnabled = useAppSelector(selectVideoEnabled);
+  const videoDeviceId = useAppSelector(selectVideoDeviceId);
+  const audioDeviceId = useAppSelector(selectAudioDeviceId);
 
   const { devices, setActiveMediaDevice } = useMediaDeviceSelect({
     kind,
@@ -37,10 +52,10 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
     stream.getVideoTracks()?.[0].getSettings().deviceId?.toString();
 
   const getVideoContraints = (deviceId?: string) => ({
-    video: { deviceId: deviceId || mediaChoices?.userChoices.videoDeviceId },
+    video: { deviceId: deviceId || videoDeviceId },
   });
   const getAudioContraints = (deviceId?: string) => ({
-    audio: { deviceId: deviceId || mediaChoices?.userChoices.audioDeviceId },
+    audio: { deviceId: deviceId || audioDeviceId },
   });
 
   const getMediaConstraints = (deviceId?: string) =>
@@ -51,8 +66,8 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
       let selectedDeviceId: string | undefined;
       if (
         enableMediaInput ||
-        mediaChoices?.userChoices.audioEnabled ||
-        mediaChoices?.userChoices.videoEnabled ||
+        audioEnabled ||
+        videoEnabled ||
         (devices.length !== localDevices.length && devices.length > 0)
       ) {
         const constraints = getMediaConstraints(deviceId);
@@ -68,11 +83,15 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
 
       if (selectedDeviceId) {
         if (kind === 'audioinput') {
-          mediaChoices?.saveAudioInputDeviceId(selectedDeviceId);
-          !mediaChoices?.userChoices.audioEnabled && mediaChoices?.saveAudioInputEnabled(enableMediaInput);
+          batch(() => {
+            dispatch(setAudioDeviceId(selectedDeviceId));
+            !audioEnabled && dispatch(setAudioEnabled(enableMediaInput));
+          });
         } else {
-          mediaChoices?.saveVideoInputDeviceId(selectedDeviceId);
-          !mediaChoices?.userChoices.videoEnabled && mediaChoices?.saveVideoInputEnabled(enableMediaInput);
+          batch(() => {
+            dispatch(setVideoDeviceId(selectedDeviceId));
+            !videoEnabled && dispatch(setVideoEnabled(enableMediaInput));
+          });
         }
         room && (await setActiveMediaDevice(selectedDeviceId));
       }
@@ -113,12 +132,11 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
   const startMedia = async (enableMediaInput: boolean, deviceId?: string) => {
     setPermissionDenied('pending');
 
-    const userMediaChoiceId =
-      kind === 'audioinput' ? mediaChoices?.userChoices.audioDeviceId : mediaChoices?.userChoices.videoDeviceId;
+    const userMediaChoiceId = kind === 'audioinput' ? audioDeviceId : videoDeviceId;
     const success = await isMediaStartSuccessful(enableMediaInput, deviceId ?? userMediaChoiceId);
     if (success) return;
 
-    loadLocalDevices(kind);
+    await loadLocalDevices(kind);
     setPermissionDenied(false);
     notifications.warning(t('device-unable-to-start', { mediaType: kind }), {
       preventDuplicate: true,

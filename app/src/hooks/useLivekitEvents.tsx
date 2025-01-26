@@ -20,14 +20,24 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '.';
 import { notifications } from '../commonComponents';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../constants';
-import { useMediaChoices } from '../provider/MediaChoicesProvider';
+import {
+  selectAudioEnabled,
+  selectVideoEnabled,
+  selectAudioDeviceId,
+  selectVideoDeviceId,
+  setAudioEnabled,
+  setVideoEnabled,
+} from '../store/slices/mediaSlice';
 import { pinnedParticipantIdSet, pinnedRemoteScreenshare, selectPinnedParticipantId } from '../store/slices/uiSlice';
 import { updateLastActive } from '../store/slices/userSlice';
 import { ParticipantId } from '../types';
 
 const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   const { t } = useTranslation();
-  const mediaChoices = useMediaChoices();
+  const audioEnabled = useAppSelector(selectAudioEnabled);
+  const videoEnabled = useAppSelector(selectVideoEnabled);
+  const videoDeviceId = useAppSelector(selectVideoDeviceId);
+  const audioDeviceId = useAppSelector(selectAudioDeviceId);
 
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
   const dispatch = useAppDispatch();
@@ -56,22 +66,21 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
 
       switch (pub.source) {
         case Track.Source.Camera:
-          mediaChoices?.saveVideoInputEnabled(room.localParticipant.isCameraEnabled);
+          dispatch(setVideoEnabled(room.localParticipant.isCameraEnabled));
           break;
 
         case Track.Source.Microphone: {
           if (!isWhisperRoom) {
             let isMicrophoneEnabled = room.localParticipant.isMicrophoneEnabled;
             // Participants are only set at unmute events
-            const audioEnabledByUserChoice = mediaChoices?.userChoices?.audioEnabled || enableAudio;
+            const audioEnabledByUserChoice = audioEnabled || enableAudio;
 
             // If user explicitly disabled audio, override the participant's microphone state
             if (audioEnabledByUserChoice !== undefined && !audioEnabledByUserChoice) {
               isMicrophoneEnabled = false;
               room.localParticipant.setMicrophoneEnabled(false);
             }
-
-            mediaChoices?.saveAudioInputEnabled(isMicrophoneEnabled);
+            dispatch(setAudioEnabled(isMicrophoneEnabled));
           }
           break;
         }
@@ -81,7 +90,7 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
           break;
       }
     },
-    [mediaChoices, isWhisperRoom, room.localParticipant, dispatch]
+    [audioEnabled, isWhisperRoom, room.localParticipant, dispatch]
   );
 
   const localParticipant = room.localParticipant;
@@ -117,20 +126,23 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   // Listener to maintain camera and microphone state between room transitions (layout-meetingView, meetingView-breakoutrooms)
   const handleRoomConnected = useCallback(() => {
     if (room.engine && !room.engine.isClosed) {
-      if (mediaChoices?.userChoices.videoEnabled !== localParticipant.isCameraEnabled) {
-        localParticipant.setCameraEnabled(true, { deviceId: mediaChoices?.userChoices.videoDeviceId });
+      if (videoEnabled !== localParticipant.isCameraEnabled) {
+        localParticipant.setCameraEnabled(true, { deviceId: videoDeviceId });
       }
-      if (mediaChoices?.userChoices.audioEnabled !== localParticipant.isMicrophoneEnabled) {
-        localParticipant.setMicrophoneEnabled(true, { deviceId: mediaChoices?.userChoices.audioDeviceId });
+      if (audioEnabled !== localParticipant.isMicrophoneEnabled) {
+        localParticipant.setMicrophoneEnabled(true, { deviceId: audioDeviceId });
       }
     }
   }, [
     localParticipant.isCameraEnabled,
-    mediaChoices?.userChoices,
     localParticipant.isMicrophoneEnabled,
     localParticipant.setCameraEnabled,
     localParticipant.setMicrophoneEnabled,
     room.engine,
+    videoDeviceId,
+    audioDeviceId,
+    videoEnabled,
+    audioEnabled,
   ]);
 
   const handleTrackSubscribed = useCallback(

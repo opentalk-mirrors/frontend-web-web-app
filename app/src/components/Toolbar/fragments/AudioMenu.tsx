@@ -7,9 +7,10 @@ import { useTranslation } from 'react-i18next';
 
 import { ErrorIcon, MicOnIcon, WarningIcon } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
+import { useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import useMediaDevice from '../../../hooks/useMediaDevice';
-import { useMediaChoices } from '../../../provider/MediaChoicesProvider';
+import { selectAudioDeviceId } from '../../../store/slices/mediaSlice';
 import { DeviceId } from '../../../types/device';
 import DeviceList from './DeviceList';
 import { MenuSectionTitle, ToolbarMenu, ToolbarMenuProps } from './ToolbarMenuUtils';
@@ -20,7 +21,7 @@ const MultilineTypography = styled(Typography)({
 
 const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const { t } = useTranslation();
-  const mediaChoices = useMediaChoices();
+  const audioDeviceId = useAppSelector(selectAudioDeviceId);
   const {
     startMedia,
     localDevices: devices,
@@ -43,12 +44,10 @@ const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [devices]);
 
-  const selectedDeviceId = mediaChoices?.userChoices.audioDeviceId;
-
   const fullscreenHandle = useFullscreenContext();
 
   const handleClick = async (deviceId: DeviceId) => {
-    if (deviceId !== mediaChoices?.userChoices.audioDeviceId) {
+    if (deviceId !== audioDeviceId) {
       await startMedia(false, deviceId);
     }
   };
@@ -99,7 +98,7 @@ const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         ) : (
           <DeviceList
             devices={filteredDevices}
-            selectedDevice={selectedDeviceId as DeviceId | undefined}
+            selectedDevice={audioDeviceId as DeviceId | undefined}
             onClick={handleClick}
             ariaLabelId="audio-menu-title"
           />

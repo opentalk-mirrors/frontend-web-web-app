@@ -11,8 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { PinIcon } from '../../assets/icons';
 import { NameTile } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
-import { useMediaChoices } from '../../provider/MediaChoicesProvider';
-import { selectVideoBackgroundEffects } from '../../store/slices/mediaSlice';
+import { selectAudioEnabled, selectVideoEnabled, selectVideoBackgroundEffects } from '../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
 import { selectDisplayName } from '../../store/slices/userSlice';
 import { OverlayIconButton } from '../ParticipantWindow/fragments/OverlayIconButton';
@@ -77,18 +76,19 @@ interface LocalVideoProps extends PropsType {
 const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoPinned }: LocalVideoProps) => {
   const videoTrackRef = useTracks([Track.Source.Camera]).find((trackRef) => trackRef.participant.isLocal);
   const screenShareTrackRef = useTracks([Track.Source.ScreenShare]).find((trackRef) => trackRef.participant.isLocal);
+  const videoEnabled = useAppSelector(selectVideoEnabled);
+  const audioEnabled = useAppSelector(selectAudioEnabled);
+  const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
 
-  const mediaChoices = useMediaChoices();
   const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoThumbnailRef = useRef<HTMLVideoElement>(null);
 
   const displayName = useAppSelector(selectDisplayName);
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
-  const backgroundEffects = useAppSelector(selectVideoBackgroundEffects);
 
-  const isVideoEnabled = mediaChoices?.userChoices.videoEnabled || false;
-  const isAudioEnabled = mediaChoices?.userChoices.audioEnabled || false;
+  const isVideoEnabled = videoEnabled || false;
+  const isAudioEnabled = audioEnabled || false;
   const screenShareEnabled = screenShareTrackRef?.participant.isScreenShareEnabled || false;
 
   const outgoingVideoStream = videoTrackRef?.publication.track?.mediaStream || null;
@@ -102,9 +102,7 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   const showLoadingSpinner =
     isVideoEnabled && (outgoingVideoStream === null || !outgoingVideoStream?.active) && !isVideoRunning;
   const isVideoMissing =
-    mediaChoices?.userChoices.videoEnabled &&
-    videoTrackRef?.publication.track?.isMuted &&
-    !videoTrackRef?.publication.track.mediaStreamTrack;
+    videoEnabled && videoTrackRef?.publication.track?.isMuted && !videoTrackRef?.publication.track.mediaStreamTrack;
 
   const attachVideo = useCallback((refObject: RefObject<HTMLVideoElement>, stream: MediaStream | null) => {
     if (refObject.current !== null) {
@@ -146,11 +144,10 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
     screenShareEnabled,
     attachVideo,
     detachVideo,
-    backgroundEffects,
+    videoBackgroundEffects,
     isVideoEnabled,
     videoTrackRef,
     screenShareTrackRef,
-    backgroundEffects,
   ]);
 
   return (
