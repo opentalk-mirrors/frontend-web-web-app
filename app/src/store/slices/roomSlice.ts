@@ -28,6 +28,8 @@ import {
 import { fetchWithAuth, getControllerBaseUrl } from '../../utils/apiUtils';
 import { hangUp, joinSuccess, startRoom } from '../commonActions';
 import { started as automodStarted, stopped as automodStopped } from './automodSlice';
+import { getLivekitRoom } from './livekitSlice';
+import { setAudioAndVideoEnabled } from './mediaSlice';
 import { timerStarted, timerStopped } from './timerSlice';
 
 interface InviteState extends FetchRequestState {
@@ -393,6 +395,22 @@ roomMiddleware.startListening({
   effect: (action: AnyAction) => {
     if (action.error) {
       notifications.error(action.error.message);
+    }
+  },
+});
+
+roomMiddleware.startListening({
+  actionCreator: enteredWaitingRoom,
+  effect: async (_, listenerApi) => {
+    try {
+      const room = getLivekitRoom();
+      room.localParticipant.setCameraEnabled(false);
+      room.localParticipant.setMicrophoneEnabled(false);
+      room.localParticipant.setScreenShareEnabled(false);
+    } catch (error) {
+      console.debug('Error while turning mic/cam off while entering the waiting room', error);
+    } finally {
+      listenerApi.dispatch(setAudioAndVideoEnabled({ audio: false, video: false }));
     }
   },
 });
