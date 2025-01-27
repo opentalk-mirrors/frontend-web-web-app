@@ -39,7 +39,7 @@ const CreateDirectMeeting = () => {
 
     try {
       await createEvent({
-        title: `Ad-hoc Meeting ${creationHours}:${creationMinutes}`,
+        title: t('dashboard-direct-meeting-generated-title', { creationHours, creationMinutes }),
         description: '',
         isTimeIndependent: true,
         waitingRoom: false,
