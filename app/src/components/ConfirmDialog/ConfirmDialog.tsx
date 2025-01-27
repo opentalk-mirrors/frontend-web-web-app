@@ -35,7 +35,7 @@ export const ConfirmDialog = ({
   return (
     <Dialog open={open} maxWidth="sm" fullWidth onMouseDown={onMouseDown} onClose={handleClose}>
       <DialogTitle sx={{ textAlign: 'left' }}>{title}</DialogTitle>
-      <Box position="absolute" top={0} right={0}>
+      <Box position="absolute" top={5} right={5}>
         <IconButton aria-label={t('global-close-dialog')} onClick={handleClose}>
           <CloseIcon />
         </IconButton>

@@ -173,7 +173,7 @@ export const CloseMeetingDialog = ({ open, onClose, eventData }: CloseMeetingDia
         {t('meeting-delete-metadata-dialog-title')}
       </DialogTitle>
 
-      <Box position="absolute" top={0} right={0}>
+      <Box position="absolute" top={5} right={5}>
         <IconButton onClick={onClose} aria-label={t('global-close-dialog')}>
           <CloseIcon />
         </IconButton>

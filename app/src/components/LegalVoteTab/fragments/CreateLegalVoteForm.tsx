@@ -110,7 +110,7 @@ const CreateLegalVoteForm = ({
         component: (formik) => (
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Stack direction="row" alignItems="center" justifyContent="space-between" paddingTop={1} paddingRight={1}>
                 <Typography variant="body2">{t('legal-vote-form-duration')}</Typography>
                 <DurationField
                   {...formikDurationFieldProps('duration', formik)}
@@ -215,7 +215,7 @@ const CreateLegalVoteForm = ({
     values: FormikValues,
     handleNext: React.MouseEventHandler<HTMLButtonElement> | undefined
   ) => (
-    <Box display="flex" justifyContent="space-between" gap={2}>
+    <Box display="flex" justifyContent="space-between" gap={2} padding={1}>
       {!isLastStep && (
         <Button type="button" onClick={() => saveFormValues(values as LegalVoteFormValues)} fullWidth>
           {t('legal-vote-form-button-save')}
@@ -243,7 +243,7 @@ const CreateLegalVoteForm = ({
         return (
           <Stack flex={1} overflow="hidden" spacing={1}>
             <Stack flex={1} spacing={1} overflow="hidden">
-              <Stack alignItems="flex-start" spacing={1}>
+              <Stack alignItems="flex-start" paddingLeft={0.5} paddingTop={0.5}>
                 <Button
                   variant="text"
                   onClick={currentStepIndex && currentStepIndex > 0 ? handlePrev : onClose}
@@ -252,12 +252,12 @@ const CreateLegalVoteForm = ({
                 >
                   {t('legal-vote-button-back')}
                 </Button>
-                <Typography variant="h2">
-                  {initialValues?.id !== undefined
-                    ? t('legal-vote-header-title-update')
-                    : t('legal-vote-header-title-create')}
-                </Typography>
               </Stack>
+              <Typography variant="h2">
+                {initialValues?.id !== undefined
+                  ? t('legal-vote-header-title-update')
+                  : t('legal-vote-header-title-create')}
+              </Typography>
 
               <Form>{renderComponent()}</Form>
             </Stack>

@@ -7,9 +7,11 @@ import { useTranslation } from 'react-i18next';
 
 import { ModerationTabKey, Tab as TabProps } from '../../config/moderationTabs';
 
+const INDICATOR_WIDTH_IN_PIXELS = 2;
+
 const Tabs = styled(MuiTabs)(({ theme }) => ({
   //todo align a proper background color from theme (for now nothing fit)
-  background: 'rgb(56, 88, 101)',
+  background: theme.palette.background.voteResult,
   padding: theme.spacing(4.5, 0),
   borderBottomLeftRadius: theme.borderRadius.medium,
   borderTopLeftRadius: theme.borderRadius.medium,
@@ -28,10 +30,15 @@ const Tabs = styled(MuiTabs)(({ theme }) => ({
   },
   '& .MuiTabs-indicator': {
     left: 0,
-    width: '2px',
+    width: `${INDICATOR_WIDTH_IN_PIXELS}px`,
     display: 'block',
     backgroundColor: theme.palette.primary.main,
     transition: 'none',
+  },
+  //Makes outline visible without changing overflow settings
+  width: `calc(100% - ${theme.typography.pxToRem(2)} * 2)`,
+  '& .MuiTabs-scroller': {
+    padding: theme.typography.pxToRem(2),
   },
 }));
 
@@ -57,18 +64,26 @@ const Tab = styled(MuiTab)<{ component?: React.ElementType }>(({ theme }) => ({
     color: theme.palette.secondary.contrastText,
   },
   '&.Mui-selected': {
+    //adjust for MuiTabs-indicator
+    width: `calc(100% + ${INDICATOR_WIDTH_IN_PIXELS}px)`,
     background: theme.palette.secondary.main,
     color: theme.palette.secondary.contrastText,
   },
+  '&.Mui-selected svg': {
+    transform: `translate(-${INDICATOR_WIDTH_IN_PIXELS}px)`,
+  },
   '&.Mui-selected .MuiTab-wrapper > svg': {
     fill: 'white',
+  },
+  '&.Mui-focusVisible': {
+    outlineOffset: 0,
   },
 }));
 
 const ToolbarDivider = styled(Divider)(({ theme }) => ({
   padding: theme.spacing(1),
   margin: theme.spacing(0, 1),
-  borderBottom: `3px solid rgb(31,62,73)`,
+  borderBottom: `3px solid ${theme.palette.secondary.lightest}`,
 }));
 
 export type ModerationSideToolbarProps = {

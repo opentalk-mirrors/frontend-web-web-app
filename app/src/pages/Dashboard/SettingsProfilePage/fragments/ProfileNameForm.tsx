@@ -45,7 +45,7 @@ const ProfileNameForm = () => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <Grid container spacing={3} direction="column">
+      <Grid container spacing={3} direction="column" paddingBottom={0.5} paddingLeft={0.5}>
         <Grid item container spacing={1} direction="column">
           <Grid item>
             <CommonTextField

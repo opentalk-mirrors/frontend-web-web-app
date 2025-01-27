@@ -54,15 +54,15 @@ const FavoriteEntry = styled(ListItem)(({ theme }) => ({
   flex: `0 0 auto`,
 
   '&:not(:first-of-type):not(:last-child)': {
-    padding: theme.spacing(2, 0, 2, 0),
+    padding: theme.spacing(2, 0, 2, 0.5),
   },
 
   '&:first-of-type': {
-    padding: theme.spacing(0, 0, 2, 0),
+    padding: theme.spacing(1, 0, 2, 0.5),
   },
 
   '&:last-child': {
-    padding: theme.spacing(2, 0, 0, 0),
+    padding: theme.spacing(2, 0, 1, 0.5),
   },
 
   '&:not(:last-child)': {
@@ -92,13 +92,17 @@ const FavoriteMeetingsCard = ({ meetings }: { meetings: Array<FavoriteMeetingPro
 
   const renderFavorites = () => {
     if (sortedMeetings.length > 0) {
-      return sortedMeetings.map(({ subject, roomId }) => (
-        <FavoriteEntry key={roomId}>
-          <Link to={`/room/${roomId}`} target="_blank">
-            {subject}
-          </Link>
-        </FavoriteEntry>
-      ));
+      return (
+        <FavoritesContainer>
+          {sortedMeetings.map(({ subject, roomId }) => (
+            <FavoriteEntry key={roomId}>
+              <Link to={`/room/${roomId}`} target="_blank">
+                {subject}
+              </Link>
+            </FavoriteEntry>
+          ))}
+        </FavoritesContainer>
+      );
     }
 
     return (
@@ -118,7 +122,7 @@ const FavoriteMeetingsCard = ({ meetings }: { meetings: Array<FavoriteMeetingPro
   return (
     <FavoritesWrapper>
       <FavoriteIcon />
-      <FavoritesContainer>{renderFavorites()}</FavoritesContainer>
+      {renderFavorites()}
     </FavoritesWrapper>
   );
 };

@@ -160,7 +160,7 @@ ${
         {t('meeting-details-dialog-title', { title })}
       </DialogTitle>
       {roomOwner && renderSubtitle()}
-      <Box position="absolute" top={4} right={2}>
+      <Box position="absolute" top={5} right={5}>
         <IconButton onClick={onClose} aria-label={t('global-close-dialog')}>
           <CloseIcon />
         </IconButton>

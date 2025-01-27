@@ -667,7 +667,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
             />
           )}
         </Stack>
-        <Grid container item justifyContent="space-between" spacing={2}>
+        <Grid container item justifyContent="space-between" spacing={2} paddingBottom={1} paddingRight={1}>
           <Grid item xs={12} sm="auto">
             {existingEvent && (
               <Button variant="text" color="secondary" endIcon={<ForwardIcon />} onClick={onForwardButtonClick}>

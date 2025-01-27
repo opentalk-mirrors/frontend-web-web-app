@@ -32,8 +32,8 @@ import yup from '../../utils/yupUtils';
 
 const CloseIconButton = styled(IconButton)({
   position: 'absolute',
-  top: 0,
-  right: 0,
+  top: 5,
+  right: 5,
 });
 
 interface Invite {

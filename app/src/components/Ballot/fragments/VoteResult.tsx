@@ -45,7 +45,9 @@ const ProgressContainer = styled('div')(({ theme }) => ({
     borderRadius: theme.borderRadius.medium,
   },
   '& .MuiRadio-root.MuiRadio-colorPrimary': {
-    marginLeft: 0,
+    padding: theme.spacing(0.3),
+    margin: theme.spacing(0, 1),
+
     aspectRatio: '1/1',
     color: theme.palette.secondary.contrastText,
     '&.Mui-checked': {

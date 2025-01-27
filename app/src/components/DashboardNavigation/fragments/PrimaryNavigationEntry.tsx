@@ -42,6 +42,11 @@ export const ListItem = styled(MuiListItem, {
       },
     },
 
+    '&:focus-visible': {
+      outline: theme.palette.focus.outline,
+      outlineOffset: theme.palette.focus.outlineOffset,
+    },
+
     '&:hover': {
       background: theme.palette.secondary.lightest,
     },

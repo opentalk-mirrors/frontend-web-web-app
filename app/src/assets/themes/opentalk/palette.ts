@@ -61,6 +61,13 @@ const lightPalette: PaletteOptions = {
     contrastText: '#FFF',
     dark: '#43A047',
   },
+  focus: {
+    color: '#005392',
+    outline: '2px solid #005392',
+    outlineOffset: '2px',
+    contrastColor: '#deed7b',
+    contrastOutline: '2px solid #deed7b',
+  },
   text: {
     primary: '#20434F',
     secondary: '#FFF',
@@ -150,6 +157,13 @@ const darkPalette: PaletteOptions = {
     main: '#3ABD9F',
     contrastText: '#FFF',
     dark: '#43A047',
+  },
+  focus: {
+    color: '#deed7b',
+    outline: '2px solid #deed7b',
+    outlineOffset: '2px',
+    contrastColor: '#005392',
+    contrastOutline: '2px solid #005392',
   },
   text: {
     primary: '#FFF',

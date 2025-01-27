@@ -28,11 +28,6 @@ const DatePicker = styled(MuiDatePicker)(({ theme }) => ({
   '& .MuiButtonBase-root.MuiIconButton-root.Mui-disabled .MuiSvgIcon-root': {
     fill: theme.palette.text.disabled,
   },
-  [theme.breakpoints.down('sm')]: {
-    '& .MuiInputBase-input.MuiOutlinedInput-input': {
-      // maxWidth: theme.typography.pxToRem(100),
-    },
-  },
 })) as typeof MuiDatePicker;
 
 export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: CustomEndOptionsProps) => {

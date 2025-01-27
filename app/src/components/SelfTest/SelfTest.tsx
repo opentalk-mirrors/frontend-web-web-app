@@ -27,7 +27,7 @@ import EchoPlayBack from './fragments/EchoPlayback';
 import ToolbarContainer from './fragments/ToolbarContainer';
 import VideoElement from './fragments/VideoElement';
 
-const InnerContainer = styled('div')(() => ({
+const InnerContainer = styled('div')(({ theme }) => ({
   position: 'relative',
   padding: 0,
   width: '100%',
@@ -38,6 +38,9 @@ const InnerContainer = styled('div')(() => ({
   WebkitBackdropFilter: 'blur(100px)',
   background: `rgba(0, 22, 35, 0.5) url(${arrowImage}) no-repeat 77% 67%`,
   backgroundSize: '10rem',
+  '& .MuiButtonBase-root.Mui-focusVisible': {
+    outline: theme.palette.focus.contrastOutline,
+  },
 }));
 
 const Header = styled('header')(({ theme }) => ({

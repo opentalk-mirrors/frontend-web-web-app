@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, styled } from '@mui/material';
 import { Event, EventInvite, isEvent, UserRole } from '@opentalk/rest-api-rtk-query';
 import { merge } from 'lodash';
 import { useState } from 'react';
@@ -26,6 +26,10 @@ interface InviteToMeetingProps {
   onBackButtonClick?: () => void;
   showOnlyLinkFields?: boolean;
 }
+
+const StepButton = styled(Button)(({ theme }) => ({
+  marginLeft: theme.spacing(0.5),
+}));
 
 const InviteToMeeting = ({
   isUpdatable,
@@ -121,12 +125,20 @@ const InviteToMeeting = ({
         <Grid container item spacing={2} justifyContent={{ xs: 'center', sm: 'space-between' }}>
           <Grid item xs={12} sm="auto">
             {onBackButtonClick && (
-              <Button variant="text" color="secondary" startIcon={<BackIcon />} onClick={onBackButtonClick}>
+              <StepButton variant="text" color="secondary" startIcon={<BackIcon />} onClick={onBackButtonClick}>
                 {t('dashboard-meeting-to-step', { step: 1 })}
-              </Button>
+              </StepButton>
             )}
           </Grid>
-          <Grid container item xs={12} sm="auto" spacing={3} flexDirection={{ xs: 'column-reverse', sm: 'row' }}>
+          <Grid
+            container
+            item
+            xs={12}
+            sm="auto"
+            spacing={3}
+            flexDirection={{ xs: 'column-reverse', sm: 'row' }}
+            padding={1}
+          >
             <Grid item>
               <Button fullWidth color="secondary" variant="outlined" onClick={handleCancelMeetingPress}>
                 {t('global-cancel')}

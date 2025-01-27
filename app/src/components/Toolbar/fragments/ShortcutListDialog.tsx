@@ -28,7 +28,7 @@ interface ShortcutListDialogProps {
 
 const CloseButton = styled(IconButton)(() => ({
   position: 'absolute',
-  right: 0,
+  right: 5,
   top: '50%',
   transform: 'translateY(-50%)',
 }));

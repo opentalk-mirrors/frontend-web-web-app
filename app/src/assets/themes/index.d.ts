@@ -70,6 +70,14 @@ type NotistackPalette = {
   secondary: NotificationVariant;
 };
 
+type FocusOutlinePalette = {
+  color: string;
+  outline: string;
+  outlineOffset: string;
+  contrastColor: string;
+  contrastOutline: string;
+};
+
 declare module '@mui/material' {
   type AccessibleSvgType = 'functional' | 'decorative' | undefined;
   interface BaseSvgIconProps extends OriginalSvgProps {
@@ -104,12 +112,14 @@ declare module '@mui/material/styles' {
     outline: TypeOutline;
     avatar: AvatarPalette;
     notistack: NotistackPalette;
+    focus: FocusOutlinePalette;
   }
 
   interface PaletteOptions {
     outline?: string;
     avatar?: AvatarPalette;
     notistack?: NotistackPalette;
+    focus: FocusOutlinePalette;
   }
 
   interface PaletteColor {
