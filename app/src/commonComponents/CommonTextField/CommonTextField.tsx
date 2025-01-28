@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { InputLabelProps, TextField, TextFieldProps, styled } from '@mui/material';
+import { InputProps, InputLabelProps, TextField, TextFieldProps, styled } from '@mui/material';
 import React, { KeyboardEvent, useState, useEffect, FocusEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,7 @@ type ComposedTextFieldProps = TextFieldProps & {
 
 const StyledTextField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'hideLabel',
-})<{ select?: boolean; hideLabel?: boolean }>(({ select, hideLabel, theme }) => ({
+})<{ select?: boolean; hideLabel?: boolean; InputProps?: InputProps }>(({ select, hideLabel, InputProps, theme }) => ({
   // in case text field is used as select component, we want to have a bigger arrow
   '& .MuiSvgIcon-root': {
     fontSize: select && '2rem',
@@ -30,6 +30,11 @@ const StyledTextField = styled(TextField, {
 
   '& .MuiFormLabel-asterisk': {
     color: theme.palette.error.main,
+  },
+
+  // for some reason label position must be fine-tuned in text fields with start adornments
+  '& .MuiInputLabel-root': {
+    paddingTop: InputProps?.startAdornment && '1px',
   },
 }));
 

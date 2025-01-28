@@ -560,6 +560,7 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             right: theme.spacing(2),
           }),
           positionStart: ({ theme }) => ({
+            height: 0,
             padding: theme.spacing(1.5, 0.5),
             marginRight: 0,
           }),
