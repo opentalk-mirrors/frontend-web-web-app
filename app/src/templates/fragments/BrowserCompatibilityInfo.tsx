@@ -34,6 +34,7 @@ const BrowserCompatibilityInfo = ({ children }: PropsWithChildren) => {
         notificationAction({
           msg: message,
           variant: 'warning',
+          ariaLive: 'polite',
           cancelBtnText: t('global-ok'),
           persist: true,
           preventDuplicate: true,

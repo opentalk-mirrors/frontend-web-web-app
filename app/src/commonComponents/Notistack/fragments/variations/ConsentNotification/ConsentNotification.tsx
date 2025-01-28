@@ -26,6 +26,7 @@ const ConsentNotification = forwardRef(
         ref={ref}
         style={style}
         type="warning"
+        aria-live="assertive"
       >
         <Stack spacing={1}>
           <NotificationHeading id="consent-notification-heading" as="h3">

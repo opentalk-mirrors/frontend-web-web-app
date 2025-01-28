@@ -40,7 +40,7 @@ const TimeLimitNotification = forwardRef<HTMLDivElement, TimeLimitNotificationPr
   };
 
   return (
-    <SnackbarContent ref={ref} role="alert">
+    <SnackbarContent ref={ref} role="alert" aria-live="polite">
       <BoxContent>
         <Box
           sx={{

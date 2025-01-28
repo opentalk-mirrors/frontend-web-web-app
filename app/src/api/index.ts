@@ -368,6 +368,7 @@ const handleControlMessage = async (
               i18next.t('talking-stick-started-second-line'),
             ]),
             variant: 'info',
+            ariaLive: 'polite',
           });
         }
       }
@@ -521,6 +522,7 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
           notificationPersistent({
             msg: i18next.t('media-ice-connection-not-possible'),
             variant: 'error',
+            ariaLive: 'assertive',
           });
           break;
         case 'invalid_request_offer':
@@ -623,6 +625,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
             i18next.t('talking-stick-started-second-line'),
           ]),
           variant: 'info',
+          ariaLive: 'polite',
         });
 
         if (data.issuedBy === state.user.uuid) {
@@ -643,6 +646,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
         key: stoppedId,
         msg: i18next.t('talking-stick-finished'),
         variant: 'info',
+        ariaLive: 'polite',
       });
 
       getLivekitRoom().localParticipant.setMicrophoneEnabled(false);
@@ -668,6 +672,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           key: nextId,
           msg: i18next.t('talking-stick-next-announcement'),
           variant: 'warning',
+          ariaLive: 'polite',
           persist: true,
         });
       }
@@ -939,6 +944,7 @@ const handleMeetingNotesMessage = (
         notificationAction({
           msg: message,
           variant: 'info',
+          ariaLive: 'polite',
           actionBtnText: i18next.t('meeting-notes-new-meeting-notes-message-button'),
           onAction: () => dispatch(updatedCinemaLayout(LayoutOptions.MeetingNotes)),
         });
@@ -955,6 +961,7 @@ const handleMeetingNotesMessage = (
         notificationAction({
           msg: message,
           variant: 'info',
+          ariaLive: 'polite',
           actionBtnText: i18next.t('meeting-notes-new-meeting-notes-message-button'),
           onAction: () => dispatch(updatedCinemaLayout(LayoutOptions.MeetingNotes)),
         });
@@ -1043,6 +1050,7 @@ const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message
       notificationAction({
         msg: i18next.t('whiteboard-new-pdf-message'),
         variant: 'info',
+        ariaLive: 'polite',
       });
 
       break;
@@ -1207,6 +1215,7 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
       notificationAction({
         msg: i18next.t('whisper-invite-notification', { displayName }),
         variant: 'info',
+        ariaLive: 'polite',
         actionBtnText: i18next.t('global-accept'),
         cancelBtnText: i18next.t('global-decline'),
         persist: true,
@@ -1239,6 +1248,7 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
       notificationAction({
         msg: i18next.t('whisper-invite-accept-notification', { displayName }),
         variant: 'info',
+        ariaLive: 'polite',
       });
       dispatch(
         updateParticipantInviteState({
@@ -1254,6 +1264,7 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
       notificationAction({
         msg: `${displayName} declined your invitation`,
         variant: 'error',
+        ariaLive: 'assertive',
       });
       break;
     }

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { notifications } from '../../commonComponents';
+import { DEFAULT_AUTO_HIDE_DURATION } from '../../commonComponents/Notistack/fragments/utils';
 import { StreamUpdatedNotification, NotificationProps } from './StreamUpdatedNotification';
 
 /**
@@ -12,6 +13,8 @@ export const createStreamUpdatedNotification = ({ kind, status, publicUrl, event
     <StreamUpdatedNotification kind={kind} status={status} publicUrl={publicUrl} eventId={eventId} />,
     {
       variant: 'info',
+      ariaLive: 'polite',
+      autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
     }
   );
 };
