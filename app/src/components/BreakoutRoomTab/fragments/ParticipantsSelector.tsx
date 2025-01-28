@@ -224,9 +224,28 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={1} height="100%" data-testid="participant-selector">
-      <Box flex={1} height="100%" overflow="hidden">
-        <Box overflow="auto" height="100%">
+    <Box
+      data-testid="participant-selector"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+        height: '100%',
+      }}
+    >
+      <Box
+        sx={{
+          flex: 1,
+          height: '100%',
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            overflow: 'auto',
+            height: '100%',
+          }}
+        >
           {renderRooms()}
         </Box>
       </Box>

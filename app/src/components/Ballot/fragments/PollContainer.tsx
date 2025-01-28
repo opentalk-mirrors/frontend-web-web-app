@@ -82,9 +82,23 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
   };
 
   return (
-    <Grid container rowSpacing={1.4} width="100%">
+    <Grid
+      container
+      rowSpacing={1.4}
+      sx={{
+        width: '100%',
+      }}
+    >
       <Grid item xs={12} style={{ scrollBehavior: 'smooth' }}>
-        <Box display="flex" alignItems="center" justifyContent="space-between" flex={1} gap={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flex: 1,
+            gap: 1,
+          }}
+        >
           <ActiveStateChip
             size="medium"
             label={t(`poll-overview-panel-status-${poll?.state}`)}
@@ -142,7 +156,15 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
             })}
           </Fieldset>
         </Grid>
-        <Grid item xs={12} my={1} container justifyContent="stretch">
+        <Grid
+          item
+          xs={12}
+          container
+          sx={{
+            my: 1,
+            justifyContent: 'stretch',
+          }}
+        >
           <Button
             type="submit"
             disabled={isSubmitButtonDisabled}

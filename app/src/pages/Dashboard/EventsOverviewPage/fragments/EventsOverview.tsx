@@ -112,13 +112,23 @@ const EventsOverview = ({
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
       component="section"
-      flex="1 1 auto"
       style={{ marginTop: marginTopReset }}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        flex: '1 1 auto',
+      }}
     >
-      <Stack spacing={1} overflow="auto" flex="1 1 auto" height={0} position="relative">
+      <Stack
+        spacing={1}
+        sx={{
+          overflow: 'auto',
+          flex: '1 1 auto',
+          height: 0,
+          position: 'relative',
+        }}
+      >
         <ArrowDownButton
           active={expandAccordion === 'all'}
           onClick={() => setExpandAccordion((prev: string) => (prev === 'all' ? '' : 'all'))}
@@ -141,6 +151,7 @@ const EventsOverview = ({
                 transition: {
                   unmountOnExit: true,
                 },
+                heading: { component: 'h2' },
               }}
             >
               <AccordionSummary

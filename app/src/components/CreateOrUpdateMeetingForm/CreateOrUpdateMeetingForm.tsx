@@ -585,11 +585,25 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
               <Grid item xs={12} sm={6}>
                 <DashboardDateTimePicker type="start" formik={formik} onChange={onChangeStartDate} />
               </Grid>
-              <Grid item xs={12} sm={6} mt={{ xs: 2, sm: 0 }}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                sx={{
+                  mt: { xs: 2, sm: 0 },
+                }}
+              >
                 <DashboardDateTimePicker type="end" formik={formik} onChange={onChangeEndDate} />
               </Grid>
 
-              <Grid item xs={12} sm={12} mt={2}>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                sx={{
+                  mt: 2,
+                }}
+              >
                 {/* TODO: Separate in own component and move related logic */}
                 <Select
                   {...formikProps('recurrencePattern', formik)}
@@ -667,7 +681,16 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
             />
           )}
         </Stack>
-        <Grid container item justifyContent="space-between" spacing={2} paddingBottom={1} paddingRight={1}>
+        <Grid
+          container
+          item
+          spacing={2}
+          sx={{
+            justifyContent: 'space-between',
+            paddingBottom: 1,
+            paddingRight: 1,
+          }}
+        >
           <Grid item xs={12} sm="auto">
             {existingEvent && (
               <Button variant="text" color="secondary" endIcon={<ForwardIcon />} onClick={onForwardButtonClick}>
@@ -675,7 +698,16 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
               </Button>
             )}
           </Grid>
-          <Grid container item xs={12} sm="auto" spacing={3} flexDirection={{ xs: 'column-reverse', sm: 'row' }}>
+          <Grid
+            container
+            item
+            xs={12}
+            sm="auto"
+            spacing={3}
+            sx={{
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+            }}
+          >
             {!existingEvent && (
               <Grid item>
                 <Button component={Link} to="/dashboard/" variant="outlined" color="secondary" fullWidth>

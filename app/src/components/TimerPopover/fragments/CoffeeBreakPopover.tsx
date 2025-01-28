@@ -23,7 +23,12 @@ const CoffeeBreakPopover = () => {
 
   return (
     <Container open={Boolean(timerActive)} role="dialog" aria-labelledby="transition-modal-title">
-      <Stack alignItems="center" spacing={1}>
+      <Stack
+        spacing={1}
+        sx={{
+          alignItems: 'center',
+        }}
+      >
         <Typography id="transition-modal-title" variant="h5" component="h3">
           {t('coffee-break-popover-title')}
         </Typography>

@@ -50,7 +50,12 @@ const UserList = () => {
   }
 
   return (
-    <Stack spacing={1} overflow="hidden">
+    <Stack
+      spacing={1}
+      sx={{
+        overflow: 'hidden',
+      }}
+    >
       <Typography variant="h2">{t('global-participants')}</Typography>
       <List>{renderUsers()}</List>
     </Stack>

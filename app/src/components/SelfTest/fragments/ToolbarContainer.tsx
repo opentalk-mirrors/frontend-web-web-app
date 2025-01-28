@@ -66,9 +66,11 @@ const ToolbarContainer = ({ children, actionButton, localAudioTrack, waitingRoom
     <Container>
       <Stack
         direction={{ xs: 'column', md: 'row' }}
-        justifyContent="center"
-        alignItems={{ xs: 'center', md: 'flex-start' }}
         spacing={2}
+        sx={{
+          justifyContent: 'center',
+          alignItems: { xs: 'center', md: 'flex-start' },
+        }}
       >
         {!isMobile && (
           <CircularIconButton aria-label={t('global-back')} onClick={navigateToHome}>

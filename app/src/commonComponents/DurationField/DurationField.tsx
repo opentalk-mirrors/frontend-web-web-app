@@ -115,7 +115,15 @@ export const DurationField = ({
   };
 
   const renderDurationOptions = () => (
-    <Stack spacing={1} flexDirection="row" flexWrap="wrap" justifyContent="space-between" alignItems="baseline">
+    <Stack
+      spacing={1}
+      sx={{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+      }}
+    >
       {durationOptions.map((duration, index) => {
         return (
           <Chip
@@ -196,7 +204,12 @@ export const DurationField = ({
               <Typography variant="caption">{t('field-duration-input-label')}</Typography>
             </Stack>
           )}
-          <Stack flexDirection="row" justifyContent="space-between">
+          <Stack
+            sx={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
             <Button variant="text" size="small" onClick={handlePopoverClose}>
               {t('field-duration-button-close')}
             </Button>

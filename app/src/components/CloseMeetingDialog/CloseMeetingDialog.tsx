@@ -107,7 +107,11 @@ export const CloseMeetingDialog = ({ open, onClose, eventData }: CloseMeetingDia
   const singleConfigurationForm = () => (
     <DialogContent>
       <Typography id={DIALOG_DESCRIPTION_ID}>{t('meeting-delete-metadata-dialog-message')}</Typography>
-      <Grid mt={1}>
+      <Grid
+        sx={{
+          mt: 1,
+        }}
+      >
         <FormControlLabel
           control={<Checkbox checked={!disableLeaveAndDeleteButton} onChange={handleCheckbox} />}
           label={t('meeting-delete-metadata-dialog-checkbox')}
@@ -119,7 +123,11 @@ export const CloseMeetingDialog = ({ open, onClose, eventData }: CloseMeetingDia
   const recurringConfigurationForm = () => (
     <DialogContent>
       <Typography id={DIALOG_DESCRIPTION_ID}>{t('meeting-delete-recurring-metadata-dialog-message')}</Typography>
-      <Grid mt={1}>
+      <Grid
+        sx={{
+          mt: 1,
+        }}
+      >
         <FormControl>
           <RadioGroup onChange={handleDeletionModeChange}>
             <FormControlLabel
@@ -172,15 +180,18 @@ export const CloseMeetingDialog = ({ open, onClose, eventData }: CloseMeetingDia
       <DialogTitle id={DIALOG_TITLE_ID} aria-hidden="true" sx={{ textAlign: 'left' }}>
         {t('meeting-delete-metadata-dialog-title')}
       </DialogTitle>
-
-      <Box position="absolute" top={5} right={5}>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 5,
+          right: 5,
+        }}
+      >
         <IconButton onClick={onClose} aria-label={t('global-close-dialog')}>
           <CloseIcon />
         </IconButton>
       </Box>
-
       {getConfigurationForm()}
-
       <DialogActions>
         <Button onClick={handleLeaveButton} color="error" variant="contained" disabled={disableLeaveAndDeleteButton}>
           {t('meeting-delete-metadata-button-leave-and-delete')}

@@ -128,29 +128,56 @@ const EventDetailsPage = () => {
 
   return (
     <Stack
-      justifyContent="space-between"
-      height="100%"
-      overflow="auto"
       style={{ paddingRight: theme.spacing(5), marginRight: theme.spacing(-5) }}
+      sx={{
+        justifyContent: 'space-between',
+        height: '100%',
+        overflow: 'auto',
+      }}
     >
       <Stack>
-        <Stack mb={4}>
+        <Stack
+          sx={{
+            mb: 4,
+          }}
+        >
           <Typography variant="h1">{pageHeading}</Typography>
-          <Typography variant="body1" fontWeight={400} mt={1} component="span">
+          <Typography
+            variant="body1"
+            component="span"
+            sx={{
+              fontWeight: 400,
+              mt: 1,
+            }}
+          >
             {getTimeInformationString()}
           </Typography>
         </Stack>
 
         {event.description && event.description !== '' && (
-          <Stack mb={4}>
+          <Stack
+            sx={{
+              mb: 4,
+            }}
+          >
             <Typography variant="h2">{t('dashboard-meeting-details-page-description-title')}</Typography>
-            <Box maxHeight={50} overflow="auto" mt={1}>
+            <Box
+              sx={{
+                maxHeight: 50,
+                overflow: 'auto',
+                mt: 1,
+              }}
+            >
               <Typography variant="body2">{event.description}</Typography>
             </Box>
           </Stack>
         )}
 
-        <Stack mb={2}>
+        <Stack
+          sx={{
+            mb: 2,
+          }}
+        >
           <InviteToMeeting existingEvent={event} showOnlyLinkFields isUpdatable={false} />
         </Stack>
         {roomParticipantLimit && (
@@ -167,7 +194,6 @@ const EventDetailsPage = () => {
           recurrenceInstance={recurrenceInstance}
         />
       </Stack>
-
       <ButtonContainer>
         <ButtonBack />
         {!isMeetingCreator && (

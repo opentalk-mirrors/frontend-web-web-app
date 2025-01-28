@@ -388,7 +388,12 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         }}
       >
         <MenuTitleContainer direction="row" spacing={2}>
-          <Box display="flex" alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
             <Avatar src={avatarUrl}>{displayName}</Avatar>
             <MenuTitle translate="no">{displayName}</MenuTitle>
           </Box>

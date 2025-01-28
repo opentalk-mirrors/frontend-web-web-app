@@ -26,20 +26,44 @@ export const EventConflictDialog = ({ onConfirm, onCancel, event, isUpdate }: Ev
   return (
     <Dialog open maxWidth="sm" fullWidth disablePortal onClose={onCancel}>
       <DialogTitle sx={{ textAlign: 'left' }}>{t('dashboard-create-meeting-dialog-title')}</DialogTitle>
-      <Box position="absolute" top={5} right={5}>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 5,
+          right: 5,
+        }}
+      >
         <IconButton aria-label={t('global-close-dialog')} onClick={onCancel}>
           <CloseIcon />
         </IconButton>
       </Box>
       <DialogContent>
-        <Typography mb={1}>{t('dashboard-create-or-update-meeting-dialog-message')}</Typography>
-        <Typography component="span" variant="h1" ml={0}>
+        <Typography
+          sx={{
+            mb: 1,
+          }}
+        >
+          {t('dashboard-create-or-update-meeting-dialog-message')}
+        </Typography>
+        <Typography
+          component="span"
+          variant="h1"
+          sx={{
+            ml: 0,
+          }}
+        >
           {eventTitle}{' '}
         </Typography>
         <Typography component="span">
           <EventTimePreview startDate={startDate} endDate={endDate} />
         </Typography>
-        <Typography mt={1}>{t(`dashboard-${isUpdate ? 'update' : 'create'}-meeting-dialog-prompt`)}</Typography>
+        <Typography
+          sx={{
+            mt: 1,
+          }}
+        >
+          {t(`dashboard-${isUpdate ? 'update' : 'create'}-meeting-dialog-prompt`)}
+        </Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={onConfirm} color="primary" variant="contained">

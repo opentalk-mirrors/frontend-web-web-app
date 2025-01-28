@@ -52,6 +52,7 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
           variant: 'contained',
           disableElevation: true,
         },
+
         styleOverrides: {
           root: ({ theme }) => ({
             borderRadius: theme.borderRadius.large,
@@ -63,6 +64,18 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               outline: theme.palette.focus.outline,
               outlineOffset: theme.palette.focus.outlineOffset,
             },
+            variants: [
+              {
+                props: { variant: 'conference-inactive', disabled: true },
+                style: {
+                  '&.Mui-disabled': {
+                    color: '#c8c8c8', // TODO: As this color was only declared for the dark theme, we don't have a counterpart for the light theme so we have to hard code it here for now.
+                    border: '2px solid currentColor',
+                    opacity: 1,
+                  },
+                },
+              },
+            ],
           }),
           sizeSmall: ({ theme }) => ({
             fontSize: theme.typography.pxToRem(12),
@@ -148,18 +161,6 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             },
           },
         },
-        variants: [
-          {
-            props: { variant: 'conference-inactive', disabled: true },
-            style: () => ({
-              '&.Mui-disabled': {
-                color: '#c8c8c8', // TODO: As this color was only declared for the dark theme, we don't have a counterpart for the light theme so we have to hard code it here for now.
-                border: '2px solid currentColor',
-                opacity: 1,
-              },
-            }),
-          },
-        ],
       },
       MuiSvgIcon: {
         styleOverrides: {
@@ -183,7 +184,7 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               },
             },
           }),
-          root: ({ ownerState, theme }) => ({
+          root: ({ theme }) => ({
             borderRadius: theme.borderRadius.large,
             padding: theme.spacing(1.5, 2),
             [theme.breakpoints.down('md')]: {
@@ -199,58 +200,75 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               outline: theme.palette.focus.outline,
               outlineOffset: theme.palette.focus.outlineOffset,
             },
-            ...(ownerState.variant === 'adornment' && {
-              padding: theme.typography.pxToRem(12),
-              '& .MuiTouchRipple-child': {
-                backgroundColor: mode === 'light' ? theme.palette.secondary.light : theme.palette.background.light,
-              },
-            }),
-            ...(ownerState.variant === 'toolbar' && {
-              backgroundColor: theme.palette.secondary.main,
-              borderRadius: theme.borderRadius.large,
-              '&:hover': {
-                background: theme.palette.secondary.lightest,
-                '& > svg': {
-                  fill: theme.palette.secondary.main,
+            variants: [
+              {
+                props: {
+                  variant: 'adornment',
+                },
+                style: {
+                  padding: theme.typography.pxToRem(12),
+                  '& .MuiTouchRipple-child': {
+                    backgroundColor: mode === 'light' ? theme.palette.secondary.light : theme.palette.background.light,
+                  },
                 },
               },
-              '& svg': {
-                fill: theme.palette.common.white,
-              },
-              '& .mic-off-line': {
-                fill: theme.palette.warning.main,
-              },
-              '& > .MuiSvgIcon-root': {
-                fontSize: theme.typography.pxToRem(18),
-                [theme.breakpoints.down('md')]: {
-                  fontSize: theme.typography.pxToRem(16),
+              {
+                props: {
+                  variant: 'toolbar',
+                },
+                style: {
+                  backgroundColor: theme.palette.secondary.main,
+                  borderRadius: theme.borderRadius.large,
+                  '&:hover': {
+                    background: theme.palette.secondary.lightest,
+                    '& > svg': {
+                      fill: theme.palette.secondary.main,
+                    },
+                  },
+                  '& svg': {
+                    fill: theme.palette.common.white,
+                  },
+                  '& .mic-off-line': {
+                    fill: theme.palette.warning.main,
+                  },
+                  '& > .MuiSvgIcon-root': {
+                    fontSize: theme.typography.pxToRem(18),
+                    [theme.breakpoints.down('md')]: {
+                      fontSize: theme.typography.pxToRem(16),
+                    },
+                  },
+                  ':disabled': {
+                    opacity: 0.5,
+                    backgroundColor: theme.palette.secondary.main,
+                    fill: theme.palette.text.disabled,
+                    '& .mic-off-line': {
+                      fill: theme.palette.text.disabled,
+                    },
+                  },
                 },
               },
-              ':disabled': {
-                opacity: 0.5,
-                backgroundColor: theme.palette.secondary.main,
-                fill: theme.palette.text.disabled,
-                '& .mic-off-line': {
-                  fill: theme.palette.text.disabled,
+              {
+                props: {
+                  color: 'error',
+                },
+                style: {
+                  // We should always use theme.palette.error.main instead of hard-coding '#fe5f60'
+                  // but currently we wrap conference toolbar buttons into
+                  // light mode instead of dark for some reason. Therefore the palette color do not match.
+                  // Should be fixed during https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2096
+                  background: '#fe5f60',
+                  svg: {
+                    fill: theme.palette.common.white,
+                  },
+                  ':hover': {
+                    background: theme.palette.common.white,
+                    svg: {
+                      fill: '#fe5f60',
+                    },
+                  },
                 },
               },
-            }),
-            ...(ownerState.color === 'error' && {
-              // We should always use theme.palette.error.main instead of hard-coding '#fe5f60'
-              // but currently we wrap conference toolbar buttons into
-              // light mode instead of dark for some reason. Therefore the palette color do not match.
-              // Should be fixed during https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2096
-              background: '#fe5f60',
-              svg: {
-                fill: theme.palette.common.white,
-              },
-              ':hover': {
-                background: theme.palette.common.white,
-                svg: {
-                  fill: '#fe5f60',
-                },
-              },
-            }),
+            ],
           }),
           colorPrimary: ({ theme }) => ({
             background: theme.palette.primary.main,
@@ -413,7 +431,7 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
       },
       MuiInputBase: {
         styleOverrides: {
-          root: ({ ownerState, theme }) => ({
+          root: ({ theme }) => ({
             display: 'flex',
             borderRadius: 2,
             fontSize: theme.typography.pxToRem(16),
@@ -423,10 +441,7 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             color: theme.palette.secondary.contrastText,
             border: `1px ${theme.palette.secondary.main}`,
             '& .MuiSvgIcon-root': {
-              color:
-                ownerState.color === 'primary'
-                  ? theme.palette.secondary.contrastText
-                  : theme.palette.primary.contrastText,
+              color: theme.palette.primary.contrastText,
             },
             ':hover': {
               border: `1px ${theme.palette.primary.main}`,
@@ -454,31 +469,46 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             [theme.breakpoints.down('md')]: {
               lineHeight: 'unset',
             },
-            ...(ownerState.checked && {
-              '&:not(&.Mui-focused):not(:hover)': {
-                backgroundColor: '#C1E9D2',
-                color: mode === 'light' ? theme.palette.primary.contrastText : theme.palette.secondary.contrastText,
-                border: '1px solid #24A037',
-                '&::after': {
-                  content: `url(${doneSvg})`,
-                  position: 'absolute',
-                  backgroundColor: '#C1E9D2',
-                  paddingLeft: theme.spacing(1),
-                  right: theme.spacing(2),
-                  width: theme.typography.pxToRem(24),
-                  height: theme.typography.pxToRem(16),
-                  [theme.breakpoints.down('md')]: {
-                    width: theme.typography.pxToRem(20),
-                    height: theme.typography.pxToRem(12),
-                    transform: 'translateY(-1px)',
-                  },
-                },
-              },
-            }),
             '& .MuiButtonBase-root.MuiIconButton-root.Mui-focusVisible': {
               outline: theme.palette.focus.contrastOutline,
               outlineOffset: '-2px',
             },
+            variants: [
+              {
+                props: {
+                  color: 'primary',
+                },
+                style: {
+                  '& .MuiSvgIcon-root': {
+                    color: theme.palette.secondary.contrastText,
+                  },
+                },
+              },
+              {
+                props: ({ ownerState }) => ownerState.checked,
+                style: {
+                  '&:not(&.Mui-focused):not(:hover)': {
+                    backgroundColor: '#C1E9D2',
+                    color: mode === 'light' ? theme.palette.primary.contrastText : theme.palette.secondary.contrastText,
+                    border: '1px solid #24A037',
+                    '&::after': {
+                      content: `url(${doneSvg})`,
+                      position: 'absolute',
+                      backgroundColor: '#C1E9D2',
+                      paddingLeft: theme.spacing(1),
+                      right: theme.spacing(2),
+                      width: theme.typography.pxToRem(24),
+                      height: theme.typography.pxToRem(16),
+                      [theme.breakpoints.down('md')]: {
+                        width: theme.typography.pxToRem(20),
+                        height: theme.typography.pxToRem(12),
+                        transform: 'translateY(-1px)',
+                      },
+                    },
+                  },
+                },
+              },
+            ],
           }),
           input: ({ theme }) => ({
             padding: theme.spacing(1.5, 2),
@@ -537,23 +567,29 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
       },
       MuiFormHelperText: {
         styleOverrides: {
-          root: ({ ownerState, theme }) => ({
+          root: ({ theme }) => ({
             marginLeft: 0,
-            color: ownerState.error ? theme.palette.error.main : theme.palette.text.primary,
-            ...(ownerState.error && {
-              '&::before': {
-                content: "'!'",
-                display: 'inline-flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '1.25rem',
-                height: '1.25rem',
-                borderRadius: '50%',
-                backgroundColor: theme.palette.error.main,
-                color: theme.palette.error.contrastText,
-                marginRight: theme.spacing(0.5),
+            color: theme.palette.text.primary,
+            variants: [
+              {
+                props: ({ ownerState }) => ownerState.error,
+                style: {
+                  color: theme.palette.error.main,
+                  '&::before': {
+                    content: "'!'",
+                    display: 'inline-flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '1.25rem',
+                    height: '1.25rem',
+                    borderRadius: '50%',
+                    backgroundColor: theme.palette.error.main,
+                    color: theme.palette.error.contrastText,
+                    marginRight: theme.spacing(0.5),
+                  },
+                },
               },
-            }),
+            ],
           }),
         },
       },
@@ -650,7 +686,6 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
           root: ({ theme }) => ({
             fontWeight: 400,
             padding: theme.spacing(1.5, 2),
-
             '&: hover': {
               background: theme.palette.secondary.lighter,
             },

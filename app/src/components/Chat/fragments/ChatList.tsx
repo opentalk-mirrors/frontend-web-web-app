@@ -147,8 +147,21 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
   }
 
   return (
-    <Stack flex={1} overflow="hidden" justifyContent="center">
-      <Stack data-testid="no-messages" alignItems="center" overflow="auto" spacing={2}>
+    <Stack
+      sx={{
+        flex: 1,
+        overflow: 'hidden',
+        justifyContent: 'center',
+      }}
+    >
+      <Stack
+        data-testid="no-messages"
+        spacing={2}
+        sx={{
+          alignItems: 'center',
+          overflow: 'auto',
+        }}
+      >
         <Box>
           <EncryptedMessagesImage width="7em" height="7em" />
         </Box>

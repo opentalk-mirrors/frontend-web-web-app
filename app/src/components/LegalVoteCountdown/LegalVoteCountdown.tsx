@@ -65,9 +65,23 @@ export default function LegalVoteCountdown({ active, duration, startTime, ...box
   }, [duration, startTime, active]);
 
   return (
-    <Box display="flex" alignItems="center" {...boxProps}>
+    <Box
+      {...boxProps}
+      sx={[
+        {
+          display: 'flex',
+          alignItems: 'center',
+        },
+        ...(Array.isArray(boxProps.sx) ? boxProps.sx : [boxProps.sx]),
+      ]}
+    >
       <DurationIcon />
-      <Typography ml={0.5} sx={{ fontVariantNumeric: 'tabular-nums' }}>
+      <Typography
+        sx={{
+          ml: 0.5,
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
         {counter}
       </Typography>
     </Box>

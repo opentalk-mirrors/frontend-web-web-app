@@ -130,25 +130,44 @@ const RoomOverview = () => {
   };
 
   return (
-    <Box display="flex" flex={1} gap={1} flexDirection="column" overflow="hidden">
+    <Box
+      sx={{
+        display: 'flex',
+        flex: 1,
+        gap: 1,
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
       <Box>
         <Typography variant="h6">{t('breakout-room-room-overview-title')}</Typography>
       </Box>
-
       <Box>
         <Typography variant="body2" color="primary">
           <StyledClockIcon />
           {renderDurationText()}
         </Typography>
       </Box>
-
-      <Box display="flex" flexDirection="column" flex={1} gap={1} overflow="hidden">
-        <Typography variant="body2" noWrap paddingTop={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          gap: 1,
+          overflow: 'hidden',
+        }}
+      >
+        <Typography
+          variant="body2"
+          noWrap
+          sx={{
+            paddingTop: 1,
+          }}
+        >
           {t('breakout-room-room-overview-participant-list')}
         </Typography>
         <ListContainer>{renderAccordions()}</ListContainer>
       </Box>
-
       <Box>
         <Button color="primary" variant="contained" onClick={stopBreakoutRoom}>
           {t('breakout-room-room-overview-button-close')}

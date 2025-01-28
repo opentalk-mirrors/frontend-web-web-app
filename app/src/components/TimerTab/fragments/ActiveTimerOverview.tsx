@@ -28,13 +28,18 @@ const ActiveTimerOverview = ({ timerStyle }: { timerStyle: TimerStyle }) => {
   };
 
   return (
-    <Stack flex={1} spacing={1} overflow="hidden">
+    <Stack
+      spacing={1}
+      sx={{
+        flex: 1,
+        overflow: 'hidden',
+      }}
+    >
       <TimerContainer flex={1} spacing={1}>
         <TimerDuration style={timerStyle} />
 
         {timerStyle === TimerStyle.Normal && <UserList />}
       </TimerContainer>
-
       <Button color="secondary" onClick={handleStop}>
         {timerStyle === TimerStyle.Normal ? t('timer-overview-button-stop') : t('coffee-break-overview-button-stop')}
       </Button>

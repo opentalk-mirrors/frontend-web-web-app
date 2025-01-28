@@ -21,7 +21,6 @@ import {
   showConsentNotification,
 } from './Notistack';
 import { ISnackActionsProps, ISnackbarPersistentProps, ISnackbarActionButtonProps } from './Notistack';
-import NumberInput from './NumberInput';
 import ParticipantAvatar, { setLibravatarOptions } from './ParticipantAvatar';
 import ProgressBar from './ProgressBar';
 import Rating from './Rating';
@@ -39,7 +38,6 @@ export {
   DurationField,
   NameTile,
   ErrorFormMessage,
-  NumberInput,
   Rating,
   FormWrapper,
   SuspenseLoading,

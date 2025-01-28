@@ -55,7 +55,15 @@ const LegalVoteOverview = ({ onClickItem }: ILegalVoteOverviewProps) => {
 
   if (votes.length === 0 && savedLegalVotes.length === 0) {
     return (
-      <Stack flex={1} spacing={2} overflow="auto" justifyContent="center" alignItems="center">
+      <Stack
+        spacing={2}
+        sx={{
+          flex: 1,
+          overflow: 'auto',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <Box>
           <NoVoteImage />
         </Box>
@@ -111,7 +119,12 @@ const LegalVoteOverview = ({ onClickItem }: ILegalVoteOverviewProps) => {
   );
 
   return (
-    <Stack flex={1} overflow="auto">
+    <Stack
+      sx={{
+        flex: 1,
+        overflow: 'auto',
+      }}
+    >
       {savedLegalVotes.length > 0 && renderSavedLegalVotes()}
       {votes.length > 0 && renderLegalVotes()}
     </Stack>

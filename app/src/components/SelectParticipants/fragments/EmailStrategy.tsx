@@ -16,15 +16,37 @@ export const EmailStrategy = {
   renderOption: (noOptionsText: string) => (props: React.HTMLAttributes<HTMLLIElement>, option: ParticipantOption) => {
     if (!schema.isValidSync(option.email)) {
       return (
-        <Box key="no-options" component="li" display="flex" style={props.style} className={props.className}>
+        <Box
+          key="no-options"
+          component="li"
+          style={props.style}
+          className={props.className}
+          sx={{
+            display: 'flex',
+          }}
+        >
           <Typography noWrap>{noOptionsText}</Typography>
         </Box>
       );
     }
 
     return (
-      <Box key={option.email} component="li" display="flex" {...props}>
-        <Box mr={1}>
+      <Box
+        key={option.email}
+        component="li"
+        {...props}
+        sx={[
+          {
+            display: 'flex',
+          },
+          ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
+        ]}
+      >
+        <Box
+          sx={{
+            mr: 1,
+          }}
+        >
           <ParticipantAvatar specialCharacter="@" />
         </Box>
         <Stack>

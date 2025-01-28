@@ -217,7 +217,15 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
                   checked={areParticipantVideosEnabled}
                 />
               }
-              label={<Typography fontWeight="normal">{t('videomenu-participant-videos')}</Typography>}
+              label={
+                <Typography
+                  sx={{
+                    fontWeight: 'normal',
+                  }}
+                >
+                  {t('videomenu-participant-videos')}
+                </Typography>
+              }
               labelPlacement="start"
             />
           </BackgroundOptionsContainer>
@@ -230,14 +238,30 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
             {isBackgroundAndBlurringSupported && (
               <FormControlLabel
                 control={<Switch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />}
-                label={<Typography fontWeight="normal">{t('videomenu-blur')}</Typography>}
+                label={
+                  <Typography
+                    sx={{
+                      fontWeight: 'normal',
+                    }}
+                  >
+                    {t('videomenu-blur')}
+                  </Typography>
+                }
                 labelPlacement="start"
                 disabled={videoBackgroundEffects.loading}
               />
             )}
             <FormControlLabel
               control={<Switch onChange={toggleMirroring} value={mirroringEnabled} checked={mirroringEnabled} />}
-              label={<Typography fontWeight="normal">{t('videomenu-mirroring')}</Typography>}
+              label={
+                <Typography
+                  sx={{
+                    fontWeight: 'normal',
+                  }}
+                >
+                  {t('videomenu-mirroring')}
+                </Typography>
+              }
               labelPlacement="start"
             />
           </BackgroundOptionsContainer>
@@ -246,7 +270,13 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
         {isBackgroundAndBlurringSupported && videoBackgrounds.length > 0 && (
           <>
             <Divider variant="middle" />
-            <Typography fontWeight="normal" id="background-images-title" sx={{ px: 2 }}>
+            <Typography
+              id="background-images-title"
+              sx={{
+                fontWeight: 'normal',
+                px: 2,
+              }}
+            >
               {t('videomenu-background-images')}
             </Typography>
             <BackgroundImageList aria-labelledby="background-images-title" role="listbox">

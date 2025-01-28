@@ -65,10 +65,7 @@ export default function Ballot() {
         disableAutoFocus
         onKeyDown={(e) => e.stopPropagation()}
         onKeyUp={(e) => e.stopPropagation()}
-        PaperProps={{
-          'aria-modal': true,
-          'aria-labelledby': LEGEND_TITLE_ID,
-        }}
+        slotProps={{ paper: { 'aria-modal': true, 'aria-labelledby': LEGEND_TITLE_ID } }}
       >
         <PollContainer onClose={handleClose} poll={pollToShow} />
       </Dialog>
@@ -86,11 +83,7 @@ export default function Ballot() {
         disableAutoFocus
         onKeyDown={(e) => e.stopPropagation()}
         onKeyUp={(e) => e.stopPropagation()}
-        PaperProps={{
-          sx: { maxWidth: 700 },
-          'aria-modal': true,
-          'aria-labelledby': LEGEND_TITLE_ID,
-        }}
+        slotProps={{ paper: { sx: { maxWidth: 700 }, 'aria-modal': true, 'aria-labelledby': LEGEND_TITLE_ID } }}
       >
         <LegalVoteContainer onClose={handleClose} legalVote={legalVoteToShow} isAllowedToVote={isAllowedToVote} />
         {isAllowedToVote && <ReportSection legalVoteId={legalVoteToShow.id} />}

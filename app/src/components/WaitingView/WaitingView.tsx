@@ -82,7 +82,17 @@ const WaitingView = () => {
           }
           waitingRoom
         >
-          <Grid container item alignItems="center" direction="column" sm={12} md="auto" mt={0}>
+          <Grid
+            container
+            item
+            direction="column"
+            sm={12}
+            md="auto"
+            sx={{
+              alignItems: 'center',
+              mt: 0,
+            }}
+          >
             <WaitingRoomText variant="body1">
               {readyToEnter ? t('in-waiting-room-ready') : t('in-waiting-room')}
             </WaitingRoomText>

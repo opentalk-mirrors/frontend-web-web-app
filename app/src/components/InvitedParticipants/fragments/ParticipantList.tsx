@@ -42,7 +42,13 @@ const ParticipantList = ({ isUpdatable, status, invitees, removeSelectedUser, ev
   };
   return (
     <Grid item xs={12} sm={4} data-testid="ParticipantList">
-      <Typography variant="body1" component="h3" mb={1}>
+      <Typography
+        variant="body1"
+        component="h3"
+        sx={{
+          mb: 1,
+        }}
+      >
         {t(`dashboard-meeting-details-page-participant-${status}`)}
       </Typography>
       <ParticipantListBox direction={isMobile ? 'row' : 'column'} data-testid="ParticipantListBox">

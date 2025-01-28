@@ -9,7 +9,17 @@ export const DurationFieldWrapper = (props: PropsWithChildren<BoxProps>) => {
   const { t } = useTranslation();
 
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="center" {...props}>
+    <Box
+      {...props}
+      sx={[
+        {
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        },
+        ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
+      ]}
+    >
       <Typography>{t('global-duration')}</Typography>
       {props.children}
     </Box>

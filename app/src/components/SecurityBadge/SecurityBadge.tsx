@@ -114,7 +114,15 @@ const SecurityBadge = () => {
   const open = Boolean(anchorEl);
 
   const renderWarningPopoverContent = () => (
-    <Grid container spacing={2} columns={6} maxWidth="24rem" alignItems="center">
+    <Grid
+      container
+      spacing={2}
+      columns={6}
+      sx={{
+        maxWidth: '24rem',
+        alignItems: 'center',
+      }}
+    >
       <Grid item xs={2}>
         <SecureIconBig warning />
       </Grid>
@@ -125,7 +133,14 @@ const SecurityBadge = () => {
     </Grid>
   );
   const renderSecurePopoverContent = () => (
-    <Grid container columns={6} maxWidth="24rem" alignItems="center">
+    <Grid
+      container
+      columns={6}
+      sx={{
+        maxWidth: '24rem',
+        alignItems: 'center',
+      }}
+    >
       <CenteredGrid item xs={2}>
         <SecureIconBig />
       </CenteredGrid>

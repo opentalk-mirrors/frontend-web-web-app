@@ -59,7 +59,13 @@ export const MobileHome = () => {
 
   const MobileCurrentMeetings = () => (
     <>
-      <Typography variant="body1" component="h2" pb="0.75rem">
+      <Typography
+        variant="body1"
+        component="h2"
+        sx={{
+          pb: '0.75rem',
+        }}
+      >
         {t('dashboard-current-meetings')}
       </Typography>
       <CurrentMeetingsContainer>

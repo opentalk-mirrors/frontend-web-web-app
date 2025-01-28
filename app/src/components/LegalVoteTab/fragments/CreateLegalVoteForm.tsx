@@ -110,7 +110,15 @@ const CreateLegalVoteForm = ({
         component: (formik) => (
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Stack direction="row" alignItems="center" justifyContent="space-between" paddingTop={1} paddingRight={1}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingTop: 1,
+                  paddingRight: 1,
+                }}
+              >
                 <Typography variant="body2">{t('legal-vote-form-duration')}</Typography>
                 <DurationField
                   {...formikDurationFieldProps('duration', formik)}
@@ -215,7 +223,14 @@ const CreateLegalVoteForm = ({
     values: FormikValues,
     handleNext: React.MouseEventHandler<HTMLButtonElement> | undefined
   ) => (
-    <Box display="flex" justifyContent="space-between" gap={2} padding={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        gap: 2,
+        padding: 1,
+      }}
+    >
       {!isLastStep && (
         <Button type="button" onClick={() => saveFormValues(values as LegalVoteFormValues)} fullWidth>
           {t('legal-vote-form-button-save')}
@@ -241,9 +256,28 @@ const CreateLegalVoteForm = ({
     >
       {({ renderComponent, handlePrev, handleNext, values, currentStepIndex, isLastStep }) => {
         return (
-          <Stack flex={1} overflow="hidden" spacing={1}>
-            <Stack flex={1} spacing={1} overflow="hidden">
-              <Stack alignItems="flex-start" paddingLeft={0.5} paddingTop={0.5}>
+          <Stack
+            spacing={1}
+            sx={{
+              flex: 1,
+              overflow: 'hidden',
+            }}
+          >
+            <Stack
+              spacing={1}
+              sx={{
+                flex: 1,
+                overflow: 'hidden',
+              }}
+            >
+              <Stack
+                spacing={1}
+                sx={{
+                  alignItems: 'flex-start',
+                  paddingLeft: 0.5,
+                  paddingTop: 0.5,
+                }}
+              >
                 <Button
                   variant="text"
                   onClick={currentStepIndex && currentStepIndex > 0 ? handlePrev : onClose}
@@ -261,7 +295,6 @@ const CreateLegalVoteForm = ({
 
               <Form>{renderComponent()}</Form>
             </Stack>
-
             {renderButtons(isLastStep, values, handleNext)}
           </Stack>
         );

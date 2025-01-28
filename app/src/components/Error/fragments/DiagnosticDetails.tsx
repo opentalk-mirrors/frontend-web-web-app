@@ -46,7 +46,12 @@ const DiagnosticDetails = ({ error, errorInfo }: DiagnosticDetailsProps) => {
   };
 
   return (
-    <Stack spacing={1} alignItems="center">
+    <Stack
+      spacing={1}
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <CollapseButton
         disableRipple
         size="large"
@@ -61,12 +66,17 @@ const DiagnosticDetails = ({ error, errorInfo }: DiagnosticDetailsProps) => {
       </CollapseButton>
       <DiagnosticDataElement>
         <Collapse orientation="vertical" in={!collapsed}>
-          <Typography textAlign="left" variant="body2" color="inherit">
+          <Typography
+            variant="body2"
+            color="inherit"
+            sx={{
+              textAlign: 'left',
+            }}
+          >
             {JSON.stringify(diagnosticData, null, '\t')}
           </Typography>
         </Collapse>
       </DiagnosticDataElement>
-
       <Button
         href={`mailto:?to=${email}&body=${encodeURIComponent(
           JSON.stringify(diagnosticData)

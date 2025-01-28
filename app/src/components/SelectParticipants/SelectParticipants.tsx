@@ -136,20 +136,22 @@ const SelectParticipants = ({
           placeholder={placeholder}
           label={label}
           variant="outlined"
-          InputProps={{
-            ...InputProps,
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon aria-label={t('dashboard-select-participants-label-search')}>
-                  <CopyIcon />
-                </SearchIcon>
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                {isLoading ? <CircularProgress color="inherit" size={16} /> : null}
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              ...InputProps,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon aria-label={t('dashboard-select-participants-label-search')}>
+                    <CopyIcon />
+                  </SearchIcon>
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  {isLoading ? <CircularProgress color="inherit" size={16} /> : null}
+                </InputAdornment>
+              ),
+            },
           }}
         />
       )}

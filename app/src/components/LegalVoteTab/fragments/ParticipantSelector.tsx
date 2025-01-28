@@ -161,7 +161,13 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
   );
 
   const renderAllUsersButton = (
-    <Grid item xs={12} display="flex">
+    <Grid
+      item
+      xs={12}
+      sx={{
+        display: 'flex',
+      }}
+    >
       <Button onClick={checkAllHandler} fullWidth>
         {t('poll-participant-list-button-select-all')}
       </Button>
@@ -179,7 +185,12 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
         <Grid item xs zeroMinWidth>
           <ListItemText primary={<Typography noWrap>{participant.displayName}</Typography>} />
         </Grid>
-        <Grid item alignContent="flex-end">
+        <Grid
+          item
+          sx={{
+            alignContent: 'flex-end',
+          }}
+        >
           <Checkbox
             checked={isSelectedParticipant(allowedParticipants, participant.id)}
             id={participant.id}

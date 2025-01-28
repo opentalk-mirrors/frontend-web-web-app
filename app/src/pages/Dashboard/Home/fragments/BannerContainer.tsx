@@ -8,7 +8,12 @@ import { StorageAlmostFullBanner } from './StorageAlmostFullBanner';
 
 const BannerContainer = () => {
   return (
-    <Stack direction="column" gap={1}>
+    <Stack
+      direction="column"
+      sx={{
+        gap: 1,
+      }}
+    >
       <PaymentStatusBanner />
       <StorageAlmostFullBanner />
     </Stack>

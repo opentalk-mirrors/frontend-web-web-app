@@ -216,11 +216,21 @@ const MeetingNotesTab = () => {
       data-testid="meeting-notes-tab"
       spacing={2}
       direction="column"
-      alignItems="center"
-      flex={1}
-      overflow="hidden"
+      sx={{
+        alignItems: 'center',
+        flex: 1,
+        overflow: 'hidden',
+      }}
     >
-      <Stack spacing={2} flex={1} width="100%" overflow="hidden" padding={0.5}>
+      <Stack
+        spacing={2}
+        sx={{
+          flex: 1,
+          width: '100%',
+          overflow: 'hidden',
+          padding: 0.5,
+        }}
+      >
         <Button
           fullWidth
           onClick={openParticipantsListPanel}
@@ -231,7 +241,14 @@ const MeetingNotesTab = () => {
         </Button>
         {renderSelectedParticipantListItems()}
       </Stack>
-      <Stack direction="column" width="100%" spacing={1} alignItems="center">
+      <Stack
+        direction="column"
+        spacing={1}
+        sx={{
+          width: '100%',
+          alignItems: 'center',
+        }}
+      >
         {meetingNotesUrl && (
           <Button fullWidth onClick={uploadPdfAction} aria-label={t('meeting-notes-upload-pdf-button')}>
             {t('meeting-notes-upload-pdf-button')}
@@ -311,7 +328,13 @@ const MeetingNotesTab = () => {
                 ))}
               </List>
             </ParticipantsListGrid>
-            <Stack justifyContent="space-between" direction="row" spacing={2}>
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                justifyContent: 'space-between',
+              }}
+            >
               <Button variant="text" onClick={closeParticipantsListPanel}>
                 {t('poll-participant-list-button-close')}
               </Button>

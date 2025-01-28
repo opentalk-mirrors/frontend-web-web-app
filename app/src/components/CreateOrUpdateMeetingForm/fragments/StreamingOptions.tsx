@@ -44,13 +44,16 @@ const StreamingOptions = ({ formik }: StreamingOptionsProps) => {
   const { enabled: streamingEnabled } = formik.values.streaming;
 
   return (
-    <Stack gap={2}>
+    <Stack
+      sx={{
+        gap: 2,
+      }}
+    >
       <MeetingFormSwitch
         checked={streamingEnabled}
         switchProps={formikMinimalProps('streaming.enabled', formik)}
         switchValueLabel={t(`dashboard-meeting-livestream-switch`)}
       />
-
       <Collapse orientation="vertical" in={streamingEnabled} unmountOnExit mountOnEnter>
         <OptionsRow>
           <CommonTextField

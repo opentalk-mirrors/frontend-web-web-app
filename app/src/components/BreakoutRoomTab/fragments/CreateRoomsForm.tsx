@@ -97,7 +97,12 @@ const CreateRoomsForm = () => {
     () => [
       {
         component: (formik) => (
-          <Box overflow="auto" height="100%">
+          <Box
+            sx={{
+              overflow: 'auto',
+              height: '100%',
+            }}
+          >
             <AccordionItem
               onChange={handleChange(AccordionOptions.Rooms, formik)}
               option={AccordionOptions.Rooms}
@@ -127,7 +132,15 @@ const CreateRoomsForm = () => {
           return formState.distribution ? (
             <HandleSubmit handleNext={handleNextRef.current as () => void} formik={formik} />
           ) : (
-            <Box display="flex" flexDirection="column" flex={1} height="100%" gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                height: '100%',
+                gap: 1,
+              }}
+            >
               <Box>
                 <Button
                   variant="text"
@@ -138,7 +151,12 @@ const CreateRoomsForm = () => {
                   {t('user-selection-button-back')}
                 </Button>
               </Box>
-              <Box overflow="hidden" flex={1}>
+              <Box
+                sx={{
+                  overflow: 'hidden',
+                  flex: 1,
+                }}
+              >
                 <ParticipantsSelector
                   onSubmit={handleNextRef.current as () => void}
                   formName={formik.values.expanded}

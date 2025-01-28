@@ -84,7 +84,13 @@ const MobileHeadbar = ({ activeNavbar, toggleNavbar, path }: HeadbarProps) => {
       <SideContainer>
         <ProfileChip collapsed={true} />
       </SideContainer>
-      <Typography variant="h1" textAlign="center" textTransform="capitalize">
+      <Typography
+        variant="h1"
+        sx={{
+          textAlign: 'center',
+          textTransform: 'capitalize',
+        }}
+      >
         {getTitle()}
       </Typography>
       <SideContainer>

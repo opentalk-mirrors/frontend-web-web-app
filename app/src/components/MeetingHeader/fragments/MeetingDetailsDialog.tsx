@@ -160,7 +160,13 @@ ${
         {t('meeting-details-dialog-title', { title })}
       </DialogTitle>
       {roomOwner && renderSubtitle()}
-      <Box position="absolute" top={5} right={5}>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 5,
+          right: 5,
+        }}
+      >
         <IconButton onClick={onClose} aria-label={t('global-close-dialog')}>
           <CloseIcon />
         </IconButton>
@@ -196,7 +202,6 @@ ${
           {streamingLinksExist && renderStreamingLinks(meetingDetails.streamingLinks)}
         </Stack>
       </DialogContent>
-
       <DialogActionsTitle>{t('meeting-details-dialog-button-header')}</DialogActionsTitle>
       <DialogActionsLeftAligned>
         {/* eslint-disable-next-line jsx-a11y/no-autofocus */}

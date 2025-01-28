@@ -61,14 +61,16 @@ const RenameParticipantDialog = ({ open, onClose, participant }: RenameParticipa
       onClose={handleClose}
       PaperComponent={Paper}
       fullWidth
-      PaperProps={{
-        component: 'form',
-        // component: 'form' is not changing the element type (the elements is still considered a div instead of a form) so we ts-ignore it.
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-          event.preventDefault();
-          formik.handleSubmit(event);
+      slotProps={{
+        paper: {
+          component: 'form',
+          // component: 'form' is not changing the element type (the elements is still considered a div instead of a form) so we ts-ignore it.
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            formik.handleSubmit(event);
+          },
         },
       }}
     >

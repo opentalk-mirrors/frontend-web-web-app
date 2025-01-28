@@ -103,8 +103,20 @@ export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
         {t('legal-vote-report-issue-title')}
       </Button>
       {expanded && (
-        <Stack component="form" onSubmit={formik.handleSubmit} mt={1}>
-          <Typography id="report-technical-problem" component="h3" mb={1}>
+        <Stack
+          component="form"
+          onSubmit={formik.handleSubmit}
+          sx={{
+            mt: 1,
+          }}
+        >
+          <Typography
+            id="report-technical-problem"
+            component="h3"
+            sx={{
+              mb: 1,
+            }}
+          >
             {t('legal-vote-report-issue-title')}
           </Typography>
           <RadioGroup
@@ -145,7 +157,13 @@ export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
               />
             </>
           )}
-          <Box display="flex" mt={1} gap={1}>
+          <Box
+            sx={{
+              display: 'flex',
+              mt: 1,
+              gap: 1,
+            }}
+          >
             <Button type="button" color="secondary" onClick={handleCancel}>
               {t('global-cancel')}
             </Button>

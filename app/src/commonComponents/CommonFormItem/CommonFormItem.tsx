@@ -46,7 +46,13 @@ const CommonFormItem = ({
 
   return (
     <Stack>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <label htmlFor={id}>{label}</label>
         {React.cloneElement(control, {
           onChange,

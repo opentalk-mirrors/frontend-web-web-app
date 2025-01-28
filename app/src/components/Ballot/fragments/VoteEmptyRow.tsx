@@ -11,7 +11,14 @@ function VoteEmptyRow() {
   return (
     <TableRow>
       <TableCell colSpan={4}>
-        <Typography noWrap component="span" textAlign="center" display="block">
+        <Typography
+          noWrap
+          component="span"
+          sx={{
+            textAlign: 'center',
+            display: 'block',
+          }}
+        >
           {t('legal-vote-no-results')}
         </Typography>
       </TableCell>

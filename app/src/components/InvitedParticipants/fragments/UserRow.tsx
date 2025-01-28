@@ -128,7 +128,13 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
   const renderLabel = (eventInvite: EventInvite) => {
     if (isRegisteredUser(eventInvite.profile)) {
       return (
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: 'center',
+          }}
+        >
           <Typography variant="body2" noWrap>
             {eventInvite.profile.firstname} {eventInvite.profile.lastname}
           </Typography>

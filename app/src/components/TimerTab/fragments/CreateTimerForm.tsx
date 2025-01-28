@@ -105,7 +105,12 @@ const CreateTimerForm = ({ timerStyle }: { timerStyle: TimerStyle }) => {
 
   return (
     <Container>
-      <Stack spacing={2} mb={2}>
+      <Stack
+        spacing={2}
+        sx={{
+          mb: 2,
+        }}
+      >
         <DurationFieldWrapper>
           <DurationField
             {...formikDurationFieldProps('duration', formik, defaultValue)}
@@ -136,7 +141,6 @@ const CreateTimerForm = ({ timerStyle }: { timerStyle: TimerStyle }) => {
           </>
         )}
       </Stack>
-
       <SubmitButton onClick={handleSubmit}>{texts.button}</SubmitButton>
     </Container>
   );

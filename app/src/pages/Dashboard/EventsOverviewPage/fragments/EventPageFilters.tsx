@@ -46,10 +46,12 @@ export const EventPageFilters = ({
   return (
     <Stack
       direction="row"
-      alignItems="center"
       spacing={1}
-      justifyContent={visuallyDivide ? 'space-between' : undefined}
-      flex={isMobile ? 1 : undefined}
+      sx={{
+        alignItems: 'center',
+        justifyContent: visuallyDivide ? 'space-between' : undefined,
+        flex: isMobile ? 1 : undefined,
+      }}
     >
       <CustomSelect
         value={filters.timePerspective}

@@ -72,7 +72,13 @@ const GridView = () => {
   const areGridCellsLoading = totalParticipants > 1 && gridCells.length === 0;
 
   const loadingGrids = (
-    <Grid container justifyContent="center" alignContent="center">
+    <Grid
+      container
+      sx={{
+        justifyContent: 'center',
+        alignContent: 'center',
+      }}
+    >
       <CircularProgress />
     </Grid>
   );

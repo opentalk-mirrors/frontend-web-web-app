@@ -187,15 +187,33 @@ export const RecurringEventDialog = ({
       data-testid="recurrence-dialog"
     >
       <DialogTitle id={RECURRING_DIALOG_LABEL_ID}>{t('dashboard-recurrence-dialog-title')}</DialogTitle>
-
       <DialogContent>
-        <Grid container rowGap={2}>
-          <Grid container alignItems="center">
+        <Grid
+          container
+          sx={{
+            rowGap: 2,
+          }}
+        >
+          <Grid
+            container
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <Grid item sm={4}>
               <CommonLabel>{t('dashboard-recurrence-dialog-frequency-label')}</CommonLabel>
             </Grid>
 
-            <Grid container item sm={8} justifyItems="baseline" alignItems="center" spacing={2}>
+            <Grid
+              container
+              item
+              sm={8}
+              spacing={2}
+              sx={{
+                justifyItems: 'baseline',
+                alignItems: 'center',
+              }}
+            >
               <Grid item sm="auto">
                 <NumberInput
                   type="number"
@@ -222,7 +240,12 @@ export const RecurringEventDialog = ({
             </Grid>
           </Grid>
           {(rruleObject.freq === RRule.MONTHLY || rruleObject.freq === RRule.WEEKLY) && (
-            <Grid container alignItems="center">
+            <Grid
+              container
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <Grid item sm={4}>
                 <InputLabel>{t('dashboard-recurrence-dialog-frequency-details-label')}</InputLabel>
               </Grid>
@@ -243,7 +266,6 @@ export const RecurringEventDialog = ({
           </Grid>
         </Grid>
       </DialogContent>
-
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={closeDialog}>
           {t('dashboard-recurrence-dialog-close-button')}

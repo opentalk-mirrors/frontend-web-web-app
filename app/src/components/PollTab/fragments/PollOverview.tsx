@@ -59,7 +59,11 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
   if (polls.length === 0 && savedPolls.length === 0) {
     return (
       <EmptyPollContainer>
-        <Box marginBottom={2}>
+        <Box
+          sx={{
+            marginBottom: 2,
+          }}
+        >
           <NoPollsIcon />
         </Box>
         <Typography align="center" variant="body2">
@@ -114,8 +118,21 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
   );
 
   return (
-    <Box display="flex" flexDirection="column" flex={1} marginBottom={1} overflow="hidden">
-      <Box height="100%" overflow="auto">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        marginBottom: 1,
+        overflow: 'hidden',
+      }}
+    >
+      <Box
+        sx={{
+          height: '100%',
+          overflow: 'auto',
+        }}
+      >
         {savedPolls.length > 0 && renderSavedPolls()}
         {polls.length > 0 && renderPolls()}
       </Box>

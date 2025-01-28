@@ -34,11 +34,16 @@ const ReconnectionDialog = () => {
     <Dialog open fullWidth maxWidth="xs">
       <DialogTitle>{t('reconnection-loop-dialogbox-title')}</DialogTitle>
       <DialogContent>
-        <Box display="flex" alignItems="center" justifyContent="center">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <CircularProgress />
         </Box>
       </DialogContent>
-
       <DialogActions>
         <Button fullWidth onClick={abort}>
           {t('reconnection-loop-abort-button')}

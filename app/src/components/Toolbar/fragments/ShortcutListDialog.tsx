@@ -68,13 +68,29 @@ const ShortcutListDialog = (props: ShortcutListDialogProps) => {
         {t('shortcut-table-summary')}
       </Typography>
       <Stack component="header">
-        <Box display="flex" alignItems="center" justifyContent="space-between" p={2} position="relative">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 2,
+            position: 'relative',
+          }}
+        >
           <DialogTitle sx={{ p: 0 }}>{t('my-meeting-menu-keyboard-shortcuts')}</DialogTitle>
           <CloseButton aria-label={t('global-close-dialog')} onClick={onClose}>
             <CloseIcon />
           </CloseButton>
         </Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" p={2} position="relative">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 2,
+            position: 'relative',
+          }}
+        >
           <SwitchLabel htmlFor={switchId}>{t('my-meeting-menu-keyboard-shortcuts')}</SwitchLabel>
           <Switch
             id={switchId}

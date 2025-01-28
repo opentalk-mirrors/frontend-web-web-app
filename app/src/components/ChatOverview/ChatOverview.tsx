@@ -77,7 +77,14 @@ const ChatOverview = () => {
         )}
       </List>
     ) : (
-      <Stack flex={1} justifyContent="center" alignItems="center" spacing={2}>
+      <Stack
+        spacing={2}
+        sx={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <NoNewMessageImage width="7em" height="7em" />
         <Typography align="center" variant="body2">
           {t('empty-messages')}

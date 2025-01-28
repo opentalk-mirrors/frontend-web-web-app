@@ -51,20 +51,24 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
         component="header"
         rowSpacing={0}
         columnSpacing={2}
-        alignItems="center"
         columns={12}
         style={{ marginTop: resetMarginTop, marginLeft: resetMarginLeft }}
         data-testid="events-page-header-desktop"
+        sx={{
+          alignItems: 'center',
+        }}
       >
         <Grid
           item
           container
           xs="auto"
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          gap={2}
           zeroMinWidth
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 2,
+          }}
         >
           <Typography variant="h1" component="h1">
             {title}
@@ -75,13 +79,27 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
             showTimePerspectiveFilter={showTimePerspectiveFilter}
           />
         </Grid>
-        <Grid item display="flex" justifyContent="space-between" flex={1} zeroMinWidth>
+        <Grid
+          item
+          zeroMinWidth
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flex: 1,
+          }}
+        >
           <EventFilterButtonBar filters={filters} onFilterChange={onFilterChange} />
           <CreateNewMeetingButton />
         </Grid>
         {isContainingRecurringEvents && (
           <Grid item xs={12}>
-            <Typography variant="h2" component="h2" mt={2}>
+            <Typography
+              variant="h2"
+              component="h2"
+              sx={{
+                mt: 2,
+              }}
+            >
               {t('dashboard-events-note-limited-view')}
             </Typography>
           </Grid>
@@ -95,13 +113,25 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
       <Grid
         container
         component="header"
-        alignItems="center"
         spacing={2}
         columns={12}
         style={{ marginTop: resetMarginTop, marginLeft: resetMarginLeft }}
         data-testid="events-page-header-tablet"
+        sx={{
+          alignItems: 'center',
+        }}
       >
-        <Grid item container columns={12} xs={12} rowSpacing={0} columnSpacing={1} alignItems="center">
+        <Grid
+          item
+          container
+          columns={12}
+          xs={12}
+          rowSpacing={0}
+          columnSpacing={1}
+          sx={{
+            alignItems: 'center',
+          }}
+        >
           <Grid item xs="auto">
             <EventPageFilters
               filters={filters}
@@ -109,7 +139,14 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
               showTimePerspectiveFilter={showTimePerspectiveFilter}
             />
           </Grid>
-          <Grid item display="flex" justifyContent="space-between" flex={1}>
+          <Grid
+            item
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              flex: 1,
+            }}
+          >
             <EventFilterButtonBar filters={filters} onFilterChange={onFilterChange} />
             <CreateNewMeetingButton />
           </Grid>
@@ -119,7 +156,13 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
             {title}
           </Typography>
           {isContainingRecurringEvents && (
-            <Typography variant="h2" component="h2" mt={2}>
+            <Typography
+              variant="h2"
+              component="h2"
+              sx={{
+                mt: 2,
+              }}
+            >
               {t('dashboard-events-note-limited-view')}
             </Typography>
           )}
@@ -132,13 +175,24 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
     <Grid
       container
       component="header"
-      alignItems="center"
       spacing={0}
       columns={12}
       style={{ marginLeft: resetMarginLeft, paddingLeft: theme.spacing(2), width: `calc(100% + ${theme.spacing(2)})` }}
       data-testid="events-page-header-mobile"
+      sx={{
+        alignItems: 'center',
+      }}
     >
-      <Grid item xs={12} display="flex" justifyContent="space-between" alignItems="center" pt={0}>
+      <Grid
+        item
+        xs={12}
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          pt: 0,
+        }}
+      >
         <EventPageFilters
           filters={filters}
           visuallyDivide
@@ -154,14 +208,29 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
         )}
       </Grid>
       {showTimePerspectiveFilter && (
-        <Grid item xs={12} mt={1} display="flex" justifyContent="center" alignItems="center">
+        <Grid
+          item
+          xs={12}
+          sx={{
+            mt: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <EventFilterButtonBar filters={filters} onFilterChange={onFilterChange} />
           <CreateNewMeetingButton />
         </Grid>
       )}
       <Grid item xs={12}>
         {isContainingRecurringEvents && (
-          <Typography variant="h2" component="h2" mt={2}>
+          <Typography
+            variant="h2"
+            component="h2"
+            sx={{
+              mt: 2,
+            }}
+          >
             {t('dashboard-events-note-limited-view')}
           </Typography>
         )}

@@ -26,7 +26,11 @@ const FavoriteMeetings = () => {
 
   if (favoritesEventsIsLoading) {
     return (
-      <Stack width="100%">
+      <Stack
+        sx={{
+          width: '100%',
+        }}
+      >
         <Skeleton variant="text" />
         <Skeleton variant="rectangular" height={200} />
       </Stack>
@@ -34,7 +38,13 @@ const FavoriteMeetings = () => {
   }
 
   return (
-    <Stack spacing={2} flex={1} justifyContent="flex-end">
+    <Stack
+      spacing={2}
+      sx={{
+        flex: 1,
+        justifyContent: 'flex-end',
+      }}
+    >
       <Typography variant="body1" component="h2">
         {t('dashboard-favorite-meetings')}
       </Typography>

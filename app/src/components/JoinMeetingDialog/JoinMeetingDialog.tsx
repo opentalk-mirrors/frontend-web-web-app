@@ -169,13 +169,15 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
         open={isDialogOpen}
         onClose={onClose}
         aria-label={t('dashboard-join-meeting-dialog')}
-        PaperProps={{
-          component: 'form',
-          //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          onSubmit: (event: FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            formik.handleSubmit(event);
+        slotProps={{
+          paper: {
+            component: 'form',
+            //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            onSubmit: (event: FormEvent<HTMLFormElement>) => {
+              event.preventDefault();
+              formik.handleSubmit(event);
+            },
           },
         }}
       >

@@ -58,7 +58,15 @@ const ParticipantListItem = ({
 
   return (
     <StyledListItem isActiveSpeaker={isActiveSpeaker} isCurrentUser={isCurrentUser}>
-      <Grid container gap={1} direction="row" wrap="nowrap" alignItems="center">
+      <Grid
+        container
+        direction="row"
+        wrap="nowrap"
+        sx={{
+          gap: 1,
+          alignItems: 'center',
+        }}
+      >
         <Grid item>
           <ListItemAvatar>
             <ParticipantAvatar src={avatarUrl}>{displayName}</ParticipantAvatar>

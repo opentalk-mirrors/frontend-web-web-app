@@ -87,7 +87,15 @@ const RoomOverviewListItem = ({ joinRoom, groupedParticipants, breakoutRoomId }:
         <List>
           {groupedParticipants.map((participant) => {
             return (
-              <Stack spacing={1} direction="row" alignItems="center" py={1} key={participant.id}>
+              <Stack
+                spacing={1}
+                direction="row"
+                key={participant.id}
+                sx={{
+                  alignItems: 'center',
+                  py: 1,
+                }}
+              >
                 <Avatar
                   src={participant?.avatarUrl}
                   alt={participant?.displayName}

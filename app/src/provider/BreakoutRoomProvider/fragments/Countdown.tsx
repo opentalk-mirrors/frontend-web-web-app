@@ -33,17 +33,29 @@ const Countdown = ({ started = Date.now(), duration, onCountdownEnds, ...rest }:
   const progress = 100 - (elapsedTime / countdownDuration) * 100;
 
   return (
-    <Box position="relative" display="inline-flex" alignContent="center" {...rest}>
+    <Box
+      {...rest}
+      sx={[
+        {
+          position: 'relative',
+          display: 'inline-flex',
+          alignContent: 'center',
+        },
+        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+      ]}
+    >
       <CircularProgress variant="determinate" value={progress} />
       <Box
-        top={0}
-        left={0}
-        bottom={0}
-        right={0}
-        position="absolute"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
         <Typography variant="body2">{`${Math.floor(remainingTime)}s`}</Typography>
       </Box>

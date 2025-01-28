@@ -32,7 +32,13 @@ const ConsentNotification = forwardRef(
             <WarningIcon aria-hidden="true" />
             {t('consent-message')}
           </NotificationHeading>
-          <Box justifyContent="end" display="flex" gap={1}>
+          <Box
+            sx={{
+              justifyContent: 'end',
+              display: 'flex',
+              gap: 1,
+            }}
+          >
             {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
             <Button variant="contained" color="primary" onClick={onAcceptButton} autoFocus>
               {t('consent-accept')}

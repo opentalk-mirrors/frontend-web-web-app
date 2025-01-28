@@ -73,7 +73,15 @@ export const CustomWeeklyOptions = ({ rRuleObject, updateRRuleObject }: CustomWe
   };
 
   return (
-    <Grid item sm={8} container gap={1} data-testid="weekly-options">
+    <Grid
+      item
+      sm={8}
+      container
+      data-testid="weekly-options"
+      sx={{
+        gap: 1,
+      }}
+    >
       {days.map((day, index) => (
         <DayChip
           key={index}

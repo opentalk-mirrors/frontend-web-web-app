@@ -12,8 +12,21 @@ const NoSearchResult = (props: NoSearchResultProps) => {
   const { t } = useTranslation();
 
   return (
-    <Stack flex={1} spacing={2} justifyContent="center" alignItems="center">
-      <Typography display="block" textAlign="center" component="span">
+    <Stack
+      spacing={2}
+      sx={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Typography
+        component="span"
+        sx={{
+          display: 'block',
+          textAlign: 'center',
+        }}
+      >
         {t('chat-no-search-results')}
       </Typography>
       <Button onClick={props.onReset}>{t('chat-search-reset')}</Button>
