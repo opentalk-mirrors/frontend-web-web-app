@@ -1188,4 +1188,4 @@ whisper-invite-accept-notification = {displayName} hat Ihre Einladung zur Flüst
 
 mobile-drawer-button-label = Schublade öffnen
 
-burger-menu-tab-title = Information & Support
+support-menu-tab-title = Information & Support

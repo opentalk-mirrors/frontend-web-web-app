@@ -23,10 +23,10 @@ import {
   TalkingStickIcon,
 } from '../assets/icons';
 import SuspenseLoading from '../commonComponents/SuspenseLoading/SuspenseLoading';
-import BurgerMenuTab from '../components/BurgerMenuTab';
 import DebriefingTab from '../components/DebriefingTab';
 import HomeIconComponent from '../components/HomeIconComponent';
 import ResultsList from '../components/MeetingHeader/fragments/ResultsList';
+import SupportList from '../components/SupportList';
 import WaitingParticipantsList from '../components/WaitingParticipantsList';
 import { useAppSelector } from '../hooks';
 import { FeaturesKeys } from '../store/slices/configSlice';
@@ -65,7 +65,7 @@ export enum ModerationTabKey {
   Divider = 'tab-divider',
   WaitingRoom = 'tab-waiting-room',
   PollsAndLegalVote = 'tab-polls-voting',
-  BurgerMenu = 'tab-burger-menu',
+  SupportMenu = 'tab-support-menu',
 }
 
 export interface Tab {
@@ -288,8 +288,8 @@ export const PollsAndVotesMobileTab: Tab = {
   component: <ResultsList />,
 };
 
-export const BurgerMenuMobileTab: Tab = {
-  key: ModerationTabKey.BurgerMenu,
-  component: <BurgerMenuTab />,
-  titleKey: 'burger-menu-tab-title',
+export const SupportMenuMobileTab: Tab = {
+  key: ModerationTabKey.SupportMenu,
+  component: <SupportList />,
+  titleKey: 'support-menu-tab-title',
 };

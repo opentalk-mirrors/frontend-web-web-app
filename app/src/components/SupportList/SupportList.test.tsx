@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import BurgerMenuTab from './BurgerMenuTab';
+import { SupportList } from './SupportList';
 
 jest.mock('react-i18next', () => ({
   ...jest.requireActual('react-i18next'),
@@ -25,37 +25,39 @@ jest.mock('../../store/slices/configSlice', () => ({
   selectIsGlitchtipConfigured: () => mockSelectIsGlitchtipConfigured(),
 }));
 
-describe('BurgerMenuTab component', () => {
+describe('SupportList component', () => {
   it('should render without crashing', async () => {
-    render(<BurgerMenuTab />);
+    render(<SupportList />);
     expect.assertions(0);
   });
   describe('children', () => {
     it('should contain list with two list items when glitchtip is not configured.', () => {
-      render(<BurgerMenuTab />);
+      render(<SupportList />);
       const list = screen.getByRole('list');
       expect(list).toBeInTheDocument();
       expect(list.children).toHaveLength(2);
     });
     it('should contain list with two list items', async () => {
       mockSelectIsGlitchtipConfigured.mockReturnValue(true);
-      render(<BurgerMenuTab />);
+      render(<SupportList />);
       const list = screen.getByRole('list');
       expect(list).toBeInTheDocument();
       expect(list.children).toHaveLength(3);
     });
   });
   it('should contain option that expands/collapses the shortcut dialog', () => {
-    render(<BurgerMenuTab />);
-    const button = screen.getByText('my-meeting-menu-keyboard-shortcuts');
+    render(<SupportList />);
+    const text = screen.getByText('my-meeting-menu-keyboard-shortcuts');
+    const button = (text.parentElement as HTMLDivElement).parentElement as HTMLButtonElement;
     expect(button).toBeInTheDocument();
-    expect(button).toHaveRole('listitem');
+    expect(button).toHaveAttribute('type', 'button');
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
   it('should expand shortcut dialog on click', () => {
-    render(<BurgerMenuTab />);
+    render(<SupportList />);
     const dialog = screen.getByText('ShortcutListDialog');
-    const button = screen.getByText('my-meeting-menu-keyboard-shortcuts');
+    const text = screen.getByText('my-meeting-menu-keyboard-shortcuts');
+    const button = (text.parentElement as HTMLDivElement).parentElement as HTMLButtonElement;
     expect(button).toHaveAttribute('aria-expanded', 'false');
     expect(dialog).not.toBeVisible();
     fireEvent.click(button);
@@ -64,9 +66,10 @@ describe('BurgerMenuTab component', () => {
   });
   it('should contain option that triggers Glitchtip manually', () => {
     mockSelectIsGlitchtipConfigured.mockReturnValue(true);
-    render(<BurgerMenuTab />);
-    const button = screen.getByText('my-meeting-menu-glitchtip-trigger');
+    render(<SupportList />);
+    const text = screen.getByText('my-meeting-menu-glitchtip-trigger');
+    const button = (text.parentElement as HTMLDivElement).parentElement as HTMLButtonElement;
     expect(button).toBeInTheDocument();
-    expect(button).toHaveRole('listitem');
+    expect(button).toHaveAttribute('type', 'button');
   });
 });

@@ -1187,4 +1187,4 @@ whisper-invite-accept-notification = {displayName} accepted your whisper group i
 
 mobile-drawer-button-label = Open drawer
 
-burger-menu-tab-title = Information & Support
+support-menu-tab-title = Information & Support

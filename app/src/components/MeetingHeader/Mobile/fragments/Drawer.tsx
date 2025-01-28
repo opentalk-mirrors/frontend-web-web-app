@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
 
 import {
-  BurgerMenuMobileTab,
+  SupportMenuMobileTab,
   ModerationTabKey,
   PollsAndVotesMobileTab,
   Tab,
@@ -84,7 +84,7 @@ const Drawer = () => {
     mobileParticipantTabs.unshift(PollsAndVotesMobileTab);
   }
 
-  mobileParticipantTabs.push(BurgerMenuMobileTab);
+  mobileParticipantTabs.push(SupportMenuMobileTab);
 
   const mobileModerationTabs = tabs.slice();
   if (isWaitingRoomEnabled && isModerator) {
@@ -96,7 +96,7 @@ const Drawer = () => {
     mobileModerationTabs.unshift(WaitingRoomMobileTab);
   }
 
-  mobileModerationTabs.push(BurgerMenuMobileTab);
+  mobileModerationTabs.push(SupportMenuMobileTab);
 
   const open = () => {
     batch(() => {

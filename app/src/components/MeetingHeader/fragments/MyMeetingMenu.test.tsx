@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import * as apiUtils from '../../../utils/apiUtils';
 import { configureStore, fireEvent, render, screen, waitFor } from '../../../utils/testUtils';
 import MyMeetingMenu from './MyMeetingMenu';
 
@@ -71,8 +70,6 @@ describe('My Meeting Menu', () => {
   });
 
   test('click on User Manual option opens user manual', async () => {
-    const openUserManualSpy = jest.spyOn(apiUtils, 'openUserManual');
-
     const { store } = configureStore();
     await render(<MyMeetingMenu />, store);
 
@@ -81,10 +78,9 @@ describe('My Meeting Menu', () => {
 
     await waitFor(() => {
       const userManualMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
-      fireEvent.click(userManualMenuItem);
-
-      expect(openUserManualSpy).toHaveBeenCalled();
-      openUserManualSpy.mockRestore();
+      expect(userManualMenuItem).toBeInTheDocument();
+      expect(userManualMenuItem).toHaveAttribute('href', 'https://docs.opentalk.eu/user/manual/');
+      expect(userManualMenuItem).not.toBeDisabled();
     });
   });
 });
