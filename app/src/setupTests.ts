@@ -176,6 +176,7 @@ global.beforeEach(() => {
     value: {
       addEventListener: jest.fn(),
       removeEventListener: jest.fn(),
+      getDisplayMedia: jest.fn(),
     },
   });
 
