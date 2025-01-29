@@ -70,10 +70,10 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   );
 
   const participant = useRemoteParticipant(screenDescriptor.participantId);
-  const hasScreen = participant?.isScreenShareEnabled;
-  const hasVideo = participant?.isCameraEnabled;
-  const descriptor = hasScreen ? screenDescriptor : videoDescriptor;
-  const isOnline = hasScreen || hasVideo;
+  const isScreenShareActive = participant?.isScreenShareEnabled;
+  const isVideoActive = participant?.isCameraEnabled;
+  const isScreenShareOrVideoActive = isScreenShareActive || isVideoActive;
+  const descriptor = isScreenShareActive ? screenDescriptor : videoDescriptor;
   const hasPacketLoss = participant?.connectionQuality === ConnectionQuality.Poor;
   const displayName = useAppSelector(selectParticipantName(participantId));
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
@@ -138,7 +138,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
 
   const getOverlayButtons = () => (
     <IndicatorContainer item>
-      {isOnline && (active || hasPacketLoss) && <Statistics descriptor={descriptor} />}
+      {isScreenShareOrVideoActive && (active || hasPacketLoss) && <Statistics descriptor={descriptor} />}
       {active && (
         <>
           {userLayout === LayoutOptions.Speaker && (
@@ -156,9 +156,11 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
           <OverlayIconButton aria-label={t('indicator-fullscreen-open')} onClick={openFullScreenView} color="secondary">
             <FullscreenViewIcon />
           </OverlayIconButton>
-          <OverlayIconButton aria-label={t('indicator-extend-new-tab')} color="secondary" onClick={openInNewTab}>
-            <ExtendToTabIcon />
-          </OverlayIconButton>
+          {isScreenShareOrVideoActive && (
+            <OverlayIconButton aria-label={t('indicator-extend-new-tab')} color="secondary" onClick={openInNewTab}>
+              <ExtendToTabIcon />
+            </OverlayIconButton>
+          )}
         </>
       )}
       <BrokenSubscriberIndicator descriptor={descriptor} />
