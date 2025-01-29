@@ -99,7 +99,7 @@ const TalkingStickTabPanel = () => {
                 />
               }
               label={
-                <Typography fontWeight="normal" component="span">
+                <Typography id={INCLUDE_MODERATOR_ID} fontWeight="normal" component="span">
                   {t('talking-stick-include-moderator-switch')}
                 </Typography>
               }

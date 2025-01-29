@@ -48,7 +48,7 @@
 		</linearGradient>
 		<linearGradient id="c-encrypted-message" x1="81.132" y1="70.19" x2="36.083" y2="34.646"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#102834" />
+			<stop offset="0" stop-color="#102834" />
 			<stop offset=".589" stop-color="#334B58" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
