@@ -19,7 +19,7 @@ stages:
 
 .setup-pnpm: &setup-pnpm
   - corepack enable
-  - corepack prepare pnpm@latest-9 --activate
+  - corepack prepare pnpm@9.15.2 --activate
   - pnpm config set store-dir .pnpm-store
 
 .setup-e2e-tests: &setup-e2e-tests
