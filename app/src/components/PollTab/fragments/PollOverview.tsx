@@ -103,9 +103,9 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
           createdPolls: !prevState.createdPolls,
         }))
       }
-      option={t('poll-overview-created-legal-votes')}
+      option={t('poll-overview-created-polls')}
       expanded={accordionState.createdPolls}
-      summaryText={t('poll-overview-created-legal-votes')}
+      summaryText={t('poll-overview-created-polls')}
     >
       <List>
         {polls.map((poll, index) => (
