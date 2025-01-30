@@ -50,7 +50,7 @@ const ResultsItem = ({ item, ...props }: ResultsItemProps) => {
   const label = Object.hasOwn(item, 'name') ? (item as LegalVote).name : (item as Poll).topic;
 
   return (
-    <CustomMenuItem {...props} onClick={() => openItem(item)} role="menuitemradio">
+    <CustomMenuItem {...props} onClick={() => openItem(item)} role="menuitem">
       <ListItemIcon>{Object.hasOwn(item, 'choices') ? <PollIcon /> : <LegalBallotIcon />}</ListItemIcon>
       <ListItemText primaryTypographyProps={{ noWrap: true }} primary={label} />
       <Chip

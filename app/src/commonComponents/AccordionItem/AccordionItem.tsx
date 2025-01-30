@@ -8,11 +8,12 @@ import {
   styled,
   Typography,
 } from '@mui/material';
+import { kebabCase } from 'lodash';
 import React, { SyntheticEvent } from 'react';
 
 import { ArrowDownIcon } from '../../assets/icons';
 
-interface IAccordionProps<T> {
+interface IAccordionProps<T extends string> {
   onChange: (event: SyntheticEvent<Element, Event>, newExpanded: boolean) => void;
   option: T;
   expanded: boolean;
@@ -88,7 +89,7 @@ const EditButtonContainer = styled('div')({
   right: 0,
 });
 
-function AccordionItem<T>({
+function AccordionItem<T extends string>({
   onChange,
   option,
   expanded,
@@ -99,9 +100,13 @@ function AccordionItem<T>({
 }: IAccordionProps<T>) {
   return (
     <Accordion square expanded={expanded} onChange={onChange}>
-      <AccordionSummary aria-controls={`${option}-content`} id={`${option}-header`} expandIcon={<ArrowDownIcon />}>
+      <AccordionSummary
+        aria-controls={`${kebabCase(option)}-content`}
+        id={`${kebabCase(option)}-header`}
+        expandIcon={<ArrowDownIcon />}
+      >
         {summaryIcon && summaryIcon}
-        <SummaryText component="div" variant="caption">
+        <SummaryText component="span" variant="caption">
           {summaryText}
         </SummaryText>
         <EditButtonContainer>{editComponent && editComponent}</EditButtonContainer>

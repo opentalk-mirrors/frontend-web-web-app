@@ -5,7 +5,9 @@ import { Box, styled, Tooltip } from '@mui/material';
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const TooltipIcon = styled('div')(({ color }) => ({
+const TooltipIcon = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'color',
+})(({ color }) => ({
   width: '1rem',
   height: '1rem',
   borderRadius: '100%',

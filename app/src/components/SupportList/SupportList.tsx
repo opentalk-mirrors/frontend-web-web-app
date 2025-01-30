@@ -13,6 +13,7 @@ import {
   MenuListProps,
   ThemeProvider,
 } from '@mui/material';
+import { ListItemButtonProps } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -34,7 +35,6 @@ type AnchorItem = {
   key: ListItemKeys;
   name: string;
   icon: JSX.Element;
-  component: 'a';
   componentProps: {
     href: string;
     target: '_blank';
@@ -45,7 +45,6 @@ type ButtonItem = {
   key: ListItemKeys;
   name: string;
   icon: JSX.Element;
-  component: 'button';
   componentProps: {
     onClick: () => void;
     onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
@@ -81,7 +80,6 @@ export const SupportList = ({
         key: ListItemKeys.UserManual,
         name: 'my-meeting-menu-user-manual',
         icon: <HelpIcon fontSize="small" />,
-        component: 'a',
         componentProps: {
           href: USER_MANUAL_URL,
           target: '_blank',
@@ -91,7 +89,6 @@ export const SupportList = ({
         key: ListItemKeys.KeyboardShortcuts,
         name: 'my-meeting-menu-keyboard-shortcuts',
         icon: <HelpSquareIcon fontSize="small" />,
-        component: 'button',
         componentProps: {
           onClick: () => {
             setIsShortcutListDialogOpen(!isShortcutListDialogOpen);
@@ -116,7 +113,6 @@ export const SupportList = ({
         key: ListItemKeys.GlitchtipTrigger,
         name: 'my-meeting-menu-glitchtip-trigger',
         icon: <BugIcon fontSize="small" />,
-        component: 'button',
         componentProps: {
           onClick: triggerGlitchtipManually,
           onKeyDown: (event) => {
@@ -141,9 +137,11 @@ export const SupportList = ({
       <>
         <MenuList {...menuListProps} className={className}>
           {items.map((item) => (
-            <MenuItem key={item.key} component={item.component} {...item.componentProps} sx={{ width: '100%' }}>
-              {icons && <ListItemIcon>{item.icon}</ListItemIcon>}
-              <ListItemText primary={t(item.name)} slotProps={{ primary: { textAlign: 'left' } }} />
+            <MenuItem key={item.key} sx={{ width: '100%' }}>
+              <ListItemButton disableGutters {...(item.componentProps as ListItemButtonProps)}>
+                {icons && <ListItemIcon>{item.icon}</ListItemIcon>}
+                <ListItemText primary={t(item.name)} slotProps={{ primary: { textAlign: 'left' } }} />
+              </ListItemButton>
             </MenuItem>
           ))}
         </MenuList>
@@ -159,7 +157,7 @@ export const SupportList = ({
       <List className={className} {...listProps}>
         {items.map((item) => (
           <ListItem key={item.key} sx={{ padding: '0 0.5rem' }}>
-            <ListItemButton disableGutters component={item.component} {...item.componentProps}>
+            <ListItemButton disableGutters {...(item.componentProps as ListItemButtonProps)}>
               {icons && <ListItemIcon sx={{ minWidth: '2.25rem' }}>{item.icon}</ListItemIcon>}
               <ListItemText primary={t(item.name)} />
             </ListItemButton>

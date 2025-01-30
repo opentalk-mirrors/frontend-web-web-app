@@ -318,7 +318,7 @@ const MeetingNotesTab = () => {
                         />
                       }
                       label={
-                        <Typography noWrap translate="no">
+                        <Typography noWrap translate="no" component="span">
                           {participant.displayName}
                         </Typography>
                       }

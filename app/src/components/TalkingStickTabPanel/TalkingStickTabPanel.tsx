@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, FormControlLabel, Stack, Switch, Typography } from '@mui/material';
+import { Box, Button, Stack, Switch, Typography } from '@mui/material';
 import { memo, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -89,21 +89,22 @@ const TalkingStickTabPanel = () => {
             />
           </Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <FormControlLabel
-              control={
-                <Switch
-                  onChange={() => setIncludeTalkingStickCreator(!includeTalkingStickCreator)}
-                  value={includeTalkingStickCreator}
-                  checked={includeTalkingStickCreator}
-                  color="primary"
-                />
-              }
-              label={
-                <Typography id={INCLUDE_MODERATOR_ID} fontWeight="normal" component="span">
-                  {t('talking-stick-include-moderator-switch')}
-                </Typography>
-              }
-              labelPlacement="start"
+            <Typography
+              id={INCLUDE_MODERATOR_ID}
+              component="label"
+              htmlFor="include-moderator-switch"
+              fontWeight="normal"
+              mr={1}
+            >
+              {t('talking-stick-include-moderator-switch')}
+            </Typography>
+            <Switch
+              id="include-moderator-switch"
+              onChange={() => setIncludeTalkingStickCreator(!includeTalkingStickCreator)}
+              value={includeTalkingStickCreator}
+              checked={includeTalkingStickCreator}
+              color="primary"
+              aria-labelledby={INCLUDE_MODERATOR_ID}
             />
           </Box>
         </Stack>
