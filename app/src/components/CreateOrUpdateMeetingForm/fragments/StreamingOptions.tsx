@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Collapse as MuiCollapse, MenuItem, Stack, styled } from '@mui/material';
+import { MenuItem, Collapse as MuiCollapse, Stack, styled } from '@mui/material';
 import { PlatformKind } from '@opentalk/rest-api-rtk-query';
 import { FormikProps } from 'formik';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CommonTextField } from '../../../commonComponents';
@@ -43,6 +44,12 @@ const StreamingOptions = ({ formik }: StreamingOptionsProps) => {
   const { t } = useTranslation();
   const { enabled: streamingEnabled } = formik.values.streaming;
 
+  useEffect(() => {
+    if (streamingEnabled && formik.values.e2eEncryption) {
+      formik.setFieldValue('streaming.enabled', false);
+    }
+  }, [streamingEnabled, formik.setFieldValue, formik.values.e2eEncryption]);
+
   return (
     <Stack
       sx={{
@@ -52,7 +59,8 @@ const StreamingOptions = ({ formik }: StreamingOptionsProps) => {
       <MeetingFormSwitch
         checked={streamingEnabled}
         switchProps={formikMinimalProps('streaming.enabled', formik)}
-        switchValueLabel={t(`dashboard-meeting-livestream-switch`)}
+        switchValueLabel={t('dashboard-meeting-livestream-switch')}
+        disabled={formik.values.e2eEncryption}
       />
       <Collapse orientation="vertical" in={streamingEnabled} unmountOnExit mountOnEnter>
         <OptionsRow>
