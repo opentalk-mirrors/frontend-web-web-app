@@ -14,6 +14,7 @@ declare global {
     webkitAudioContext: typeof AudioContext;
     i18n: i18n;
     debugKillSignaling: () => void;
+    setLogLevel: (level: LogLevel, name?: LoggerNames) => void;
   }
   // still marked as experimental but already implemented in most browsers
   interface HTMLAudioElement {

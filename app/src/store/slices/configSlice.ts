@@ -49,6 +49,7 @@ export interface Config {
   userSurveyApiKey?: string;
   errorReportAddress: string;
   disallowCustomDisplayName?: boolean;
+  logLevel?: string;
   beta: Beta;
   livekit: {
     e2eeSalt?: string;
@@ -100,6 +101,7 @@ export interface ConfigState {
   beta: Beta;
   errorReportAddress: string;
   disallowCustomDisplayName?: boolean;
+  logLevel?: string;
   oidcConfig: {
     clientId: string;
     redirectPath: string;
@@ -162,6 +164,7 @@ export const initialState: ConfigState = {
   userSurveyApiKey: undefined,
   errorReportAddress: 'report@opentalk.eu',
   disallowCustomDisplayName: false,
+  logLevel: undefined,
   beta: {
     isBeta: true,
   },
@@ -249,6 +252,7 @@ export const selectBetaBadgeUrl = (state: RootState) => state.config.beta.badgeU
 export const selectLivekitE2EESalt = (state: RootState) => state.config.livekit?.e2eeSalt;
 export const selectErrorReportEmail = (state: RootState) => state.config.errorReportAddress;
 export const selectDisallowCustomDisplayName = (state: RootState) => state.config.disallowCustomDisplayName;
+export const selectLogLevel = (state: RootState) => state.config.logLevel;
 export const selectChangePassword = (state: RootState) => state.config.changePassword;
 export const selectEnabledModulesList = (state: RootState) => state.config.tariff.modules;
 export const selectIsFeatureEnabled = (featureKey: BackendFeatures) => (state: RootState) =>
