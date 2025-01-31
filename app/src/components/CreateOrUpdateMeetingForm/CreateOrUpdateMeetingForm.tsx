@@ -123,7 +123,9 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       .test('is required', t('meeting-required-start-date'), (startDate) => !!startDate?.trim())
       .test('is valid', t('meeting-invalid-start-date'), (startDate) => !isInvalidDate(new Date(startDate as string)))
       .test('is in the future', t('dashboard-meeting-date-field-error-future'), function (startDate) {
-        if (this.parent.isTimeDependent && startDate && new Date(startDate) < new Date()) {
+        const isOriginalEventInThePast =
+          existingEvent && !isTimelessEvent(existingEvent) && new Date(existingEvent.startsAt.datetime) < new Date();
+        if (this.parent.isTimeDependent && startDate && new Date(startDate) < new Date() && !isOriginalEventInThePast) {
           return false;
         }
         return true;
@@ -536,6 +538,16 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
     return undefined;
   };
 
+  let minDate: Date | null = new Date();
+  //Enables past dates as valid if the event is in the past.
+  if (existingEvent && !isTimelessEvent(existingEvent) && new Date(existingEvent.startsAt.datetime) < new Date()) {
+    minDate = null;
+  }
+  const pastDateHelperText =
+    !minDate && new Date(formik.values.startDate) < new Date()
+      ? t('meeting-start-date-is-in-the-past')
+      : formik.errors.startDate;
+
   return (
     <>
       <Form onSubmit={formik.handleSubmit}>
@@ -575,7 +587,13 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
           <Collapse orientation="vertical" in={formik.values.isTimeDependent} unmountOnExit mountOnEnter>
             <Grid container columnSpacing={{ xs: 2, sm: 5 }}>
               <Grid item xs={12} sm={6}>
-                <DashboardDateTimePicker type="start" formik={formik} onChange={onChangeStartDate} />
+                <DashboardDateTimePicker
+                  type="start"
+                  formik={formik}
+                  onChange={onChangeStartDate}
+                  minTimeDate={minDate}
+                  helperText={pastDateHelperText}
+                />
               </Grid>
               <Grid
                 item
@@ -585,7 +603,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
                   mt: { xs: 2, sm: 0 },
                 }}
               >
-                <DashboardDateTimePicker type="end" formik={formik} onChange={onChangeEndDate} />
+                <DashboardDateTimePicker type="end" formik={formik} onChange={onChangeEndDate} minTimeDate={minDate} />
               </Grid>
 
               <Grid
