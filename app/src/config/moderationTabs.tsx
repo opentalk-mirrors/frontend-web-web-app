@@ -26,6 +26,7 @@ import SuspenseLoading from '../commonComponents/SuspenseLoading/SuspenseLoading
 import DebriefingTab from '../components/DebriefingTab';
 import HomeIconComponent from '../components/HomeIconComponent';
 import ResultsList from '../components/MeetingHeader/fragments/ResultsList';
+import SupportList from '../components/SupportList';
 import WaitingParticipantsList from '../components/WaitingParticipantsList';
 import { useAppSelector } from '../hooks';
 import { FeaturesKeys } from '../store/slices/configSlice';
@@ -64,6 +65,7 @@ export enum ModerationTabKey {
   Divider = 'tab-divider',
   WaitingRoom = 'tab-waiting-room',
   PollsAndLegalVote = 'tab-polls-voting',
+  SupportMenu = 'tab-support-menu',
 }
 
 export interface Tab {
@@ -284,4 +286,10 @@ export const PollsAndVotesMobileTab: Tab = {
   tooltipTranslationKey: 'votes-poll-overview-title',
   titleKey: 'votes-poll-overview-title',
   component: <ResultsList />,
+};
+
+export const SupportMenuMobileTab: Tab = {
+  key: ModerationTabKey.SupportMenu,
+  component: <SupportList />,
+  titleKey: 'support-menu-tab-title',
 };

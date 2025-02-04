@@ -9,6 +9,15 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '.';
 import { pass } from '../api/types/outgoing/automod';
 import { showConsentNotification } from '../commonComponents';
+import {
+  HOTKEY_FULLSCREEN,
+  HOTKEY_MICROPHONE,
+  HOTKEY_NEXT_SPEAKER,
+  HOTKEY_PUSH_TO_TALK,
+  HOTKEY_VIDEO,
+  HOTKEY_WHISPERGROUP,
+  HOTKEYS,
+} from '../constants';
 import { useFullscreenContext } from '../hooks/useFullscreenContext';
 import { selectIsUserMicDisabled } from '../store/selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker } from '../store/slices/automodSlice';
@@ -21,21 +30,6 @@ import { selectTimerStyle } from '../store/slices/timerSlice';
 import { selectHotkeysEnabled } from '../store/slices/uiSlice';
 import { RoomMode, TimerStyle } from '../types';
 import useMediaDevice from './useMediaDevice';
-
-export const HOTKEY_MICROPHONE = 'm';
-export const HOTKEY_WHISPERGROUP = 'w';
-export const HOTKEY_VIDEO = 'v';
-export const HOTKEY_FULLSCREEN = 'f';
-export const HOTKEY_PUSH_TO_TALK = ' ';
-export const HOTKEY_NEXT_SPEAKER = 'n';
-const HOTKEYS = [
-  HOTKEY_VIDEO,
-  HOTKEY_MICROPHONE,
-  HOTKEY_FULLSCREEN,
-  HOTKEY_PUSH_TO_TALK,
-  HOTKEY_NEXT_SPEAKER,
-  HOTKEY_WHISPERGROUP,
-];
 
 enum PushToTalkState {
   Whisper = 'whisper',

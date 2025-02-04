@@ -1186,3 +1186,5 @@ whisper-invite-decline-notification = {displayName} declined your invitation to 
 whisper-invite-accept-notification = {displayName} accepted your whisper group invitation. Press and hold the W key to whisper.
 
 mobile-drawer-button-label = Open drawer
+
+support-menu-tab-title = Information & Support
