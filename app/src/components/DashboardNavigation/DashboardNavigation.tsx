@@ -46,6 +46,9 @@ const NavContainer = styled('nav', {
 }));
 
 const Collapse = styled(CollapseMui)(({ theme }) => ({
+  '& .MuiCollapse-horizontal': {
+    textWrap: 'noWrap',
+  },
   [theme.breakpoints.up('md')]: {
     entered: {
       width: '100%',
