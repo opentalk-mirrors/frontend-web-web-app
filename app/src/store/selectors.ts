@@ -40,12 +40,7 @@ import {
 import { selectAllPolls } from './slices/pollSlice';
 import { selectEventInfo } from './slices/roomSlice';
 import { selectParticipantsReady } from './slices/timerSlice';
-import {
-  selectFocusedSpeaker,
-  selectParticipantsSearchValue,
-  selectParticipantsSortOption,
-  selectPinnedParticipantId,
-} from './slices/uiSlice';
+import { selectParticipantsSearchValue, selectParticipantsSortOption } from './slices/uiSlice';
 import { selectGroups, selectOurUuid, selectUserAsPartialParticipant } from './slices/userSlice';
 
 export const selectUserAsParticipant = createSelector(
@@ -138,12 +133,6 @@ export const selectAllMeetingNotesParticipants = createSelector(
     }
     return [];
   }
-);
-
-export const selectCombinedSpeakerId = createSelector(
-  selectPinnedParticipantId,
-  selectFocusedSpeaker,
-  (pinnedParticipantId, focusedSpeakerId) => pinnedParticipantId ?? focusedSpeakerId
 );
 
 export const selectAllGroupParticipants = createSelector(

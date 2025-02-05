@@ -5,8 +5,6 @@ import { PayloadAction, TypedStartListening, createListenerMiddleware, createSli
 
 import { AppDispatch, RootState } from '../';
 import { RequestMute } from '../../api/types/incoming/media';
-import { updateSpeakingState } from '../../api/types/outgoing/media';
-import { getCurrentConferenceRoom } from '../../modules/WebRTC';
 import { ParticipantId, VideoSetting } from '../../types';
 
 export interface BackgroundConfig {
@@ -61,9 +59,6 @@ export const mediaSlice = createSlice({
     setBackgroundEffectsLoading: (state, { payload }: PayloadAction<boolean>) => {
       state.videoBackgroundEffects.loading = payload;
     },
-    setSpeakerActivity: (state, { payload }: PayloadAction<boolean>) => {
-      state.isUserSpeaking = payload;
-    },
     setUpstreamLimit: (state, { payload }: PayloadAction<VideoSetting>) => {
       state.upstreamLimit = payload;
     },
@@ -99,7 +94,6 @@ export const mediaSlice = createSlice({
 export const {
   setBackgroundEffects,
   setBackgroundEffectsLoading,
-  setSpeakerActivity,
   notificationShown,
   setVideoEnabled,
   setAudioEnabled,
@@ -123,15 +117,6 @@ export const mediaMiddleware = createListenerMiddleware();
 type AppStartListening = TypedStartListening<RootState, AppDispatch>;
 
 const startAppListening = mediaMiddleware.startListening as AppStartListening;
-startAppListening({
-  actionCreator: setSpeakerActivity,
-  effect: (action, listenerApi) => {
-    const isInConference = getCurrentConferenceRoom() !== undefined;
-    if (isInConference) {
-      listenerApi.dispatch(updateSpeakingState.action({ isSpeaking: action.payload }));
-    }
-  },
-});
 
 startAppListening({
   matcher: isAnyOf(setBackgroundEffects, setAudioDeviceId, setVideoDeviceId),

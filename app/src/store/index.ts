@@ -40,10 +40,10 @@ export const middleware: Array<Middleware> = [
   apiMiddleware,
   restApi.middleware,
   rtkQueryErrorLoggerMiddlware,
-  mediaMiddleware.middleware,
   timerMiddleware.middleware,
   roomMiddleware.middleware,
   participantsMiddleware.middleware,
+  mediaMiddleware.middleware,
 ];
 
 const logger = () => (next: Dispatch) => (action: AnyAction) => {

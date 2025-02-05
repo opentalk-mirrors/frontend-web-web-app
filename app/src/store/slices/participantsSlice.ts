@@ -24,7 +24,6 @@ import {
   ParticipantId,
   ParticipantInOtherRoom,
   Role,
-  Speaker,
   WaitingState,
 } from '../../types';
 import { joinSuccess } from '../commonActions';
@@ -32,7 +31,7 @@ import { selectCurrentBreakoutRoomId } from './breakoutSlice';
 import { received } from './chatSlice';
 import { getLivekitRoom } from './livekitSlice';
 import { connectionClosed } from './roomSlice';
-import { GridViewOrder, setFocusedSpeaker } from './uiSlice';
+import { GridViewOrder } from './uiSlice';
 
 export const participantAdapter = createEntityAdapter<Participant>({
   sortComparer: (a, b) => a.displayName.localeCompare(b.displayName),
@@ -59,7 +58,6 @@ export const participantsSlice = createSlice({
             participationKind,
             role,
             meetingNotesAccess,
-            isSpeaking,
             isRoomOwner,
           },
         },
@@ -80,7 +78,6 @@ export const participantsSlice = createSlice({
         role,
         waitingState: WaitingState.Joined,
         meetingNotesAccess,
-        isSpeaking,
         isRoomOwner,
       });
     },
@@ -115,7 +112,6 @@ export const participantsSlice = createSlice({
         lastActive: timestamp,
         waitingState: WaitingState.Joined,
         meetingNotesAccess: MeetingNotesAccess.None,
-        isSpeaking: false,
         isRoomOwner: false,
       };
       participantAdapter.upsertOne(state, participant);
@@ -141,7 +137,6 @@ export const participantsSlice = createSlice({
         lastActive: payload.control.joinedAt,
         meetingNotesAccess: MeetingNotesAccess.None,
         waitingState: WaitingState.Waiting,
-        isSpeaking: false,
         isRoomOwner: false,
       };
       participantAdapter.upsertOne(state, participant);
@@ -171,7 +166,7 @@ export const participantsSlice = createSlice({
       state,
       {
         payload: { id, displayName, handIsUp, lastActive, joinedAt, leftAt, handUpdatedAt, role, meetingNotesAccess },
-      }: PayloadAction<Omit<Participant, 'breakoutRoomId' | 'groups' | 'isSpeaking'>>
+      }: PayloadAction<Omit<Participant, 'breakoutRoomId' | 'groups'>>
     ) => {
       participantAdapter.updateOne(state, {
         id,
@@ -184,16 +179,6 @@ export const participantsSlice = createSlice({
           handUpdatedAt,
           role,
           meetingNotesAccess,
-        },
-      });
-    },
-    updatedSpeaker: (state, { payload }: PayloadAction<Speaker>) => {
-      const { participant, isSpeaking, updatedAt } = payload;
-      participantAdapter.updateOne(state, {
-        id: participant,
-        changes: {
-          isSpeaking,
-          lastActive: updatedAt,
         },
       });
     },
@@ -233,7 +218,6 @@ export const {
   waitingRoomLeft,
   approveToEnter,
   approvedAll,
-  updatedSpeaker,
   rename,
 } = participantsSlice.actions;
 export const actions = participantsSlice.actions;
@@ -328,10 +312,6 @@ export const selectParticipationKind = (id: EntityId) => {
   return createSelector(sel, (participant) => participant?.participationKind);
 };
 
-export const selectIsParticipantSpeaking = (id: EntityId) => {
-  return createSelector(selectParticipantById(id), (participant) => participant?.isSpeaking);
-};
-
 export const selectMapRemotePaticipanstDisplayName = (remoteParticipants: RemoteParticipant[]) => {
   return createSelector([selectAllOnlineParticipants], (onlineParticipants) => {
     return remoteParticipants.reduce(
@@ -350,17 +330,6 @@ export const participantsMiddleware = createListenerMiddleware();
 type AppStartListening = TypedStartListening<RootState, AppDispatch>;
 
 const startAppListening = participantsMiddleware.startListening as AppStartListening;
-startAppListening({
-  actionCreator: updatedSpeaker,
-  effect: (action, listenerApi) => {
-    const ourId = listenerApi.getState().user.uuid;
-    const speakerId = action.payload.participant;
-    const isSpeaking = action.payload.isSpeaking;
-    if (isSpeaking && speakerId !== ourId) {
-      listenerApi.dispatch(setFocusedSpeaker(speakerId));
-    }
-  },
-});
 
 startAppListening({
   matcher: isAnyOf(leave, join),

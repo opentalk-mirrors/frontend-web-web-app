@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RootState } from '../../../store';
 import {
   MediaSessionState,
   MediaSessionType,
@@ -9,10 +8,7 @@ import {
   ParticipantId,
   TrickleCandidate,
   VideoSetting,
-  createModule,
 } from '../../../types';
-import { createSignalingApiCall } from '../../createSignalingApiCall';
-import { sendMessage } from '../../index';
 
 interface Target {
   target: ParticipantId;
@@ -82,11 +78,6 @@ export interface SdpEndOfCandidates extends Target {
   action: 'sdp_end_of_candidates';
 }
 
-export interface UpdateSpeakingState {
-  action: 'update_speaking_state';
-  isSpeaking: boolean;
-}
-
 export type Action =
   | Publish
   | PublishComplete
@@ -97,17 +88,8 @@ export type Action =
   | Resubscribe
   | Configure
   | SdpCandidate
-  | SdpEndOfCandidates
-  | UpdateSpeakingState;
+  | SdpEndOfCandidates;
 
 export type Media = Namespaced<Action, 'media'>;
-
-export const updateSpeakingState = createSignalingApiCall<UpdateSpeakingState>('media', 'update_speaking_state');
-
-export const handler = createModule<RootState>((builder) => {
-  builder.addCase(updateSpeakingState.action, (_state, action) => {
-    sendMessage(updateSpeakingState(action.payload));
-  });
-});
 
 export default Media;
