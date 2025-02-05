@@ -58,10 +58,17 @@ const StreamingOptions = ({ formik }: StreamingOptionsProps) => {
         <OptionsRow>
           <CommonTextField
             {...formikProps('streaming.platform.kind', formik)}
-            id="platform-select"
             label={t('dashboard-meeting-livestream-platform-label')}
             select
             defaultValue=""
+            slotProps={{
+              inputLabel: {
+                htmlFor: 'platform-select',
+              },
+              input: {
+                id: 'platform-select',
+              },
+            }}
           >
             <MenuItem key={PlatformKind.Custom} value={PlatformKind.Custom}>
               {t('dashboard-meeting-livestream-platform-custom')}

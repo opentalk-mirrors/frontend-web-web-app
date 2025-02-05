@@ -50,7 +50,7 @@ describe('SupportList component', () => {
     const text = screen.getByText('my-meeting-menu-keyboard-shortcuts');
     const button = (text.parentElement as HTMLDivElement).parentElement as HTMLButtonElement;
     expect(button).toBeInTheDocument();
-    expect(button).toHaveAttribute('type', 'button');
+    expect(button).toHaveRole('button');
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
   it('should expand shortcut dialog on click', () => {
@@ -70,6 +70,6 @@ describe('SupportList component', () => {
     const text = screen.getByText('my-meeting-menu-glitchtip-trigger');
     const button = (text.parentElement as HTMLDivElement).parentElement as HTMLButtonElement;
     expect(button).toBeInTheDocument();
-    expect(button).toHaveAttribute('type', 'button');
+    expect(button).toHaveRole('button');
   });
 });

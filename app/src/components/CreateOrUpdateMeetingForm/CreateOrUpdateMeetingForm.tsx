@@ -612,6 +612,14 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
                   select
                   label={t('dashboard-meeting-recurrence-label')}
                   hideLabel
+                  slotProps={{
+                    inputLabel: {
+                      htmlFor: 'recurrence-pattern-select',
+                    },
+                    input: {
+                      id: 'recurrence-pattern-select',
+                    },
+                  }}
                   SelectProps={{
                     open: isRecurrenceSelectOpen,
                     onOpen: () => setIsRecurrenceSelectOpen(true),

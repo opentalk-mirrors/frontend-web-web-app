@@ -206,22 +206,20 @@ const GlitchtipErrorDialog = () => {
           transition: {
             onExited: () => setDataHasBeenSent(false),
           },
-          paper: {
-            component: 'form',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-              event.preventDefault();
-              formik.handleSubmit(event);
-            },
-          },
         }}
         open={showErrorDialog}
         onClose={handleCloseDialog}
         fullWidth
         maxWidth="md"
       >
-        {dataHasBeenSent ? renderDataHasSentContent() : renderFormContent()}
+        <form
+          onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            formik.handleSubmit(event);
+          }}
+        >
+          {dataHasBeenSent ? renderDataHasSentContent() : renderFormContent()}
+        </form>
       </Dialog>
     </ThemeProvider>
   );

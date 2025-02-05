@@ -62,7 +62,8 @@ const HeaderPagination = styled(Pagination)(({ theme }) => ({
 }));
 
 const HeaderContainer = styled('div', {
-  shouldForwardProp: (prop) => !['lgOrder', 'fullWidth', 'justifyContentLgDown', 'wrap'].includes(prop as string),
+  shouldForwardProp: (prop) =>
+    !['lgOrder', 'fullWidth', 'justifyContentLgDown', 'wrap', 'flex'].includes(prop as string),
 })<{
   justifyContentLgDown?: string;
   wrap?: boolean;

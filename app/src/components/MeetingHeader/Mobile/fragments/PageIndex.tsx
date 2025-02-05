@@ -32,7 +32,7 @@ const PageButton = styled(Button, {
 const PageIndex = ({ index, highlighted, handleClick }: PageIndexProps) => {
   return (
     <PageButton highlighted={highlighted} onClick={handleClick} variant="outlined">
-      <Typography>{index}</Typography>
+      <Typography component="span">{index}</Typography>
     </PageButton>
   );
 };

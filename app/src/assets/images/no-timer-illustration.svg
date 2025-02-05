@@ -39,49 +39,49 @@
 		fill="#B7C54A" />
 	<defs>
 		<linearGradient id="a-no-timer" x1="47.986" y1="99.244" x2="73.391" y2="52.7" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#102834" />
+			<stop offset="0" stop-color="#102834" />
 			<stop offset=".245" stop-color="#152D39" />
 			<stop offset=".553" stop-color="#243D49" />
 			<stop offset=".894" stop-color="#3D5662" />
 			<stop offset="1" stop-color="#465F6C" />
 		</linearGradient>
 		<linearGradient id="b-no-timer" x1="88.985" y1="59.405" x2="71.966" y2="25.556" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".144" stop-color="#C4D255" />
 			<stop offset=".438" stop-color="#D9E766" />
 			<stop offset=".727" stop-color="#E6F470" />
 			<stop offset="1" stop-color="#EAF874" />
 		</linearGradient>
 		<linearGradient id="c-no-timer" x1="90.893" y1="48.608" x2="69.359" y2="31.618" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#EAF874" />
+			<stop offset="0" stop-color="#EAF874" />
 			<stop offset=".274" stop-color="#E6F470" />
 			<stop offset=".562" stop-color="#D9E766" />
 			<stop offset=".856" stop-color="#C4D255" />
 			<stop offset="1" stop-color="#B7C54A" />
 		</linearGradient>
 		<linearGradient id="d-no-timer" x1="91.864" y1="49.374" x2="65.837" y2="28.839" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".144" stop-color="#C4D255" />
 			<stop offset=".438" stop-color="#D9E766" />
 			<stop offset=".727" stop-color="#E6F470" />
 			<stop offset="1" stop-color="#EAF874" />
 		</linearGradient>
 		<linearGradient id="e-no-timer" x1="45.935" y1="43.108" x2="26.4" y2="19.527" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".144" stop-color="#C4D255" />
 			<stop offset=".438" stop-color="#D9E766" />
 			<stop offset=".727" stop-color="#E6F470" />
 			<stop offset="1" stop-color="#EAF874" />
 		</linearGradient>
 		<linearGradient id="f-no-timer" x1="26.618" y1="37.155" x2="42.265" y2="24.809" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#B7C54A" />
+			<stop offset="0" stop-color="#B7C54A" />
 			<stop offset=".144" stop-color="#C4D255" />
 			<stop offset=".438" stop-color="#D9E766" />
 			<stop offset=".727" stop-color="#E6F470" />
 			<stop offset="1" stop-color="#EAF874" />
 		</linearGradient>
 		<linearGradient id="g-no-timer" x1="25.912" y1="37.712" x2="44.825" y2="22.791" gradientUnits="userSpaceOnUse">
-			<stop stop-color="#EAF874" />
+			<stop offset="0" stop-color="#EAF874" />
 			<stop offset=".274" stop-color="#E6F470" />
 			<stop offset=".562" stop-color="#D9E766" />
 			<stop offset=".856" stop-color="#C4D255" />

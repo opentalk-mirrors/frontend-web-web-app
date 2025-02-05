@@ -88,7 +88,7 @@ const ParticipantListItem = ({
             }
           />
         </Grid>
-        {isActiveSpeaker ? <MicOnIcon /> : <MicOffIcon disabled />}
+        {isActiveSpeaker ? <MicOnIcon /> : <MicOffIcon />}
       </Grid>
     </StyledListItem>
   );

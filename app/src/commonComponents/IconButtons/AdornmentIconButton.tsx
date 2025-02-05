@@ -28,12 +28,16 @@ const StyledIconButton = styled(IconButton, {
   }
 
   return {
+    padding: theme.typography.pxToRem(12),
     ':hover': { backgroundColor: parentHasFocus ? focusColor : nonFocusColor },
+    '& .MuiTouchRipple-child': {
+      backgroundColor: theme.palette.mode === 'light' ? theme.palette.secondary.light : theme.palette.background.light,
+    },
   };
 });
 const AdornmentIconButton = React.forwardRef<HTMLButtonElement, AdornmentIconButtonProps>(
   (props: AdornmentIconButtonProps, ref) => (
-    <StyledIconButton ref={ref} variant="adornment" {...props}>
+    <StyledIconButton ref={ref} {...props}>
       {props.children}
     </StyledIconButton>
   )

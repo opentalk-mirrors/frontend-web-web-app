@@ -88,29 +88,23 @@ const TalkingStickTabPanel = () => {
               onChange={setSelectedSortType}
             />
           </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
+          <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography
               id={INCLUDE_MODERATOR_ID}
-              component="span"
-              sx={{
-                fontWeight: 'normal',
-                marginRight: 1,
-              }}
+              component="label"
+              htmlFor="include-moderator-switch"
+              fontWeight="normal"
+              mr={1}
             >
               {t('talking-stick-include-moderator-switch')}
             </Typography>
             <Switch
+              id="include-moderator-switch"
               onChange={() => setIncludeTalkingStickCreator(!includeTalkingStickCreator)}
               value={includeTalkingStickCreator}
               checked={includeTalkingStickCreator}
               color="primary"
-              inputProps={{ 'aria-labelledby': INCLUDE_MODERATOR_ID }}
+              aria-labelledby={INCLUDE_MODERATOR_ID}
             />
           </Box>
         </Stack>

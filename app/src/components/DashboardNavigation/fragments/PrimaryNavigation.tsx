@@ -135,7 +135,6 @@ const PrimaryNavigation = ({ submenu, routes, setActiveNavbar }: NavigationProps
         )}
 
         <PrimaryNavigationEntry
-          href=""
           onClick={() => auth?.signOut()}
           Icon={<SignOutIcon />}
           collapsedBar={collapsedBar}

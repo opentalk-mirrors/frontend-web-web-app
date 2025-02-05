@@ -55,13 +55,7 @@ export const ShortcutTable = () => {
                 <code>{shortcut.key}</code>
               </TableCell>
               <TableCell headers="shortcut-description">
-                <Typography
-                  sx={{
-                    fontWeight: 300,
-                  }}
-                >
-                  {shortcut.description}
-                </Typography>
+                <Typography fontWeight="300">{shortcut.description}</Typography>
               </TableCell>
             </TableRow>
           ))}

@@ -12,7 +12,9 @@ import IconSlideButton from './IconSlideButton';
 import { Thumbnail } from './Thumbnail';
 
 // ThumbsHolder: the surrounding container of the thumbnails
-const ThumbsHolder = styled(Stack)<{ tracks: number }>(({ theme }) => ({
+const ThumbsHolder = styled(Stack, {
+  shouldForwardProp: (prop) => prop !== 'tracks',
+})<{ tracks: number }>(({ theme }) => ({
   margin: theme.spacing(2, 0, 0, 0),
   gridGap: theme.spacing(2),
   width: '100%',

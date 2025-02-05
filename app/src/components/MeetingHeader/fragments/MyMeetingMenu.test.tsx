@@ -77,10 +77,11 @@ describe('My Meeting Menu', () => {
     fireEvent.click(menuButton);
 
     await waitFor(() => {
-      const userManualMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
-      expect(userManualMenuItem).toBeInTheDocument();
-      expect(userManualMenuItem).toHaveAttribute('href', 'https://docs.opentalk.eu/user/manual/');
-      expect(userManualMenuItem).not.toBeDisabled();
+      const text = screen.getByText('my-meeting-menu-user-manual');
+      const anchor = (text.parentElement as HTMLDivElement).parentElement as HTMLAnchorElement;
+      expect(anchor).toBeInTheDocument();
+      expect(anchor).toHaveAttribute('href', 'https://docs.opentalk.eu/user/manual/');
+      expect(anchor).not.toBeDisabled();
     });
   });
 });

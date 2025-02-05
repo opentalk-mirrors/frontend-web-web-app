@@ -80,10 +80,13 @@ const Tab = styled(MuiTab)<{ component?: React.ElementType }>(({ theme }) => ({
   },
 }));
 
-const ToolbarDivider = styled(Divider)(({ theme }) => ({
-  padding: theme.spacing(1),
+const ToolbarDivider = styled(Divider, {
+  shouldForwardProp: (prop) => prop === 'key' || prop === 'role',
+})(({ theme }) => ({
+  padding: theme.spacing(0),
   margin: theme.spacing(0, 1),
   borderBottom: `3px solid ${theme.palette.secondary.lightest}`,
+  alignSelf: 'center',
 }));
 
 export type ModerationSideToolbarProps = {
@@ -109,7 +112,7 @@ const ModerationSideToolbar = ({ onSelect, displayedTabs, activeTab }: Moderatio
   const renderTabs = () =>
     displayedTabs.map((tab) =>
       tab.divider ? (
-        <Tab key={tab.key} id={tab.key} value={tab.key} icon={<ToolbarDivider />} disabled aria-hidden />
+        <ToolbarDivider key={tab.key} role="presentation" />
       ) : (
         <Tab
           key={tab.key}
