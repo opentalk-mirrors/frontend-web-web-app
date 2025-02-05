@@ -22,7 +22,7 @@ const CoffeeBreakPopover = () => {
   const timerActive = useAppSelector(selectTimerActive);
 
   return (
-    <Container open={Boolean(timerActive)} role="dialog" aria-labelledby="transition-modal-title">
+    <Container open={Boolean(timerActive)} role="alert" aria-live="polite" aria-labelledby="transition-modal-title">
       <Stack
         spacing={1}
         sx={{
