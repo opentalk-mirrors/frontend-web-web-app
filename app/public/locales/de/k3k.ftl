@@ -1189,3 +1189,8 @@ whisper-invite-accept-notification = {displayName} hat Ihre Einladung zur Flüst
 mobile-drawer-button-label = Schublade öffnen
 
 support-menu-tab-title = Information & Support
+
+video-overlay-tooltip-fullscreen = Vollbildmodus
+video-overlay-tooltip-pin-video = Video fixieren
+video-overlay-tooltip-connection-info = Verbindunginformationen
+video-overlay-tooltip-separate-window = Video in separatem Fenster öffnen

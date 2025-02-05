@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
-import { Popover } from '@mui/material';
+import { Popover, Tooltip } from '@mui/material';
 import { ConnectionQuality } from 'livekit-client';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,9 +44,11 @@ const Statistics = ({
 
   return (
     <>
-      <OverlayIconButton onClick={toggleStats} size="large" color="secondary" aria-label={t('statistics-video')}>
-        {hasPacketLoss ? <ConnectionMediumIcon color="error" /> : <ConnectionGoodIcon />}
-      </OverlayIconButton>
+      <Tooltip title={t('video-overlay-tooltip-connection-info')}>
+        <OverlayIconButton onClick={toggleStats} size="large" color="secondary" aria-label={t('statistics-video')}>
+          {hasPacketLoss ? <ConnectionMediumIcon color="error" /> : <ConnectionGoodIcon />}
+        </OverlayIconButton>
+      </Tooltip>
       <Popover
         open={open}
         anchorEl={anchorEl}
