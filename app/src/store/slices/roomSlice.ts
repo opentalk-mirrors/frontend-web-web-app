@@ -17,6 +17,7 @@ import convertToSnakeCase from 'snakecase-keys';
 
 import { AppDispatch, RootState } from '../';
 import { StartRoomError } from '../../api/rest';
+import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
 import { notifications } from '../../commonComponents';
 import {
   AutomodSelectionStrategy,
@@ -97,6 +98,7 @@ interface RoomState {
   reconnectTimerId: ReturnType<typeof setTimeout> | null;
   hotkeysEnabled: boolean;
   isOwnedByCurrentUser: boolean;
+  isPresenceConfirmationActive: boolean;
 }
 
 export interface InviteRoomVerifyResponse {
@@ -124,6 +126,7 @@ const initialState: RoomState = {
   reconnectTimerId: null,
   hotkeysEnabled: true,
   isOwnedByCurrentUser: false,
+  isPresenceConfirmationActive: false,
 };
 
 export enum InviteCodeErrorEnum {
@@ -202,6 +205,12 @@ export const roomSlice = createSlice({
     setHotkeysEnabled: (state, { payload }) => {
       state.hotkeysEnabled = payload;
     },
+    presenceConfirmationRequested: (state) => {
+      state.isPresenceConfirmationActive = true;
+    },
+    presenceConfirmationDone: (state) => {
+      state.isPresenceConfirmationActive = false;
+    },
     roomReset: () => initialState,
   },
   extraReducers: (builder) => {
@@ -261,6 +270,11 @@ export const roomSlice = createSlice({
       state.participantLimit = payload.tariff.quotas?.roomParticipantLimit;
       state.isOwnedByCurrentUser = payload.isRoomOwner;
 
+      if (payload.trainingParticipationReport) {
+        state.isPresenceConfirmationActive =
+          payload.trainingParticipationReport.state === ParticipationLoggingState.WaitingForConfirmation;
+      }
+
       if (payload.timer && payload.timer.style === TimerStyle.CoffeeBreak) {
         state.currentMode = RoomMode.CoffeeBreak;
       }
@@ -317,6 +331,8 @@ export const {
   abortedReconnection,
   setHotkeysEnabled,
   roomReset,
+  presenceConfirmationRequested,
+  presenceConfirmationDone,
 } = actions;
 
 export const selectRoomPassword = (state: RootState) => state.room.password;
@@ -331,6 +347,8 @@ export const selectCurrentRoomMode = (state: RootState) => state.room.currentMod
 export const selectEventInfo = (state: RootState) => state.room.eventInfo;
 export const selectRoomInfo = (state: RootState) => state.room.roomInfo;
 export const selectHotkeysEnabled = (state: RootState) => state.room.hotkeysEnabled;
+export const selectIsRoomOwner = (state: RootState) => state.room.isOwnedByCurrentUser;
+export const selectIsParticipationConfirmationActive = (state: RootState) => state.room.isPresenceConfirmationActive;
 
 export default roomSlice.reducer;
 

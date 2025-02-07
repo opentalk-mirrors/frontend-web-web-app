@@ -58,6 +58,8 @@ import {
   forceMuteEnabled,
   loweredHand,
   raisedHand,
+  trainingParticipationReportDisabled,
+  trainingParticipationReportEnabled,
 } from '../store/slices/moderationSlice';
 import {
   breakoutJoined,
@@ -78,6 +80,8 @@ import {
   enableWaitingRoom,
   enteredWaitingRoom,
   joinBlocked,
+  presenceConfirmationDone,
+  presenceConfirmationRequested,
   readyToEnter,
   selectParticipantLimit,
 } from '../store/slices/roomSlice';
@@ -134,6 +138,7 @@ import {
   streaming,
   subroomAudio,
   timer,
+  trainingParticipationReport,
   whiteboard,
 } from './types/incoming';
 import { AutomodEventType } from './types/incoming/automod';
@@ -336,6 +341,7 @@ const handleControlMessage = async (
           roomInfo: data.roomInfo,
           isRoomOwner: data.isRoomOwner,
           livekit: data.livekit,
+          trainingParticipationReport: data.trainingParticipationReport,
         })
       );
 
@@ -1270,6 +1276,81 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
   }
 };
 
+const handleTrainingParticipationReportMessage = (
+  dispatch: AppDispatch,
+  data: trainingParticipationReport.Message,
+  state: RootState
+) => {
+  switch (data.message) {
+    case 'presence_logging_enabled':
+      if (state.room.isOwnedByCurrentUser) {
+        dispatch(trainingParticipationReportEnabled());
+        notificationAction({
+          msg: i18next.t('presence-logging-enabled-notification'),
+          variant: 'info',
+          ariaLive: 'polite',
+        });
+      }
+      break;
+    case 'presence_logging_disabled':
+      if (state.room.isOwnedByCurrentUser) {
+        dispatch(trainingParticipationReportDisabled());
+        notificationAction({
+          msg: i18next.t('presence-logging-disabled-notification'),
+          variant: 'info',
+          ariaLive: 'polite',
+        });
+      }
+      break;
+    case 'presence_logging_started':
+      if (state.room.isOwnedByCurrentUser) {
+        notificationAction({
+          msg: i18next.t('presence-logging-started-notification'),
+          variant: 'info',
+          ariaLive: 'polite',
+        });
+      }
+      break;
+    case 'presence_logging_ended':
+      if (state.room.isOwnedByCurrentUser) {
+        notificationAction({
+          msg: i18next.t('presence-logging-ended-notification'),
+          variant: 'info',
+          ariaLive: 'polite',
+        });
+      } else {
+        dispatch(presenceConfirmationDone());
+      }
+      break;
+    case 'presence_confirmation_requested':
+      dispatch(presenceConfirmationRequested());
+      break;
+    case 'presence_confirmation_logged':
+      dispatch(presenceConfirmationDone());
+      break;
+    case 'pdf_asset': {
+      if (state.room.isOwnedByCurrentUser) {
+        let assetLocation;
+        if (state.room.eventInfo?.id) {
+          assetLocation = composeMeetingDetailsUrl(state.config.baseUrl, state.room.eventInfo?.id).href;
+        }
+        showWithLinkNotification({
+          translationKey: 'training-participation-report-pdf-asset-notification',
+          url: assetLocation,
+        });
+      }
+      break;
+    }
+    case 'error':
+      showErrorNotification(data.message);
+      break;
+    default: {
+      const dataString = JSON.stringify(data, null, 2);
+      console.error(`Unknown training participation report message type: ${dataString}`);
+    }
+  }
+};
+
 /**
  * Handle incoming websocket messages, sent from the signaling server
  *
@@ -1330,6 +1411,9 @@ const onMessage =
         break;
       case 'subroom_audio':
         handleSubroomAudioMessage(dispatch, message.payload, getState());
+        break;
+      case 'training_participation_report':
+        handleTrainingParticipationReportMessage(dispatch, message.payload, getState());
         break;
       default: {
         const dataString = JSON.stringify(message, null, 2);
@@ -1418,7 +1502,8 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.subroomAudio.handler(builder, dispatch))
       .addModule((builder) => outgoing.timer.handler(builder, dispatch))
       .addModule((builder) => outgoing.whiteboard.handler(builder, dispatch))
-      .addModule((builder) => outgoing.recording.handler(builder, dispatch));
+      .addModule((builder) => outgoing.recording.handler(builder, dispatch))
+      .addModule((builder) => outgoing.trainingParticipationReport.handler(builder, dispatch));
   });
 
   return (next) => (action: AnyAction) => {

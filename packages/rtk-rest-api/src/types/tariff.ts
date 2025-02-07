@@ -28,6 +28,7 @@ export enum BackendModules {
   Timer = 'timer',
   Whiteboard = 'whiteboard',
   SubroomAudio = 'subroomAudio',
+  TrainingParticipationReport = 'trainingParticipationReport',
 }
 
 /**

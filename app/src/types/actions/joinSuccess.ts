@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { EventInfo, SharedFolderData, StreamingState, Tariff } from '@opentalk/rest-api-rtk-query';
 
+import { ParticipationLogging } from '../../api/types/outgoing/trainingParticipationReport';
 import { InitialAutomod } from '../automod';
 import { InitialBreakout } from '../breakout';
 import { ChatMessage, InitialChat } from '../chat';
@@ -59,6 +60,7 @@ export interface JoinSuccessInternalState {
     token: string;
     publicUrl: string;
   };
+  trainingParticipationReport?: ParticipationLogging;
 }
 
 export interface JoinSuccessIncoming {
@@ -93,4 +95,5 @@ export interface JoinSuccessIncoming {
     publicUrl: string;
     microphoneRestrictionState?: ForceMute;
   };
+  trainingParticipationReport?: ParticipationLogging;
 }

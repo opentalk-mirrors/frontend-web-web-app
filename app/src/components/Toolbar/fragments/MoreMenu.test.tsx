@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen, fireEvent } from '@testing-library/react';
 
+import { Role } from '../../../types';
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import MenuButton from './MoreButton';
 import MoreMenu from './MoreMenu';
@@ -25,6 +26,44 @@ describe('<MoreButton />', () => {
     fireEvent.click(button);
 
     expect(screen.getByTestId('moreMenu')).toBeInTheDocument();
+  });
+
+  describe('training participation report option: ', () => {
+    test('training participation button should not be in MoreMenu if not defined', () => {
+      renderWithProviders(<MoreMenu anchorEl={null} onClose={() => jest.fn()} open />, {
+        store,
+        provider: { snackbar: true },
+      });
+
+      expect(screen.queryByText('training-participation-logging-enable-button')).not.toBeInTheDocument();
+    });
+
+    test('training participation button should be in MoreMenu when module trainingParticipationReport is defined', () => {
+      const { store: storeWithModules } = configureStore({
+        initialState: {
+          user: {
+            role: Role.Moderator,
+          },
+          room: {
+            isOwnedByCurrentUser: true,
+          },
+          config: {
+            tariff: {
+              modules: {
+                trainingParticipationReport: { features: [] },
+              },
+            },
+          },
+        },
+      });
+
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+        store: storeWithModules,
+        provider: { mui: true, snackbar: true },
+      });
+
+      expect(screen.queryByText('training-participation-logging-enable-button')).toBeInTheDocument();
+    });
   });
 
   describe('additional development options', () => {
@@ -60,6 +99,32 @@ describe('<MoreButton />', () => {
       expect(notificationMessage).toBeInTheDocument();
       expect(notificationMessage.parentElement).toHaveAttribute('role', 'alert');
       expect(notificationMessage.parentElement).toHaveClass('notistack-MuiContent-error');
+    });
+    test('training participation button should be in MoreMenu when module trainingParticipationReport is defined', () => {
+      const { store: storeWithModules } = configureStore({
+        initialState: {
+          user: {
+            role: Role.Moderator,
+          },
+          room: {
+            isOwnedByCurrentUser: true,
+          },
+          config: {
+            tariff: {
+              modules: {
+                trainingParticipationReport: { features: [] },
+              },
+            },
+          },
+        },
+      });
+
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+        store: storeWithModules,
+        provider: { mui: true, snackbar: true },
+      });
+
+      expect(screen.queryByText('Test training participation report on')).toBeInTheDocument();
     });
   });
 });

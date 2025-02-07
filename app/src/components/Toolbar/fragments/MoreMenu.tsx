@@ -11,7 +11,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import { BackendModules, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +25,7 @@ import {
   enableWaitingRoom,
 } from '../../../api/types/outgoing/moderation';
 import { sendStartStreamSignal, sendStopStreamSignal } from '../../../api/types/outgoing/streaming';
+import { disablePresenceLogging, enablePresenceLogging } from '../../../api/types/outgoing/trainingParticipationReport';
 import {
   AddUserIcon,
   CloseIcon,
@@ -50,9 +51,13 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
-import { selectIsFeatureEnabled } from '../../../store/slices/configSlice';
-import { selectMicrophonesEnabled, selectRaiseHandsEnabled } from '../../../store/slices/moderationSlice';
-import { selectWaitingRoomState } from '../../../store/slices/roomSlice';
+import { selectIsFeatureEnabled, selectIsModuleEnabled } from '../../../store/slices/configSlice';
+import {
+  selectMicrophonesEnabled,
+  selectRaiseHandsEnabled,
+  selectTrainingParticipationReportEnabled,
+} from '../../../store/slices/moderationSlice';
+import { selectIsRoomOwner, selectWaitingRoomState } from '../../../store/slices/roomSlice';
 import {
   selectActiveStreamIds,
   selectInactiveStreamIds,
@@ -76,6 +81,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const participantId = useAppSelector(selectOurUuid);
   const displayName = useAppSelector(selectDisplayName);
   const avatarUrl = useAppSelector(selectAvatarUrl);
+  const isRoomOwner = useAppSelector(selectIsRoomOwner);
   const isWaitingRoomActive = useAppSelector(selectWaitingRoomState);
   const hasHandraisesEnabled = useAppSelector(selectRaiseHandsEnabled);
   const hasMicrophonesEnabled = useAppSelector(selectMicrophonesEnabled);
@@ -86,6 +92,11 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
   const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled('record'));
   const fullscreenHandle = useFullscreenContext();
+
+  const isTrainingParticipationReportModuleOn = useAppSelector(
+    selectIsModuleEnabled(BackendModules.TrainingParticipationReport)
+  );
+  const isTrainingParticipationReportEnabled = useAppSelector(selectTrainingParticipationReportEnabled);
 
   const toggleWaitingRoomItem = isWaitingRoomActive
     ? {
@@ -146,6 +157,24 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         icon: <MicOnIcon />,
       };
 
+  const togglePresenceLogging = isTrainingParticipationReportEnabled
+    ? {
+        label: 'training-participation-logging-disable-button',
+        action: () => {
+          onClose();
+          dispatch(disablePresenceLogging.action());
+        },
+        icon: <CloseIcon />,
+      }
+    : {
+        label: 'training-participation-logging-enable-button',
+        action: () => {
+          onClose();
+          dispatch(enablePresenceLogging.action({}));
+        },
+        icon: <DoneIcon />,
+      };
+
   const toggleChatItem = isChatEnabled
     ? {
         label: 'more-menu-disable-chat',
@@ -182,7 +211,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     },
   };
 
-  const moderatorMenuItems = [
+  const moderatorMenuItems: Array<MenuEntry> = [
     {
       label: 'more-menu-create-invite',
       action: () => {
@@ -197,6 +226,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     deleteGlobalChatItem,
     exportAttendanceReportItem,
   ];
+
+  if (isRoomOwner && isTrainingParticipationReportModuleOn) {
+    moderatorMenuItems.push(togglePresenceLogging);
+  }
 
   //Exclude start/stop recording when errored/unavailable until we have designs/approach for how to handle errored and unavailable streams
   const isValidRecordingTarget =
@@ -329,6 +362,32 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
       icon: <ErrorIcon />,
     },
   ];
+  const devMenuTrainingParticipationToggle = isTrainingParticipationReportEnabled
+    ? {
+        label: `Test training participation report off`,
+        action: () => {
+          onClose();
+          dispatch(disablePresenceLogging.action());
+        },
+        icon: <CloseIcon />,
+      }
+    : {
+        label: `Test training participation report on`,
+        action: () => {
+          onClose();
+          dispatch(
+            enablePresenceLogging.action({
+              initialCheckpointDelay: { after: 5, within: 10 },
+              checkpointInterval: { after: 10, within: 5 },
+            })
+          );
+        },
+        icon: <ErrorIcon />,
+      };
+
+  if (isTrainingParticipationReportModuleOn) {
+    devMenuItems.push(devMenuTrainingParticipationToggle);
+  }
 
   const renderMenuItems = (menuEntries: Array<MenuEntry>) => (
     <MenuList>

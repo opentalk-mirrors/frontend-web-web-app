@@ -31,7 +31,8 @@ export type Namespaces =
   | 'shared_folder'
   | 'echo'
   | 'livekit'
-  | 'subroom_audio';
+  | 'subroom_audio'
+  | 'training_participation_report';
 
 export enum Tag {
   Room = 'Room',
