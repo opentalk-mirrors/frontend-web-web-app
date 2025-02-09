@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useParticipantContext } from '@livekit/components-react';
-import { Box as MuiBox, styled } from '@mui/material';
+import { styled, Box as MuiBox } from '@mui/material';
 import { useState } from 'react';
 
 import { NameTile } from '../../commonComponents';
@@ -26,15 +26,6 @@ const Container = styled(MuiBox)(({ theme }) => ({
   justifyContent: 'center',
   background: theme.palette.background.video,
 }));
-
-const HandRaisedBox = styled(MuiBox)({
-  position: 'absolute',
-  right: 5,
-  bottom: 5,
-  display: 'flex',
-  alignItems: 'flex-end',
-  justifyContent: 'flex-end',
-});
 
 interface ParticipantWindowProps {
   activePresenter?: boolean;
@@ -71,9 +62,7 @@ const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: 
           className="positionBottom"
         />
       )}
-      <HandRaisedBox>
-        <HandRaisedIndicator participantId={participantId} />
-      </HandRaisedBox>
+      <HandRaisedIndicator participantId={participantId} />
     </Container>
   );
 };
