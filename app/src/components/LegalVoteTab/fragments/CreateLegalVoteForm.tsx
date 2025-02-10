@@ -202,8 +202,8 @@ const CreateLegalVoteForm = ({
     dispatch(
       start.action({
         name: values.name,
-        topic: values.topic,
-        subtitle: values.subtitle,
+        subtitle: values.subtitle || undefined,
+        topic: values.topic || undefined,
         enableAbstain: values.enableAbstain,
         autoClose: values.autoClose,
         duration: values.duration ? values.duration * 60 : values.duration,
@@ -212,7 +212,7 @@ const CreateLegalVoteForm = ({
           : [],
         createPdf: values.createPdf,
         kind: values.kind,
-        timezone: getCurrentTimezone(),
+        timezone: getCurrentTimezone() || undefined,
       })
     );
     onClose();
