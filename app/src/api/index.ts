@@ -808,8 +808,6 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
     case 'sent_to_waiting_room': {
       dispatch(enteredWaitingRoom());
       notifications.warning(i18next.t('meeting-notification-moved-to-waiting-room'));
-      const room = getLivekitRoom();
-      room.localParticipant.setScreenShareEnabled(false);
       break;
     }
     case 'waiting_room_enabled':
