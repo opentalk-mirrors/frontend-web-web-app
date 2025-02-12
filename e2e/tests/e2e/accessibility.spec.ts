@@ -7,8 +7,75 @@ import { HomePage } from '../pages/HomePage';
 import { LobbyRoomPage } from '../pages/LobbyRoomPage';
 import { MeetingPage } from '../pages/MeetingPage';
 import { MeetingRoomPage } from '../pages/MeetingRoomPage';
+import { SidebarPage } from '../pages/SidebarPage';
+
+const meetingTitle = 'test_meeting';
+const meetingRoomPassword = 'test1234';
+const createdMeetingStore = [];
 
 test.describe('Accessibility', () => {
+  test.afterEach(async ({ page }) => {
+    if (createdMeetingStore.length === 1) {
+      await page.goto(process.env.INSTANCE_URL);
+      await expect(page.getByRole('link', { name: 'Home' })).toBeVisible();
+      const homePage = new HomePage({ page });
+      await homePage.deleteMeeting(meetingTitle);
+      createdMeetingStore.pop();
+      await page.close();
+    }
+  });
+
+  test('TC_001_Dashboard', async ({ page, browserName }) => {
+    const sidebarPage = new SidebarPage({ page });
+    const baseUrl = process.env.INSTANCE_URL;
+    await page.goto(baseUrl);
+    await expect(sidebarPage.homeButton).toBeVisible();
+    const homePage = new HomePage({ page });
+    // Warning button in safari blocks the selector for creating new meeting
+    if (browserName === 'webkit') {
+      const closeButton = await page.getByRole('button', { name: 'Ok', exact: true });
+      await closeButton.click();
+    }
+    await homePage.planNewMeetingButton.click();
+    const meetingPage = new MeetingPage({ page });
+    await meetingPage.createNewMeeting(meetingTitle, meetingRoomPassword);
+    createdMeetingStore.push(meetingTitle);
+    await sidebarPage.homeButton.click();
+    await homePage.markMeetingAsFavourite(meetingTitle);
+    await sidebarPage.getProfileLocator().focus();
+    // cursor will now be in the beginning of tabable element
+    await page.keyboard.press('Tab');
+    await expect(sidebarPage.homeButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(sidebarPage.meetingsButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(sidebarPage.helpButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(sidebarPage.settingButton).toBeFocused();
+    await page.keyboard.press('Tab');
+
+    // there is no legal options for the testing server
+    if (!baseUrl.startsWith('http://')) {
+      await expect(sidebarPage.legalButton).toBeFocused();
+      await page.keyboard.press('Tab');
+    }
+    await expect(sidebarPage.logoutButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(sidebarPage.closeNavigationButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(homePage.planNewMeetingButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(homePage.startNewMeetingButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(homePage.joinExistingMeetingButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(homePage.getFavouriteMeetingSelector(meetingTitle)).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(homePage.getThreeDotMenuOfMeeting(meetingTitle)).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(homePage.getStartMeetingButton(meetingTitle)).toBeFocused();
+  });
+
   test('TC_002_Lobby', async ({ page, browserName }) => {
     // Camera and Microphone permissions are not being granted in Firefox and Safari
     // Thus they cannot be accessed by keyboard "Tab"

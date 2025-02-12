@@ -26,9 +26,13 @@ export class MeetingPage {
   }
 
   async createNewMeeting(title: string, password: string): Promise<void> {
+    await this.titleInputField.click();
     await this.titleInputField.fill(title);
+    await this.passwordInputField.click();
     await this.passwordInputField.fill(password);
     await this.createMeetingButton.click();
+    // wait for meeting to full render in frontend
+    await this.page.waitForSelector('[aria-label="Only for registered users"]', { state: 'visible' });
   }
 
   async goToAdhocMeetingLobbyAsModerator(closeMeetingTab?: boolean): Promise<void> {
