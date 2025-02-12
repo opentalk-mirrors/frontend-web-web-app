@@ -38,7 +38,7 @@ const CloseButtonContainer = styled('span')(({ theme }) => ({
   },
 }));
 
-const CloseButton = styled(CloseIcon)(() => ({
+const StyledCloseIcon = styled(CloseIcon)(() => ({
   fontSize: '1rem',
 }));
 
@@ -51,7 +51,7 @@ const FontAwesome = (props: IFontAwesomeProps) => {
   return (
     <CustomDialog aria-labelledby="customized-dialog-title" open={props.isOpen}>
       <CloseButtonContainer onClick={props.toggleOpen}>
-        <CloseButton />
+        <StyledCloseIcon />
       </CloseButtonContainer>
       <DialogTitle>Font Awesome License</DialogTitle>
 

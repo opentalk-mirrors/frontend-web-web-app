@@ -2,10 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, styled } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 
-import { CloseIcon } from '../../../../assets/icons';
-import { IconButton } from '../../../IconButtons';
+import { CloseButton } from '../CloseButton';
 import { ISnackbarActionButtonProps } from '../utils';
 
 // a hack to fix for https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1323#note_111313
@@ -19,6 +17,10 @@ const CustomButton = styled(Button)(() => ({
   },
 }));
 
+const StyledCloseButton = styled(CloseButton)(({ theme }) => ({
+  padding: theme.spacing(1),
+}));
+
 const SnackbarActionButtons = ({
   onCancel,
   onAction,
@@ -28,8 +30,6 @@ const SnackbarActionButtons = ({
   actionBtnAttributes = {},
   cancelBtnAttributes = {},
 }: Omit<ISnackbarActionButtonProps, 'msg'>) => {
-  const { t } = useTranslation();
-
   return (
     <Box
       sx={{
@@ -49,11 +49,7 @@ const SnackbarActionButtons = ({
               {cancelBtnText}
             </CustomButton>
           )}
-          {!cancelBtnText && (
-            <IconButton aria-label={t('global-close')} onClick={onCancel}>
-              <CloseIcon />
-            </IconButton>
-          )}
+          {!cancelBtnText && <StyledCloseButton onClick={onCancel} />}
         </>
       )}
     </Box>

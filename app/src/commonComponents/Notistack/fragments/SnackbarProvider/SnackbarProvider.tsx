@@ -8,17 +8,13 @@ import {
   SnackbarProviderProps as SnackbarProviderPropsDefault,
 } from 'notistack';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { getNotistackComponents, notifications } from '..';
-import { CloseIcon } from '../../../../assets/icons';
 import { useFullscreenContext } from '../../../../provider/FullscreenProvider';
-import { IconButton } from '../../../IconButtons';
+import { CloseButton } from '../CloseButton';
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  marginRight: theme.spacing(2),
-  padding: 0,
-  color: theme.palette.common.white,
+const StyledCloseButton = styled(CloseButton)(({ theme }) => ({
+  padding: theme.spacing(1),
 }));
 
 export interface SnackbarProviderProps extends SnackbarProviderPropsDefault {
@@ -52,11 +48,10 @@ const SnackbarProvider = (props: SnackbarProviderProps) => {
     notifications.close(key);
   };
   const { children, Components, domRoot } = props;
-  const { t } = useTranslation();
 
   return (
     <>
-      {/* 
+      {/*
           The only found possibility till now to customize snackbar container of Notistack is to use the `classes` API.
           Therefor we need to generate custom CSS classes and apply them to the `SnackbarProvider`.
           Using GlobalStyles seems to be a better alternative, than creating an external *.css file.
@@ -80,11 +75,7 @@ const SnackbarProvider = (props: SnackbarProviderProps) => {
           vertical: 'top',
           horizontal: 'right',
         }}
-        action={(snackbarKey: SnackbarKey) => (
-          <StyledIconButton aria-label={t('global-close')} onClick={() => onClickDismiss(snackbarKey)}>
-            <CloseIcon />
-          </StyledIconButton>
-        )}
+        action={(snackbarKey: SnackbarKey) => <StyledCloseButton onClick={() => onClickDismiss(snackbarKey)} />}
         Components={{ ...getNotistackComponents(Components) }}
         domRoot={fullscreenHandle.rootElement ? fullscreenHandle.rootElement : domRoot}
       >

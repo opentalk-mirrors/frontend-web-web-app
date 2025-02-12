@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { IconButton, styled } from '@mui/material';
+import { styled } from '@mui/material';
 import { closeSnackbar, CustomContentProps, SnackbarContent } from 'notistack';
-import { forwardRef, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { forwardRef, isValidElement, useCallback } from 'react';
 
-import { CloseIcon } from '../../../../assets/icons';
+import { CloseButton } from '../CloseButton';
 
 // Styles are directly copied from the notistack that is why values are hardcoded
 const StyledSnackbarContent = styled(SnackbarContent)(({ theme }) => ({
@@ -46,18 +45,32 @@ const StyledSnackbarContent = styled(SnackbarContent)(({ theme }) => ({
   },
 }));
 
+const StyledCloseButton = styled(CloseButton)(({ theme }) => ({
+  padding: theme.spacing(1),
+}));
+
 interface CustomNotificationProps extends CustomContentProps {
   ariaLive?: 'assertive' | 'off' | 'polite';
 }
 
 export const CustomNotification = forwardRef<HTMLDivElement, CustomNotificationProps>((props, ref) => {
-  const { t } = useTranslation();
-
   const handleDismiss = useCallback(() => {
     closeSnackbar(props.id);
   }, [props.id, closeSnackbar]);
 
   const Icon = props.iconVariant[props.variant];
+
+  const ActionButtons = () => {
+    if (isValidElement(props.action)) {
+      return props.action;
+    }
+
+    if (typeof props.action === 'function') {
+      return props.action(props.id);
+    }
+
+    return <StyledCloseButton onClick={handleDismiss} />;
+  };
 
   return (
     <StyledSnackbarContent
@@ -69,9 +82,7 @@ export const CustomNotification = forwardRef<HTMLDivElement, CustomNotificationP
     >
       {Icon}
       <span>{props.message}</span>
-      <IconButton size="small" onClick={handleDismiss} aria-label={t('global-close')}>
-        <CloseIcon />
-      </IconButton>
+      <ActionButtons />
     </StyledSnackbarContent>
   );
 });
