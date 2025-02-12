@@ -361,6 +361,11 @@ e2e:chrome:
   script:
     - npx playwright install --with-deps
     - npx playwright test --project=chromium
+  artifacts:
+    when: always
+    paths:
+      - test-results/**/*.zip
+    expire_in: 7 days
 
 e2e:firefox:
   <<: *setup-e2e-tests
@@ -372,6 +377,11 @@ e2e:firefox:
   script:
     - npx playwright install --with-deps
     - npx playwright test --project=firefox
+  artifacts:
+    when: always
+    paths:
+      - test-results/**/*.zip
+    expire_in: 7 days
 
 e2e:webkit:
   <<: *setup-e2e-tests
@@ -383,6 +393,11 @@ e2e:webkit:
   script:
     - npx playwright install --with-deps
     - npx playwright test --project=webkit
+  artifacts:
+    when: always
+    paths:
+      - test-results/**/*.zip
+    expire_in: 7 days
 
 cleanup:review-app:
   stage: cleanup
