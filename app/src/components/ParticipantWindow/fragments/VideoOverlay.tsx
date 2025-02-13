@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
-import { Grid, styled } from '@mui/material';
+import { Grid, styled, Tooltip } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { ConnectionQuality, Track } from 'livekit-client';
 import { MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
@@ -142,24 +142,34 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
       {active && (
         <>
           {userLayout === LayoutOptions.Speaker && (
-            <OverlayIconButton
-              color={pinnedParticipantId === descriptor.participantId ? 'primary' : 'secondary'}
-              onClick={togglePin}
-              translate="no"
-              aria-label={t('indicator-pinned', {
-                participantName: displayName || '',
-              })}
-            >
-              <PinIcon />
-            </OverlayIconButton>
+            <Tooltip title={t('video-overlay-tooltip-pin-video')}>
+              <OverlayIconButton
+                color={pinnedParticipantId === descriptor.participantId ? 'primary' : 'secondary'}
+                onClick={togglePin}
+                translate="no"
+                aria-label={t('indicator-pinned', {
+                  participantName: displayName || '',
+                })}
+              >
+                <PinIcon />
+              </OverlayIconButton>
+            </Tooltip>
           )}
-          <OverlayIconButton aria-label={t('indicator-fullscreen-open')} onClick={openFullScreenView} color="secondary">
-            <FullscreenViewIcon />
-          </OverlayIconButton>
-          {isScreenShareOrVideoActive && (
-            <OverlayIconButton aria-label={t('indicator-extend-new-tab')} color="secondary" onClick={openInNewTab}>
-              <ExtendToTabIcon />
+          <Tooltip title={t('video-overlay-tooltip-fullscreen')}>
+            <OverlayIconButton
+              aria-label={t('indicator-fullscreen-open')}
+              onClick={openFullScreenView}
+              color="secondary"
+            >
+              <FullscreenViewIcon />
             </OverlayIconButton>
+          </Tooltip>
+          {isScreenShareOrVideoActive && (
+            <Tooltip title={t('video-overlay-tooltip-separate-window')}>
+              <OverlayIconButton aria-label={t('indicator-extend-new-tab')} color="secondary" onClick={openInNewTab}>
+                <ExtendToTabIcon />
+              </OverlayIconButton>
+            </Tooltip>
           )}
         </>
       )}

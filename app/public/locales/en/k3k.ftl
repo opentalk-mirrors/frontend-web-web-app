@@ -1188,3 +1188,8 @@ whisper-invite-accept-notification = {displayName} accepted your whisper group i
 mobile-drawer-button-label = Open drawer
 
 support-menu-tab-title = Information & Support
+
+video-overlay-tooltip-fullscreen = Fullscreen
+video-overlay-tooltip-pin-video = Pin video
+video-overlay-tooltip-connection-info = Connection info
+video-overlay-tooltip-separate-window = Open video in a separate window
