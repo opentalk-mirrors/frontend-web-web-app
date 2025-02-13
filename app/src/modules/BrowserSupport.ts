@@ -82,6 +82,10 @@ class BrowserSupport {
     );
   }
 
+  isScreenShareSupported() {
+    return navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices;
+  }
+
   _getSafariVersion() {
     if (this.isSafari()) {
       const ua = navigator.userAgent;

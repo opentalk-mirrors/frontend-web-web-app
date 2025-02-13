@@ -10,6 +10,7 @@ import { ShareScreenOffIcon, ShareScreenOnIcon } from '../../../assets/icons';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppSelector } from '../../../hooks';
+import browser from '../../../modules/BrowserSupport';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import ToolbarButton from './ToolbarButton';
 
@@ -19,6 +20,7 @@ const ShareScreenButton = () => {
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
   const [permissionDenied, setPermissionDenied] = useState(false);
+  const isScreenShareSupported = browser.isScreenShareSupported();
 
   const canPublishScreenShare =
     localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
@@ -45,6 +47,10 @@ const ShareScreenButton = () => {
       }
     });
   };
+
+  if (!isScreenShareSupported) {
+    return null;
+  }
 
   return (
     <ToolbarButton
