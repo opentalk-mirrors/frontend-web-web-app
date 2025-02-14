@@ -113,6 +113,7 @@ media-access-error =
     Bitte prüfen Sie, ob es gerade von einer anderen Anwendung genutzt wird.
 
 media-ice-connection-not-possible = Die Verbindung zu den anderen Teilnehmer konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Internetverbindung und Firewall. Kontaktieren Sie bitte Ihren Administrator, wenn das Problem weiterhin besteht.
+media-bad-connection = Ihre Serververbindung ist instabil, die Leistung / Qualität der Medien könnte beeinträchtigt sein.
 
 chatbar-send-message = Senden
 chatbar-input-placehoder = Nachricht eingeben
