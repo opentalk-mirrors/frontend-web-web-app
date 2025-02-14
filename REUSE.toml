@@ -29,6 +29,7 @@ path = [
     "e2e/.env-example",
     "packages/**/**.snap",
     "pnpm-lock.yaml",
+    "renovate.json",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "OpenTalk GmbH <mail@opentalk.eu>"
