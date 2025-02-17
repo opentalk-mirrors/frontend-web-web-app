@@ -7,6 +7,7 @@ import {
   AccordionSummary as MuiAccordionSummary,
   styled,
   Typography,
+  Box,
 } from '@mui/material';
 import { kebabCase } from 'lodash';
 import React, { SyntheticEvent } from 'react';
@@ -17,10 +18,12 @@ interface IAccordionProps<T extends string> {
   onChange: (event: SyntheticEvent<Element, Event>, newExpanded: boolean) => void;
   option: T;
   expanded: boolean;
+  defaultExpanded?: boolean;
   summaryText: string;
   summaryIcon?: React.ReactNode;
+  summaryAdditionalComponent?: React.ReactNode;
   children: React.ReactNode;
-  editComponent?: React.ReactNode;
+  headingComponent?: React.ElementType;
 }
 
 const Accordion = styled(MuiAccordion)(({ theme }) => ({
@@ -84,33 +87,39 @@ const SummaryText = styled(Typography)<{ component: string }>(({ theme }) => ({
   padding: theme.spacing(1, 0),
 }));
 
-const EditButtonContainer = styled('div')({
-  position: 'absolute',
-  right: 0,
-});
-
 function AccordionItem<T extends string>({
   onChange,
   option,
   expanded,
+  defaultExpanded = false,
   summaryText,
   summaryIcon,
   children,
-  editComponent,
+  summaryAdditionalComponent: summaryButton,
+  headingComponent,
 }: IAccordionProps<T>) {
   return (
-    <Accordion square expanded={expanded} onChange={onChange}>
-      <AccordionSummary
-        aria-controls={`${kebabCase(option)}-content`}
-        id={`${kebabCase(option)}-header`}
-        expandIcon={<ArrowDownIcon />}
-      >
-        {summaryIcon && summaryIcon}
-        <SummaryText component="span" variant="caption">
-          {summaryText}
-        </SummaryText>
-        <EditButtonContainer>{editComponent && editComponent}</EditButtonContainer>
-      </AccordionSummary>
+    <Accordion
+      square
+      defaultExpanded={defaultExpanded}
+      expanded={expanded}
+      onChange={onChange}
+      slotProps={{ heading: { component: headingComponent } }}
+    >
+      <Box sx={{ display: 'flex' }}>
+        <AccordionSummary
+          aria-controls={`${kebabCase(option)}-content`}
+          id={`${kebabCase(option)}-header`}
+          expandIcon={<ArrowDownIcon />}
+          sx={{ flexGrow: 1 }}
+        >
+          {summaryIcon && summaryIcon}
+          <SummaryText component="span" variant="caption">
+            {summaryText}
+          </SummaryText>
+        </AccordionSummary>
+        {summaryButton && <Box sx={{ pt: 0.5, whiteSpace: 'nowrap' }}>{summaryButton}</Box>}
+      </Box>
       <AccordionDetails>{children}</AccordionDetails>
     </Accordion>
   );

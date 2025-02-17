@@ -287,7 +287,7 @@ const CreateLegalVoteForm = ({
                   {t('legal-vote-button-back')}
                 </Button>
               </Stack>
-              <Typography variant="h2">
+              <Typography variant="h2" component="h4">
                 {initialValues?.id !== undefined
                   ? t('legal-vote-header-title-update')
                   : t('legal-vote-header-title-create')}

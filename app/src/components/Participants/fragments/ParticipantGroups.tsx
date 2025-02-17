@@ -1,19 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Typography, Stack, StackProps, Box, Button } from '@mui/material';
-import { Fragment, useState } from 'react';
+import { Stack, StackProps, Box } from '@mui/material';
+import { useState } from 'react';
 
-import { ArrowDownIcon } from '../../../assets/icons';
+import { AccordionItem } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectParticipantGroupsSortedAndFiltered } from '../../../store/selectors';
 import ParticipantSimpleList from './ParticipantSimpleList';
-
-const AccordionButton = styled(Button)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  padding: theme.spacing(0.5),
-}));
 
 const ParticipantGroups = (props: StackProps) => {
   const [expandedGroupId, setExpandedGroupId] = useState<string>('');
@@ -35,37 +29,27 @@ const ParticipantGroups = (props: StackProps) => {
     const isExpanded = groupId === expandedGroupId;
 
     accordions.push(
-      <Fragment key={groupId}>
-        <AccordionButton
-          type="button"
-          variant="text"
-          color="inherit"
-          fullWidth
-          aria-controls={groupId}
-          aria-expanded={isExpanded}
-          onClick={() => toggle(groupId)}
-          focusRipple={true}
+      <>
+        <AccordionItem
+          onChange={() => toggle(groupId)}
+          option={`participant-group-${groupId}`}
+          expanded={isExpanded}
+          defaultExpanded={true}
+          summaryText={groupId}
+          headingComponent="h4"
         >
-          <ArrowDownIcon
+          <Box
+            id={groupId}
             sx={{
-              width: '0.6em',
-              transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)',
-              transition: 'transform 0.3s ease-in',
-              marginRight: 1,
+              overflow: 'hidden',
+              flex: isExpanded ? 1 : 0,
+              height: '30vh',
             }}
-          />
-          <Typography variant="caption">{groupId}</Typography>
-        </AccordionButton>
-        <Box
-          id={groupId}
-          sx={{
-            overflow: 'hidden',
-            flex: isExpanded ? 1 : 0,
-          }}
-        >
-          <ParticipantSimpleList participants={participants} />
-        </Box>
-      </Fragment>
+          >
+            <ParticipantSimpleList participants={participants} />
+          </Box>
+        </AccordionItem>
+      </>
     );
 
     return accordions;

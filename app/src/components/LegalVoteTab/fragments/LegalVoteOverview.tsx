@@ -85,6 +85,7 @@ const LegalVoteOverview = ({ onClickItem }: ILegalVoteOverviewProps) => {
       option={t('legal-vote-overview-saved-legal-votes')}
       expanded={accordionState.savedVotes}
       summaryText={t('legal-vote-overview-saved-legal-votes')}
+      headingComponent="h4"
     >
       <List>
         {savedLegalVotes.map((savedLegalVote, index: number) => (
@@ -107,6 +108,7 @@ const LegalVoteOverview = ({ onClickItem }: ILegalVoteOverviewProps) => {
       option={t('legal-vote-overview-created-legal-votes')}
       expanded={accordionState.createdVotes}
       summaryText={t('legal-vote-overview-created-legal-votes')}
+      headingComponent="h4"
     >
       <List>
         {votes.map((vote, index) => (

@@ -109,6 +109,7 @@ const CreateRoomsForm = () => {
               expanded={expanded === AccordionOptions.Rooms}
               summaryText={t('breakout-room-tab-by-rooms')}
               summaryIcon={<NoOfRoomsIcon />}
+              headingComponent="h4"
             >
               <CreateByRoomsForm formName={AccordionOptions.Rooms} handleNext={handleNext} />
             </AccordionItem>
@@ -118,6 +119,7 @@ const CreateRoomsForm = () => {
               expanded={expanded === AccordionOptions.Participants}
               summaryText={t('breakout-room-tab-by-participants')}
               summaryIcon={<NoOfParticipantsIcon />}
+              headingComponent="h4"
             >
               <CreateByParticipantsForm formName={AccordionOptions.Participants} handleNext={handleNext} />
             </AccordionItem>
