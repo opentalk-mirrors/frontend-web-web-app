@@ -7,9 +7,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useManageVideoEffect } from '../../../hooks/useManageVideoEffect';
-import { selectVideoDeviceId, selectVideoEnabled, setVideoEnabled } from '../../../store/slices/mediaSlice';
+import {
+  selectVideoBackgroundEffects,
+  selectVideoDeviceId,
+  selectVideoEnabled,
+  setVideoEnabled,
+} from '../../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
+import { applyBackgroundEffectToTrack } from '../../../utils/applyBackgroundEffect';
 
 const Container = styled(Grid)({
   position: 'relative',
@@ -51,6 +56,7 @@ const VideoElement = () => {
   const videoDeviceId = useAppSelector(selectVideoDeviceId);
   const videoRef = useRef<HTMLVideoElement>(null);
   const dispatch = useAppDispatch();
+  const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
 
   const [videoTrack, setLocalVideoTrack] = useState<LocalVideoTrack | undefined>();
 
@@ -68,7 +74,9 @@ const VideoElement = () => {
         });
   }, [videoDeviceId, videoEnabled]);
 
-  useManageVideoEffect(true, videoTrack);
+  useEffect(() => {
+    applyBackgroundEffectToTrack(videoTrack, videoBackgroundEffects, dispatch);
+  }, [videoTrack, videoBackgroundEffects.style, videoBackgroundEffects.imageUrl]);
 
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
 
