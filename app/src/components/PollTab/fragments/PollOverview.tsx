@@ -14,11 +14,18 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import NoPollsIcon from '../../../assets/images/no-poll-illustration.svg?react';
+import { NoPollsIcon } from '../../../assets/icons';
 import { AccordionItem } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectAllPolls, selectAllSavedPolls } from '../../../store/slices/pollSlice';
 import PollOverviewPanel from './PollOverviewPanel';
+
+const StyledNoPollsIcon = styled(NoPollsIcon)({
+  '&.MuiSvgIcon-root': {
+    width: '5em',
+    height: '5em',
+  },
+});
 
 interface IPollOverview {
   onClickItem: (formId: number | undefined) => void;
@@ -64,7 +71,7 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
             marginBottom: 2,
           }}
         >
-          <NoPollsIcon />
+          <StyledNoPollsIcon type="decorative" />
         </Box>
         <Typography align="center" variant="body2">
           {t('no-polls-in-conference')}

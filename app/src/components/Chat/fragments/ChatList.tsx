@@ -6,7 +6,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ViewportList, ViewportListRef } from 'react-viewport-list';
 
-import EncryptedMessagesImage from '../../../assets/images/encrypted-messages-illustration.svg?react';
+import { EncryptedMessagesIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
 import { selectCombinedMessageAndEvents } from '../../../store/selectors';
 import type { RoomEvent } from '../../../store/slices/eventSlice';
@@ -14,6 +14,13 @@ import { selectChatSearchValue } from '../../../store/slices/uiSlice';
 import { ChatMessage as ChatMessageType, ChatScope, ParticipantId, TargetId } from '../../../types';
 import ChatMessage from './ChatMessage';
 import NoSearchResult from './NoSearchResult';
+
+const StyledEncryptedMessagesIcon = styled(EncryptedMessagesIcon)({
+  '&.MuiSvgIcon-root': {
+    width: '4.7em',
+    height: '4.7em',
+  },
+});
 
 const ChatOrderedList = styled(List, {
   shouldForwardProp: (prop) => prop !== 'empty',
@@ -163,7 +170,7 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
         }}
       >
         <Box>
-          <EncryptedMessagesImage width="7em" height="7em" />
+          <StyledEncryptedMessagesIcon type="decorative" />
         </Box>
         <Typography align="center" variant="body2">
           {t('encrypted-messages')}

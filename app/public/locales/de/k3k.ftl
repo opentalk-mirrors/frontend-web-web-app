@@ -1195,3 +1195,13 @@ video-overlay-tooltip-fullscreen = Vollbildmodus
 video-overlay-tooltip-pin-video = Video fixieren
 video-overlay-tooltip-connection-info = Verbindunginformationen
 video-overlay-tooltip-separate-window = Video in separatem Fenster öffnen
+
+moderator-icon-title = Moderator
+mic-on-icon-title = Mikrofon ist an
+mic-off-icon-title = Mikrofon ist aus
+screenshare-icon-title = Bildschirm freigegeben
+handraise-icon-title = Hand gehoben
+active-speaker-icon-title = Aktueller Sprecher
+meeting-notes-writer-selected-title = Protokollant
+timer-done-icon-title = Fertig
+timer-not-done-icon-title = Nicht fertig

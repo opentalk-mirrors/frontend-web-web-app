@@ -13,7 +13,7 @@ import {
   styled,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { isEmpty } from 'lodash';
+import { isEmpty, uniqueId } from 'lodash';
 import React, { CSSProperties, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
@@ -392,15 +392,35 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     const isAudioEnabled = isParticipantSelf ? ownAudioEnabled : audioActive;
 
     if (isHandRaised) {
-      return <RaiseHandOnIcon />;
+      return (
+        <RaiseHandOnIcon
+          type="functional"
+          title={t('handraise-icon-title')}
+          titleId={uniqueId('handraise-icon-title-')}
+        />
+      );
     }
     if (isScreenShareEnabled) {
-      return <ShareScreenOnIcon />;
+      return (
+        <ShareScreenOnIcon
+          type="functional"
+          title={t('screenshare-icon-title')}
+          titleId={uniqueId('screenshare-icon-title-')}
+        />
+      );
     }
     if (isAudioEnabled) {
-      return isSipParticipant ? <PhoneIcon /> : <MicOnIcon data-testid="MicOn" />;
+      return isSipParticipant ? (
+        <PhoneIcon type="functional" title={t('mic-on-icon-title')} titleId={uniqueId('mic-on-icon-title-')} />
+      ) : (
+        <MicOnIcon type="functional" title={t('mic-on-icon-title')} titleId={uniqueId('mic-on-icon-title-')} />
+      );
     }
-    return isSipParticipant ? <PhoneOffIconStyled /> : <MicOffIconStyled data-testid="MicOff" />;
+    return isSipParticipant ? (
+      <PhoneOffIconStyled type="functional" title={t('mic-off-icon-title')} titleId={uniqueId('mic-off-icon-title-')} />
+    ) : (
+      <MicOffIconStyled type="functional" title={t('mic-off-icon-title')} titleId={uniqueId('mic-off-icon-title-')} />
+    );
   }, [
     participant.handIsUp,
     participant.id,
@@ -481,7 +501,20 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
 
     if (renderWithBadge) {
       return (
-        <StyledBadge badgeContent={isParticipantGuest ? t('guest-label') : <ModeratorIcon color="primary" />}>
+        <StyledBadge
+          badgeContent={
+            isParticipantGuest ? (
+              t('guest-label')
+            ) : (
+              <ModeratorIcon
+                color="primary"
+                type="functional"
+                title={t('moderator-icon-title')}
+                titleId={uniqueId('moderator-icon-title-')}
+              />
+            )
+          }
+        >
           <Avatar src={participant?.avatarUrl} alt={participant?.displayName} isSipParticipant={isSipParticipant}>
             {participant?.displayName}
           </Avatar>

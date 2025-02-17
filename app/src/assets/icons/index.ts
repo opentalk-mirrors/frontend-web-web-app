@@ -30,6 +30,7 @@ import DoneIcon from './DoneIcon';
 import DurationIcon from './DurationIcon';
 import EditIcon from './EditIcon';
 import EmojiIcon from './EmojiIcon';
+import EncryptedMessagesIcon from './EncryptedMessagesIcon';
 import EndCallIcon from './EndCallIcon';
 import ErrorIcon from './ErrorIcon';
 import ExtendToTabIcon from './ExtendToTabIcon';
@@ -61,8 +62,10 @@ import MoreIcon from './MoreIcon';
 import MuteAllIcon from './MuteAllIcon';
 import MyAccountIcon from './MyAccountIcon';
 import NewMessageIcon from './NewMessageIcon';
+import NoMessagesIcon from './NoMessagesIcon';
 import NoOfParticipantsIcon from './NoOfParticipantsIcon';
 import NoOfRoomsIcon from './NoOfRoomsIcon';
+import NoPollsIcon from './NoPollsIcon';
 import NoVotesIcon from './NoVotesIcon';
 import PhoneIcon from './PhoneIcon';
 import PictureIcon from './PictureIcon';
@@ -128,6 +131,7 @@ export {
   DurationIcon,
   EditIcon,
   EmojiIcon,
+  EncryptedMessagesIcon,
   EndCallIcon,
   ErrorIcon,
   ExtendToTabIcon,
@@ -159,8 +163,10 @@ export {
   MuteAllIcon,
   MyAccountIcon,
   NewMessageIcon,
+  NoMessagesIcon,
   NoOfParticipantsIcon,
   NoOfRoomsIcon,
+  NoPollsIcon,
   NoVotesIcon,
   PhoneIcon,
   PictureIcon,
