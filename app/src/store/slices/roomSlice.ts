@@ -12,6 +12,7 @@ import {
   createSlice,
 } from '@reduxjs/toolkit';
 import convertToCamelCase from 'camelcase-keys';
+import { batch } from 'react-redux';
 import convertToSnakeCase from 'snakecase-keys';
 
 import { AppDispatch, RootState } from '../';
@@ -28,8 +29,7 @@ import {
 import { fetchWithAuth, getControllerBaseUrl } from '../../utils/apiUtils';
 import { hangUp, joinSuccess, startRoom } from '../commonActions';
 import { started as automodStarted, stopped as automodStopped } from './automodSlice';
-import { getLivekitRoom } from './livekitSlice';
-import { setAudioAndVideoEnabled } from './mediaSlice';
+import { startMedia } from './mediaSlice';
 import { timerStarted, timerStopped } from './timerSlice';
 
 interface InviteState extends FetchRequestState {
@@ -401,16 +401,11 @@ roomMiddleware.startListening({
 
 roomMiddleware.startListening({
   actionCreator: enteredWaitingRoom,
-  effect: async (_, listenerApi) => {
-    try {
-      const room = getLivekitRoom();
-      await room.localParticipant.setCameraEnabled(false);
-      await room.localParticipant.setMicrophoneEnabled(false);
-      await room.localParticipant.setScreenShareEnabled(false);
-    } catch (error) {
-      console.debug('Error while turning mic/cam off while entering the waiting room', error);
-    } finally {
-      listenerApi.dispatch(setAudioAndVideoEnabled({ audio: false, video: false }));
-    }
+  effect: (_, listenerApi) => {
+    batch(() => {
+      listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+      listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+      listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
+    });
   },
 });

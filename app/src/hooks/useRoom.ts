@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../commonComponents';
 import { setLivekitRoom } from '../store/slices/livekitSlice';
-import { selectAudioEnabled, setAudioEnabled } from '../store/slices/mediaSlice';
+import { selectAudioEnabled, startMedia } from '../store/slices/mediaSlice';
 import { selectShouldForceMuted } from '../store/slices/moderationSlice';
 import { useAppDispatch, useAppSelector } from './index';
 import { E2EEData } from './useE2EE';
@@ -72,8 +72,7 @@ const useRoom = ({ e2eeData, isWhisperRoom }: IUseRoomOptions): Room | undefined
 
     // Mutes the user if microphones are disabled in conference
     if (shouldForceMuted && audioEnabled) {
-      roomInstance.localParticipant.setMicrophoneEnabled(false);
-      dispatch(setAudioEnabled(false));
+      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
     }
 
     return roomInstance;

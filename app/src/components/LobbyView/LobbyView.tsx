@@ -11,6 +11,7 @@ import { uniqueId } from 'lodash';
 import { SnackbarKey } from 'notistack';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { batch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
@@ -25,7 +26,7 @@ import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
 import { startRoom } from '../../store/commonActions';
 import { selectDisallowCustomDisplayName, selectFeatures } from '../../store/slices/configSlice';
-import { setAudioAndVideoEnabled } from '../../store/slices/mediaSlice';
+import { startMedia } from '../../store/slices/mediaSlice';
 import {
   ConnectionState,
   InviteCodeErrorEnum,
@@ -169,7 +170,10 @@ const LobbyView = () => {
   const enterRoom = useCallback(
     async (displayName: string, password: string) => {
       if (joinWithoutMedia) {
-        dispatch(setAudioAndVideoEnabled({ audio: false, video: false }));
+        batch(() => {
+          dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+          dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+        });
       }
 
       return dispatch(
@@ -221,7 +225,7 @@ const LobbyView = () => {
           }
         });
     },
-    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia]
+    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, startMedia]
   );
 
   const formik = useFormik({

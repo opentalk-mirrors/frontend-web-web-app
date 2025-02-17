@@ -5,18 +5,16 @@ import { ParticipantPermission } from '@livekit/protocol';
 import {
   ConnectionState as LivekitConnectionState,
   LocalParticipant,
-  LocalTrackPublication,
-  ParticipantEvent,
   RemoteParticipant,
   RemoteTrack,
   RemoteTrackPublication,
   Room,
   RoomEvent,
   Track,
-  TrackPublication,
 } from 'livekit-client';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { batch } from 'react-redux';
 
 import { useAppDispatch, useAppSelector } from '.';
 import { notifications } from '../commonComponents';
@@ -27,11 +25,10 @@ import {
   selectAudioEnabled,
   selectVideoDeviceId,
   selectVideoEnabled,
-  setAudioEnabled,
+  startMedia,
 } from '../store/slices/mediaSlice';
 import { ConnectionState, selectRoomConnectionState } from '../store/slices/roomSlice';
 import { pinnedParticipantIdSet, pinnedRemoteScreenshare, selectPinnedParticipantId } from '../store/slices/uiSlice';
-import { updateLastActive } from '../store/slices/userSlice';
 import { ParticipantId } from '../types';
 
 const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
@@ -63,28 +60,6 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
     [dispatch, pinnedParticipantId]
   );
 
-  const handleTrackState = useCallback(
-    async (pub: TrackPublication | LocalTrackPublication, enableAudio: boolean) => {
-      dispatch(updateLastActive());
-
-      if (pub.source === Track.Source.Microphone) {
-        if (!isWhisperRoom) {
-          let isMicrophoneEnabled = room.localParticipant.isMicrophoneEnabled;
-          // Participants are only set at unmute events
-          const audioEnabledByUserChoice = audioEnabled || enableAudio;
-
-          // If user explicitly disabled audio, override the participant's microphone state
-          if (audioEnabledByUserChoice !== undefined && !audioEnabledByUserChoice) {
-            isMicrophoneEnabled = false;
-            await room.localParticipant.setMicrophoneEnabled(false);
-          }
-          dispatch(setAudioEnabled(isMicrophoneEnabled));
-        }
-      }
-    },
-    [audioEnabled, isWhisperRoom, room.localParticipant, dispatch]
-  );
-
   const localParticipant = room.localParticipant;
 
   const handlePermissionChanged = useCallback(
@@ -107,7 +82,7 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
             key: 'control-participant-presenter-role-granted',
           });
         } else if (!hasScreenShare && hadScreenShare) {
-          await localParticipant.setScreenShareEnabled(false);
+          dispatch(startMedia({ kind: 'screenshare', enabled: false }));
           notifications.close('control-participant-presenter-role-granted');
           notifications.warning(t('control-participant-presenter-role-revoked'), {
             key: 'control-participant-presenter-role-revoked',
@@ -121,29 +96,26 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   // Listener to maintain camera and microphone state between room transitions (layout-meetingView, meetingView-breakoutrooms)
   const handleRoomConnected = useCallback(async () => {
     dispatch(setLivekitUnavailable(false));
-    if (room.engine && !room.engine.isClosed) {
-      if (videoEnabled !== localParticipant.isCameraEnabled) {
-        await localParticipant.setCameraEnabled(true, { deviceId: videoDeviceId }).catch((error) => {
-          console.error('Unable to start video: ', error);
-        });
-      }
-      if (audioEnabled !== localParticipant.isMicrophoneEnabled) {
-        await localParticipant.setMicrophoneEnabled(true, { deviceId: audioDeviceId }).catch((error) => {
-          console.error('Unable to start audio: ', error);
-        });
-      }
+    if (room?.state === LivekitConnectionState.Connected) {
+      batch(() => {
+        if (videoEnabled !== localParticipant.isCameraEnabled) {
+          dispatch(startMedia({ kind: 'videoinput', enabled: videoEnabled, deviceId: videoDeviceId }));
+        }
+        if (audioEnabled !== localParticipant.isMicrophoneEnabled) {
+          dispatch(startMedia({ kind: 'audioinput', enabled: audioEnabled, deviceId: audioDeviceId }));
+        }
+      });
     }
   }, [
     localParticipant.isCameraEnabled,
     localParticipant.isMicrophoneEnabled,
-    localParticipant.setCameraEnabled,
-    localParticipant.setMicrophoneEnabled,
-    room.engine,
+    room?.state,
     videoDeviceId,
     audioDeviceId,
     videoEnabled,
     audioEnabled,
     dispatch,
+    startMedia,
   ]);
 
   const handleTrackSubscribed = useCallback(
@@ -193,9 +165,6 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   }, [room.state, isWhisperRoom, dispatch, connectionState]);
 
   useEffect(() => {
-    const handleUnmuteEventListener = (pub: TrackPublication | LocalTrackPublication) => handleTrackState(pub, true);
-    const handleMuteEventListener = (pub: TrackPublication | LocalTrackPublication) => handleTrackState(pub, false);
-
     room
       .on(RoomEvent.Connected, handleRoomConnected)
       .on(RoomEvent.Disconnected, handleRoomDisconnected)
@@ -204,11 +173,6 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
       .on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
       .on(RoomEvent.ParticipantPermissionsChanged, handlePermissionChanged)
       .on(RoomEvent.ConnectionStateChanged, handleConnectionStateChanged);
-    localParticipant
-      .on(ParticipantEvent.TrackUnmuted, handleUnmuteEventListener)
-      .on(ParticipantEvent.LocalTrackPublished, handleUnmuteEventListener)
-      .on(ParticipantEvent.TrackMuted, handleMuteEventListener)
-      .on(ParticipantEvent.LocalTrackUnpublished, handleMuteEventListener);
 
     return () => {
       room
@@ -219,11 +183,6 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
         .off(RoomEvent.TrackSubscribed, handleTrackSubscribed)
         .off(RoomEvent.ParticipantPermissionsChanged, handlePermissionChanged)
         .off(RoomEvent.ConnectionStateChanged, handleConnectionStateChanged);
-      localParticipant
-        .off(ParticipantEvent.TrackUnmuted, handleUnmuteEventListener)
-        .off(ParticipantEvent.LocalTrackPublished, handleUnmuteEventListener)
-        .off(ParticipantEvent.TrackMuted, handleMuteEventListener)
-        .off(ParticipantEvent.LocalTrackUnpublished, handleMuteEventListener);
     };
   }, [
     room.on,
@@ -235,7 +194,6 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
     handleRoomConnected,
     handleRoomDisconnected,
     handleTrackPublished,
-    handleTrackState,
     handleTrackSubscribed,
     handleTrackUnpublished,
   ]);

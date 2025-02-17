@@ -1,19 +1,25 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useLocalParticipantPermissions, useMaybeRoomContext } from '@livekit/components-react';
+import { useLocalParticipantPermissions } from '@livekit/components-react';
 import { styled } from '@mui/material';
 import { LocalAudioTrack } from 'livekit-client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MicOffIcon, MicOnIcon } from '../../../assets/icons';
-import { SuspenseLoading, showConsentNotification } from '../../../commonComponents';
+import { showConsentNotification, SuspenseLoading } from '../../../commonComponents';
 import { LIVEKIT_AUDIO_PERMISSION_NUMBER, ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
-import { selectAudioEnabled, setAudioEnabled } from '../../../store/slices/mediaSlice';
+import {
+  selectAudioChangeInProgress,
+  selectAudioEnabled,
+  selectAudioPermissionDenied,
+  selectMediaChangeInProgress,
+  startMedia,
+} from '../../../store/slices/mediaSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import AudioIndicator from './AudioIndicator';
 import AudioMenu from './AudioMenu';
@@ -33,16 +39,18 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
   const askConsent = useAppSelector(selectNeedRecordingConsent);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const dispatch = useAppDispatch();
-  const room = useMaybeRoomContext();
   const audioEnabled = useAppSelector(selectAudioEnabled);
   const localParticipantPermissions = (!isLobby && useLocalParticipantPermissions()) || undefined;
-  const microphoneEnabled = (audioEnabled || false) && !isLivekitUnavailable;
+  const microphoneEnabled = audioEnabled && !isLivekitUnavailable;
+  const permissionDenied = useAppSelector(selectAudioPermissionDenied);
+  const audioChangeInProgress = useAppSelector(selectAudioChangeInProgress);
+  const mediaChangeInProgress = useAppSelector(selectMediaChangeInProgress);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [canPublishAudio, setCanPublishAudio] = useState(true);
 
-  const { startMedia, permissionDenied, devices } = useMediaDevice({
+  const { devices } = useMediaDevice({
     kind: 'audioinput',
   });
 
@@ -54,31 +62,11 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
       }
     }
 
-    if (audioEnabled) {
-      dispatch(setAudioEnabled(false));
-
-      if (!isLobby) {
-        await room?.localParticipant.setMicrophoneEnabled(false).catch((error) => {
-          console.error('Unable to stop audio: ', error);
-        });
-      }
-    } else {
-      try {
-        if (!isLobby && !room?.localParticipant.isMicrophoneEnabled) {
-          dispatch(setAudioEnabled(true));
-          await room?.localParticipant.setMicrophoneEnabled(true);
-        }
-        await startMedia(true);
-      } catch (e) {
-        console.error('Unable to start audio: ', e);
-      }
-    }
+    dispatch(startMedia({ kind: 'audioinput', enabled: !audioEnabled }));
   };
 
-  const pendingPermission = permissionDenied === 'pending';
-
   const indicator = useMemo(() => {
-    if (pendingPermission || (!localAudioTrack && microphoneEnabled)) {
+    if (audioChangeInProgress || (!localAudioTrack && microphoneEnabled)) {
       return <SuspenseLoading size="1rem" />;
     }
 
@@ -92,7 +80,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
     }
 
     return <MicOffIcon data-testid="toolbarAudioButtonOff" />;
-  }, [microphoneEnabled, localAudioTrack, pendingPermission]);
+  }, [microphoneEnabled, localAudioTrack, audioChangeInProgress]);
 
   const tooltipText = () => {
     if (permissionDenied === true) {
@@ -111,7 +99,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
       if (canPublishAudio !== undefined) {
         setCanPublishAudio(canPublishAudio);
         if (!canPublishAudio && microphoneEnabled) {
-          dispatch(setAudioEnabled(false));
+          dispatch(startMedia({ kind: 'audioinput', enabled: false }));
         }
       }
     }
@@ -123,8 +111,8 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
         tooltipTitle={tooltipText()}
         onClick={onClick}
         hasContext
-        contextDisabled={pendingPermission || devices.length === 0}
-        disabled={!canPublishAudio || pendingPermission || devices.length === 0 || isLivekitUnavailable}
+        contextDisabled={mediaChangeInProgress || devices.length === 0}
+        disabled={!canPublishAudio || mediaChangeInProgress || devices.length === 0 || isLivekitUnavailable}
         openMenu={() => setShowMenu(true)}
         active={Boolean(microphoneEnabled && localAudioTrack)}
         isLobby={isLobby}

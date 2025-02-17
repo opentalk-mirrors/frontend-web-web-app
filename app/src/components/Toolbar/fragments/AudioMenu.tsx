@@ -7,10 +7,10 @@ import { useTranslation } from 'react-i18next';
 
 import { ErrorIcon, MicOnIcon, WarningIcon } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
-import { useAppSelector } from '../../../hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import useMediaDevice from '../../../hooks/useMediaDevice';
-import { selectAudioDeviceId } from '../../../store/slices/mediaSlice';
+import { selectAudioChangeInProgress, selectAudioDeviceId, setAudioDeviceId } from '../../../store/slices/mediaSlice';
 import { DeviceId } from '../../../types/device';
 import DeviceList from './DeviceList';
 import { MenuSectionTitle, ToolbarMenu, ToolbarMenuProps } from './ToolbarMenuUtils';
@@ -21,13 +21,10 @@ const MultilineTypography = styled(Typography)({
 
 const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const audioDeviceId = useAppSelector(selectAudioDeviceId);
-  const {
-    startMedia,
-    localDevices: devices,
-    permissionDenied,
-    loadLocalDevices,
-  } = useMediaDevice({ kind: 'audioinput' });
+  const audioChangeInProgress = useAppSelector(selectAudioChangeInProgress);
+  const { localDevices: devices, permissionDenied, loadLocalDevices } = useMediaDevice({ kind: 'audioinput' });
 
   // Some browsers (e.g. Firefox) duplicate devices, so we need to filter them out
   const filteredDevices = useMemo(() => {
@@ -47,14 +44,12 @@ const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const fullscreenHandle = useFullscreenContext();
 
   const handleClick = async (deviceId: DeviceId) => {
-    if (deviceId !== audioDeviceId) {
-      await startMedia(false, deviceId);
-    }
+    dispatch(setAudioDeviceId(deviceId));
   };
 
   useEffect(() => {
     if (open) {
-      loadLocalDevices('audioinput');
+      loadLocalDevices();
     }
   }, [open]);
 
@@ -90,7 +85,7 @@ const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           </MenuSectionTitle>
         )}
 
-        {filteredDevices.length === 0 && permissionDenied === 'pending' ? (
+        {filteredDevices.length === 0 && audioChangeInProgress ? (
           <MenuSectionTitle>
             <WarningIcon />
             <ListItemText>{t('devicemenu-wait-for-permission')}</ListItemText>

@@ -4,6 +4,7 @@
 import { PayloadAction, TypedStartListening, createListenerMiddleware, createSlice } from '@reduxjs/toolkit';
 import { intervalToDuration } from 'date-fns';
 import i18next from 'i18next';
+import { batch } from 'react-redux';
 
 import { AppDispatch, RootState } from '../';
 import { ReadyToContinue } from '../../api/types/incoming/timer';
@@ -11,6 +12,7 @@ import { notifications } from '../../commonComponents';
 import { ParticipantId, TimerKind, TimerStopKind, TimerStyle, Timestamp } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
 import { getLivekitRoom } from './livekitSlice';
+import { startMedia } from './mediaSlice';
 
 interface State {
   startedAt?: Timestamp;
@@ -135,7 +137,7 @@ const startAppListening = timerMiddleware.startListening as AppStartListening;
 
 startAppListening({
   actionCreator: timerStarted,
-  effect: async (action) => {
+  effect: (action, listenerApi) => {
     const room = getLivekitRoom();
 
     //Avoid sending reconfigure if both video and audio tracks are not active
@@ -144,11 +146,13 @@ startAppListening({
 
     if (action.payload.style === TimerStyle.CoffeeBreak) {
       if (isAnyMediaTrackEnabled) {
-        await room.localParticipant.setCameraEnabled(false);
-        await room.localParticipant.setMicrophoneEnabled(false);
+        batch(() => {
+          listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+          listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+        });
       }
       if (isShareScreenEnabled) {
-        await room.localParticipant.setScreenShareEnabled(false);
+        listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
       }
     }
   },

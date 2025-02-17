@@ -10,7 +10,13 @@ import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
-import { selectVideoEnabled, setVideoEnabled } from '../../../store/slices/mediaSlice';
+import {
+  selectMediaChangeInProgress,
+  selectVideoChangeInProgress,
+  selectVideoEnabled,
+  selectVideoPermissionDenied,
+  startMedia,
+} from '../../../store/slices/mediaSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import ToolbarButton from './ToolbarButton';
 import VideoMenu from './VideoMenu';
@@ -27,9 +33,12 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
   const videoEnabled = useAppSelector(selectVideoEnabled);
   const cameraEnabled = (videoEnabled || false) && !isLivekitUnavailable;
 
+  const videoChangeInProgress = useAppSelector(selectVideoChangeInProgress);
+  const mediaChangeInProgress = useAppSelector(selectMediaChangeInProgress);
+  const videoPermissionDenied = useAppSelector(selectVideoPermissionDenied);
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
-  const { startMedia, devices, permissionDenied } = useMediaDevice({
+  const { devices } = useMediaDevice({
     kind: 'videoinput',
   });
 
@@ -40,20 +49,11 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
         return;
       }
     }
-
-    if (cameraEnabled) {
-      dispatch(setVideoEnabled(false));
-    } else {
-      try {
-        await startMedia(true);
-      } catch (e) {
-        console.error('Unable to start video: ', e);
-      }
-    }
+    dispatch(startMedia({ kind: 'videoinput', enabled: !cameraEnabled }));
   };
 
   const tooltipText = () => {
-    if (permissionDenied === true) {
+    if (videoPermissionDenied === true) {
       return t('device-permission-denied');
     }
     if (cameraEnabled) {
@@ -62,10 +62,8 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
     return t('toolbar-button-video-turn-on-tooltip-title');
   };
 
-  const pendingPermission = permissionDenied === 'pending';
-
   const ButtonIcon = () => {
-    if (pendingPermission) {
+    if (videoChangeInProgress) {
       return <SuspenseLoading size="1rem" />;
     }
     return cameraEnabled ? <CameraOnIcon /> : <CameraOffIcon />;
@@ -77,11 +75,11 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
         tooltipTitle={tooltipText()}
         onClick={onClick}
         hasContext
-        contextDisabled={pendingPermission || devices.length === 0}
+        contextDisabled={mediaChangeInProgress || devices.length === 0}
         contextTitle={t('toolbar-button-video-context-title')}
         contextMenuId="video-context-menu"
         contextMenuExpanded={showMenu}
-        disabled={pendingPermission || devices.length === 0 || isLivekitUnavailable}
+        disabled={mediaChangeInProgress || devices.length === 0 || isLivekitUnavailable}
         active={cameraEnabled}
         openMenu={() => {
           setShowMenu(true);
@@ -99,7 +97,6 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
         }}
         open={showMenu}
         videoEnabled={cameraEnabled}
-        isLobby={isLobby}
       />
     </div>
   );

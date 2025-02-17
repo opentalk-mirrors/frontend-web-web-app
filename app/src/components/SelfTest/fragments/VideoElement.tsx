@@ -11,10 +11,13 @@ import {
   selectVideoBackgroundEffects,
   selectVideoDeviceId,
   selectVideoEnabled,
-  setVideoEnabled,
+  setMediaChangeInProgress,
+  setVideoDeviceId,
+  startMedia,
 } from '../../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
 import { applyBackgroundEffectToTrack } from '../../../utils/applyBackgroundEffect';
+import { handleMediaPermissionError } from '../../../utils/mediaErrorUtils';
 
 const Container = styled(Grid)({
   position: 'relative',
@@ -61,17 +64,24 @@ const VideoElement = () => {
   const [videoTrack, setLocalVideoTrack] = useState<LocalVideoTrack | undefined>();
 
   useEffect(() => {
-    videoEnabled &&
+    if (videoEnabled) {
+      dispatch(setMediaChangeInProgress('videoinput'));
       createLocalVideoTrack({ deviceId: videoDeviceId })
         .then((videoTrack) => {
           setLocalVideoTrack(videoTrack);
-        })
-        .catch((err) => {
-          dispatch(setVideoEnabled(false));
-          if (err.name !== 'NotAllowedError') {
-            console.error('Error while publishing video track: ', err);
+          const usedDeviceId = videoTrack.constraints.deviceId as string;
+          if (usedDeviceId !== videoDeviceId) {
+            dispatch(setVideoDeviceId(usedDeviceId));
           }
+        })
+        .catch((error) => {
+          dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+          handleMediaPermissionError({ error, deviceId: videoDeviceId, kind: 'videoinput' });
+        })
+        .finally(() => {
+          dispatch(setMediaChangeInProgress(null));
         });
+    }
   }, [videoDeviceId, videoEnabled]);
 
   useEffect(() => {

@@ -612,8 +612,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           dispatch(automod.selectNext.action());
         }
       }
-
-      getLivekitRoom().localParticipant.setMicrophoneEnabled(false);
+      dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: false }));
       break;
     }
     case 'stopped': {
@@ -629,7 +628,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
         ariaLive: 'polite',
       });
 
-      getLivekitRoom().localParticipant.setMicrophoneEnabled(false);
+      dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: false }));
       break;
     }
     // case 'start_animation':
@@ -641,7 +640,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
     case 'speaker_updated': {
       const room = getLivekitRoom();
       if (data.speaker !== state.user.uuid) {
-        room.localParticipant.setMicrophoneEnabled(false);
+        dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: false }));
         dispatch(setAsInactiveSpeaker());
       }
       notifications.close(nextId);
@@ -674,7 +673,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           notifications.showTalkingStickMutedNotification({
             onUnmute: async () => {
               notifications.close(currentId);
-              await room.localParticipant.setMicrophoneEnabled(true);
+              dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: true }));
               notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
             },
             onNext: () => {

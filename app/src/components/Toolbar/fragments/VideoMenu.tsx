@@ -28,8 +28,10 @@ import { selectVideoBackgrounds } from '../../../store/slices/configSlice';
 import { selectQualityCap, setDisableRemoteVideos } from '../../../store/slices/livekitSlice';
 import {
   selectVideoBackgroundEffects,
+  selectVideoChangeInProgress,
   selectVideoDeviceId,
   setBackgroundEffects,
+  setVideoDeviceId,
 } from '../../../store/slices/mediaSlice';
 import { mirroredVideoSet, selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
 import { VideoSetting } from '../../../types';
@@ -95,7 +97,6 @@ const MultilineTypography = styled(Typography)({
 
 interface VideoMenuProps extends ToolbarMenuProps {
   videoEnabled: boolean;
-  isLobby: boolean;
 }
 
 const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
@@ -104,6 +105,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
   const fullscreenHandle = useFullscreenContext();
 
   const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
+  const videoChangeInProgress = useAppSelector(selectVideoChangeInProgress);
   const videoDeviceId = useAppSelector(selectVideoDeviceId);
   const mirroringEnabled = useAppSelector(selectMirroredVideoEnabled);
   const videoBackgrounds = useAppSelector(selectVideoBackgrounds);
@@ -111,12 +113,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
 
   const areParticipantVideosEnabled = qualityCap !== VideoSetting.Off;
 
-  const {
-    startMedia,
-    localDevices: devices,
-    permissionDenied,
-    loadLocalDevices,
-  } = useMediaDevice({ kind: 'videoinput' });
+  const { localDevices: devices, permissionDenied, loadLocalDevices } = useMediaDevice({ kind: 'videoinput' });
 
   // Some browsers (e.g. Firefox) duplicate devices, so we need to filter them out
   const filteredDevices = useMemo(() => {
@@ -146,14 +143,12 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
   const toggleMirroring = () => dispatch(mirroredVideoSet(!mirroringEnabled));
 
   const handleClick = async (deviceId: DeviceId) => {
-    if (deviceId !== videoDeviceId) {
-      await startMedia(false, deviceId);
-    }
+    dispatch(setVideoDeviceId(deviceId));
   };
 
   useEffect(() => {
     if (open) {
-      loadLocalDevices('videoinput');
+      loadLocalDevices();
     }
   }, [open]);
 
@@ -188,7 +183,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
             <MultilineTypography variant="body2">{t('device-permission-denied')}</MultilineTypography>
           </MenuSectionTitle>
         )}
-        {filteredDevices.length === 0 && permissionDenied === 'pending' ? (
+        {filteredDevices.length === 0 && videoChangeInProgress ? (
           <MenuSectionTitle>
             <WarningIcon />
             <ListItemText>{t('devicemenu-wait-for-permission')}</ListItemText>

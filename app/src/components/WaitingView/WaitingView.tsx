@@ -12,11 +12,12 @@ import {
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { batch } from 'react-redux';
 
 import { enterRoom } from '../../api/types/outgoing/control';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectFeatures } from '../../store/slices/configSlice';
-import { setAudioAndVideoEnabled } from '../../store/slices/mediaSlice';
+import { startMedia } from '../../store/slices/mediaSlice';
 import { ConnectionState, selectRoomConnectionState } from '../../store/slices/roomSlice';
 import ImprintContainer from '../ImprintContainer';
 import SelfTest from '../SelfTest';
@@ -54,7 +55,10 @@ const WaitingView = () => {
 
   const moveToRoom = useCallback(async () => {
     if (joinWithoutMedia) {
-      setAudioAndVideoEnabled({ audio: false, video: false });
+      batch(() => {
+        dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+        dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+      });
     }
     dispatch(enterRoom.action());
   }, [dispatch, joinWithoutMedia]);
