@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { UserId } from '@opentalk/rest-api-rtk-query';
+import { screen, fireEvent } from '@testing-library/react';
 
-import { render, screen, configureStore, fireEvent, waitFor } from '../../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import EndCallButton from './EndCallButton';
 
 jest.mock('../../../api/rest', () => ({
@@ -29,13 +30,13 @@ describe('<EndCallButton />', () => {
     jest.clearAllMocks();
   });
 
-  test('should render EndCallButton component', async () => {
-    await render(<EndCallButton />, store);
+  test('should render EndCallButton component', () => {
+    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
     expect(screen.getByTestId('toolbarEndCallButton')).toBeInTheDocument();
   });
 
-  test('If creator of meeting click on EndCallButton, popup should be displayed with delete room option', async () => {
-    await render(<EndCallButton />, store);
+  test('If creator of meeting click on EndCallButton, popup should be displayed with delete room option', () => {
+    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
     const endButton = screen.getByTestId('toolbarEndCallButton');
     expect(endButton).toBeInTheDocument();
 
@@ -43,31 +44,27 @@ describe('<EndCallButton />', () => {
 
     fireEvent.click(endButton);
 
-    await waitFor(() => {
-      const closeMeetingButton = screen.getByText('meeting-delete-metadata-button-leave-and-delete');
+    const closeMeetingButton = screen.getByText('meeting-delete-metadata-button-leave-and-delete');
 
-      expect(screen.getByLabelText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
-      expect(closeMeetingButton).toBeInTheDocument();
-      expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
-    });
+    expect(screen.getByLabelText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
+    expect(closeMeetingButton).toBeInTheDocument();
+    expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
   });
 
-  test('should dispatch leave by clicking on leaveWithoutDeletingButton', async () => {
-    await render(<EndCallButton />, store);
+  test('should dispatch leave by clicking on leaveWithoutDeletingButton', () => {
+    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
     const endButton = screen.getByTestId('toolbarEndCallButton');
     expect(endButton).toBeInTheDocument();
 
     fireEvent.click(endButton);
 
     let leaveWithoutDeletingButton = null;
-    await waitFor(() => {
-      leaveWithoutDeletingButton = screen.getByText('meeting-delete-metadata-button-leave-and-delete');
+    leaveWithoutDeletingButton = screen.getByText('meeting-delete-metadata-button-leave-and-delete');
 
-      expect(leaveWithoutDeletingButton).toBeInTheDocument();
-      expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
-    });
+    expect(leaveWithoutDeletingButton).toBeInTheDocument();
+    expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
 
-    /* TODO the hangup ('room/hangup/pending') async thunks is undefined here
+    /* TODO the hangup ('room/hangup/pending')  thunks is undefined here
 
     fireEvent.click(leaveWithoutDeletingButton);
 
@@ -79,21 +76,19 @@ describe('<EndCallButton />', () => {
     });*/
   });
 
-  test('should dispatch delete and leave by clicking on deleteMeeting button', async () => {
-    await render(<EndCallButton />, store);
+  test('should dispatch delete and leave by clicking on deleteMeeting button', () => {
+    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
     const endButton = screen.getByTestId('toolbarEndCallButton');
 
     expect(endButton).toBeInTheDocument();
 
     fireEvent.click(endButton);
 
-    await waitFor(() => {
-      const deleteMeeting = screen.getByText('meeting-delete-metadata-button-leave-without-delete');
-      expect(screen.getByText('meeting-delete-metadata-button-leave-and-delete')).toBeInTheDocument();
-      expect(deleteMeeting).toBeInTheDocument();
-    });
+    const deleteMeeting = screen.getByText('meeting-delete-metadata-button-leave-without-delete');
+    expect(screen.getByText('meeting-delete-metadata-button-leave-and-delete')).toBeInTheDocument();
+    expect(deleteMeeting).toBeInTheDocument();
 
-    /* TODO the hangup ('room/hangup/pending') async thunks is undefined here
+    /* TODO the hangup ('room/hangup/pending')  thunks is undefined here
 
     fireEvent.click(deleteMeeting);
 

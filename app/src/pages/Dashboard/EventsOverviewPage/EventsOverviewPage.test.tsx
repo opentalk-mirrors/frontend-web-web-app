@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { DateTime } from '@opentalk/rest-api-rtk-query';
+import { screen, cleanup } from '@testing-library/react';
 
-import { configureStore, render, screen, cleanup, eventMockedData } from '../../../utils/testUtils';
+import { configureStore, renderWithProviders, eventMockedData } from '../../../utils/testUtils';
 import EventsPage from './EventsOverviewPage';
 import { TimeFilter } from './fragments/EventsPageHeader';
 import { filterByTimePeriod } from './fragments/utils';
@@ -36,9 +37,9 @@ jest.mock('../../../templates/DashboardTemplate', () => ({
 describe('Dashboard EventsPage', () => {
   afterEach(() => cleanup());
 
-  test('it will render 1 Accordion', async () => {
+  test('it will render 1 Accordion', () => {
     const { store } = configureStore();
-    await render(<EventsPage />, store);
+    renderWithProviders(<EventsPage />, { store, provider: { mui: true, router: true } });
 
     expect(screen.getByTestId('EventAccordion')).toBeInTheDocument();
     expect(screen.getAllByTestId('EventAccordion')).toHaveLength(1);

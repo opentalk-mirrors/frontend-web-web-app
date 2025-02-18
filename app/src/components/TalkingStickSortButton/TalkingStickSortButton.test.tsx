@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, render } from '@testing-library/react';
 
 import { SortOption } from '../../types';
-import { render } from '../../utils/testUtils';
 import TalkingStickSortButton from './TalkingStickSortButton';
 
 describe('TalkingStickSortButton', () => {
@@ -17,12 +16,11 @@ describe('TalkingStickSortButton', () => {
     DEFAULT_PROPS.onChange.mockClear();
   });
 
-  it('should reveal sort popover when button is clicked.', async () => {
-    await render(<TalkingStickSortButton {...DEFAULT_PROPS} />);
+  test('should reveal sort popover when button is clicked.', () => {
+    render(<TalkingStickSortButton {...DEFAULT_PROPS} />);
     const button = screen.getByText('sort-name-asc');
     fireEvent.click(button);
-    await waitFor(() => {
-      expect(screen.getByRole('menu')).toBeInTheDocument();
-    });
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
   });
 });

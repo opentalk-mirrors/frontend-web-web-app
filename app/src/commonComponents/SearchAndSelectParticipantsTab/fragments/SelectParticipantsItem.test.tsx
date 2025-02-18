@@ -5,9 +5,9 @@
 // import MuteParticipantsItem from './MuteParticipantsItem';
 
 describe('SelectParticipantsItem', () => {
-  test('placeholder test', () => {
-    expect(1 + 1).toEqual(2);
-  });
+  test.todo('SelectParticipantsItem should render properly without crashing');
+  test.todo('click on checkBox should trigger onCheck()');
+  test.todo('click on checkBox should trigger onCheck()');
   // const handleCheck = jest.fn();
   // const { store } = mockStore(1, { video: true, screen: true });
   // const participant = mockedParticipant(0);

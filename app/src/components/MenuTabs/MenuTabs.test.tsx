@@ -1,13 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, fireEvent, configureStore, waitFor } from '../../utils/testUtils';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
+
+import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import MenuTabs from './MenuTabs';
 
 describe('MenuTabs Component', () => {
-  test('render MenuTabs component without crashing and initialy Chat Tab is selected', async () => {
+  test('render MenuTabs component without crashing and initialy Chat Tab is selected', () => {
     const { store } = configureStore();
-    await render(<MenuTabs />, store);
+    renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
     const tablist = screen.getByRole('tablist');
     const tabs = screen.getAllByRole('tab');
@@ -33,9 +35,9 @@ describe('MenuTabs Component', () => {
     expect(screen.getByPlaceholderText('chat-input-placeholder')).toBeInTheDocument();
   });
 
-  test('click on MessageTab should mark tab as selected', async () => {
+  test('click on MessageTab should mark tab as selected', () => {
     const { store } = configureStore();
-    await render(<MenuTabs />, store);
+    renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
     const chatTab = screen.getByRole('tab', { name: /menutabs-chat/i });
     const messageTab = screen.getByRole('tab', { name: /menutabs-message/i });
@@ -48,15 +50,15 @@ describe('MenuTabs Component', () => {
 
     fireEvent.click(messageTab);
 
-    await waitFor(() => {
-      expect(messageTab).toHaveAttribute('aria-selected', 'true');
-      expect(chatTab).toHaveAttribute('aria-selected', 'false');
-    });
+    expect(messageTab).toHaveAttribute('aria-selected', 'true');
+    expect(chatTab).toHaveAttribute('aria-selected', 'false');
   });
+
+  // TODO UNIT TEST  Warning: `NaN` is an invalid value for the `height` css style property. (root element is not available in unit tests)
 
   test('click on PeopleTab should mark tab as selected', async () => {
     const { store } = configureStore();
-    await render(<MenuTabs />, store);
+    renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
     const chatTab = screen.getByRole('tab', { name: /menutabs-chat/i });
     const peopleTab = screen.getByRole('tab', { name: /menutabs-people/i });

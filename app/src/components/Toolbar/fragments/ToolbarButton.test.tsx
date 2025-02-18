@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { render, screen, cleanup } from '@testing-library/react';
+
 import { MicOnIcon } from '../../../assets/icons';
-import { render, screen, cleanup, fireEvent } from '../../../utils/testUtils';
 import ToolbarButton from './ToolbarButton';
 
 const handleClick = jest.fn();
@@ -22,64 +23,72 @@ describe('<ToolbarButton />', () => {
     isLobby: false,
   };
 
-  test('render ToolbarButton with context and children', async () => {
-    await render(
+  test('render ToolbarButton with context and children', () => {
+    render(
       <ToolbarButton {...toolbarButtonProps}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    expect(await screen.findByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
     expect(screen.getByTestId('toolbarChildrenTest')).toBeInTheDocument();
-    expect(await screen.findByRole('button', { name: 'toolbarToggleButton' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'toolbarToggleButton' })).toBeInTheDocument();
   });
 
-  test('render ToolbarButton without context', async () => {
-    await render(
+  test('render ToolbarButton without context', () => {
+    render(
       <ToolbarButton {...toolbarButtonProps} hasContext={false}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    expect(await screen.findByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
     expect(screen.getByTestId('toolbarChildrenTest')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'toolbarToggleButton' })).not.toBeInTheDocument();
   });
 
-  test('testing click on ToolbarButton', async () => {
-    await render(
+  test('testing click on ToolbarButton', () => {
+    render(
       <ToolbarButton {...toolbarButtonProps} onClick={handleClick}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    const button = await screen.findByRole('button', { name: 'toolbarMainButton' });
+    const button = screen.getByRole('button', { name: 'toolbarMainButton' });
 
     expect(button).toBeInTheDocument();
-    fireEvent.click(button);
+
+    button.click();
+
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  test('testing click on disabled ToolbarButton', async () => {
-    await render(
+  test('testing click on disabled ToolbarButton', () => {
+    render(
       <ToolbarButton {...toolbarButtonProps} openMenu={handleClick} disabled>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    const button = await screen.findByRole('button', { name: 'toolbarMainButton' });
+    const button = screen.getByRole('button', { name: 'toolbarMainButton' });
 
     expect(button).toBeInTheDocument();
     expect(button).toBeDisabled();
-    fireEvent.click(button);
+
+    button.click();
+
     expect(handleClick).not.toHaveBeenCalled();
   });
 
-  test('testing click on ToggleToolbarButton', async () => {
-    await render(
+  test('testing click on ToggleToolbarButton', () => {
+    render(
       <ToolbarButton {...toolbarButtonProps} openMenu={handleClick}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>
     );
-    const toggleButton = await screen.findByRole('button', { name: 'toolbarToggleButton' });
+    const toggleButton = screen.getByRole('button', { name: 'toolbarToggleButton' });
     expect(toggleButton).toBeInTheDocument();
-    fireEvent.click(toggleButton);
+
+    toggleButton.click();
+
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 });

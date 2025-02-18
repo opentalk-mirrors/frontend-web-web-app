@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen, waitFor } from '../../../utils/testUtils';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 /**
  * Mocking react-i18next module as we don't care about actual
@@ -11,18 +11,16 @@ import { fireEvent, render, screen, waitFor } from '../../../utils/testUtils';
 import SortPopoverMenuItem from './SortPopoverMenuItem';
 
 describe('<SortPopoverMenuItem />', () => {
-  it('should render with required properties.', async () => {
-    await render(<SortPopoverMenuItem i18nKey="test-key" value="test-value" onSelect={jest.fn()} />);
+  test('should render with required properties.', () => {
+    render(<SortPopoverMenuItem i18nKey="test-key" value="test-value" onSelect={jest.fn()} />);
   });
 
-  it('should execute onSelect callback with value when clicked.', async () => {
+  test('should execute onSelect callback with value when clicked.', () => {
     const callback = jest.fn();
-    await render(<SortPopoverMenuItem i18nKey="test-key" value="test-value" onSelect={callback} selected={false} />);
+    render(<SortPopoverMenuItem i18nKey="test-key" value="test-value" onSelect={callback} selected={false} />);
     const li = screen.getByRole('menuitem');
     fireEvent.click(li);
 
-    await waitFor(() => {
-      expect(callback).toHaveBeenCalledWith('test-value');
-    });
+    expect(callback).toHaveBeenCalledWith('test-value');
   });
 });

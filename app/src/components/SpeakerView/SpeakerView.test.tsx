@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen, cleanup } from '@testing-library/react';
+
 import SpeakerView from '.';
-import { render, screen, cleanup, mockStore } from '../../utils/testUtils';
+import { renderWithProviders, mockStore } from '../../utils/testUtils';
 
 jest.mock('./fragments/SpeakerWindow', () => ({
   __esModule: true,
@@ -17,9 +19,9 @@ jest.mock('./fragments/ThumbsRow', () => ({
 describe('speaker view', () => {
   afterEach(cleanup);
 
-  test('SpeakerView is rendered', async () => {
+  test('SpeakerView is rendered', () => {
     const { store } = mockStore(0);
-    await render(<SpeakerView />, store);
+    renderWithProviders(<SpeakerView />, { store });
 
     // Initial elements appear
     expect(screen.getByTestId('SpeakerView-Container')).toBeInTheDocument();

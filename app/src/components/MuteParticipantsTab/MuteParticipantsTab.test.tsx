@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { mockStore, render, screen, mockedParticipant } from '../../utils/testUtils';
+import { screen } from '@testing-library/react';
+
+import { mockStore, renderWithProviders, mockedParticipant } from '../../utils/testUtils';
 import MuteParticipantsTab from './MuteParticipantsTab';
 
 const NUMBER_OF_PARTICIPANTS = 4;
@@ -27,8 +29,8 @@ describe('MuteParticipantsTab', () => {
     audio: UNMUTED_PARTICIPANTS,
   });
 
-  test(`component will render SearchAndSelectParticipantsTab`, async () => {
-    await render(<MuteParticipantsTab />, store);
+  test(`component will render SearchAndSelectParticipantsTab`, () => {
+    renderWithProviders(<MuteParticipantsTab />, { store });
 
     expect(screen.getByTestId('searchAndSelectParticipantsTab')).toBeInTheDocument();
   });

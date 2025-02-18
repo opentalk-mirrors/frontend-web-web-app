@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, configureStore } from '../../../utils/testUtils';
+import { screen } from '@testing-library/react';
+
+import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import ShareScreenButton from './ShareScreenButton';
 
 jest.mock('@livekit/components-react', () => ({
@@ -15,12 +17,12 @@ jest.mock('@livekit/components-react', () => ({
 
 describe('<ShareScreenButton />', () => {
   const { store } = configureStore();
-  test('render ShareScreenButton component', async () => {
-    await render(<ShareScreenButton />, store);
+  test('render ShareScreenButton component', () => {
+    renderWithProviders(<ShareScreenButton />, { store });
     expect(screen.getByTestId('toolbarBlurScreenButton')).toBeInTheDocument();
   });
 
-  test('ShareScreenButton not visible on devices that not support share screen feature', async () => {
+  test('ShareScreenButton not visible on devices that not support share screen feature', () => {
     if ('getDisplayMedia' in global.navigator.mediaDevices) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { getDisplayMedia, ...mediaDevicesProps } = global.navigator.mediaDevices;
@@ -29,7 +31,7 @@ describe('<ShareScreenButton />', () => {
       });
     }
 
-    const { container } = await render(<ShareScreenButton />, store);
+    const { container } = renderWithProviders(<ShareScreenButton />, { store });
     expect(container).toBeEmptyDOMElement();
   });
 });

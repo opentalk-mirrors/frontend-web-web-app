@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen, waitFor } from '../../../../utils/testUtils';
+import { fireEvent, render, screen } from '@testing-library/react';
+
+import { renderWithProviders } from '../../../../utils/testUtils';
 import { RecurringEventDialog, RecurringEventDialogProps } from './CustomRecurringEventDialog';
 
 const mockDialogProps: RecurringEventDialogProps = {
@@ -12,20 +14,20 @@ const mockDialogProps: RecurringEventDialogProps = {
 };
 
 describe('Custom Recurrence Dialog', () => {
-  test('Dialog renders correctly', async () => {
-    await render(<RecurringEventDialog {...mockDialogProps} />);
+  test('Dialog renders correctly', () => {
+    render(<RecurringEventDialog {...mockDialogProps} />);
 
     expect(screen.getByTestId('recurrence-dialog')).toBeInTheDocument();
   });
 
-  test('Dialog does not render if not open', async () => {
-    await render(<RecurringEventDialog {...mockDialogProps} open={false} />);
+  test('Dialog does not render if not open', () => {
+    render(<RecurringEventDialog {...mockDialogProps} open={false} />);
 
     expect(screen.queryByTestId('recurrence-dialog')).not.toBeInTheDocument();
   });
 
-  test('Month content renders correctly', async () => {
-    await render(<RecurringEventDialog {...mockDialogProps} />);
+  test('Month content renders correctly', () => {
+    render(<RecurringEventDialog {...mockDialogProps} />);
 
     //For some reason after updating MUI version and <Select> swapping to role="combobox" getting it by role and name is not possible
     //The workaround we have is to get all comboboxes and then find the one we need
@@ -45,10 +47,8 @@ describe('Custom Recurrence Dialog', () => {
 
     fireEvent.click(monthOption);
 
-    await waitFor(() => {
-      const select = screen.getByTestId('frequency-select');
-      expect(select.textContent).toBe('dashboard-recurrence-dialog-frequency-month​');
-    });
+    const select = screen.getByTestId('frequency-select');
+    expect(select.textContent).toBe('dashboard-recurrence-dialog-frequency-month​');
 
     const selectButtonsAfterMonthSelection = screen.getAllByRole('combobox');
     const monthSelectButton = selectButtonsAfterMonthSelection.find((button) =>
@@ -57,8 +57,8 @@ describe('Custom Recurrence Dialog', () => {
     expect(monthSelectButton).toBeInTheDocument();
   });
 
-  test('Week content renders correctly', async () => {
-    await render(<RecurringEventDialog {...mockDialogProps} />);
+  test('Week content renders correctly', () => {
+    renderWithProviders(<RecurringEventDialog {...mockDialogProps} />, { provider: { mui: true } });
 
     const selectButtons = screen.getAllByRole('combobox');
     const freqSelectButton = selectButtons.find((button) =>
@@ -75,16 +75,14 @@ describe('Custom Recurrence Dialog', () => {
 
     fireEvent.click(weekOption);
 
-    await waitFor(() => {
-      //There is an unidentified char (Unicode 8203) added at the end of the value, so we use the regex to remove it
-      const select = screen.getByTestId('frequency-select').textContent?.replace(/\u200B/g, '');
-      expect(select).toBe('dashboard-recurrence-dialog-frequency-week');
-      expect(screen.getByTestId('weekly-options')).toBeInTheDocument();
-    });
+    //There is an unidentified char (Unicode 8203) added at the end of the value, so we use the regex to remove it
+    const select = screen.getByTestId('frequency-select').textContent?.replace(/\u200B/g, '');
+    expect(select).toBe('dashboard-recurrence-dialog-frequency-week');
+    expect(screen.getByTestId('weekly-options')).toBeInTheDocument();
   });
 
-  test('Date selection is enabled after selecting option "On"', async () => {
-    await render(<RecurringEventDialog {...mockDialogProps} />);
+  test('Date selection is enabled after selecting option "On"', () => {
+    render(<RecurringEventDialog {...mockDialogProps} />);
 
     const datePickerInput = screen.getByRole('textbox');
     expect(datePickerInput).toBeDisabled();
@@ -93,8 +91,6 @@ describe('Custom Recurrence Dialog', () => {
 
     fireEvent.click(optionOn);
 
-    await waitFor(() => {
-      expect(datePickerInput).not.toBeDisabled();
-    });
+    expect(datePickerInput).not.toBeDisabled();
   });
 });

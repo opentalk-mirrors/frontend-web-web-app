@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Store, Dispatch } from '@reduxjs/toolkit';
-import { waitFor } from '@testing-library/dom';
+import { screen, act } from '@testing-library/react';
 
 import { received } from '../../../store/slices/chatSlice';
 import { ChatScope, ParticipantId, ChatMessage } from '../../../types';
-import { render, screen, createStore } from '../../../utils/testUtils';
+import { renderWithProviders, createStore } from '../../../utils/testUtils';
 import ChatLiveRegion from './ChatLiveRegion';
 
 const OUR_UUID = '1234546';
@@ -48,16 +48,18 @@ describe('ChatLiveRegion', () => {
     store = createdStore.store;
     dispatch = createdStore.dispatch;
   });
-  it('renders the live region', async () => {
-    await render(<ChatLiveRegion />, store);
+  test('renders the live region', () => {
+    renderWithProviders(<ChatLiveRegion />, { store });
+
     expect(screen.getByRole('log')).toBeInTheDocument();
   });
-  it('does not announce messages, that were received before live region were rendered', async () => {
-    await render(<ChatLiveRegion />, store);
+  test('does not announce messages, that were received before live region were rendered', () => {
+    renderWithProviders(<ChatLiveRegion />, { store });
+
     expect(screen.queryByTestId('chat-announcement')).not.toBeInTheDocument();
   });
-  it('announces messages from other users, that were received after live region were rendered', async () => {
-    await render(<ChatLiveRegion />, store);
+  test('announces messages from other users, that were received after live region were rendered', () => {
+    renderWithProviders(<ChatLiveRegion />, { store });
 
     const mockNewGlobalMessage: ChatMessage = {
       ...mockOldGlobalMessage,
@@ -65,14 +67,14 @@ describe('ChatLiveRegion', () => {
       timestamp: new Date().toISOString(),
     };
 
-    dispatch(received(mockNewGlobalMessage));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('chat-announcement')).toBeInTheDocument();
+    act(() => {
+      dispatch(received(mockNewGlobalMessage));
     });
+
+    expect(screen.getByTestId('chat-announcement')).toBeInTheDocument();
   });
-  it('ignores messages from us, that were received after live region were rendered', async () => {
-    await render(<ChatLiveRegion />, store);
+  test('ignores messages from us, that were received after live region were rendered', () => {
+    renderWithProviders(<ChatLiveRegion />, { store });
 
     const mockNewGlobalMessageFromUs: ChatMessage = {
       ...mockOldGlobalMessage,
@@ -81,10 +83,10 @@ describe('ChatLiveRegion', () => {
       source: OUR_UUID as ParticipantId,
     };
 
-    dispatch(received(mockNewGlobalMessageFromUs));
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('chat-announcement')).not.toBeInTheDocument();
+    act(() => {
+      dispatch(received(mockNewGlobalMessageFromUs));
     });
+
+    expect(screen.queryByTestId('chat-announcement')).not.toBeInTheDocument();
   });
 });

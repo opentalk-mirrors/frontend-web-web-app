@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen } from '../../../../utils/testUtils';
+import { render, screen } from '@testing-library/react';
+
 import DesktopHome from './DesktopHome';
 
 jest.mock('./AdhocMeetingButton', () => ({
@@ -35,9 +36,9 @@ jest.mock('./FavoriteMeetings', () => ({
 }));
 
 describe('MobileHome', () => {
-  it('renders header and all elements ', async () => {
+  test('renders header and all elements ', () => {
     const pageHeading = 'heading';
-    await render(<DesktopHome pageHeading={pageHeading} />);
+    render(<DesktopHome pageHeading={pageHeading} />);
 
     const header = screen.getByRole('heading', { name: pageHeading });
     expect(header).toBeInTheDocument();

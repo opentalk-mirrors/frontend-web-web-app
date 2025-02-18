@@ -4,7 +4,6 @@
 import { ThemeProvider } from '@mui/material';
 import '@mui/material';
 import { ftl2js } from '@opentalk/fluent_conv';
-import { AuthProvider } from '@opentalk/redux-oidc';
 import {
   BaseAsset,
   DateTime,
@@ -28,7 +27,7 @@ import {
   configureStore as configureStoreTlk,
   createStore as createStoreTlk,
 } from '@reduxjs/toolkit';
-import { RenderOptions, RenderResult, act, render as rtlRender } from '@testing-library/react';
+import { RenderOptions, RenderResult, render as rtlRender } from '@testing-library/react';
 import i18n from 'i18next';
 import {
   Participant as LivekitParticipant,
@@ -39,7 +38,7 @@ import {
 import { range } from 'lodash';
 import fs from 'node:fs';
 import React from 'react';
-import { I18nextProvider, initReactI18next } from 'react-i18next';
+import { initReactI18next } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -47,7 +46,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { createOpenTalkTheme } from '../assets/themes/opentalk';
 import { SnackbarProvider } from '../commonComponents';
 import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
-import BreakoutRoomProvider from '../provider/BreakoutRoomProvider';
 import FullscreenProvider from '../provider/FullscreenProvider';
 import { appReducers } from '../store';
 import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
@@ -144,54 +142,43 @@ export const configureStore = (options?: ConfigureStoreOptions['preloadedState']
   return { store };
 };
 
-// ignore the rule, as it's not relevant for HMR
-// eslint-disable-next-line react-refresh/only-export-components
-export * from '@testing-library/react';
+interface Render {
+  options?: RenderOptions;
+  store?: Store;
+  provider?: {
+    mui?: boolean;
+    router?: boolean;
+    snackbar?: boolean;
+  };
+}
 
-export const render = async (ui: React.ReactElement, store?: Store, options?: RenderOptions): Promise<RenderResult> => {
-  function Wrapper({ children }: { children: React.ReactElement }): React.ReactElement {
-    if (store === undefined) {
-      return (
-        <ThemeProvider theme={createOpenTalkTheme()}>
-          <I18nextProvider i18n={i18n}>
-            <FullscreenProvider>{children}</FullscreenProvider>
-          </I18nextProvider>
-        </ThemeProvider>
+export const renderWithProviders = (
+  component: React.ReactElement,
+  { options, store, provider }: Render
+): RenderResult => {
+  const WrappedComponent = ({ children }: { children: React.ReactElement }): React.ReactElement => {
+    let component = children;
+
+    if (provider?.snackbar) {
+      component = (
+        <FullscreenProvider>
+          <SnackbarProvider>{component}</SnackbarProvider>
+        </FullscreenProvider>
       );
     }
-    return (
-      <ThemeProvider theme={createOpenTalkTheme()}>
-        <Provider store={store}>
-          <MemoryRouter>
-            <AuthProvider
-              configuration={{
-                authority: 'http://OP',
-                clientId: 'Frontend',
-                redirectUri: '/',
-                baseUrl: '/',
-                scope: 'void',
-                signOutRedirectUri: '/',
-              }}
-            >
-              <I18nextProvider i18n={i18n}>
-                <BreakoutRoomProvider>
-                  <FullscreenProvider>
-                    <SnackbarProvider>{children}</SnackbarProvider>
-                  </FullscreenProvider>
-                </BreakoutRoomProvider>
-              </I18nextProvider>
-            </AuthProvider>
-          </MemoryRouter>
-        </Provider>
-      </ThemeProvider>
-    );
-  }
+    if (provider?.router) {
+      component = <MemoryRouter>{component}</MemoryRouter>;
+    }
+    if (provider?.mui) {
+      component = <ThemeProvider theme={createOpenTalkTheme()}>{component}</ThemeProvider>;
+    }
+    if (store) {
+      component = <Provider store={store}>{component}</Provider>;
+    }
+    return component;
+  };
 
-  let result: RenderResult = {} as RenderResult;
-  await act(async () => {
-    result = rtlRender(ui, { wrapper: Wrapper, ...options });
-  });
-  return result;
+  return rtlRender(<WrappedComponent>{component}</WrappedComponent>, options);
 };
 
 export const jwtVariables = {

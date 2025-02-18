@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { useGetMeQuery } from '../../../../api/rest';
-import { configureStore, render, screen } from '../../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../../utils/testUtils';
 import { PaymentStatusBanner } from './PaymentStatusBanner';
 
 jest.mock('../../../../api/rest', () => ({
@@ -27,14 +28,14 @@ const { store } = configureStore({
 });
 
 describe('Payment Status Banner', () => {
-  test('show nothing for default tariff', async () => {
+  test('show nothing for default tariff', () => {
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
         tariffStatus: 'default',
       },
     }));
 
-    await render(<PaymentStatusBanner />, store);
+    renderWithProviders(<PaymentStatusBanner />, { store });
     expect(screen.queryByText(/./)).not.toBeInTheDocument();
   });
   test('show payment status warning for downgraded tariff and navigate user to payment administration on button click', async () => {
@@ -48,7 +49,7 @@ describe('Payment Status Banner', () => {
     const jsdomOpen = window.open;
     window.open = jest.fn();
 
-    await render(<PaymentStatusBanner />, store);
+    renderWithProviders(<PaymentStatusBanner />, { store, provider: { mui: true } });
     expect(screen.getByText('dashboard-payment-status-downgraded')).toBeInTheDocument();
 
     const addPaymentButton = screen.getByRole('button', { name: 'dashboard-add-payment-button' });

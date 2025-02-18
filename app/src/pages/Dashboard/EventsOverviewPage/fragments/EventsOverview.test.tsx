@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { configureStore, eventMockedData, render, screen } from '../../../../utils/testUtils';
+import { screen } from '@testing-library/react';
+
+import { configureStore, eventMockedData, renderWithProviders } from '../../../../utils/testUtils';
 import { MeetingsProp } from '../types';
 import EventsOverview from './EventsOverview';
 
@@ -13,9 +15,9 @@ const mockEvents = [
 ];
 
 describe('EventsOverview', () => {
-  test('page will not crash', async () => {
+  test('page will not crash', () => {
     const { store } = configureStore();
-    await render(
+    renderWithProviders(
       <EventsOverview
         entries={mockEvents as MeetingsProp[]}
         expandAccordion=""
@@ -23,14 +25,14 @@ describe('EventsOverview', () => {
         isLoading={false}
         setExpandAccordion={() => ''}
       />,
-      store
+      { store }
     );
     expect(screen.getAllByTestId('EventAccordion')).toHaveLength(1);
   });
 
-  test('Accordion Title should be in the document', async () => {
+  test('Accordion Title should be in the document', () => {
     const { store } = configureStore();
-    await render(
+    renderWithProviders(
       <EventsOverview
         entries={mockEvents as MeetingsProp[]}
         expandAccordion="false"
@@ -38,7 +40,7 @@ describe('EventsOverview', () => {
         isLoading={false}
         setExpandAccordion={() => ''}
       />,
-      store
+      { store }
     );
     expect(screen.getByText('Time Independent Meetings')).toBeInTheDocument();
   });

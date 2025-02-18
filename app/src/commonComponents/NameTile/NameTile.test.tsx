@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen, cleanup } from '@testing-library/react';
+
 import { ParticipantId } from '../../types';
-import { screen, configureStore, mockedParticipant, render, cleanup } from '../../utils/testUtils';
+import { mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import NameTile from './NameTile';
 
 jest.mock('@livekit/components-react', () => ({
@@ -16,46 +18,50 @@ describe('render <NameTile />', () => {
   const participantId = participant.id as ParticipantId;
   beforeEach(() => cleanup());
 
-  test('render NameTile component with audio on', async () => {
-    const { store } = configureStore();
-    await render(<NameTile displayName={displayName} participantId={participantId} />, store);
+  test('render NameTile component with audio on', () => {
+    renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
+      provider: { mui: true },
+    });
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(displayName)).toBeInTheDocument();
     expect(screen.getByTestId('micOff')).toBeInTheDocument();
   });
 
-  test('render NameTile component with audio off', async () => {
-    const { store } = configureStore();
-    await render(<NameTile displayName={displayName} participantId={participantId} />, store);
+  test('render NameTile component with audio off', () => {
+    renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
+      provider: { mui: true },
+    });
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(displayName)).toBeInTheDocument();
     expect(screen.getByTestId('micOff')).toBeInTheDocument();
   });
 
-  test('render NameTile component with video on', async () => {
-    const { store } = configureStore();
-    await render(<NameTile displayName={displayName} participantId={participantId} />, store);
+  test('render NameTile component with video on', () => {
+    renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
+      provider: { mui: true },
+    });
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(displayName)).toBeInTheDocument();
     expect(screen.queryByTestId('camOff')).toBeInTheDocument();
   });
 
-  test('render NameTile component with video and audio on', async () => {
-    const { store } = configureStore();
-    await render(<NameTile displayName={displayName} participantId={participantId} />, store);
+  test('render NameTile component with video and audio on', () => {
+    renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
+      provider: { mui: true },
+    });
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(displayName)).toBeInTheDocument();
     expect(screen.queryByTestId('iconBox')).toBeInTheDocument();
   });
 
-  test('render NameTile component with local video on', async () => {
-    const { store } = configureStore();
-    console.log(store.getState());
-    await render(<NameTile localVideoOn localAudioOn={false} displayName={displayName} />, store);
+  test('render NameTile component with local video on', () => {
+    renderWithProviders(<NameTile localVideoOn localAudioOn={false} displayName={displayName} />, {
+      provider: { mui: true },
+    });
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(displayName)).toBeInTheDocument();
@@ -63,9 +69,10 @@ describe('render <NameTile />', () => {
     expect(screen.queryByTestId('camOff')).not.toBeInTheDocument();
   });
 
-  test('render NameTile component with local audio on', async () => {
-    const { store } = configureStore();
-    await render(<NameTile localAudioOn localVideoOn={false} displayName={displayName} />, store);
+  test('render NameTile component with local audio on', () => {
+    renderWithProviders(<NameTile localAudioOn localVideoOn={false} displayName={displayName} />, {
+      provider: { mui: true },
+    });
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(displayName)).toBeInTheDocument();
@@ -73,9 +80,8 @@ describe('render <NameTile />', () => {
     expect(screen.queryByTestId('camOff')).toBeInTheDocument();
   });
 
-  test('render NameTile component with local video and audio on', async () => {
-    const { store } = configureStore();
-    await render(<NameTile localVideoOn localAudioOn displayName={displayName} />, store);
+  test('render NameTile component with local video and audio on', () => {
+    renderWithProviders(<NameTile localVideoOn localAudioOn displayName={displayName} />, { provider: { mui: true } });
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(displayName)).toBeInTheDocument();

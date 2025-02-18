@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen, cleanup } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
-import { render, screen, cleanup, mockStore, mockedParticipant } from '../../../utils/testUtils';
+import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
 import SpeakerWindow from './SpeakerWindow';
 
 jest.mock('@livekit/components-react', () => ({
@@ -28,16 +29,16 @@ afterEach(() => {
 });
 
 describe('SpeakerWindow', () => {
-  test('SpeakerWindow is not rendered with zero participants', async () => {
+  test('SpeakerWindow is not rendered with zero participants', () => {
     const { store } = mockStore(0);
-    await render(<SpeakerWindow />, store);
+    renderWithProviders(<SpeakerWindow />, { store, provider: { mui: true } });
 
     expect(screen.queryByTestId('ParticipantWindow')).not.toBeInTheDocument();
   });
 
-  test('SpeakerWindow is rendered with one participant', async () => {
+  test('SpeakerWindow is rendered with one participant', () => {
     const { store } = mockStore(1);
-    await render(<SpeakerWindow />, store);
+    renderWithProviders(<SpeakerWindow />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('participantWindow')).toBeInTheDocument();
   });

@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
 
-import { fireEvent, render, screen } from '../../../../../utils/testUtils';
 import ConsentNotification from './ConsentNotification';
 
 jest.mock('../../utils', () => ({
@@ -14,19 +13,19 @@ const acceptButtonFn = jest.fn();
 const declineButtonFn = jest.fn();
 
 describe('ConsentNotification', () => {
-  test('component DOM structure', async () => {
-    await render(<ConsentNotification style={{}} onAcceptButton={acceptButtonFn} onDeclineButton={declineButtonFn} />);
+  test('component DOM structure', () => {
+    render(<ConsentNotification style={{}} onAcceptButton={acceptButtonFn} onDeclineButton={declineButtonFn} />);
     const element = screen.getByRole('alertdialog');
     expect(element).toBeInTheDocument();
     const describedByElement = element.getAttribute('aria-describedby');
     expect(screen.getByText('consent-message')).toHaveAttribute('id', describedByElement);
   });
 
-  test('button responsiveness', async () => {
-    await render(<ConsentNotification style={{}} onAcceptButton={acceptButtonFn} onDeclineButton={declineButtonFn} />);
+  test('button responsiveness', () => {
+    render(<ConsentNotification style={{}} onAcceptButton={acceptButtonFn} onDeclineButton={declineButtonFn} />);
     fireEvent.click(screen.getByText('consent-accept'));
     fireEvent.click(screen.getByText('consent-decline'));
-    expect(acceptButtonFn).toBeCalled();
-    expect(declineButtonFn).toBeCalled();
+    expect(acceptButtonFn).toHaveBeenCalled();
+    expect(declineButtonFn).toHaveBeenCalled();
   });
 });
