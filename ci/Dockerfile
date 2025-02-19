@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: EUPL-1.2
 
-FROM nginx:alpine
+FROM nginx:alpine-slim
 ARG DIST_FOLDER=dist
 COPY /$DIST_FOLDER /usr/share/nginx/html
 
