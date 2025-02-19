@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { List } from '@mui/material';
+import { Box } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useState, useEffect } from 'react';
 
@@ -41,7 +41,9 @@ const ChatLiveRegion = () => {
     const newMessagesFromOthers = messagesFromOthers.filter(
       (message) => new Date(message.timestamp) > considerationTimestamp
     );
-    setMessagesToAnnounce((prevMessages) => [...prevMessages, ...newMessagesFromOthers]);
+    setMessagesToAnnounce((prevMessages) => {
+      return [...new Set([...prevMessages, ...newMessagesFromOthers])];
+    });
 
     const newConsiderationTimestamp = calculateConsiderationTimestamp(messagesFromOthers);
     setConsiderationTimestamp(newConsiderationTimestamp);
@@ -64,11 +66,11 @@ const ChatLiveRegion = () => {
   };
 
   return (
-    <List sx={visuallyHidden} role="log">
+    <Box sx={visuallyHidden} role="log">
       {currentMessage && (
         <ChatAnnouncement key={currentMessage.id} message={currentMessage} onAnnouncementEnd={handleAnnouncementEnd} />
       )}
-    </List>
+    </Box>
   );
 };
 
