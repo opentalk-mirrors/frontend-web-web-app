@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Tab as MuiTab, Tabs as MuiTabs, styled, Tooltip, Divider, Button, Box } from '@mui/material';
+import { Tab as MuiTab, Tabs as MuiTabs, styled, Tooltip, Divider, Box } from '@mui/material';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -121,7 +121,6 @@ const ModerationSideToolbar = ({ onSelect, displayedTabs, activeTab }: Moderatio
               <Box component="span">{tab.icon}</Box>
             </Tooltip>
           }
-          component={Button}
           id={tab.key}
           value={tab.key}
           disabled={tab.disabled}

@@ -48,8 +48,6 @@ type ButtonItem = {
   icon: JSX.Element;
   componentProps: {
     onClick: () => void;
-    onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
-    onKeyUp?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
     'aria-expanded'?: boolean;
   };
 };
@@ -100,16 +98,6 @@ export const SupportList = ({
           onClick: () => {
             setIsShortcutListDialogOpen(!isShortcutListDialogOpen);
           },
-          onKeyDown: (event) => {
-            if (event.code === 'Space') {
-              event.stopPropagation();
-            }
-          },
-          onKeyUp: (event) => {
-            if (event.code === 'Space') {
-              event.stopPropagation();
-            }
-          },
           'aria-expanded': isShortcutListDialogOpen,
         },
       },
@@ -122,16 +110,6 @@ export const SupportList = ({
         icon: <BugIcon fontSize="small" />,
         componentProps: {
           onClick: triggerGlitchtipManually,
-          onKeyDown: (event) => {
-            if (event.code === 'Space') {
-              event.stopPropagation();
-            }
-          },
-          onKeyUp: (event) => {
-            if (event.code === 'Space') {
-              event.stopPropagation();
-            }
-          },
         },
       });
     }

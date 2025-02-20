@@ -58,12 +58,6 @@ const MyMeetingMenu = () => {
           aria-controls={isMenuOpen ? 'my-meeting-menu' : undefined}
           aria-label={t('my-meeting-menu')}
           onClick={(event) => setAnchorElement(event.currentTarget)}
-          onKeyDown={(event) => {
-            event.stopPropagation();
-          }}
-          onKeyUp={(event) => {
-            event.stopPropagation();
-          }}
         >
           <BurgermenuIcon />
         </BurgerIconButton>
