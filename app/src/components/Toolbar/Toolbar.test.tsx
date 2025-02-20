@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen } from '@testing-library/react';
+
 import { Role } from '../../api/types/incoming/control';
-import { render, screen, configureStore, mockedParticipant } from '../../utils/testUtils';
+import { renderWithProviders, configureStore, mockedParticipant } from '../../utils/testUtils';
 import Toolbar from './Toolbar';
 
 jest.mock('./fragments/VideoButton', () => ({
@@ -38,13 +40,13 @@ jest.mock('livekit-client', () => ({
 }));
 
 describe('render <Toolbar />', () => {
-  test('render full-layout Toolbar component for modarator', async () => {
+  test('render full-layout Toolbar component for modarator', () => {
     const { store } = configureStore({
       initialState: {
         user: { loggedIn: true, role: Role.Moderator },
       },
     });
-    await render(<Toolbar />, store);
+    renderWithProviders(<Toolbar />, { store, provider: { snackbar: true } });
 
     expect(screen.getByTestId('toolbarHandraiseButton')).toBeInTheDocument();
     expect(screen.getByTestId('toolbarBlurScreenButton')).toBeInTheDocument();
@@ -54,13 +56,13 @@ describe('render <Toolbar />', () => {
     expect(screen.getByTestId('toolbarEndCallButton')).toBeInTheDocument();
   });
 
-  test('render full-layout Toolbar component for normal user', async () => {
+  test('render full-layout Toolbar component for normal user', () => {
     const { store } = configureStore({
       initialState: {
         user: { loggedIn: true, role: Role.User },
       },
     });
-    await render(<Toolbar />, store);
+    renderWithProviders(<Toolbar />, { store, provider: { snackbar: true } });
 
     expect(screen.getByTestId('toolbarHandraiseButton')).toBeInTheDocument();
     expect(screen.getByTestId('toolbarBlurScreenButton')).toBeInTheDocument();

@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { setTimeout } from 'timers';
+import { screen, fireEvent } from '@testing-library/react';
 
 import DashboardNavigation from '.';
 import { HomeIcon, MeetingsIcon, SettingsIcon } from '../../assets/icons';
-import { screen, render, fireEvent, configureStore, waitFor } from '../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../utils/testUtils';
 
 const routes = [
   {
@@ -62,54 +62,46 @@ describe('dashboard navigation', () => {
       },
     },
   });
-  test('displays the primary navigation', async () => {
-    await render(<DashboardNavigation routes={routes} />, store);
+  test('displays the primary navigation', () => {
+    renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
 
     expect(screen.getByTestId('PrimaryNavigation')).toBeInTheDocument();
   });
 
-  test('populates primary navigation', async () => {
-    await render(<DashboardNavigation routes={routes} />, store);
+  test('populates primary navigation', () => {
+    renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
 
     expect(screen.getAllByTestId('PrimaryNavItem')).toHaveLength(routes.length);
   });
 
-  test('has closed secondary navigation by default', async () => {
-    await render(<DashboardNavigation routes={routes} />, store);
+  test('has closed secondary navigation by default', () => {
+    renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
 
     expect(screen.queryByTestId('SecondaryNavigation')).toBeNull();
   });
 
   // commented out in case of this setTimeout causes problems in infects other tests for some reason
-  test.skip('opens and closes secondary navigation', async () => {
-    await render(<DashboardNavigation routes={routes} />, store);
+  test.skip('opens and closes secondary navigation', () => {
+    renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
     const button = screen.getAllByTestId('PrimaryNavItem')[0];
 
     fireEvent.click(button);
 
-    await waitFor(() => {
-      expect(screen.getByTestId('SecondaryNavigation')).toBeInTheDocument();
-    });
+    expect(screen.getByTestId('SecondaryNavigation')).toBeInTheDocument();
 
     fireEvent.click(button);
 
-    await waitFor(() => {
-      setTimeout(() => {
-        expect(screen.queryByTestId('SecondaryNavigation')).toBeNull();
-      }, 300);
-    });
+    expect(screen.queryByTestId('SecondaryNavigation')).toBeNull();
   });
 
-  test('populates secondary navigation', async () => {
-    await render(<DashboardNavigation routes={routes} />, store);
+  test('populates secondary navigation', () => {
+    renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
     const secondaryRoutes = routes[0].childRoutes ? routes[0].childRoutes.length : 0;
 
     const button = screen.getAllByTestId('PrimaryNavItem')[0];
 
     fireEvent.click(button);
 
-    await waitFor(() => {
-      expect(screen.getAllByTestId('SecondaryNavItem')).toHaveLength(secondaryRoutes);
-    });
+    expect(screen.getAllByTestId('SecondaryNavItem')).toHaveLength(secondaryRoutes);
   });
 });

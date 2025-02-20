@@ -1,12 +1,21 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { cleanup, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 
-import { render, screen, configureStore, fireEvent } from '../../../../utils/testUtils';
+import { mockChangeLanguage } from '../../../../setupTests';
+import { renderWithProviders, configureStore } from '../../../../utils/testUtils';
 import LanguageSelector from './LanguageSelector';
 
 const mockUpdateMe = jest.fn();
+
+const mockSuccessNotification = jest.fn();
+jest.mock('../../../../commonComponents/Notistack/fragments/utils', () => ({
+  ...jest.requireActual('../../../../commonComponents/Notistack/fragments/utils'),
+  notifications: {
+    success: (key: string) => mockSuccessNotification(key),
+  },
+}));
 
 jest.mock('../../../../api/rest', () => ({
   ...jest.requireActual('../../../../api/rest'),
@@ -27,8 +36,8 @@ jest.mock('../../../../api/rest', () => ({
 describe('LanguageSelector component', () => {
   const { store } = configureStore();
   afterEach(() => cleanup());
-  test('render component without crashing', async () => {
-    await render(<LanguageSelector />, store);
+  test('render component without crashing', () => {
+    renderWithProviders(<LanguageSelector />, { store });
 
     expect(screen.getByDisplayValue('en-US')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'dashboard-settings-profile-button-save' })).toBeInTheDocument();
@@ -36,7 +45,7 @@ describe('LanguageSelector component', () => {
   });
 
   test('click on Save button should trigger mockUpdateMe', async () => {
-    await render(<LanguageSelector />, store);
+    renderWithProviders(<LanguageSelector />, { store });
 
     const saveButton = screen.getByRole('button', { name: /dashboard-settings-profile-button-save/i });
     expect(saveButton).toBeInTheDocument();
@@ -48,14 +57,15 @@ describe('LanguageSelector component', () => {
   });
 
   test('successful UpdateMe should triggers a success notification', async () => {
-    await render(<LanguageSelector />, store);
+    renderWithProviders(<LanguageSelector />, { store, provider: { snackbar: true } });
 
     const saveButton = screen.getByRole('button', { name: /dashboard-settings-profile-button-save/i });
     expect(saveButton).toBeInTheDocument();
 
     fireEvent.click(saveButton);
     await waitFor(() => {
-      expect(screen.getByText('dashboard-settings-general-notification-save-success')).toBeInTheDocument();
+      expect(mockChangeLanguage).toHaveBeenCalled();
+      expect(mockSuccessNotification).toHaveBeenCalledWith('dashboard-settings-general-notification-save-success');
     });
   });
 });

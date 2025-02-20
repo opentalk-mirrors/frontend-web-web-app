@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { cleanup, waitFor } from '@testing-library/react';
+import { cleanup, screen, fireEvent } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
-import { render, screen, configureStore, fireEvent } from '../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import FullscreenView from './FullscreenView';
 
 /**
@@ -57,8 +57,8 @@ describe('FullscreenView', () => {
   afterEach(() => cleanup());
   const { store } = configureStore();
 
-  test('render without crashing', async () => {
-    await render(<FullscreenView />, store);
+  test('render without crashing', () => {
+    renderWithProviders(<FullscreenView />, { store });
 
     expect(screen.getByTestId('fullscreen')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /indicator-fullscreen-close/i })).toBeInTheDocument();
@@ -66,29 +66,27 @@ describe('FullscreenView', () => {
     expect(screen.queryByTestId('Toolbar')).not.toBeInTheDocument();
   });
 
-  test('mouse over, expected to render LocalVideo & toolbar', async () => {
-    await render(<FullscreenView />, store);
+  test('mouse over, expected to render LocalVideo & toolbar', () => {
+    renderWithProviders(<FullscreenView />, { store });
     const fullscreen = screen.getByTestId('fullscreen');
     expect(fullscreen).toBeInTheDocument();
 
-    await fireEvent.mouseMove(fullscreen);
+    fireEvent.mouseMove(fullscreen);
 
     expect(screen.getByRole('button', { name: /indicator-fullscreen-close/i })).toBeInTheDocument();
     expect(screen.getByTestId('toolbar')).toBeInTheDocument();
     expect(screen.getByTestId('fullscreenLocalVideo')).toBeInTheDocument();
   });
 
-  test('click on close button should trigger react-full-screen exit function', async () => {
-    await render(<FullscreenView />, store);
+  test('click on close button should trigger react-full-screen exit function', () => {
+    renderWithProviders(<FullscreenView />, { store });
 
     const closeBtn = screen.getByRole('button', { name: /indicator-fullscreen-close/i });
     expect(screen.getByTestId('fullscreen')).toBeInTheDocument();
     expect(closeBtn).toBeInTheDocument();
 
-    await fireEvent.click(closeBtn);
+    fireEvent.click(closeBtn);
 
-    await waitFor(() => {
-      expect(mockExitCall).toBeCalled();
-    });
+    expect(mockExitCall).toHaveBeenCalled();
   });
 });

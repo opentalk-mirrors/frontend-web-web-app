@@ -4,7 +4,7 @@
 import getReferrerRouterState from './getReferrerRouterState';
 
 describe('getReferrerRouterState()', () => {
-  it('returns all meetings route by default.', () => {
+  test('returns all meetings route by default.', () => {
     expect(getReferrerRouterState({ pathname: '/test' })).toEqual({ referrer: '/test' });
   });
 });

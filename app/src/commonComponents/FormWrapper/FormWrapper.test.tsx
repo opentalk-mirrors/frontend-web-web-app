@@ -13,7 +13,7 @@ describe('FormWrapper Component', () => {
     error: false,
   };
 
-  it('render component without crashing', async () => {
+  test('render component without crashing', () => {
     render(
       <FormWrapper {...formWrapperTestProps}>
         <></>

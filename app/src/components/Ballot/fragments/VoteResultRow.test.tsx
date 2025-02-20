@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen } from '../../../utils/testUtils';
+import { render, screen } from '@testing-library/react';
+
 import VoteResultRow from './VoteResultRow';
 
 const mockDispatch = jest.fn();
@@ -12,8 +13,8 @@ jest.mock('../../../hooks', () => ({
 }));
 
 describe('VoteResultRow', () => {
-  it('can render', async () => {
-    await render(<VoteResultRow participantId="" selectedVote="no" token="test-token" />, undefined, {
+  test('can render', () => {
+    render(<VoteResultRow participantId="" selectedVote="no" token="test-token" />, {
       wrapper: ({ children }) => (
         <table>
           <tbody>{children}</tbody>

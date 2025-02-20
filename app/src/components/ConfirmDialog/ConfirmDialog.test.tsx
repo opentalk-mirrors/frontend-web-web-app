@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, render, fireEvent } from '../../utils/testUtils';
+import { screen, render, fireEvent } from '@testing-library/react';
+
 import ConfirmDialog, { ConfirmDialogProps } from './ConfirmDialog';
 
 const dialogProps: ConfirmDialogProps = {
@@ -16,8 +17,8 @@ const dialogProps: ConfirmDialogProps = {
 
 describe('ConfirmDialog', () => {
   const handleClick = jest.fn();
-  test('dialog will render properly', async () => {
-    await render(<ConfirmDialog {...dialogProps} />);
+  test('dialog will render properly', () => {
+    render(<ConfirmDialog {...dialogProps} />);
     expect(screen.getByText('dialogTitle')).toBeInTheDocument();
     expect(screen.getByText('dialogMessage')).toBeInTheDocument();
 
@@ -28,28 +29,28 @@ describe('ConfirmDialog', () => {
     expect(cancelButton).toBeInTheDocument();
   });
 
-  test('click on submitButton should trigger onConfirm()', async () => {
-    await render(<ConfirmDialog {...dialogProps} onConfirm={handleClick} />);
+  test('click on submitButton should trigger onConfirm()', () => {
+    render(<ConfirmDialog {...dialogProps} onConfirm={handleClick} />);
 
     const submitButton = screen.getByText('submitText');
     expect(submitButton).toBeInTheDocument();
 
-    await fireEvent.click(submitButton);
+    fireEvent.click(submitButton);
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  test('click on cancelButton should trigger onCancel()', async () => {
-    await render(<ConfirmDialog {...dialogProps} onCancel={handleClick} />);
+  test('click on cancelButton should trigger onCancel()', () => {
+    render(<ConfirmDialog {...dialogProps} onCancel={handleClick} />);
 
     const cancelButton = screen.getByText('cancelText');
     expect(cancelButton).toBeInTheDocument();
 
-    await fireEvent.click(cancelButton);
+    fireEvent.click(cancelButton);
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  test('component with flag open={false}, should not render component', async () => {
-    await render(<ConfirmDialog {...dialogProps} open={false} />);
+  test('component with flag open={false}, should not render component', () => {
+    render(<ConfirmDialog {...dialogProps} open={false} />);
     expect(screen.queryByText('dialogTitle')).not.toBeInTheDocument();
     expect(screen.queryByText('dialogMessage')).not.toBeInTheDocument();
     expect(screen.queryByText('submitText')).not.toBeInTheDocument();

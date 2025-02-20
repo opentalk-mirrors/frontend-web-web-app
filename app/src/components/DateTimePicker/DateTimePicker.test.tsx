@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import DateFnsAdapter from '@date-io/date-fns';
-import userEvent from '@testing-library/user-event';
-import i18n from 'i18next';
+import { screen, act } from '@testing-library/react';
 
-import { render, screen, configureStore } from '../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import DateTimePicker from './DateTimePicker';
 
 const date = new Date();
@@ -28,24 +27,42 @@ const clearableDateTimePickerProps = {
 
 describe('render <DateTimePicker />', () => {
   const { store } = configureStore();
-  i18n.changeLanguage('de');
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   test('render DateTimePicker component with german localization', async () => {
-    await render(<DateTimePicker {...dateTimePickerProps} />, store);
+    // eslint disabled is needed because of recursion type definitions inside the library
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    jest.spyOn(require('react-i18next'), 'useTranslation').mockReturnValue({
+      t: (i18nKey: string) => i18nKey,
+      i18n: {
+        language: {
+          split: () => ['de'],
+        },
+      },
+    });
+
+    renderWithProviders(<DateTimePicker {...dateTimePickerProps} />, { store, provider: { mui: true } });
     const input: HTMLInputElement = screen.getByRole('textbox');
     const deFormattedDate = dateFns.formatByString(date, 'dd.MM.yyyy HH:mm');
+
     expect(input.value).toBe(deFormattedDate);
   });
 
-  test('render DateTimePicker placeholer value on clear button click', async () => {
-    await render(<DateTimePicker {...clearableDateTimePickerProps} />, store);
+  test('render DateTimePicker placeholder value on clear button click', () => {
+    renderWithProviders(<DateTimePicker {...clearableDateTimePickerProps} />, { store, provider: { mui: true } });
 
     const input: HTMLInputElement = screen.getByRole('textbox');
     expect(input).toBeInTheDocument();
 
     const chooseDateButton = screen.getByRole('button', { name: /choose date/i });
     expect(chooseDateButton).toBeInTheDocument();
-    await userEvent.click(chooseDateButton);
+
+    act(() => {
+      chooseDateButton.click();
+    });
 
     const clearButton = screen.getByRole('button', { name: clearableDateTimePickerProps.clearButtonLabel });
     expect(clearButton).toBeInTheDocument();

@@ -2,10 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { cleanup } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 
-import { ReactComponent as BreakoutRoomIcon } from '../../../assets/images/subroom-illustration.svg';
+import { BreakroomsIcon } from '../../../assets/icons';
 import { notifications } from '../../../commonComponents';
-import { fireEvent, render, screen, configureStore, waitFor } from '../../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import BreakoutRoomNotification, { Action } from './BreakoutRoomNotification';
 
 const actionFn = jest.fn();
@@ -25,38 +26,34 @@ const MESSAGE = 'testMessage';
 
 describe('BreakoutRoomNotification', () => {
   afterEach(() => cleanup());
-  test('render all items', async () => {
+  test('render all items', () => {
     const { store } = configureStore();
-    await render(
+    renderWithProviders(
       <BreakoutRoomNotification
         snackbarKey={SNACKBAR_KEY}
         actions={ACTIONS}
         message={MESSAGE}
-        iconComponent={BreakoutRoomIcon}
+        iconComponent={BreakroomsIcon}
       />,
-      store
+      { store, provider: { snackbar: true, mui: true } }
     );
-    await waitFor(() => {
-      expect(screen.getByText(MESSAGE)).toBeInTheDocument();
-    });
+    expect(screen.getByText(MESSAGE)).toBeInTheDocument();
     expect(screen.getByText(ACTIONS[0].text)).toBeInTheDocument();
     expect(screen.getByText(ACTIONS[1].text)).toBeInTheDocument();
   });
 
-  test('action called once', async () => {
+  test('action called once', () => {
     const { store } = configureStore();
-    await render(
+    renderWithProviders(
       <BreakoutRoomNotification
         snackbarKey={SNACKBAR_KEY}
         actions={ACTIONS}
         message={MESSAGE}
-        iconComponent={BreakoutRoomIcon}
+        iconComponent={BreakroomsIcon}
       />,
-      store
+      { store, provider: { snackbar: true, mui: true } }
     );
-    await waitFor(() => {
-      expect(screen.getByText(MESSAGE)).toBeInTheDocument();
-    });
+    expect(screen.getByText(MESSAGE)).toBeInTheDocument();
 
     expect(actionFn).toHaveBeenCalledTimes(0);
 
@@ -66,22 +63,20 @@ describe('BreakoutRoomNotification', () => {
     expect(actionFn).toHaveBeenCalledTimes(1);
   });
 
-  test('close after click on an action', async () => {
+  test('close after click on an action', () => {
     const { store } = configureStore();
-    await render(
+    renderWithProviders(
       <BreakoutRoomNotification
         snackbarKey={SNACKBAR_KEY}
         actions={ACTIONS}
         message={MESSAGE}
-        iconComponent={BreakoutRoomIcon}
+        iconComponent={BreakroomsIcon}
       />,
-      store
+      { store, provider: { snackbar: true, mui: true } }
     );
     const spyClose = jest.spyOn(notifications, 'close');
 
-    await waitFor(() => {
-      expect(screen.getByText(MESSAGE)).toBeInTheDocument();
-    });
+    expect(screen.getByText(MESSAGE)).toBeInTheDocument();
 
     expect(spyClose).toHaveBeenCalledTimes(0);
 

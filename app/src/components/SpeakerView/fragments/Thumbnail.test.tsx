@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen, cleanup } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
 import { ParticipantId } from '../../../types';
-import { render, screen, cleanup, mockStore, mockedParticipant } from '../../../utils/testUtils';
+import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
 import Thumbnail from './Thumbnail';
 
 jest.mock('@livekit/components-react', () => ({
@@ -27,13 +28,13 @@ describe('Thumbnail', () => {
     cleanup();
   });
 
-  test('ThumbnailContainer rendered width one participant', async () => {
+  test('ThumbnailContainer rendered width one participant', () => {
     const { store } = mockStore(1);
 
     const ids = store.getState().participants.ids;
     const participantId = ids[0] as ParticipantId;
 
-    await render(<Thumbnail width={0} />, store);
+    renderWithProviders(<Thumbnail width={0} />, { store, provider: { mui: true } });
 
     // Initial ThumbnailContainer appears
     expect(screen.getByTestId(`thumbsVideo-${participantId}`)).toBeInTheDocument();

@@ -2,9 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { RoomId } from '@opentalk/rest-api-rtk-query';
+import { screen, cleanup } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { screen, render, cleanup } from '../../utils/testUtils';
+import { renderWithProviders } from '../../utils/testUtils';
 import FavoriteMeetingsCard from './FavoriteMeetingsCard';
 
 const dummyMeetings = [
@@ -18,20 +19,22 @@ const dummyMeetings = [
 
 describe('favorite meetings card', () => {
   afterEach(() => cleanup());
-  test('is empty when no meetings available', async () => {
-    await render(
+  test('is empty when no meetings available', () => {
+    renderWithProviders(
       <BrowserRouter>
         <FavoriteMeetingsCard meetings={[]} />
-      </BrowserRouter>
+      </BrowserRouter>,
+      { provider: { mui: true } }
     );
 
     expect(screen.getByTestId('empty-entry')).toBeInTheDocument();
   });
-  test('contains all favorited meetings', async () => {
-    await render(
+  test('contains all favorited meetings', () => {
+    renderWithProviders(
       <BrowserRouter>
         <FavoriteMeetingsCard meetings={dummyMeetings} />
-      </BrowserRouter>
+      </BrowserRouter>,
+      { provider: { mui: true } }
     );
 
     expect(screen.queryAllByRole('link')).toHaveLength(dummyMeetings.length);

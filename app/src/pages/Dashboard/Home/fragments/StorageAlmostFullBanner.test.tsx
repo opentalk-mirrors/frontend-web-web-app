@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { useGetMeQuery, useGetMeTariffQuery } from '../../../../api/rest';
-import { configureStore, render, screen } from '../../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../../utils/testUtils';
 import { StorageAlmostFullBanner } from './StorageAlmostFullBanner';
 import { STORAGE_SECTION_PATH, CRITICAL_STORAGE_CAPACITY_IN_PERCENT } from './constants';
 
@@ -28,7 +29,7 @@ const { store } = configureStore({
 });
 
 describe('Storage almost full Banner', () => {
-  test('shows nothing for unlimited storage', async () => {
+  test('shows nothing for unlimited storage', () => {
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
         usedStorage: MAX_LIMITED_STORAGE_IN_MB * 1000 * 1000,
@@ -42,11 +43,11 @@ describe('Storage almost full Banner', () => {
       },
     }));
 
-    await render(<StorageAlmostFullBanner />, store);
+    renderWithProviders(<StorageAlmostFullBanner />, { store });
     expect(screen.queryByText(/./)).not.toBeInTheDocument();
   });
 
-  test('shows nothing for used storage beyond critical', async () => {
+  test('shows nothing for used storage beyond critical', () => {
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
         usedStorage: CRITICAL_USED_STORAGE_IN_MB * 1000 * 1000 - 1,
@@ -60,7 +61,7 @@ describe('Storage almost full Banner', () => {
       },
     }));
 
-    await render(<StorageAlmostFullBanner />, store);
+    renderWithProviders(<StorageAlmostFullBanner />, { store });
     expect(screen.queryByText(/./)).not.toBeInTheDocument();
   });
 
@@ -78,10 +79,10 @@ describe('Storage almost full Banner', () => {
       },
     }));
 
-    await render(<StorageAlmostFullBanner />, store);
+    renderWithProviders(<StorageAlmostFullBanner />, { store, provider: { mui: true, router: true } });
     expect(screen.getByText('dashboard-storage-almost-full-message')).toBeInTheDocument();
 
-    // Test navigation to accounte mangement url
+    // Test navigation to account management url
     // mock window.open
     const jsdomOpen = window.open;
     window.open = jest.fn();

@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useMediaQuery } from '@mui/material';
 import { DateTime } from '@opentalk/rest-api-rtk-query';
+import { render, screen } from '@testing-library/react';
 import { ComponentPropsWithoutRef } from 'react';
 
 import { TimePerspectiveFilter } from '../../../../utils/eventUtils';
-import { render, screen } from '../../../../utils/testUtils';
 import { EventFilterButtonBar } from './EventFilterButtonBar';
 import { EventPageFilters } from './EventPageFilters';
 import { TimeFilter } from './EventsPageHeader';
@@ -54,24 +54,27 @@ describe('Events Page Header tests', () => {
   });
 
   describe('mobile', () => {
-    it.concurrent('can render', async () => {
-      await render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
+    test('can render', () => {
+      render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
+
       expect(screen.getByTestId('events-page-header-mobile')).toBeInTheDocument();
     });
   });
 
   describe('tablet', () => {
-    it.concurrent('can render', async () => {
+    test('can render', () => {
       mockUseMediaQuery.mockReturnValueOnce(false).mockReturnValueOnce(true);
-      await render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
+      render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
+
       expect(screen.getByTestId('events-page-header-tablet')).toBeInTheDocument();
     });
   });
 
   describe('desktop', () => {
-    it.concurrent('can render', async () => {
+    test('can render', () => {
       mockUseMediaQuery.mockReturnValueOnce(true).mockReturnValueOnce(false);
-      await render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
+      render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
+
       expect(screen.getByTestId('events-page-header-desktop')).toBeInTheDocument();
     });
   });

@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Email, EventId, InviteStatus, UserId } from '@opentalk/rest-api-rtk-query';
 import { UserRole } from '@opentalk/rest-api-rtk-query/src/types';
+import { cleanup, screen } from '@testing-library/react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { cleanup, configureStore, render, screen } from '../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ParticipantList from './ParticipantList';
 
 const invitees = [
@@ -33,8 +34,8 @@ describe('ParticipantList', () => {
 
   afterEach(() => cleanup());
 
-  test('will render without errors', async () => {
-    await render(
+  test('will render without errors', () => {
+    renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}
         invitees={invitees}
@@ -42,13 +43,14 @@ describe('ParticipantList', () => {
         removeSelectedUser={mockRemoveSelectedUser}
         isUpdatable={true}
       />,
-      store
+      { store }
     );
+
     expect(screen.getByTestId('ParticipantList')).toBeInTheDocument();
   });
 
-  test('render UserRow component', async () => {
-    await render(
+  test('render UserRow component', () => {
+    renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}
         invitees={invitees}
@@ -56,13 +58,14 @@ describe('ParticipantList', () => {
         removeSelectedUser={mockRemoveSelectedUser}
         isUpdatable={true}
       />,
-      store
+      { store }
     );
+
     expect(screen.getByTestId('ParticipantListBox').children).toHaveLength(1);
   });
 
-  test('render accept status title', async () => {
-    await render(
+  test('render accept status title', () => {
+    renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}
         invitees={invitees}
@@ -70,13 +73,14 @@ describe('ParticipantList', () => {
         removeSelectedUser={mockRemoveSelectedUser}
         isUpdatable={true}
       />,
-      store
+      { store }
     );
+
     expect(screen.getByText(`dashboard-meeting-details-page-participant-${InviteStatus.Accepted}`)).toBeInTheDocument();
   });
 
-  test('render declined status title', async () => {
-    await render(
+  test('render declined status title', () => {
+    renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}
         invitees={invitees}
@@ -84,13 +88,14 @@ describe('ParticipantList', () => {
         removeSelectedUser={mockRemoveSelectedUser}
         isUpdatable={true}
       />,
-      store
+      { store }
     );
+
     expect(screen.getByText(`dashboard-meeting-details-page-participant-${InviteStatus.Declined}`)).toBeInTheDocument();
   });
 
-  test('render open/pending status title', async () => {
-    await render(
+  test('render open/pending status title', () => {
+    renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}
         invitees={invitees}
@@ -98,8 +103,9 @@ describe('ParticipantList', () => {
         removeSelectedUser={mockRemoveSelectedUser}
         isUpdatable={true}
       />,
-      store
+      { store }
     );
+
     expect(screen.getByText(`dashboard-meeting-details-page-participant-${InviteStatus.Pending}`)).toBeInTheDocument();
   });
 });

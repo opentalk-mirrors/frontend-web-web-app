@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
-import { screen } from '../utils/testUtils';
 import LobbyTemplate from './LobbyTemplate';
 
 jest.mock('./fragments/BrowserCompatibilityInfo', () => ({

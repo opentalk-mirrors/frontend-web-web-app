@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { render, screen } from '@testing-library/react';
+
 import { useHeader } from '../../../hooks/useHeader';
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
-import { render, screen, waitFor } from '../../../utils/testUtils';
 import Home from './Home';
 import BannerContainer from './fragments/BannerContainer';
 
@@ -37,36 +38,34 @@ const mockUseHeader = useHeader as jest.Mock;
 describe('Home', () => {
   beforeEach(() => mockUseHeader.mockReturnValue({ setHeader: jest.fn() }));
 
-  it('renders desktop view', async () => {
+  test('renders desktop view', () => {
     const isDesktop = true;
     mockUseIsDesktop.mockReturnValue(isDesktop);
 
-    await render(<Home />);
+    render(<Home />);
 
     expect(screen.getByTestId('desktop-home')).toBeInTheDocument();
   });
 
-  it('renders mobile view', async () => {
+  test('renders mobile view', () => {
     const isDesktop = false;
     mockUseIsDesktop.mockReturnValue(isDesktop);
 
-    await render(<Home />);
+    render(<Home />);
     expect(screen.getByTestId('mobile-home')).toBeInTheDocument();
   });
 
-  it('updates the document title', async () => {
-    await render(<Home />);
+  test('updates the document title', () => {
+    render(<Home />);
     expect(useUpdateDocumentTitle).toHaveBeenCalledWith('dashboard-current-meetings');
   });
 
-  it('renders the banner container into the document header', async () => {
+  test('renders the banner container into the document header', () => {
     const mockSetHeader = jest.fn();
     mockUseHeader.mockReturnValue({ setHeader: mockSetHeader });
 
-    await render(<Home />);
+    render(<Home />);
 
-    await waitFor(() => {
-      expect(mockSetHeader).toHaveBeenCalledWith(<BannerContainer />);
-    });
+    expect(mockSetHeader).toHaveBeenCalledWith(<BannerContainer />);
   });
 });

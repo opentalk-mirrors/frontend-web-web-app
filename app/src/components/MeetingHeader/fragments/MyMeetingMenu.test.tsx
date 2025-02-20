@@ -1,34 +1,34 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { configureStore, fireEvent, render, screen, waitFor } from '../../../utils/testUtils';
+import { fireEvent, screen } from '@testing-library/react';
+
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MyMeetingMenu from './MyMeetingMenu';
 
 jest.mock('../../../utils/apiUtils');
 
 describe('My Meeting Menu', () => {
-  test('render menu and all default menu items on button click', async () => {
+  test('render menu and all default menu items on button click', () => {
     const { store } = configureStore();
-    await render(<MyMeetingMenu />, store);
+    renderWithProviders(<MyMeetingMenu />, { store });
 
     const menuButton = screen.getByRole('button', { name: 'my-meeting-menu' });
     expect(menuButton).toBeInTheDocument();
 
     fireEvent.click(menuButton);
 
-    await waitFor(() => {
-      const menu = screen.getByRole('menu', { name: 'my-meeting-menu' });
-      expect(menu).toBeInTheDocument();
+    const menu = screen.getByRole('menu', { name: 'my-meeting-menu' });
+    expect(menu).toBeInTheDocument();
 
-      const userManualMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
-      expect(userManualMenuItem).toBeInTheDocument();
+    const userManualMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
+    expect(userManualMenuItem).toBeInTheDocument();
 
-      const shortcutsMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-keyboard-shortcuts' });
-      expect(shortcutsMenuItem).toBeInTheDocument();
-    });
+    const shortcutsMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-keyboard-shortcuts' });
+    expect(shortcutsMenuItem).toBeInTheDocument();
   });
 
-  test('Report error button is not visible if glitchtip is not configured', async () => {
+  test('Report error button is not visible if glitchtip is not configured', () => {
     const { store } = configureStore({
       initialState: {
         config: {
@@ -37,18 +37,16 @@ describe('My Meeting Menu', () => {
       },
     });
 
-    await render(<MyMeetingMenu />, store);
+    renderWithProviders(<MyMeetingMenu />, { store });
 
     const menuButton = screen.getByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
 
-    await waitFor(() => {
-      const reportBugMenuItem = screen.queryByRole('menuitem', { name: 'my-meeting-menu-glitchtip-trigger' });
-      expect(reportBugMenuItem).not.toBeInTheDocument();
-    });
+    const reportBugMenuItem = screen.queryByRole('menuitem', { name: 'my-meeting-menu-glitchtip-trigger' });
+    expect(reportBugMenuItem).not.toBeInTheDocument();
   });
 
-  test('Report error button is visible when glitchtip dsn is configured', async () => {
+  test('Report error button is visible when glitchtip dsn is configured', () => {
     const { store } = configureStore({
       initialState: {
         config: {
@@ -58,30 +56,26 @@ describe('My Meeting Menu', () => {
         },
       },
     });
-    await render(<MyMeetingMenu />, store);
+    renderWithProviders(<MyMeetingMenu />, { store });
 
     const menuButton = screen.getByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
 
-    await waitFor(() => {
-      const reportBugMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-glitchtip-trigger' });
-      expect(reportBugMenuItem).toBeInTheDocument();
-    });
+    const reportBugMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-glitchtip-trigger' });
+    expect(reportBugMenuItem).toBeInTheDocument();
   });
 
-  test('click on User Manual option opens user manual', async () => {
+  test('click on User Manual option opens user manual', () => {
     const { store } = configureStore();
-    await render(<MyMeetingMenu />, store);
+    renderWithProviders(<MyMeetingMenu />, { store });
 
     const menuButton = screen.getByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
 
-    await waitFor(() => {
-      const text = screen.getByText('my-meeting-menu-user-manual');
-      const anchor = (text.parentElement as HTMLDivElement).parentElement as HTMLAnchorElement;
-      expect(anchor).toBeInTheDocument();
-      expect(anchor).toHaveAttribute('href', 'https://docs.opentalk.eu/user/manual/');
-      expect(anchor).not.toBeDisabled();
-    });
+    const text = screen.getByText('my-meeting-menu-user-manual');
+    const anchor = (text.parentElement as HTMLDivElement).parentElement as HTMLAnchorElement;
+    expect(anchor).toBeInTheDocument();
+    expect(anchor).toHaveAttribute('href', 'https://docs.opentalk.eu/user/manual/');
+    expect(anchor).not.toBeDisabled();
   });
 });

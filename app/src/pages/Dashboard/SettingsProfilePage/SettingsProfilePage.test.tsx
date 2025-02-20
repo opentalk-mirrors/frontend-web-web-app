@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, configureStore } from '../../../utils/testUtils';
+import { screen } from '@testing-library/react';
+
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import SettingsProfilePage from './SettingsProfilePage';
 
 const mockUpdateMe = jest.fn();
@@ -23,9 +25,9 @@ jest.mock('../../../api/rest', () => ({
 }));
 
 describe('SettingsProfilePage', () => {
-  test('page will not crash', async () => {
+  test('page will not crash', () => {
     const { store } = configureStore();
-    await render(<SettingsProfilePage />, store);
+    renderWithProviders(<SettingsProfilePage />, { store, provider: { mui: true } });
 
     expect(screen.getByText('dashboard-settings-profile-picture')).toBeInTheDocument();
   });
