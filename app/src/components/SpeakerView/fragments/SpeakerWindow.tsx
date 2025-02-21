@@ -6,6 +6,8 @@ import { styled } from '@mui/material';
 import { Participant, RemoteParticipant } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useAppSelector } from '../../../hooks';
+import { selectPinnedParticipantId } from '../../../store/slices/uiSlice';
 import ParticipantWindow from '../../ParticipantWindow';
 
 interface SpeakerViewProps {
@@ -26,7 +28,8 @@ const Container = styled('div', {
 
 const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerViewProps) => {
   const sortedParticipants = useSortedParticipants(useRemoteParticipants());
-  const currentSpeakerId = sortedParticipants[0]?.identity;
+  const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
+  const currentSpeakerId = pinnedParticipantId || sortedParticipants[0]?.identity;
   const [{ width, height }, setDimensions] = useState({ width: 1, height: 1 });
 
   const selectedSpeaker = useMemo(
