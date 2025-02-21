@@ -70,10 +70,10 @@ test.describe('79_Dashboard_Settings', () => {
     await expect(page.getByRole('navigation').getByText(`${profileName}-TEST`)).toBeVisible();
 
     //reset values
-    await page.getByRole('textbox', { name: 'Profile Name' }).fill(profileName);
-    await expect(page.getByRole('textbox', { name: 'Profile Name' })).toHaveValue(profileName);
+    await page.getByRole('textbox', { name: 'Profile Name' }).fill(process.env.USERNAME);
+    await expect(page.getByRole('textbox', { name: 'Profile Name' })).toHaveValue(process.env.USERNAME);
     await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByRole('navigation').getByText(profileName)).toBeVisible();
+    await expect(page.getByRole('navigation').getByText(process.env.USERNAME)).toBeVisible();
   });
 
   test('TC_003_Dashboard_Settings_Account option', async ({ page }) => {
