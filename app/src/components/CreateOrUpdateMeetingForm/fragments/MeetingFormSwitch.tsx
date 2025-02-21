@@ -1,13 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { FormControlLabel as MuiFormControlLabel, Stack, Switch, SwitchProps, styled, Tooltip } from '@mui/material';
+import { FormControlLabel as MuiFormControlLabel, Stack, Switch, SwitchProps, Tooltip, styled } from '@mui/material';
 
 interface MeetingFormSwitchProps {
   switchProps: SwitchProps;
   checked: boolean;
   switchValueLabel: string;
   tooltipTitle?: string;
+  disabled?: boolean;
 }
 
 const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
@@ -27,11 +28,22 @@ const ConditionalTooltip = (props: ConditionalTooltipProps) => {
   return title ? <Tooltip title={title}>{children}</Tooltip> : <>{children}</>;
 };
 
-const MeetingFormSwitch = ({ switchProps, checked, switchValueLabel, tooltipTitle }: MeetingFormSwitchProps) => {
+const MeetingFormSwitch = ({
+  switchProps,
+  checked,
+  switchValueLabel,
+  tooltipTitle,
+  disabled,
+}: MeetingFormSwitchProps) => {
   return (
     <Stack>
       <ConditionalTooltip title={tooltipTitle}>
-        <FormControlLabel checked={checked} control={<Switch {...switchProps} />} label={switchValueLabel} />
+        <FormControlLabel
+          checked={checked}
+          control={<Switch {...switchProps} />}
+          label={switchValueLabel}
+          disabled={disabled}
+        />
       </ConditionalTooltip>
     </Stack>
   );
