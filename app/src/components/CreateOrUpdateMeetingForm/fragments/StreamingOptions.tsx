@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CommonTextField } from '../../../commonComponents';
-import { formikMinimalProps, formikProps } from '../../../utils/formikUtils';
+import { formikProps, formikSwitchProps } from '../../../utils/formikUtils';
 import { CreateOrUpdateMeetingFormikValues } from './DashboardDateTimePicker';
 import MeetingFormSwitch from './MeetingFormSwitch';
 
@@ -58,7 +58,7 @@ const StreamingOptions = ({ formik }: StreamingOptionsProps) => {
     >
       <MeetingFormSwitch
         checked={streamingEnabled}
-        switchProps={formikMinimalProps('streaming.enabled', formik)}
+        switchProps={formikSwitchProps('streaming.enabled', formik)}
         switchValueLabel={t('dashboard-meeting-livestream-switch')}
         disabled={formik.values.e2eEncryption}
       />

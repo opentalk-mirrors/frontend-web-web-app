@@ -11,7 +11,6 @@ import {
   FormControlLabel as MuiFormControlLabel,
   MenuItem as MuiMenuItem,
   Stack,
-  Switch,
   ThemeProvider,
   Typography,
   styled,
@@ -21,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CameraOnIcon, CloseIcon, ErrorIcon, SettingsIcon, WarningIcon } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
+import { CommonSwitch } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import useMediaDevice from '../../../hooks/useMediaDevice';
@@ -211,7 +211,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
           <BackgroundOptionsContainer spacing={1}>
             <FormControlLabel
               control={
-                <Switch
+                <CommonSwitch
                   onChange={(_, enabled) => dispatch(setDisableRemoteVideos(!enabled))}
                   value={areParticipantVideosEnabled}
                   checked={areParticipantVideosEnabled}
@@ -233,7 +233,9 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
           <BackgroundOptionsContainer spacing={1}>
             {isBackgroundAndBlurringSupported && (
               <FormControlLabel
-                control={<Switch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />}
+                control={
+                  <CommonSwitch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />
+                }
                 label={
                   <Typography fontWeight="normal" component="span">
                     {t('videomenu-blur')}
@@ -244,7 +246,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
               />
             )}
             <FormControlLabel
-              control={<Switch onChange={toggleMirroring} value={mirroringEnabled} checked={mirroringEnabled} />}
+              control={<CommonSwitch onChange={toggleMirroring} value={mirroringEnabled} checked={mirroringEnabled} />}
               label={
                 <Typography fontWeight="normal" component="span">
                   {t('videomenu-mirroring')}

@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, Stack, Switch, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { memo, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { selectNext, talkingStickStart, stop as talkingStickStop } from '../../api/types/outgoing/automod';
+import { CommonSwitch } from '../../commonComponents';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { selectCombinedUserFirstAndParticipantsInConference } from '../../store/selectors';
 import { selectAutomodActiveState, selectAutomoderationParticipantIds } from '../../store/slices/automodSlice';
@@ -98,7 +99,7 @@ const TalkingStickTabPanel = () => {
             >
               {t('talking-stick-include-moderator-switch')}
             </Typography>
-            <Switch
+            <CommonSwitch
               id="include-moderator-switch"
               onChange={() => setIncludeTalkingStickCreator(!includeTalkingStickCreator)}
               value={includeTalkingStickCreator}

@@ -14,11 +14,11 @@ import * as yup from 'yup';
 import { start } from '../../../api/types/outgoing/legalVote';
 import { BackIcon } from '../../../assets/icons';
 import { DurationField, CommonTextField, notifications } from '../../../commonComponents';
+import { CommonFormItem } from '../../../commonComponents';
 import { savedLegalVoteForm, selectLegalVoteId } from '../../../store/slices/legalVoteSlice';
 import { LegalVoteFormValues, SavedLegalVoteForm } from '../../../types';
 import { formikDurationFieldProps, formikSwitchProps, formikProps } from '../../../utils/formikUtils';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
-import FormItem from './FormItem';
 import ParticipantSelector, { AllowedParticipant } from './ParticipantSelector';
 
 interface ICreateLegalVoteFormProps {
@@ -131,15 +131,14 @@ const CreateLegalVoteForm = ({
               </Stack>
             </Grid>
             <Grid item xs={12}>
-              <FormItem
+              <CommonFormItem
                 {...formikSwitchProps('enableAbstain', formik)}
                 control={<Switch color="primary" />}
                 label={t('legal-vote-form-allow-abstain')}
-                labelPlacement="start"
               />
             </Grid>
             <Grid item xs={12}>
-              <FormItem
+              <CommonFormItem
                 {...formikSwitchProps('autoClose', formik)}
                 control={
                   <Tooltip title={`${t('legal-vote-form-auto-stop-tooltip')}`}>
@@ -147,11 +146,10 @@ const CreateLegalVoteForm = ({
                   </Tooltip>
                 }
                 label={t('legal-vote-form-auto-stop')}
-                labelPlacement="start"
               />
             </Grid>
             <Grid item xs={12}>
-              <Select {...formikSwitchProps('kind', formik)} defaultValue={formik.initialValues['kind']} id="vote-kind">
+              <Select {...formikProps('kind', formik)} defaultValue={formik.initialValues['kind']} id="vote-kind">
                 {legalVoteOptions.map((kind) => (
                   <MenuItem key={kind} value={kind}>
                     {t(`legal-vote-${kind}`)}

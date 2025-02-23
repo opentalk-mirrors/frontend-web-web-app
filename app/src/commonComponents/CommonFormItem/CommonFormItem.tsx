@@ -21,6 +21,7 @@ interface CommonFormItemProps {
     (e: React.FocusEvent<unknown>): void;
     <T = unknown>(fieldOrEvent: T): T extends string ? (e: unknown) => void : void;
   };
+  onKeyDown?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
   error?: boolean;
   helperText?: string;
   value?: unknown;
@@ -35,6 +36,7 @@ const CommonFormItem = ({
   control,
   value,
   onChange,
+  onKeyDown,
   onBlur,
   name,
   checked,
@@ -56,6 +58,7 @@ const CommonFormItem = ({
         <label htmlFor={id}>{label}</label>
         {React.cloneElement(control, {
           onChange,
+          onKeyDown,
           onBlur,
           name,
           checked: isChecked,
