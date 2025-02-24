@@ -4,12 +4,12 @@
 import roundToUpper30 from './roundToUpper30';
 
 describe('roundToUpper30()', () => {
-  it('should return Date instance', () => {
+  test('should return Date instance', () => {
     const input = new Date('12/13/2022 13:32:48 UTC');
     expect(roundToUpper30(input)).toBeInstanceOf(Date);
   });
 
-  it.each([
+  test.each([
     ['12/13/2022 13:32:48 UTC', '2022-12-13T14:00:00.000Z'],
     ['12/13/2022 16:42 UTC', '2022-12-13T17:00:00.000Z'],
     ['12/13/2022 16:47 UTC', '2022-12-13T17:00:00.000Z'],

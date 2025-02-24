@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
-import { render, screen, waitFor, cleanup } from '../../../utils/testUtils';
 import AnswersFormElement from './AnswersFormElement';
 
 jest.mock('formik', () => {
@@ -19,7 +19,7 @@ jest.mock('../../../commonComponents', () => ({
   CommonTextField: () => <div />,
 }));
 
-describe.skip('AnswersFormElement', () => {
+describe('AnswersFormElement', () => {
   const mockUseFormikContext = useFormikContext as jest.Mock;
 
   beforeEach(() => {
@@ -31,12 +31,12 @@ describe.skip('AnswersFormElement', () => {
 
   afterAll(() => cleanup());
 
-  it('unconditionally renders', async () => {
-    await render(<AnswersFormElement name="test-name" />);
+  test('unconditionally renders', () => {
+    render(<AnswersFormElement name="test-name" />);
     expect(screen.getByText('poll-input-choices')).toHaveProperty('tagName', 'BUTTON');
   });
 
-  it('is disabled in edit mode', async () => {
+  test('is disabled in edit mode', () => {
     mockUseFormikContext.mockReturnValue({
       errors: [],
       values: {
@@ -44,7 +44,7 @@ describe.skip('AnswersFormElement', () => {
       },
     });
 
-    await render(<AnswersFormElement name="test-name" />);
+    render(<AnswersFormElement name="test-name" />);
     waitFor(() => {
       expect(screen.getByText('poll-input-choices')).toBeDisabled();
     });

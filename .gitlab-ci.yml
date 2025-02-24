@@ -224,7 +224,7 @@ build:container:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       variables:
         IMAGE_DESTINATION_ARGS: >
-          --destination ${CI_REGISTRY_IMAGE}:${CI_MERGE_REQUEST_IID}_${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+          --destination ${CI_REGISTRY_IMAGE}:${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
     # set variable for forked pipeline (commented out to get rid of pipelines in forked repos)
     # - if: $CI_PROJECT_ROOT_NAMESPACE != 'opentalk' &&
     #      $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH &&
@@ -291,7 +291,7 @@ deploy:review-app:
       --set webapp.image.pullPolicy=Always
       --set webapp.image.registry=$CI_REGISTRY
       --set webapp.image.repository=$CI_PROJECT_PATH
-      --set webapp.image.tag=${CI_MERGE_REQUEST_IID}_${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+      --set webapp.image.tag=${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
       --set webapp.imagePullSecrets[0].name=git
       --set webapp.ingress.enabled=true
       --set webapp.ingress.className=traefik

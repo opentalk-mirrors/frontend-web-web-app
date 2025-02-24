@@ -1,14 +1,24 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { waitFor } from '@testing-library/react';
+import { waitFor, screen, fireEvent } from '@testing-library/react';
 
-import { configureStore, fireEvent, render, screen } from '../../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../../utils/testUtils';
 import ProfileNameForm from './ProfileNameForm';
 
 const mockUpdateMe = jest.fn();
 
 const MOCK_DISPLAY_NAME = 'Test User';
+
+const mockSuccessNotification = jest.fn();
+const mockErrorNotification = jest.fn();
+jest.mock('../../../../commonComponents/Notistack/fragments/utils', () => ({
+  ...jest.requireActual('../../../../commonComponents/Notistack/fragments/utils'),
+  notifications: {
+    success: (key: string) => mockSuccessNotification(key),
+    error: (key: string) => mockErrorNotification(key),
+  },
+}));
 
 jest.mock('../../../../api/rest', () => ({
   ...jest.requireActual('../../../../api/rest'),
@@ -33,16 +43,16 @@ describe('ProfileNameForm', () => {
     });
   });
 
-  test('page will not crash', async () => {
+  test('page will not crash', () => {
     const { store } = configureStore();
-    await render(<ProfileNameForm />, store);
+    renderWithProviders(<ProfileNameForm />, { store });
 
     expect(screen.getByRole('textbox', { name: 'dashboard-settings-profile-name-label' }));
   });
 
   test('empty displayName will show error', async () => {
     const { store } = configureStore();
-    await render(<ProfileNameForm />, store);
+    renderWithProviders(<ProfileNameForm />, { store });
 
     expect(screen.queryByText(/field-error-required/i)).not.toBeInTheDocument();
 
@@ -56,7 +66,7 @@ describe('ProfileNameForm', () => {
 
   test('click on submit button will trigger updateMe', async () => {
     const { store } = configureStore();
-    await render(<ProfileNameForm />, store);
+    renderWithProviders(<ProfileNameForm />, { store });
 
     expect(mockUpdateMe).toHaveBeenCalledTimes(0);
 
@@ -64,13 +74,13 @@ describe('ProfileNameForm', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mockUpdateMe).toHaveBeenCalledTimes(1);
+      expect(mockSuccessNotification).toHaveBeenCalledTimes(1);
     });
   });
 
   test('click on submit button will not trigger updateMe on invalid form input', async () => {
     const { store } = configureStore();
-    await render(<ProfileNameForm />, store);
+    renderWithProviders(<ProfileNameForm />, { store });
 
     expect(mockUpdateMe).toHaveBeenCalledTimes(0);
 
@@ -86,13 +96,13 @@ describe('ProfileNameForm', () => {
 
   test('successful triggers a notification', async () => {
     const { store } = configureStore();
-    await render(<ProfileNameForm />, store);
+    renderWithProviders(<ProfileNameForm />, { store });
 
     const submitButton = screen.getByText('dashboard-settings-profile-button-save');
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('dashboard-settings-general-notification-save-success')).toBeInTheDocument();
+      expect(mockSuccessNotification).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -102,13 +112,13 @@ describe('ProfileNameForm', () => {
     });
 
     const { store } = configureStore();
-    await render(<ProfileNameForm />, store);
+    renderWithProviders(<ProfileNameForm />, { store });
 
     const submitButton = screen.getByText('dashboard-settings-profile-button-save');
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('dashboard-settings-general-notification-save-error')).toBeInTheDocument();
+      expect(mockErrorNotification).toHaveBeenCalledTimes(1);
     });
   });
 });

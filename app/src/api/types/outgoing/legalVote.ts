@@ -15,6 +15,9 @@ import {
 } from '../../../types';
 import { sendMessage } from '../../index';
 
+/**
+ * Prevent sending empty strings for optional fields, since those are rejected by backend.
+ */
 export interface VoteStart extends LegalVoteParameters {
   action: 'start';
 }

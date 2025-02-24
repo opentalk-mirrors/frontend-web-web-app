@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen, cleanup, fireEvent } from '@testing-library/react';
+
 import { LegalVoteId, PollId } from '../../../types';
-import { configureStore, render, screen, cleanup, fireEvent } from '../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import VoteResult, { IVoteData, IVoteResult } from './VoteResult';
 import { VoteType } from './constants';
 
@@ -44,8 +46,8 @@ describe('testing vote results', () => {
     multipleChoice: true,
   };
 
-  test('component should render wothout breaking', async () => {
-    await render(<VoteResult {...voteResultsProps} />, store);
+  test('component should render wothout breaking', () => {
+    renderWithProviders(<VoteResult {...voteResultsProps} />, { store, provider: { mui: true } });
     const yesRadioButton = screen.getByRole('radio', { name: voteResultsProps.title });
 
     expect(yesRadioButton).toBeInTheDocument();
@@ -53,8 +55,8 @@ describe('testing vote results', () => {
     expect(screen.getByText('50.0%')).toBeInTheDocument();
   });
 
-  test('on click should fire onVote event', async () => {
-    await render(<VoteResult {...voteResultsProps} />, store);
+  test('on click should fire onVote event', () => {
+    renderWithProviders(<VoteResult {...voteResultsProps} />, { store, provider: { mui: true } });
     const yesRadioButton = screen.getByRole('radio', { name: voteResultsProps.title });
     expect(yesRadioButton).toBeInTheDocument();
     fireEvent.click(yesRadioButton);
@@ -62,8 +64,8 @@ describe('testing vote results', () => {
     expect(voteResultsProps.onVote).toBeCalledTimes(1);
   });
 
-  test('component should render checkbox if multiple choice is passed', async () => {
-    await render(<VoteResult {...pollProps} />, store);
+  test('component should render checkbox if multiple choice is passed', () => {
+    renderWithProviders(<VoteResult {...pollProps} />, { store, provider: { mui: true } });
     const yesCheckbox = screen.getByRole('checkbox', { name: pollProps.title });
 
     expect(yesCheckbox).toBeInTheDocument();

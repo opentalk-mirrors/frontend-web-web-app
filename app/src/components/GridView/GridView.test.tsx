@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
-import { render, screen, mockStore, mockedParticipant } from '../../utils/testUtils';
+import { renderWithProviders, mockStore, mockedParticipant } from '../../utils/testUtils';
 import GridView from './GridView';
 
 jest.mock('./fragments/GridCell', () => ({
@@ -22,9 +23,10 @@ jest.mock('@livekit/components-react', () => ({
 }));
 
 describe('GridView', () => {
-  test('render GridView', async () => {
+  test('render GridView', () => {
     const { store } = mockStore(0);
-    await render(<GridView />, store);
+    renderWithProviders(<GridView />, { store });
+
     expect(screen.getByTestId('grid-container')).toBeVisible();
   });
 });

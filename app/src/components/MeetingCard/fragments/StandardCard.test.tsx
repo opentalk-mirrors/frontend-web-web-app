@@ -2,11 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Event } from '@opentalk/rest-api-rtk-query';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 
-import store from '../../../store';
-import { screen, render, eventMockedData, fireEvent, waitFor } from '../../../utils/testUtils';
+import { renderWithProviders, eventMockedData, configureStore } from '../../../utils/testUtils';
 import StandardCard from './StandardCard';
 
 const dummyMeetingCardData = {
@@ -49,43 +47,33 @@ jest.mock('../../../api/rest', () => ({
 }));
 
 describe('Standard Card', () => {
-  test('render component without crashing', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <StandardCard {...dummyMeetingCardData} />
-        </Provider>
-      </BrowserRouter>
-    );
+  const { store } = configureStore();
+
+  test('render component without crashing', () => {
+    renderWithProviders(<StandardCard {...dummyMeetingCardData} />, { store, provider: { router: true } });
+
     expect(screen.getByRole('link', { name: 'dashboard-home-join-label' })).toBeInTheDocument();
     expect(screen.getByLabelText('toolbar-button-more-tooltip-title')).toBeInTheDocument();
     expect(screen.getByTestId('favorite-icon-visible')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'global-favorite' })).toBeInTheDocument();
   });
 
-  test('card is not marked as favorite with flag favorite={false}, svg fav should not be in document', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <StandardCard {...dummyMeetingCardData} event={{ ...dummyMeetingCardData.event, isFavorite: false }} />
-        </Provider>
-      </BrowserRouter>
+  test('card is not marked as favorite with flag favorite={false}, svg fav should not be in document', () => {
+    renderWithProviders(
+      <StandardCard {...dummyMeetingCardData} event={{ ...dummyMeetingCardData.event, isFavorite: false }} />,
+      { store, provider: { router: true } }
     );
+
     expect(screen.queryByTestId('favorite-icon-visible')).not.toBeInTheDocument();
     expect(screen.queryByRole('img', { name: 'global-favorite' })).not.toBeInTheDocument();
   });
 
   test('click on more menu should display popup with edit, fav and delete option for meeting creator', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <StandardCard {...dummyMeetingCardData} />
-        </Provider>
-      </BrowserRouter>
-    );
-
+    renderWithProviders(<StandardCard {...dummyMeetingCardData} />, { store, provider: { router: true } });
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
+
     expect(MoreMenu).toBeInTheDocument();
+
     fireEvent.mouseDown(MoreMenu);
 
     await waitFor(() => {
@@ -97,15 +85,13 @@ describe('Standard Card', () => {
   });
 
   test('when user is not creator, meeting is marked as fav, click on more menu should display popup with remove favorite option', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <StandardCard {...dummyMeetingCardData} isMeetingCreator={false} />
-        </Provider>
-      </BrowserRouter>
-    );
+    renderWithProviders(<StandardCard {...dummyMeetingCardData} isMeetingCreator={false} />, {
+      store,
+      provider: { router: true },
+    });
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
     expect(MoreMenu).toBeInTheDocument();
+
     fireEvent.mouseDown(MoreMenu);
 
     await waitFor(() => {
@@ -117,19 +103,17 @@ describe('Standard Card', () => {
   });
 
   test('when user is not creator, meeting is not marked as fav, click on more menu should display popup with add favorite option', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <StandardCard
-            {...dummyMeetingCardData}
-            event={{ ...dummyMeetingCardData.event, isFavorite: false }}
-            isMeetingCreator={false}
-          />
-        </Provider>
-      </BrowserRouter>
+    renderWithProviders(
+      <StandardCard
+        {...dummyMeetingCardData}
+        event={{ ...dummyMeetingCardData.event, isFavorite: false }}
+        isMeetingCreator={false}
+      />,
+      { store, provider: { router: true } }
     );
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
     expect(MoreMenu).toBeInTheDocument();
+
     fireEvent.mouseDown(MoreMenu);
 
     await waitFor(() => {

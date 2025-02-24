@@ -1,37 +1,47 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, fireEvent, waitFor, mockStore } from '../../utils/testUtils';
+import { screen, fireEvent } from '@testing-library/react';
+import { PropsWithChildren } from 'react';
+
+import { renderWithProviders, mockStore } from '../../utils/testUtils';
 import TalkingStickTabPanel from './TalkingStickTabPanel';
+
+jest.mock('../TalkingStickParticipantList/fragments/ParticipantListItem/ParticipantListItem', () => ({
+  __esModule: true,
+  default: ({ children }: PropsWithChildren) => {
+    return <div>{children}</div>;
+  },
+}));
 
 const NUMBER_OF_PARTICIPANTS = 2;
 describe('<TalkingStickTabPanel />', () => {
   describe('automod inactive', () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, { video: true, screen: true });
 
-    it('should render start button', async () => {
-      await render(<TalkingStickTabPanel />, store);
+    test('should render start button', () => {
+      renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
       const startButton = screen.queryByRole('button', { name: 'global-start-now' });
       expect(startButton).toBeInTheDocument();
     });
-    it('should render include moderator checkbox, which is set by default', async () => {
-      await render(<TalkingStickTabPanel />, store);
+    test('should render include moderator checkbox, which is set by default', () => {
+      renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
       const includeModerator = screen.getByRole('checkbox', { name: 'talking-stick-include-moderator-switch' });
       expect(includeModerator).toHaveAttribute('value', 'true');
     });
-    it('should unset include moderator checkbox, on user click ', async () => {
-      await render(<TalkingStickTabPanel />, store);
+    test('should unset include moderator checkbox, on user click ', () => {
+      renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
       const includeModerator = screen.getByRole('checkbox', { name: 'talking-stick-include-moderator-switch' });
+
       fireEvent.click(includeModerator);
-      await waitFor(() => {
-        expect(includeModerator).toHaveAttribute('value', 'false');
-      });
+
+      expect(includeModerator).toHaveAttribute('value', 'false');
     });
-    it('should not render skip speaker and stop button', async () => {
-      await render(<TalkingStickTabPanel />, store);
+    test('should not render skip speaker and stop button', () => {
+      renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
       const skipSpeakerButton = screen.queryByRole('button', { name: 'talking-stick-skip-speaker' });
       const stopButton = screen.queryByRole('button', { name: 'global-stop' });
@@ -47,8 +57,8 @@ describe('<TalkingStickTabPanel />', () => {
       automodActive: true,
     });
 
-    it('should not render start button and include moderator checkbox', async () => {
-      await render(<TalkingStickTabPanel />, store);
+    test('should not render start button and include moderator checkbox', () => {
+      renderWithProviders(<TalkingStickTabPanel />, { store });
 
       const startButton = screen.queryByRole('button', { name: 'global-start-now' });
       expect(startButton).not.toBeInTheDocument();
@@ -56,8 +66,8 @@ describe('<TalkingStickTabPanel />', () => {
       const includeModerator = screen.queryByRole('checkbox', { name: 'talking-stick-include-moderator-switch' });
       expect(includeModerator).not.toBeInTheDocument();
     });
-    it('should render skip speaker and stop button', async () => {
-      await render(<TalkingStickTabPanel />, store);
+    test('should render skip speaker and stop button', () => {
+      renderWithProviders(<TalkingStickTabPanel />, { store });
 
       const skipSpeakerButton = screen.queryByRole('button', { name: 'talking-stick-skip-speaker' });
       const stopButton = screen.queryByRole('button', { name: 'global-stop' });

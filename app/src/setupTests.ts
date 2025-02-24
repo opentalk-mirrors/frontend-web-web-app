@@ -147,6 +147,12 @@ const handlers = [
       })
     );
   }),
+  rest.get('http://localhost/locales/en-US/k3k.ftl', async (req, res, ctx) => {
+    return res(ctx.text('Mocked FTL Content'));
+  }),
+  rest.get('http://localhost/locales/en/k3k.ftl', async (req, res, ctx) => {
+    return res(ctx.text('Mocked FTL Content'));
+  }),
 ];
 
 // Start msw node mock server
@@ -191,4 +197,28 @@ global.beforeEach(() => {
 
 jest.mock('@livekit/components-react', () => ({
   useRoomContext: () => jest.fn(),
+}));
+
+export const mockChangeLanguage = jest.fn();
+
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using translate hook can use it without a warning being shown
+  useTranslation: () => {
+    return {
+      t: (i18nKey: string) => i18nKey,
+      // or with TypeScript:
+      //t: (i18nKey: string) => i18nKey,
+      i18n: {
+        changeLanguage: mockChangeLanguage,
+        language: {
+          split: () => ['en'],
+        },
+      },
+    };
+  },
+  initReactI18next: {
+    type: '3rdParty',
+    init: () => {},
+  },
+  Trans: ({ i18nKey }: { children: React.ReactNode; i18nKey: string }) => i18nKey,
 }));

@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, cleanup, fireEvent } from '../../../utils/testUtils';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+
 import IconSlideButton from './IconSlideButton';
 
 afterEach(() => {
@@ -9,10 +10,10 @@ afterEach(() => {
 });
 
 describe('IconSlideButton', () => {
-  test('right IconSlideButton is rendered', async () => {
+  test('right IconSlideButton is rendered', () => {
     const slideRight = jest.fn();
 
-    await render(<IconSlideButton direction="right" onClick={slideRight} />);
+    render(<IconSlideButton direction="right" onClick={slideRight} />);
 
     const navRightButton = screen.getByLabelText('navigate-to-right');
     expect(navRightButton).toBeInTheDocument();
@@ -22,10 +23,10 @@ describe('IconSlideButton', () => {
     expect(slideRight).toHaveBeenCalled();
   });
 
-  test('left IconSlideButton is rendered', async () => {
+  test('left IconSlideButton is rendered', () => {
     const slideLeft = jest.fn();
 
-    await render(<IconSlideButton direction="left" onClick={slideLeft} />);
+    render(<IconSlideButton direction="left" onClick={slideLeft} />);
 
     const navLeftButton = screen.getByLabelText('navigate-to-left');
 

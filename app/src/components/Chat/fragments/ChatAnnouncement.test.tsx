@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { render, screen, waitFor } from '@testing-library/react';
+
 import { ChatScope, ChatMessage, ParticipantId } from '../../../types';
-import { render, screen, waitFor } from '../../../utils/testUtils';
 import ChatAnnouncement from './ChatAnnouncement';
 
 export const mockGlobalChatMessage: ChatMessage = {
@@ -23,13 +24,15 @@ jest.mock('./constants', () => ({
 }));
 
 describe('ChatAnnouncement', () => {
-  it('renders announcement', async () => {
-    await render(<ChatAnnouncement message={mockGlobalChatMessage} onAnnouncementEnd={jest.fn()} />);
+  test('renders announcement', () => {
+    render(<ChatAnnouncement message={mockGlobalChatMessage} onAnnouncementEnd={jest.fn()} />);
+
     expect(screen.getByText('chat-live-message-announcemenet')).toBeInTheDocument();
   });
-  it('executes callback after announcement end', async () => {
+  test('executes callback after announcement end', async () => {
     const onAnnouncementEnd = jest.fn();
-    await render(<ChatAnnouncement message={mockGlobalChatMessage} onAnnouncementEnd={onAnnouncementEnd} />);
+    render(<ChatAnnouncement message={mockGlobalChatMessage} onAnnouncementEnd={onAnnouncementEnd} />);
+
     await waitFor(() => {
       expect(onAnnouncementEnd).toHaveBeenCalledTimes(1);
     });

@@ -31,31 +31,31 @@ describe('sortParticipants(language)(participants, sortOption).', () => {
   ];
 
   describe('SortOption:Name', () => {
-    it('should sort by name descending.', () => {
+    test('should sort by name descending.', () => {
       const expected = [participants[2], participants[1], participants[0]];
 
       expect(sortParticipants(participants, SortOption.NameDESC)).toEqual(expected);
     });
 
-    it('should sort by name ascending.', () => {
+    test('should sort by name ascending.', () => {
       expect(sortParticipants(participants, SortOption.NameASC)).toEqual(participants);
     });
   });
 
   describe('SortOption:Join', () => {
-    it('should sort by last joined.', () => {
+    test('should sort by last joined.', () => {
       const expected = [participants[2], participants[1], participants[0]];
 
       expect(sortParticipants(participants, SortOption.LastJoin)).toEqual(expected);
     });
 
-    it('should sort by first joined.', () => {
+    test('should sort by first joined.', () => {
       expect(sortParticipants(participants, SortOption.FirstJoin)).toEqual(participants);
     });
   });
 
   describe('SortOption:Active', () => {
-    it('should sort by last active', () => {
+    test('should sort by last active', () => {
       const expected = [participants[1], participants[2], participants[0]];
 
       expect(sortParticipants(participants, SortOption.LastActive)).toEqual(expected);
@@ -63,7 +63,7 @@ describe('sortParticipants(language)(participants, sortOption).', () => {
   });
 
   describe('SortOption:HandRaised', () => {
-    it('should sort by first raised hand', () => {
+    test('should sort by first raised hand', () => {
       const expected = [participants[2], participants[0], participants[1]];
 
       expect(sortParticipants(participants, SortOption.RaisedHandFirst)).toEqual(expected);
@@ -71,7 +71,7 @@ describe('sortParticipants(language)(participants, sortOption).', () => {
   });
 
   describe('SortOption:Random', () => {
-    it('should return participants in unpredictable order', () => {
+    test('should return participants in unpredictable order', () => {
       expect(sortParticipants(participants, SortOption.Random)).not.toEqual(participants);
     });
   });

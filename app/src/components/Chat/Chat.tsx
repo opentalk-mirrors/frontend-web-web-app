@@ -23,7 +23,7 @@ const Container = styled(Stack)({
 });
 
 interface ChatProps {
-  scope: ChatScope;
+  scope?: ChatScope;
   target?: TargetId;
   autoFocusMessageInput?: boolean;
 }

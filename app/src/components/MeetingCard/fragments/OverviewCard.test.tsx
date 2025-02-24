@@ -2,11 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Event, InviteStatus, UserId, TimelessEvent } from '@opentalk/rest-api-rtk-query';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { screen, fireEvent } from '@testing-library/react';
 
-import store from '../../../store';
-import { screen, render, fireEvent, eventMockedData } from '../../../utils/testUtils';
+import { renderWithProviders, eventMockedData } from '../../../utils/testUtils';
 import OverviewCard from './OverviewCard';
 
 jest.mock('../../EventTimePreview/EventTimePreview', () => ({
@@ -81,81 +79,63 @@ jest.mock('../../../api/rest', () => ({
 }));
 
 describe('OverviewCard', () => {
-  test('component is rendered without crashing', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <OverviewCard isMeetingCreator={false} event={mockedMeeting} />
-        </Provider>
-      </BrowserRouter>
-    );
+  test('component is rendered without crashing', () => {
+    renderWithProviders(<OverviewCard isMeetingCreator={false} event={mockedMeeting} />, {
+      provider: { router: true, mui: true },
+    });
 
     expect(screen.getByTestId('MeetingOverviewCard')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'global-favorite' })).toBeInTheDocument();
   });
 
-  test('component is not marked as favorite', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <OverviewCard isMeetingCreator={false} event={{ ...mockedMeeting, isFavorite: false }} />
-        </Provider>
-      </BrowserRouter>
-    );
+  test('component is not marked as favorite', () => {
+    renderWithProviders(<OverviewCard isMeetingCreator={false} event={{ ...mockedMeeting, isFavorite: false }} />, {
+      provider: { router: true, mui: true },
+    });
+
     expect(screen.queryByTestId('favorite-icon-visible')).not.toBeInTheDocument();
     expect(screen.queryByRole('img', { name: 'global-favorite' })).not.toBeInTheDocument();
   });
 
-  test('pending invite displays right action buttons', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />
-        </Provider>
-      </BrowserRouter>
-    );
+  // TODO UNIT TEST Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
+  test('pending invite displays right action buttons', () => {
+    renderWithProviders(<OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />, {
+      provider: { router: true, mui: true },
+    });
+
     const acceptButton = screen.getByRole('button', { name: /global-accept/i });
     const declineButton = screen.getByRole('button', { name: /global-decline/i });
+
     expect(acceptButton).toBeInTheDocument();
     expect(declineButton).toBeInTheDocument();
   });
 
-  test('click on pending invite accept button should triger right action', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />
-        </Provider>
-      </BrowserRouter>
-    );
+  test('click on pending invite accept button should triger right action', () => {
+    renderWithProviders(<OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />, {
+      provider: { router: true, mui: true },
+    });
     const acceptButton = screen.getByRole('button', { name: /global-accept/i });
     expect(acceptButton).toBeInTheDocument();
     fireEvent.click(acceptButton);
-    expect(mockAcceptEventInvite).toBeCalledTimes(1);
+
+    expect(mockAcceptEventInvite).toHaveBeenCalledTimes(1);
   });
 
-  test('click on pending invite decline button should triger right action', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />
-        </Provider>
-      </BrowserRouter>
-    );
+  test('click on pending invite decline button should triger right action', () => {
+    renderWithProviders(<OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />, {
+      provider: { router: true, mui: true },
+    });
     const declineButton = screen.getByRole('button', { name: /global-decline/i });
     expect(declineButton).toBeInTheDocument();
     fireEvent.click(declineButton);
-    expect(mockDeclineEventInvite).toBeCalledTimes(1);
+
+    expect(mockDeclineEventInvite).toHaveBeenCalledTimes(1);
   });
 
-  test('click on more menu should display popup with edit, fav and delete options for meeting creator', async () => {
-    await render(
-      <BrowserRouter>
-        <Provider store={store}>
-          <OverviewCard isMeetingCreator={true} event={mockedMeeting} />
-        </Provider>
-      </BrowserRouter>
-    );
+  test('click on more menu should display popup with edit, fav and delete options for meeting creator', () => {
+    renderWithProviders(<OverviewCard isMeetingCreator={true} event={mockedMeeting} />, {
+      provider: { router: true, mui: true },
+    });
 
     expect(screen.getByTestId('MeetingPopover')).toBeInTheDocument();
   });

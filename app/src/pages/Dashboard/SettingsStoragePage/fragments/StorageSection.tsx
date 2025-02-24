@@ -109,7 +109,7 @@ const StorageUsage = () => {
   const isFull = displayedOccupancy >= 100;
   return (
     <Stack spacing={1}>
-      <Typography variant="body1" color={(theme) => (isFull ? theme.palette.error.main : theme.palette.secondary.main)}>
+      <Typography variant="body1" color={isFull ? 'error' : 'secondary'}>
         {getLimitedStorageText(usedStorage, maxStorage)}
       </Typography>
       <StorageProgress variant="determinate" value={displayedOccupancy} />

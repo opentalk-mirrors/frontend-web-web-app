@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, configureStore } from '../../../utils/testUtils';
+import { screen } from '@testing-library/react';
+
+import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import SettingsGeneralPage from './SettingsGeneralPage';
 
 jest.mock('../../../api/rest', () => ({
@@ -15,9 +17,9 @@ jest.mock('../../../api/rest', () => ({
 }));
 
 describe('Dashboard SettingsGeneralPage', () => {
-  test('render page without crashing', async () => {
+  test('render page without crashing', () => {
     const { store } = configureStore();
-    await render(<SettingsGeneralPage />, store);
+    renderWithProviders(<SettingsGeneralPage />, { store });
 
     expect(screen.getByTestId('dashboardSettingsGeneral')).toBeInTheDocument();
   });

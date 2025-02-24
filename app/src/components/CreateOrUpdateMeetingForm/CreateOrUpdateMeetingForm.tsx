@@ -120,12 +120,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       ),
     startDate: yup
       .string()
-      .test('is required', t('meeting-required-start-date'), function (startDate) {
-        if (!startDate || startDate.trim() === '') {
-          return false;
-        }
-        return true;
-      })
+      .test('is required', t('meeting-required-start-date'), (startDate) => !!startDate?.trim())
       .test('is valid', t('meeting-invalid-start-date'), (startDate) => !isInvalidDate(new Date(startDate as string)))
       .test('is in the future', t('dashboard-meeting-date-field-error-future'), function (startDate) {
         if (this.parent.isTimeDependent && startDate && new Date(startDate) < new Date()) {
@@ -142,12 +137,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
     endDate: yup
       .string()
       .required(t('dashboard-meeting-date-field-error-invalid-value'))
-      .test('is required', t('meeting-required-end-date'), function (endDate) {
-        if (!endDate || endDate.trim() === '') {
-          return false;
-        }
-        return true;
-      })
+      .test('is required', t('meeting-required-end-date'), (endDate) => !!endDate?.trim())
       .test('is valid', t('meeting-invalid-end-date'), (endDate) => !isInvalidDate(new Date(endDate as string)))
       .test('if after start date', t('dashboard-meeting-date-field-error-duration'), function (endDate) {
         if (this.parent.isTimeDependent && endDate) {

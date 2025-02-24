@@ -38,7 +38,7 @@ const LegalContainer = () => {
       <FontAwesome isOpen={faLicence} toggleOpen={toggleOpen} />
       <List>
         {menuItems.map((item) => (
-          <ListItem button key={item.key} onClick={item.toggle}>
+          <ListItem key={item.key} onClick={item.toggle}>
             <CustomListItemText primary={t('font-awesome-license')} />
           </ListItem>
         ))}

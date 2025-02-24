@@ -4,9 +4,10 @@
 import { Email, EventId, InviteStatus, UserId } from '@opentalk/rest-api-rtk-query';
 import { UserRole } from '@opentalk/rest-api-rtk-query/src/types';
 import { EventInvite } from '@opentalk/rest-api-rtk-query/src/types/eventInvite';
+import { screen } from '@testing-library/react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { configureStore, render, screen } from '../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import InvitedParticipants from './InvitedParticipants';
 
 const mockInvitees: Array<EventInvite> = [
@@ -79,13 +80,21 @@ describe('InvitedParticipants', () => {
     jest.clearAllMocks();
   });
 
-  test('will render without errors', async () => {
-    await render(<InvitedParticipants eventId={'SOME_EVENT_ID' as EventId} isUpdatable={true} />, store);
+  test('will render without errors', () => {
+    renderWithProviders(<InvitedParticipants eventId={'SOME_EVENT_ID' as EventId} isUpdatable={true} />, {
+      store,
+      provider: { mui: true },
+    });
+
     expect(screen.getByTestId('InvitedParticipants')).toBeInTheDocument();
   });
 
-  test('render 3 ParticipantList components', async () => {
-    await render(<InvitedParticipants eventId={'SOME_EVENT_ID' as EventId} isUpdatable={true} />, store);
+  test('render 3 ParticipantList components', () => {
+    renderWithProviders(<InvitedParticipants eventId={'SOME_EVENT_ID' as EventId} isUpdatable={true} />, {
+      store,
+      provider: { mui: true },
+    });
+
     expect(screen.getByTestId('InvitedParticipants').children).toHaveLength(3);
   });
 });

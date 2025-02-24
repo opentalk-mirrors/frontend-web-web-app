@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen } from '@testing-library/react';
+
 import { generateInstanceId } from '../../utils/eventUtils';
-import { configureStore, render, screen, mockedSingleEvent, mockedRecurringEvent } from '../../utils/testUtils';
+import { configureStore, renderWithProviders, mockedSingleEvent, mockedRecurringEvent } from '../../utils/testUtils';
 import CloseMeetingDialog, { CloseMeetingDialogProps } from './CloseMeetingDialog';
 
 const TEST_DATE = '2024-02-16T10:30:00Z';
@@ -15,7 +17,7 @@ const dialogProps: CloseMeetingDialogProps = {
 };
 
 describe('generate instance id', () => {
-  it('should generate an instance id with the date of test date', () => {
+  test('should generate an instance id with the date of test date', () => {
     const startTimeInEventFormat = new Date(TEST_DATE);
 
     const instanceId = generateInstanceId({
@@ -30,8 +32,11 @@ describe('generate instance id', () => {
 describe('CloseMeetingDialog', () => {
   const { store } = configureStore();
 
-  it('should not render with open={false}', async () => {
-    await render(<CloseMeetingDialog {...dialogProps} open={false} />, store);
+  test('should not render with open={false}', () => {
+    renderWithProviders(<CloseMeetingDialog {...dialogProps} open={false} />, {
+      store,
+      provider: { router: true, snackbar: true },
+    });
     expect(screen.queryByText('meeting-delete-metadata-dialog-title')).not.toBeInTheDocument();
     expect(screen.queryByText('meeting-delete-metadata-dialog-message')).not.toBeInTheDocument();
     expect(screen.queryByText('meeting-delete-metadata-dialog-checkbox')).not.toBeInTheDocument();
@@ -39,8 +44,11 @@ describe('CloseMeetingDialog', () => {
     expect(screen.queryByText('meeting-delete-metadata-button-leave-without-delete')).not.toBeInTheDocument();
   });
 
-  it('should render properly for single events', async () => {
-    await render(<CloseMeetingDialog {...dialogProps} eventData={mockedSingleEvent} />, store);
+  test('should render properly for single events', () => {
+    renderWithProviders(<CloseMeetingDialog {...dialogProps} eventData={mockedSingleEvent} />, {
+      store,
+      provider: { router: true, snackbar: true },
+    });
     expect(screen.getByText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-metadata-dialog-message')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-metadata-dialog-checkbox')).toBeInTheDocument();
@@ -48,8 +56,11 @@ describe('CloseMeetingDialog', () => {
     expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
   });
 
-  it('should render properly for recurring events', async () => {
-    await render(<CloseMeetingDialog {...dialogProps} eventData={mockedRecurringEvent} />, store);
+  test('should render properly for recurring events', () => {
+    renderWithProviders(<CloseMeetingDialog {...dialogProps} eventData={mockedRecurringEvent} />, {
+      store,
+      provider: { router: true, snackbar: true },
+    });
     expect(screen.getByText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-recurring-metadata-dialog-message')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-recurring-dialog-radio-single')).toBeInTheDocument();

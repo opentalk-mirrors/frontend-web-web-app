@@ -1,14 +1,17 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, configureStore } from '../../../utils/testUtils';
+import { screen } from '@testing-library/react';
+
+import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import MoreButton from './MoreButton';
 
 describe('<MoreButton />', () => {
   const { store } = configureStore();
 
-  test('render MoreButton component', async () => {
-    await render(<MoreButton />, store);
+  test('render MoreButton component', () => {
+    renderWithProviders(<MoreButton />, { store, provider: { snackbar: true } });
+
     expect(screen.getByTestId('toolbarMenuButton')).toBeInTheDocument();
   });
 });

@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { configureStore, render, screen } from '../../../utils/testUtils';
+import { screen } from '@testing-library/react';
+
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import SettingsAccountPage from './SettingsAccountPage';
 
 jest.mock('../../../api/rest', () => ({
@@ -14,9 +16,9 @@ jest.mock('../../../api/rest', () => ({
 }));
 
 describe('SettingsAccountPage', () => {
-  test('page will not crash', async () => {
+  test('page will not crash', () => {
     const { store } = configureStore();
-    await render(<SettingsAccountPage />, store);
+    renderWithProviders(<SettingsAccountPage />, { store });
 
     expect(screen.getByText('dashboard-settings-account-title')).toBeInTheDocument();
   });

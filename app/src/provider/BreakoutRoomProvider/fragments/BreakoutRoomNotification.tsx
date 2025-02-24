@@ -22,7 +22,7 @@ interface CountDown {
 
 interface IJoinNotificationProps {
   message: SnackbarMessage;
-  iconComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+  iconComponent: React.JSX.ElementType;
   actions: Action[];
   snackbarKey: SnackbarKey;
   countdown?: CountDown;

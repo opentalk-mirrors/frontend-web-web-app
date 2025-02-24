@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 // SPDX-License-Identifier: EUPL-1.2
 import { MenuItem } from '@mui/material';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { render, screen, fireEvent, act } from '../../utils/testUtils';
 import CommonTextField from './CommonTextField';
 import { KEYS_TO_PROPAGATE } from './constants';
 
@@ -17,23 +17,23 @@ const START_ADORNMENT = 'Adore';
 const HELPER_TEXT = 'Helper text';
 
 describe('CommonTextField', () => {
-  it('renders with visible label', async () => {
-    await render(<CommonTextField label={LABEL} placeholder={PLACEHOLDER} />);
+  test('renders with visible label', () => {
+    const screen = render(<CommonTextField label={LABEL} placeholder={PLACEHOLDER} />);
     const textField = screen.getByRole('textbox', { name: LABEL });
     expect(textField).toBeInTheDocument();
     expect(textField).not.toHaveAttribute('aria-label');
     const label = screen.getByText(LABEL, { selector: 'label' });
     expect(label).toHaveStyle('display: block');
   });
-  it('hides the label and adds aria-label for text field', async () => {
-    await render(<CommonTextField label={LABEL} hideLabel={true} />);
+  test('hides the label and adds aria-label for text field', () => {
+    render(<CommonTextField label={LABEL} hideLabel={true} />);
     const label = screen.getByText(LABEL, { selector: 'label' });
     expect(label).toHaveStyle('display: none');
     const textField = screen.getByRole('textbox', { name: LABEL });
     expect(textField).toHaveAttribute('aria-label', LABEL);
   });
-  it('hides the label and does not add aria-label for combobox', async () => {
-    await render(
+  test('hides the label and does not add aria-label for combobox', () => {
+    render(
       <CommonTextField label={LABEL} hideLabel={true} select>
         <MenuItem>Test</MenuItem>
       </CommonTextField>
@@ -43,107 +43,97 @@ describe('CommonTextField', () => {
     const combobox = screen.getByRole('combobox', { name: LABEL });
     expect(combobox).not.toHaveAttribute('aria-label', LABEL);
   });
-  it('shrinks the label when user types value', async () => {
-    const user = userEvent.setup();
-    await render(<CommonTextField label={LABEL} placeholder={PLACEHOLDER} />);
+  test('shrinks the label when user types value', () => {
+    const screen = render(<CommonTextField label={LABEL} placeholder={PLACEHOLDER} />);
     const textField = screen.getByRole('textbox', { name: LABEL });
     const label = screen.getByText(LABEL, { selector: 'label' });
     expect(label).toHaveAttribute('data-shrink', 'false');
-    await act(async () => {
-      await user.type(textField, VALUE);
-    });
+    fireEvent.change(textField, { target: { value: VALUE } });
     expect(label).toHaveAttribute('data-shrink', 'true');
   });
-  it('shrinks the label only when user types value even with the start adornment', async () => {
+  test('shrinks the label only when user types value even with the start adornment', async () => {
     // By default, if text field has a start adornment, the label would be shrinked even without a value.
     // Therefore, we have fixed this behaviour in the text field implementation.
-    const user = userEvent.setup();
-    await render(
+    render(
       <CommonTextField label={LABEL} placeholder={PLACEHOLDER} InputProps={{ startAdornment: START_ADORNMENT }} />
     );
     const textField = screen.getByRole('textbox', { name: LABEL });
     const label = screen.getByText(LABEL, { selector: 'label' });
     expect(label).toHaveAttribute('data-shrink', 'false');
-    await act(async () => {
-      await user.type(textField, VALUE);
+    await userEvent.type(textField, VALUE);
+    await waitFor(() => {
+      expect(label).toHaveAttribute('data-shrink', 'true');
     });
-    expect(label).toHaveAttribute('data-shrink', 'true');
   });
-  it('shrinks the label with the start adornment, if parent component passes a value, without focusing the input', async () => {
+  test('shrinks the label with the start adornment, if parent component passes a value, without focusing the input', () => {
     // Special case for emoji picker
-    await render(<CommonTextField label={LABEL} value={LABEL} InputProps={{ startAdornment: START_ADORNMENT }} />);
+    render(<CommonTextField label={LABEL} value={LABEL} InputProps={{ startAdornment: START_ADORNMENT }} />);
     const label = screen.getByText(LABEL, { selector: 'label' });
     expect(label).toHaveAttribute('data-shrink', 'true');
   });
-  it('propagates only keys defined in KEYS_TO_PROPAGATE', async () => {
+  test('propagates only keys defined in KEYS_TO_PROPAGATE', () => {
     const onKeyboard = jest.fn();
-    await render(
+    render(
       //role="presentation resolves jsx-a11y/no-static-element-interactions restriction"
       <div role="presentation" onKeyDown={onKeyboard} onKeyUp={onKeyboard}>
         <CommonTextField label={LABEL} />
       </div>
     );
     const textField = screen.getByRole('textbox', { name: LABEL });
-    act(() => {
-      fireEvent.keyDown(textField, { key: 'Space' });
-    });
+    fireEvent.keyDown(textField, { key: 'Space' });
     expect(onKeyboard).not.toHaveBeenCalled();
-    act(() => {
-      fireEvent.keyDown(textField, { key: 'm' });
-    });
+
+    fireEvent.keyDown(textField, { key: 'm' });
     expect(onKeyboard).not.toHaveBeenCalled();
+
     KEYS_TO_PROPAGATE.forEach((key) => {
-      act(() => {
-        fireEvent.keyDown(textField, { key });
-      });
+      fireEvent.keyDown(textField, { key });
       expect(onKeyboard).toHaveBeenCalled();
     });
   });
-  it('shows remaining characters helper text if max characters defined', async () => {
-    await render(<CommonTextField label={LABEL} value={VALUE} maxCharacters={VALUE.length} />);
+  test('shows remaining characters helper text if max characters defined', () => {
+    render(<CommonTextField label={LABEL} value={VALUE} maxCharacters={VALUE.length} />);
     const helperText = screen.getByText('global-textfield-max-characters');
     expect(helperText).toBeInTheDocument();
   });
-  it('does not show remaining characters if max characters and show limit are defined, and value length is below the show limit at', async () => {
-    await render(
-      <CommonTextField label={LABEL} value={VALUE} maxCharacters={VALUE.length * 2} showLimitAt={VALUE.length} />
-    );
+  test('does not show remaining characters if max characters and show limit are defined, and value length is below the show limit at', () => {
+    render(<CommonTextField label={LABEL} value={VALUE} maxCharacters={VALUE.length * 2} showLimitAt={VALUE.length} />);
     const helperText = screen.queryByText('global-textfield-max-characters');
     expect(helperText).not.toBeInTheDocument();
   });
-  it('shows remaining characters if max characters and show limit are defined, and value length is equal or above the show limit at', async () => {
-    await render(
+  test('shows remaining characters if max characters and show limit are defined, and value length is equal or above the show limit at', () => {
+    render(
       <CommonTextField label={LABEL} value={VALUE} maxCharacters={VALUE.length * 2} showLimitAt={VALUE.length - 1} />
     );
     const helperText = screen.getByText('global-textfield-max-characters');
     expect(helperText).toBeInTheDocument();
   });
-  it('shows plain helper text without error', async () => {
-    await render(<CommonTextField label={LABEL} helperText={HELPER_TEXT} />);
+  test('shows plain helper text without error', () => {
+    render(<CommonTextField label={LABEL} helperText={HELPER_TEXT} />);
     const helperText = screen.getByText(HELPER_TEXT);
     expect(helperText).toBeInTheDocument();
     const errorText = screen.queryByText(/global-error/i);
     expect(errorText).not.toBeInTheDocument();
   });
-  it('shows plain helper with error prefix', async () => {
-    await render(<CommonTextField label={LABEL} helperText={HELPER_TEXT} error={true} />);
+  test('shows plain helper with error prefix', () => {
+    render(<CommonTextField label={LABEL} helperText={HELPER_TEXT} error={true} />);
     const helperText = screen.getByText('global-error' + ': ' + HELPER_TEXT);
     expect(helperText).toBeInTheDocument();
   });
-  it('shall call onBlur and onFocus props passed by parent', async () => {
+  test('shall call onBlur and onFocus props passed by parent', async () => {
     const onFocus = jest.fn();
     const onBlur = jest.fn();
-    await render(<CommonTextField label={LABEL} onFocus={onFocus} onBlur={onBlur} />);
+    render(<CommonTextField label={LABEL} onFocus={onFocus} onBlur={onBlur} />);
     const textField = screen.getByRole('textbox', { name: LABEL });
-
-    await act(async () => {
-      await userEvent.click(textField);
+    act(() => {
+      textField.focus();
     });
     expect(onFocus).toHaveBeenCalled();
-
-    await act(async () => {
-      await userEvent.click(document.body);
+    act(() => {
+      userEvent.click(document.body);
     });
-    expect(onBlur).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onBlur).toHaveBeenCalled();
+    });
   });
 });

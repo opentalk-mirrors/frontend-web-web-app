@@ -2,10 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Typography } from '@mui/material';
+import { screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
 import { CommonTextField } from '../../commonComponents';
-import { render, screen, configureStore } from '../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import SelfTest from './SelfTest';
 
 jest.mock('../../utils/apiUtils');
@@ -29,12 +30,12 @@ jest.mock('./fragments/ToolbarContainer', () => ({
 describe('SelfTest', () => {
   const { store } = configureStore();
 
-  test('render SelfTest component without crashing', async () => {
-    await render(
+  test('render SelfTest component without crashing', () => {
+    renderWithProviders(
       <SelfTest>
         <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />
       </SelfTest>,
-      store
+      { store, provider: { router: true, mui: true } }
     );
 
     expect(screen.getByText('selftest-body')).toBeInTheDocument();
@@ -51,20 +52,20 @@ describe('SelfTest', () => {
     expect(screen.queryByTestId('toolbarEndCallButton')).not.toBeInTheDocument();
   });
 
-  test('render SelfTest header as h2', async () => {
-    await render(
+  test('render SelfTest header as h2', () => {
+    renderWithProviders(
       <SelfTest>
         <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />
       </SelfTest>,
-      store
+      { store, provider: { router: true, mui: true } }
     );
     const headerElement = screen.getByText('selftest-header');
     expect(headerElement).toBeInTheDocument();
     expect(headerElement.tagName).toBe('H2');
   });
 
-  test('render room title as h1', async () => {
-    await render(
+  test('render room title as h1', () => {
+    renderWithProviders(
       <SelfTest>
         <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />
         <Typography
@@ -77,7 +78,7 @@ describe('SelfTest', () => {
           joinform-room-title
         </Typography>
       </SelfTest>,
-      store
+      { store, provider: { router: true, mui: true } }
     );
     const titleElement = screen.getByText('joinform-room-title');
     expect(titleElement).toBeInTheDocument();

@@ -2,11 +2,12 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { InviteCode } from '@opentalk/rest-api-rtk-query';
+import { screen, fireEvent, cleanup } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
 import { Role } from '../../api/types/incoming/control';
 import * as UseInviteCodeModule from '../../hooks/useInviteCode';
-import { render, screen, fireEvent, waitFor, cleanup, configureStore } from '../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import LobbyView from './LobbyView';
 
 jest.mock('../../templates/fragments/BrowserCompatibilityInfo', () => ({
@@ -38,19 +39,23 @@ describe('LobbyForm', () => {
       room: { passwordRequired: true, invite: { inviteCode: 'inviteCode' } },
     },
   });
-  afterEach(() => cleanup());
+  afterEach(() => {
+    cleanup();
+    jest.resetAllMocks();
+  });
 
-  test('LobyFormShouldRender', async () => {
-    await render(<LobbyView />, store);
+  test('LobyFormShouldRender', () => {
+    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
+
     expect(screen.getByTestId('selfTest')).toBeInTheDocument();
   });
 
-  xtest('render LobbyForm component without crashing for authed user', async () => {
+  test.skip('render LobbyForm component without crashing for authed user', () => {
     //As we now get the invite code in components from the query params we need to mock a value for it.
     const useInviteCodeMock = jest.spyOn(UseInviteCodeModule, 'useInviteCode');
     useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
 
-    await render(<LobbyView />, store);
+    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
 
     const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
     expect(userNameInput).toBeInTheDocument();
@@ -69,39 +74,37 @@ describe('LobbyForm', () => {
     expect(submitButton).not.toHaveAttribute('disabled');
   });
 
-  xtest('submit button is disabled if user is not logged in', async () => {
+  test.skip('submit button is disabled if user is not logged in', () => {
     const { store } = configureStore({
       initialState: {
         user: { loggedIn: false, role: Role.User },
       },
     });
-    await render(<LobbyView />, store);
+    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
 
     const submitButton = screen.getByRole('button', { name: /joinform-enter-now/i });
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toHaveAttribute('disabled');
   });
 
-  xtest('adding values to input fileds and click on submit should submit added values', async () => {
+  test.skip('adding values to input fileds and click on submit should submit added values', () => {
     const USERNAME = 'lobbyForm testUserName*7';
     const PASSWORD = 'lobbyFormPassword (*';
-    await render(<LobbyView />, store);
+    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
 
     const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
     expect(userNameInput).toBeInTheDocument();
 
     fireEvent.change(userNameInput, { target: { value: USERNAME } });
-    await waitFor(() => {
-      expect(userNameInput).toHaveValue(USERNAME);
-    });
+
+    expect(userNameInput).toHaveValue(USERNAME);
 
     const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
     expect(passwordInput).toBeInTheDocument();
 
     fireEvent.change(passwordInput, { target: { value: PASSWORD } });
-    await waitFor(() => {
-      expect(passwordInput).toHaveValue(PASSWORD);
-    });
+
+    expect(passwordInput).toHaveValue(PASSWORD);
 
     const submitButton = screen.getByRole('button', { name: /joinform-enter-now/i });
     expect(submitButton).toBeInTheDocument();
@@ -117,8 +120,8 @@ describe('LobbyForm', () => {
     */
   });
 
-  xtest('click on toggle visibility button should change input type=text', async () => {
-    await render(<LobbyView />, store);
+  test.skip('click on toggle visibility button should change input type=text', () => {
+    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
 
     const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
     expect(passwordInput).toHaveAttribute('type', 'password');
@@ -127,11 +130,13 @@ describe('LobbyForm', () => {
     expect(toggleVisibilityBtn).toBeInTheDocument();
 
     fireEvent.click(toggleVisibilityBtn);
+
     expect(passwordInput).toHaveAttribute('type', 'text');
   });
 
-  xtest('name field prefilled from displayName', async () => {
-    await render(<LobbyView />, store);
+  test.skip('name field prefilled from displayName', () => {
+    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
+
     expect(screen.getByPlaceholderText('lobby-name-placeholder')).toHaveDisplayValue('Test');
   });
 });

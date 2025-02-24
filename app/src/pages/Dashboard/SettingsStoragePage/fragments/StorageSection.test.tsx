@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen } from '@testing-library/react';
+
 import { useGetMeQuery, useGetMeTariffQuery } from '../../../../api/rest';
-import { render, configureStore, screen } from '../../../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../../../utils/testUtils';
 import { StorageSection } from './StorageSection';
 
 const MAX_LIMITED_STORAGE_IN_MB = 100;
@@ -18,7 +20,7 @@ const mockUseGetMeQuery = useGetMeQuery as jest.Mock;
 const mockUseGetMeTariffQuery = useGetMeTariffQuery as jest.Mock;
 
 describe('Storage Section', () => {
-  it('renders storage section for limited max storage and used half capacity', async () => {
+  test('renders storage section for limited max storage and used half capacity', () => {
     const { store } = configureStore();
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
@@ -33,7 +35,7 @@ describe('Storage Section', () => {
       },
     }));
 
-    await render(<StorageSection />, store);
+    renderWithProviders(<StorageSection />, { store });
 
     const progressBar = screen.getByRole('progressbar');
     expect(progressBar).toBeInTheDocument();
@@ -43,7 +45,7 @@ describe('Storage Section', () => {
     expect(storageMessage).toBeInTheDocument();
   });
 
-  it('renders storage section for limited max storage and used full capacity', async () => {
+  test('renders storage section for limited max storage and used full capacity', () => {
     const { store } = configureStore();
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
@@ -58,7 +60,7 @@ describe('Storage Section', () => {
       },
     }));
 
-    await render(<StorageSection />, store);
+    renderWithProviders(<StorageSection />, { store });
 
     const progressBar = screen.getByRole('progressbar');
     expect(progressBar).toBeInTheDocument();
@@ -68,7 +70,7 @@ describe('Storage Section', () => {
     expect(storageMessage).toBeInTheDocument();
   });
 
-  it('renders storage section for limited max storage and storage is empty', async () => {
+  test('renders storage section for limited max storage and storage is empty', () => {
     const { store } = configureStore();
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
@@ -83,7 +85,7 @@ describe('Storage Section', () => {
       },
     }));
 
-    await render(<StorageSection />, store);
+    renderWithProviders(<StorageSection />, { store });
 
     const progressBar = screen.getByRole('progressbar');
     expect(progressBar).toBeInTheDocument();
@@ -93,7 +95,7 @@ describe('Storage Section', () => {
     expect(storageMessage).toBeInTheDocument();
   });
 
-  it('renders storage section for unlimited max storage', async () => {
+  test('renders storage section for unlimited max storage', () => {
     const { store } = configureStore();
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
@@ -108,7 +110,7 @@ describe('Storage Section', () => {
       },
     }));
 
-    await render(<StorageSection />, store);
+    renderWithProviders(<StorageSection />, { store });
 
     const progressBar = screen.queryByRole('progressbar');
     expect(progressBar).not.toBeInTheDocument();

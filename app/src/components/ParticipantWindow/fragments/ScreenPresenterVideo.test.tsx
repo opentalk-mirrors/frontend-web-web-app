@@ -1,16 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen, fireEvent, cleanup } from '@testing-library/react';
+
 import { idFromDescriptor } from '../../../modules/WebRTC';
 import {
-  render,
-  screen,
+  renderWithProviders,
   mockedParticipant,
   mockedVideoMediaDescriptor,
   mockStore,
-  fireEvent,
-  cleanup,
-  waitFor,
 } from '../../../utils/testUtils';
 import { PresenterVideoPosition } from './PresenterOverlay';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
@@ -43,8 +41,8 @@ describe('ScreenPresenterVideo Component', () => {
   const { store } = mockStore(1, { video: true, screen: true });
   afterEach(() => cleanup());
 
-  test('render component without crashing', async () => {
-    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, store);
+  test('render component without crashing', () => {
+    renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('sharedPresenterVideo')).toBeInTheDocument();
 
@@ -53,54 +51,55 @@ describe('ScreenPresenterVideo Component', () => {
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
   });
 
-  test("mouse over presenter's video should display presenter's overlay", async () => {
-    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, store);
+  test("mouse over presenter's video should display presenter's overlay", () => {
+    renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });
     const screenShareVideo = screen.getByTestId('sharedPresenterVideo');
 
     expect(screenShareVideo).toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
 
     fireEvent.mouseEnter(screenShareVideo);
-    await waitFor(() => {
-      expect(screen.getByLabelText('indicator-pinned')).toBeInTheDocument();
-      expect(screen.getByLabelText('indicator-change-position')).toBeInTheDocument();
-      expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
-    });
+
+    expect(screen.getByLabelText('indicator-pinned')).toBeInTheDocument();
+    expect(screen.getByLabelText('indicator-change-position')).toBeInTheDocument();
+    expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
   });
 
-  test("click on pinIcon in presenter's overlay should trigger togglePinVideo()", async () => {
-    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} togglePin={handleClick} />, store);
+  test("click on pinIcon in presenter's overlay should trigger togglePinVideo()", () => {
+    renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} togglePin={handleClick} />, {
+      store,
+      provider: { mui: true },
+    });
     const screenShareVideo = screen.getByTestId('sharedPresenterVideo');
 
     expect(screenShareVideo).toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
 
     fireEvent.mouseEnter(screenShareVideo);
-    await waitFor(() => {
-      expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
-    });
+
+    expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
 
     const pinButton = screen.getByRole('button', { name: /indicator-pinned/i });
     expect(pinButton).toBeInTheDocument();
 
     fireEvent.click(pinButton);
 
-    await waitFor(() => {
-      expect(handleClick).toHaveBeenCalledTimes(1);
-    });
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  test("click on change position icon in presenter's overlay should trigger changeVideoPosition()", async () => {
-    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} changeVideoPosition={handleClick} />, store);
+  test("click on change position icon in presenter's overlay should trigger changeVideoPosition()", () => {
+    renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} changeVideoPosition={handleClick} />, {
+      store,
+      provider: { mui: true },
+    });
     const screenShareVideo = screen.getByTestId('sharedPresenterVideo');
 
     expect(screenShareVideo).toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
 
     fireEvent.mouseEnter(screenShareVideo);
-    await waitFor(() => {
-      expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
-    });
+
+    expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
 
     const button = screen.getByRole('button', {
       name: /indicator-change-position/i,
@@ -108,14 +107,13 @@ describe('ScreenPresenterVideo Component', () => {
     expect(button).toBeInTheDocument();
 
     fireEvent.click(button);
-    await waitFor(() => {
-      expect(handleClick).toHaveBeenCalledTimes(1);
-    });
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  test("render component with presenter's video off should display avatar component", async () => {
+  test("render component with presenter's video off should display avatar component", () => {
     const { store } = mockStore(1, { video: false, screen: true });
-    await render(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, store);
+    renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('sharedPresenterVideo')).toBeInTheDocument();
     expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();

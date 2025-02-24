@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, mockedRoomAssets } from '../../utils/testUtils';
+import { render, screen } from '@testing-library/react';
+
+import { mockedRoomAssets } from '../../utils/testUtils';
 import { sleep } from '../../utils/timeUtils';
 import AssetTable from './AssetTable';
 import { checkRowTextContent } from './fragments/AssetTableRow.test';
@@ -15,9 +17,9 @@ const handleDelete = jest.fn(() => {
 });
 
 describe('Asset Table', () => {
-  it('renders table correctly for one asset with both action buttons', async () => {
+  test('renders table correctly for one asset with both action buttons', () => {
     const asset = mockedRoomAssets[0];
-    await render(<AssetTable assets={[asset]} onDownload={handleDownload} onDelete={handleDelete} />);
+    render(<AssetTable assets={[asset]} onDownload={handleDownload} onDelete={handleDelete} />);
     const table = screen.getByRole('table');
     expect(table).toBeInTheDocument();
 
@@ -38,8 +40,8 @@ describe('Asset Table', () => {
     );
   });
 
-  it('renders table correctly for multiple assets and shows no delete button', async () => {
-    await render(<AssetTable assets={mockedRoomAssets} onDownload={handleDownload} />);
+  test('renders table correctly for multiple assets and shows no delete button', () => {
+    render(<AssetTable assets={mockedRoomAssets} onDownload={handleDownload} />);
     expect(screen.queryByRole('button', { name: /action-delete/i })).not.toBeInTheDocument();
   });
 });

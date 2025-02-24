@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen } from '@testing-library/react';
+
 import { idFromDescriptor } from '../../../modules/WebRTC';
-import { render, screen, mockedVideoMediaDescriptor, mockStore } from '../../../utils/testUtils';
+import { mockedVideoMediaDescriptor, mockStore, renderWithProviders } from '../../../utils/testUtils';
 import RemoteVideo from './RemoteVideo';
 
 jest.mock('@livekit/components-react', () => ({
@@ -13,8 +15,9 @@ jest.mock('@livekit/components-react', () => ({
 
 describe('RemoteVideo', () => {
   const { store } = mockStore(1, { video: true });
-  test('render without crashing', async () => {
-    await render(<RemoteVideo descriptor={mockedVideoMediaDescriptor(0)} />, store);
+  test('render without crashing', () => {
+    renderWithProviders(<RemoteVideo descriptor={mockedVideoMediaDescriptor(0)} />, { store });
+
     expect(screen.getByTestId(`remoteVideo-${idFromDescriptor(mockedVideoMediaDescriptor(0))}`)).toBeInTheDocument();
   });
 });

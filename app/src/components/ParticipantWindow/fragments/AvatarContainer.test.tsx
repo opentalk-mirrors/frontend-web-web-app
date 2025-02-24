@@ -1,26 +1,28 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { screen } from '@testing-library/react';
+
 import { ParticipationKind } from '../../../types';
 import { getInitials } from '../../../utils/stringUtils';
-import { mockedParticipant, mockStore, render, screen } from '../../../utils/testUtils';
+import { mockedParticipant, mockStore, renderWithProviders } from '../../../utils/testUtils';
 import { AvatarContainer } from './AvatarContainer';
 
 describe('render <AvatarContainer />', () => {
   const participant = mockedParticipant(0);
   const initials = getInitials(participant.displayName, 3);
 
-  test('should render AvatarContainer component with initial', async () => {
+  test('should render AvatarContainer component with initial', () => {
     const { store } = mockStore(1);
-    await render(<AvatarContainer participantId={participant.id} />, store);
+    renderWithProviders(<AvatarContainer participantId={participant.id} />, { store, provider: { mui: true } });
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
     expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
     expect(screen.getByText(initials)).toBeInTheDocument();
   });
 
-  test('render with isSipParticipant flag should not render initials', async () => {
+  test('render with isSipParticipant flag should not render initials', () => {
     const { store } = mockStore(1, { participantKinds: [ParticipationKind.Sip] });
-    await render(<AvatarContainer participantId={participant.id} />, store);
+    renderWithProviders(<AvatarContainer participantId={participant.id} />, { store, provider: { mui: true } });
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
     expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
     expect(screen.queryByTestId('avatarIcon')).not.toBeInTheDocument();

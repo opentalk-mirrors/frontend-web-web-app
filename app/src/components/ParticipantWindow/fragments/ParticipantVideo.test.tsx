@@ -1,11 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { cleanup } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 
 import { idFromDescriptor } from '../../../modules/WebRTC';
 import { VideoSetting } from '../../../types';
-import { render, screen, mockedVideoMediaDescriptor, mockStore, mockedParticipant } from '../../../utils/testUtils';
+import {
+  renderWithProviders,
+  mockedVideoMediaDescriptor,
+  mockStore,
+  mockedParticipant,
+} from '../../../utils/testUtils';
 import ParticipantVideo from './ParticipantVideo';
 
 jest.mock('@livekit/components-react', () => ({
@@ -36,25 +41,31 @@ const ParticipantWindowProps = {
 describe('ParticipantVideo', () => {
   afterEach(() => cleanup());
 
-  //TODO rewrite the tests
-  test('render participantVideo component', async () => {
-    await render(<ParticipantVideo {...ParticipantWindowProps} />, store);
+  //TODO UNIT TESTS rewrite the tests
+  test('render participantVideo component', () => {
+    renderWithProviders(<ParticipantVideo {...ParticipantWindowProps} />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
   });
 
-  test('render participantVideo component with video stream only', async () => {
+  test('render participantVideo component with video stream only', () => {
     const { store } = mockStore(1, { video: true, screen: false });
     const participant = mockedParticipant(0);
-    await render(<ParticipantVideo {...ParticipantWindowProps} participantId={participant.id} />, store);
+    renderWithProviders(<ParticipantVideo {...ParticipantWindowProps} participantId={participant.id} />, {
+      store,
+      provider: { mui: true },
+    });
 
     expect(screen.queryByTestId('participantSreenShareVideo')).not.toBeInTheDocument();
   });
 
-  test('render participantVideo component without any stream should only display avatar component', async () => {
+  test('render participantVideo component without any stream should only display avatar component', () => {
     const { store } = mockStore(1, { video: false, screen: false });
     const participant = mockedParticipant(0);
-    await render(<ParticipantVideo {...ParticipantWindowProps} participantId={participant.id} />, store);
+    renderWithProviders(<ParticipantVideo {...ParticipantWindowProps} participantId={participant.id} />, {
+      store,
+      provider: { mui: true },
+    });
 
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
     expect(screen.queryByTestId('participantSreenShareVideo')).not.toBeInTheDocument();

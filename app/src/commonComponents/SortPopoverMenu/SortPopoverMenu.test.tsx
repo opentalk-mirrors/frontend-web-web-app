@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen, waitFor } from '../../utils/testUtils';
+import { fireEvent, render, screen } from '@testing-library/react';
+
 import SortPopoverMenu from './SortPopoverMenu';
 
 describe('<SortPopoverMenu />', () => {
@@ -22,17 +23,17 @@ describe('<SortPopoverMenu />', () => {
     DEFAULT_PROPS.onClose.mockClear();
   });
 
-  it('should render with mandatory properties.', async () => {
-    await render(<SortPopoverMenu {...DEFAULT_PROPS} />);
+  test('should render with mandatory properties.', () => {
+    render(<SortPopoverMenu {...DEFAULT_PROPS} />);
   });
 
-  it('should render given items.', async () => {
+  test('should render given items.', () => {
     const items = [
       { i18nKey: 'option-1', type: 'Option 1' },
       { i18nKey: 'option-2', type: 'Option 2' },
     ];
     const props = { ...DEFAULT_PROPS, items };
-    await render(<SortPopoverMenu {...props} />);
+    render(<SortPopoverMenu {...props} />);
 
     const container = screen.getByRole('menu');
 
@@ -40,16 +41,14 @@ describe('<SortPopoverMenu />', () => {
     expect(container).toContainElement(screen.getByText(items[1].i18nKey));
   });
 
-  it('should execute onChange callback when option is selected.', async () => {
+  test('should execute onChange callback when option is selected.', () => {
     const items = [{ i18nKey: 'option-1', type: 'Option 1' }];
     const props = { ...DEFAULT_PROPS, items };
 
-    await render(<SortPopoverMenu {...props} />);
+    render(<SortPopoverMenu {...props} />);
 
     fireEvent.click(screen.getByText(items[0].i18nKey));
 
-    await waitFor(() => {
-      expect(DEFAULT_PROPS.onChange).toBeCalledWith(items[0].type);
-    });
+    expect(DEFAULT_PROPS.onChange).toHaveBeenCalledWith(items[0].type);
   });
 });

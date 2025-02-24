@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { render, screen } from '../../../../utils/testUtils';
 import MobileHome from './MobileHome';
 
 jest.mock('./AdhocMeetingButton', () => ({
@@ -37,14 +37,14 @@ jest.mock('./FavoriteMeetings', () => ({
 }));
 
 describe('MobileHome', () => {
-  it('renders header buttons', async () => {
-    await render(<MobileHome />);
+  test('renders header buttons', () => {
+    render(<MobileHome />);
     expect(screen.getByTestId('adhoc-button')).toBeInTheDocument();
     expect(screen.getByTestId('join-meeting-dialog')).toBeInTheDocument();
     expect(screen.getByTestId('new-meeting-button')).toBeInTheDocument();
   });
-  it('renders view selector and current meetings by default', async () => {
-    await render(<MobileHome />);
+  test('renders view selector and current meetings by default', () => {
+    render(<MobileHome />);
     const viewSelector = screen.getByRole('combobox', { name: 'dashboard-meeting-mobile-view-select' });
     expect(viewSelector).toBeInTheDocument();
     expect(viewSelector).toHaveTextContent('dashboard-current-meetings');
@@ -54,8 +54,8 @@ describe('MobileHome', () => {
 
     expect(screen.getByTestId('current-meetings')).toBeInTheDocument();
   });
-  it('renders current and favorite options in the view selector menu', async () => {
-    await render(<MobileHome />);
+  test('renders current and favorite options in the view selector menu', async () => {
+    render(<MobileHome />);
 
     const viewSelector = screen.getByRole('combobox', { name: 'dashboard-meeting-mobile-view-select' });
     await userEvent.click(viewSelector);
@@ -65,14 +65,16 @@ describe('MobileHome', () => {
     expect(options[0]).toHaveTextContent('dashboard-current-meetings');
     expect(options[1]).toHaveTextContent('dashboard-favorite-meetings');
   });
-  it('renders favorite meetings on user selection', async () => {
-    await render(<MobileHome />);
+  test('renders favorite meetings on user selection', async () => {
+    render(<MobileHome />);
 
     const viewSelector = screen.getByRole('combobox', { name: 'dashboard-meeting-mobile-view-select' });
     await userEvent.click(viewSelector);
 
     const options = screen.getAllByRole('option');
-    await userEvent.click(options[1]);
+    act(() => {
+      options[1].click();
+    });
     expect(screen.getByTestId('favorite-meetings')).toBeInTheDocument();
   });
 });

@@ -2,21 +2,16 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { within } from '@testing-library/dom';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import format from 'date-fns/format';
 
 import { formatBytes } from '../../../utils/numberUtils';
-import { render, screen, mockedRoomAssets, waitFor } from '../../../utils/testUtils';
-import { sleep } from '../../../utils/timeUtils';
+import { mockedRoomAssets } from '../../../utils/testUtils';
 import { AssetTableRow } from './AssetTableRow';
 
-const handleDownload = jest.fn(() => {
-  return sleep(100);
-});
+const mockHandleDownload = jest.fn();
 
-const handleDelete = jest.fn(() => {
-  return sleep(100);
-});
+const mockHandleDelete = jest.fn();
 
 // checks all the text content inside a row
 export const checkRowTextContent = (
@@ -45,11 +40,11 @@ const checkAssetActionButtons = (row: HTMLElement, deletable: boolean) => {
   expect(actionButtons.length).toEqual(expectedButtonsNumber);
 };
 
-describe('Asset Table', () => {
+describe('AssetTableRow', () => {
   const asset = mockedRoomAssets[0];
-  it('renders asset with both action buttons', async () => {
+  test('renders asset with both action buttons', () => {
     const deletable = true;
-    await render(<AssetTableRow asset={asset} handleDownload={handleDownload} handleDelete={handleDelete} />);
+    render(<AssetTableRow asset={asset} handleDownload={mockHandleDownload} handleDelete={mockHandleDelete} />);
     const tableRow = screen.getByRole('row');
 
     const isHeader = false;
@@ -64,26 +59,22 @@ describe('Asset Table', () => {
 
     // check download button
     const downloadButton = within(tableRow).getByRole('button', { name: /action-download/i });
-    userEvent.click(downloadButton);
-    await waitFor(() => {
-      expect(handleDownload).toHaveBeenCalledWith({
-        assetId: asset.id,
-        filename: asset.filename,
-        fileSize: asset.size,
-      });
+    downloadButton.click();
+    expect(mockHandleDownload).toHaveBeenCalledWith({
+      assetId: asset.id,
+      filename: asset.filename,
+      fileSize: asset.size,
     });
 
     // check delete button
     const deleteButton = within(tableRow).getByRole('button', { name: /action-delete/i });
-    userEvent.click(deleteButton);
-    await waitFor(() => {
-      expect(handleDelete).toHaveBeenCalledWith(asset.id);
-    });
+    deleteButton.click();
+    expect(mockHandleDelete).toHaveBeenCalledWith(asset.id);
   });
 
-  it('disables buttons if asset progress is passed', async () => {
-    await render(
-      <AssetTableRow asset={asset} handleDownload={handleDownload} handleDelete={handleDelete} progress={0} />
+  test('disables buttons if asset progress is passed', () => {
+    render(
+      <AssetTableRow asset={asset} handleDownload={mockHandleDownload} handleDelete={mockHandleDelete} progress={0} />
     );
     const tableRow = screen.getByRole('row');
 

@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { cleanup, screen } from '@testing-library/react';
+
 import { ConnectionState } from '../../store/slices/roomSlice';
-import { cleanup, configureStore, mockedParticipant, render, screen } from '../../utils/testUtils';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import WaitingView from './WaitingView';
 
 jest.mock('@livekit/components-react', () => ({
@@ -23,13 +25,13 @@ jest.mock('../SelfTest', () => ({
 describe('Waiting view', () => {
   afterEach(() => cleanup());
 
-  test('Enter button is disabled if ConnectionState is Waiting', async () => {
+  test('Enter button is disabled if ConnectionState is Waiting', () => {
     const { store } = configureStore({
       initialState: {
         room: { connectionState: ConnectionState.ReadyToEnter },
       },
     });
-    await render(<WaitingView />, store);
+    renderWithProviders(<WaitingView />, { store });
 
     expect(screen.getByTestId('selfTest')).toBeVisible();
   });

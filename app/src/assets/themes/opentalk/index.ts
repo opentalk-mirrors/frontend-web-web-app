@@ -249,6 +249,11 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
               backgroundColor: theme.palette.focus.contrastColor,
               transitionDuration: '100ms',
             },
+            '&.Mui-disabled': {
+              '& + .MuiSwitch-track': {
+                opacity: 0.4,
+              },
+            },
           }),
           track: {
             opacity: 1,

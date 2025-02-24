@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { DateTimeWithTimezone, SingleEvent } from '@opentalk/rest-api-rtk-query';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, screen, cleanup, waitFor } from '@testing-library/react';
 import { formatRFC3339 } from 'date-fns';
 
-import { configureStore, render, screen, cleanup, waitFor, eventMockedData } from '../../utils/testUtils';
+import { configureStore, renderWithProviders, eventMockedData } from '../../utils/testUtils';
 import CreateOrUpdateMeetingForm from './CreateOrUpdateMeetingForm';
 
 const mockOnForwardButtonClick = jest.fn();
@@ -72,15 +72,22 @@ jest.mock('../../api/rest', () => ({
 describe('Dashboard CreateOrUpdateMeetingForm', () => {
   afterEach(() => cleanup());
 
-  test('page will not crash', async () => {
+  test('page will not crash', () => {
     const { store } = configureStore();
-    await render(<CreateOrUpdateMeetingForm onForwardButtonClick={mockOnForwardButtonClick} />, store);
+    renderWithProviders(<CreateOrUpdateMeetingForm onForwardButtonClick={mockOnForwardButtonClick} />, {
+      store,
+      provider: { router: true, mui: true },
+    });
+
     expect(screen.getAllByText('dashboard-meeting-textfield-title')[0]).toBeInTheDocument();
   });
 
   test('updateEvent will be called with the right payload', async () => {
     const { store } = configureStore();
-    await render(<CreateOrUpdateMeetingForm existingEvent={mockEvent} />, store);
+    renderWithProviders(<CreateOrUpdateMeetingForm existingEvent={mockEvent} />, {
+      store,
+      provider: { router: true, mui: true, snackbar: true },
+    });
 
     const submitButton = screen.getByRole('button', { name: 'global-save-changes' });
     fireEvent.click(submitButton);
