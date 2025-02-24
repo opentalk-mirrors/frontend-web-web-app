@@ -201,7 +201,7 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
         option={AccordionOptions.Rooms}
         expanded={expanded === name}
         summaryText={`${name} (${assignments.length})`}
-        editComponent={
+        summaryAdditionalComponent={
           <ParticipantsEditor
             title={name}
             onChange={(participants) => {
@@ -211,6 +211,7 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
             assignedParticipants={assignments}
           />
         }
+        headingComponent="h4"
       >
         <UserNameContainer>
           {assignments.map((assignment) => (

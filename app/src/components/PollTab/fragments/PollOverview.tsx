@@ -91,6 +91,7 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
       option={t('poll-overview-saved-polls')}
       expanded={accordionState.savedPolls}
       summaryText={t('poll-overview-saved-polls')}
+      headingComponent="h4"
     >
       <List>
         {savedPolls.map((savedPoll, index: number) => (
@@ -113,6 +114,7 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
       option={t('poll-overview-created-polls')}
       expanded={accordionState.createdPolls}
       summaryText={t('poll-overview-created-polls')}
+      headingComponent="h4"
     >
       <List>
         {polls.map((poll, index) => (

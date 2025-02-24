@@ -127,7 +127,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: ICrea
                 {t('poll-button-back')}
               </Button>
             </Box>
-            <Typography variant="h2">
+            <Typography variant="h2" component="h4">
               {isEditing ? t('poll-header-title-update') : t('poll-header-title-create')}
             </Typography>
           </Box>
