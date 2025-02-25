@@ -1095,6 +1095,7 @@ meeting-required-start-date = Startdatum ist erforderlich
 meeting-required-end-date = Enddatum ist erforderlich
 meeting-invalid-start-date = Startdatum ist ungültig
 meeting-invalid-end-date = Enddatum ist ungültig
+meeting-start-date-is-in-the-past = Hinweis: Das Startdatum liegt in der Vergangenheit.
 
 consent-message = Sind Sie einverstanden, dass Ihr Audio und Video-Signal aufgezeichnet wird?
 consent-accept = Erlauben

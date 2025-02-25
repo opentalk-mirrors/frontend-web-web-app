@@ -29,10 +29,14 @@ type PickerTextFieldProps = {
   required?: boolean;
 };
 
-type DateTimePickerProps = {
+export type DateTimePickerProps = {
   value: string | number;
   ampm?: boolean;
-  minTimeDate?: Date;
+  /**
+   * Passing null explicitly states that we do not want a minimum date and we can pick dates even in the past.
+   * Used for scenarios like recurring meetings.
+   */
+  minTimeDate?: Date | null;
   clearable?: boolean;
   clearButtonLabel?: string;
   okButtonLabel?: string;
@@ -49,6 +53,12 @@ const StartAdornmentTypography = styled(Typography)<{ component?: string; htmlFo
 
   '& .MuiFormLabel-asterisk': {
     color: theme.palette.error.main,
+  },
+}));
+
+const StyledDateTimePicker = styled(MuiDateTimePicker)(({ theme }) => ({
+  '& .MuiFormHelperText-root': {
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -75,6 +85,10 @@ const DateTimePicker = ({
   const theme = useTheme();
   const inputId = generateUniqueId();
 
+  //If explicitly stated as null we do not give a min date.
+  //Still keeps the fallback as current date.
+  const minDate = minTimeDate === null ? undefined : minTimeDate;
+
   // There are cases, when the screen height is too small to fit the popper of the desktop variant
   // Therefore we need an offset for the popper relativ to it's anchor
   const getOffsetModifier = () => {
@@ -95,9 +109,8 @@ const DateTimePicker = ({
   } else {
     actualValue = isEmpty(value) ? new Date() : new Date(value);
   }
-
   let minTime;
-  if (actualValue && isSameDay(actualValue, minTimeDate)) {
+  if (actualValue && minTimeDate && isSameDay(actualValue, minTimeDate)) {
     minTime = minTimeDate;
   } else {
     minTime = undefined;
@@ -139,13 +152,13 @@ const DateTimePicker = ({
     // Another option would be to introduce custom action components, which will make more work at the moment
     <>
       <PickerLocalizationProvider localeText={actionButtonLabels}>
-        <MuiDateTimePicker
+        <StyledDateTimePicker
           value={actualValue}
           onChange={onChange}
           onOpen={() => setOpened(true)}
           onClose={() => setOpened(false)}
           ampm={ampm}
-          minDate={minTimeDate}
+          minDate={minDate}
           minTime={minTime}
           closeOnSelect={false}
           slotProps={{
@@ -163,6 +176,7 @@ const DateTimePicker = ({
                 'aria-describedby': error ? `${inputId}-error` : undefined,
               },
               required,
+              helperText: !error && helperText,
             },
             actionBar: { actions },
             popper: { placement: 'bottom-start', modifiers: [getOffsetModifier()] },

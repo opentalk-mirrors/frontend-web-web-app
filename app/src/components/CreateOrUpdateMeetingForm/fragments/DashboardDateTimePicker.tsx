@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { formikDateTimePickerProps } from '../../../utils/formikUtils';
 import { generateUniqueId } from '../../../utils/stringUtils';
 import DateTimePicker from '../../DateTimePicker';
+import { DateTimePickerProps } from '../../DateTimePicker/DateTimePicker';
 
 interface Streaming {
   enabled: boolean;
@@ -35,7 +36,9 @@ type DashboardDateTimePickerProps = {
   onChange(date: Date): void;
   formik: FormikProps<CreateOrUpdateMeetingFormikValues>;
   type: 'start' | 'end';
-};
+  //Extend min date so we can pass it down.
+  //If more props needed we could add more to the Pick or define the whole props of type DateTimePickerProps.
+} & Pick<DateTimePickerProps, 'minTimeDate' | 'helperText'>;
 
 export const DashboardDateTimePicker = (props: DashboardDateTimePickerProps) => {
   const id = props.id || generateUniqueId();
@@ -48,11 +51,13 @@ export const DashboardDateTimePicker = (props: DashboardDateTimePickerProps) => 
           ...props.formik,
           handleChange: props.onChange as never,
         })}
+        minTimeDate={props.minTimeDate}
         textField={{
           id: id,
           startAdornment: t(`dashboard-meeting-date-${props.type}`),
           required: true,
         }}
+        helperText={props.helperText}
       />
     </Stack>
   );
