@@ -54,7 +54,7 @@ describe('VideoOverlay extend tab', () => {
       provider: { snackbar: true },
     });
 
-    const extendNewTabButton = screen.queryByRole('button', { name: 'indicator-extend-new-tab' });
+    const extendNewTabButton = screen.queryByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).not.toBeInTheDocument();
   });
   test('renders extend new tab button if participant shares screen', () => {
@@ -69,7 +69,7 @@ describe('VideoOverlay extend tab', () => {
       provider: { snackbar: true },
     });
 
-    const extendNewTabButton = screen.getByRole('button', { name: 'indicator-extend-new-tab' });
+    const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).toBeInTheDocument();
   });
   test('renders extend new tab button if participant enabled camera', () => {
@@ -84,7 +84,7 @@ describe('VideoOverlay extend tab', () => {
       provider: { snackbar: true },
     });
 
-    const extendNewTabButton = screen.getByRole('button', { name: 'indicator-extend-new-tab' });
+    const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).toBeInTheDocument();
   });
   test('renders extend new tab button if participant shares screen AND enabled camera', () => {
@@ -99,7 +99,7 @@ describe('VideoOverlay extend tab', () => {
       provider: { snackbar: true },
     });
 
-    const extendNewTabButton = screen.getByRole('button', { name: 'indicator-extend-new-tab' });
+    const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).toBeInTheDocument();
   });
 });

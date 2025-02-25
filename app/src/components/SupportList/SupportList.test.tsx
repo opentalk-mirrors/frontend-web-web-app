@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 
 import { SupportList } from './SupportList';
 
@@ -45,6 +45,18 @@ describe('SupportList component', () => {
 
       expect(list).toBeInTheDocument();
       expect(list.children).toHaveLength(3);
+    });
+    test('user manual list is containing open new tab image', () => {
+      render(<SupportList />);
+      const userManual = screen.getAllByRole('listitem')[0];
+      const openNewTabImage = within(userManual).getByRole('img', { name: 'global-open-new-tab' });
+      expect(openNewTabImage).toBeInTheDocument();
+    });
+    test('keyboard shortcut list item is not containing open new tab image', () => {
+      render(<SupportList />);
+      const keyboardShortcut = screen.getAllByRole('listitem')[1];
+      const openNewTabImage = within(keyboardShortcut).queryByRole('img', { name: 'global-open-new-tab' });
+      expect(openNewTabImage).not.toBeInTheDocument();
     });
   });
   test('should contain option that expands/collapses the shortcut dialog', () => {

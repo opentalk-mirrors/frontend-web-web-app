@@ -12,12 +12,13 @@ import {
   MenuList,
   MenuListProps,
   ThemeProvider,
+  styled,
 } from '@mui/material';
 import { ListItemButtonProps } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { BugIcon, HelpIcon, HelpSquareIcon } from '../../assets/icons';
+import { BugIcon, HelpIcon, HelpSquareIcon, ExtendToTabIcon } from '../../assets/icons';
 import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { useAppSelector } from '../../hooks';
 import { selectIsGlitchtipConfigured } from '../../store/slices/configSlice';
@@ -62,6 +63,12 @@ type SupportListProps = {
   className?: string;
   menu?: boolean;
 };
+
+const StyledExtendToTabIcon = styled(ExtendToTabIcon)(({ theme }) => ({
+  '&.MuiSvgIcon-root': {
+    color: theme.palette.text.disabled,
+  },
+}));
 
 export const SupportList = ({
   icons = false,
@@ -132,6 +139,23 @@ export const SupportList = ({
     return output;
   }, [isGlitchtipConfigured, isShortcutListDialogOpen]);
 
+  const willOpenNewTab = (item: Item) => {
+    return 'target' in item.componentProps && item.componentProps.target === '_blank';
+  };
+
+  const renderEndAdornment = (item: Item) => {
+    if (willOpenNewTab(item)) {
+      return (
+        <StyledExtendToTabIcon
+          fontSize="small"
+          type="functional"
+          titleId={item.key + '-new-tab'}
+          title={t('global-open-new-tab')}
+        />
+      );
+    }
+  };
+
   if (menu) {
     return (
       <>
@@ -141,6 +165,7 @@ export const SupportList = ({
               <ListItemButton disableGutters {...(item.componentProps as ListItemButtonProps)}>
                 {icons && <ListItemIcon>{item.icon}</ListItemIcon>}
                 <ListItemText primary={t(item.name)} slotProps={{ primary: { textAlign: 'left' } }} />
+                {renderEndAdornment(item)}
               </ListItemButton>
             </MenuItem>
           ))}
@@ -160,6 +185,7 @@ export const SupportList = ({
             <ListItemButton disableGutters {...(item.componentProps as ListItemButtonProps)}>
               {icons && <ListItemIcon sx={{ minWidth: '2.25rem' }}>{item.icon}</ListItemIcon>}
               <ListItemText primary={t(item.name)} />
+              {renderEndAdornment(item)}
             </ListItemButton>
           </ListItem>
         ))}

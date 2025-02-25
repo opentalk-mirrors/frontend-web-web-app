@@ -163,7 +163,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
           </Tooltip>
           {isScreenShareOrVideoActive && (
             <Tooltip title={t('video-overlay-tooltip-separate-window')}>
-              <OverlayIconButton aria-label={t('indicator-extend-new-tab')} color="secondary" onClick={openInNewTab}>
+              <OverlayIconButton aria-label={t('global-open-new-tab')} color="secondary" onClick={openInNewTab}>
                 <ExtendToTabIcon />
               </OverlayIconButton>
             </Tooltip>
