@@ -11,6 +11,7 @@ import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppSelector } from '../../../hooks';
 import browser from '../../../modules/BrowserSupport';
+import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import ToolbarButton from './ToolbarButton';
 
@@ -19,8 +20,10 @@ const ShareScreenButton = () => {
   const localParticipantPermissions = useLocalParticipantPermissions();
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
+  const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const isScreenShareSupported = browser.isScreenShareSupported();
+  const isScreenShareEnabled = enabled && !isLivekitUnavailable;
 
   const canPublishScreenShare =
     localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
@@ -33,7 +36,7 @@ const ShareScreenButton = () => {
     if (permissionDenied) {
       return t('device-permission-denied');
     }
-    if (enabled) {
+    if (isScreenShareEnabled) {
       return t('toolbar-button-screen-share-turn-off-tooltip-title');
     }
     return t('toolbar-button-screen-share-turn-on-tooltip-title');
@@ -56,12 +59,12 @@ const ShareScreenButton = () => {
     <ToolbarButton
       tooltipTitle={getToolTipTitle()}
       onClick={onClick}
-      active={enabled && isModeratorOrPresenter}
-      disabled={pending || !isModeratorOrPresenter}
-      data-testid="toolbarBlurScreenButton"
+      active={isScreenShareEnabled && isModeratorOrPresenter}
+      disabled={pending || !isModeratorOrPresenter || isLivekitUnavailable}
+      data-testid="toolbarShareScreenButton"
       id={ToolbarButtonIds.ShareScreen}
     >
-      {enabled ? <ShareScreenOnIcon /> : <ShareScreenOffIcon />}
+      {isScreenShareEnabled ? <ShareScreenOnIcon /> : <ShareScreenOffIcon />}
     </ToolbarButton>
   );
 };

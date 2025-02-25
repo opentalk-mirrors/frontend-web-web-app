@@ -171,7 +171,6 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
 
           // TODO reconnect
           this.eventEmitter.emit('shutdown', { error: 9999 });
-          getLivekitRoom().disconnect();
         }
         return;
       case 'closed':

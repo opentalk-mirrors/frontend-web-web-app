@@ -33,13 +33,18 @@ export interface RequestPopoutStreamAccessToken {
   action: 'request_popout_stream_access_token';
 }
 
+export interface CreateNewAccessToken {
+  action: 'create_new_access_token';
+}
+
 export type Action =
   | ForceMute
   | GrantScreenSharePermission
   | RevokeScreenSharePermission
   | EnableMicrophoneRestrictions
   | DisableMicrophoneRestrictions
-  | RequestPopoutStreamAccessToken;
+  | RequestPopoutStreamAccessToken
+  | CreateNewAccessToken;
 
 export type Livekit = Namespaced<Action, 'livekit'>;
 
@@ -66,6 +71,8 @@ export const requestPopoutStreamAccessToken = createSignalingApiCall<RequestPopo
   'request_popout_stream_access_token'
 );
 
+export const createNewAccessToken = createSignalingApiCall<CreateNewAccessToken>('livekit', 'create_new_access_token');
+
 export const handler = createModule<RootState>((builder) => {
   builder.addCase(requestMute.action, (_state, action) => {
     sendMessage(requestMute(action.payload));
@@ -84,6 +91,9 @@ export const handler = createModule<RootState>((builder) => {
   });
   builder.addCase(requestPopoutStreamAccessToken.action, (_state, action) => {
     sendMessage(requestPopoutStreamAccessToken(action.payload));
+  });
+  builder.addCase(createNewAccessToken.action, (_state, action) => {
+    sendMessage(createNewAccessToken(action.payload));
   });
 });
 

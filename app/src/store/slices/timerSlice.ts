@@ -135,7 +135,7 @@ const startAppListening = timerMiddleware.startListening as AppStartListening;
 
 startAppListening({
   actionCreator: timerStarted,
-  effect: (action) => {
+  effect: async (action) => {
     const room = getLivekitRoom();
 
     //Avoid sending reconfigure if both video and audio tracks are not active
@@ -144,11 +144,11 @@ startAppListening({
 
     if (action.payload.style === TimerStyle.CoffeeBreak) {
       if (isAnyMediaTrackEnabled) {
-        room.localParticipant.setCameraEnabled(false);
-        room.localParticipant.setMicrophoneEnabled(false);
+        await room.localParticipant.setCameraEnabled(false);
+        await room.localParticipant.setMicrophoneEnabled(false);
       }
       if (isShareScreenEnabled) {
-        room.localParticipant.setScreenShareEnabled(false);
+        await room.localParticipant.setScreenShareEnabled(false);
       }
     }
   },

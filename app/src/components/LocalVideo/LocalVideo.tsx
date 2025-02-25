@@ -8,14 +8,15 @@ import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PinIcon } from '../../assets/icons';
+import { PinIcon, WarningIcon } from '../../assets/icons';
 import { NameTile } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import { selectLivekitUnavailable } from '../../store/slices/livekitSlice';
 import {
   selectAudioEnabled,
-  selectVideoEnabled,
   selectVideoBackgroundEffects,
   selectVideoDeviceId,
+  selectVideoEnabled,
 } from '../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
 import { selectDisplayName } from '../../store/slices/userSlice';
@@ -94,6 +95,7 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
 
   const displayName = useAppSelector(selectDisplayName);
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
+  const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
 
   const isVideoEnabled = videoEnabled || false;
   const isAudioEnabled = audioEnabled || false;
@@ -121,13 +123,23 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   }, []);
 
   useEffect(() => {
+    const setCameraStateWithEffects = async () => {
+      try {
+        const publication = await room?.localParticipant.setCameraEnabled(videoEnabled);
+        if (!publication?.isMuted) {
+          await applyBackgroundEffectToTrack(
+            videoTrackRef?.publication.videoTrack as LocalVideoTrack,
+            videoBackgroundEffects,
+            dispatch
+          );
+        }
+      } catch (error) {
+        console.error('Unable to start video: ', error);
+      }
+    };
+
     if (room?.state === ConnectionState.Connected) {
-      room?.localParticipant.setCameraEnabled(videoEnabled);
-      applyBackgroundEffectToTrack(
-        videoTrackRef?.publication.videoTrack as LocalVideoTrack,
-        videoBackgroundEffects,
-        dispatch
-      );
+      setCameraStateWithEffects();
     }
   }, [
     room?.state,
@@ -211,7 +223,8 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
           />
         </>
       )}
-      {showLoadingSpinner && <CircularProgress color="primary" size="2.5rem" />}
+      {showLoadingSpinner && !isLivekitUnavailable && <CircularProgress color="primary" size="2.5rem" />}
+      {isLivekitUnavailable && <WarningIcon color="error" fontSize="large" />}
       {isVideoMissing && <NoVideoText>{t('localvideo-no-device')}</NoVideoText>}
     </Container>
   );

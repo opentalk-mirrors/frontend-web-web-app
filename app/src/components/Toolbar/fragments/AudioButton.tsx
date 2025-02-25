@@ -12,6 +12,7 @@ import { SuspenseLoading, showConsentNotification } from '../../../commonCompone
 import { LIVEKIT_AUDIO_PERMISSION_NUMBER, ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
+import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { selectAudioEnabled, setAudioEnabled } from '../../../store/slices/mediaSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import AudioIndicator from './AudioIndicator';
@@ -30,11 +31,12 @@ interface AudioButtonProps {
 const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => {
   const { t } = useTranslation();
   const askConsent = useAppSelector(selectNeedRecordingConsent);
+  const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const dispatch = useAppDispatch();
   const room = useMaybeRoomContext();
   const audioEnabled = useAppSelector(selectAudioEnabled);
   const localParticipantPermissions = (!isLobby && useLocalParticipantPermissions()) || undefined;
-  const microphoneEnabled = audioEnabled || false;
+  const microphoneEnabled = (audioEnabled || false) && !isLivekitUnavailable;
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -56,14 +58,20 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
       dispatch(setAudioEnabled(false));
 
       if (!isLobby) {
-        await room?.localParticipant.setMicrophoneEnabled(false);
+        await room?.localParticipant.setMicrophoneEnabled(false).catch((error) => {
+          console.error('Unable to stop audio: ', error);
+        });
       }
     } else {
-      if (!isLobby && !room?.localParticipant.isMicrophoneEnabled) {
-        dispatch(setAudioEnabled(true));
-        await room?.localParticipant.setMicrophoneEnabled(true);
+      try {
+        if (!isLobby && !room?.localParticipant.isMicrophoneEnabled) {
+          dispatch(setAudioEnabled(true));
+          await room?.localParticipant.setMicrophoneEnabled(true);
+        }
+        await startMedia(true);
+      } catch (e) {
+        console.error('Unable to start audio: ', e);
       }
-      await startMedia(true);
     }
   };
 
@@ -116,7 +124,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
         onClick={onClick}
         hasContext
         contextDisabled={pendingPermission || devices.length === 0}
-        disabled={!canPublishAudio || pendingPermission || devices.length === 0}
+        disabled={!canPublishAudio || pendingPermission || devices.length === 0 || isLivekitUnavailable}
         openMenu={() => setShowMenu(true)}
         active={Boolean(microphoneEnabled && localAudioTrack)}
         isLobby={isLobby}

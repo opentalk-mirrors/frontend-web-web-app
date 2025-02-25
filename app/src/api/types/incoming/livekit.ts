@@ -27,11 +27,19 @@ export interface PopoutStreamAccessToken {
   token: string;
 }
 
+export interface Credentials {
+  message: 'credentials';
+  room: string;
+  token: string;
+  publicUrl: string;
+}
+
 export type Message =
   | MicrophoneRestrictionsEnabled
   | MicrophoneRestrictionsDisabled
   | ForceMuted
   | PopoutStreamAccessToken
+  | Credentials
   | LivekitError;
 
 export type Livekit = NamespacedIncoming<Message, 'livekit'>;

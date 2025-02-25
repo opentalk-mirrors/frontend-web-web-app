@@ -25,7 +25,7 @@ const CinemaCell = styled('div', {
   display: 'flex',
   alignItems: 'center',
   overflow: 'hidden',
-  borderRadius: '1em',
+  borderRadius: theme.borderRadius.card,
   position: 'relative',
 
   '&::before': {
@@ -43,7 +43,7 @@ const CinemaCell = styled('div', {
     width: '100%',
     height: '100%',
     inset: '0',
-    borderRadius: '1em',
+    borderRadius: theme.borderRadius.card,
     boxShadow: `inset 0px 0px 0px ${highlight ? 2 : 0}px ${theme.palette.primary.main}`,
     transition: 'all 300ms linear',
     pointerEvents: 'none',

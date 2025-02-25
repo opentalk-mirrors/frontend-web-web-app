@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { authError, AuthTypeError } from '@opentalk/redux-oidc';
-import { RoomId, fetchQuery, createOpenTalkApiWithReactHooks } from '@opentalk/rest-api-rtk-query';
-import { createAsyncThunk, isRejectedWithValue, Middleware } from '@reduxjs/toolkit';
+import { AuthTypeError, authError } from '@opentalk/redux-oidc';
+import { RoomId, createOpenTalkApiWithReactHooks, fetchQuery } from '@opentalk/rest-api-rtk-query';
+import { Middleware, createAsyncThunk, isRejectedWithValue } from '@reduxjs/toolkit';
 import convertToCamelCase from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
@@ -46,7 +46,7 @@ export enum StartRoomError {
   InvalidJson = 'invalid_json',
   NotFound = 'not_found',
   Forbidden = 'forbidden',
-  Unathorized = 'unauthorized',
+  Unauthorized = 'unauthorized',
   BadRequest = 'bad_request',
 }
 
@@ -112,7 +112,7 @@ const baseQuery = fetchQuery({
 
 export const restApi = createOpenTalkApiWithReactHooks(baseQuery);
 
-export const rtkQueryErrorLoggerMiddlware: Middleware =
+export const rtkQueryErrorLoggerMiddleware: Middleware =
   ({ dispatch }) =>
   (next) =>
   (action) => {

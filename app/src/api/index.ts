@@ -42,7 +42,12 @@ import {
   updated as legalVoteUpdated,
   voted as legalVoteVoted,
 } from '../store/slices/legalVoteSlice';
-import { getLivekitRoom, setLivekitPopoutStreamAccessToken, setLivekitUnavailable } from '../store/slices/livekitSlice';
+import {
+  getLivekitRoom,
+  setLivekitPopoutStreamAccessToken,
+  setLivekitUnavailable,
+  setNewAccessToken,
+} from '../store/slices/livekitSlice';
 import * as mediaStore from '../store/slices/mediaSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from '../store/slices/meetingNotesSlice';
 import {
@@ -669,7 +674,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           notifications.showTalkingStickMutedNotification({
             onUnmute: async () => {
               notifications.close(currentId);
-              room.localParticipant.setMicrophoneEnabled(true);
+              await room.localParticipant.setMicrophoneEnabled(true);
               notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
             },
             onNext: () => {
@@ -1143,6 +1148,10 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
     }
     case 'popout_stream_access_token': {
       dispatch(setLivekitPopoutStreamAccessToken(data.token));
+      return;
+    }
+    case 'credentials': {
+      dispatch(setNewAccessToken(data));
       return;
     }
     case 'error': {

@@ -25,7 +25,7 @@ const Statistics = ({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
   const participant = useRemoteParticipant(descriptor.participantId);
-  const isOnline = participant?.connectionQuality === ConnectionQuality.Lost;
+  const isOnline = participant?.connectionQuality !== ConnectionQuality.Lost;
   const hasPacketLoss = participant?.connectionQuality === ConnectionQuality.Poor;
 
   const handleClose = useCallback((event: React.MouseEvent<HTMLElement>) => {

@@ -7,22 +7,26 @@ import { VisuallyHiddenTitle } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
+import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { selectCinemaLayout } from '../../../store/slices/uiSlice';
 import FullscreenView from '../../FullscreenView';
 import GridView from '../../GridView';
 import MeetingNotesView from '../../MeetingNotesView';
 import SpeakerView from '../../SpeakerView';
 import WhiteboardView from '../../Whiteboard';
+import MediaReconnectionDialog from './MediaReconnectionDialog';
 
 const Container = styled('main')({
   gridArea: 'main',
   height: '100%',
   overflow: 'hidden',
+  position: 'relative',
   display: 'flex',
 });
 
 const Cinema = () => {
   const userLayout = useAppSelector(selectCinemaLayout);
+  const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const fullscreenHandle = useFullscreenContext();
 
   const renderView = () => {
@@ -45,6 +49,7 @@ const Cinema = () => {
   return (
     <Container ref={fullscreenHandle.node}>
       <VisuallyHiddenTitle component="h2" label="videoroom-hidden-heading" />
+      {isLivekitUnavailable && <MediaReconnectionDialog />}
       {renderView()}
     </Container>
   );

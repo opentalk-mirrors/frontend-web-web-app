@@ -1,17 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useLocalParticipantPermissions } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
 
-import { ForceMuteType } from '../../../types';
+import { LIVEKIT_AUDIO_PERMISSION_NUMBER } from '../../../constants';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import AudioButton from './AudioButton';
 
-const MOCK_USER_ID = '06ff9aeb-21d6-4016-8e74-486ff78d70af';
-
 jest.mock('@livekit/components-react', () => ({
-  useRoomContext: () => jest.fn(),
-  useLocalParticipantPermissions: () => jest.fn(),
+  useLocalParticipantPermissions: jest.fn(),
   useMaybeRoomContext: () => ({ localParticipant: mockedParticipant(0) }),
   useMediaDeviceSelect: () => ({
     devices: [
@@ -21,18 +19,12 @@ jest.mock('@livekit/components-react', () => ({
   }),
 }));
 
-jest.mock('');
-
 describe('Audio Button', () => {
-  test.skip('Button is disabled if microphones are disabled', () => {
-    const { store } = configureStore({
-      initialState: {
-        moderation: {
-          forceMute: {
-            type: ForceMuteType.Enabled,
-          },
-        },
-      },
+  const { store } = configureStore();
+
+  test('Button is disabled if microphones are disabled', async () => {
+    (useLocalParticipantPermissions as jest.Mock).mockReturnValue({
+      canPublishSources: [],
     });
     renderWithProviders(<AudioButton />, { store, provider: { snackbar: true } });
 
@@ -42,14 +34,8 @@ describe('Audio Button', () => {
   });
 
   test('Button is enabled if microphones are enabled', () => {
-    const { store } = configureStore({
-      initialState: {
-        moderation: {
-          forceMute: {
-            type: ForceMuteType.Disabled,
-          },
-        },
-      },
+    (useLocalParticipantPermissions as jest.Mock).mockReturnValue({
+      canPublishSources: [LIVEKIT_AUDIO_PERMISSION_NUMBER],
     });
 
     renderWithProviders(<AudioButton />, { store, provider: { snackbar: true } });
@@ -59,25 +45,16 @@ describe('Audio Button', () => {
     expect(audioButton).not.toBeDisabled();
   });
 
-  test('Button is enabled if user is in unrestrictedParticipants', () => {
+  test('Button is disabled if isLivekitUnavailable is true', async () => {
     const { store } = configureStore({
       initialState: {
-        moderation: {
-          forceMute: {
-            type: ForceMuteType.Enabled,
-            unrestrictedParticipants: [MOCK_USER_ID],
-          },
-        },
-        user: {
-          uuid: MOCK_USER_ID,
+        livekit: {
+          unavailable: true,
         },
       },
     });
 
     renderWithProviders(<AudioButton />, { store, provider: { snackbar: true } });
-
-    const audioButton = screen.getByTestId('toolbarAudioButton');
-
-    expect(audioButton).not.toBeDisabled();
+    expect(screen.getByTestId('toolbarAudioButton')).toBeDisabled();
   });
 });

@@ -1142,6 +1142,8 @@ dev-version = (Vorschau)
 
 reconnection-loop-dialogbox-title = Verbindung wird erneut aufgebaut
 reconnection-loop-abort-button = Abbrechen
+reconnection-media-title = Verbindung zum Medienserver wird wiederhergestellt
+reconnection-media-description = Sie können den Chat weiter nutzen, während wir die Verbindung wiederherstellen.
 
 glitchtip-crash-report-title = Oh, es sieht so aus, als hätten wir ein Problem.
 glitchtip-crash-report-subtitle = Wenn Sie helfen möchten, erzählen Sie uns, was passiert ist. Diese Felder sind nicht zwingend nötig zum Senden des Fehlerberichts.

@@ -49,7 +49,7 @@ describe('render <Toolbar />', () => {
     renderWithProviders(<Toolbar />, { store, provider: { snackbar: true } });
 
     expect(screen.getByTestId('toolbarHandraiseButton')).toBeInTheDocument();
-    expect(screen.getByTestId('toolbarBlurScreenButton')).toBeInTheDocument();
+    expect(screen.getByTestId('toolbarShareScreenButton')).toBeInTheDocument();
     expect(screen.getByTestId('audioButton')).toBeInTheDocument();
     expect(screen.getByTestId('videoButton')).toBeInTheDocument();
     expect(screen.getByTestId('toolbarMenuButton')).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe('render <Toolbar />', () => {
     renderWithProviders(<Toolbar />, { store, provider: { snackbar: true } });
 
     expect(screen.getByTestId('toolbarHandraiseButton')).toBeInTheDocument();
-    expect(screen.getByTestId('toolbarBlurScreenButton')).toBeInTheDocument();
+    expect(screen.getByTestId('toolbarShareScreenButton')).toBeInTheDocument();
     expect(screen.getByTestId('audioButton')).toBeInTheDocument();
     expect(screen.getByTestId('videoButton')).toBeInTheDocument();
     expect(screen.getByTestId('toolbarMenuButton')).toBeInTheDocument();

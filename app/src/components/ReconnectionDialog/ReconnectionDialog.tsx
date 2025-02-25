@@ -18,10 +18,10 @@ const ReconnectionDialog = () => {
 
   const disableMedia = async () => {
     if (audioEnabled) {
-      room?.localParticipant.setMicrophoneEnabled(false);
+      await room?.localParticipant.setMicrophoneEnabled(false);
     }
     if (videoEnabled) {
-      room?.localParticipant.setCameraEnabled(false);
+      await room?.localParticipant.setCameraEnabled(false);
     }
   };
 

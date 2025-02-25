@@ -87,13 +87,13 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
 
       await startMedia(shouldEnable);
       dispatch(setAudioEnabled(shouldEnable));
-      room?.localParticipant.setMicrophoneEnabled(shouldEnable);
+      await room?.localParticipant.setMicrophoneEnabled(shouldEnable);
     },
     [askConsent, audioEnabled, dispatch, room, startMedia]
   );
 
   const pushToWhisper = useCallback(
-    (type: 'keyup' | 'keydown') => {
+    async (type: 'keyup' | 'keydown') => {
       if (!isWhisperingPossible.whisperId) {
         return;
       }
@@ -102,7 +102,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
           toggleAudio(false);
           if (pushToTalkState === PushToTalkState.Inactive) {
             dispatch(setIsWhisperActive(true));
-            whisperRoom?.localParticipant.setMicrophoneEnabled(true);
+            await whisperRoom?.localParticipant.setMicrophoneEnabled(true);
             setPushToTalkState(PushToTalkState.Whisper);
           }
           break;
@@ -110,7 +110,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
         case 'keyup': {
           if (pushToTalkState === PushToTalkState.Whisper) {
             dispatch(setIsWhisperActive(false));
-            whisperRoom?.localParticipant.setMicrophoneEnabled(false);
+            await whisperRoom?.localParticipant.setMicrophoneEnabled(false);
             setPushToTalkState(PushToTalkState.Inactive);
           }
           break;

@@ -19,7 +19,7 @@ describe('<ShareScreenButton />', () => {
   const { store } = configureStore();
   test('render ShareScreenButton component', () => {
     renderWithProviders(<ShareScreenButton />, { store });
-    expect(screen.getByTestId('toolbarBlurScreenButton')).toBeInTheDocument();
+    expect(screen.getByTestId('toolbarShareScreenButton')).toBeInTheDocument();
   });
 
   test('ShareScreenButton not visible on devices that not support share screen feature', () => {
@@ -33,5 +33,18 @@ describe('<ShareScreenButton />', () => {
 
     const { container } = renderWithProviders(<ShareScreenButton />, { store });
     expect(container).toBeEmptyDOMElement();
+  });
+
+  test('Button is disabled if isLivekitUnavailable is true', async () => {
+    const { store } = configureStore({
+      initialState: {
+        livekit: {
+          unavailable: true,
+        },
+      },
+    });
+
+    renderWithProviders(<ShareScreenButton />, { store });
+    expect(screen.getByTestId('toolbarShareScreenButton')).toBeDisabled();
   });
 });
