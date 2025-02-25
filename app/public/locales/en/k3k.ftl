@@ -827,7 +827,7 @@ dashboard-create-meeting-dialog-cancel = Cancel
 global-required-fields-info = Required fields are marked with an asterisk. Please fill them out.
 
 dashboard-direct-meeting-title = Who do you want to invite to your meeting?
-dashboard-direct-meeting-attention = Attention: This is an adhoc meeting, it will be automatically deleted after 24h and not shown in the dashboard.
+dashboard-direct-meeting-attention = Attention: This is an ad-hoc meeting, it will be automatically deleted after 24h and not shown in the dashboard.
 dashboard-direct-meeting-label-select-participants = Invite participants - Max. {maxParticipants} participants per meeting, incl. you
 dashboard-direct-meeting-label-select-participants-fallback = Invite participants
 dashboard-direct-meeting-button-cancel = Cancel
@@ -837,6 +837,7 @@ dashboard-direct-meeting-invitations-successful = All the people you added have 
 dashboard-direct-meeting-invitations-error = There was a problem sending one or more invitations. Please try again later.
 dashboard-direct-meeting-password-label = Password
 dashboard-direct-meeting-password-placeholder = Strong password has at least 8 characters
+dashboard-direct-meeting-generated-title = Ad-hoc Meeting {creationHours}:{creationMinutes}
 
 dashboard-invite-to-meeting-room-link-label = Meeting-Link
 dashboard-invite-to-meeting-copy-room-link-aria-label = Copy Room link for {$eventTitle}
