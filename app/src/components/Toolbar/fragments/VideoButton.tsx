@@ -75,7 +75,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
         tooltipTitle={tooltipText()}
         onClick={onClick}
         hasContext
-        contextDisabled={mediaChangeInProgress || devices.length === 0}
+        contextDisabled={mediaChangeInProgress}
         contextTitle={t('toolbar-button-video-context-title')}
         contextMenuId="video-context-menu"
         contextMenuExpanded={showMenu}

@@ -153,6 +153,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
   }, [open]);
 
   const sortedDevices = filteredDevices.sort((a, b) => a.label.localeCompare(b.label));
+  const showDeviceOptions = filteredDevices.length > 0;
 
   return (
     <ThemeProvider theme={createOpenTalkTheme()}>
@@ -173,32 +174,35 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
         aria-labelledby="video-menu-title"
         role="menu"
       >
-        <MenuSectionTitle id="video-menu-title" sx={{ pt: 1.5, pb: 1.5 }}>
-          <CameraOnIcon />
-          {t('videomenu-choose-input')}
-        </MenuSectionTitle>
-        {permissionDenied === true && (
-          <MenuSectionTitle>
-            <ErrorIcon />
-            <MultilineTypography variant="body2">{t('device-permission-denied')}</MultilineTypography>
-          </MenuSectionTitle>
+        {showDeviceOptions && (
+          <>
+            <MenuSectionTitle id="video-menu-title" sx={{ pb: 1.5 }}>
+              <CameraOnIcon />
+              {t('videomenu-choose-input')}
+            </MenuSectionTitle>
+            {permissionDenied === true && (
+              <MenuSectionTitle>
+                <ErrorIcon />
+                <MultilineTypography variant="body2">{t('device-permission-denied')}</MultilineTypography>
+              </MenuSectionTitle>
+            )}
+            {videoChangeInProgress ? (
+              <MenuSectionTitle>
+                <WarningIcon />
+                <ListItemText>{t('devicemenu-wait-for-permission')}</ListItemText>
+              </MenuSectionTitle>
+            ) : (
+              <DeviceList
+                devices={sortedDevices}
+                selectedDevice={videoDeviceId as DeviceId | undefined}
+                onClick={handleClick}
+                ariaLabelId="video-menu-title"
+              />
+            )}
+            <Divider variant="middle" />
+          </>
         )}
-        {filteredDevices.length === 0 && videoChangeInProgress ? (
-          <MenuSectionTitle>
-            <WarningIcon />
-            <ListItemText>{t('devicemenu-wait-for-permission')}</ListItemText>
-          </MenuSectionTitle>
-        ) : (
-          <DeviceList
-            devices={sortedDevices}
-            selectedDevice={videoDeviceId as DeviceId | undefined}
-            onClick={handleClick}
-            ariaLabelId="video-menu-title"
-          />
-        )}
-        <Divider variant="middle" />
-
-        <MenuSectionTitle>
+        <MenuSectionTitle sx={{ minWidth: '16rem' }}>
           <SettingsIcon />
           {t('videomenu-settings')}
         </MenuSectionTitle>
@@ -221,38 +225,43 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
             />
           </BackgroundOptionsContainer>
         </FormGroup>
+        {showDeviceOptions && (
+          <>
+            <Divider variant="middle" />
+            <MenuSectionTitle>{t('videomenu-background')}</MenuSectionTitle>
+            <FormGroup>
+              <BackgroundOptionsContainer spacing={1}>
+                {isBackgroundAndBlurringSupported && (
+                  <FormControlLabel
+                    control={
+                      <CommonSwitch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />
+                    }
+                    label={
+                      <Typography fontWeight="normal" component="span">
+                        {t('videomenu-blur')}
+                      </Typography>
+                    }
+                    labelPlacement="start"
+                    disabled={videoBackgroundEffects.loading}
+                  />
+                )}
+                <FormControlLabel
+                  control={
+                    <CommonSwitch onChange={toggleMirroring} value={mirroringEnabled} checked={mirroringEnabled} />
+                  }
+                  label={
+                    <Typography fontWeight="normal" component="span">
+                      {t('videomenu-mirroring')}
+                    </Typography>
+                  }
+                  labelPlacement="start"
+                />
+              </BackgroundOptionsContainer>
+            </FormGroup>
+          </>
+        )}
 
-        <Divider variant="middle" />
-        <MenuSectionTitle>{t('videomenu-background')}</MenuSectionTitle>
-        <FormGroup>
-          <BackgroundOptionsContainer spacing={1}>
-            {isBackgroundAndBlurringSupported && (
-              <FormControlLabel
-                control={
-                  <CommonSwitch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />
-                }
-                label={
-                  <Typography fontWeight="normal" component="span">
-                    {t('videomenu-blur')}
-                  </Typography>
-                }
-                labelPlacement="start"
-                disabled={videoBackgroundEffects.loading}
-              />
-            )}
-            <FormControlLabel
-              control={<CommonSwitch onChange={toggleMirroring} value={mirroringEnabled} checked={mirroringEnabled} />}
-              label={
-                <Typography fontWeight="normal" component="span">
-                  {t('videomenu-mirroring')}
-                </Typography>
-              }
-              labelPlacement="start"
-            />
-          </BackgroundOptionsContainer>
-        </FormGroup>
-
-        {isBackgroundAndBlurringSupported && videoBackgrounds.length > 0 && (
+        {showDeviceOptions && isBackgroundAndBlurringSupported && videoBackgrounds.length > 0 && (
           <>
             <Divider variant="middle" />
             <Typography

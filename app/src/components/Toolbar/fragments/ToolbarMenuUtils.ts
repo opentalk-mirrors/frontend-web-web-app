@@ -14,6 +14,7 @@ const ToolbarMenu = styled(Popover)(({ theme }) => ({
 
   '& .MuiPaper-root': {
     paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
   },
 }));
 

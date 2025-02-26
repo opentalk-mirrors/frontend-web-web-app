@@ -28,6 +28,7 @@ import { sendStartStreamSignal, sendStopStreamSignal } from '../../../api/types/
 import { disablePresenceLogging, enablePresenceLogging } from '../../../api/types/outgoing/trainingParticipationReport';
 import {
   AddUserIcon,
+  AttendanceReportIcon,
   CloseIcon,
   DoneIcon,
   ErrorIcon,
@@ -39,7 +40,6 @@ import {
   RecordingsIcon,
   TimerIcon,
   TrashIcon,
-  AttendanceReportIcon,
 } from '../../../assets/icons';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import {
@@ -404,7 +404,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
 
   const MenuTitleContainer = styled(Stack)(({ theme }) => ({
     alignItems: 'center',
-    padding: theme.spacing(1, 2, 0, 1),
+    padding: theme.spacing(0, 2, 0, 1),
     justifyContent: 'space-between',
   }));
 

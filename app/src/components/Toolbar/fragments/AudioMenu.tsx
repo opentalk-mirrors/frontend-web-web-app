@@ -73,7 +73,7 @@ const AudioMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         aria-labelledby="audio-menu-title"
         role="listbox"
       >
-        <MenuSectionTitle id="audio-menu-title" sx={{ pt: 1.5, pb: 1.5 }}>
+        <MenuSectionTitle id="audio-menu-title" sx={{ pb: 1.5 }}>
           <MicOnIcon />
           {t('audiomenu-choose-input')}
         </MenuSectionTitle>
