@@ -36,7 +36,7 @@ import { CommonTextField, notificationAction, notifications } from '../../common
 import { useAppSelector } from '../../hooks';
 import { selectFeatures, selectWaitingRoomDefault } from '../../store/slices/configSlice';
 import { appendRecurringEventInstances } from '../../utils/eventUtils';
-import { formikMinimalProps, formikProps } from '../../utils/formikUtils';
+import { formikProps, formikSwitchProps } from '../../utils/formikUtils';
 import getReferrerRouterState from '../../utils/getReferrerRouterState';
 import { isFeatureEnabledPredicate } from '../../utils/moduleUtils';
 import roundToUpper30 from '../../utils/roundToUpper30';
@@ -580,7 +580,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
 
           <MeetingFormSwitch
             checked={formik.values.isTimeDependent}
-            switchProps={formikMinimalProps('isTimeDependent', formik)}
+            switchProps={formikSwitchProps('isTimeDependent', formik)}
             switchValueLabel={t('dashboard-meeting-date-and-time-switch')}
           />
 
@@ -671,19 +671,19 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
 
           <MeetingFormSwitch
             checked={formik.values.waitingRoom}
-            switchProps={formikMinimalProps('waitingRoom', formik)}
+            switchProps={formikSwitchProps('waitingRoom', formik)}
             switchValueLabel={t('dashboard-meeting-waiting-room-switch')}
           />
           {features.sharedFolder && (
             <MeetingFormSwitch
               checked={formik.values.sharedFolder}
-              switchProps={formikMinimalProps('sharedFolder', formik)}
+              switchProps={formikSwitchProps('sharedFolder', formik)}
               switchValueLabel={t('dashboard-meeting-shared-folder-switch')}
             />
           )}
           <MeetingFormSwitch
             checked={formik.values.showMeetingDetails}
-            switchProps={formikMinimalProps('showMeetingDetails', formik)}
+            switchProps={formikSwitchProps('showMeetingDetails', formik)}
             switchValueLabel={t('dashboard-meeting-details-switch')}
             tooltipTitle={t('dashboard-meeting-details-tooltip')}
           />
@@ -693,7 +693,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
           {features.e2eEncryption && (
             <MeetingFormSwitch
               checked={formik.values.e2eEncryption}
-              switchProps={formikMinimalProps('e2eEncryption', formik)}
+              switchProps={formikSwitchProps('e2eEncryption', formik)}
               switchValueLabel={t('dashboard-meeting-e2ee-switch')}
               tooltipTitle={t('dashboard-meeting-e2ee-tooltip')}
             />

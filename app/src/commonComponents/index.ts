@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import AccordionItem from './AccordionItem';
 import CommonFormItem from './CommonFormItem';
+import CommonSwitch from './CommonSwitch';
 import CommonTextField from './CommonTextField';
 import CopyTextField from './CopyTextField';
 import DurationField, { DurationValueOptions } from './DurationField';
@@ -34,6 +35,7 @@ export {
   AccordionItem,
   CommonFormItem,
   CommonTextField,
+  CommonSwitch,
   CopyTextField,
   DurationField,
   NameTile,

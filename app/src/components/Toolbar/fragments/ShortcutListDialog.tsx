@@ -1,22 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  Dialog,
-  DialogTitle,
-  IconButton,
-  Paper,
-  Stack,
-  Box,
-  styled,
-  Switch,
-  FormLabel,
-  Typography,
-} from '@mui/material';
+import { Dialog, DialogTitle, IconButton, Paper, Stack, Box, styled, FormLabel, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../../assets/icons';
+import { CommonSwitch } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks/index';
 import { selectHotkeysEnabled, setHotkeysEnabled } from '../../../store/slices/uiSlice';
 import { ShortcutTable } from './ShortcutTable';
@@ -92,16 +82,10 @@ const ShortcutListDialog = (props: ShortcutListDialogProps) => {
           }}
         >
           <SwitchLabel htmlFor={switchId}>{t('my-meeting-menu-keyboard-shortcuts')}</SwitchLabel>
-          <Switch
+          <CommonSwitch
             id={switchId}
             checked={hotkeysEnabled}
             onChange={() => dispatch(setHotkeysEnabled(!hotkeysEnabled))}
-            onKeyDown={(e) => {
-              if (e.code === 'Space') {
-                e.stopPropagation();
-              }
-            }}
-            onKeyUp={(e) => e.stopPropagation()}
             /* eslint-disable jsx-a11y/no-autofocus */
             // We want screen reader to jump to the first interactive element
             // upon reveal and start pronouncing content of the dialog.

@@ -30,6 +30,7 @@ interface IFormikPropsReturnValue extends IFormikCommonPropsReturnValue {
 
 export interface IFormikSwitchPropsReturnValue extends IFormikCommonPropsReturnValue {
   checked: boolean;
+  onKeyDown: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
 }
 
 export interface IFormikDateTimePickerPropsReturnValue extends IFormikCommonPropsReturnValue {
@@ -81,11 +82,21 @@ export function formikSwitchProps<Values>(
   const errorMessage = get(errors, fieldName);
   const hasError = Boolean(errorMessage);
 
+  const isChecked = () => {
+    return get(values, fieldName) ?? false;
+  };
+
   return {
     name: fieldName,
     onChange: handleChange,
+    onKeyDown: (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        formik.setFieldValue(fieldName, !isChecked());
+      }
+    },
     onBlur: handleBlur,
-    checked: get(values, fieldName) ?? false,
+    checked: isChecked(),
     error: hasError,
     helperText: (hasError && (errorMessage as string)) || undefined,
   };

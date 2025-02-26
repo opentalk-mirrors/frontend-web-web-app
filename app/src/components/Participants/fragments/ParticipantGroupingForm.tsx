@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, FormControlLabel as MuiFormControlLabel, Switch, Typography } from '@mui/material';
+import { styled, FormControlLabel as MuiFormControlLabel, Typography } from '@mui/material';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { CommonSwitch } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectShowParticipantGroups, setSortByGroups } from '../../../store/slices/uiSlice';
 
@@ -22,7 +23,7 @@ const ParticipantGroupingForm = () => {
   return (
     <FormControlLabel
       control={
-        <Switch
+        <CommonSwitch
           color="primary"
           onChange={(_, checked) => dispatch(setSortByGroups(checked))}
           value={participantGroupingEnabled}
