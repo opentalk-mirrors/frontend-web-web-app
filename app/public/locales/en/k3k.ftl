@@ -1170,6 +1170,7 @@ my-meeting-menu = My meeting
 my-meeting-menu-keyboard-shortcuts = Keyboard Shortcuts
 my-meeting-menu-user-manual = User manual
 my-meeting-menu-glitchtip-trigger = Report a bug
+my-meeting-menu-support = Support
 
 control-participant-presenter-role-revoked = Your presenter role has been revoked
 control-participant-presenter-role-granted = You got the presenter role

@@ -68,6 +68,7 @@ window.config = {
   insecure: ${INSECURE:-false},
   baseUrl: "${BASE_URL}",
   helpdeskUrl: "${HELPDESK_URL}",
+  contactSupportUrl: "${CONTACT_SUPPORT_URL}",
   imprintUrl: "${IMPRINT_URL}",
   dataProtectionUrl: "${DATA_PROTECTION_URL}",
   provider: {

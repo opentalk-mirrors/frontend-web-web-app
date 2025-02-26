@@ -98,6 +98,7 @@ export type ConfigState = {
   insecure: boolean;
   baseUrl: string;
   helpdeskUrl: string;
+  contactSupportUrl: string;
   userSurveyUrl?: string;
   userSurveyApiKey?: string;
   beta: Beta;
@@ -162,6 +163,7 @@ export const initialState: ConfigState = {
   insecure: false,
   baseUrl: 'http://localhost',
   helpdeskUrl: 'HELPDESK',
+  contactSupportUrl: 'CONTACT_SUPPORT',
   userSurveyUrl: undefined,
   userSurveyApiKey: undefined,
   errorReportAddress: 'report@opentalk.eu',
@@ -240,6 +242,7 @@ export const selectControllerUrl = (state: RootState) => {
   return `${prefix}://${state.config.controller}/`;
 };
 export const selectHelpdeskUrl = (state: RootState) => state.config.helpdeskUrl;
+export const selectContactSupportUrl = (state: RootState) => state.config.contactSupportUrl;
 export const selectWsController = (state: RootState) => state.config.insecure;
 export const selectOidcConfig = (state: RootState) => state.config.oidcConfig;
 export const selectSpeedTestConfig = (state: RootState) => state.config.speedTest;
