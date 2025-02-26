@@ -57,7 +57,7 @@ export const DashboardDateTimePicker = (props: DashboardDateTimePickerProps) => 
           startAdornment: t(`dashboard-meeting-date-${props.type}`),
           required: true,
         }}
-        helperText={props.helperText}
+        helperText={props.formik.errors[`${props.type}Date`] || props.helperText}
       />
     </Stack>
   );
