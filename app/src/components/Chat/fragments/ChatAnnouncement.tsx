@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ListItem } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,7 +31,7 @@ const ChatAnnouncement = (props: ChatAnnouncementProps) => {
     };
   }, []);
 
-  return <ListItem>{announcement}</ListItem>;
+  return <Typography>{announcement}</Typography>;
 };
 
 export default ChatAnnouncement;
