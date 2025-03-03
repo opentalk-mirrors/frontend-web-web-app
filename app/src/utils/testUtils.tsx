@@ -267,6 +267,8 @@ export const mockedParticipant = (
   kind: ParticipationKind = ParticipationKind.User
 ): Participant & {
   identity: string;
+  isCameraEnabled: boolean;
+  isMicrophoneEnabled: boolean;
   getTrackPublication: () => LocalTrackPublication | undefined;
   setMicrophoneEnabled: (enabled: boolean) => LocalTrackPublication | undefined;
   videoTrackPublications: Map<string, RemoteTrackPublication>;
@@ -285,6 +287,8 @@ export const mockedParticipant = (
   waitingState: WaitingState.Joined,
   meetingNotesAccess: MeetingNotesAccess.None,
   isRoomOwner: false,
+  isCameraEnabled: false,
+  isMicrophoneEnabled: false,
   getTrackPublication: () => undefined,
   setMicrophoneEnabled: () => undefined,
   videoTrackPublications: new Map(),

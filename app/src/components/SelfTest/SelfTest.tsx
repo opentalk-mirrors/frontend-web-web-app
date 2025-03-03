@@ -19,7 +19,7 @@ import { useInviteCode } from '../../hooks/useInviteCode';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { selectFeatures } from '../../store/slices/configSlice';
-import { selectVideoEnabled, selectAudioEnabled } from '../../store/slices/mediaSlice';
+import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/mediaSlice';
 import { BreakoutRoomId } from '../../types';
 import MyMeetingMenu from '../MeetingHeader/fragments/MyMeetingMenu';
 import SpeedTestDialog from '../SpeedTestDialog';
@@ -134,7 +134,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
 
   return (
-    <Container>
+    <Container data-testid="selfTest">
       <InnerContainer>
         <Header>
           <IconButton onClick={navigateToHome} aria-label={t('conference-go-home')}>

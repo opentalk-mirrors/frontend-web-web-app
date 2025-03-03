@@ -83,11 +83,7 @@ const GridView = () => {
     </Grid>
   );
 
-  return (
-    <GridContainer data-testid="grid-container" videoWidth={videoWidth}>
-      {areGridCellsLoading ? loadingGrids : gridCells}
-    </GridContainer>
-  );
+  return <GridContainer videoWidth={videoWidth}>{areGridCellsLoading ? loadingGrids : gridCells}</GridContainer>;
 };
 
 export default GridView;

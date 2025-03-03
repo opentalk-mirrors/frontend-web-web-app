@@ -15,7 +15,7 @@ jest.mock('./fragments/GridCell', () => ({
 jest.mock('@livekit/components-react', () => ({
   ParticipantContext: {
     Provider: ({ children }: PropsWithChildren) => {
-      return <div data-testid="provider"> {children}</div>;
+      return <div>{children}</div>;
     },
   },
   useRoomContext: () => jest.fn(),
@@ -24,9 +24,9 @@ jest.mock('@livekit/components-react', () => ({
 
 describe('GridView', () => {
   test('render GridView', () => {
-    const { store } = mockStore(0);
+    const { store } = mockStore(1);
     renderWithProviders(<GridView />, { store });
 
-    expect(screen.getByTestId('grid-container')).toBeVisible();
+    expect(screen.getByTestId('gridCell')).toBeVisible();
   });
 });

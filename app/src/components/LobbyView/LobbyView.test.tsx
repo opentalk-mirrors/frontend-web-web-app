@@ -7,7 +7,7 @@ import { PropsWithChildren } from 'react';
 
 import { Role } from '../../api/types/incoming/control';
 import * as UseInviteCodeModule from '../../hooks/useInviteCode';
-import { renderWithProviders, configureStore } from '../../utils/testUtils';
+import { renderWithProviders, configureStore, mockedParticipant } from '../../utils/testUtils';
 import LobbyView from './LobbyView';
 
 jest.mock('../../templates/fragments/BrowserCompatibilityInfo', () => ({
@@ -26,9 +26,20 @@ jest.mock('../../api/rest', () => ({
   }),
 }));
 
-jest.mock('../SelfTest', () => ({
-  __esModule: true,
-  default: () => <div data-testid="selfTest"></div>,
+jest.mock('../../hooks/useFullscreenContext.ts', () => ({
+  useFullscreenContext: () => ({
+    active: false,
+  }),
+}));
+
+jest.mock('@livekit/components-react', () => ({
+  useMaybeRoomContext: () => ({ localParticipant: mockedParticipant(0) }),
+  useMediaDeviceSelect: () => ({
+    devices: [
+      { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },
+      { deviceId: 'xxxx1', groupId: 'xxxxx1', kind: 'videoinput', label: 'video' },
+    ],
+  }),
 }));
 
 describe('LobbyForm', () => {
@@ -44,18 +55,18 @@ describe('LobbyForm', () => {
     jest.resetAllMocks();
   });
 
-  test('LobyFormShouldRender', () => {
-    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
+  test('renders self test component', () => {
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     expect(screen.getByTestId('selfTest')).toBeInTheDocument();
   });
 
-  test.skip('render LobbyForm component without crashing for authed user', () => {
+  test('render LobbyForm component without crashing for authed user', () => {
     //As we now get the invite code in components from the query params we need to mock a value for it.
     const useInviteCodeMock = jest.spyOn(UseInviteCodeModule, 'useInviteCode');
     useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
 
-    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
     expect(userNameInput).toBeInTheDocument();
@@ -74,23 +85,23 @@ describe('LobbyForm', () => {
     expect(submitButton).not.toHaveAttribute('disabled');
   });
 
-  test.skip('submit button is disabled if user is not logged in', () => {
+  test('submit button is disabled if user is not logged in', () => {
     const { store } = configureStore({
       initialState: {
         user: { loggedIn: false, role: Role.User },
       },
     });
-    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const submitButton = screen.getByRole('button', { name: /joinform-enter-now/i });
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toHaveAttribute('disabled');
   });
 
-  test.skip('adding values to input fileds and click on submit should submit added values', () => {
+  test('adding values to input fileds and click on submit should submit added values', () => {
     const USERNAME = 'lobbyForm testUserName*7';
     const PASSWORD = 'lobbyFormPassword (*';
-    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
     expect(userNameInput).toBeInTheDocument();
@@ -120,8 +131,8 @@ describe('LobbyForm', () => {
     */
   });
 
-  test.skip('click on toggle visibility button should change input type=text', () => {
-    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
+  test('click on toggle visibility button should change input type=text', () => {
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
     expect(passwordInput).toHaveAttribute('type', 'password');
@@ -134,8 +145,8 @@ describe('LobbyForm', () => {
     expect(passwordInput).toHaveAttribute('type', 'text');
   });
 
-  test.skip('name field prefilled from displayName', () => {
-    renderWithProviders(<LobbyView />, { store, provider: { router: true } });
+  test('name field prefilled from displayName', () => {
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     expect(screen.getByPlaceholderText('lobby-name-placeholder')).toHaveDisplayValue('Test');
   });
