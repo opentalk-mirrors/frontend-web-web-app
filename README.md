@@ -281,7 +281,6 @@ window.config = {
       "addUser": true,
       "joinWithoutMedia": false,
       "sharedFolder": false,
-      "subroomAudio": false,
       "e2eEncryption": false,
     },
 	settings: {
