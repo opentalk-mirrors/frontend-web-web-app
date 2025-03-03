@@ -56,6 +56,17 @@ lint:prettier+eslint:
     - pnpm lint --max-warnings 0
     - pnpm fmt:ci
 
+lint:circular-deps:
+  stage: lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  before_script:
+    - *setup-pnpm
+  script:
+    - pnpm install
+    - pnpm circular-deps
+  allow_failure: true
+
 lint:yaml:
   stage: lint
   rules:

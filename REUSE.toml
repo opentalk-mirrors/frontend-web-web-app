@@ -8,6 +8,7 @@ path = [
     ".commitlintrc.json",
     ".lintstagedrc.json",
     ".husky/*",
+    ".madgerc",
     ".parcelrc.js",
     ".parcelrc",
     ".prettierrc.js",

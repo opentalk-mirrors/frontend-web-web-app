@@ -1,0 +1,14 @@
+{
+  "excludeRegExp": ["dist", "node_modules"],
+  "fileExtensions": ["ts", "tsx"],
+  "detectiveOptions": {
+    "ts": {
+      "skipTypeImports": true,
+      "skipAsyncImports": true
+    },
+    "tsx": {
+      "skipTypeImports": true,
+      "skipAsyncImports": true
+    }
+  }
+}
