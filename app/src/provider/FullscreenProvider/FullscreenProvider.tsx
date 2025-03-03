@@ -37,6 +37,10 @@ const FullscreenProvider = ({ children }: { children: ReactNode }) => {
     return () => fscreen.removeEventListener('fullscreenchange', handleChange);
   }, []);
 
+  const isFullScreenAvailable = () => {
+    return Boolean(node.current?.requestFullscreen);
+  };
+
   const extendedFullscreenHandle = {
     node,
     active,
@@ -47,6 +51,7 @@ const FullscreenProvider = ({ children }: { children: ReactNode }) => {
     setHasActiveOverlay,
     rootElement,
     setRootElement,
+    isFullScreenAvailable,
   };
 
   return <FullscreenContext.Provider value={extendedFullscreenHandle}>{children}</FullscreenContext.Provider>;

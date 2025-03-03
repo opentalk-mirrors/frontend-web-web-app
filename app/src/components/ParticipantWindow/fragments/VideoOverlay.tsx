@@ -137,47 +137,49 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
     });
   };
 
-  const getOverlayButtons = () => (
-    <IndicatorContainer item>
-      {active && (
-        <>
-          {userLayout === LayoutOptions.Speaker && (
-            <Tooltip title={t('video-overlay-tooltip-pin-video')}>
-              <OverlayIconButton
-                color={pinnedParticipantId === descriptor.participantId ? 'primary' : 'secondary'}
-                onClick={togglePin}
-                translate="no"
-                aria-label={t('indicator-pinned', {
-                  participantName: displayName || '',
-                })}
-              >
-                <PinIcon />
-              </OverlayIconButton>
-            </Tooltip>
-          )}
-          <Tooltip title={t('video-overlay-tooltip-fullscreen')}>
-            <OverlayIconButton
-              aria-label={t('indicator-fullscreen-open')}
-              onClick={openFullScreenView}
-              color="secondary"
-            >
-              <FullscreenViewIcon />
-            </OverlayIconButton>
-          </Tooltip>
-          {isScreenShareOrVideoActive && (
-            <Tooltip title={t('video-overlay-tooltip-separate-window')}>
-              <OverlayIconButton aria-label={t('global-open-new-tab')} color="secondary" onClick={openInNewTab}>
-                <ExtendToTabIcon />
-              </OverlayIconButton>
-            </Tooltip>
-          )}
-        </>
-      )}
-      <BrokenSubscriberIndicator descriptor={descriptor} />
-    </IndicatorContainer>
+  return (
+    <OverlayContainer>
+      <IndicatorContainer item>
+        {active && (
+          <>
+            {userLayout === LayoutOptions.Speaker && (
+              <Tooltip title={t('video-overlay-tooltip-pin-video')}>
+                <OverlayIconButton
+                  color={pinnedParticipantId === descriptor.participantId ? 'primary' : 'secondary'}
+                  onClick={togglePin}
+                  translate="no"
+                  aria-label={t('indicator-pinned', {
+                    participantName: displayName || '',
+                  })}
+                >
+                  <PinIcon />
+                </OverlayIconButton>
+              </Tooltip>
+            )}
+            {fullscreenHandle.isFullScreenAvailable() && (
+              <Tooltip title={t('video-overlay-tooltip-fullscreen')}>
+                <OverlayIconButton
+                  aria-label={t('indicator-fullscreen-open')}
+                  onClick={openFullScreenView}
+                  color="secondary"
+                >
+                  <FullscreenViewIcon />
+                </OverlayIconButton>
+              </Tooltip>
+            )}
+            {isScreenShareOrVideoActive && (
+              <Tooltip title={t('video-overlay-tooltip-separate-window')}>
+                <OverlayIconButton aria-label={t('global-open-new-tab')} color="secondary" onClick={openInNewTab}>
+                  <ExtendToTabIcon />
+                </OverlayIconButton>
+              </Tooltip>
+            )}
+          </>
+        )}
+        <BrokenSubscriberIndicator descriptor={descriptor} />
+      </IndicatorContainer>
+    </OverlayContainer>
   );
-
-  return <OverlayContainer>{getOverlayButtons()}</OverlayContainer>;
 };
 
 export default VideoOverlay;
