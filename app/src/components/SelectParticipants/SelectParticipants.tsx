@@ -32,6 +32,9 @@ const AutocompleteTextField = styled(TextField)(({ theme }) => ({
   '& .MuiSvgIcon-root': {
     color: `${theme.palette.secondary.dark} !important`,
   },
+  '& .MuiInputBase-input::placeholder': {
+    opacity: 1,
+  },
 }));
 
 const SelectParticipants = ({
