@@ -5,7 +5,7 @@ import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
 
 import { Event } from '../../../dist/esm';
 import { eventMockedData } from '../mocks/data';
-import { RootState } from './store';
+import type { RootState } from './store';
 
 const eventAdapter = createEntityAdapter<Event>({
   selectId: (event) => `${event.id}@${event.title}`,

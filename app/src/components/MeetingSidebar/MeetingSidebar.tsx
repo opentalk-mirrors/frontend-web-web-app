@@ -4,8 +4,9 @@
 import { styled, useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { ModerationTabKey } from '../../config/moderationTabs';
-import { useAppDispatch, useAppSelector, useTabs as useSidebarTabs } from '../../hooks';
+import { ModerationTabKey } from '../../config/constants';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import useTabs from '../../hooks/useTabs';
 import { selectActiveTab, setActiveTab } from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import LocalVideo from '../LocalVideo';
@@ -44,7 +45,7 @@ const MeetingSidebar = () => {
   const CHAT_PANEL_VALUE = ModerationTabKey.Home;
   const activeTab = useAppSelector(selectActiveTab);
   const dispatch = useAppDispatch();
-  const tabs = useSidebarTabs();
+  const tabs = useTabs();
 
   const handleSetActiveTab = (tabKey: ModerationTabKey) => dispatch(setActiveTab(tabKey));
 

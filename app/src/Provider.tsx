@@ -7,10 +7,11 @@ import { AuthProvider } from '@opentalk/redux-oidc';
 import { createOpenTalkTheme } from './assets/themes/opentalk';
 import { SnackbarProvider } from './commonComponents';
 import { useAppSelector } from './hooks';
+import { ConnectionState } from './modules/WebRTC/ConferenceRoom';
 import BreakoutRoomProvider from './provider/BreakoutRoomProvider';
 import FullscreenProvider from './provider/FullscreenProvider';
 import { selectBaseUrl, selectControllerUrl, selectOidcConfig } from './store/slices/configSlice';
-import { ConnectionState, selectRoomConnectionState } from './store/slices/roomSlice';
+import { selectRoomConnectionState } from './store/slices/roomSlice';
 
 interface ProviderProps {
   children: React.ReactNode;

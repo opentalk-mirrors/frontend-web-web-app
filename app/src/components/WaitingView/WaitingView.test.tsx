@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { cleanup, screen } from '@testing-library/react';
 
-import { ConnectionState } from '../../store/slices/roomSlice';
+import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import WaitingView from './WaitingView';
 

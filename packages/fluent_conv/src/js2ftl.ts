@@ -1,4 +1,4 @@
-import { FluentIJs } from '.';
+import type { FluentIJs } from '.';
 
 /**
  * Creates a k=value pair from two string arguments.

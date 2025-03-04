@@ -9,9 +9,10 @@ import {
 } from 'notistack';
 import React from 'react';
 
-import { getNotistackComponents, notifications } from '..';
 import { useFullscreenContext } from '../../../../provider/FullscreenProvider';
 import { CloseButton } from '../CloseButton';
+import { notifications } from '../utils';
+import { getNotistackComponents } from '../variations';
 
 const StyledCloseButton = styled(CloseButton)(({ theme }) => ({
   padding: theme.spacing(1),

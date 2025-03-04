@@ -6,7 +6,7 @@ import fscreen from 'fscreen';
 import { Participant, RemoteParticipant } from 'livekit-client';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
-import { getLivekitRoom } from '../../store/slices/livekitSlice';
+import { getLivekitRoom } from '../../store/livekitRoom';
 import { FullscreenContext } from './FullscreenContext';
 
 const FullscreenProvider = ({ children }: { children: ReactNode }) => {

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-import { RootState } from '..';
+import type { RootState } from '..';
 import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
 import { ForceMute, ForceMuteType } from '../../types';
 import { joinSuccess } from '../commonActions';

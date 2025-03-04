@@ -4,7 +4,8 @@
 import { CircularProgress, styled } from '@mui/material';
 
 import { useAppSelector } from '../../../hooks';
-import { ConnectionState, selectRoomConnectionState } from '../../../store/slices/roomSlice';
+import { ConnectionState } from '../../../modules/WebRTC/ConferenceRoom';
+import { selectRoomConnectionState } from '../../../store/slices/roomSlice';
 import { selectShowCoffeeBreakCurtain } from '../../../store/slices/uiSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import Ballot from '../../Ballot';

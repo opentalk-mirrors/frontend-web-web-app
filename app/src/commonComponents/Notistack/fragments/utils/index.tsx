@@ -1,29 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { TFunctionResult } from 'i18next';
 import { OptionsObject, SnackbarKey, enqueueSnackbar, closeSnackbar, SnackbarMessage } from 'notistack';
-import React from 'react';
 
 import SnackbarActionButtons from '../SnackbarActionButtons';
+import { SnackbarActionButtonProps, AdditionalButtonAttributes } from '../SnackbarActionButtons/SnackbarActionButtons';
 
-export interface AdditionalButtonAttributes {
-  variant?: 'text' | 'outlined' | 'contained';
-  color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
-}
-
-export interface ISnackbarActionButtonProps {
-  msg: (string | React.ReactNode) & TFunctionResult;
-  onCancel?: () => void;
-  onAction?: () => void;
-  actionBtnText?: string;
-  actionBtnAttributes?: AdditionalButtonAttributes;
-  cancelBtnAttributes?: AdditionalButtonAttributes;
-  cancelBtnText?: string;
-  hideCloseButton?: boolean;
-}
-
-export interface ISnackActionsProps extends OptionsObject, ISnackbarActionButtonProps {}
+export interface ISnackActionsProps extends OptionsObject, SnackbarActionButtonProps {}
 
 export interface ISnackbarPersistentProps extends Omit<OptionsObject, 'persist' | 'action' | 'autoHideDuration'> {
   msg: string;

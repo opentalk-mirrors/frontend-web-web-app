@@ -4,7 +4,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
-import { RootState } from '../';
+import type { RootState } from '../';
 import { leaveWhisperGroup } from '../../api/types/outgoing/subroomAudio';
 import { ParticipantId, WhisperId, WhisperParticipant, WhisperParticipantState } from '../../types';
 import { hangUp } from '../commonActions';

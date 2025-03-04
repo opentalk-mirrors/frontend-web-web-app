@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Email, UserId, BaseAsset } from './common';
-import { EventId } from './event';
-import { RoomId } from './room';
+import { BaseAsset } from './common';
+import type { Email, UserId } from './common';
+import type { EventId } from './event';
+import type { RoomId } from './room';
 
 // FIXME: This needs an overhaul after we added all ne new settings related endpoints
 // Request Bodies

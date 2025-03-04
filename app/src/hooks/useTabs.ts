@@ -3,15 +3,18 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useAppDispatch, useAppSelector } from '.';
-import { ModerationTabKey, Tab, tabs as initialTabs } from '../config/moderationTabs';
+import { ModerationTabKey } from '../config/constants';
+import { Tab, tabs as initialTabs } from '../config/moderationTabs';
 import { selectEnabledModulesList, selectFeatures } from '../store/slices/configSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { selectTimerStyle } from '../store/slices/timerSlice';
 import { selectActiveTab, setActiveTab } from '../store/slices/uiSlice';
 import { selectIsModerator } from '../store/slices/userSlice';
 import { RoomMode, TimerStyle } from '../types';
+import { useAppDispatch, useAppSelector } from './useCustomRedux';
 
+// components should export the hook directly from here and not from `hooks/index.ts`
+// otherwise it will cause circular dependencies
 const useTabs = () => {
   const [tabs, setTabs] = useState<Tab[]>([]);
   const features = useAppSelector(selectFeatures);

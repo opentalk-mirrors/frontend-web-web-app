@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { StreamingTargetId } from '@opentalk/rest-api-rtk-query';
 
-import { sendMessage } from '../..';
-import { RootState } from '../../../store';
+import type { RootState } from '../../../store';
 import { createModule, Namespaced } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
+import { sendMessage } from './common';
 
 interface BaseTargets {
   targetIds: Array<StreamingTargetId>;

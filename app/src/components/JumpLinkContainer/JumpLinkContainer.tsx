@@ -4,7 +4,7 @@
 import { styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { ModerationTabKey } from '../../config/moderationTabs';
+import { ModerationTabKey } from '../../config/constants';
 import { MY_MEETING_MENU_BUTTON_ID, ToolbarButtonIds } from '../../constants';
 import { useAppSelector } from '../../hooks';
 import { selectIsModerator } from '../../store/slices/userSlice';

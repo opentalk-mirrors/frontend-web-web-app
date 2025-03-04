@@ -4,7 +4,7 @@
 import { Box, Typography, styled } from '@mui/material';
 import React, { forwardRef } from 'react';
 
-import { ModerationTabKey } from '../../../config/moderationTabs';
+import { ModerationTabKey } from '../../../config/constants';
 
 interface SideTabPanelProps {
   value: ModerationTabKey;

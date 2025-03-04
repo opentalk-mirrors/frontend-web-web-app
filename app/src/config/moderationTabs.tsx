@@ -28,10 +28,9 @@ import HomeIconComponent from '../components/HomeIconComponent';
 import ResultsList from '../components/MeetingHeader/fragments/ResultsList';
 import SupportList from '../components/SupportList';
 import WaitingParticipantsList from '../components/WaitingParticipantsList';
-import { useAppSelector } from '../hooks';
 import { FeaturesKeys } from '../store/slices/configSlice';
-import { selectCurrentRoomMode } from '../store/slices/roomSlice';
-import { RoomMode, TimerStyle } from '../types';
+import { TimerStyle } from '../types';
+import { ModerationTabKey } from './constants';
 import {
   MenuTabs,
   BreakoutRoomTab,
@@ -44,29 +43,6 @@ import {
   TimerTab,
   WhiteboardTab,
 } from './fragments/lazyTabs';
-
-export enum ModerationTabKey {
-  Home = 'tab-home',
-  MuteUsers = 'tab-mute-users',
-  ResetHandraises = 'tab-reset-handraises',
-  Breakout = 'tab-breakout-rooms',
-  Whiteboard = 'tab-whiteboard',
-  Polls = 'tab-polls',
-  LegalVote = 'tab-voting',
-  Timer = 'tab-timer',
-  CoffeeBreak = 'tab-coffee-break',
-  MeetingNotes = 'tab-meeting-notes',
-  AddUser = 'tab-add-user',
-  TalkingStick = 'tab-talking-stick',
-  Debriefing = 'tab-debriefing',
-  Wollknaul = 'tab-wollknaul',
-  SpeakerQueue = 'tab-speaker-queue',
-  WheelOfNames = 'tab-wheel-of-names',
-  Divider = 'tab-divider',
-  WaitingRoom = 'tab-waiting-room',
-  PollsAndLegalVote = 'tab-polls-voting',
-  SupportMenu = 'tab-support-menu',
-}
 
 export interface Tab {
   /**
@@ -88,10 +64,6 @@ export interface Tab {
   disabled?: boolean;
   titleKey?: string;
 }
-
-export const currentRoomMode = (): RoomMode | undefined => {
-  return useAppSelector(selectCurrentRoomMode);
-};
 
 export const tabs: Array<Tab> = [
   {
@@ -161,7 +133,7 @@ export const tabs: Array<Tab> = [
     icon: <LegalBallotIcon />,
     component: (
       <Suspense fallback={<SuspenseLoading />}>
-        <LegalVoteTab currentRoomMode={currentRoomMode} />
+        <LegalVoteTab />
       </Suspense>
     ),
     tooltipTranslationKey: 'moderationbar-button-ballot-tooltip',

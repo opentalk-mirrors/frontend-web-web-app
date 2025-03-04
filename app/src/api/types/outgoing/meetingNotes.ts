@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RootState } from '../../../store';
+import type { RootState } from '../../../store';
 import { createModule, Namespaced, ParticipantId } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
-import { sendMessage } from '../../index';
+import { sendMessage } from './common';
 
 export interface SelectMeetingNotesAccess {
   action: 'select_writer' | 'deselect_writer';

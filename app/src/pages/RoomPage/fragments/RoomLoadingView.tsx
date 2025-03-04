@@ -7,7 +7,8 @@ import { Trans } from 'react-i18next';
 
 import { ReconnectionDialog } from '../../../components/ReconnectionDialog';
 import { useAppSelector } from '../../../hooks';
-import { ConnectionState, selectRoomConnectionState } from '../../../store/slices/roomSlice';
+import { ConnectionState } from '../../../modules/WebRTC/ConferenceRoom';
+import { selectRoomConnectionState } from '../../../store/slices/roomSlice';
 
 const Container = styled(MuiContainer)(({ theme }) => ({
   display: 'flex',

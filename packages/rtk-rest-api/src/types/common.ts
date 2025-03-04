@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Opaque } from 'type-fest';
 
-import { SipId } from './room';
-import { BaseUser } from './user';
+import type { SipId } from './room';
+import type { BaseUser } from './user';
 
 export type UserId = Opaque<string, 'userId'>;
 export type Email = Opaque<string, 'email'>;

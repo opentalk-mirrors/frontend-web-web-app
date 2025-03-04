@@ -4,7 +4,7 @@
 import { Badge, styled } from '@mui/material';
 
 import { HomeIcon } from '../../assets/icons';
-import { ModerationTabKey } from '../../config/moderationTabs';
+import { ModerationTabKey } from '../../config/constants';
 import { useAppSelector } from '../../hooks';
 import { selectUnreadGlobalMessageCount, selectUnreadPersonalMessageCount } from '../../store/slices/chatSlice';
 import { selectActiveTab } from '../../store/slices/uiSlice';

@@ -24,11 +24,11 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
+import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { startRoom } from '../../store/commonActions';
 import { selectDisallowCustomDisplayName, selectFeatures } from '../../store/slices/configSlice';
 import { startMedia } from '../../store/slices/mediaSlice';
 import {
-  ConnectionState,
   InviteCodeErrorEnum,
   fetchRoomByInviteId,
   selectInviteState,

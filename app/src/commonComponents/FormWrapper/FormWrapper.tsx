@@ -5,7 +5,7 @@ import { FormControl, Stack, styled } from '@mui/material';
 import type { CSSObject } from '@mui/material';
 import { useMemo } from 'react';
 
-import { ErrorFormMessage } from '../';
+import ErrorFormMessage from '../ErrorFormMessage';
 
 export type FormProps = {
   label?: string;

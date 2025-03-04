@@ -4,15 +4,16 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Event } from '@sentry/react';
 
-import { RootState } from '../';
+import type { RootState } from '../';
 import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
-import { ModerationTabKey } from '../../config/moderationTabs';
+import { ModerationTabKey } from '../../config/constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ChatScope, LegalVoteId, ParticipantId, PollId, SortOption, TargetId, TimerStyle } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
 import { started as automodStarted } from './automodSlice';
+import { GridViewOrder } from './common';
 import { started as legalVoteStarted } from './legalVoteSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { breakoutLeft, leave } from './participantsSlice';
@@ -21,11 +22,6 @@ import { connectionClosed } from './roomSlice';
 import { timerStarted, timerStopped } from './timerSlice';
 import { setWhiteboardAvailable } from './whiteboardSlice';
 
-export enum GridViewOrder {
-  FirstJoined = 'firstJoined',
-  VideoFirst = 'videoFirst',
-  ModeratorsFirst = 'moderatorsFirst',
-}
 export interface IChatConversationState {
   scope?: ChatScope;
   targetId?: TargetId;

@@ -12,15 +12,15 @@ import { notifications, stopTimeLimitNotification } from '../commonComponents';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { BreakoutRoomId, JoinSuccessInternalState } from '../types';
 import { getControllerBaseUrl } from '../utils/apiUtils';
-import { RootState } from './index';
-import { getLivekitRoom } from './slices/livekitSlice';
+import type { RootState } from './index';
+import { getLivekitRoom } from './livekitRoom';
 
-export interface RoomCredentials {
+export type RoomCredentials = {
   roomId: RoomId;
   password?: string;
   inviteCode?: InviteCode;
   breakoutRoomId: BreakoutRoomId | null;
-}
+};
 
 export const login = createAsyncThunk<{ permission: Array<string> }, string, { state: RootState; rejectValue: Error }>(
   'user/login',

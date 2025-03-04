@@ -15,10 +15,11 @@ import convertToCamelCase from 'camelcase-keys';
 import { batch } from 'react-redux';
 import convertToSnakeCase from 'snakecase-keys';
 
-import { AppDispatch, RootState } from '../';
+import type { AppDispatch, RootState } from '../';
 import { StartRoomError } from '../../api/rest';
 import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
 import { notifications } from '../../commonComponents';
+import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import {
   AutomodSelectionStrategy,
   FetchRequestError,
@@ -37,37 +38,6 @@ interface InviteState extends FetchRequestState {
   active?: boolean;
   expiration?: string;
   inviteCode?: InviteCode;
-}
-
-/**
- * ### State Machine Graph
- * - Initial -> Setup
- * - Setup -> Starting
- * - Starting -> Blocked
- * - Starting -> Waiting ->ReadyToEnter -> Online
- * - Starting -> Failed
- * - Starting -> Failed-credentials
- * - Starting -> Online
- * - Online -> Failed
- * - Online -> Leaving
- * - Leaving -> Failed
- * - Leaving -> Left
- * - Failed -> Starting
- * - Failed -> Left
- * - Left -> Starting
- */
-export enum ConnectionState {
-  Initial = 'initial',
-  Setup = 'setup',
-  Starting = 'starting',
-  Waiting = 'waiting',
-  Online = 'online',
-  Leaving = 'leaving',
-  Left = 'left',
-  Failed = 'failed',
-  FailedCredentials = 'failed-credentials',
-  Blocked = 'blocked',
-  ReadyToEnter = 'ready-to-enter',
 }
 
 /**

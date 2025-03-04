@@ -5,7 +5,7 @@ import { BackendFeatures, BackendModules, Tariff, TariffId } from '@opentalk/res
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
-import { RootState } from '../';
+import type { RootState } from '../';
 import { joinSuccess } from '../commonActions';
 
 // Map is not recommended by redux/immer
@@ -91,7 +91,9 @@ export interface Config {
   };
 }
 
-export interface ConfigState {
+// is a `type` instead of being an `interface`, to be safely imported by commonActions.ts
+// otherwise causes circular dependency
+export type ConfigState = {
   controller: string;
   insecure: boolean;
   baseUrl: string;
@@ -143,7 +145,7 @@ export interface ConfigState {
   glitchtip?: {
     dsn?: string;
   };
-}
+};
 /**
  * Initial Configuration.
  *

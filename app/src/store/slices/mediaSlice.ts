@@ -10,12 +10,12 @@ import {
   isAnyOf,
 } from '@reduxjs/toolkit';
 
-import { AppDispatch, RootState } from '../';
+import type { AppDispatch, RootState } from '../';
 import { RequestMute } from '../../api/types/incoming/media';
+import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { FetchRequestError, ParticipantId, VideoSetting } from '../../types';
-import { handleMediaPermissionError } from '../../utils/mediaErrorUtils';
-import { getLivekitRoom } from './livekitSlice';
-import { ConnectionState } from './roomSlice';
+import { handleMediaPermissionError, MediaError } from '../../utils/mediaErrorUtils';
+import { getLivekitRoom } from '../livekitRoom';
 
 export interface BackgroundConfig {
   style: 'blur' | 'color' | 'image' | 'off';
@@ -31,11 +31,6 @@ export enum NotificationKind {
 export interface AudioAndVideoUpdate {
   audio: boolean;
   video: boolean;
-}
-
-export enum MediaError {
-  NotAllowedError = 'NotAllowedError',
-  AbortError = 'AbortError',
 }
 
 interface MuteNotification {

@@ -14,10 +14,10 @@ import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../commonComponents';
-import { setLivekitRoom } from '../store/slices/livekitSlice';
+import { setLivekitRoom } from '../store/livekitRoom';
 import { selectAudioEnabled, startMedia } from '../store/slices/mediaSlice';
 import { selectShouldForceMuted } from '../store/slices/moderationSlice';
-import { useAppDispatch, useAppSelector } from './index';
+import { useAppDispatch, useAppSelector } from './useCustomRedux';
 import { E2EEData } from './useE2EE';
 import useLivekitEvents from './useLivekitEvents';
 

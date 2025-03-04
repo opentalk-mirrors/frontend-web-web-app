@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
-import { RootState } from '../';
+import type { RootState } from '../';
 import { Started, LiveUpdate, Done } from '../../api/types/incoming/poll';
 import { UserChoice } from '../../api/types/outgoing/poll';
 import { Choice, ChoiceResult, PollId } from '../../types';

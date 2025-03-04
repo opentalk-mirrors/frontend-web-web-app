@@ -5,7 +5,8 @@ import { Tab as MuiTab, Tabs as MuiTabs, styled, Tooltip, Divider, Box } from '@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ModerationTabKey, Tab as TabProps } from '../../config/moderationTabs';
+import { ModerationTabKey } from '../../config/constants';
+import { Tab as TabProps } from '../../config/moderationTabs';
 
 const INDICATOR_WIDTH_IN_PIXELS = 2;
 

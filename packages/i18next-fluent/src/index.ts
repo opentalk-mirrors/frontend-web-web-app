@@ -2,7 +2,7 @@ import { FluentVariable } from '@fluent/bundle';
 import { Message } from '@fluent/bundle/esm/ast';
 import { i18n, I18nFormatModule, InitOptions } from 'i18next';
 
-import { BundleStore } from './store';
+import { BundleStore, FluentConfig } from './store';
 
 function getDefaults() {
   return {
@@ -63,9 +63,3 @@ export class Fluent implements I18nFormatModule {
 }
 
 export default Fluent;
-export interface FluentConfig {
-  bindI18nStore?: boolean;
-  fluentBundleOptions?: {
-    useIsolating?: boolean;
-  };
-}

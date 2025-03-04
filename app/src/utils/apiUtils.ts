@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { InviteCode, RoomId, EventId } from '@opentalk/rest-api-rtk-query';
 
-import { ConfigState, DefaultAvatarImage } from '../store/slices/configSlice';
+import type { ConfigState, DefaultAvatarImage } from '../store/slices/configSlice';
 import { BreakoutRoomId } from '../types';
 
 type Fetch = typeof window.fetch;

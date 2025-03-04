@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { t } from 'i18next';
 
-import { notifications } from '../commonComponents';
-import { MediaDeviceKindExtended, MediaError } from '../store/slices/mediaSlice';
+import { notifications } from '../commonComponents/Notistack/fragments/utils';
+import type { MediaDeviceKindExtended } from '../store/slices/mediaSlice';
 
 export interface MediaPermissionErrorHandler {
   error: unknown;
@@ -33,3 +33,7 @@ export const handleMediaPermissionError = ({ error, kind, deviceId }: MediaPermi
   }
   throw new Error(`Error toggling ${kind}: ${error}`);
 };
+export enum MediaError {
+  NotAllowedError = 'NotAllowedError',
+  AbortError = 'AbortError',
+}
