@@ -20,7 +20,7 @@ export const applyBackgroundEffectToTrack = async (
   videoBackgroundEffects: BackgroundEffect,
   dispatch: AppDispatch
 ) => {
-  if (!videoTrack) {
+  if (!videoTrack || videoTrack.isMuted) {
     return;
   }
   const isBlurred = videoBackgroundEffects.style === 'blur';
@@ -29,10 +29,6 @@ export const applyBackgroundEffectToTrack = async (
   const processor = videoTrack?.getProcessor() as ProcessorWrapper<Record<string, unknown>>;
   try {
     dispatch(setBackgroundEffectsLoading(true));
-    if (videoTrack?.isMuted) {
-      await videoTrack?.unmute();
-    }
-
     if (isBlurred && (!processor || processor?.name !== 'background-blur')) {
       const blurProcessor = BackgroundProcessor({ assetPaths, blurRadius: BLUR_RADIUS }, 'background-blur');
       await videoTrack?.setProcessor(blurProcessor);

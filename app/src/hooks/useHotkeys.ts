@@ -4,9 +4,8 @@
 import { useMediaDeviceSelect } from '@livekit/components-react';
 import { Room } from 'livekit-client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '.';
+import { useAppDispatch, useAppSelector } from '.';
 import { pass } from '../api/types/outgoing/automod';
 import { showConsentNotification } from '../commonComponents';
 import {
@@ -22,14 +21,13 @@ import { useFullscreenContext } from '../hooks/useFullscreenContext';
 import { selectIsUserMicDisabled } from '../store/selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker } from '../store/slices/automodSlice';
 import { selectEnabledModulesList } from '../store/slices/configSlice';
-import { selectAudioEnabled, selectVideoEnabled, setAudioEnabled, setVideoEnabled } from '../store/slices/mediaSlice';
+import { selectAudioEnabled, selectVideoEnabled, startMedia } from '../store/slices/mediaSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../store/slices/streamingSlice';
 import { selectSubroomAudioState, setIsWhisperActive } from '../store/slices/subroomAudioSlice';
 import { selectTimerStyle } from '../store/slices/timerSlice';
 import { selectHotkeysEnabled } from '../store/slices/uiSlice';
 import { RoomMode, TimerStyle } from '../types';
-import useMediaDevice from './useMediaDevice';
 
 enum PushToTalkState {
   Whisper = 'whisper',
@@ -50,7 +48,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   const speakerState = useAppSelector(selectSpeakerState);
   const hasMicrophoneDisabledByModerator = useAppSelector(selectIsUserMicDisabled);
   const askConsent = useAppSelector(selectNeedRecordingConsent);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const startingAudio = useRef<Promise<void> | undefined>();
   const stoppingAudio = useRef<Promise<void> | undefined>();
@@ -69,10 +67,6 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   const audioEnabled = useAppSelector(selectAudioEnabled);
   const videoEnabled = useAppSelector(selectVideoEnabled);
 
-  const { startMedia } = useMediaDevice({
-    kind: 'audioinput',
-  });
-
   const toggleAudio = useCallback(
     async (forcedState?: boolean) => {
       if (askConsent && !audioEnabled) {
@@ -85,9 +79,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
       const shouldEnable =
         forcedState !== undefined ? forcedState : !(audioEnabled || room?.localParticipant.isMicrophoneEnabled);
 
-      await startMedia(shouldEnable);
-      dispatch(setAudioEnabled(shouldEnable));
-      await room?.localParticipant.setMicrophoneEnabled(shouldEnable);
+      dispatch(startMedia({ kind: 'audioinput', enabled: shouldEnable }));
     },
     [askConsent, audioEnabled, dispatch, room, startMedia]
   );
@@ -127,7 +119,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
         return;
       }
     }
-    dispatch(setVideoEnabled(!videoEnabled));
+    dispatch(startMedia({ kind: 'videoinput', enabled: !videoEnabled }));
   }, [videoEnabled, askConsent, dispatch]);
 
   // Push-to-talk function shall work ONLY if the user is muted (audio is disabled)

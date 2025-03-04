@@ -1,9 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { batch } from 'react-redux';
+
 import { sendStreamConsentSignal } from '../../../../../api/types/outgoing/streaming';
 import { AppDispatch } from '../../../../../store';
-import { getLivekitRoom } from '../../../../../store/slices/livekitSlice';
+import { startMedia } from '../../../../../store/slices/mediaSlice';
 import { notifications } from '../../utils';
 
 export const showConsentNotification = (dispatch: AppDispatch) =>
@@ -14,10 +16,11 @@ export const showConsentNotification = (dispatch: AppDispatch) =>
       dispatch(sendStreamConsentSignal.action({ consent }));
       notifications.close(key);
       if (!consent) {
-        const room = getLivekitRoom();
-        await room.localParticipant.setCameraEnabled(false);
-        await room.localParticipant.setMicrophoneEnabled(false);
-        await room.localParticipant.setScreenShareEnabled(false);
+        batch(() => {
+          dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+          dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+          dispatch(startMedia({ kind: 'screenshare', enabled: false }));
+        });
       }
       resolve(consent);
     };

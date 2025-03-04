@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { VideoTrack, useRoomContext, useTracks } from '@livekit/components-react';
+import { VideoTrack, useTracks } from '@livekit/components-react';
 import { CircularProgress, Grid, Typography, styled } from '@mui/material';
-import { ConnectionState, LocalVideoTrack, Track } from 'livekit-client';
+import { LocalVideoTrack, Track } from 'livekit-client';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -90,7 +90,6 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoThumbnailRef = useRef<HTMLVideoElement>(null);
-  const room = useRoomContext();
   const dispatch = useAppDispatch();
 
   const displayName = useAppSelector(selectDisplayName);
@@ -123,26 +122,12 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   }, []);
 
   useEffect(() => {
-    const setCameraStateWithEffects = async () => {
-      try {
-        const publication = await room?.localParticipant.setCameraEnabled(videoEnabled);
-        if (!publication?.isMuted) {
-          await applyBackgroundEffectToTrack(
-            videoTrackRef?.publication.videoTrack as LocalVideoTrack,
-            videoBackgroundEffects,
-            dispatch
-          );
-        }
-      } catch (error) {
-        console.error('Unable to start video: ', error);
-      }
-    };
-
-    if (room?.state === ConnectionState.Connected) {
-      setCameraStateWithEffects();
-    }
+    applyBackgroundEffectToTrack(
+      videoTrackRef?.publication.videoTrack as LocalVideoTrack,
+      videoBackgroundEffects,
+      dispatch
+    );
   }, [
-    room?.state,
     videoEnabled,
     videoTrackRef?.publication.videoTrack,
     videoBackgroundEffects.style,

@@ -11,6 +11,7 @@ import { lowerHand, raiseHand } from '../../api/types/outgoing/control';
 import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
 import { joinSuccess, login, startRoom } from '../commonActions';
+import { startMedia } from './mediaSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { connectionClosed, fetchRoomByInviteId } from './roomSlice';
 
@@ -104,6 +105,9 @@ export const userSlice = createSlice({
     });
     builder.addCase(setMeetingNotesWriteUrl, (state) => {
       state.meetingNotesAccess = MeetingNotesAccess.Write;
+    });
+    builder.addCase(startMedia.fulfilled, (state) => {
+      state.lastActive = new Date().toISOString();
     });
   },
 });

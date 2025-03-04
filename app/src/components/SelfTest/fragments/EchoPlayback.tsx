@@ -13,8 +13,10 @@ import {
   selectAudioEnabled,
   selectAudioDeviceId,
   setAudioDeviceId,
-  setAudioEnabled,
+  setMediaChangeInProgress,
+  startMedia,
 } from '../../../store/slices/mediaSlice';
+import { handleMediaPermissionError } from '../../../utils/mediaErrorUtils';
 
 interface EchoPlayBackProps {
   localAudioTrack?: LocalAudioTrack;
@@ -60,6 +62,7 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
 
   useEffect(() => {
     if (audioEnabled || activeDeviceId !== audioDeviceId) {
+      dispatch(setMediaChangeInProgress('audioinput'));
       createLocalAudioTrack({ deviceId: audioDeviceId })
         .then((audioTrack) => {
           setLocalAudioTrack(audioTrack);
@@ -68,11 +71,12 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
             dispatch(setAudioDeviceId(usedDeviceId));
           }
         })
-        .catch((err) => {
-          dispatch(setAudioEnabled(false));
-          if (err.name !== 'NotAllowedError') {
-            console.error('Error while publishing audio track: ', err);
-          }
+        .catch((error) => {
+          dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+          handleMediaPermissionError({ error, deviceId: audioDeviceId, kind: 'audioinput' });
+        })
+        .finally(() => {
+          dispatch(setMediaChangeInProgress(null));
         });
     }
   }, [setLocalAudioTrack, activeDeviceId, audioDeviceId]);

@@ -1,27 +1,25 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useMaybeRoomContext } from '@livekit/components-react';
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/mediaSlice';
+import { selectAudioEnabled, selectVideoEnabled, startMedia } from '../../store/slices/mediaSlice';
 import { abortedReconnection } from '../../store/slices/roomSlice';
 
 const ReconnectionDialog = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const room = useMaybeRoomContext();
   const videoEnabled = useAppSelector(selectVideoEnabled);
   const audioEnabled = useAppSelector(selectAudioEnabled);
 
   const disableMedia = async () => {
     if (audioEnabled) {
-      await room?.localParticipant.setMicrophoneEnabled(false);
+      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
     }
     if (videoEnabled) {
-      await room?.localParticipant.setCameraEnabled(false);
+      dispatch(startMedia({ kind: 'videoinput', enabled: false }));
     }
   };
 
