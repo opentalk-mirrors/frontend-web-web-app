@@ -60,6 +60,12 @@ export const subroomAudioSlice = createSlice({
     },
     removeParticipant: (state, { payload: { participantId } }) => {
       state.participants = state.participants.filter((p) => p.participantId !== participantId);
+      if (state.participants.length < 2) {
+        state.participants = [];
+        state.token = undefined;
+        state.whisperId = undefined;
+        state.isWhisperActive = false;
+      }
     },
     setIsWhisperActive: (state, { payload }) => {
       state.isWhisperActive = payload;
