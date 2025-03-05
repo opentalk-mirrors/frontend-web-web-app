@@ -18,6 +18,28 @@ You need a running controller (<https://git.opentalk.dev/opentalk/backend/servic
 
 see [docker docs](./ci/README.md)
 
+## Developer mode
+
+We have a super secret developer mode. You can activate it by manipulating the local storage in the browser dev tools. This adds debugging options to the `MoreMenu.tsx` which is located below your own video under the `...` button.
+
+### Chrome
+
+- Open the developer tools (F12)
+- Go to the `Application` tab
+- Open the local storage element
+- Click inside to add a new key
+- Set the key to `devMode`
+- Set the value to `true`
+
+### Firefox
+
+- Open the developer tools (F12)
+- Go to the `Storage` tab
+- Open the local storage element
+- Click inside to add a new key
+- Set the key to `devMode`
+- Set the value to `true`
+
 ### Environment variables used in the container
 
 | Variable Name            | Required | Default                                           | Description                                                                                                                                                                                           |
