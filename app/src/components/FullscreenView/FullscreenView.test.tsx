@@ -32,7 +32,7 @@ jest.mock('../../hooks/useFullscreenContext.ts', () => ({
 jest.mock('@livekit/components-react', () => ({
   ParticipantContext: {
     Provider: ({ children }: PropsWithChildren) => {
-      return <div data-testid="buttomContainer"> {children}</div>;
+      return <div>{children}</div>;
     },
   },
   useRoomContext: () => jest.fn(),
@@ -40,12 +40,12 @@ jest.mock('@livekit/components-react', () => ({
 
 jest.mock('../LocalVideo', () => ({
   __esModule: true,
-  default: () => <div data-testid="localVideo"></div>,
+  default: () => <div />,
 }));
 
 jest.mock('../ParticipantWindow', () => ({
   __esModule: true,
-  default: () => <div data-testid="participantWindow"></div>,
+  default: () => <div />,
 }));
 
 jest.mock('../Toolbar', () => ({

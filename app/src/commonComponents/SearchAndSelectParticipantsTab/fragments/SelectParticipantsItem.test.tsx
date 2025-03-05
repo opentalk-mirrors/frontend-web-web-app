@@ -1,56 +1,39 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-// import { mockStore, render, screen, fireEvent, waitFor, mockedParticipant } from '../../../utils/testUtils';
-// import MuteParticipantsItem from './MuteParticipantsItem';
+import { fireEvent, screen } from '@testing-library/react';
+
+import { mockStore, mockedLivekitParticipant, renderWithProviders } from '../../../utils/testUtils';
+import SelectParticipantsItem, { SelectableParticipant } from './SelectParticipantsItem';
 
 describe('SelectParticipantsItem', () => {
-  test.todo('SelectParticipantsItem should render properly without crashing');
-  test.todo('click on checkBox should trigger onCheck()');
-  test.todo('click on checkBox should trigger onCheck()');
-  // const handleCheck = jest.fn();
-  // const { store } = mockStore(1, { video: true, screen: true });
-  // const participant = mockedParticipant(0);
+  const handleCheck = jest.fn();
+  const { store } = mockStore(1, { video: true, screen: true });
+  const participant = { ...mockedLivekitParticipant(0), selected: false } as SelectableParticipant;
 
-  // test('SelectParticipantsItem should render properly without crashing', async () => {
-  //   await render(
-  //     <SelectParticipantsItem participant={{ ...participant, selected: false }} onCheck={handleCheck} />,
-  //     store
-  //   );
+  test('SelectParticipantsItem should render properly without crashing', async () => {
+    renderWithProviders(<SelectParticipantsItem participant={participant} onCheck={handleCheck} />, {
+      store,
+      provider: { mui: true },
+    });
 
-  //   expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
-  //   expect(screen.getByRole('checkbox', { name: participant.displayName })).toBeInTheDocument();
-  //   expect(screen.getByLabelText(participant.displayName)).toBeInTheDocument();
-  // });
-  // // const handleCheck = jest.fn();
-  // // const { store } = mockStore(1, { video: true, screen: true });
-  // // const participant = mockedParticipant(0);
+    expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: participant.name })).toBeInTheDocument();
+    expect(screen.getByLabelText(participant.name as string)).toBeInTheDocument();
+  });
 
-  // test('click on checkBox should trigger onCheck()', async () => {
-  //   await render(
-  //     <SelectParticipantsItem participant={{ ...participant, selected: false }} onCheck={handleCheck} />,
-  //     store
-  //   );
+  test('click on checkBox should trigger onCheck()', async () => {
+    renderWithProviders(<SelectParticipantsItem participant={participant} onCheck={handleCheck} />, {
+      store,
+      provider: { mui: true },
+    });
 
-  //   expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
-  //   expect(screen.getByRole('checkbox', { name: participant.displayName })).toBeInTheDocument();
-  //   expect(screen.getByLabelText(participant.displayName)).toBeInTheDocument();
-  // });
+    const checkbox = screen.getByRole('checkbox', { name: participant.name });
+    expect(checkbox).toBeInTheDocument();
+    fireEvent.click(checkbox);
 
-  // test('click on checkoBox should trigger onCheck()', async () => {
-  //   await render(
-  //     <MuteParticipantsItem participant={{ ...participant, selected: false }} onCheck={handleCheck} />,
-  //     store
-  //   );
-
-  //   const checkbox = screen.getByRole('checkbox', { name: participant.displayName });
-  //   expect(checkbox).toBeInTheDocument();
-  //   fireEvent.click(checkbox);
-
-  //   await waitFor(() => {
-  //     expect(handleCheck).toBeCalledTimes(1);
-  //   });
-  // });
+    expect(handleCheck).toHaveBeenCalledTimes(1);
+  });
 });
 
 export {};

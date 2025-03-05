@@ -9,7 +9,7 @@ import OverviewCard from './OverviewCard';
 
 jest.mock('../../EventTimePreview/EventTimePreview', () => ({
   __esModule: true,
-  default: () => <div data-testid="eventTimePreview"></div>,
+  default: () => <div />,
 }));
 
 jest.mock('../../../commonComponents', () => ({
@@ -19,7 +19,7 @@ jest.mock('../../../commonComponents', () => ({
 jest.mock('./MeetingPopover', () => ({
   __esModule: true,
   default: () => <div data-testid="MeetingPopover"></div>,
-  MeetingCardFragmentProps: () => <div data-testid="meetingCardFragmentProps"></div>,
+  MeetingCardFragmentProps: () => <div />,
 }));
 
 const timeDependentMeeting = {

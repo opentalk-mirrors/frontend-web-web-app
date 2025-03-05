@@ -4,7 +4,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import store from '../../store';
-import { mockedLivekitParticipant, renderWithProviders } from '../../utils/testUtils';
+import { configureStore, mockedLivekitParticipant, renderWithProviders } from '../../utils/testUtils';
 import SearchAndSelectParticipantsTab from './SearchAndSelectParticipantsTab';
 import { SelectableParticipant } from './fragments/SelectParticipantsItem';
 
@@ -73,11 +73,23 @@ describe('Select Participants Tab', () => {
     expect(participantsList).toHaveLength(participants.length);
   });
 
-  test.skip('should call handleSelectParticipant when a checkbox is clicked', () => {
+  test('should call handleSelectParticipant when a checkbox is clicked', () => {
     const participants = [1, 2, 3].map((value) => ({
       ...mockedLivekitParticipant(value),
       selected: false,
     })) as SelectableParticipant[];
+
+    const { store } = configureStore({
+      initialState: {
+        participants: {
+          ids: participants.map((p) => p.identity),
+          entities: Object.fromEntries(
+            participants.map((participant) => [participant.identity, { ...participant, displayName: participant.name }])
+          ),
+        },
+      },
+    });
+
     renderWithProviders(
       <SearchAndSelectParticipantsTab
         handleAllClick={mockHandleAllClick}
