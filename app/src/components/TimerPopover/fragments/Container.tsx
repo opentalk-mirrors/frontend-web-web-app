@@ -8,7 +8,7 @@ export const Container = styled(Paper, {
 })<{ open: boolean }>(({ theme, open }) => ({
   display: open ? 'block' : 'none',
   position: 'fixed',
-  top: theme.spacing(2),
+  top: theme.spacing(8),
   right: theme.spacing(2),
   padding: theme.spacing(2, 4),
   zIndex: 8,
