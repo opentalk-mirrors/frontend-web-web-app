@@ -127,8 +127,22 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
     []
   );
 
+  useEffect(() => {
+    sessionStorage.removeItem('isPageReloading');
+
+    window.onbeforeunload = () => {
+      sessionStorage.setItem('isPageReloading', 'true');
+    };
+
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, []);
+
   const handleRoomDisconnected = useCallback(() => {
-    if (connectionState !== ConnectionState.Leaving && !isWhisperRoom) {
+    const isPageReloading = sessionStorage.getItem('isPageReloading') === 'true';
+
+    if (connectionState !== ConnectionState.Leaving && !isWhisperRoom && !isPageReloading) {
       dispatch({ type: 'livekit/triggerReconnect' });
     }
   }, [dispatch, connectionState, isWhisperRoom]);

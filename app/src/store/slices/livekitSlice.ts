@@ -132,11 +132,11 @@ const BASE_RETRY_DELAY = 500;
 const MAX_RETRY_DELAY = 20000;
 const RECONNECT_INDICATOR_THRESHOLD = 0;
 
-function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
+const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
   let attempt = 0;
   const calculateDelay = (attempt: number) => Math.min(BASE_RETRY_DELAY * 2 ** attempt, MAX_RETRY_DELAY);
 
-  async function tryReconnect() {
+  const tryReconnect = async () => {
     while (room.state === 'disconnected') {
       if (attempt === RECONNECT_INDICATOR_THRESHOLD) {
         listenerApi.dispatch(setLivekitUnavailable(true));
@@ -153,12 +153,12 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
     }
 
     listenerApi.dispatch(setLivekitUnavailable(false));
-  }
+  };
 
   tryReconnect().catch((error) => {
     console.error('Failed to reconnect to LiveKit:', error);
   });
-}
+};
 
 livekitMiddleware.startListening({
   type: 'livekit/triggerReconnect',
