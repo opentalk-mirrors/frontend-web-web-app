@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@reduxjs/toolkit": "^1.8.5",
-    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-commonjs": "^28.0.2",
     "@swc/core": "^1.5.27",
     "@swc/helpers": "^0.5.11",
     "@testing-library/react": "^16.1.0",
