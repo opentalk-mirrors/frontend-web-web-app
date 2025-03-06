@@ -17,7 +17,7 @@
   "emitDeclarationOnly": true,
   "devDependencies": {
     "@reduxjs/toolkit": "^1.8.5",
-    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/rollup-plugin-peer-deps-external": "^2",
