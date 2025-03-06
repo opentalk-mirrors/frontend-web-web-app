@@ -301,7 +301,7 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4
       '@types/jest':
-        specifier: ^29.0.2
+        specifier: ^29.5.14
         version: 29.5.14
       '@types/lodash':
         specifier: ^4.17.7
