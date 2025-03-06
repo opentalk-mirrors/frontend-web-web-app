@@ -84,8 +84,8 @@ videomenu-background = Background
 videomenu-background-images = Background images
 videomenu-background-no-image = No background image
 videomenu-participant-videos = Participant videos
-remotevideo-no-stream = no video stream
 localvideo-no-device = no video device found
+remotevideo-no-stream = no video stream
 videoroom-hidden-heading = Video Room
 
 participant-stream-broken-tooltip = Mediastream broken
@@ -730,6 +730,7 @@ dashboard-help = Help
 dashboard-help-user-manual = User manual
 dashboard-help-support = Support
 
+user-manual-dashboard-title = User manual
 user-manual-open = Open user manual
 conference-go-home = Go to dashboard
 
@@ -1208,3 +1209,20 @@ active-speaker-icon-title = Active speaker
 meeting-notes-writer-selected-title = Minute-taker
 timer-done-icon-title = Done
 timer-not-done-icon-title = Not done
+
+participation-confirmation-dialog-title = Training participation confirmation
+participation-confirmation-dialog-description = You are participating in a course or training. For the attendance report, your presence is logged at intervals.
+participation-confirmation-dialog-confirm-button = Confirm presence
+training-participation-logging-disable-button = Disable training participation logging
+training-participation-logging-enable-button = Enable training participation logging
+training-participation-report-pdf-asset-notification = <messageContainer>The participation report was exported. The corresponding file is located in the dashboard under <messageLink>meeting details</messageLink>.</messageContainer>
+presence-logging-enabled-notification = Presence logging enabled
+presence-logging-disabled-notification = Presence logging disabled
+presence-logging-started-notification = Presence logging started
+presence-logging-ended-notification = Presence logging ended
+presence-logging-already-enabled-error = Presence logging already enabled
+presence-logging-not-enabled-error = Presence logging not enabled
+presence-logging-not-allowed-for-participant-error = Presence logging not allowed for participant
+insufficient-permissions-error =  Insufficient permissions
+invalid-parameters-error = Invalid parameters
+storage-error = Not enough storage

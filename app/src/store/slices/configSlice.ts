@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { BackendFeatures, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
+import { BackendFeatures, BackendModules, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
@@ -255,6 +255,8 @@ export const selectDisallowCustomDisplayName = (state: RootState) => state.confi
 export const selectLogLevel = (state: RootState) => state.config.logLevel;
 export const selectChangePassword = (state: RootState) => state.config.changePassword;
 export const selectEnabledModulesList = (state: RootState) => state.config.tariff.modules;
+export const selectIsModuleEnabled = (module: BackendModules) => (state: RootState) =>
+  Object.keys(state.config.tariff.modules).some((moduleKey) => module === moduleKey);
 export const selectIsFeatureEnabled = (featureKey: BackendFeatures) => (state: RootState) =>
   Object.values(state.config.tariff.modules).some((module) => module?.features.includes(featureKey));
 export const selectAccountManagementUrl = (state: RootState) => state.config.provider.accountManagementUrl;

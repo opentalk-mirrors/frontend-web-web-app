@@ -16,6 +16,7 @@ import { selectIsModerator } from '../../store/slices/userSlice';
 import { CoffeeBreakView } from '../CoffeeBreakView/CoffeeBreakView';
 import TimerPopover from '../TimerPopover';
 import InnerLayout from './fragments/InnerLayout';
+import { ParticipationConfirmationDialog } from './fragments/ParticipationConfirmationDialog';
 
 const Container = styled('div')(({ theme }) => ({
   background: theme.palette.background.overlay,
@@ -81,6 +82,8 @@ const MeetingView = ({ e2eeData }: MeetingViewProps) => {
           ) : (
             <>
               {enableAudio && <RoomAudioRenderer />}
+
+              <ParticipationConfirmationDialog />
 
               <CachedInnerLayout />
 

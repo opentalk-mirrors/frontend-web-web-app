@@ -4,6 +4,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '..';
+import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
 import { ForceMute, ForceMuteType } from '../../types';
 import { joinSuccess } from '../commonActions';
 
@@ -12,6 +13,7 @@ interface ModerationState {
   handUpdatedAt?: string;
   raiseHandsEnabled: boolean;
   forceMute: ForceMute;
+  trainingParticipationReportEnabled: boolean;
 }
 
 const initialState: ModerationState = {
@@ -21,6 +23,7 @@ const initialState: ModerationState = {
     type: ForceMuteType.Disabled,
     unrestrictedParticipants: [],
   },
+  trainingParticipationReportEnabled: false,
 };
 
 export const moderationSlice = createSlice({
@@ -51,6 +54,12 @@ export const moderationSlice = createSlice({
         unrestrictedParticipants: [],
       };
     },
+    trainingParticipationReportEnabled: (state) => {
+      state.trainingParticipationReportEnabled = true;
+    },
+    trainingParticipationReportDisabled: (state) => {
+      state.trainingParticipationReportEnabled = false;
+    },
     /**
      * Inbound action
      */
@@ -68,6 +77,10 @@ export const moderationSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, action) => {
+      if (action.payload.trainingParticipationReport) {
+        state.trainingParticipationReportEnabled =
+          action.payload.trainingParticipationReport.state !== ParticipationLoggingState.Disabled;
+      }
       const forceMute = action.payload.forceMute;
       if (forceMute) {
         state.forceMute = forceMute;
@@ -89,6 +102,8 @@ export const {
   loweredHand,
   forceMuteEnabled,
   forceMuteDisabled,
+  trainingParticipationReportEnabled,
+  trainingParticipationReportDisabled,
 } = moderationSlice.actions;
 export const actions = moderationSlice.actions;
 
@@ -102,5 +117,7 @@ export const selectShouldForceMuted = (state: RootState) =>
   !state.moderation.forceMute.unrestrictedParticipants.includes(state.user.uuid);
 export const selectMicrophonesEnabled = (state: RootState) =>
   state.moderation.forceMute.type === ForceMuteType.Disabled;
+export const selectTrainingParticipationReportEnabled = (state: RootState) =>
+  state.moderation.trainingParticipationReportEnabled;
 
 export default moderationSlice.reducer;

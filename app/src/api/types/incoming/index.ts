@@ -16,6 +16,7 @@ import SharedFolderMessage from './sharedFolder';
 import StreamingMessage from './streaming';
 import SubroomAudioMessage from './subroomAudio';
 import TimerMessage from './timer';
+import TrainingParticipationReport from './trainingParticipationReport';
 import WhiteboardMessage from './whiteboard';
 
 export * as breakout from './breakout';
@@ -34,6 +35,7 @@ export * as legalVote from './legalVote';
 export * as automod from './automod';
 export * as livekit from './livekit';
 export * as subroomAudio from './subroomAudio';
+export * as trainingParticipationReport from './trainingParticipationReport';
 
 export type Message =
   | AutomodMessage
@@ -51,4 +53,5 @@ export type Message =
   | StreamingMessage
   | SharedFolderMessage
   | LivekitMessage
-  | SubroomAudioMessage;
+  | SubroomAudioMessage
+  | TrainingParticipationReport;
