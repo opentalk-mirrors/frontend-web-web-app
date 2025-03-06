@@ -22,7 +22,7 @@
     "@livekit/components-react": "^2.6.9",
     "@livekit/protocol": "^1.23.0",
     "@livekit/track-processors": "workspace:*",
-    "@m-lab/ndt7": "^0.0.5",
+    "@m-lab/ndt7": "^0.0.6",
     "@mui/material": "^6.4.1",
     "@mui/x-date-pickers": "^6.14.0",
     "@opentalk/fluent_conv": "workspace:*",
