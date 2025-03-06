@@ -63,7 +63,7 @@ importers:
         specifier: ^5.0.0
         version: 5.1.0
       dotenv:
-        specifier: ^16.4.5
+        specifier: ^16.4.7
         version: 16.4.7
       eslint:
         specifier: ^8.57.0
