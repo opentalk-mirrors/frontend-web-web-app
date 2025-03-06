@@ -39,7 +39,7 @@ importers:
         specifier: ^7
         version: 7.9.7
       '@types/identity-obj-proxy':
-        specifier: ^3
+        specifier: ^3.0.2
         version: 3.0.2
       '@types/node':
         specifier: ^20.14.5
