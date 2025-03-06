@@ -35,7 +35,7 @@
     "@types/dom-mediacapture-transform": "^0.1.11",
     "@types/offscreencanvas": "^2019.7.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
     "eslint-config-airbnb-typescript": "18.0.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-ecmascript-compat": "^3.0.0",
