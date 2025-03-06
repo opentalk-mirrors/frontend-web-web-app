@@ -319,7 +319,7 @@ importers:
         specifier: ^1
         version: 1.8.8
       '@types/uuid':
-        specifier: ^8.3.3
+        specifier: ^8.3.4
         version: 8.3.4
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.18.0
