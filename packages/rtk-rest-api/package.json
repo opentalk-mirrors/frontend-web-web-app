@@ -38,7 +38,7 @@
     "type-fest": "^2.19.0",
     "typescript": "^5.7.2",
     "uuid": "^9.0.1",
-    "whatwg-fetch": "^3.6.2"
+    "whatwg-fetch": "^3.6.20"
   },
   "peerDependencies": {
     "@reduxjs/toolkit": "^1.8.0",
