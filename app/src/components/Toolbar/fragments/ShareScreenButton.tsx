@@ -16,7 +16,10 @@ import { selectIsModerator } from '../../../store/slices/userSlice';
 import ToolbarButton from './ToolbarButton';
 
 const ShareScreenButton = () => {
-  const { toggle, enabled, pending } = useTrackToggle({ source: Track.Source.ScreenShare });
+  const { toggle, enabled, pending } = useTrackToggle({
+    source: Track.Source.ScreenShare,
+    captureOptions: { audio: true, systemAudio: 'include' },
+  });
   const localParticipantPermissions = useLocalParticipantPermissions();
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
