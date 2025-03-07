@@ -1,13 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "rangeStrategy": "bump",
-  "packageRules": [
-    {
-      "groupName": "Update: high confidence minor and patch dependency updates",
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchConfidence": ["very high", "high"]
-    }
-  ],
   "reviewers": [
     "@opentalk/frontend"
   ],
