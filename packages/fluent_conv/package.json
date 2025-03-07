@@ -21,9 +21,9 @@
     "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
-    "typescript": "^5.7.2",
-    "vite": "^5.4.10",
-    "vite-plugin-dts": "^4.1.1"
+    "typescript": "^5.8.2",
+    "vite": "^5.4.14",
+    "vite-plugin-dts": "^4.5.3"
   },
   "scripts": {
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
