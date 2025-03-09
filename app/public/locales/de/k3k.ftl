@@ -1191,7 +1191,7 @@ whisper-invite-notification = {displayName} hat Sie zu einer Flüstergruppe eing
 whisper-invite-decline-notification = {displayName} hat Ihre Einladung zur Flüstergruppe abgelehnt.
 whisper-invite-accept-notification = {displayName} hat Ihre Einladung zur Flüstergruppe angenommen. Drücken und halten Sie die Taste W zum flüstern.
 
-mobile-drawer-button-label = Schublade öffnen
+mobile-drawer-button-label = Kontrollleiste öffnen
 
 support-menu-tab-title = Information & Support
 

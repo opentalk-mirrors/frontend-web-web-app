@@ -4,7 +4,7 @@
 import { styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { LogoSmallIcon } from '../../../../assets/icons';
+import { BurgermenuIcon } from '../../../../assets/icons';
 import { IconButton as DefaultIconButton } from '../../../../commonComponents';
 import { useAppSelector } from '../../../../hooks';
 import { selectPollsAndVotingsCount } from '../../../../store/selectors';
@@ -69,10 +69,9 @@ export const DrawerButton = ({ onClick, expanded, controls }: DrawerButtonProps)
       onClick={onClick}
       aria-expanded={expanded}
       aria-controls={controls}
-      onKeyDown={(event) => event.stopPropagation()}
       aria-label={t('mobile-drawer-button-label')}
     >
-      <LogoSmallIcon />
+      <BurgermenuIcon />
       {showIndicator && <ButtonIndicator />}
     </IconButton>
   );

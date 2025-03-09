@@ -52,7 +52,6 @@ import LiveIcon from './LiveIcon';
 import LockedIcon from './LockedIcon';
 import LogoGradientIcon from './LogoGradientIcon';
 import LogoIcon from './LogoIcon';
-import LogoSmallIcon from './LogoSmallIcon';
 import MeetingNotesIcon from './MeetingNotesIcon';
 import MeetingsIcon from './MeetingsIcon';
 import MicOffIcon from './MicOffIcon';
@@ -153,7 +152,6 @@ export {
   LockedIcon,
   LogoGradientIcon,
   LogoIcon,
-  LogoSmallIcon,
   MeetingNotesIcon,
   MeetingsIcon,
   MicOffIcon,
