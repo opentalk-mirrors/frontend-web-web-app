@@ -801,6 +801,37 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
           }),
         },
       },
+      MuiPickersCalendarHeader: {
+        styleOverrides: {
+          labelContainer: () => ({
+            overflow: 'visible',
+          }),
+        },
+      },
+      MuiPickersDay: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            '&:hover': {
+              backgroundColor: theme.palette.action.hover,
+            },
+            '&:focus': {
+              outline: theme.palette.focus.outline,
+            },
+          }),
+        },
+      },
+      MuiMultiSectionDigitalClockSection: {
+        styleOverrides: {
+          item: ({ theme }) => ({
+            '&:hover': {
+              backgroundColor: theme.palette.action.hover,
+            },
+            '&:focus': {
+              outline: theme.palette.focus.outline,
+            },
+          }),
+        },
+      },
       MuiClock: {
         styleOverrides: {
           wrapper: ({ theme }) => ({
