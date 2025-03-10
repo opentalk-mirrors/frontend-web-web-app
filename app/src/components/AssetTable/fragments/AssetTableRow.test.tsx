@@ -74,9 +74,16 @@ describe('AssetTableRow', () => {
     expect(mockHandleDelete).toHaveBeenCalledWith(asset.id);
   });
 
-  test('disables buttons if asset progress is passed', () => {
+  test('disables buttons from the parent', () => {
     render(
-      <AssetTableRow asset={asset} handleDownload={mockHandleDownload} handleDelete={mockHandleDelete} progress={0} />
+      <AssetTableRow
+        asset={asset}
+        handleDownload={mockHandleDownload}
+        handleDelete={mockHandleDelete}
+        progress={0}
+        disabledDelete
+        disabledDownload
+      />
     );
     const tableRow = screen.getByRole('row');
 

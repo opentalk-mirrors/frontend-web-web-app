@@ -14,6 +14,8 @@ interface AssetTableRowProps {
   handleDownload: ({ assetId, filename, fileSize, updateDownloadProgress }: AssetDownloadBaseInfo) => void;
   handleDelete?: (assetId: AssetId) => void;
   progress?: number;
+  disabledDownload?: boolean;
+  disabledDelete?: boolean;
 }
 
 const DownloadButton = styled(Button, {
@@ -27,9 +29,15 @@ const DownloadButton = styled(Button, {
       : undefined,
 }));
 
-export const AssetTableRow = ({ asset, handleDownload, handleDelete, progress }: AssetTableRowProps) => {
+export const AssetTableRow = ({
+  asset,
+  handleDownload,
+  handleDelete,
+  progress,
+  disabledDelete,
+  disabledDownload,
+}: AssetTableRowProps) => {
   const { t } = useTranslation();
-  const isDisabled = progress !== undefined;
   const { id: assetId, filename, size, createdAt } = asset;
 
   return (
@@ -42,14 +50,14 @@ export const AssetTableRow = ({ asset, handleDownload, handleDelete, progress }:
           <DownloadButton
             color="secondary"
             onClick={() => handleDownload({ assetId, filename, fileSize: size })}
-            disabled={isDisabled}
+            disabled={disabledDownload}
             progressPercentage={progress}
             fullWidth
           >
-            {t(isDisabled ? 'download-in-progress' : 'action-download')}
+            {t(disabledDownload ? 'download-in-progress' : 'action-download')}
           </DownloadButton>
           {handleDelete && (
-            <Button color="error" onClick={() => handleDelete(assetId)} disabled={isDisabled} fullWidth>
+            <Button color="error" onClick={() => handleDelete(assetId)} disabled={disabledDelete} fullWidth>
               {t('action-delete')}
             </Button>
           )}
