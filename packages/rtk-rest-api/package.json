@@ -23,7 +23,7 @@
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@swc/core": "^1.11.7",
+    "@swc/core": "^1.11.8",
     "@swc/helpers": "^0.5.15",
     "@testing-library/react": "^16.2.0",
     "@types/react-test-renderer": "^18.3.1",
