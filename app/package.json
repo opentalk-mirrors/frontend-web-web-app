@@ -76,7 +76,7 @@
     "@types/fscreen": "^1.0.4",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.16",
-    "@types/node": "^18.19.79",
+    "@types/node": "^18.19.80",
     "@types/react": "^18.3.18",
     "@types/react-dom": "18.3.5",
     "@types/react-window": "^1.8.8",
