@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, List, ListItem, ListItemText } from '@mui/material';
+import { List, ListItem, ListItemText, styled } from '@mui/material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import FontAwesome from '../../components/Licenses/FontAwesome';
+import FontAwesome from '../../components/Licenses';
 
 const Container = styled('div')({
   display: 'flex',

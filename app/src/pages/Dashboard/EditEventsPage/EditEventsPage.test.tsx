@@ -20,7 +20,7 @@ jest.mock('../../../components/CreateOrUpdateMeetingForm', () => ({
   ),
 }));
 
-jest.mock('../../../components/InviteToMeeting/InviteToMeeting', () => ({
+jest.mock('../../../components/InviteToMeeting', () => ({
   __esModule: true,
   default: () => <div data-testid="InviteToMeeting" />,
 }));

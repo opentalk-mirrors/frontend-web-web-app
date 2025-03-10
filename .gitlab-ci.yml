@@ -65,7 +65,7 @@ lint:circular-deps:
     - *setup-pnpm
   script:
     - pnpm install
-    - pnpm circular-deps
+    - pnpm deps:circular
   allow_failure: true
 
 lint:yaml:
@@ -116,6 +116,28 @@ lint:commit:
     - npm install -g @commitlint/cli @commitlint/config-conventional
   script:
     - npx commitlint --from $CI_MERGE_REQUEST_DIFF_BASE_SHA --to HEAD --verbose
+
+lint:unused-deps:
+  stage: lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  before_script:
+    - apk add --no-cache git
+    - *setup-pnpm
+    - pnpm install
+  script:
+    - pnpm knip --include dependencies
+
+lint:unused-files:
+  stage: lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  before_script:
+    - apk add --no-cache git
+    - *setup-pnpm
+    - pnpm install
+  script:
+    - pnpm knip --include files
 
 trigger_changelog_preview:
   stage: trigger

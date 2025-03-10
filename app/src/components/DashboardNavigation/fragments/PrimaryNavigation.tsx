@@ -15,7 +15,7 @@ import {
   selectImprintUrl,
   selectUserSurveyUrl,
 } from '../../../store/slices/configSlice';
-import FeedbackDialog from '../../FeedbackDialog/FeedbackDialog';
+import FeedbackDialog from '../../FeedbackDialog';
 import CollapseRow from './CollapseRow';
 import PrimaryNavigationEntry from './PrimaryNavigationEntry';
 import PrimaryNavigationList, { PrimaryRoute } from './PrimaryNavigationList';
