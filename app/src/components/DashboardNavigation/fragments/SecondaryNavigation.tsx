@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { List as MuiList, ListItem as MuiListItem, ListItemText, styled, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import { useAppSelector } from '../../../hooks';
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
@@ -48,7 +48,7 @@ const ListItem = styled(MuiListItem)(({ theme }) => ({
   },
 }));
 
-const NavItem = styled(NavLink)(({ theme }) => ({
+const NavItem = styled(NavLink)(({ theme, target }) => ({
   color: theme.palette.text.primary,
   display: 'flex',
   background: 'transparent',
@@ -58,7 +58,7 @@ const NavItem = styled(NavLink)(({ theme }) => ({
   position: 'relative',
 
   '&::after': {
-    display: 'block',
+    display: target === '_self' ? 'block' : 'none',
     opacity: 0,
     width: '5px',
     height: `100%`,
@@ -90,16 +90,28 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
   const dataProtectionUrl = useAppSelector(selectDataProtectionUrl);
   const helpdeskUrl = useAppSelector(selectHelpdeskUrl);
 
+  const getTarget = (path: string) => {
+    switch (path) {
+      case 'imprint':
+      case 'data-protection':
+      case 'support':
+      case 'user-manual':
+        return '_blank';
+      default:
+        return '_self';
+    }
+  };
+
   const handleNavigation = (path: string) => {
     switch (path) {
       case 'imprint':
-        window.open(imprintUrl, '_blank');
+        window.open(imprintUrl, getTarget(path));
         break;
       case 'data-protection':
-        window.open(dataProtectionUrl, '_blank');
+        window.open(dataProtectionUrl, getTarget(path));
         break;
       case 'support':
-        window.open(helpdeskUrl, '_blank');
+        window.open(helpdeskUrl, getTarget(path));
         break;
       case 'user-manual':
         openUserManual();
@@ -128,18 +140,24 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
       {routes &&
         routes
           .filter((route) => showSubmenuEntry(route.path))
-          .map(({ path, name }) => (
-            <ListItem key={path}>
-              <NavItem
-                to={`${submenu}/${path}`}
-                onClick={() => handleNavigation(path)}
-                data-testid="SecondaryNavItem"
-                aria-controls="main-content-dashboard"
-              >
-                <ListItemText>{t(name)}</ListItemText>
-              </NavItem>
-            </ListItem>
-          ))}
+          .map(({ path, name }) => {
+            const target = getTarget(path);
+
+            return (
+              <ListItem key={path}>
+                <NavItem
+                  as={target === '_self' ? NavLink : Link}
+                  to={`${submenu}/${path}`}
+                  onClick={() => handleNavigation(path)}
+                  data-testid="SecondaryNavItem"
+                  aria-controls={target === '_self' ? 'main-content-dashboard' : undefined}
+                  target={target}
+                >
+                  <ListItemText>{t(name)}</ListItemText>
+                </NavItem>
+              </ListItem>
+            );
+          })}
     </List>
   );
 
