@@ -34,7 +34,7 @@
     "@sentry/react": "^7.120.3",
     "bowser": "^2.11.0",
     "camelcase-keys": "^7.0.2",
-    "context-filter-polyfill": "^0.2.4",
+    "context-filter-polyfill": "^0.3.22",
     "date-fns": "^2.30.0",
     "emoji-picker-react": "^4.12.0",
     "formik": "^2.4.6",
