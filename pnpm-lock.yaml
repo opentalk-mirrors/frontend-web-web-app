@@ -186,8 +186,8 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
       context-filter-polyfill:
-        specifier: ^0.2.4
-        version: 0.2.4
+        specifier: ^0.3.22
+        version: 0.3.22
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0
@@ -3838,8 +3838,8 @@ packages:
     resolution: {integrity: sha512-EiPU8G6dQG0GFHNR8ljnZFki/8a+cQwEQ+7wpxdChl02Q8HXlwEZWD5lqAF8vC2sEC3Tehr8hy7vErz88LHyUA==}
     engines: {node: ^14.18.0 || >=16.10.0}
 
-  context-filter-polyfill@0.2.4:
-    resolution: {integrity: sha512-LDZ3WiTzo6kIeJM7j8kPSgZf+gbD1cV1GaLyYO8RWvAg25cO3zUo3d2KizO0w9hAezNwz7tTbuWKpPdvLWzKqQ==}
+  context-filter-polyfill@0.3.22:
+    resolution: {integrity: sha512-0zaP1URpNrqx2kk6pUzXS5f0/65J2Ogy0rhOY+bPkMxaVF9L9DE8DrDfhPcFdAB4R/dYeB5DnWijaM5sBjGKww==}
 
   conventional-changelog-angular@7.0.0:
     resolution: {integrity: sha512-ROjNchA9LgfNMTTFSIWPzebCwOGFdgkEq45EnvvrmSLvCtAw0HSmrCs7/ty+wAeYUZyNay0YMUNYFTRL72PkBQ==}
@@ -11774,7 +11774,7 @@ snapshots:
 
   consola@3.4.0: {}
 
-  context-filter-polyfill@0.2.4: {}
+  context-filter-polyfill@0.3.22: {}
 
   conventional-changelog-angular@7.0.0:
     dependencies:
