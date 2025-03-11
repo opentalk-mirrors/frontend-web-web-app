@@ -6,5 +6,44 @@
   ],
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": [
+        "@fluent/*"
+      ],
+      "groupName": "fluent",
+      "groupSlug": "fluent"
+    },
+    {
+      "matchPackagePatterns": [
+        "eslint*"
+      ],
+      "groupName": "eslint-plugins",
+      "groupSlug": "eslint-plugins"
+    },
+    {
+      "matchPackagePatterns": [
+        "@rollup*",
+        "rollup"
+      ],
+      "groupName": "rollup",
+      "groupSlug": "rollup"
+    },
+    {
+      "matchPackagePatterns": [
+        "@types/*"
+      ],
+      "groupName": "@types",
+      "groupSlug": "@types"
+    },
+    {
+      "matchPackagePatterns": [
+        "i18next",
+        "i18next-*"
+      ],
+      "groupName": "i18next",
+      "groupSlug": "i18next"
+    }
   ]
 }
