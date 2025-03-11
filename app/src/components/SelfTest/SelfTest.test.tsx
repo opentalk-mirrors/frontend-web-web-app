@@ -11,6 +11,13 @@ import SelfTest from './SelfTest';
 
 jest.mock('../../utils/apiUtils');
 
+jest.mock('../../api/rest', () => ({
+  ...jest.requireActual('../../api/rest'),
+  useGetRoomEventInfoQuery: () => ({
+    data: {},
+  }),
+}));
+
 jest.mock('@livekit/components-react', () => ({
   useRoomContext: () => jest.fn(),
   useMediaDeviceSelect: () => [

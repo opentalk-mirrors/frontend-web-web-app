@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createEntityAdapter, createSlice, EntityId, EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
 import {
   VoteCanceled,
@@ -51,7 +51,7 @@ interface ActiveVote {
 interface State {
   activeVote?: ActiveVote;
   currentShownVote?: LegalVoteId;
-  votes: EntityState<LegalVote>;
+  votes: EntityState<LegalVote, LegalVoteId>;
   showResultWindow: boolean;
   savedLegalVotes: Array<SavedLegalVoteForm>;
 }
@@ -256,7 +256,7 @@ export const {
 
 const voteSelectors = legalVoteAdapter.getSelectors((state: { legalVote: State }) => state.legalVote.votes);
 
-export const selectVoteById = (id: EntityId) => (state: { legalVote: State }) => voteSelectors.selectById(state, id);
+export const selectVoteById = (id: LegalVoteId) => (state: { legalVote: State }) => voteSelectors.selectById(state, id);
 export const selectVoteIds = (state: { legalVote: State }) => voteSelectors.selectIds(state);
 export const selectAllVotes = (state: { legalVote: State }) => voteSelectors.selectAll(state);
 export const selectVotes = (state: { legalVote: State }) => voteSelectors.selectEntities(state);

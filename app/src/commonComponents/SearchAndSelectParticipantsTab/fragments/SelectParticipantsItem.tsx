@@ -16,6 +16,7 @@ import React from 'react';
 import { ParticipantAvatar } from '../../';
 import { useAppSelector } from '../../../hooks';
 import { selectParticipantAvatarUrl, selectParticipantName } from '../../../store/slices/participantsSlice';
+import type { ParticipantId } from '../../../types';
 
 export interface SelectableParticipant extends RemoteParticipant {
   selected: boolean;
@@ -48,8 +49,8 @@ const FormControlLabel = styled(MuiFormControlLabel)(() => ({
 }));
 
 const SelectParticipantsItem = ({ participant, onCheck }: SelectParticipantsItemProps) => {
-  const displayName = useAppSelector(selectParticipantName(participant.identity));
-  const avatarUrl = useAppSelector(selectParticipantAvatarUrl(participant.identity));
+  const displayName = useAppSelector(selectParticipantName(participant.identity as ParticipantId));
+  const avatarUrl = useAppSelector(selectParticipantAvatarUrl(participant.identity as ParticipantId));
 
   return (
     <ListItem alignItems="flex-start">

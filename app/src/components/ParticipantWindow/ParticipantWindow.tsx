@@ -9,7 +9,7 @@ import { NameTile } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
 import { useFullscreenContext } from '../../hooks/useFullscreenContext';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
-import { ParticipantId } from '../../types';
+import type { ParticipantId } from '../../types';
 import HandRaisedIndicator from './fragments/HandRaisedIndicator';
 import ParticipantVideo from './fragments/ParticipantVideo';
 import VideoOverlay from './fragments/VideoOverlay';
@@ -38,7 +38,7 @@ const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: 
   const participantId = participant.identity as ParticipantId;
 
   const fullscreenHandle = useFullscreenContext();
-  const displayName = useAppSelector(selectParticipantName(participant.identity));
+  const displayName = useAppSelector(selectParticipantName(participant.identity as ParticipantId));
   const [activeOverlay, setActiveOverlay] = useState<boolean>(!!alwaysShowOverlay);
 
   const handleDisplayOverlay = (show: boolean) => !alwaysShowOverlay && setActiveOverlay(show);

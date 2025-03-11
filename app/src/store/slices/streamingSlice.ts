@@ -19,12 +19,12 @@ interface StreamingTargetFilter {
   kind?: StreamingKind;
 }
 
-const streamingAdapter = createEntityAdapter<StreamingTargetEntity>({
+const streamingAdapter = createEntityAdapter<StreamingTargetEntity, StreamingTargetId>({
   selectId: (streamTarget) => streamTarget.targetId,
 });
 
 interface StreamingState {
-  streams: EntityState<StreamingTargetEntity>;
+  streams: EntityState<StreamingTargetEntity, StreamingTargetId>;
   consent?: boolean;
 }
 

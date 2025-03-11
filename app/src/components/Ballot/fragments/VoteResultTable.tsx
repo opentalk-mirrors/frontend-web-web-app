@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../../hooks';
 import { selectVoteById } from '../../../store/slices/legalVoteSlice';
+import type { LegalVoteId } from '../../../types';
 import VoteEmptyRow from './VoteEmptyRow';
 import VoteResultCountRow from './VoteResultCountRow';
 import VoteResultRow from './VoteResultRow';
@@ -21,7 +22,7 @@ const CustomTable = styled(Table)(({ theme }) => ({
 }));
 
 interface VoteResultTableProps {
-  voteId: string;
+  voteId: LegalVoteId;
   scrollToResults: () => void;
 }
 

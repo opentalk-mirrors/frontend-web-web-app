@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Dialog, styled, Paper } from '@mui/material';
-import { EntityId } from '@reduxjs/toolkit';
 import { batch } from 'react-redux';
 
 import { useAppSelector, useAppDispatch } from '../../hooks';
@@ -18,6 +17,7 @@ import {
 } from '../../store/slices/pollSlice';
 import { selectVoteOrPollIdToShow, setVoteOrPollIdToShow } from '../../store/slices/uiSlice';
 import { selectOurUuid } from '../../store/slices/userSlice';
+import type { PollId, LegalVoteId } from '../../types';
 import { LegalVoteContainer } from './fragments/LegalVoteContainer';
 import { PollContainer } from './fragments/PollContainer';
 import { ReportSection } from './fragments/ReportSection';
@@ -35,11 +35,9 @@ export default function Ballot() {
   const pollIdToShow = useAppSelector(selectPollIdToShow);
   const voteOrPollIdToShow = useAppSelector(selectVoteOrPollIdToShow); // when user selects a vote to preview from the dropdown menu
 
-  const pollToShow = useAppSelector(
-    selectPollById((voteOrPollIdToShow ? voteOrPollIdToShow : pollIdToShow) as EntityId)
-  );
+  const pollToShow = useAppSelector(selectPollById((voteOrPollIdToShow ? voteOrPollIdToShow : pollIdToShow) as PollId));
   const legalVoteToShow = useAppSelector(
-    selectVoteById((voteOrPollIdToShow ? voteOrPollIdToShow : voteIdToShow) as EntityId)
+    selectVoteById((voteOrPollIdToShow ? voteOrPollIdToShow : voteIdToShow) as LegalVoteId)
   );
 
   const ourUuid = useAppSelector(selectOurUuid);

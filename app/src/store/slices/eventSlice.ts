@@ -17,7 +17,7 @@ export interface RoomEvent {
   event: 'joined' | 'left' | 'chat_enabled' | 'chat_disabled';
 }
 
-const eventAdapter = createEntityAdapter<RoomEvent>({
+const eventAdapter = createEntityAdapter<RoomEvent, string>({
   selectId: (event) => `${event.target}@${event.id}`,
 });
 

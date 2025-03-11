@@ -1,14 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  createEntityAdapter,
-  createSelector,
-  createSlice,
-  EntityState,
-  EntityId,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { isAfter } from 'date-fns';
 import { last } from 'lodash';
 
@@ -62,7 +55,7 @@ export type ChatProps = {
   lastMessage: ChatMessage;
 };
 
-const messagesAdapter = createEntityAdapter<ChatMessage>({
+const messagesAdapter = createEntityAdapter<ChatMessage, string>({
   selectId: (message) => `${message.source}@${message.timestamp}`,
   sortComparer: (a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp),
 });
@@ -72,7 +65,7 @@ export interface PersonalChatLastSeen {
   lastSeenTimestamp: string;
 }
 
-const lastSeenTimestampAdapter = createEntityAdapter<PersonalChatLastSeen>({
+const lastSeenTimestampAdapter = createEntityAdapter<PersonalChatLastSeen, TargetId>({
   selectId: (entity) => entity.target,
   sortComparer: (a, b) => a.target.localeCompare(b.target),
 });
@@ -81,9 +74,9 @@ export interface ChatState {
   enabled: boolean;
   settingsChangedAt?: string;
   settingsChangedBy?: ParticipantId;
-  messages: EntityState<ChatMessage>;
+  messages: EntityState<ChatMessage, string>;
   lastSeenTimestampGlobal?: string;
-  lastSeenTimestampsPersonal: EntityState<PersonalChatLastSeen>;
+  lastSeenTimestampsPersonal: EntityState<PersonalChatLastSeen, TargetId>;
 }
 
 const initialState: ChatState = {
@@ -174,8 +167,7 @@ const chatMessagesSelectors = messagesAdapter.getSelectors<RootState>((state) =>
 export const selectAllChatMessages = (state: RootState) =>
   chatMessagesSelectors.selectAll(state).filter((message) => message !== undefined);
 
-export const selectChatMessagesById = (id: EntityId) => (state: RootState) =>
-  chatMessagesSelectors.selectById(state, id);
+export const selectChatMessagesById = (id: string) => (state: RootState) => chatMessagesSelectors.selectById(state, id);
 
 export const selectChatMessagesByScope = (scope: ChatScope, targetId?: TargetId) => {
   const isInTargetScope = (chatMessage: ChatMessage) =>

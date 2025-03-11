@@ -19,19 +19,19 @@ export enum SpeakerState {
   Transitioning = 'transitioning',
 }
 
-const remainingParticipantsAdapter = createEntityAdapter<ParticipantId>({
+const remainingParticipantsAdapter = createEntityAdapter<ParticipantId, ParticipantId>({
   selectId: (participant) => participant,
 });
 
-const historyParticipantsAdapter = createEntityAdapter<ParticipantId>({
+const historyParticipantsAdapter = createEntityAdapter<ParticipantId, ParticipantId>({
   selectId: (participant) => participant,
 });
 
 export interface AutomodState {
   active: boolean;
   selectionStrategy: AutomodSelectionStrategy;
-  history: EntityState<ParticipantId>;
-  remaining: EntityState<ParticipantId>;
+  history: EntityState<ParticipantId, ParticipantId>;
+  remaining: EntityState<ParticipantId, ParticipantId>;
   animationOnRandom: boolean;
   allowDoubleSelection: boolean;
   timeLimit: MilliSeconds | null;

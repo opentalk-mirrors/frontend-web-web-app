@@ -42,7 +42,7 @@ const Toolbar = ({ layout }: { layout?: LayoutTypes }) => {
   const audioTrack = localParticipant.getTrackPublication(Track.Source.Microphone)?.audioTrack;
 
   return (
-    <MainContainer aria-label={t('landmark-complementary-toolbar')} className={layout} data-testid="Toolbar">
+    <MainContainer aria-label={t('landmark-complementary-toolbar')} className={layout}>
       <HandraiseButton />
       <ShareScreenButton />
       <AudioButton localAudioTrack={audioTrack} />

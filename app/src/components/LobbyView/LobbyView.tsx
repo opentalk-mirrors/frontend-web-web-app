@@ -272,7 +272,14 @@ const LobbyView = () => {
           }
         >
           <ThemeProvider theme={createOpenTalkTheme('dark')}>
-            <Stack id={JOIN_FORM_ID} direction="row" spacing={1} component="form" onSubmit={formik.handleSubmit}>
+            <Stack
+              id={JOIN_FORM_ID}
+              direction="row"
+              spacing={1}
+              component="form"
+              onSubmit={formik.handleSubmit}
+              aria-label={t('joinform-title') as string}
+            >
               <ContitionalToolTip
                 showToolTip={Boolean(disableDisplayNameField)}
                 title={t('joinform-display-name-field-disabled-tooltip')}
@@ -292,18 +299,20 @@ const LobbyView = () => {
                   placeholder={t('lobby-password-placeholder')}
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label={t('toggle-password-visibility')}
-                          onClick={handleClickShowPassword}
-                          edge="end"
-                        >
-                          {!showPassword ? <VisibleIcon /> : <HiddenIcon />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label={t('toggle-password-visibility')}
+                            onClick={handleClickShowPassword}
+                            edge="end"
+                          >
+                            {!showPassword ? <VisibleIcon /> : <HiddenIcon />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
                   }}
                 />
               )}

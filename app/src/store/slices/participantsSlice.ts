@@ -2,14 +2,13 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  EntityId,
   PayloadAction,
   TypedStartListening,
+  UnknownAction,
   createEntityAdapter,
   createListenerMiddleware,
   createSelector,
   createSlice,
-  isAnyOf,
 } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { Participant as RemoteParticipant } from 'livekit-client';
@@ -289,7 +288,8 @@ export const selectSlicedParticipants = (page: number, maxParticipants: number, 
   });
 };
 
-export const selectParticipantById = (id: EntityId) => (state: RootState) => participantSelectors.selectById(state, id);
+export const selectParticipantById = (id: ParticipantId) => (state: RootState) =>
+  participantSelectors.selectById(state, id);
 
 export const selectParticipants = (state: RootState) => participantSelectors.selectEntities(state);
 export const selectParticipantsTotal = createSelector(
@@ -297,17 +297,17 @@ export const selectParticipantsTotal = createSelector(
   (participants) => participants.length + 1
 );
 
-export const selectParticipantAvatarUrl = (id: EntityId) => {
+export const selectParticipantAvatarUrl = (id: ParticipantId) => {
   const sel = selectParticipantById(id);
   return createSelector(sel, (participant) => participant?.avatarUrl);
 };
 
-export const selectParticipantName = (id: EntityId) => {
+export const selectParticipantName = (id: ParticipantId) => {
   const sel = selectParticipantById(id);
   return createSelector(sel, (participant) => participant?.displayName);
 };
 
-export const selectParticipationKind = (id: EntityId) => {
+export const selectParticipationKind = (id: ParticipantId) => {
   const sel = selectParticipantById(id);
   return createSelector(sel, (participant) => participant?.participationKind);
 };
@@ -331,9 +331,15 @@ type AppStartListening = TypedStartListening<RootState, AppDispatch>;
 
 const startAppListening = participantsMiddleware.startListening as AppStartListening;
 
+const isJoinOrLeaveAction = (
+  action: UnknownAction
+): action is PayloadAction<{ id: ParticipantId; participant: Participant }> =>
+  join.match(action) || leave.match(action);
+
 startAppListening({
-  matcher: isAnyOf(leave, join),
-  effect: ({ payload, type }, listenerApi) => {
+  matcher: isJoinOrLeaveAction,
+  effect: (action, listenerApi) => {
+    const { payload } = action;
     const state = listenerApi.getOriginalState();
     const { activeVote, votes } = state.legalVote;
     if (!activeVote) {
@@ -350,9 +356,9 @@ startAppListening({
       const participantName =
         payload?.participant?.displayName || participantSelectors.selectById(state, participantId)?.displayName;
 
-      if (type.match(join)) {
+      if (join.match(action)) {
         notifications.warning(i18next.t('legal-vote-participant-joined-the-meeting', { participantName }));
-      } else {
+      } else if (leave.match(action)) {
         notifications.warning(i18next.t('legal-vote-participant-left-the-meeting', { participantName }));
       }
     }

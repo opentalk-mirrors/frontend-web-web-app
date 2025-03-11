@@ -1,11 +1,12 @@
 import { isEmpty } from 'lodash';
 import { ReactNode, useEffect } from 'react';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuthContext } from './authProvider';
 import { selectAuthIsPending, selectIsAuthenticated } from './store';
+import { getAppDispatch } from './store';
 import { codeCallback } from './store/authActions';
 
 export interface AuthCallbackContext {
@@ -16,7 +17,7 @@ const AuthCallbackComponent = ({ children, redirectUrl = '/' }: AuthCallbackCont
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const auth = useAuthContext();
-  const dispatch = useDispatch();
+  const dispatch = getAppDispatch();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const isAuthPending = useSelector(selectAuthIsPending);
 

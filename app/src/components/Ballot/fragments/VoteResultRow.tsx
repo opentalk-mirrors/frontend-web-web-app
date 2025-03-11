@@ -7,7 +7,7 @@ import { memo } from 'react';
 import { useAppSelector } from '../../../hooks';
 import { selectUserAsParticipant } from '../../../store/selectors';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
-import { LegalVoteOption } from '../../../types';
+import type { LegalVoteOption, ParticipantId } from '../../../types';
 
 interface VoteResultRowProps {
   participantId: string;
@@ -16,7 +16,7 @@ interface VoteResultRowProps {
 }
 
 function VoteResultRow(props: VoteResultRowProps) {
-  const participant = useAppSelector(selectParticipantById(props.participantId.toLowerCase()));
+  const participant = useAppSelector(selectParticipantById(props.participantId.toLowerCase() as ParticipantId));
   const user = useAppSelector(selectUserAsParticipant);
   const { token } = props;
 

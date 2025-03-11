@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { login } from '@opentalk/redux-oidc';
 import { Namespaces, StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
-import { AnyAction, Middleware, freeze } from '@reduxjs/toolkit';
+import { Middleware, freeze, isAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { kebabCase } from 'lodash';
 
@@ -1506,10 +1506,12 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.trainingParticipationReport.handler(builder, dispatch));
   });
 
-  return (next) => (action: AnyAction) => {
-    const caseHandler = actionsMap[action.type];
-    if (caseHandler) {
-      caseHandler(freeze(getState(), true), action);
+  return (next) => (action) => {
+    if (isAction(action)) {
+      const caseHandler = actionsMap[action.type];
+      if (caseHandler) {
+        caseHandler(freeze(getState(), true), action);
+      }
     }
     return next(action);
   };
