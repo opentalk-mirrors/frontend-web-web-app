@@ -261,8 +261,8 @@ importers:
         specifier: ^1.8.11
         version: 1.8.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       snakecase-keys:
-        specifier: ^5.5.0
-        version: 5.5.0
+        specifier: ^8.0.1
+        version: 8.0.1
       use-elapsed-time:
         specifier: ^3.0.4
         version: 3.0.4(react@18.3.1)
@@ -502,8 +502,8 @@ importers:
         specifier: ^0.14.1
         version: 0.14.1
       snakecase-keys:
-        specifier: ^5.5.0
-        version: 5.5.0
+        specifier: ^8.0.1
+        version: 8.0.1
     devDependencies:
       '@reduxjs/toolkit':
         specifier: ^1.9.7
@@ -6738,9 +6738,9 @@ packages:
   snake-case@3.0.4:
     resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
 
-  snakecase-keys@5.5.0:
-    resolution: {integrity: sha512-r3kRtnoPu3FxGJ3fny6PKNnU3pteb29o6qAa0ugzhSseKNWRkw1dw8nIjXMyyKaU9vQxxVIE62Mb3bKbdrgpiw==}
-    engines: {node: '>=12'}
+  snakecase-keys@8.0.1:
+    resolution: {integrity: sha512-Sj51kE1zC7zh6TDlNNz0/Jn1n5HiHdoQErxO8jLtnyrkJW/M5PrI7x05uDgY3BO7OUQYKCvmeMurW6BPUdwEOw==}
+    engines: {node: '>=18'}
 
   socks-proxy-agent@8.0.5:
     resolution: {integrity: sha512-HehCEsotFqbPW9sJ8WVYB6UbmIMv7kUUORIF2Nncq4VQvBfNBLibW9YZR5dlYCSUhwcD628pRllm7n+E+YTzJw==}
@@ -7176,10 +7176,6 @@ packages:
   type-fest@2.19.0:
     resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
     engines: {node: '>=12.20'}
-
-  type-fest@3.13.1:
-    resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
-    engines: {node: '>=14.16'}
 
   type-fest@4.37.0:
     resolution: {integrity: sha512-S/5/0kFftkq27FPNye0XM1e2NsnoD/3FS+pBmbjmmtLT6I+i344KoOf7pvXreaFsDamWeaJX55nczA1m5PsBDg==}
@@ -14925,11 +14921,11 @@ snapshots:
       dot-case: 3.0.4
       tslib: 2.8.1
 
-  snakecase-keys@5.5.0:
+  snakecase-keys@8.0.1:
     dependencies:
       map-obj: 4.3.0
       snake-case: 3.0.4
-      type-fest: 3.13.1
+      type-fest: 4.37.0
 
   socks-proxy-agent@8.0.5:
     dependencies:
@@ -15445,8 +15441,6 @@ snapshots:
   type-fest@1.4.0: {}
 
   type-fest@2.19.0: {}
-
-  type-fest@3.13.1: {}
 
   type-fest@4.37.0: {}
 
