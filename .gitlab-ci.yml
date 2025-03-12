@@ -18,8 +18,9 @@ stages:
   - e2e
 
 .setup-pnpm: &setup-pnpm
+  - npm install -g corepack@latest
   - corepack enable
-  - corepack prepare pnpm@9.15.2 --activate
+  - corepack prepare pnpm@10.6.2 --activate
   - pnpm config set store-dir .pnpm-store
 
 .setup-e2e-tests: &setup-e2e-tests
