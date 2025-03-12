@@ -46,13 +46,15 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
     dispatch(setMediaChangeInProgress(kind));
     try {
       setLocalDevices(await Room.getLocalDevices(kind, true));
+      setPermissionDenied(false);
     } catch (error) {
-      setPermissionDenied(true);
       setLocalDevices([]);
       console.debug(`Permission or ${kind} toggle failed: ${error}`);
-      notifications.warning(t('media-denied-warning', { mediaType: kind }), {
-        preventDuplicate: true,
-      });
+      !permissionDenied &&
+        notifications.warning(t('media-denied-warning', { mediaType: kind }), {
+          preventDuplicate: true,
+        });
+      setPermissionDenied(true);
     } finally {
       dispatch(setMediaChangeInProgress(null));
     }
