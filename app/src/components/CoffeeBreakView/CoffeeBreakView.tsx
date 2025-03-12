@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-
 /* eslint-disable jsx-a11y/no-autofocus */
 import { Button, styled } from '@mui/material';
 import Box from '@mui/material/Box';

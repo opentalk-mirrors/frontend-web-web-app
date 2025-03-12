@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-
 /*  Since we probably won't be able to provide a real time transcription for videos as of now, media-has-caption will be disabled for now.*/
 import { VideoTrack, useParticipantTracks } from '@livekit/components-react';
 import { CircularProgress, Grid, styled } from '@mui/material';
