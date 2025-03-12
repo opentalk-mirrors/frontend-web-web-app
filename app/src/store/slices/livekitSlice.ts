@@ -4,11 +4,11 @@
 // Redux has limitations with non-serializable data, like the LiveKit room object, as it can cause issues with state persistence.
 // We've decided to use a separate slice and declare an exception in the store for now.
 import {
-  PayloadAction,
-  createSlice,
-  createSelector,
   ListenerEffectAPI,
+  PayloadAction,
   createListenerMiddleware,
+  createSelector,
+  createSlice,
 } from '@reduxjs/toolkit';
 
 import type { AppDispatch, RootState } from '../';
@@ -158,7 +158,9 @@ const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
 
 livekitMiddleware.startListening({
   type: 'livekit/triggerReconnect',
-  effect: (_action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
-    reconnect(listenerApi);
+  effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+    if (!listenerApi.getState().room.isDeleted) {
+      reconnect(listenerApi);
+    }
   },
 });

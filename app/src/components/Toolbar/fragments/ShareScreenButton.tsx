@@ -12,6 +12,7 @@ import { ToolbarButtonIds } from '../../../constants';
 import { useAppSelector } from '../../../hooks';
 import browser from '../../../modules/BrowserSupport';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
+import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import ToolbarButton from './ToolbarButton';
 
@@ -24,6 +25,7 @@ const ShareScreenButton = () => {
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
+  const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const isScreenShareSupported = browser.isScreenShareSupported();
   const isScreenShareEnabled = enabled && !isLivekitUnavailable;
@@ -63,7 +65,7 @@ const ShareScreenButton = () => {
       tooltipTitle={getToolTipTitle()}
       onClick={onClick}
       active={isScreenShareEnabled && isModeratorOrPresenter}
-      disabled={pending || !isModeratorOrPresenter || isLivekitUnavailable}
+      disabled={pending || !isModeratorOrPresenter || isLivekitUnavailable || isRoomDeleted}
       data-testid="toolbarShareScreenButton"
       id={ToolbarButtonIds.ShareScreen}
     >

@@ -5,7 +5,7 @@ import { screen, fireEvent } from '@testing-library/react';
 
 import { ModerationTabKey } from '../../config/constants';
 import { Tab as TabProps } from '../../config/moderationTabs';
-import { renderWithProviders } from '../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import ModerationSideToolbar from './ModerationSideToolbar';
 
 describe('ModerationSideToolbar', () => {
@@ -35,10 +35,11 @@ describe('ModerationSideToolbar', () => {
     },
   ];
 
+  const { store } = configureStore();
   const renderComponent = (activeTab: ModerationTabKey = 'chat' as ModerationTabKey) =>
     renderWithProviders(
       <ModerationSideToolbar onSelect={mockOnSelect} displayedTabs={exampleTabs} activeTab={activeTab} />,
-      { provider: { mui: true } }
+      { store, provider: { mui: true } }
     );
 
   beforeEach(() => {

@@ -1243,3 +1243,6 @@ presence-logging-not-allowed-for-participant-error = Presence logging not allowe
 insufficient-permissions-error =  Insufficient permissions
 invalid-parameters-error = Invalid parameters
 storage-error = Not enough storage
+
+meeting-ended-dialog-title = Meeting Ended
+meeting-ended-dialog-button-title = Leave Conference

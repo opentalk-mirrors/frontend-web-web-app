@@ -17,6 +17,7 @@ import {
   selectVideoPermissionDenied,
   startMedia,
 } from '../../../store/slices/mediaSlice';
+import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import ToolbarButton from './ToolbarButton';
 import VideoMenu from './VideoMenu';
@@ -27,9 +28,10 @@ interface VideoButtonProps {
 
 const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const askConsent = useAppSelector(selectNeedRecordingConsent);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
-  const dispatch = useAppDispatch();
+  const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const videoEnabled = useAppSelector(selectVideoEnabled);
   const cameraEnabled = (videoEnabled || false) && !isLivekitUnavailable;
 
@@ -79,7 +81,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
         contextTitle={t('toolbar-button-video-context-title')}
         contextMenuId="video-context-menu"
         contextMenuExpanded={showMenu}
-        disabled={mediaChangeInProgress || devices.length === 0 || isLivekitUnavailable}
+        disabled={mediaChangeInProgress || devices.length === 0 || isLivekitUnavailable || isRoomDeleted}
         active={cameraEnabled}
         openMenu={() => {
           setShowMenu(true);

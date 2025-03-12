@@ -1243,3 +1243,6 @@ presence-logging-not-allowed-for-participant-error = Schulungs-Teilnahmeprotokol
 insufficient-permissions-error =  Keine Berechtigung
 invalid-parameters-error = Ungültige Parameter
 storage-error = Zu wenig Speicherplatz
+
+meeting-ended-dialog-title = Meeting beendet
+meeting-ended-dialog-button-title = Konferenz verlassen

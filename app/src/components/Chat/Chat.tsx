@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { LastSeenTimestampAddedPayload, setLastSeenTimestamp } from '../../api/types/outgoing/chat';
 import { useAppSelector } from '../../hooks';
 import { lastSeenTimestampAdded, selectLastMessageForScope } from '../../store/slices/chatSlice';
+import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
 import { selectChatSearchValue, setChatSearchValue } from '../../store/slices/uiSlice';
 import { ChatScope, TargetId } from '../../types';
 import ChatForm from './fragments/ChatForm';
@@ -31,6 +32,7 @@ interface ChatProps {
 const Chat = ({ target, scope = ChatScope.Global, autoFocusMessageInput }: ChatProps) => {
   // Default value is used when we switch tabs and component remounts.
   const defaultChatValue = useAppSelector(selectChatSearchValue);
+  const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const [searchValue, setSearchValue] = useState<string>(defaultChatValue);
   const dispatch = useDispatch();
   const chatSearchInputReference = useRef<HTMLInputElement | null>(null);
@@ -38,11 +40,13 @@ const Chat = ({ target, scope = ChatScope.Global, autoFocusMessageInput }: ChatP
 
   //Adds a last seen timestamp when the specific scope is opened or a message in the scope is received while open
   useEffect(() => {
-    const timestamp = lastMessageForScope ? lastMessageForScope.timestamp : new Date().toISOString();
-    const payload: LastSeenTimestampAddedPayload = { scope, timestamp, target };
-    dispatch(lastSeenTimestampAdded(payload));
-    dispatch(setLastSeenTimestamp.action(payload));
-  }, [lastMessageForScope, dispatch, scope, target]);
+    if (!isRoomDeleted) {
+      const timestamp = lastMessageForScope ? lastMessageForScope.timestamp : new Date().toISOString();
+      const payload: LastSeenTimestampAddedPayload = { scope, timestamp, target };
+      dispatch(lastSeenTimestampAdded(payload));
+      dispatch(setLastSeenTimestamp.action(payload));
+    }
+  }, [lastMessageForScope, dispatch, scope, target, isRoomDeleted]);
 
   const debouncedSetChatSearchValue = useCallback(
     debounce((value: string) => {
