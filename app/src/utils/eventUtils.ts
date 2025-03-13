@@ -15,7 +15,7 @@ import {
   isTimelessEvent,
   RecurringEvent,
 } from '@opentalk/rest-api-rtk-query';
-import { addMonths, isWithinInterval, subMonths } from 'date-fns';
+import { addMonths, Interval, isWithinInterval, subMonths } from 'date-fns';
 import { cloneDeep, findIndex, orderBy } from 'lodash';
 
 import { getISOStringWithoutMilliseconds } from './timeUtils';
