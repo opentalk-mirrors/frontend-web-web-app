@@ -17,12 +17,12 @@
     "@opentalk/fluent_conv": "workspace:*"
   },
   "peerDependencies": {
-    "i18next": "^21.10.0"
+    "i18next": "^24.2.2"
   },
   "devDependencies": {
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.1",
-    "i18next": "^21.10.0",
+    "i18next": "^24.2.2",
     "typescript": "^5.8.2",
     "vite": "^6.2.1",
     "vite-plugin-dts": "^4.5.3"

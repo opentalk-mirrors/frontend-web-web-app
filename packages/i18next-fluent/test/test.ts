@@ -57,7 +57,7 @@ describe('fluent format', () => {
   describe('with i18next', () => {
     beforeAll(() => {
       i18next.use(Fluent).init({
-        lng: 'en-CA',
+        lng: 'en',
         fallbackLng: 'en',
         resources: {
           en: {
