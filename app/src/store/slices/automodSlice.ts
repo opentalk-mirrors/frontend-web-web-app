@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { WritableDraft } from 'immer/dist/internal';
 
 import {
   AutomodRemainingUpdatedEvent,
@@ -61,7 +60,7 @@ function getInitialState() {
   return initialState;
 }
 
-function reset(state: WritableDraft<AutomodState>) {
+function reset(state: AutomodState) {
   const initialState = getInitialState();
   state.active = initialState.active;
   state.history = historyParticipantsAdapter.getInitialState();
