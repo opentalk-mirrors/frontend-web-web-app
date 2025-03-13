@@ -44,7 +44,7 @@ describe('VideoOverlay general', () => {
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
-  test('renders fullscreen button if overlay is active', async () => {
+  test('renders fullscreen button if overlay is active', () => {
     mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
@@ -55,7 +55,7 @@ describe('VideoOverlay general', () => {
     const fullscreenButton = screen.getByRole('button', { name: 'indicator-fullscreen-open' });
     expect(fullscreenButton).toBeInTheDocument();
   });
-  test('does not render fullscreen button if fullscreen feature is unavailable', async () => {
+  test('does not render fullscreen button if fullscreen feature is unavailable', () => {
     mockFullscreenContext.isFullScreenAvailable = jest.fn(() => false);
 
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {

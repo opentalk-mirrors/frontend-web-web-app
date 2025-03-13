@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
+//
+// SPDX-License-Identifier: EUPL-1.2
 import { useMediaQuery } from '@mui/material';
 import { act, screen } from '@testing-library/react';
 
@@ -29,37 +32,75 @@ jest.mock('@mui/material', () => {
 });
 
 const mockUseMediaQuery = useMediaQuery as jest.Mock;
-const openMenu = async () => {
+const openMenu = () => {
   const openButton = screen.getByRole('button', { name: 'conference-view-trigger-button' });
-  await openButton.click();
+  openButton.click();
 };
 
 describe('Layout selection menu', () => {
+  const { store } = configureStore();
   afterEach(() => {
     mockUseMediaQuery.mockClear();
   });
+  const getButtonSelector = (name: string) => screen.getByRole('menuitemradio', { name, hidden: true });
 
-  it('renders fullscreen button if overlay is active', async () => {
-    const { store } = configureStore();
+  it('opens a menu when the open button is clicked', () => {
+    renderWithProviders(<LayoutSelection />, {
+      store,
+    });
+    act(openMenu);
+    const menu = screen.getByRole('menu', { hidden: true });
+    expect(menu).toBeInTheDocument();
+  });
+  it('renders the correct buttons', () => {
+    renderWithProviders(<LayoutSelection />, {
+      store,
+    });
+    act(openMenu);
+    const gridViewButton = getButtonSelector('conference-view-grid');
+    const speakerViewButton = getButtonSelector('conference-view-speaker');
+    const cameraFirstButton = getButtonSelector('conference-view-grid-camera-first');
+    const moderatorFirstButton = getButtonSelector('conference-view-grid-moderators-first');
+    expect(gridViewButton).toBeInTheDocument();
+    expect(speakerViewButton).toBeInTheDocument();
+    expect(cameraFirstButton).toBeInTheDocument();
+    expect(moderatorFirstButton).toBeInTheDocument();
+  });
+
+  it('renders fullscreen button if the fullscreen feature is available', () => {
     mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
     renderWithProviders(<LayoutSelection />, {
       store,
     });
-    await act(openMenu);
+    act(openMenu);
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
-    const fullscreenMenuItem = screen.getByRole('menuitemradio', { name: 'conference-view-fullscreen', hidden: true });
+    const fullscreenMenuItem = getButtonSelector('conference-view-fullscreen');
     expect(fullscreenMenuItem).toBeInTheDocument();
   });
-  it('does not render fullscreen button if fullscreen feature is unavailable', async () => {
-    const { store } = configureStore();
+
+  it('opens fullscreen when clicking the fullscreen button', () => {
+    mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
+
+    renderWithProviders(<LayoutSelection />, {
+      store,
+    });
+    act(openMenu);
+    expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
+    const fullscreenMenuItem = getButtonSelector('conference-view-fullscreen');
+
+    act(() => fullscreenMenuItem.click());
+    expect(mockFullscreenContext.enter).toHaveBeenCalled();
+  });
+
+  it('does not render fullscreen button if fullscreen feature is unavailable', () => {
     mockFullscreenContext.isFullScreenAvailable = jest.fn(() => false);
 
     renderWithProviders(<LayoutSelection />, {
       store,
     });
 
-    await act(openMenu);
+    act(openMenu);
 
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
@@ -68,7 +109,7 @@ describe('Layout selection menu', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders meeting notes option on mobile when meeting notes are available', async () => {
+  it('renders meeting notes option on mobile when meeting notes are available', () => {
     mockUseMediaQuery.mockReturnValue(true);
     const { store } = configureStore({
       initialState: {
@@ -84,14 +125,11 @@ describe('Layout selection menu', () => {
         snackbar: true,
       },
     });
-    await act(openMenu);
+    act(openMenu);
 
     expect(mockUseMediaQuery).toHaveBeenCalled();
 
-    const meetingNotesButton = screen.getByRole('menuitemradio', {
-      name: 'moderationbar-button-meeting-notes-tooltip',
-      hidden: true,
-    });
+    const meetingNotesButton = getButtonSelector('moderationbar-button-meeting-notes-tooltip');
     expect(meetingNotesButton).toBeInTheDocument();
   });
 });
