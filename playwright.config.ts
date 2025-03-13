@@ -2,14 +2,14 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { defineConfig, devices } from '@playwright/test';
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import path from 'path';
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config({ path: path.resolve(__dirname, 'e2e', '.env') });
+dotenv.config({ path: path.resolve(__dirname, 'e2e', '.env'), override: true });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -45,8 +45,11 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         storageState: '.auth/user.json',
+        launchOptions: {
+          args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream', '--allow-file-access'],
+        },
         contextOptions: {
-          permissions: ['clipboard-read', 'clipboard-write'],
+          permissions: ['clipboard-read', 'clipboard-write', 'camera', 'microphone'],
         },
       },
       dependencies: ['setup'],
