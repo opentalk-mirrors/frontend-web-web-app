@@ -1,0 +1,81 @@
+// SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
+//
+// SPDX-License-Identifier: EUPL-1.2
+import { Button, Switch } from '@mui/material';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+import { useHotkeysActive } from './useHotkeys';
+import { usePreventSpaceKey } from './usePreventSpaceKey';
+
+jest.mock('./useHotkeys');
+
+interface WithProps {
+  handleChange: jest.Mock;
+}
+
+function WithButton(props: WithProps) {
+  const { handleChange } = props;
+  usePreventSpaceKey();
+  return <Button onClick={handleChange} />;
+}
+
+function WithSwitch(props: WithProps) {
+  const { handleChange } = props;
+  usePreventSpaceKey();
+  return <Switch onChange={handleChange} />;
+}
+
+describe('usePreventSpaceKey', () => {
+  describe('shortkeys are enabled', () => {
+    beforeEach(() => {
+      (useHotkeysActive as jest.Mock).mockReturnValue(true);
+    });
+    test('preventing space key for a button', async () => {
+      const handleChange = jest.fn();
+      render(<WithButton handleChange={handleChange} />);
+
+      const button = screen.getByRole('button');
+      button.focus();
+
+      await userEvent.keyboard('[Space]');
+      expect(handleChange).not.toHaveBeenCalled();
+    });
+    test('preventing space key for a switch', async () => {
+      const handleChange = jest.fn();
+      render(<WithSwitch handleChange={handleChange} />);
+
+      const switchElement = screen.getByRole('checkbox');
+      switchElement.focus();
+
+      await userEvent.keyboard('[Space]');
+      expect(handleChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('shortkeys are disabled', () => {
+    beforeEach(() => {
+      (useHotkeysActive as jest.Mock).mockReturnValue(false);
+    });
+    test('not preventing space key for a button', async () => {
+      const handleChange = jest.fn();
+      render(<WithButton handleChange={handleChange} />);
+
+      const button = screen.getByRole('button');
+      button.focus();
+
+      await userEvent.keyboard('[Space]');
+      expect(handleChange).toHaveBeenCalled();
+    });
+    test('not preventing space key for a switch', async () => {
+      const handleChange = jest.fn();
+      render(<WithSwitch handleChange={handleChange} />);
+
+      const switchElement = screen.getByRole('checkbox');
+      switchElement.focus();
+
+      await userEvent.keyboard('[Space]');
+      expect(handleChange).toHaveBeenCalled();
+    });
+  });
+});

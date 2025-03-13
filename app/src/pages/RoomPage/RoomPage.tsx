@@ -10,6 +10,7 @@ import LobbyView from '../../components/LobbyView';
 import { useAppSelector } from '../../hooks';
 import useE2EE from '../../hooks/useE2EE';
 import { useInviteCode } from '../../hooks/useInviteCode';
+import { usePreventSpaceKey } from '../../hooks/usePreventSpaceKey';
 import { ConnectionState, selectRoomConnectionState } from '../../store/slices/roomSlice';
 import RoomLoadingView from './fragments/RoomLoadingView';
 
@@ -24,6 +25,8 @@ const RoomPage = () => {
   const inviteCode = useInviteCode();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const connectionState: ConnectionState = useAppSelector(selectRoomConnectionState);
+
+  usePreventSpaceKey();
 
   if (!isAuthenticated && !inviteCode) {
     console.warn('meeting page - not logged in - redirect');
