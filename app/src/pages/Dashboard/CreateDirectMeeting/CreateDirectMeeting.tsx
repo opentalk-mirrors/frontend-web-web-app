@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCreateEventMutation, useLazyGetEventQuery } from '../../../api/rest';
 import { notifications } from '../../../commonComponents';
-import InviteToMeeting from '../../../components/InviteToMeeting/InviteToMeeting';
+import InviteToMeeting from '../../../components/InviteToMeeting';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
 const Container = styled(Box)(({ theme }) => ({

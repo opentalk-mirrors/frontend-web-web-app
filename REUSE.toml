@@ -31,6 +31,7 @@ path = [
     "packages/**/**.snap",
     "pnpm-lock.yaml",
     "renovate.json",
+    ".knip.json",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "OpenTalk GmbH <mail@opentalk.eu>"

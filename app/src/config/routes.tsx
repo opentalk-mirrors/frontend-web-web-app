@@ -88,14 +88,6 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
     children: [{ index: true, element: <InvitePage /> }],
     key: 'invite',
   },
-  /*
-  Just disabled for now, we need this page later for the desktop. https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1877
-  {
-    path: '/join',
-    element: <LobbyTemplate />,
-    children: [{ index: true, element: <LandingPage /> }],
-    key: 'join',
-  }, */
   {
     path: '/dashboard',
     element: (

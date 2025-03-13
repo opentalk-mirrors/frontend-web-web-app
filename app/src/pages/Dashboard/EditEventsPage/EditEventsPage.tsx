@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Skeleton, Stack, Step, StepButton as MuiStepButton, Stepper, styled, Typography } from '@mui/material';
+import { Box, StepButton as MuiStepButton, Skeleton, Stack, Step, Stepper, Typography, styled } from '@mui/material';
 import { EventId } from '@opentalk/rest-api-rtk-query';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useLazyGetEventQuery } from '../../../api/rest';
 import { EditIcon } from '../../../assets/icons';
 import CreateOrUpdateMeetingForm from '../../../components/CreateOrUpdateMeetingForm';
-import InviteToMeeting from '../../../components/InviteToMeeting/InviteToMeeting';
+import InviteToMeeting from '../../../components/InviteToMeeting';
 import { RequiredFieldsInfo } from '../../../components/RequiredFieldsInfo';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 

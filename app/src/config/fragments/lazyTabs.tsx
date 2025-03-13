@@ -6,9 +6,7 @@ import React from 'react';
 export const MenuTabs = React.lazy(() => import('../../components/MenuTabs'));
 export const BreakoutRoomTab = React.lazy(() => import('../../components/BreakoutRoomTab'));
 export const LegalVoteTab = React.lazy(() => import('../../components/LegalVoteTab'));
-export const TalkingStickTabPanel = React.lazy(
-  () => import('../../components/TalkingStickTabPanel/TalkingStickTabPanel')
-);
+export const TalkingStickTabPanel = React.lazy(() => import('../../components/TalkingStickTabPanel'));
 export const PollTab = React.lazy(() => import('../../components/PollTab'));
 export const MuteParticipantsTab = React.lazy(() => import('../../components/MuteParticipantsTab'));
 export const MeetingNotesTab = React.lazy(() => import('../../components/MeetingNotesTab'));

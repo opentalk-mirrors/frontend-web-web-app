@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Box, Button, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Button, Stack, Typography, styled, useTheme } from '@mui/material';
 import { EventId, InviteStatus, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useTranslation } from 'react-i18next';
@@ -9,16 +9,16 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 import {
-  useGetEventQuery,
   useAcceptEventInviteMutation,
   useDeclineEventInviteMutation,
+  useGetEventQuery,
   useGetMeQuery,
   useGetRoomTariffQuery,
 } from '../../../api/rest';
 import { notifications } from '../../../commonComponents';
 import SuspenseLoading from '../../../commonComponents/SuspenseLoading/SuspenseLoading';
 import EventTimePreview from '../../../components/EventTimePreview';
-import InviteToMeeting from '../../../components/InviteToMeeting/InviteToMeeting';
+import InviteToMeeting from '../../../components/InviteToMeeting';
 import InvitedParticipants from '../../../components/InvitedParticipants';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import { RecurrenceInstance } from '../../../utils/eventUtils';

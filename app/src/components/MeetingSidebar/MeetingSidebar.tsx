@@ -8,7 +8,7 @@ import { ModerationTabKey } from '../../config/moderationTabs';
 import { useAppDispatch, useAppSelector, useTabs as useSidebarTabs } from '../../hooks';
 import { selectActiveTab, setActiveTab } from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
-import LocalVideo from '../LocalVideo/index';
+import LocalVideo from '../LocalVideo';
 import MenuTabs from '../MenuTabs/MenuTabs';
 import ModerationSideToolbar from '../ModerationSideToolbar';
 import Toolbar from '../Toolbar';

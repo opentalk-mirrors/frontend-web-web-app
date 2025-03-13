@@ -8,10 +8,10 @@ import { ConnectionState, selectRoomConnectionState } from '../../../store/slice
 import { selectShowCoffeeBreakCurtain } from '../../../store/slices/uiSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import Ballot from '../../Ballot';
-import { CoffeeBreakView } from '../../CoffeeBreakView/CoffeeBreakView';
+import CoffeeBreakView from '../../CoffeeBreakView';
 import JumpLinkContainer from '../../JumpLinkContainer';
 import MeetingHeader from '../../MeetingHeader';
-import MeetingSidebar from '../../MeetingSidebar/index';
+import MeetingSidebar from '../../MeetingSidebar';
 import Cinema from './Cinema';
 
 const InnerContainer = styled('div')(({ theme }) => ({

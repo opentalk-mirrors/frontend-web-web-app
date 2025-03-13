@@ -13,7 +13,7 @@ import { selectLivekitAccessToken, selectLivekitPublicUrl } from '../../store/sl
 import { selectSubroomAudioToken } from '../../store/slices/subroomAudioSlice';
 import { selectShowCoffeeBreakCurtain } from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
-import { CoffeeBreakView } from '../CoffeeBreakView/CoffeeBreakView';
+import CoffeeBreakView from '../CoffeeBreakView';
 import TimerPopover from '../TimerPopover';
 import InnerLayout from './fragments/InnerLayout';
 import { ParticipationConfirmationDialog } from './fragments/ParticipationConfirmationDialog';
