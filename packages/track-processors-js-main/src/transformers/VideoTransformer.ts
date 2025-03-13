@@ -11,7 +11,7 @@ export default abstract class VideoTransformer<Options extends Record<string, un
 
   inputVideo?: HTMLVideoElement;
 
-  protected isDisabled?: Boolean = false;
+  protected isDisabled?: boolean = false;
 
   async init({
     outputCanvas,
