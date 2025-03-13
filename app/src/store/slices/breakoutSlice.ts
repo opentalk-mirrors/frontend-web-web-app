@@ -1,14 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  createEntityAdapter,
-  createSelector,
-  createSlice,
-  EntityId,
-  EntityState,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
 import { RootState } from '../';
 import { Started } from '../../api/types/incoming/breakout';
@@ -28,7 +21,7 @@ export interface BreakoutState {
   // Waiting for use to choose one room
   waitForUserSelection: boolean;
   // Overview
-  breakoutRooms: EntityState<Room>;
+  breakoutRooms: EntityState<Room, BreakoutRoomId>;
   inParentRoom: Array<ParticipantId>;
   // Selected breakout room by user
   selectedBreakoutRoom?: BreakoutRoomId;
@@ -123,11 +116,11 @@ const rootState = (state: RootState) => state;
 export const selectIsActive = (state: RootState) => state.breakout.active;
 
 export const selectCurrentBreakoutRoomId = (state: RootState) => state.breakout.currentBreakoutRoomId;
-export const selectBreakoutRoomById = (id: string) => (state: RootState) =>
+export const selectBreakoutRoomById = (id: BreakoutRoomId) => (state: RootState) =>
   breakoutRoomsSelectors.selectById(state, id);
 export const selectCurrentBreakoutRoom = createSelector(
   [rootState, selectCurrentBreakoutRoomId],
-  (state, currentRoomId) => breakoutRoomsSelectors.selectById(state, currentRoomId as EntityId)
+  (state, currentRoomId) => breakoutRoomsSelectors.selectById(state, currentRoomId as BreakoutRoomId)
 );
 
 export const selectAllBreakoutRooms = (state: RootState) => breakoutRoomsSelectors.selectAll(state);

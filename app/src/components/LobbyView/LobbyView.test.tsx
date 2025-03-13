@@ -2,20 +2,26 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { InviteCode } from '@opentalk/rest-api-rtk-query';
-import { screen, fireEvent, cleanup } from '@testing-library/react';
-import { PropsWithChildren } from 'react';
+import { screen, cleanup, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { Role } from '../../api/types/incoming/control';
 import * as UseInviteCodeModule from '../../hooks/useInviteCode';
-import { renderWithProviders, configureStore, mockedParticipant } from '../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import LobbyView from './LobbyView';
 
-jest.mock('../../templates/fragments/BrowserCompatibilityInfo', () => ({
+jest.mock('../SelfTest', () => ({
   __esModule: true,
-  default: ({ children }: PropsWithChildren) => {
-    return <div>{children}</div>;
+  default: ({ children, actionButton }: { children?: React.ReactNode; actionButton?: React.ReactNode }) => {
+    return (
+      <div data-testid="self-test">
+        {actionButton}
+        {children}
+      </div>
+    );
   },
 }));
+
 jest.mock('../../api/rest', () => ({
   ...jest.requireActual('../../api/rest'),
   useGetMeQuery: () => ({
@@ -24,26 +30,13 @@ jest.mock('../../api/rest', () => ({
     },
     isLoading: false,
   }),
-}));
-
-jest.mock('../../hooks/useFullscreenContext.ts', () => ({
-  useFullscreenContext: () => ({
-    active: false,
-  }),
-}));
-
-jest.mock('@livekit/components-react', () => ({
-  useMaybeRoomContext: () => ({ localParticipant: mockedParticipant(0) }),
-  useMediaDeviceSelect: () => ({
-    devices: [
-      { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },
-      { deviceId: 'xxxx1', groupId: 'xxxxx1', kind: 'videoinput', label: 'video' },
-    ],
+  useGetRoomEventInfoQuery: () => ({
+    data: {},
   }),
 }));
 
 describe('LobbyForm', () => {
-  const { store /*, dispatch*/ } = configureStore({
+  const { store } = configureStore({
     initialState: {
       auth: { isAuthed: true },
       user: { loggedIdToken: undefined, role: Role.Guest },
@@ -55,17 +48,16 @@ describe('LobbyForm', () => {
     jest.resetAllMocks();
   });
 
-  test('renders self test component', () => {
+  test('rendering of self test and join form', () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
-    expect(screen.getByTestId('selfTest')).toBeInTheDocument();
+    const selftest = screen.getByTestId('self-test');
+    expect(selftest).toBeInTheDocument();
+    const form = within(selftest).getByRole('form', { name: 'joinform-title' });
+    expect(form).toBeInTheDocument();
   });
 
-  test('render LobbyForm component without crashing for authed user', () => {
-    //As we now get the invite code in components from the query params we need to mock a value for it.
-    const useInviteCodeMock = jest.spyOn(UseInviteCodeModule, 'useInviteCode');
-    useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
-
+  test('rendering of the form input fields', () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
@@ -77,10 +69,17 @@ describe('LobbyForm', () => {
     expect(passwordInput).toBeInTheDocument();
     expect(passwordInput).toHaveAttribute('type', 'password');
 
-    const passVisibilityToggle = screen.getByRole('button', { name: /toggle-password-visibility/i });
+    const passVisibilityToggle = screen.getByRole('button', { name: 'toggle-password-visibility' });
     expect(passVisibilityToggle).toBeInTheDocument();
+  });
 
-    const submitButton = screen.getByRole('button', { name: /joinform-enter-now/i });
+  test('rendering of the submit button, which is enabled by default', () => {
+    const useInviteCodeMock = jest.spyOn(UseInviteCodeModule, 'useInviteCode');
+    useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
+
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    const submitButton = screen.getByRole('button', { name: 'joinform-enter-now' });
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).not.toHaveAttribute('disabled');
   });
@@ -93,35 +92,31 @@ describe('LobbyForm', () => {
     });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
-    const submitButton = screen.getByRole('button', { name: /joinform-enter-now/i });
+    const submitButton = screen.getByRole('button', { name: 'joinform-enter-now' });
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toHaveAttribute('disabled');
   });
 
-  test('adding values to input fileds and click on submit should submit added values', () => {
+  test('adding values to input fileds and click on submit should submit added values', async () => {
     const USERNAME = 'lobbyForm testUserName*7';
     const PASSWORD = 'lobbyFormPassword (*';
+
+    const useInviteCodeMock = jest.spyOn(UseInviteCodeModule, 'useInviteCode');
+    useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
-    expect(userNameInput).toBeInTheDocument();
-
-    fireEvent.change(userNameInput, { target: { value: USERNAME } });
-
+    await userEvent.clear(userNameInput);
+    await userEvent.type(userNameInput, USERNAME);
     expect(userNameInput).toHaveValue(USERNAME);
 
     const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
-    expect(passwordInput).toBeInTheDocument();
-
-    fireEvent.change(passwordInput, { target: { value: PASSWORD } });
-
+    await userEvent.type(passwordInput, PASSWORD);
     expect(passwordInput).toHaveValue(PASSWORD);
 
-    const submitButton = screen.getByRole('button', { name: /joinform-enter-now/i });
-    expect(submitButton).toBeInTheDocument();
-
     /* TODO the startRoom ('room/start/pending') async thunks is undefined here
-    fireEvent.click(submitButton);
+    const submitButton = screen.getByRole('button', { name: 'joinform-enter-now' });
+    await userEvent.click(submitButton);
     await waitFor(() => {
       expect(dispatch.mock.calls).toContain([
         [{ payload: undefined, type: 'auth/loaded' }],
@@ -131,17 +126,14 @@ describe('LobbyForm', () => {
     */
   });
 
-  test('click on toggle visibility button should change input type=text', () => {
+  test('click on toggle visibility button should show the password', async () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
     expect(passwordInput).toHaveAttribute('type', 'password');
 
-    const toggleVisibilityBtn = screen.getByRole('button', { name: /toggle-password-visibility/i });
-    expect(toggleVisibilityBtn).toBeInTheDocument();
-
-    fireEvent.click(toggleVisibilityBtn);
-
+    const toggleVisibilityBtn = screen.getByRole('button', { name: 'toggle-password-visibility' });
+    await userEvent.click(toggleVisibilityBtn);
     expect(passwordInput).toHaveAttribute('type', 'text');
   });
 

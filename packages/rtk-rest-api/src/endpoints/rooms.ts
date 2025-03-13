@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { EndpointBuilder } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
-import { FetchBaseQueryError, FetchBaseQueryMeta } from '@reduxjs/toolkit/dist/query/fetchBaseQuery';
-import { BaseQueryFn, FetchArgs } from '@reduxjs/toolkit/query';
+import type { EndpointBuilder, BaseQueryFn, FetchBaseQueryError, FetchBaseQueryMeta } from '@reduxjs/toolkit/query';
+import { FetchArgs } from '@reduxjs/toolkit/query';
 import snakecaseKeys from 'snakecase-keys';
 
 import { AssetId, CreateRoomPayload, EventInfo, PrivateRoom, PublicRoom, Tag, Tags, UpdateRoomPayload } from '../types';

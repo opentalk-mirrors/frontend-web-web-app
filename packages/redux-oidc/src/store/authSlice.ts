@@ -1,8 +1,24 @@
 // move this to common
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, ThunkDispatch } from '@reduxjs/toolkit';
+import type { Action, UnknownAction } from '@reduxjs/toolkit';
 
 import { AuthTypeError, SerializedError, SessionStatus, getSessionStatus } from '../utils';
 import { login, codeCallback, getNewToken } from './authActions';
+
+export let appDispatch: ThunkDispatch<unknown, unknown, Action | UnknownAction> | undefined;
+
+// We must pass the app dispatch to the auth slice for proper typing
+export const setupAppDispatch = (dispatch: ThunkDispatch<unknown, unknown, Action | UnknownAction>) => {
+  appDispatch = dispatch;
+};
+
+export const getAppDispatch = () => {
+  if (appDispatch) {
+    return appDispatch;
+  } else {
+    throw new Error('[redux-oidc]: The dispatch function has not been setup');
+  }
+};
 
 export interface AuthState {
   state: SessionStatus;

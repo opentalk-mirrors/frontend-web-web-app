@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { AuthTypeError, authError } from '@opentalk/redux-oidc';
 import { RoomId, createOpenTalkApiWithReactHooks, fetchQuery } from '@opentalk/rest-api-rtk-query';
-import { Middleware, createAsyncThunk, isRejectedWithValue } from '@reduxjs/toolkit';
+import { Middleware, createAsyncThunk, isAction, isRejectedWithValue } from '@reduxjs/toolkit';
 import convertToCamelCase from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
@@ -118,32 +118,35 @@ export const rtkQueryErrorLoggerMiddleware: Middleware =
   (action) => {
     // Auth library is handling only auth errors with name: AuthTypeError.RefreshTokenFailed && AuthTypeError.SessionExpired
     // If rtk query get rejected dispatch auth error
-    if (isRejectedWithValue(action)) {
-      if (action.payload.status === 401) {
-        if (action.payload.data.message === AuthTypeErrorMessage.InvalidTokenOrInvite) {
+    if (isAction(action) && isRejectedWithValue(action)) {
+      // At some point we could define a common type for rejected payload
+      const payload = action.payload as { status: number; data: { message: string } };
+
+      if (payload.status === 401) {
+        if (payload.data.message === AuthTypeErrorMessage.InvalidTokenOrInvite) {
           // Don't dispatch any auth error since this is an exeption. Is not auth error, it's wrong Url and or/invite code.
           return next(action);
         }
         dispatch(
           authError({
-            status: action.payload.status,
+            status: payload.status,
             name: AuthTypeError.SessionExpired,
-            message: action.payload.data.message,
+            message: payload.data.message,
           })
         );
         return next(action);
       }
-      if (action.payload.status === 403) {
+      if (payload.status === 403) {
         // Warning: This can be potentially dangereous as we don't know
         // what pandora's box we are openning, before hand this middleware
         // couldn't even finish up on 403 as it would come to this sopt and be
         // left unhandled as next callback was never called.
         return next(action);
       }
-      if (action.payload.status >= 500) {
+      if (payload.status >= 500) {
         dispatch(
           authError({
-            status: action.payload.status,
+            status: payload.status,
             name: AuthTypeError.SystemCurrentlyUnavailable,
             message: AuthTypeError.SystemCurrentlyUnavailable,
           })

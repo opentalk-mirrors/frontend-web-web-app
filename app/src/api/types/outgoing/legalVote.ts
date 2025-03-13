@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { AnyAction } from '@reduxjs/toolkit';
-import { RootStateOrAny } from 'react-redux';
 
+import type { RootState } from '../../../store';
 import {
   LegalVoteOption,
   LegalVoteId,
@@ -66,7 +66,7 @@ export const cancel = createSignalingApiCall<VoteCancel>('legal_vote', 'cancel')
 export const vote = createSignalingApiCall<VoteOutgoing>('legal_vote', 'vote');
 export const reportIssue = createSignalingApiCall<VoteReportIssue>('legal_vote', 'report_issue');
 
-export const handler = createModule((builder: MiddlewareMapBuilder<RootStateOrAny>) => {
+export const handler = createModule((builder: MiddlewareMapBuilder<RootState>) => {
   builder.addCase(start.action, (_state, action: AnyAction) => {
     sendMessage(start(action.payload));
   });

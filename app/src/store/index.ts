@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { authReducer } from '@opentalk/redux-oidc';
-import { AnyAction, Dispatch, Middleware, MiddlewareAPI, configureStore } from '@reduxjs/toolkit';
+import { authReducer, setupAppDispatch } from '@opentalk/redux-oidc';
+import { Middleware, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { merge } from 'lodash';
 
@@ -48,16 +48,7 @@ export const middleware: Array<Middleware> = [
   livekitMiddleware.middleware,
 ];
 
-const logger = () => (next: Dispatch) => (action: AnyAction) => {
-  if (!action.type.startsWith('stats/statsUpdated')) {
-    const payloadJSON = action.payload ? `: ${JSON.stringify(action.payload)}` : '';
-    const metaJSON = action.meta ? ` (meta: ${JSON.stringify(action.meta)}` : '';
-    console.debug(`action: ${action.type}${payloadJSON}${metaJSON}`);
-  }
-  return next(action);
-};
-
-const crashReporter = (store: MiddlewareAPI) => (next: Dispatch) => (action: AnyAction) => {
+const crashReporter: Middleware = (store) => (next) => (action) => {
   try {
     return next(action);
   } catch (err) {
@@ -70,7 +61,6 @@ const crashReporter = (store: MiddlewareAPI) => (next: Dispatch) => (action: Any
 };
 
 if (process.env.NODE_ENV === 'development') {
-  middleware.push(logger);
   middleware.push(crashReporter);
 }
 
@@ -118,6 +108,8 @@ const store = configureStore({
 });
 
 setupListeners(store.dispatch);
+
+setupAppDispatch(store.dispatch);
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;

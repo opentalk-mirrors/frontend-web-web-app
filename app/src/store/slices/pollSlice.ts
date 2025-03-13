@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createEntityAdapter, createSlice, EntityId, EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
 import { RootState } from '../';
 import { Started, LiveUpdate, Done } from '../../api/types/incoming/poll';
@@ -52,7 +52,7 @@ const pollAdapter = createEntityAdapter<Poll>({
 interface State {
   activePoll?: PollId;
   pollIdToShow?: PollId;
-  polls: EntityState<Poll>;
+  polls: EntityState<Poll, PollId>;
   savedPolls: PollFormValues[];
   showResult: boolean;
 }
@@ -134,7 +134,7 @@ export const actions = pollSlice.actions;
 
 const pollSelectors = pollAdapter.getSelectors<RootState>((state) => state.poll.polls);
 
-export const selectPollById = (id: EntityId) => (state: RootState) => pollSelectors.selectById(state, id);
+export const selectPollById = (id: PollId) => (state: RootState) => pollSelectors.selectById(state, id);
 export const selectPollIds = (state: RootState) => pollSelectors.selectIds(state);
 export const selectAllPolls = (state: RootState) => pollSelectors.selectAll(state);
 export const selectPollVotes = (state: RootState) => pollSelectors.selectEntities(state);

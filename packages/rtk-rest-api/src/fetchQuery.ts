@@ -2,12 +2,13 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { isPlainObject } from '@reduxjs/toolkit';
-import type { ResponseHandler } from '@reduxjs/toolkit/dist/query/fetchBaseQuery';
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, FetchBaseQueryMeta, BaseQueryApi } from '@reduxjs/toolkit/query';
 import snakecaseKeys from 'snakecase-keys';
 
 import { camelcaseKeysDeep } from './types/utils';
 import { joinUrls } from './utils';
+
+type ResponseHandler = 'content-type' | 'json' | 'text' | ((response: Response) => Promise<unknown>);
 
 const defaultFetchFn: typeof fetch = (input, init) => fetch(input, init);
 

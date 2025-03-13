@@ -17,6 +17,7 @@ import { useAppSelector, useDateFormat } from '../../../hooks';
 import { ChatProps, selectUnreadPersonalMessageCountByTarget } from '../../../store/slices/chatSlice';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
 import { ChatScope } from '../../../types';
+import type { ParticipantId } from '../../../types';
 
 const CustomListItemButton = styled(ListItemButton)(({ theme }) => ({
   '&:hover': {
@@ -40,7 +41,7 @@ interface IScopedChatItemProps {
 }
 
 const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
-  const participant = useAppSelector(selectParticipantById(chat.id));
+  const participant = useAppSelector(selectParticipantById(chat.id as ParticipantId));
   const date = new Date(chat.lastMessage?.timestamp) ?? Date.now;
   const formattedTime = useDateFormat(date, 'time');
   const getDisplayName = () => (isEmpty(participant) ? chat.id : participant?.displayName);

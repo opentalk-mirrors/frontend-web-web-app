@@ -1,5 +1,5 @@
 import React, { createContext, FC, PropsWithChildren, useContext, useEffect } from 'react';
-import { batch, useDispatch, useSelector } from 'react-redux';
+import { batch, useSelector } from 'react-redux';
 
 import { AuthAdapter, AuthAdapterConfiguration, AuthenticationProviderUrls } from './authAdapter';
 import { getNewToken } from './store/authActions';
@@ -10,6 +10,7 @@ import {
   selectLoginTimestamp,
   selectRefreshError,
   startLoading,
+  getAppDispatch,
 } from './store/authSlice';
 import { AuthTypeError, calculateTokenRenewalTime, hasValidToken, pkceChallenge } from './utils';
 
@@ -30,7 +31,7 @@ export interface AuthProviderValues {
 export const AuthContext = createContext<AuthContextValues | undefined>(undefined);
 
 const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, configuration }) => {
-  const dispatch = useDispatch();
+  const dispatch = getAppDispatch();
   const authAdapter = AuthAdapter.getInstance(configuration);
   const isRefreshAuthError = useSelector(selectRefreshError);
   const isAuthError = useSelector(selectError);
