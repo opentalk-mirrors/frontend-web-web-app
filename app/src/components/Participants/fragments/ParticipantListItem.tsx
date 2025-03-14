@@ -312,7 +312,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
       return [];
     }
 
-    if (!userIsInWhisperGroup) {
+    if (!userIsInWhisperGroup && !isSipParticipant) {
       return [
         {
           i18nKey: 'participant-menu-start-whisper',
