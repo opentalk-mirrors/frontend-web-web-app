@@ -47,7 +47,7 @@
     "immer": "^9.0.21",
     "linkify-react": "^3.0.4",
     "linkifyjs": "^3.0.5",
-    "livekit-client": "^2.9.6",
+    "livekit-client": "=2.9.5",
     "lodash": "^4.17.21",
     "loglevel": "^1.9.2",
     "mitt": "^3.0.1",
