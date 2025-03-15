@@ -2,9 +2,25 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, styled } from '@mui/material';
+import type { TFunctionResult } from 'i18next';
 
 import { CloseButton } from '../CloseButton';
-import { ISnackbarActionButtonProps } from '../utils';
+
+export interface AdditionalButtonAttributes {
+  variant?: 'text' | 'outlined' | 'contained';
+  color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
+}
+
+export interface SnackbarActionButtonProps {
+  msg: (string | React.ReactNode) & TFunctionResult;
+  onCancel?: () => void;
+  onAction?: () => void;
+  actionBtnText?: string;
+  actionBtnAttributes?: AdditionalButtonAttributes;
+  cancelBtnAttributes?: AdditionalButtonAttributes;
+  cancelBtnText?: string;
+  hideCloseButton?: boolean;
+}
 
 // a hack to fix for https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/1323#note_111313
 // theoretically, those colors should come from the notistack itself for the `inherit` button color
@@ -29,7 +45,7 @@ const SnackbarActionButtons = ({
   hideCloseButton,
   actionBtnAttributes = {},
   cancelBtnAttributes = {},
-}: Omit<ISnackbarActionButtonProps, 'msg'>) => {
+}: Omit<SnackbarActionButtonProps, 'msg'>) => {
   return (
     <Box
       sx={{

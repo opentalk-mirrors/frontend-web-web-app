@@ -13,7 +13,7 @@ import {
 import i18next from 'i18next';
 import { Participant as RemoteParticipant } from 'livekit-client';
 
-import { AppDispatch, RootState } from '../';
+import type { AppDispatch, RootState } from '../';
 import { notifications } from '../../commonComponents';
 import {
   BackendParticipant,
@@ -26,11 +26,11 @@ import {
   WaitingState,
 } from '../../types';
 import { joinSuccess } from '../commonActions';
+import { getLivekitRoom } from '../livekitRoom';
 import { selectCurrentBreakoutRoomId } from './breakoutSlice';
 import { received } from './chatSlice';
-import { getLivekitRoom } from './livekitSlice';
+import { GridViewOrder } from './common';
 import { connectionClosed } from './roomSlice';
-import { GridViewOrder } from './uiSlice';
 
 export const participantAdapter = createEntityAdapter<Participant>({
   sortComparer: (a, b) => a.displayName.localeCompare(b.displayName),

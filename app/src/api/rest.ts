@@ -7,7 +7,7 @@ import { Middleware, createAsyncThunk, isAction, isRejectedWithValue } from '@re
 import convertToCamelCase from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
-import { RootState } from '../store';
+import type { RootState } from '../store';
 import { FetchRequestError, ParticipantId } from '../types';
 import { fetchWithAuth, getControllerBaseUrl } from '../utils/apiUtils';
 

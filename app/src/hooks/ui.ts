@@ -4,7 +4,7 @@
 import { selectParticipants } from '../store/slices/participantsSlice';
 import { selectDisplayName, selectOurUuid } from '../store/slices/userSlice';
 import { ParticipantId } from '../types';
-import { useAppSelector } from './';
+import { useAppSelector } from './useCustomRedux';
 
 export const useDisplayName = () => {
   const participants = useAppSelector(selectParticipants);

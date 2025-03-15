@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import 'notistack';
 
-import { AdditionalButtonAttributes } from '../fragments/utils';
+import { AdditionalButtonAttributes } from '../fragments/SnackbarActionButtons';
 
 declare module 'notistack' {
   interface VariantOverrides {

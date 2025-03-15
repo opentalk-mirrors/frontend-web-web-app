@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RootState } from '../../../store';
+import type { RootState } from '../../../store';
 import { createModule, Namespaced } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
-import { sendMessage } from '../../index';
+import { sendMessage } from './common';
 
 export enum ParticipationLoggingState {
   /**
@@ -21,9 +21,9 @@ export enum ParticipationLoggingState {
   WaitingForConfirmation = 'waiting_for_confirmation',
 }
 
-export interface ParticipationLogging {
+export type ParticipationLogging = {
   state: ParticipationLoggingState;
-}
+};
 
 export interface TimeRange {
   /**

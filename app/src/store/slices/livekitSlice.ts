@@ -5,31 +5,15 @@
 // We've decided to use a separate slice and declare an exception in the store for now.
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { AnyAction, ListenerEffectAPI, createListenerMiddleware } from '@reduxjs/toolkit';
-import { Room } from 'livekit-client';
 
-import { AppDispatch, RootState } from '../';
+import type { AppDispatch, RootState } from '../';
 import { Credentials } from '../../api/types/incoming/livekit';
 import { createNewAccessToken } from '../../api/types/outgoing/livekit';
 import { MediaDescriptor } from '../../modules/WebRTC';
 import { VideoSetting } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
-
-let room: Room;
-
-export const setLivekitRoom = (newRoom: Room) => {
-  room = newRoom;
-};
-
-export const getLivekitRoom = (dispatch?: AppDispatch): Room => {
-  if (!room) {
-    if (dispatch) {
-      dispatch(setLivekitUnavailable(true));
-    }
-    throw Error('[LiveKit]: Room was not set');
-  }
-
-  return room;
-};
+import { setLivekitUnavailable } from '../livekitRoom';
+import { getLivekitRoom } from '../livekitRoom';
 
 type PopoutStreamAccess = {
   mediaDescriptor: MediaDescriptor;
@@ -58,9 +42,6 @@ export const livekitSlice = createSlice({
   name: 'livekit',
   initialState,
   reducers: {
-    setLivekitUnavailable: (state, { payload }: PayloadAction<boolean>) => {
-      state.unavailable = payload;
-    },
     addPopoutStreamAccess: (state, { payload }: PayloadAction<MediaDescriptor>) => {
       state.popoutStreamAccesses.push({
         mediaDescriptor: payload,
@@ -102,11 +83,13 @@ export const livekitSlice = createSlice({
     builder.addCase(hangUp.rejected, (state) => {
       state.accessToken = undefined;
     });
+    builder.addCase(setLivekitUnavailable, (state, { payload }) => {
+      state.unavailable = payload;
+    });
   },
 });
 
 export const {
-  setLivekitUnavailable,
   addPopoutStreamAccess,
   setLivekitPopoutStreamAccessToken,
   deleteLivekitPopoutStreamAccessToken,
@@ -137,7 +120,7 @@ const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
   const calculateDelay = (attempt: number) => Math.min(BASE_RETRY_DELAY * 2 ** attempt, MAX_RETRY_DELAY);
 
   const tryReconnect = async () => {
-    while (room.state === 'disconnected') {
+    while (getLivekitRoom().state === 'disconnected') {
       if (attempt === RECONNECT_INDICATOR_THRESHOLD) {
         listenerApi.dispatch(setLivekitUnavailable(true));
       }

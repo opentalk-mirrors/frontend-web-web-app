@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { sendMessage } from '../../';
 import {
   AutomodSelectionStrategy,
   createModule,
@@ -11,6 +10,7 @@ import {
   Namespaced,
   ParticipantId,
 } from '../../../types';
+import { sendMessage } from './common';
 
 export interface AutomodStartCommand extends Command, AutomodStartBase {
   action: 'start';

@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RootState } from '../../../store';
+import type { RootState } from '../../../store';
 import { createModule, Namespaced, ChatScope, TargetId } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
-import { sendMessage } from '../../index';
+import { sendMessage, ClearGlobalMessages } from './common';
 
 interface ChatActionBase {
   content: string;
@@ -30,10 +30,6 @@ export interface LastSeenTimestampAddedPayload {
 
 interface SetLastSeenTimestamp extends LastSeenTimestampAddedPayload {
   action: 'set_last_seen_timestamp';
-}
-
-export interface ClearGlobalMessages {
-  action: 'clear_history';
 }
 
 export type Action = SetLastSeenTimestamp | SendMessage | EnableChat | DisableChat;

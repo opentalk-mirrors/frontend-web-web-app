@@ -4,7 +4,7 @@
 import { batch } from 'react-redux';
 
 import { sendStreamConsentSignal } from '../../../../../api/types/outgoing/streaming';
-import { AppDispatch } from '../../../../../store';
+import type { AppDispatch } from '../../../../../store';
 import { startMedia } from '../../../../../store/slices/mediaSlice';
 import { notifications } from '../../utils';
 

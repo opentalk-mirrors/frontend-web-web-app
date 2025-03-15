@@ -11,7 +11,8 @@ import { useAppSelector } from '../../hooks';
 import useE2EE from '../../hooks/useE2EE';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { usePreventSpaceKey } from '../../hooks/usePreventSpaceKey';
-import { ConnectionState, selectRoomConnectionState } from '../../store/slices/roomSlice';
+import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
+import { selectRoomConnectionState } from '../../store/slices/roomSlice';
 import RoomLoadingView from './fragments/RoomLoadingView';
 
 const MeetingView = React.lazy(() => import('../../components/MeetingView'));

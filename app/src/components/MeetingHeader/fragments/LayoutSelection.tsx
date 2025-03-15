@@ -22,9 +22,9 @@ import { IconButton } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
+import { GridViewOrder } from '../../../store/slices/common';
 import { selectIsMeetingNotesAvailable } from '../../../store/slices/meetingNotesSlice';
 import {
-  GridViewOrder,
   selectCinemaLayout,
   selectGridViewOrder,
   selectIsCurrentMeetingNotesHighlighted,

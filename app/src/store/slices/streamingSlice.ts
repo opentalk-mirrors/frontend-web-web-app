@@ -10,7 +10,7 @@ import {
 } from '@opentalk/rest-api-rtk-query';
 import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
-import { RootState } from '../';
+import type { RootState } from '../';
 import { sendStreamConsentSignal } from '../../api/types/outgoing/streaming';
 import { hangUp, joinSuccess } from '../commonActions';
 

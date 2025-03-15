@@ -7,8 +7,9 @@ import { SnackbarContent, CustomContentProps } from 'notistack';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IconButton, notifications } from '../../../..';
 import { CloseIcon, FeedbackIcon } from '../../../../../assets/icons';
+import { IconButton } from '../../../../IconButtons';
+import { notifications } from '../../utils';
 import AnimationTimerDown from './fragments/AnimationTimerDown';
 
 const BoxContent = styled(Box)(({ theme }) => ({

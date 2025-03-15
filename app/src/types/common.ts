@@ -4,8 +4,8 @@
 import { Namespaces } from '@opentalk/rest-api-rtk-query';
 import { Track } from 'livekit-client';
 
-import { MeetingNotesState } from './meetingNotes';
-import { TimerState } from './timer';
+import type { MeetingNotesState } from './meetingNotes';
+import type { TimerIsReady } from './timer';
 
 export type ParticipantId = string & { readonly __tag: unique symbol };
 export type GroupId = string & { readonly __tag: unique symbol };
@@ -83,8 +83,6 @@ export type ParticipantMediaState = {
   video?: MediaSessionState;
   forceMute: ForceMute;
 };
-
-type TimerIsReady = Pick<TimerState, 'readyStatus'>;
 
 export interface BackendParticipant {
   id: ParticipantId;

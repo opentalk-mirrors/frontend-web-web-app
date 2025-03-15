@@ -1,6 +1,6 @@
 import { parse } from '@fluent/syntax';
 
-import { FluentIJs, InnerFluentJs } from '.';
+import type { FluentIJs, InnerFluentJs } from '.';
 import { serialize } from './ftl2jsSerializer';
 
 type Params = { respectComments: true };

@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SnackbarKey } from 'notistack';
 
-import { notifications } from '../../../..';
 import { MINUTE_MS } from '../../../../../utils/timeFormatUtils';
 import { sleep } from '../../../../../utils/timeUtils';
-import { DEFAULT_AUTO_HIDE_DURATION } from '../../utils';
+import { DEFAULT_AUTO_HIDE_DURATION, notifications } from '../../utils';
 
 let showFirstNotificationTimer: ReturnType<typeof setTimeout>;
 let triggerFollowingNotificationTimer: ReturnType<typeof setInterval>;

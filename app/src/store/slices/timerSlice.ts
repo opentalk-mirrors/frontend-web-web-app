@@ -6,12 +6,12 @@ import { intervalToDuration } from 'date-fns';
 import i18next from 'i18next';
 import { batch } from 'react-redux';
 
-import { AppDispatch, RootState } from '../';
+import type { AppDispatch, RootState } from '../';
 import { ReadyToContinue } from '../../api/types/incoming/timer';
 import { notifications } from '../../commonComponents';
 import { ParticipantId, TimerKind, TimerStopKind, TimerStyle, Timestamp } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
-import { getLivekitRoom } from './livekitSlice';
+import { getLivekitRoom } from '../livekitRoom';
 import { startMedia } from './mediaSlice';
 
 interface State {

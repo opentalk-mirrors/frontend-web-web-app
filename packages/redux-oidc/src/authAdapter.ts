@@ -11,24 +11,6 @@ export interface AuthAdapterConfiguration {
   signOutRedirectUri: string;
 }
 
-export interface CodeResponse {
-  accessToken: string;
-  expiresIn: number;
-  refreshToken: string;
-  refreshExpiresIn: number;
-  idToken: string;
-  scope: string;
-}
-
-export interface RefreshTokenResponse {
-  accessToken: string;
-  expiresIn: number;
-  refreshToken: string;
-  refreshExpiresIn: number;
-  idToken: string;
-  scope: string;
-}
-
 export interface AuthenticationProviderUrls {
   authorizationEndpoint: string;
   endSessionEndpoint: string;

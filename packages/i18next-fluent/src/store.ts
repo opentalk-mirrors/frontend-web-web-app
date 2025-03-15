@@ -2,7 +2,6 @@ import { FluentBundle, FluentResource } from '@fluent/bundle';
 import { FluentIJs, js2ftl } from '@opentalk/fluent_conv';
 import { i18n } from 'i18next';
 
-import { FluentConfig } from '.';
 import { getI18ResourceForLangAndNamespace, setBundle } from './utils';
 import * as utils from './utils';
 
@@ -22,6 +21,12 @@ function ftl(code: string): string {
   const indent = new RegExp(`^\\s{${common}}`);
 
   return lines.map((line) => line.replace(indent, '')).join('\n');
+}
+export interface FluentConfig {
+  bindI18nStore?: boolean;
+  fluentBundleOptions?: {
+    useIsolating?: boolean;
+  };
 }
 
 export class BundleStore {

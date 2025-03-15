@@ -5,7 +5,7 @@ import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadA
 import { isAfter } from 'date-fns';
 import { last } from 'lodash';
 
-import { RootState } from '../';
+import type { RootState } from '../';
 import { LastSeenTimestampAddedPayload } from '../../api/types/outgoing/chat';
 import { ChatMessage, ChatScope, ParticipantId, TargetId, Timestamp } from '../../types';
 import { joinSuccess } from '../commonActions';

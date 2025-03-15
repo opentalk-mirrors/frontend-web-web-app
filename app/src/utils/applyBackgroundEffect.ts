@@ -5,7 +5,7 @@
 import { BackgroundProcessor, ProcessorWrapper } from '@livekit/track-processors';
 import { LocalVideoTrack } from 'livekit-client';
 
-import { AppDispatch } from '../store';
+import type { AppDispatch } from '../store';
 import { BackgroundEffect, setBackgroundEffectsLoading } from '../store/slices/mediaSlice';
 
 export const BLUR_RADIUS = 10;

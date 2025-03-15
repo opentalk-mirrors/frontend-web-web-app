@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { MediaSessionState, MediaSessionType, ParticipantId } from '../../types';
-import { ConferenceRoom } from './ConferenceRoom';
+import { ConferenceRoom, getCurrentConferenceRoom } from './ConferenceRoom';
 
 export { ConferenceRoom };
 
@@ -31,22 +31,9 @@ export const descriptorFromId = (id: MediaId): MediaDescriptor => {
 export type SubscriberConfig = MediaDescriptor & MediaSessionState;
 
 export const PACKET_LOSS_THRESHOLD = 0.1; //10%
-let currentConferenceRoom: ConferenceRoom | undefined = undefined;
-
-export const setCurrentConferenceRoom = (room: ConferenceRoom) => {
-  currentConferenceRoom = room;
-  const shutdownHandler = () => {
-    currentConferenceRoom?.removeEventListener('shutdown', shutdownHandler);
-    currentConferenceRoom = undefined;
-  };
-  currentConferenceRoom.addEventListener('shutdown', shutdownHandler);
-};
-
-export const getCurrentConferenceRoom = () => {
-  return currentConferenceRoom;
-};
 
 export const shutdownConferenceContext = () => {
+  const currentConferenceRoom = getCurrentConferenceRoom();
   if (currentConferenceRoom === undefined) {
     throw new Error('conferenceContext already shut');
   }

@@ -4,8 +4,8 @@
 import convertToCamelCase from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
-import { Message as IncomingMessage } from '../../api/types/incoming';
-import { Message as OutgoingMessage } from '../../api/types/outgoing';
+import type { Message as IncomingMessage } from '../../api/types/incoming';
+import type { Message as OutgoingMessage } from '../../api/types/outgoing';
 import { NamespacedIncoming } from '../../types';
 import { BaseEventEmitter } from '../EventListener';
 

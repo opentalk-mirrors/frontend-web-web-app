@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { RootState } from '..';
+import type { RootState } from '..';
 
 interface MeetingNotesState {
   meetingNotesUrl: string | null;

@@ -1,6 +1,22 @@
 import { jwtDecode } from 'jwt-decode';
 
-import { CodeResponse, RefreshTokenResponse } from './authAdapter';
+interface CodeResponse {
+  accessToken: string;
+  expiresIn: number;
+  refreshToken: string;
+  refreshExpiresIn: number;
+  idToken: string;
+  scope: string;
+}
+
+interface RefreshTokenResponse {
+  accessToken: string;
+  expiresIn: number;
+  refreshToken: string;
+  refreshExpiresIn: number;
+  idToken: string;
+  scope: string;
+}
 
 export enum SessionStatus {
   ANONYMOUS = 'anonymous',

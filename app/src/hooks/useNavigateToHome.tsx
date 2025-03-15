@@ -4,9 +4,10 @@
 import { batch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch, useAppSelector } from '.';
+import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
 import { hangUp } from '../store/commonActions';
-import { ConnectionState, roomReset, selectRoomConnectionState } from '../store/slices/roomSlice';
+import { roomReset, selectRoomConnectionState } from '../store/slices/roomSlice';
+import { useAppDispatch, useAppSelector } from './useCustomRedux';
 
 /**
  * Navigates to dashboard and resets room state. Used when navigating out of lobby/room

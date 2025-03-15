@@ -4,7 +4,7 @@
 import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-import { RootState } from '..';
+import type { RootState } from '..';
 import { ChatScope, ParticipantId } from '../../types';
 import { setChatSettings } from './chatSlice';
 import { join as participantJoin, leave as participantLeave } from './participantsSlice';

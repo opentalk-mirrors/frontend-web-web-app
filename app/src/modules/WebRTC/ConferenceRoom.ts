@@ -4,17 +4,48 @@
 import { isEmpty } from 'lodash';
 import convertToSnakeCase from 'snakecase-keys';
 
-import { setCurrentConferenceRoom } from '.';
 import { ApiErrorWithBody, StartRoomError } from '../../api/rest';
-import { Message as IncomingMessage } from '../../api/types/incoming';
-import { Message as ControlMessage } from '../../api/types/incoming/control';
-import { Message as OutgoingMessage } from '../../api/types/outgoing';
-import { RoomCredentials } from '../../store/commonActions';
-import { ConfigState } from '../../store/slices/configSlice';
-import { getLivekitRoom } from '../../store/slices/livekitSlice';
+import type { Message as IncomingMessage } from '../../api/types/incoming';
+import type { Message as ControlMessage } from '../../api/types/incoming/control';
+import type { Message as OutgoingMessage } from '../../api/types/outgoing';
+import type { RoomCredentials } from '../../store/commonActions';
+import { getLivekitRoom } from '../../store/livekitRoom';
+import type { ConfigState } from '../../store/slices/configSlice';
 import { fetchWithAuth, getControllerBaseUrl, getSignalingUrl } from '../../utils/apiUtils';
 import { BaseEventEmitter } from '../EventListener';
 import { SignalingSocket, SignalingState } from './SignalingSocket';
+
+/**
+ * ### State Machine Graph
+ * - Initial -> Setup
+ * - Setup -> Starting
+ * - Starting -> Blocked
+ * - Starting -> Waiting ->ReadyToEnter -> Online
+ * - Starting -> Failed
+ * - Starting -> Failed-credentials
+ * - Starting -> Online
+ * - Online -> Failed
+ * - Online -> Leaving
+ * - Leaving -> Failed
+ * - Leaving -> Left
+ * - Failed -> Starting
+ * - Failed -> Left
+ * - Left -> Starting
+ */
+
+export enum ConnectionState {
+  Initial = 'initial',
+  Setup = 'setup',
+  Starting = 'starting',
+  Waiting = 'waiting',
+  Online = 'online',
+  Leaving = 'leaving',
+  Left = 'left',
+  Failed = 'failed',
+  FailedCredentials = 'failed-credentials',
+  Blocked = 'blocked',
+  ReadyToEnter = 'ready-to-enter',
+}
 
 const REJOIN_ON_BLOCKED_CONNECTION_TIME = 10000;
 
@@ -23,6 +54,21 @@ type ConferenceEvent = {
   // A 'shutdown' event is sent after the whole WebRTC context has been terminated and all connections are closed.
   shutdown: { error?: number };
   message: IncomingMessage;
+};
+
+let currentConferenceRoom: ConferenceRoom | undefined = undefined;
+
+export const setCurrentConferenceRoom = (room: ConferenceRoom) => {
+  currentConferenceRoom = room;
+  const shutdownHandler = () => {
+    currentConferenceRoom?.removeEventListener('shutdown', shutdownHandler);
+    currentConferenceRoom = undefined;
+  };
+  currentConferenceRoom.addEventListener('shutdown', shutdownHandler);
+};
+
+export const getCurrentConferenceRoom = () => {
+  return currentConferenceRoom;
 };
 
 export const startRoom = async (credentials: RoomCredentials, config: ConfigState, resumptionToken?: string) => {

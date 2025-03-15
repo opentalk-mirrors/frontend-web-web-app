@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { login } from '@opentalk/redux-oidc';
-import { Namespaces, StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import { StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import { Middleware, freeze, isAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { kebabCase } from 'lodash';
@@ -20,9 +20,12 @@ import { createStreamUpdatedNotification } from '../components/StreamUpdatedNoti
 import { showWithLinkNotification } from '../components/WithLinkNotification';
 import LayoutOptions from '../enums/LayoutOptions';
 import i18n from '../i18n';
-import { ConferenceRoom, getCurrentConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
-import { AppDispatch, RootState } from '../store';
+import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
+import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
+import type { AppDispatch, RootState } from '../store';
 import { hangUp, joinSuccess, startRoom } from '../store/commonActions';
+import { setLivekitUnavailable } from '../store/livekitRoom';
+import { getLivekitRoom } from '../store/livekitRoom';
 import {
   remainingUpdated as automodRemainingUpdated,
   speakerUpdated as automodSpeakerUpdated,
@@ -42,12 +45,7 @@ import {
   updated as legalVoteUpdated,
   voted as legalVoteVoted,
 } from '../store/slices/legalVoteSlice';
-import {
-  getLivekitRoom,
-  setLivekitPopoutStreamAccessToken,
-  setLivekitUnavailable,
-  setNewAccessToken,
-} from '../store/slices/livekitSlice';
+import { setLivekitPopoutStreamAccessToken, setNewAccessToken } from '../store/slices/livekitSlice';
 import * as mediaStore from '../store/slices/mediaSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from '../store/slices/meetingNotesSlice';
 import {
@@ -110,7 +108,6 @@ import {
   InitialChatHistory,
   MeetingNotesAccess,
   MeetingNotesState,
-  Namespaced,
   Participant,
   ParticipantId,
   ParticipantInOtherRoom,
@@ -144,9 +141,8 @@ import {
 import { AutomodEventType } from './types/incoming/automod';
 import { Role } from './types/incoming/control';
 import { LegalVoteError, LegalVoteMessageType, VoteFinalResults } from './types/incoming/legalVote';
-import { Action as OutgoingActionType, automod } from './types/outgoing';
+import { automod } from './types/outgoing';
 import * as outgoing from './types/outgoing';
-import { ClearGlobalMessages } from './types/outgoing/chat';
 import { acceptWhisperInvite, declineWhisperInvite } from './types/outgoing/subroomAudio';
 
 /**
@@ -230,14 +226,6 @@ const mapBreakoutToUiParticipant = (
   meetingNotesAccess: MeetingNotesAccess.None,
   isRoomOwner: false,
 });
-
-export const sendMessage = (message: Namespaced<OutgoingActionType | ClearGlobalMessages, Namespaces>) => {
-  const conferenceContext = getCurrentConferenceRoom();
-  if (conferenceContext === undefined) {
-    throw new Error('can not send message to conferenceContext');
-  }
-  conferenceContext.sendMessage(message as outgoing.Message /*TODO remove conversion*/);
-};
 
 //TODO: improve to a more general solution with proper typing as part of #2251(https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2251)
 const showErrorNotification = (message: string) => {

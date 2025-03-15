@@ -5,11 +5,11 @@ import { parseISO } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '.';
 import { notifications } from '../commonComponents';
 import { selectServerTimeOffset } from '../store/slices/roomSlice';
 import { selectTimerStartedAt, selectTimerEndsAt } from '../store/slices/timerSlice';
 import { getRemainingTimeForInterval } from '../utils/timeUtils';
+import { useAppSelector } from './useCustomRedux';
 
 interface RemainingTime {
   duration: Duration;

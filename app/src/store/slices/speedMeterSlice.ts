@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { RootState } from '..';
+import type { RootState } from '..';
 
 export interface SpeedMeterState {
   download: number | undefined;

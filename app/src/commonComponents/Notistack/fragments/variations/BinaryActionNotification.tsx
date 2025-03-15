@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../../../assets/icons';
 import { NotistackPalette } from '../../../../assets/themes';
-import type { AdditionalButtonAttributes } from '../utils';
+import { AdditionalButtonAttributes } from '../SnackbarActionButtons';
 
 const AlertBox = styled(Box, {
   shouldForwardProp: (prop: string) => !['type'].includes(prop),

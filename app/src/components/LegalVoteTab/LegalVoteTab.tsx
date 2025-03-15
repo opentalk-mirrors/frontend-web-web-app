@@ -6,19 +6,17 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
+import { useAppSelector } from '../../hooks';
 import { selectSavedLegalVotePerId } from '../../store/slices/legalVoteSlice';
-import { RoomMode } from '../../types';
+import { selectCurrentRoomMode } from '../../store/slices/roomSlice';
 import CreateLegalVoteForm from './fragments/CreateLegalVoteForm';
 import LegalVoteOverview from './fragments/LegalVoteOverview';
 
-interface ILegalVoteParams {
-  currentRoomMode: () => RoomMode | undefined;
-}
-
-const LegalVoteTab = ({ currentRoomMode }: ILegalVoteParams) => {
+const LegalVoteTab = () => {
   const [showLegalVoteForm, setShowLegalVoteForm] = useState(false);
   const [savedLegalVoteFormId, setSavedLegalVoteFormId] = useState<number | undefined>();
-  const isCoffeeBreakActive = currentRoomMode() === 'coffee-break';
+  const currentRoomMode = useAppSelector(selectCurrentRoomMode);
+  const isCoffeeBreakActive = currentRoomMode === 'coffee-break';
   const formValues = useSelector(selectSavedLegalVotePerId(savedLegalVoteFormId));
   const { t } = useTranslation();
 

@@ -12,7 +12,7 @@ import { Role } from '../../../api/types/incoming/control';
 import { ModeratorIcon } from '../../../assets/icons';
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector, useDateFormat } from '../../../hooks';
-import { RootState } from '../../../store';
+import type { RootState } from '../../../store';
 import { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
 import { selectAvatarUrl, selectDisplayName, selectOurUuid } from '../../../store/slices/userSlice';

@@ -13,7 +13,7 @@ import {
   createSignalingApiCall,
   LegalVoteParameters,
 } from '../../../types';
-import { sendMessage } from '../../index';
+import { sendMessage } from './common';
 
 /**
  * Prevent sending empty strings for optional fields, since those are rejected by backend.

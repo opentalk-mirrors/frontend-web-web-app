@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RootState } from '../../../store';
+import type { RootState } from '../../../store';
 import { Namespaced, ParticipantId, createModule, createSignalingApiCall } from '../../../types';
-import { sendMessage } from '../../index';
+import { sendMessage } from './common';
 
 export interface ForceMute {
   action: 'force_mute';

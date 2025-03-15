@@ -6,14 +6,15 @@ import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
 
+import { ModerationTabKey } from '../../../../config/constants';
 import {
   SupportMenuMobileTab,
-  ModerationTabKey,
   PollsAndVotesMobileTab,
   Tab,
   WaitingRoomMobileTab,
 } from '../../../../config/moderationTabs';
-import { useAppDispatch, useAppSelector, useTabs } from '../../../../hooks';
+import { useAppDispatch, useAppSelector } from '../../../../hooks';
+import useTabs from '../../../../hooks/useTabs';
 import { selectActivePollsAndVotingsCount, selectPollsAndVotingsCount } from '../../../../store/selectors';
 import { selectUnreadGlobalMessageCount, selectUnreadPersonalMessageCount } from '../../../../store/slices/chatSlice';
 import { selectParticipantsWaitingCount } from '../../../../store/slices/participantsSlice';

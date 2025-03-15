@@ -16,10 +16,11 @@ import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { batch } from 'react-redux';
 
-import { useAppDispatch, useAppSelector } from '.';
 import { notifications } from '../commonComponents';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../constants';
-import { selectLivekitUnavailable, setLivekitUnavailable } from '../store/slices/livekitSlice';
+import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
+import { setLivekitUnavailable } from '../store/livekitRoom';
+import { selectLivekitUnavailable } from '../store/slices/livekitSlice';
 import {
   selectAudioDeviceId,
   selectAudioEnabled,
@@ -27,9 +28,10 @@ import {
   selectVideoEnabled,
   startMedia,
 } from '../store/slices/mediaSlice';
-import { ConnectionState, selectRoomConnectionState } from '../store/slices/roomSlice';
+import { selectRoomConnectionState } from '../store/slices/roomSlice';
 import { pinnedParticipantIdSet, pinnedRemoteScreenshare, selectPinnedParticipantId } from '../store/slices/uiSlice';
 import { ParticipantId } from '../types';
+import { useAppDispatch, useAppSelector } from './useCustomRedux';
 
 const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   const { t } = useTranslation();

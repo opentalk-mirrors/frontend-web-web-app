@@ -7,10 +7,11 @@ import { Room } from 'livekit-client';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDispatch, useAppSelector } from '.';
 import { notifications } from '../commonComponents';
+import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
 import { selectAudioDeviceId, selectVideoDeviceId, setMediaChangeInProgress } from '../store/slices/mediaSlice';
-import { ConnectionState, selectRoomConnectionState } from '../store/slices/roomSlice';
+import { selectRoomConnectionState } from '../store/slices/roomSlice';
+import { useAppDispatch, useAppSelector } from './useCustomRedux';
 
 interface MediaPermissionsConstraints {
   kind: MediaDeviceKind;

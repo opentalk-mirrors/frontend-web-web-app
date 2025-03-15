@@ -4,7 +4,7 @@
 import { SharedFolderData } from '@opentalk/rest-api-rtk-query';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { RootState } from '..';
+import type { RootState } from '..';
 import { joinSuccess } from '../commonActions';
 
 interface SharedFolderState {

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
-import { RootState } from '../';
+import type { RootState } from '../';
 import { Started } from '../../api/types/incoming/breakout';
 import { BreakoutRoomId, ParticipantId } from '../../types';
 import { joinSuccess, startRoom } from '../commonActions';

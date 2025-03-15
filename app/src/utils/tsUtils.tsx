@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ErrorStruct } from '../types';
+import { ErrorStruct } from '../types/common';
 
 // ignore the rule, as it's not relevant for HMR
 // eslint-disable-next-line react-refresh/only-export-components

@@ -16,9 +16,10 @@ import { batch } from 'react-redux';
 
 import { enterRoom } from '../../api/types/outgoing/control';
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { selectFeatures } from '../../store/slices/configSlice';
 import { startMedia } from '../../store/slices/mediaSlice';
-import { ConnectionState, selectRoomConnectionState } from '../../store/slices/roomSlice';
+import { selectRoomConnectionState } from '../../store/slices/roomSlice';
 import ImprintContainer from '../ImprintContainer';
 import SelfTest from '../SelfTest';
 
