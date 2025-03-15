@@ -8,6 +8,7 @@ import { useMemo, useRef } from 'react';
 
 import { MAX_GRID_TILES_DESKTOP } from '../../constants';
 import { useAppSelector } from '../../hooks';
+import type { RootState } from '../../store';
 import { selectParticipantsTotal, selectSlicedParticipants } from '../../store/slices/participantsSlice';
 import { selectGridViewOrder, selectPaginationPageState } from '../../store/slices/uiSlice';
 import GridCell from './fragments/GridCell';
@@ -29,8 +30,8 @@ const GridContainer = styled('div', {
 const GridView = () => {
   const selectedPage = useAppSelector(selectPaginationPageState);
   const gridViewOrder = useAppSelector(selectGridViewOrder);
-  const slicedParticipants = useAppSelector(
-    selectSlicedParticipants(selectedPage, MAX_GRID_TILES_DESKTOP, gridViewOrder)
+  const slicedParticipants = useAppSelector((state: RootState) =>
+    selectSlicedParticipants(state, gridViewOrder, selectedPage, MAX_GRID_TILES_DESKTOP)
   );
   const remoteParticipants = useRemoteParticipants();
   const totalParticipants = useAppSelector(selectParticipantsTotal);

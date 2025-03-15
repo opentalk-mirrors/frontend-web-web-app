@@ -5,7 +5,7 @@ import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { RootState } from '..';
-import { ChatScope, ParticipantId } from '../../types';
+import { ParticipantId } from '../../types';
 import { setChatSettings } from './chatSlice';
 import { join as participantJoin, leave as participantLeave } from './participantsSlice';
 import { connectionClosed } from './roomSlice';
@@ -63,8 +63,7 @@ export const eventSlice = createSlice({
 
 const eventSelector = eventAdapter.getSelectors<RootState>((state) => state.events);
 export const selectAllEvents = (state: RootState) => eventSelector.selectAll(state);
-export const selectGlobalEvents = (scope: ChatScope) => (state: RootState) =>
-  scope === ChatScope.Global ? selectAllEvents(state) : [];
+
 export const actions = eventSlice.actions;
 
 export default eventSlice.reducer;

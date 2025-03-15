@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice, createSelector } from '@reduxjs/toolkit';
 import { Event } from '@sentry/react';
 
 import type { RootState } from '../';
@@ -301,19 +301,25 @@ export const selectIsCurrentMeetingNotesHighlighted = (state: RootState) => stat
 export const selectShowCoffeeBreakCurtain = (state: RootState) => state.ui.showCoffeeBreakCurtain;
 export const selectActiveTab = (state: RootState) => state.ui.activeTab;
 export const selectIsFullscreenMode = (state: RootState) => state.ui.isFullscreenMode;
-export function selectDefaultChatMessage(scope: ChatScope, target?: TargetId) {
-  return (state: RootState): string => {
+export const selectDefaultChatMessage = createSelector(
+  [
+    (state: RootState) => state.ui.chatAutosavedInputs,
+    (_state: RootState, scope: ChatScope) => scope,
+    (_state: RootState, _scope: ChatScope, targetId?: TargetId) => targetId,
+  ],
+  (chatAutosavedInputs, scope, targetId) => {
     if (scope === ChatScope.Global) {
-      return state.ui.chatAutosavedInputs[ChatScope.Global];
+      return chatAutosavedInputs[ChatScope.Global];
     }
 
-    if (target && state.ui.chatAutosavedInputs[scope][target]) {
-      return state.ui.chatAutosavedInputs[scope][target];
+    if (targetId && chatAutosavedInputs[scope][targetId]) {
+      return chatAutosavedInputs[scope][targetId];
     }
 
     return '';
-  };
-}
+  }
+);
+
 export const selectHotkeysEnabled = (state: RootState) => state.ui.hotkeysEnabled;
 export const selectShowErrorDialog = (state: RootState) => state.ui.errorDialog.showErrorDialog;
 export const selectErrorDialogEvent = (state: RootState) => state.ui.errorDialog.event;

@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Action, Actions, AnyAction, Dispatch } from '@reduxjs/toolkit';
+import { Action, Actions, Dispatch } from '@reduxjs/toolkit';
 
 interface TypedActionCreator<Type extends string> {
   (...args: never[]): Action<Type>;
   type: Type;
 }
 
-export type CaseResponder<S = never, A extends Action = AnyAction> = (state: S, action: A) => void;
+export type CaseResponder<S = never, A extends Action = Action> = (state: S, action: A) => void;
 
 export type CaseResponders<S, AS extends Actions> = {
   [T in keyof AS]: AS[T] extends Action ? CaseResponder<S, AS[T]> : void;

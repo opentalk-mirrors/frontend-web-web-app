@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../../hooks';
+import type { RootState } from '../../../store';
 import { selectVoteById } from '../../../store/slices/legalVoteSlice';
 import type { LegalVoteId } from '../../../types';
 import VoteEmptyRow from './VoteEmptyRow';
@@ -28,7 +29,7 @@ interface VoteResultTableProps {
 
 function VoteResultTable(props: VoteResultTableProps) {
   const { t } = useTranslation();
-  const vote = useAppSelector(selectVoteById(props.voteId));
+  const vote = useAppSelector((state: RootState) => selectVoteById(state, props.voteId));
 
   if (!vote || !vote.votes) {
     return null;

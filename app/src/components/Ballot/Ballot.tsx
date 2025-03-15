@@ -39,7 +39,6 @@ export default function Ballot() {
   const legalVoteToShow = useAppSelector(
     selectVoteById((voteOrPollIdToShow ? voteOrPollIdToShow : voteIdToShow) as LegalVoteId)
   );
-
   const ourUuid = useAppSelector(selectOurUuid);
   const isAllowedToVote =
     ourUuid && legalVoteToShow ? Boolean(legalVoteToShow.allowedParticipants?.includes(ourUuid)) : false;

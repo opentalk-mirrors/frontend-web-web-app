@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 
 import { LastSeenTimestampAddedPayload, setLastSeenTimestamp } from '../../api/types/outgoing/chat';
 import { useAppSelector } from '../../hooks';
+import type { RootState } from '../../store';
 import { lastSeenTimestampAdded, selectLastMessageForScope } from '../../store/slices/chatSlice';
 import { selectChatSearchValue, setChatSearchValue } from '../../store/slices/uiSlice';
 import { ChatScope, TargetId } from '../../types';
@@ -34,7 +35,7 @@ const Chat = ({ target, scope = ChatScope.Global, autoFocusMessageInput }: ChatP
   const [searchValue, setSearchValue] = useState<string>(defaultChatValue);
   const dispatch = useDispatch();
   const chatSearchInputReference = useRef<HTMLInputElement | null>(null);
-  const lastMessageForScope = useAppSelector(selectLastMessageForScope(scope, target));
+  const lastMessageForScope = useAppSelector((state: RootState) => selectLastMessageForScope(state, scope, target));
 
   //Adds a last seen timestamp when the specific scope is opened or a message in the scope is received while open
   useEffect(() => {

@@ -1187,7 +1187,7 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
       }
       dispatch(setSubroomAudioData({ whisperId: data.whisperId, participants: data.participants }));
 
-      const displayName = selectParticipantById(data.issuer)(state)?.displayName;
+      const displayName = selectParticipantById(state, data.issuer)?.displayName;
       notificationAction({
         msg: i18next.t('whisper-invite-notification', { displayName }),
         variant: 'info',
@@ -1220,7 +1220,7 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
       dispatch(inviteParticipants({ participants: data.participantIds }));
       break;
     case 'whisper_invite_accepted': {
-      const displayName = selectParticipantById(data.participantId)(state)?.displayName;
+      const displayName = selectParticipantById(state, data.participantId)?.displayName;
       notificationAction({
         msg: i18next.t('whisper-invite-accept-notification', { displayName }),
         variant: 'info',
@@ -1235,7 +1235,7 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
       break;
     }
     case 'whisper_invite_declined': {
-      const displayName = selectParticipantById(data.participantId)(state)?.displayName;
+      const displayName = selectParticipantById(state, data.participantId)?.displayName;
       dispatch(removeParticipant({ participantId: data.participantId }));
       notificationAction({
         msg: `${displayName} declined your invitation`,

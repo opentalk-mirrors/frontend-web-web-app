@@ -117,17 +117,17 @@ export const { updateRole, setDisplayName, updateLastActive } = actions;
 
 const userState = (state: RootState) => state.user;
 
-export const selectOurUuid = createSelector(userState, (state) => state.uuid);
-export const selectGroups = createSelector(userState, (state) => state.groups);
-export const selectDisplayName = createSelector(userState, (state) => state.displayName);
-export const selectAvatarUrl = createSelector(userState, (state) => state.avatarUrl);
-export const selectUserMeetingNotesAccess = createSelector(userState, (state) => state.meetingNotesAccess);
-export const selectIsModerator = createSelector(userState, (state) => state.role === Role.Moderator);
-export const selectIsGuest = createSelector(userState, (state) => state.role === Role.Guest);
-export const selectRole = createSelector(userState, (state) => state.role);
+export const selectOurUuid = createSelector([userState], (state) => state.uuid);
+export const selectGroups = createSelector([userState], (state) => state.groups);
+export const selectDisplayName = createSelector([userState], (state) => state.displayName);
+export const selectAvatarUrl = createSelector([userState], (state) => state.avatarUrl);
+export const selectUserMeetingNotesAccess = createSelector([userState], (state) => state.meetingNotesAccess);
+export const selectIsModerator = createSelector([userState], (state) => state.role === Role.Moderator);
+export const selectIsGuest = createSelector([userState], (state) => state.role === Role.Guest);
+export const selectRole = createSelector([userState], (state) => state.role);
 
 export const selectUserAsPartialParticipant = createSelector(
-  userState,
+  [userState],
   (state): Omit<Participant, 'breakoutRoomId' | 'handIsUp' | 'handUpdatedAt'> | undefined => {
     const { displayName, avatarUrl, groups, joinedAt, lastActive, isRoomOwner, role } = state;
 

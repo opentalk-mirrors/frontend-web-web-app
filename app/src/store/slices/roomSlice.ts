@@ -4,7 +4,6 @@
 import { AuthTypeError, authError } from '@opentalk/redux-oidc';
 import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import {
-  AnyAction,
   ListenerEffectAPI,
   PayloadAction,
   createAsyncThunk,
@@ -364,10 +363,10 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
 
 roomMiddleware.startListening({
   type: 'room/start/rejected',
-  effect: (_action: AnyAction, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => reconnect(listenerApi),
+  effect: (_action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => reconnect(listenerApi),
 });
 
-type ConnectionClosedAction = Partial<ReturnType<typeof connectionClosed>> & AnyAction;
+type ConnectionClosedAction = Partial<ReturnType<typeof connectionClosed>>;
 roomMiddleware.startListening({
   type: 'room/connectionClosed',
   effect: (action: ConnectionClosedAction, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
@@ -379,8 +378,7 @@ roomMiddleware.startListening({
 
 roomMiddleware.startListening({
   type: 'room/hangup/rejected',
-  // TODO: Find a way to increase guard type and step away from AnyAction.
-  effect: (action: AnyAction) => {
+  effect: (action: { type: string; error?: { message: string } }) => {
     if (action.error) {
       notifications.error(action.error.message);
     }

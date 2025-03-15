@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../../hooks';
+import type { RootState } from '../../../store';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
 import { ChatMessage } from '../../../types';
 import { ANNOUNCEMENT_TIMEOUT } from './constants';
@@ -19,7 +20,7 @@ const ChatAnnouncement = (props: ChatAnnouncementProps) => {
   const { message, onAnnouncementEnd } = props;
   const { t } = useTranslation();
 
-  const author = useAppSelector(selectParticipantName(message.source));
+  const author = useAppSelector((state: RootState) => selectParticipantName(state, message.source));
   const announcement = t('chat-live-message-announcemenet', { name: author ?? t('global-participant') });
 
   useEffect(() => {

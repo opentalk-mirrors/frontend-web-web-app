@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { RaiseHandOnIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
-import { ParticipantId } from '../../../types';
+import type { ParticipantId } from '../../../types';
 
 const waveAnimation = keyframes`
     0%,100% { transform:rotate(0) }

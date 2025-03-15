@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { BackIcon, PinIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
+import type { RootState } from '../../../store';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
 import { ParticipantId } from '../../../types';
 import { OverlayIconButton } from './OverlayIconButton';
@@ -62,7 +63,7 @@ export const PresenterOverlay = ({
     () => ({ participantId, mediaType: Track.Source.Camera }),
     [participantId]
   );
-  const displayName = useAppSelector(selectParticipantName(participantId));
+  const displayName = useAppSelector((state: RootState) => selectParticipantName(state, participantId));
 
   const arrowIconDirection = useMemo(() => {
     switch (videoPosition) {

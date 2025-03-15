@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector, useDateFormat } from '../../../hooks';
+import type { RootState } from '../../../store';
 import { ChatProps, selectUnreadPersonalMessageCountByTarget } from '../../../store/slices/chatSlice';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
 import { ChatScope } from '../../../types';
@@ -45,7 +46,9 @@ const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
   const date = new Date(chat.lastMessage?.timestamp) ?? Date.now;
   const formattedTime = useDateFormat(date, 'time');
   const getDisplayName = () => (isEmpty(participant) ? chat.id : participant?.displayName);
-  const lastSeenTimestampCount = useAppSelector(selectUnreadPersonalMessageCountByTarget(chat.id));
+  const lastSeenTimestampCount = useAppSelector((state: RootState) =>
+    selectUnreadPersonalMessageCountByTarget(state, chat.id)
+  );
   const [fontWeight, setFontWeigth] = useState('normal');
 
   useEffect(() => {

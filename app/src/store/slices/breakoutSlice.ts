@@ -118,6 +118,7 @@ export const selectIsActive = (state: RootState) => state.breakout.active;
 export const selectCurrentBreakoutRoomId = (state: RootState) => state.breakout.currentBreakoutRoomId;
 export const selectBreakoutRoomById = (id: BreakoutRoomId) => (state: RootState) =>
   breakoutRoomsSelectors.selectById(state, id);
+
 export const selectCurrentBreakoutRoom = createSelector(
   [rootState, selectCurrentBreakoutRoomId],
   (state, currentRoomId) => breakoutRoomsSelectors.selectById(state, currentRoomId as BreakoutRoomId)

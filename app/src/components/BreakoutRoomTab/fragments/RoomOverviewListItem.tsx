@@ -5,8 +5,7 @@ import { Button as MuiButton, List, styled, Typography, Stack } from '@mui/mater
 import { useCallback, useState, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ParticipantAvatar } from '../../../commonComponents';
-import { AccordionItem } from '../../../commonComponents';
+import { AccordionItem, ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectBreakoutRoomById, selectCurrentBreakoutRoomId } from '../../../store/slices/breakoutSlice';
 import { selectOurUuid } from '../../../store/slices/userSlice';

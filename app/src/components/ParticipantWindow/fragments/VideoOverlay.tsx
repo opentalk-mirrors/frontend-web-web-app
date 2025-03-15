@@ -17,6 +17,7 @@ import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { MediaDescriptor } from '../../../modules/WebRTC';
+import type { RootState } from '../../../store';
 import {
   addPopoutStreamAccess,
   deleteLivekitPopoutStreamAccessToken,
@@ -73,9 +74,11 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const isVideoActive = participant?.isCameraEnabled;
   const isScreenShareOrVideoActive = isScreenShareActive || isVideoActive;
   const descriptor = isScreenShareActive ? screenDescriptor : videoDescriptor;
-  const displayName = useAppSelector(selectParticipantName(participantId));
+  const displayName = useAppSelector((state: RootState) => selectParticipantName(state, participantId));
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
-  const popoutStreamAccess = useAppSelector(selectLivekitPopoutStreamAccessByParticipantId(participantId));
+  const popoutStreamAccess = useAppSelector((state: RootState) =>
+    selectLivekitPopoutStreamAccessByParticipantId(state, participantId)
+  );
   const { t } = useTranslation();
   const fullscreenHandle = useFullscreenContext();
   const livekitUrl = useAppSelector(selectLivekitPublicUrl);

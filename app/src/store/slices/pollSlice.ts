@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
 import type { RootState } from '../';
 import { Started, LiveUpdate, Done } from '../../api/types/incoming/poll';
@@ -50,7 +50,6 @@ const pollAdapter = createEntityAdapter<Poll>({
 });
 
 interface State {
-  activePoll?: PollId;
   pollIdToShow?: PollId;
   polls: EntityState<Poll, PollId>;
   savedPolls: PollFormValues[];
@@ -67,14 +66,12 @@ export const pollSlice = createSlice({
   reducers: {
     started: (state, { payload }: PayloadAction<Started>) => {
       state.pollIdToShow = payload.id;
-      state.activePoll = payload.id;
       state.showResult = true;
 
       const vote: Poll = newPollFromApiType(payload);
       pollAdapter.addOne(state.polls, vote);
     },
     done: (state, { payload }: PayloadAction<Done>) => {
-      state.activePoll = undefined;
       pollAdapter.updateOne(state.polls, {
         id: payload.id,
         changes: { stopTime: new Date().toISOString(), state: 'finished', results: payload.results },
@@ -140,16 +137,16 @@ export const selectAllPolls = (state: RootState) => pollSelectors.selectAll(stat
 export const selectPollVotes = (state: RootState) => pollSelectors.selectEntities(state);
 
 export const selectPollIdToShow = (state: RootState) => state.poll.pollIdToShow;
-export const selectPollToShow = (state: RootState) =>
-  state.poll.pollIdToShow ? selectPollById(state.poll.pollIdToShow)(state) : undefined;
-
-export const selectActivePollId = (state: RootState) => state.poll.activePoll;
-export const selectActivePoll = (state: RootState) =>
-  state.poll.activePoll ? selectPollById(state.poll.activePoll)(state) : undefined;
+export const selectPollToShow = createSelector(
+  [(state: RootState) => state, selectPollIdToShow],
+  (state, pollIdToShow) => (pollIdToShow ? selectPollById(pollIdToShow) : undefined)
+);
 
 export const selectAllSavedPolls = (state: RootState) => state.poll.savedPolls;
-export const selectSavedPollPerId = (id: number | undefined) => (state: RootState) =>
-  state.poll.savedPolls.find((savedPoll) => savedPoll.id === id);
+export const selectSavedPollPerId = createSelector(
+  [(state: RootState) => state.poll.savedPolls, (_state: RootState, id: number | undefined) => id],
+  (savedPolls, id) => savedPolls.find((savedPoll) => savedPoll.id === id)
+);
 
 export const selectShowResult = (state: RootState) => state.poll.showResult;
 export default pollSlice.reducer;
