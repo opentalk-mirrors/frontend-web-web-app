@@ -406,7 +406,7 @@ importers:
         specifier: 7.3.0
         version: 7.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rollup:
-        specifier: ^4.35.0
+        specifier: ^4.36.0
         version: 4.36.0
       rollup-plugin-dts:
         specifier: ^6.1.1
