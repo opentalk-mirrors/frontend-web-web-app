@@ -438,16 +438,6 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     return participantMenuOptionItems;
   };
 
-  const renderMenu = () =>
-    getMenuOptions().length > 0 && (
-      <>
-        <IconButton aria-label="open participant more menu" onClick={handleClick}>
-          <MoreIcon className="more-icon" />
-        </IconButton>
-        {open && <MenuPopover open={true} setAnchorEl={setAnchorEl} anchorEl={anchorEl} options={getMenuOptions()} />}
-      </>
-    );
-
   const getContextText = () => {
     switch (sortType) {
       case SortOption.RaisedHandFirst: {
@@ -555,7 +545,16 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
           }
         />
 
-        {renderMenu()}
+        {getMenuOptions().length > 0 && (
+          <>
+            <IconButton aria-label={t('participant-menu-open-label')} onClick={handleClick}>
+              <MoreIcon className="more-icon" />
+            </IconButton>
+            {open && (
+              <MenuPopover open={true} setAnchorEl={setAnchorEl} anchorEl={anchorEl} options={getMenuOptions()} />
+            )}
+          </>
+        )}
 
         <IconsContainer>
           {isMeetingNotesEditor(participant) && <MeetingNotesIcon />}

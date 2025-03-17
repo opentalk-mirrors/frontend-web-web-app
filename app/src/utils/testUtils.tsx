@@ -61,6 +61,7 @@ import {
   ParticipantId,
   ParticipationKind,
   PollId,
+  Role,
   VideoSetting,
   WaitingState,
 } from '../types';
@@ -188,12 +189,13 @@ export const jwtVariables = {
 };
 
 /*
-  const mockStore
-  create participants and use them to create a redux store for testing.
-
-  @params participantCount: number of mocked participants
-  @returns mocked redux store for testing
-*/
+ * const mockStore
+ * create participants and use them to create a redux store for testing.
+ *
+ * @params participantCount: number of mocked participants
+ * @params options: a set of options related to participant state
+ * @returns mocked redux store for testing
+ */
 
 export const mockStore = (
   participantCount: number,
@@ -203,15 +205,18 @@ export const mockStore = (
     raiseHands?: number;
     automodActive?: boolean;
     audio?: number;
+    role?: Role[];
     participantKinds?: ParticipationKind[];
+    store?: ConfigureStoreOptions['preloadedState'];
   }
 ) => {
   const participantsIds = range(participantCount);
   const participants = participantsIds.map((index) => {
     const handIsUp = index < (options?.raiseHands || 0);
     const kind = options?.participantKinds?.[index];
+    const role = options?.role?.[index];
     const participant = {
-      ...mockedParticipant(index, kind),
+      ...mockedParticipant(index, kind, role),
       handIsUp,
     };
     return participant;
@@ -255,6 +260,7 @@ export const mockStore = (
       ...automodState,
       active: options?.automodActive,
     },
+    ...options?.store?.initialState,
   };
 
   return createStore({
@@ -264,7 +270,8 @@ export const mockStore = (
 
 export const mockedParticipant = (
   index: number,
-  kind: ParticipationKind = ParticipationKind.User
+  kind: ParticipationKind = ParticipationKind.User,
+  role: Role = Role.User
 ): Participant & {
   identity: string;
   isCameraEnabled: boolean;
@@ -292,6 +299,7 @@ export const mockedParticipant = (
   getTrackPublication: () => undefined,
   setMicrophoneEnabled: () => undefined,
   videoTrackPublications: new Map(),
+  role,
 });
 
 export const mockedLivekitParticipant = (index: number) => {
