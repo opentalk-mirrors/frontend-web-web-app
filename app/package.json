@@ -41,7 +41,7 @@
     "formik": "^2.4.6",
     "formik-wizard-form": "^2.1.0",
     "fscreen": "^1.2.0",
-    "i18next": "^24.2.2",
+    "i18next": "^24.2.3",
     "i18next-browser-languagedetector": "^8.0.4",
     "i18next-http-backend": "^3.0.2",
     "linkify-react": "^3.0.4",
