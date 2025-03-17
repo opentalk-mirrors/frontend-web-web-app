@@ -9,7 +9,7 @@ importers:
   .:
     devDependencies:
       '@babel/core':
-        specifier: ^7.26.9
+        specifier: ^7.26.10
         version: 7.26.10
       '@babel/preset-env':
         specifier: ^7.26.9
