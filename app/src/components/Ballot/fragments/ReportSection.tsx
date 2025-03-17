@@ -7,7 +7,7 @@ import { useFormik } from 'formik';
 import { FC, Fragment, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { reportIssue, ReportIssueKind, VoteReportIssue } from '../../../api/types/outgoing/legalVote';
+import { ReportIssueKind, VoteReportIssue, reportIssue } from '../../../api/types/outgoing/legalVote';
 import { CommonTextField, notifications } from '../../../commonComponents';
 import { useAppDispatch } from '../../../hooks';
 import { LegalVoteId } from '../../../types';
@@ -19,11 +19,11 @@ const reportValidationScheme = yup.object({
     .string()
     .equals([ReportIssueKind.Screenshare, ReportIssueKind.Audio, ReportIssueKind.Video, ReportIssueKind.Other])
     .optional(),
-  description: yup.string().when('kind', {
-    is: ReportIssueKind.Other,
-    then: yup.string().maxBytes(1000).required(),
-    otherwise: yup.string().maxBytes(1000).optional(),
-  }),
+  description: yup
+    .string()
+    .when('kind', ([kind], schema) =>
+      kind === ReportIssueKind.Other ? schema.maxBytes(1000).required() : schema.maxBytes(1000).optional()
+    ),
 });
 
 type ReportSectionProps = {

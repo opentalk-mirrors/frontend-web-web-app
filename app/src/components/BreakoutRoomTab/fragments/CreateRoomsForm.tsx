@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Button, Box } from '@mui/material';
+import { Box, Button, styled } from '@mui/material';
 import { FormikProps } from 'formik';
-import { Step, FormikWizard } from 'formik-wizard-form';
+import { FormikWizard, Step } from 'formik-wizard-form';
 import { FormikValues } from 'formik/dist/types';
 import i18next from 'i18next';
 import { get, shuffle } from 'lodash';
@@ -45,20 +45,22 @@ class HandleSubmit extends React.Component<{ handleNext: () => void; formik: For
 const validationSchema = () =>
   Yup.object({
     expanded: Yup.mixed<AccordionOptions>()
-      .oneOf(Object.values(AccordionOptions), i18next.t('breakout-room-form-error-expanded'))
+      .oneOf([...Object.values(AccordionOptions)], i18next.t('breakout-room-form-error-expanded'))
       .required(i18next.t('breakout-room-form-error-expanded')),
-    rooms: Yup.object().when(['expanded'], {
-      is: AccordionOptions.Rooms,
-      then: Yup.object({
-        rooms: Yup.number().min(2, i18next.t('breakout-room-form-error-min-room')),
-      }),
-    }),
-    participants: Yup.object().when(['expanded'], {
-      is: AccordionOptions.Participants,
-      then: Yup.object().shape({
-        participantsPerRoom: Yup.number().min(2, i18next.t('breakout-room-form-error-min-participants')),
-      }),
-    }),
+    rooms: Yup.object().when('expanded', ([expanded], schema) =>
+      expanded === AccordionOptions.Rooms
+        ? schema.shape({
+            rooms: Yup.number().min(2, i18next.t('breakout-room-form-error-min-room')),
+          })
+        : schema
+    ),
+    participants: Yup.object().when('expanded', ([expanded], schema) =>
+      expanded === AccordionOptions.Participants
+        ? schema.shape({
+            participantsPerRoom: Yup.number().min(2, i18next.t('breakout-room-form-error-min-participants')),
+          })
+        : schema
+    ),
   });
 
 const CreateRoomsForm = () => {

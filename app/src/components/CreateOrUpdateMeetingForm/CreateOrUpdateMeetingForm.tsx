@@ -152,12 +152,12 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
     showMeetingDetails: yup.boolean().optional(),
     streaming: yup.object().shape({
       enabled: yup.boolean().required(),
-      platform: yup.object().when('enabled', (value: boolean) => {
-        if (!value) {
+      platform: yup.object().when('enabled', ([enabled], schema) => {
+        if (!enabled) {
           return yup.object().optional();
         }
         //Initial implementation supports only 'custom' platform model
-        return yup.object().shape({
+        return schema.shape({
           kind: yup.string().required(),
           name: yup.string().required(t('dashboard-meeting-livestream-platform-name-required')),
           streamingEndpoint: yup
