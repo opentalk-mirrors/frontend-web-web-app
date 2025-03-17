@@ -72,7 +72,7 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
     if ('sharedFolder' in event) {
       try {
         await deleteSharedFolder({ eventId, forceDeletion: false }).unwrap();
-      } catch (error) {
+      } catch (_error) {
         if (isFirstTryToDeleteSharedFolder.current) {
           onClose();
           notificationAction({
@@ -102,7 +102,7 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
   };
 
   const hasFetchError = (response: Awaited<ReturnType<typeof deleteEvent>>) => {
-    return 'error' in response && 'status' in response.error && response.error.status === 'FETCH_ERROR';
+    return response.error && 'status' in response.error && response.error.status === 'FETCH_ERROR';
   };
 
   const deleteMeeting = async () => {
@@ -119,7 +119,7 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
       instanceId: generateInstanceId(event.startsAt),
       status: EventStatus.Cancelled,
     });
-    if ('error' in response && 'status' in response.error && response.error.status === 'FETCH_ERROR') {
+    if (response.error && 'status' in response.error && response.error.status === 'FETCH_ERROR') {
       notifications.error(t('dashboard-meeting-card-delete-offline-failure'));
     }
   };

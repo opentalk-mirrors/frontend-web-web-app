@@ -34,7 +34,7 @@ describe('render <DateTimePicker />', () => {
 
   test('render DateTimePicker component with german localization', async () => {
     // eslint disabled is needed because of recursion type definitions inside the library
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     jest.spyOn(require('react-i18next'), 'useTranslation').mockReturnValue({
       t: (i18nKey: string) => i18nKey,
       i18n: {

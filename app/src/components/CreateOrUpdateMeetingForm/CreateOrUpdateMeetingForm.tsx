@@ -376,7 +376,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       navigate(`/dashboard/meetings/update/${event.current.id}/1`, {
         state: { ...getReferrerRouterState(window.location) },
       });
-    } catch (err) {
+    } catch (_err) {
       notifications.error(t('dashboard-meeting-notification-error'));
     }
   };
@@ -396,7 +396,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
 
         notifications.success(t('dashboard-meeting-notification-success-edit', { event: event.title }));
       }
-    } catch (err) {
+    } catch (_err) {
       notifications.error(t('dashboard-meeting-notification-error'));
     }
   };
@@ -416,7 +416,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       try {
         setIsFirstTryToCreateSharedFolder(false);
         await createSharedFolder({ eventId: event.id }).unwrap();
-      } catch (error) {
+      } catch (_err) {
         notificationAction({
           msg: t('dashboard-meeting-shared-folder-create-error-message'),
           variant: 'error',
@@ -437,7 +437,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
     } else {
       try {
         await createSharedFolder({ eventId: event.id }).unwrap();
-      } catch (error) {
+      } catch (_err) {
         values.sharedFolder = false;
         notifications.error(t('dashboard-meeting-shared-folder-create-retry-error-message'));
         setIsFirstTryToCreateSharedFolder(true);
@@ -452,7 +452,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       try {
         setIsFirstTryToDeleteSharedFolder(false);
         await deleteSharedFolder({ eventId: event.id, forceDeletion: false }).unwrap();
-      } catch (error) {
+      } catch (_err) {
         notificationAction({
           msg: t('dashboard-meeting-shared-folder-delete-error-message'),
           variant: 'error',
@@ -473,7 +473,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
     } else {
       try {
         await deleteSharedFolder({ eventId: event.id, forceDeletion: false }).unwrap();
-      } catch (error) {
+      } catch (_err) {
         values.sharedFolder = true;
         notifications.error(t('dashboard-meeting-shared-folder-delete-retry-error-message'));
         setIsFirstTryToDeleteSharedFolder(true);

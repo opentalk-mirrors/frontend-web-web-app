@@ -115,7 +115,7 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
         } else {
           notifications.error(t('global-copy-permanent-guest-link-error'), { persist: true });
         }
-      } catch (error) {
+      } catch (_error) {
         notifications.error(t('global-copy-permanent-guest-link-error'));
       }
     }
@@ -133,7 +133,7 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
           meetingTitle: title,
         })
       );
-    } catch (error) {
+    } catch (_error) {
       notifications.error(
         t('error-general', {
           meetingTitle: title,

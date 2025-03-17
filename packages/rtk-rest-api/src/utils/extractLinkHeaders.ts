@@ -37,6 +37,7 @@ const parseLinkInternal = (link: string, baseUrl?: string): Record<string, strin
     }
     return null;
   } catch (e) {
+    console.error('parseLinkInternal', e);
     return null;
   }
 };

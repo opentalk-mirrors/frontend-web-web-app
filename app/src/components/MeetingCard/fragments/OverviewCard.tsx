@@ -94,7 +94,7 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
           meetingTitle: title,
         })
       );
-    } catch (error) {
+    } catch (_error) {
       notifications.error(
         t(`error-general`, {
           meetingTitle: title,
@@ -111,7 +111,7 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
           meetingTitle: title,
         })
       );
-    } catch (error) {
+    } catch (_error) {
       notifications.error(
         t(`error-general`, {
           meetingTitle: title,

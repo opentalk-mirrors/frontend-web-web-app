@@ -7,7 +7,7 @@ export interface VideoTransformerInitOptions extends TrackTransformerInitOptions
   inputElement: HTMLVideoElement;
 }
 
-export interface AudioTransformerInitOptions extends TrackTransformerInitOptions {}
+export type AudioTransformerInitOptions = TrackTransformerInitOptions;
 
 export interface VideoTrackTransformer<Options extends Record<string, unknown>>
   extends BaseTrackTransformer<VideoTransformerInitOptions, VideoFrame> {
