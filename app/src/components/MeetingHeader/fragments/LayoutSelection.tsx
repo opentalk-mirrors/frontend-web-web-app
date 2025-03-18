@@ -13,6 +13,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +23,7 @@ import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { GridViewOrder } from '../../../store/slices/common';
-import { selectIsMeetingNotesAvailable } from '../../../store/slices/meetingNotesSlice';
+import { selectIsModuleEnabled } from '../../../store/slices/configSlice';
 import {
   selectCinemaLayout,
   selectGridViewOrder,
@@ -39,31 +40,22 @@ const ViewPopperContainer = styled(Stack)(({ theme }) => ({
   borderRadius: '0.25rem',
   justifyContent: 'center',
   alignItems: 'center',
-  '& .MuiPopover-paper': {
-    marginTop: '0.3rem',
-    background: theme.palette.background.defaultGradient,
-  },
+  '& .MuiPopover-paper': { marginTop: '0.3rem', background: theme.palette.background.defaultGradient },
   '& .MuiIconButton-root .MuiSvgIcon-root': {
-    [theme.breakpoints.down('md')]: {
-      fontSize: theme.typography.pxToRem(20),
-    },
+    [theme.breakpoints.down('md')]: { fontSize: theme.typography.pxToRem(20) },
   },
 }));
 
-const PopoverContainer = styled(MenuList)(({ theme }) => ({
-  background: theme.palette.background.video,
-}));
+const PopoverContainer = styled(MenuList)(({ theme }) => ({ background: theme.palette.background.video }));
 
-const MenuItem = styled(MuiMenuItem, {
-  shouldForwardProp: (prop) => prop !== 'hasIndicator',
-})<{ hasIndicator?: boolean }>(({ theme, hasIndicator }) => ({
+const MenuItem = styled(MuiMenuItem, { shouldForwardProp: (prop) => prop !== 'hasIndicator' })<{
+  hasIndicator?: boolean;
+}>(({ theme, hasIndicator }) => ({
   padding: theme.spacing(1),
   '& .MuiListItemIcon-root .MuiSvgIcon-root': {
     position: 'relative',
     fontSize: theme.typography.pxToRem(16),
-    [theme.breakpoints.down('md')]: {
-      fontSize: theme.typography.pxToRem(20),
-    },
+    [theme.breakpoints.down('md')]: { fontSize: theme.typography.pxToRem(20) },
   },
   '&:after': {
     content: '""',
@@ -76,17 +68,9 @@ const MenuItem = styled(MuiMenuItem, {
   },
 }));
 
-const ButtonIndicator = styled(Indicator)({
-  position: 'absolute',
-  top: '0.1rem',
-  right: '0.1rem',
-});
+const ButtonIndicator = styled(Indicator)({ position: 'absolute', top: '0.1rem', right: '0.1rem' });
 
-const StyledDivider = styled(Divider)<{ component: string }>({
-  '&:before, &:after': {
-    backgroundColor: '#385865',
-  },
-});
+const StyledDivider = styled(Divider)<{ component: string }>({ '&:before, &:after': { backgroundColor: '#385865' } });
 
 const LayoutSelection = () => {
   const dispatch = useAppDispatch();
@@ -96,7 +80,7 @@ const LayoutSelection = () => {
   const { t } = useTranslation();
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const isViewPopoverOpen = Boolean(anchorElement);
-  const isMeetingNotesAvailable = useAppSelector(selectIsMeetingNotesAvailable);
+  const isMeetingNotesAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingNotes));
   const isCurrentMeetingNotesHighlighted = useAppSelector(selectIsCurrentMeetingNotesHighlighted);
 
   /**
@@ -151,14 +135,8 @@ const LayoutSelection = () => {
       <Popover
         open={isViewPopoverOpen}
         anchorEl={anchorElement}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         onClose={() => setAnchorElement(null)}
         disablePortal
       >

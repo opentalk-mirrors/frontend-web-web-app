@@ -20,6 +20,7 @@ export enum BackendModules {
   Moderation = 'moderation',
   Polls = 'polls',
   MeetingNotes = 'meetingNotes',
+  MeetingReport = 'meetingReport',
   /**
    * Special case, since currently it is a basically useless module without a feature inside
    */
@@ -34,9 +35,7 @@ export enum BackendModules {
 /**
  * Presence of a module (even with an empty features list) means it is enabled.
  */
-export type Modules = {
-  [value in BackendModules]?: { features: Array<string> };
-};
+export type Modules = { [value in BackendModules]?: { features: Array<string> } };
 
 export type RecordingFeatures = 'stream' | 'record';
 /**
