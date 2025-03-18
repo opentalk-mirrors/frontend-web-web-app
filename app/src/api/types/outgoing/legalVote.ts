@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { AnyAction } from '@reduxjs/toolkit';
-
 import type { RootState } from '../../../store';
 import {
   LegalVoteOption,
@@ -67,19 +65,19 @@ export const vote = createSignalingApiCall<VoteOutgoing>('legal_vote', 'vote');
 export const reportIssue = createSignalingApiCall<VoteReportIssue>('legal_vote', 'report_issue');
 
 export const handler = createModule((builder: MiddlewareMapBuilder<RootState>) => {
-  builder.addCase(start.action, (_state, action: AnyAction) => {
+  builder.addCase(start.action, (_state, action) => {
     sendMessage(start(action.payload));
   });
-  builder.addCase(stop.action, (_state, action: AnyAction) => {
+  builder.addCase(stop.action, (_state, action) => {
     sendMessage(stop(action.payload));
   });
-  builder.addCase(cancel.action, (_state, action: AnyAction) => {
+  builder.addCase(cancel.action, (_state, action) => {
     sendMessage(cancel(action.payload));
   });
-  builder.addCase(vote.action, (_state, action: AnyAction) => {
+  builder.addCase(vote.action, (_state, action) => {
     sendMessage(vote(action.payload));
   });
-  builder.addCase(reportIssue.action, (_state, action: AnyAction) => {
+  builder.addCase(reportIssue.action, (_state, action) => {
     sendMessage(reportIssue(action.payload));
   });
 });

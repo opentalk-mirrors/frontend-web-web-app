@@ -155,48 +155,57 @@ export const chatSlice = createSlice({
 export const { lastSeenTimestampAdded, received, setChatSettings, clearGlobalChat } = chatSlice.actions;
 export const actions = chatSlice.actions;
 
+const lastSeenTimestampsSelector = lastSeenTimestampAdapter.getSelectors<RootState>(
+  (state) => state.chat.lastSeenTimestampsPersonal
+);
+const chatMessagesSelectors = messagesAdapter.getSelectors<RootState>((state) => state.chat.messages);
+
 export const selectLastSeenTimestampGlobal = (state: RootState) => state.chat.lastSeenTimestampGlobal;
-export const selectLastSeenTimestamps = (state: RootState) =>
-  lastSeenTimestampAdapter.getSelectors<RootState>((state) => state.chat.lastSeenTimestampsPersonal).selectAll(state);
+
+export const selectLastSeenTimestamps = (state: RootState) => lastSeenTimestampsSelector.selectAll(state);
 
 export const selectChatEnabledState = (state: RootState) => state.chat.enabled;
-const chatMessagesSelectors = messagesAdapter.getSelectors<RootState>((state) => state.chat.messages);
 
 // For some reason in unit tests selectAll method returned array with undefined messages inside
 // therefore we filter them out, as it doesn't hurt in production as well
-export const selectAllChatMessages = (state: RootState) =>
-  chatMessagesSelectors.selectAll(state).filter((message) => message !== undefined);
+export const selectAllChatMessages = createSelector(
+  [(state: RootState) => chatMessagesSelectors.selectAll(state)],
+  (messages) => messages.filter((message) => message !== undefined)
+);
 
-export const selectChatMessagesById = (id: string) => (state: RootState) => chatMessagesSelectors.selectById(state, id);
+export const selectChatMessagesByScope = createSelector(
+  [
+    selectAllChatMessages,
+    (_state: RootState, scope: ChatScope) => scope,
+    (_state: RootState, _scope: ChatScope, targetId?: TargetId) => targetId,
+  ],
+  (messages, scope, targetId) => {
+    const isInTargetScope = (chatMessage: ChatMessage) =>
+      scope === ChatScope.Global
+        ? chatMessage.scope === scope
+        : chatMessage.scope === scope &&
+          (chatMessage.group === targetId || chatMessage.target === targetId || chatMessage.source === targetId);
 
-export const selectChatMessagesByScope = (scope: ChatScope, targetId?: TargetId) => {
-  const isInTargetScope = (chatMessage: ChatMessage) =>
-    scope === ChatScope.Global
-      ? chatMessage.scope === scope
-      : chatMessage.scope === scope &&
-        (chatMessage.group === targetId || chatMessage.target === targetId || chatMessage.source === targetId);
+    return messages.filter(isInTargetScope);
+  }
+);
 
-  return createSelector(selectAllChatMessages, (messages) => messages.filter(isInTargetScope));
-};
-
-export const selectAllGlobalChatMessages = createSelector(selectAllChatMessages, (chatMessages) =>
+export const selectAllGlobalChatMessages = createSelector([selectAllChatMessages], (chatMessages) =>
   chatMessages.filter((chatMessage) => chatMessage.scope === ChatScope.Global)
 );
-export const selectAllGroupChatMessages = createSelector(selectAllChatMessages, (chatMessages) =>
+export const selectAllGroupChatMessages = createSelector([selectAllChatMessages], (chatMessages) =>
   chatMessages.filter((chatMessage) => chatMessage.scope === ChatScope.Group)
 );
-export const selectAllPrivateChatMessages = createSelector(selectAllChatMessages, (chatMessages) =>
+export const selectAllPrivateChatMessages = createSelector([selectAllChatMessages], (chatMessages) =>
   chatMessages.filter((chatMessage) => chatMessage.scope === ChatScope.Private)
 );
-export const selectAllGroupChats = createSelector(selectAllGroupChatMessages, (chatMessages) =>
+export const selectAllGroupChats = createSelector([selectAllGroupChatMessages], (chatMessages) =>
   reduceMessagesToPersonalChats(chatMessages)
 );
-export const selectLastMessageForScope = (scope: ChatScope, target?: TargetId) =>
-  createSelector(selectChatMessagesByScope(scope, target), (messages) => last(messages));
+export const selectLastMessageForScope = createSelector([selectChatMessagesByScope], (messages) => last(messages));
 
 export const selectUnreadGlobalMessageCount = createSelector(
-  selectAllGlobalChatMessages,
-  selectLastSeenTimestampGlobal,
+  [selectAllGlobalChatMessages, selectLastSeenTimestampGlobal],
   (globalMessages, lastSeenTimestampGlobal) => {
     if (lastSeenTimestampGlobal && globalMessages.length > 0) {
       return globalMessages.filter((message) => isAfter(new Date(message.timestamp), new Date(lastSeenTimestampGlobal)))
@@ -208,9 +217,7 @@ export const selectUnreadGlobalMessageCount = createSelector(
 );
 
 export const selectUnreadPersonalMessageCount = createSelector(
-  selectAllGroupChatMessages,
-  selectAllPrivateChatMessages,
-  selectLastSeenTimestamps,
+  [selectAllGroupChatMessages, selectAllPrivateChatMessages, selectLastSeenTimestamps],
   (groupMessages, privateMessages, lastSeenTimestamps) => {
     if (lastSeenTimestamps.length > 0 && (groupMessages.length > 0 || privateMessages.length > 0)) {
       const unreadGroupMessageCount = getUnreadPersonalMessageCount(groupMessages, lastSeenTimestamps);
@@ -223,8 +230,9 @@ export const selectUnreadPersonalMessageCount = createSelector(
   }
 );
 
-export const selectUnreadPersonalMessageCountByTarget = (targetId: TargetId) =>
-  createSelector(selectAllChatMessages, selectLastSeenTimestamps, (allChatMessages, lastSeenTimestamps) => {
+export const selectUnreadPersonalMessageCountByTarget = createSelector(
+  [selectAllChatMessages, selectLastSeenTimestamps, (_state: RootState, targetId: TargetId) => targetId],
+  (allChatMessages, lastSeenTimestamps, targetId) => {
     const messagesForTargetId = allChatMessages.filter(
       (message) =>
         (message.scope === ChatScope.Group || message.scope === ChatScope.Private) && message.target === targetId
@@ -243,6 +251,7 @@ export const selectUnreadPersonalMessageCountByTarget = (targetId: TargetId) =>
       }
     }
     return messagesForTargetId.length;
-  });
+  }
+);
 
 export default chatSlice.reducer;

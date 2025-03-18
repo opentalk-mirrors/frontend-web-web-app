@@ -8,6 +8,7 @@ import { resetRaisedHands } from '../../api/types/outgoing/moderation';
 import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAndSelectParticipantsTab';
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import type { RootState } from '../../store';
 import { selectParticipantsWithRaisedHands } from '../../store/selectors';
 import { selectMapRemotePaticipanstDisplayName } from '../../store/slices/participantsSlice';
 import { ParticipantId } from '../../types';
@@ -22,7 +23,9 @@ const ResetHandraisesTab = () => {
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
 
-  const participantNames = useAppSelector(selectMapRemotePaticipanstDisplayName(remoteParticipants));
+  const participantNames = useAppSelector((state: RootState) =>
+    selectMapRemotePaticipanstDisplayName(state, remoteParticipants)
+  );
 
   const searchFilteredParticipantsList = useMemo(() => {
     return remoteParticipants

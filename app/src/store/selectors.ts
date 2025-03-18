@@ -6,6 +6,7 @@ import i18next, { t } from 'i18next';
 import _, { intersection } from 'lodash';
 import { some } from 'lodash';
 
+import type { RootState } from '.';
 import {
   ChatMessage as ChatMessageType,
   ChatScope,
@@ -29,7 +30,7 @@ import {
   selectAllPrivateChatMessages,
   selectChatMessagesByScope,
 } from './slices/chatSlice';
-import { RoomEvent, selectGlobalEvents } from './slices/eventSlice';
+import { RoomEvent, selectAllEvents } from './slices/eventSlice';
 import { selectAllVotes } from './slices/legalVoteSlice';
 import { selectForceMute, selectHandUp, selectHandUpdatedAt } from './slices/moderationSlice';
 import {
@@ -44,10 +45,7 @@ import { selectParticipantsSearchValue, selectParticipantsSortOption } from './s
 import { selectGroups, selectOurUuid, selectUserAsPartialParticipant } from './slices/userSlice';
 
 export const selectUserAsParticipant = createSelector(
-  selectUserAsPartialParticipant,
-  selectCurrentBreakoutRoomId,
-  selectHandUp,
-  selectHandUpdatedAt,
+  [selectUserAsPartialParticipant, selectCurrentBreakoutRoomId, selectHandUp, selectHandUpdatedAt],
   (partialParticipant, breakoutRoomId, handIsUp, handUpdatedAt): Participant | undefined => {
     if (partialParticipant === undefined) {
       return undefined;
@@ -63,36 +61,34 @@ export const selectUserAsParticipant = createSelector(
 );
 
 export const selectCombinedParticipantsAndUserInCoference = createSelector(
-  selectAllOnlineParticipantsInConference,
-  selectUserAsParticipant,
+  [selectAllOnlineParticipantsInConference, selectUserAsParticipant],
   (participants, user) => (user ? [...participants, user] : participants)
 );
 
 export const selectCombinedUserFirstAndParticipantsInConference = createSelector(
-  selectAllOnlineParticipantsInConference,
-  selectUserAsParticipant,
+  [selectAllOnlineParticipantsInConference, selectUserAsParticipant],
   (participants, user) => (user ? [user, ...participants] : participants)
 );
 
 export const selectCombinedParticipantsAndUser = createSelector(
-  selectAllOnlineParticipants,
-  selectUserAsParticipant,
+  [selectAllOnlineParticipants, selectUserAsParticipant],
   (participants, user) => (user ? [...participants, user] : participants)
 );
 
-export const selectParticipantsWithourGuestAndSip = createSelector(selectCombinedParticipantsAndUser, (participants) =>
-  participants.filter(
-    (participant) =>
-      !(
-        participant.participationKind.match(ParticipationKind.Guest) ||
-        participant.participationKind.match(ParticipationKind.Sip)
-      )
-  )
+export const selectParticipantsWithourGuestAndSip = createSelector(
+  [selectCombinedParticipantsAndUser],
+  (participants) =>
+    participants.filter(
+      (participant) =>
+        !(
+          participant.participationKind.match(ParticipationKind.Guest) ||
+          participant.participationKind.match(ParticipationKind.Sip)
+        )
+    )
 );
 
 export const selectJoinedFirstTimestamp = createSelector(
-  selectAllParticipants,
-  selectUserAsParticipant,
+  [selectAllParticipants, selectUserAsParticipant],
   (participants, user) =>
     (user ? [...participants, user] : participants)
       .map((participant) => participant.joinedAt)
@@ -100,13 +96,12 @@ export const selectJoinedFirstTimestamp = createSelector(
 );
 
 export const selectCombinedParticipantsAndUserCount = createSelector(
-  selectCombinedParticipantsAndUser,
+  [selectCombinedParticipantsAndUser],
   (users) => users.length
 );
 
 export const selectAllMeetingNotesParticipants = createSelector(
-  selectCombinedParticipantsAndUser,
-  selectUserAsParticipant,
+  [selectCombinedParticipantsAndUser, selectUserAsParticipant],
   (participants, user) => {
     if (user) {
       const allMeetingNotesParticipants = participants.filter(
@@ -194,15 +189,25 @@ export const selectAllParticipantsSortedAndFiltered = createSelector(
   (participants, sortOption, searchValue) => sortAndFilterParticipants(participants, sortOption, searchValue)
 );
 
-export const selectCombinedMessageAndEvents = (scope: ChatScope, targetId: TargetId | undefined) =>
-  createSelector(selectGlobalEvents(scope), selectChatMessagesByScope(scope, targetId), (events, messages) => {
-    const merged: Array<ChatMessageType | RoomEvent> = (messages as Array<ChatMessageType | RoomEvent>).concat(events);
+export const selectCombinedMessageAndEvents = createSelector(
+  [
+    selectAllEvents,
+    (_state: RootState, scope: ChatScope) => scope,
+    (_state: RootState, _scope: ChatScope, targetId?: TargetId) => targetId,
+    selectChatMessagesByScope,
+  ],
+  (events, scope, _targetId, messages) => {
+    //we show events only in global chat
+    const globalEvents = scope === ChatScope.Global ? events : [];
+    const merged: Array<ChatMessageType | RoomEvent> = (messages as Array<ChatMessageType | RoomEvent>).concat(
+      globalEvents
+    );
     return _.sortBy(merged, ['timestamp']);
-  });
+  }
+);
 
 export const selectParticipantsReadyList = createSelector(
-  selectAllOnlineParticipantsInConference,
-  selectParticipantsReady,
+  [selectAllOnlineParticipantsInConference, selectParticipantsReady],
   (selectCombinedParticipantsAndUser, participantsReady) =>
     selectCombinedParticipantsAndUser.map((participant) => ({
       isReady: participantsReady.includes(participant.id),
@@ -211,21 +216,20 @@ export const selectParticipantsReadyList = createSelector(
 );
 
 export const selectParticipantsWithRaisedHands = createSelector(
-  selectAllOnlineParticipants,
+  [selectAllOnlineParticipants],
   (participants): Participant[] => {
     return participants.filter((participant) => participant.handIsUp);
   }
 );
 
-export const selectVotingUsers = createSelector(selectCombinedParticipantsAndUser, (records) => {
+export const selectVotingUsers = createSelector([selectCombinedParticipantsAndUser], (records) => {
   return records.filter((record) => {
     return record.role === 'user' || record.participationKind === 'user';
   });
 });
 
 export const selectTalkingStickParticipants = createSelector(
-  selectCombinedParticipantsAndUserInCoference,
-  selectAutomoderationParticipantIds,
+  [selectCombinedParticipantsAndUserInCoference, selectAutomoderationParticipantIds],
   (onlineParticipants, talkingStickIds): Participant[] => {
     const participantsInTalkingStick: Participant[] = [];
 
@@ -241,18 +245,18 @@ export const selectTalkingStickParticipants = createSelector(
   }
 );
 
-export const selectPollsAndVotingsCount = createSelector(selectAllVotes, selectAllPolls, (votings, polls) => {
+export const selectPollsAndVotingsCount = createSelector([selectAllVotes, selectAllPolls], (votings, polls) => {
   return votings.length + polls.length;
 });
 
-export const selectActivePollsAndVotingsCount = createSelector(selectAllVotes, selectAllPolls, (votings, polls) => {
+export const selectActivePollsAndVotingsCount = createSelector([selectAllVotes, selectAllPolls], (votings, polls) => {
   return (
     votings.filter((voting) => voting.state === LegalVoteState.Started).length +
     polls.filter((poll) => poll.state === 'active').length
   );
 });
 
-export const selectIsUserMicDisabled = createSelector(selectForceMute, selectOurUuid, (forceMute, userId) => {
+export const selectIsUserMicDisabled = createSelector([selectForceMute, selectOurUuid], (forceMute, userId) => {
   return (
     forceMute.type === ForceMuteType.Enabled &&
     (userId === null || !forceMute.unrestrictedParticipants.includes(userId))

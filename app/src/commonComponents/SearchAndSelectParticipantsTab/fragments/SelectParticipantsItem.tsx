@@ -15,6 +15,7 @@ import React from 'react';
 
 import { ParticipantAvatar } from '../../';
 import { useAppSelector } from '../../../hooks';
+import type { RootState } from '../../../store';
 import { selectParticipantAvatarUrl, selectParticipantName } from '../../../store/slices/participantsSlice';
 import type { ParticipantId } from '../../../types';
 
@@ -49,8 +50,12 @@ const FormControlLabel = styled(MuiFormControlLabel)(() => ({
 }));
 
 const SelectParticipantsItem = ({ participant, onCheck }: SelectParticipantsItemProps) => {
-  const displayName = useAppSelector(selectParticipantName(participant.identity as ParticipantId));
-  const avatarUrl = useAppSelector(selectParticipantAvatarUrl(participant.identity as ParticipantId));
+  const displayName = useAppSelector((state: RootState) =>
+    selectParticipantName(state, participant.identity as ParticipantId)
+  );
+  const avatarUrl = useAppSelector((state: RootState) =>
+    selectParticipantAvatarUrl(state, participant.identity as ParticipantId)
+  );
 
   return (
     <ListItem alignItems="flex-start">

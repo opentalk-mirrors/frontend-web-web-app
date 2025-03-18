@@ -8,6 +8,7 @@ import { ViewportList, ViewportListRef } from 'react-viewport-list';
 
 import { EncryptedMessagesIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
+import type { RootState } from '../../../store';
 import { selectCombinedMessageAndEvents } from '../../../store/selectors';
 import type { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectChatSearchValue } from '../../../store/slices/uiSlice';
@@ -44,7 +45,9 @@ type ChatListProps = {
 
 const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps) => {
   // Everytime selectCombinedMessageAndEvents is called new array is returned regardless of changes.
-  const combinedMessageAndEvents = useAppSelector(selectCombinedMessageAndEvents(scope, targetId));
+  const combinedMessageAndEvents = useAppSelector((state: RootState) =>
+    selectCombinedMessageAndEvents(state, scope, targetId)
+  );
   const { t } = useTranslation();
   const chatSearchValue = useAppSelector(selectChatSearchValue);
   const viewportReference = useRef<HTMLUListElement | null>(null);

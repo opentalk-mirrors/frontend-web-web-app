@@ -29,6 +29,7 @@ import { EmojiIcon, SendMessageIcon } from '../../../assets/icons';
 import { AdornmentIconButton, CommonTextField, VisuallyHiddenTitle } from '../../../commonComponents';
 import { CHAT_INPUT_ID } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import type { RootState } from '../../../store';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
 import { saveDefaultChatMessage, selectDefaultChatMessage } from '../../../store/slices/uiSlice';
 import { ChatScope, GroupId, ParticipantId, TargetId } from '../../../types';
@@ -101,7 +102,7 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
   const [hasFocus, setFocus] = useState(false);
   const isChatEnabled = useAppSelector(selectChatEnabledState);
   const emojiButton = useRef<HTMLButtonElement | null>(null);
-  const defaultChatMessage = useAppSelector(selectDefaultChatMessage(scope, targetId));
+  const defaultChatMessage = useAppSelector((state: RootState) => selectDefaultChatMessage(state, scope, targetId));
   const messageInputReference = useRef<HTMLInputElement>(null);
 
   useLayoutEffect(

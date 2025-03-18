@@ -3,8 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 // Redux has limitations with non-serializable data, like the LiveKit room object, as it can cause issues with state persistence.
 // We've decided to use a separate slice and declare an exception in the store for now.
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { AnyAction, ListenerEffectAPI, createListenerMiddleware } from '@reduxjs/toolkit';
+import {
+  PayloadAction,
+  createSlice,
+  createSelector,
+  ListenerEffectAPI,
+  createListenerMiddleware,
+} from '@reduxjs/toolkit';
 
 import type { AppDispatch, RootState } from '../';
 import { Credentials } from '../../api/types/incoming/livekit';
@@ -100,11 +105,19 @@ export const {
 export const selectLivekitUnavailable = (state: RootState) => state.livekit.unavailable;
 export const selectLivekitAccessToken = (state: RootState) => state.livekit.accessToken;
 export const selectLivekitPublicUrl = (state: RootState) => state.livekit.publicUrl;
-export const selectLivekitPopoutStreamAccessByParticipantId = (participantId: string) => (state: RootState) =>
-  state.livekit.popoutStreamAccesses.find(
-    (popoutStreamAccess) =>
-      popoutStreamAccess.mediaDescriptor.participantId === participantId && popoutStreamAccess.token !== undefined
-  );
+export const selectLivekitPopoutStreamAccessByParticipantId = createSelector(
+  [
+    (state: RootState) => state.livekit.popoutStreamAccesses,
+    (_state: RootState, participantId: string) => participantId,
+  ],
+  (popoutStreamAccess, participantId) => {
+    return popoutStreamAccess.find(
+      (popoutStreamAccess) =>
+        popoutStreamAccess.mediaDescriptor.participantId === participantId && popoutStreamAccess.token !== undefined
+    );
+  }
+);
+
 export const selectQualityCap = (state: RootState) => state.livekit.qualityCap;
 
 export default livekitSlice.reducer;
@@ -145,7 +158,7 @@ const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
 
 livekitMiddleware.startListening({
   type: 'livekit/triggerReconnect',
-  effect: (_action: AnyAction, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+  effect: (_action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
     reconnect(listenerApi);
   },
 });

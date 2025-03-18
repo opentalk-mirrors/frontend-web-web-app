@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AnyAction, configureStore, EnhancedStore, Middleware, Reducer, Store } from '@reduxjs/toolkit';
+import { Action, configureStore, EnhancedStore, Middleware, Reducer, Store } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { cleanup } from '@testing-library/react';
 import React from 'react';
@@ -29,7 +29,7 @@ export function setupApiStore<
     } & {
       [K in keyof R]: ReturnType<R[K]>;
     },
-    AnyAction,
+    Action,
     ReturnType<typeof getStore> extends EnhancedStore<any, any, infer M> ? M : never
   >;
 

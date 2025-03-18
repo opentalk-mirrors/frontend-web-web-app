@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
+import type { RootState } from '..';
 import {
   AutomodRemainingUpdatedEvent,
   AutomodSpeakerUpdatedEvent,
@@ -149,27 +150,26 @@ export const {
 
 export const actions = automodSlice.actions;
 
-export const selectAutomodActiveState = (state: { automod: AutomodState }) => state.automod.active;
+export const selectAutomodActiveState = (state: RootState) => state.automod.active;
 
 const historySelectors = historyParticipantsAdapter.getSelectors();
 const remainingSelectors = remainingParticipantsAdapter.getSelectors();
 
-const selectAllHistory = (state: { automod: AutomodState }) => historySelectors.selectAll(state.automod.history);
-const selectAllRemaining = (state: { automod: AutomodState }) => remainingSelectors.selectAll(state.automod.remaining);
+const selectAllHistory = (state: RootState) => historySelectors.selectAll(state.automod.history);
+const selectAllRemaining = (state: RootState) => remainingSelectors.selectAll(state.automod.remaining);
 
 export const selectAutomoderationParticipantIds = createSelector(
-  selectAllHistory,
-  selectAllRemaining,
+  [selectAllHistory, selectAllRemaining],
   (history, remaining) => {
     return history.concat(remaining);
   }
 );
 
-export const selectSpeakerId = (state: { automod: AutomodState }) => state.automod.speakerId;
+export const selectSpeakerId = (state: RootState) => state.automod.speakerId;
 
-export const selectSpeakerState = (state: { automod: AutomodState }) => state.automod.speakerState;
+export const selectSpeakerState = (state: RootState) => state.automod.speakerState;
 
-export const selectMyParticipantId = (state: { automod: AutomodState }) => state.automod.participantId;
+export const selectMyParticipantId = (state: RootState) => state.automod.participantId;
 
 export const automodReducer = automodSlice.reducer;
 

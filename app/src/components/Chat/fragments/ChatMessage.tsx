@@ -12,7 +12,6 @@ import { Role } from '../../../api/types/incoming/control';
 import { ModeratorIcon } from '../../../assets/icons';
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector, useDateFormat } from '../../../hooks';
-import type { RootState } from '../../../store';
 import { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
 import { selectAvatarUrl, selectDisplayName, selectOurUuid } from '../../../store/slices/userSlice';
@@ -60,10 +59,8 @@ const Avatar = styled(ParticipantAvatar)({
   fontSize: '0.75rem',
 });
 
-const getSender = (message: ChatMessageType | RoomEvent) => (state: RootState) => {
-  return isEventMessage(message)
-    ? selectParticipantById(message?.target)(state)
-    : selectParticipantById(message?.source)(state);
+const getSender = (message: ChatMessageType | RoomEvent) => {
+  return isEventMessage(message) ? selectParticipantById(message?.target) : selectParticipantById(message?.source);
 };
 
 interface ChatMessageProps {

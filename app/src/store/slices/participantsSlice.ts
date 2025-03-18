@@ -224,21 +224,23 @@ export const actions = participantsSlice.actions;
 export const participantSelectors = participantAdapter.getSelectors<RootState>((state) => state.participants);
 
 export const selectAllParticipants = (state: RootState) => participantSelectors.selectAll(state);
+export const selectParticipantById = (id: ParticipantId) => (state: RootState) =>
+  participantSelectors.selectById(state, id);
 
-export const selectAllParticipantsInWaitingRoom = createSelector(selectAllParticipants, (participants) =>
+export const selectAllParticipantsInWaitingRoom = createSelector([selectAllParticipants], (participants) =>
   participants.filter((participant) => participant.waitingState !== WaitingState.Joined)
 );
 
 export const selectParticipantsWaitingCount = createSelector(
-  selectAllParticipantsInWaitingRoom,
+  [selectAllParticipantsInWaitingRoom],
   (participants) => participants.length
 );
 
-export const selectNotApprovedParticipants = createSelector(selectAllParticipantsInWaitingRoom, (participants) =>
+export const selectNotApprovedParticipants = createSelector([selectAllParticipantsInWaitingRoom], (participants) =>
   participants.filter((participant) => participant.waitingState === WaitingState.Waiting)
 );
 
-export const selectAllOnlineParticipantsInConference = createSelector(selectAllParticipants, (participants) =>
+export const selectAllOnlineParticipantsInConference = createSelector([selectAllParticipants], (participants) =>
   participants.filter((participant) => participant.leftAt === null && participant.waitingState === WaitingState.Joined)
 );
 
@@ -248,72 +250,75 @@ export const selectAllOnlineParticipants = createSelector(
     participants.filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
 );
 
-export const selectSortedParticipants = (gridViewOrder: GridViewOrder) => {
-  return createSelector(
-    [selectAllOnlineParticipantsInConference, selectCurrentBreakoutRoomId],
-    (participants, currentBreakoutRoomId) => {
-      let filteredParticipants = participants
-        .filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
-        .sort((a, b) => a.joinedAt.localeCompare(b.joinedAt)); // always sort by firstJoined;
+export const selectSortedParticipants = createSelector(
+  [
+    (_state: RootState, gridViewOrder: GridViewOrder) => gridViewOrder,
+    selectAllOnlineParticipantsInConference,
+    selectCurrentBreakoutRoomId,
+  ],
+  (gridViewOrder, participants, currentBreakoutRoomId) => {
+    let filteredParticipants = participants
+      .filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
+      .sort((a, b) => a.joinedAt.localeCompare(b.joinedAt)); // always sort by firstJoined;
 
-      if (gridViewOrder === GridViewOrder.ModeratorsFirst) {
-        filteredParticipants = filteredParticipants.sort((participant) =>
-          participant.role === Role.Moderator ? -1 : 1
-        );
-      }
-      if (gridViewOrder === GridViewOrder.VideoFirst) {
-        const room = getLivekitRoom();
-        const videoSubscribers = Array.from(room.remoteParticipants.values() || []).filter(
-          (participant) => participant.isCameraEnabled
-        );
-
-        filteredParticipants = filteredParticipants
-          .sort((a, b) => Date.parse(b.lastActive) - Date.parse(a.lastActive))
-          .sort((participant) =>
-            videoSubscribers.find((subscriber) => participant.id === subscriber.identity) ? -1 : 1
-          );
-      }
-      return filteredParticipants;
+    if (gridViewOrder === GridViewOrder.ModeratorsFirst) {
+      filteredParticipants = filteredParticipants.sort((participant) => (participant.role === Role.Moderator ? -1 : 1));
     }
-  );
-};
+    if (gridViewOrder === GridViewOrder.VideoFirst) {
+      const room = getLivekitRoom();
+      const videoSubscribers = Array.from(room.remoteParticipants.values() || []).filter(
+        (participant) => participant.isCameraEnabled
+      );
 
-export const selectSlicedParticipants = (page: number, maxParticipants: number, gridViewOrder: GridViewOrder) => {
-  return createSelector(selectSortedParticipants(gridViewOrder), (participants) => {
+      filteredParticipants = filteredParticipants
+        .sort((a, b) => Date.parse(b.lastActive) - Date.parse(a.lastActive))
+        .sort((participant) =>
+          videoSubscribers.find((subscriber) => participant.id === subscriber.identity) ? -1 : 1
+        );
+    }
+    return filteredParticipants;
+  }
+);
+
+export const selectSlicedParticipants = createSelector(
+  [
+    (state: RootState, gridViewOrder: GridViewOrder) => selectSortedParticipants(state, gridViewOrder),
+    (_state: RootState, _gridViewOrder: GridViewOrder, page: number) => page,
+    (_state: RootState, _gridViewOrder: GridViewOrder, _page: number, maxParticipants: number) => maxParticipants,
+  ],
+  (participants, page, maxParticipants) => {
     const maxPage = Math.ceil(participants.length / maxParticipants);
     if (maxPage === page) {
       return participants.slice(-maxParticipants);
     }
     return participants.slice((page - 1) * maxParticipants, maxParticipants * page);
-  });
-};
-
-export const selectParticipantById = (id: ParticipantId) => (state: RootState) =>
-  participantSelectors.selectById(state, id);
+  }
+);
 
 export const selectParticipants = (state: RootState) => participantSelectors.selectEntities(state);
 export const selectParticipantsTotal = createSelector(
-  selectAllOnlineParticipants,
+  [selectAllOnlineParticipants],
   (participants) => participants.length + 1
 );
 
-export const selectParticipantAvatarUrl = (id: ParticipantId) => {
-  const sel = selectParticipantById(id);
-  return createSelector(sel, (participant) => participant?.avatarUrl);
-};
+export const selectParticipantAvatarUrl = createSelector(
+  [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
+  (participant) => participant?.avatarUrl
+);
 
-export const selectParticipantName = (id: ParticipantId) => {
-  const sel = selectParticipantById(id);
-  return createSelector(sel, (participant) => participant?.displayName);
-};
+export const selectParticipantName = createSelector(
+  [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
+  (participant) => participant?.displayName
+);
 
-export const selectParticipationKind = (id: ParticipantId) => {
-  const sel = selectParticipantById(id);
-  return createSelector(sel, (participant) => participant?.participationKind);
-};
+export const selectParticipationKind = createSelector(
+  [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
+  (participant) => participant?.participationKind
+);
 
-export const selectMapRemotePaticipanstDisplayName = (remoteParticipants: RemoteParticipant[]) => {
-  return createSelector([selectAllOnlineParticipants], (onlineParticipants) => {
+export const selectMapRemotePaticipanstDisplayName = createSelector(
+  [(_state: RootState, remoteParticipants: RemoteParticipant[]) => remoteParticipants, selectAllOnlineParticipants],
+  (remoteParticipants, onlineParticipants) => {
     return remoteParticipants.reduce(
       (acc, remoteParticipant) => {
         acc[remoteParticipant.identity] = onlineParticipants.find(
@@ -323,8 +328,8 @@ export const selectMapRemotePaticipanstDisplayName = (remoteParticipants: Remote
       },
       {} as Record<string, string | undefined>
     );
-  });
-};
+  }
+);
 
 export const participantsMiddleware = createListenerMiddleware();
 type AppStartListening = TypedStartListening<RootState, AppDispatch>;

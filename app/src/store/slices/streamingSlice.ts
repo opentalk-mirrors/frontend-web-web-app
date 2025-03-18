@@ -72,34 +72,36 @@ const streamingSlice = createSlice({
 
 export const { streamUpdated } = streamingSlice.actions;
 
-const streamingSelectors = streamingAdapter.getSelectors();
+const streamingSelectors = streamingAdapter.getSelectors<RootState>((state) => state.streaming.streams);
 
-const selectAllStreamingTargets = (state: RootState) => streamingSelectors.selectAll(state.streaming.streams);
+const selectAllStreamingTargets = (state: RootState) => streamingSelectors.selectAll(state);
+
 const selectTargetsByStatusAndKind = ({ status, kind }: StreamingTargetFilter) =>
-  createSelector(selectAllStreamingTargets, (targets) =>
+  createSelector([selectAllStreamingTargets], (targets) =>
     targets.filter((target) => (!status || target.status === status) && (!kind || target.streamingKind === kind))
   );
 
 //Could change if we have multiple recording targets
-export const selectRecordingTarget = (state: RootState) =>
-  selectAllStreamingTargets(state).find((streamingTarget) => streamingTarget.streamingKind === StreamingKind.Recording);
+export const selectRecordingTarget = createSelector([selectAllStreamingTargets], (streamingTargets) =>
+  streamingTargets.find((streamingTarget) => streamingTarget.streamingKind === StreamingKind.Recording)
+);
 
 export const selectIsRecordingActive = createSelector(
-  selectTargetsByStatusAndKind({ status: StreamingStatus.Active, kind: StreamingKind.Recording }),
+  [selectTargetsByStatusAndKind({ status: StreamingStatus.Active, kind: StreamingKind.Recording })],
   (recordings) => recordings.length > 0
 );
 
 const selectActiveStreams = createSelector(
-  selectTargetsByStatusAndKind({ status: StreamingStatus.Active, kind: StreamingKind.Livestream }),
-  (streams) => streams
+  [selectTargetsByStatusAndKind({ status: StreamingStatus.Active, kind: StreamingKind.Livestream })],
+  (streams) => [...streams]
 );
-export const selectIsStreamActive = createSelector(selectActiveStreams, (activeStreams) => activeStreams.length > 0);
+export const selectIsStreamActive = createSelector([selectActiveStreams], (activeStreams) => activeStreams.length > 0);
 
-export const selectActiveStreamIds = createSelector(selectActiveStreams, (activeStreams) =>
+export const selectActiveStreamIds = createSelector([selectActiveStreams], (activeStreams) =>
   activeStreams.map((stream) => stream.targetId)
 );
 
-export const selectInactiveStreamIds = createSelector(selectAllStreamingTargets, (targets) =>
+export const selectInactiveStreamIds = createSelector([selectAllStreamingTargets], (targets) =>
   targets
     .filter(
       (target) =>
@@ -109,9 +111,13 @@ export const selectInactiveStreamIds = createSelector(selectAllStreamingTargets,
     .map((stream) => stream.targetId)
 );
 
-const selectHasActiveTarget = (state: RootState) =>
-  selectAllStreamingTargets(state).some((streamingTarget) => streamingTarget.status === StreamingStatus.Active);
-export const selectNeedRecordingConsent = (state: RootState) =>
-  selectHasActiveTarget(state) && !state.streaming.consent;
+const selectHasActiveTarget = createSelector([selectAllStreamingTargets], (streamingTargets) =>
+  streamingTargets.some((streamingTarget) => streamingTarget.status === StreamingStatus.Active)
+);
+const selectHasConsent = (state: RootState) => state.streaming.consent;
+export const selectNeedRecordingConsent = createSelector(
+  [selectHasActiveTarget, selectHasConsent],
+  (hasActiveTarget, hasConsent) => hasActiveTarget && !hasConsent
+);
 
 export default streamingSlice.reducer;
