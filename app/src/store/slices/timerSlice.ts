@@ -4,7 +4,6 @@
 import { PayloadAction, TypedStartListening, createListenerMiddleware, createSlice } from '@reduxjs/toolkit';
 import { intervalToDuration } from 'date-fns';
 import i18next from 'i18next';
-import { batch } from 'react-redux';
 
 import type { AppDispatch, RootState } from '../';
 import { ReadyToContinue } from '../../api/types/incoming/timer';
@@ -146,10 +145,8 @@ startAppListening({
 
     if (action.payload.style === TimerStyle.CoffeeBreak) {
       if (isAnyMediaTrackEnabled) {
-        batch(() => {
-          listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-          listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-        });
+        listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+        listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
       }
       if (isShareScreenEnabled) {
         listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));

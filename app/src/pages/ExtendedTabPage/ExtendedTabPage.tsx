@@ -5,7 +5,6 @@ import { LiveKitRoom } from '@livekit/components-react';
 import { CircularProgress, styled } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useEffect } from 'react';
-import { batch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { useAppDispatch } from '../../hooks';
@@ -30,10 +29,8 @@ const ExtendedTabPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    batch(() => {
-      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-      dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-    });
+    dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+    dispatch(startMedia({ kind: 'videoinput', enabled: false }));
   }, []);
 
   if (room === undefined || mediaType === undefined || participantId === undefined) {

@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 
 import { enterRoom } from '../../api/types/outgoing/control';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -56,10 +55,8 @@ const WaitingView = () => {
 
   const moveToRoom = useCallback(async () => {
     if (joinWithoutMedia) {
-      batch(() => {
-        dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-        dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-      });
+      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(startMedia({ kind: 'videoinput', enabled: false }));
     }
     dispatch(enterRoom.action());
   }, [dispatch, joinWithoutMedia]);

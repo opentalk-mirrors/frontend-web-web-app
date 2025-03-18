@@ -8,7 +8,6 @@ import { useState } from 'react';
 import { NameTile } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
 import { useFullscreenContext } from '../../hooks/useFullscreenContext';
-import type { RootState } from '../../store';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
 import type { ParticipantId } from '../../types';
 import HandRaisedIndicator from './fragments/HandRaisedIndicator';
@@ -39,9 +38,7 @@ const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: 
   const participantId = participant.identity as ParticipantId;
 
   const fullscreenHandle = useFullscreenContext();
-  const displayName = useAppSelector((state: RootState) =>
-    selectParticipantName(state, participant.identity as ParticipantId)
-  );
+  const displayName = useAppSelector((state) => selectParticipantName(state, participant.identity as ParticipantId));
   const [activeOverlay, setActiveOverlay] = useState<boolean>(!!alwaysShowOverlay);
 
   const handleDisplayOverlay = (show: boolean) => !alwaysShowOverlay && setActiveOverlay(show);

@@ -11,7 +11,6 @@ import {
   createSlice,
 } from '@reduxjs/toolkit';
 import convertToCamelCase from 'camelcase-keys';
-import { batch } from 'react-redux';
 import convertToSnakeCase from 'snakecase-keys';
 
 import type { AppDispatch, RootState } from '../';
@@ -388,10 +387,8 @@ roomMiddleware.startListening({
 roomMiddleware.startListening({
   actionCreator: enteredWaitingRoom,
   effect: (_, listenerApi) => {
-    batch(() => {
-      listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-      listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-      listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
-    });
+    listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+    listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+    listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
   },
 });

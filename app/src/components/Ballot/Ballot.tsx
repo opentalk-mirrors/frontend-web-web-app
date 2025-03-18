@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Dialog, styled, Paper } from '@mui/material';
-import { batch } from 'react-redux';
 
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import {
@@ -44,11 +43,9 @@ export default function Ballot() {
     ourUuid && legalVoteToShow ? Boolean(legalVoteToShow.allowedParticipants?.includes(ourUuid)) : false;
 
   const handleClose = () => {
-    batch(() => {
-      dispatch(setVoteOrPollIdToShow(undefined));
-      dispatch(closedLegalVoteResultWindow());
-      dispatch(closedPollResultWindow());
-    });
+    dispatch(setVoteOrPollIdToShow(undefined));
+    dispatch(closedLegalVoteResultWindow());
+    dispatch(closedPollResultWindow());
   };
 
   if (pollToShow) {

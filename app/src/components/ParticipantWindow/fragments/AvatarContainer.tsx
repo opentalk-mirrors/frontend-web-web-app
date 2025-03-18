@@ -5,7 +5,6 @@ import { Grid, styled } from '@mui/material';
 
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
-import type { RootState } from '../../../store';
 import {
   selectParticipantAvatarUrl,
   selectParticipantName,
@@ -30,9 +29,9 @@ interface AvatarContainerProps {
 }
 
 export const AvatarContainer = ({ participantId }: AvatarContainerProps) => {
-  const displayName = useAppSelector((state: RootState) => selectParticipantName(state, participantId));
-  const avatarUrl = useAppSelector((state: RootState) => selectParticipantAvatarUrl(state, participantId));
-  const participationKind = useAppSelector((state: RootState) => selectParticipationKind(state, participantId));
+  const displayName = useAppSelector((state) => selectParticipantName(state, participantId));
+  const avatarUrl = useAppSelector((state) => selectParticipantAvatarUrl(state, participantId));
+  const participationKind = useAppSelector((state) => selectParticipationKind(state, participantId));
 
   return (
     <Container

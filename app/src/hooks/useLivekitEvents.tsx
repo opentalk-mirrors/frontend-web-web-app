@@ -14,7 +14,6 @@ import {
 } from 'livekit-client';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 
 import { notifications } from '../commonComponents';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../constants';
@@ -99,14 +98,12 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   const handleRoomConnected = useCallback(async () => {
     dispatch(setLivekitUnavailable(false));
     if (room?.state === LivekitConnectionState.Connected) {
-      batch(() => {
-        if (videoEnabled !== localParticipant.isCameraEnabled) {
-          dispatch(startMedia({ kind: 'videoinput', enabled: videoEnabled, deviceId: videoDeviceId }));
-        }
-        if (audioEnabled !== localParticipant.isMicrophoneEnabled) {
-          dispatch(startMedia({ kind: 'audioinput', enabled: audioEnabled, deviceId: audioDeviceId }));
-        }
-      });
+      if (videoEnabled !== localParticipant.isCameraEnabled) {
+        dispatch(startMedia({ kind: 'videoinput', enabled: videoEnabled, deviceId: videoDeviceId }));
+      }
+      if (audioEnabled !== localParticipant.isMicrophoneEnabled) {
+        dispatch(startMedia({ kind: 'audioinput', enabled: audioEnabled, deviceId: audioDeviceId }));
+      }
     }
   }, [
     localParticipant.isCameraEnabled,

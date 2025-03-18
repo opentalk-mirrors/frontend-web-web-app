@@ -4,7 +4,6 @@
 import { Drawer as MuiDrawer, Stack, styled } from '@mui/material';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 
 import { ModerationTabKey } from '../../../../config/constants';
 import {
@@ -100,25 +99,21 @@ const Drawer = () => {
   mobileModerationTabs.push(SupportMenuMobileTab);
 
   const open = () => {
-    batch(() => {
-      if (activeVoteAndPollCount > 0 && !isModerator) {
-        dispatch(setActiveTab(ModerationTabKey.PollsAndLegalVote));
-      }
-      if (participantsWaitingCount > 0 && isModerator) {
-        // The click on the indicator "o" opens the waiting room overview
-        dispatch(setActiveTab(ModerationTabKey.WaitingRoom));
-      }
-      dispatch(setIsDrawerOpen(true));
-    });
+    if (activeVoteAndPollCount > 0 && !isModerator) {
+      dispatch(setActiveTab(ModerationTabKey.PollsAndLegalVote));
+    }
+    if (participantsWaitingCount > 0 && isModerator) {
+      // The click on the indicator "o" opens the waiting room overview
+      dispatch(setActiveTab(ModerationTabKey.WaitingRoom));
+    }
+    dispatch(setIsDrawerOpen(true));
   };
 
   const close = () => {
-    batch(() => {
-      dispatch(setIsDrawerOpen(false));
-      if (participantsWaitingCount === 0 && activeTab === ModerationTabKey.WaitingRoom && isModerator) {
-        dispatch(setActiveTab(ModerationTabKey.Home));
-      }
-    });
+    dispatch(setIsDrawerOpen(false));
+    if (participantsWaitingCount === 0 && activeTab === ModerationTabKey.WaitingRoom && isModerator) {
+      dispatch(setActiveTab(ModerationTabKey.Home));
+    }
   };
 
   const toggle = () => {

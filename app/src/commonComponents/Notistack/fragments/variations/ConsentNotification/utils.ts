@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { batch } from 'react-redux';
-
 import { sendStreamConsentSignal } from '../../../../../api/types/outgoing/streaming';
 import type { AppDispatch } from '../../../../../store';
 import { startMedia } from '../../../../../store/slices/mediaSlice';
@@ -16,11 +14,9 @@ export const showConsentNotification = (dispatch: AppDispatch) =>
       dispatch(sendStreamConsentSignal.action({ consent }));
       notifications.close(key);
       if (!consent) {
-        batch(() => {
-          dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-          dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-          dispatch(startMedia({ kind: 'screenshare', enabled: false }));
-        });
+        dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+        dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+        dispatch(startMedia({ kind: 'screenshare', enabled: false }));
       }
       resolve(consent);
     };

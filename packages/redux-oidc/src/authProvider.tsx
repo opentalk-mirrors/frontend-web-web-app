@@ -1,5 +1,5 @@
 import React, { createContext, FC, PropsWithChildren, useContext, useEffect } from 'react';
-import { batch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { AuthAdapter, AuthAdapterConfiguration, AuthenticationProviderUrls } from './authAdapter';
 import { getNewToken } from './store/authActions';
@@ -80,10 +80,8 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
         // We manualy dispatch startLoading from here, because user is already authenticated, but token is not automaticly refetched
         // (probably because user closed the app in the meantime or connection issues occured)
         // The UI needs to waits untill new token is requested.
-        batch(() => {
-          dispatch(startLoading());
-          getNewRefreshToken();
-        });
+        dispatch(startLoading());
+        getNewRefreshToken();
       } else {
         const renewalTokenInterval = calculateTokenRenewalTime(accessToken as string);
         const tokenInterval = setInterval(() => {
