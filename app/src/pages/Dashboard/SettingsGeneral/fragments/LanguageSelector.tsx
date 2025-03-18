@@ -17,10 +17,10 @@ const LanguageSelector = () => {
   const { data } = useGetMeQuery();
   const [updateMe, { isLoading }] = useUpdateMeMutation();
   const getDefaultLanguage = useCallback(() => {
-    if (i18n.resolvedLanguage.startsWith('en')) {
+    if (i18n.resolvedLanguage?.startsWith('en')) {
       return 'en-US';
     }
-    if (i18n.resolvedLanguage.startsWith('de')) {
+    if (i18n.resolvedLanguage?.startsWith('de')) {
       return 'de-DE';
     }
     return i18n.resolvedLanguage;
@@ -40,7 +40,7 @@ const LanguageSelector = () => {
         await updateMe({ language });
         await i18n.changeLanguage(language);
         notifications.success(t('dashboard-settings-general-notification-save-success'));
-      } catch (err) {
+      } catch (_err) {
         notifications.error(t('error-general'));
       }
     },

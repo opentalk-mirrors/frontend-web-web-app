@@ -28,7 +28,9 @@ export const checkRowTextContent = (
   expect(columns[1]).toHaveTextContent(created);
   expect(columns[2]).toHaveTextContent(size);
   // asset rows have buttons inside, we will check them separately
-  action ? expect(columns[3]).toHaveTextContent(action) : null;
+  if (action) {
+    expect(columns[3]).toHaveTextContent(action);
+  }
 };
 
 // checks specifically action buttons within an asset row

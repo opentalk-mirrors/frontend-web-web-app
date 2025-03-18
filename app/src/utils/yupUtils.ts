@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import * as yup from 'yup';
-import { RequiredStringSchema } from 'yup/lib/string';
-import { AnyObject, Maybe } from 'yup/lib/types';
 
 yup.addMethod<yup.StringSchema>(yup.string, 'maxBytes', function (maxBytes: number, message?: string) {
   return this.test('maxBytes', message || '', function (value) {
@@ -30,7 +28,7 @@ yup.addMethod<yup.StringSchema>(yup.string, 'validateURL', function (message?: s
     try {
       const url = new URL(value);
       return url.protocol.length > 0;
-    } catch (error) {
+    } catch (_error) {
       return createError({ path, message });
     }
   });
@@ -38,14 +36,15 @@ yup.addMethod<yup.StringSchema>(yup.string, 'validateURL', function (message?: s
 
 declare module 'yup' {
   interface StringSchema<
-    TType extends Maybe<string> = string | undefined,
-    TContext extends AnyObject = AnyObject,
-    TOut extends TType = TType,
-  > extends yup.BaseSchema<TType, TContext, TOut> {
+    TType extends yup.Maybe<string> = string | undefined,
+    TContext extends yup.AnyObject = yup.AnyObject,
+    TDefault = undefined,
+    TFlags extends yup.Flags = '',
+  > extends yup.Schema<TType, TContext, TDefault, TFlags> {
     /**
      * MUST IMPORT yup FROM yupUtils.ts TO ACCESS
      */
-    maxBytes(maxBytes: number, message?: string): RequiredStringSchema<undefined, TContext>;
+    maxBytes(maxBytes: number, message?: string): yup.StringSchema<undefined, TContext>;
     /**
      * MUST IMPORT yup FROM yupUtils.ts TO ACCESS
      *

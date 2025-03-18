@@ -173,3 +173,6 @@ public/*config.js
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+serve.json
+
+gl-sast-report.json

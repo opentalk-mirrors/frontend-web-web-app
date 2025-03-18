@@ -141,7 +141,7 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
         }
 
         throw Error;
-      } catch (error) {
+      } catch (_error) {
         if (isClipboardEvent || !formik.errors.roomId) {
           formik.setFieldError('roomId', t('dashboard-join-meeting-dialog-invalid-url'));
         }

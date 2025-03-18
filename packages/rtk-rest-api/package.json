@@ -47,22 +47,6 @@
     "src/**",
     "dist/**"
   ],
-  "eslintConfig": {
-    "extends": [
-      "prettier"
-    ],
-    "rules": {
-      "@typescript-eslint/ban-types": [
-        "error",
-        {
-          "types": {
-            "Function": false
-          },
-          "extendDefaults": true
-        }
-      ]
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",

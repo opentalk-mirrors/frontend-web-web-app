@@ -4,6 +4,8 @@
 import camelcaseKeys from 'camelcase-keys';
 import { DelimiterCase, Opaque, CamelCase } from 'type-fest';
 
+type Function = () => void;
+
 /**
 Convert object properties to delimiter case recursively.
 This can be useful when, for example, converting some API types from a different style.

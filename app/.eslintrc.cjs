@@ -24,6 +24,7 @@ module.exports = {
         "react/react-in-jsx-scope": "off",
         "react/jsx-curly-brace-presence": ["error", "never"],
         "react-refresh/only-export-components": "warn",
+        "@typescript-eslint/no-unused-expressions": ["error", { allowShortCircuit: true, allowTernary: true }]
       }
     }
   ]
