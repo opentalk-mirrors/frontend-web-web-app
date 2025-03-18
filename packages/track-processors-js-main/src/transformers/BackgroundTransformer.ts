@@ -93,7 +93,7 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
       if (!this.canvas) {
         throw TypeError('Canvas needs to be initialized first');
       }
-      let startTimeMs = performance.now();
+      const startTimeMs = performance.now();
       this.imageSegmenter?.segmentForVideo(
         this.inputVideo!,
         startTimeMs,
@@ -131,7 +131,10 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
       this.ctx.filter = 'none';
       this.ctx.globalCompositeOperation = 'source-out';
 
-      const alphabitmap = await alphaCorrection(this.segmentationResults.confidenceMasks);
+      const alphabitmap = await alphaCorrection(
+        this.segmentationResults.confidenceMasks,
+        this.canvas,
+      );
       this.ctx?.drawImage(alphabitmap, 0, 0, this.canvas.width, this.canvas.height);
 
       if (this.backgroundImage) {
@@ -173,7 +176,10 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
       this.ctx.filter = 'none';
       this.ctx.globalCompositeOperation = 'source-out';
 
-      const alphabitmap = await alphaCorrection(this.segmentationResults.confidenceMasks);
+      const alphabitmap = await alphaCorrection(
+        this.segmentationResults.confidenceMasks,
+        this.canvas,
+      );
       this.ctx?.drawImage(alphabitmap, 0, 0, this.canvas.width, this.canvas.height);
       this.ctx.globalCompositeOperation = 'source-in';
       this.ctx.drawImage(frame, 0, 0, this.canvas.width, this.canvas.height);
@@ -185,10 +191,13 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
   }
 }
 
-function alphaCorrection(confidenceMasks: vision.MPMask[]): Promise<ImageBitmap> {
+function alphaCorrection(
+  confidenceMasks: vision.MPMask[],
+  canvas: OffscreenCanvas,
+): Promise<ImageBitmap> {
   const result = confidenceMasks[0].getAsUint8Array();
-  const videoHeight = confidenceMasks[0].height;
-  const videoWidth = confidenceMasks[0].width;
+  const videoHeight = confidenceMasks[0].height || canvas.height;
+  const videoWidth = confidenceMasks[0].width || canvas.width;
   const dataArray: Uint8ClampedArray = new Uint8ClampedArray(videoWidth * videoHeight * 4);
   const minConfidence = 0.3;
   const maxConfidence = 0.8;
