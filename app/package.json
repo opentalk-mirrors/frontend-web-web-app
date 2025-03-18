@@ -20,7 +20,7 @@
     "@heinlein-video/rrule": "^2.7.999",
     "@livekit/components-core": "^0.12.1",
     "@livekit/components-react": "^2.8.1",
-    "@livekit/protocol": "^1.34.0",
+    "@livekit/protocol": "^1.35.0",
     "@livekit/track-processors": "workspace:*",
     "@m-lab/ndt7": "^0.0.6",
     "@mui/material": "^6.4.8",
