@@ -28,6 +28,16 @@ export class MeetingPage {
     await this.createMeetingButton.click();
   }
 
+  async goToAdhocMeetingLobby(): Promise<void> {
+    const meetingLink = await this.meetingLinkInputField.inputValue();
+    const popupPromise = this.page.waitForEvent('popup');
+    await this.openMeetingRoomButton.click();
+    const meetingRoomLobbyPage = await popupPromise;
+    await meetingRoomLobbyPage.waitForLoadState();
+    await meetingRoomLobbyPage.close();
+    await this.page.goto(meetingLink);
+  }
+
   async goToMeetingLobby(): Promise<Page> {
     const popupPromise = this.page.waitForEvent('popup');
     await this.openMeetingRoomButton.click();
