@@ -14,7 +14,8 @@ import type { AppDispatch, RootState } from '../';
 import { RequestMute } from '../../api/types/incoming/media';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { FetchRequestError, ParticipantId, VideoSetting } from '../../types';
-import { handleMediaPermissionError, MediaError } from '../../utils/mediaErrorUtils';
+import { MediaError, handleMediaPermissionError } from '../../utils/mediaErrorUtils';
+import { getDeviceId } from '../../utils/mediaUtils';
 import { getLivekitRoom } from '../livekitRoom';
 
 export interface BackgroundConfig {
@@ -89,7 +90,11 @@ export const startMedia = createAsyncThunk<
         };
         if (inMeetingView) {
           const track = await getLivekitRoom().localParticipant.setMicrophoneEnabled(enabled, { deviceId });
-          payload.deviceId = track?.audioTrack?.mediaStreamTrack.getCapabilities().deviceId;
+          const mediaStreamTrack = track?.audioTrack?.mediaStreamTrack;
+
+          if (mediaStreamTrack) {
+            payload.deviceId = getDeviceId(mediaStreamTrack);
+          }
         }
 
         return payload;
@@ -102,7 +107,11 @@ export const startMedia = createAsyncThunk<
         };
         if (inMeetingView) {
           const track = await getLivekitRoom().localParticipant.setCameraEnabled(enabled, { deviceId });
-          payload.deviceId = track?.videoTrack?.mediaStreamTrack.getCapabilities().deviceId;
+          const mediaStreamTrack = track?.videoTrack?.mediaStreamTrack;
+
+          if (mediaStreamTrack) {
+            payload.deviceId = getDeviceId(mediaStreamTrack);
+          }
         }
         return payload;
       }
