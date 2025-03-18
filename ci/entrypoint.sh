@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 #
