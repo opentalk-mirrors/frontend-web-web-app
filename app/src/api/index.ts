@@ -1136,6 +1136,7 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
       notifications.warning(
         i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
       );
+      dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: false }));
       dispatch(mediaStore.notificationShown());
       return;
     }
