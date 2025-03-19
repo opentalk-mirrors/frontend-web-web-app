@@ -1,4 +1,4 @@
-import convertToCamelCase from 'camelcase-keys';
+import camelcaseKeys from 'camelcase-keys';
 
 import { clearApplicationStorage } from './utils';
 
@@ -52,7 +52,7 @@ export class AuthAdapter {
         throw `OIDC config empty. Response: ${response} (${response.status} ${response.statusText})`;
       }
 
-      return convertToCamelCase(await response.json(), { deep: true });
+      return camelcaseKeys(await response.json(), { deep: true });
     } catch (error) {
       if (error instanceof SyntaxError) {
         // Unexpected token < in JSON

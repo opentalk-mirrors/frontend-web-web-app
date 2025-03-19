@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import convertToCamelCase from 'camelcase-keys';
+import camelcaseKeys from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
 import type { Message as IncomingMessage } from '../../api/types/incoming';
@@ -54,7 +54,7 @@ export class SignalingSocket extends BaseEventEmitter<SignalingConnectionEvent> 
     this.socket = new WebSocket(this.url, [`ticket#${ticket}`, `opentalk-signaling-json-v${API_VERSION}`]);
     this.socket.onopen = this.onConnected;
     this.socket.onmessage = (ev) => {
-      const message: IncomingMessage | EchoMessage = convertToCamelCase(JSON.parse(ev.data), {
+      const message: IncomingMessage | EchoMessage = camelcaseKeys(JSON.parse(ev.data), {
         // We exclude votingRecord, lastSeenTimestamp* because they contain id that must not be converted to the camel case
         // as we can no longer map them to the participants.
         stopPaths: [

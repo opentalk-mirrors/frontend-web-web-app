@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { createSlice } from '@reduxjs/toolkit';
-import { createApi, BaseQueryApi } from '@reduxjs/toolkit/query';
+import { BaseQueryApi, createApi } from '@reduxjs/toolkit/query';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
@@ -110,10 +110,10 @@ describe('fetchQuery', () => {
         rest.get('http://example.com/success', (_, res, ctx) =>
           res.once(
             ctx.json({
-              snake_case: 'snake_case',
-              camelCase: 'camelCase',
-              UpperCamelCase: 'UpperCamelCase',
               'kebab-case': 'kebab-case',
+              camelCase: 'camelCase',
+              snake_case: 'snake_case',
+              UpperCamelCase: 'UpperCamelCase',
             })
           )
         )
@@ -123,10 +123,10 @@ describe('fetchQuery', () => {
       const res = await req;
       expect(res).toBeInstanceOf(Object);
       expect(res.data).toEqual({
+        'kebab-case': 'kebab-case',
         camelCase: 'camelCase',
-        snakeCase: 'snake_case',
-        kebabCase: 'kebab-case',
-        upperCamelCase: 'UpperCamelCase',
+        snake_case: 'snake_case',
+        UpperCamelCase: 'UpperCamelCase',
       });
     });
 

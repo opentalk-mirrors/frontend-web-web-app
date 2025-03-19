@@ -4,7 +4,7 @@
 import { AuthTypeError, authError } from '@opentalk/redux-oidc';
 import { RoomId, createOpenTalkApiWithReactHooks, fetchQuery } from '@opentalk/rest-api-rtk-query';
 import { Middleware, createAsyncThunk, isAction, isRejectedWithValue } from '@reduxjs/toolkit';
-import convertToCamelCase from 'camelcase-keys';
+import camelcaseKeys from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
 import type { RootState } from '../store';
@@ -71,7 +71,7 @@ export const addRoom = createAsyncThunk<Room, NewRoom, { state: RootState; rejec
         statusText: await response.text(),
       });
     }
-    return convertToCamelCase(await response.json(), { deep: true }) as Room;
+    return camelcaseKeys(await response.json(), { deep: true }) as Room;
   }
 );
 
