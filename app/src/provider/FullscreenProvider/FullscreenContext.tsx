@@ -14,6 +14,7 @@ export type ExtendedFullScreenHandle = {
   setHasActiveOverlay: (hasActiveOverlay: boolean) => void;
   rootElement: HTMLElement | null;
   setRootElement: (element: HTMLElement | null) => void;
+  isFullScreenAvailable: () => boolean;
 };
 
 export const FullscreenContext = createContext<ExtendedFullScreenHandle | null>(null);

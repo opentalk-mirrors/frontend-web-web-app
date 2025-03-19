@@ -7,6 +7,22 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders, mockedParticipant, configureStore } from '../../../utils/testUtils';
 import VideoOverlay from './VideoOverlay';
 
+const mockFullscreenContext = {
+  active: true,
+  node: null,
+  exit: jest.fn(),
+  enter: jest.fn(),
+  fullscreenParticipantID: '',
+  setRootElement: jest.fn(),
+  rootElement: null,
+  setHasActiveOverlay: jest.fn(),
+  isFullScreenAvailable: jest.fn(),
+};
+
+jest.mock('../../../hooks/useFullscreenContext.ts', () => ({
+  useFullscreenContext: () => mockFullscreenContext,
+}));
+
 jest.mock('@livekit/components-react', () => ({
   useRemoteParticipant: jest.fn(),
 }));
@@ -28,14 +44,27 @@ describe('VideoOverlay general', () => {
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
-  test('renders fullscreen button if overlay is active', async () => {
+  test('renders fullscreen button if overlay is active', () => {
+    mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
       provider: { snackbar: true },
     });
+    expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
     const fullscreenButton = screen.getByRole('button', { name: 'indicator-fullscreen-open' });
     expect(fullscreenButton).toBeInTheDocument();
+  });
+  test('does not render fullscreen button if fullscreen feature is unavailable', () => {
+    mockFullscreenContext.isFullScreenAvailable = jest.fn(() => false);
+
+    renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
+      store,
+      provider: { snackbar: true },
+    });
+    expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
+
+    expect(screen.queryByRole('button', { name: 'indicator-fullscreen-open' })).not.toBeInTheDocument();
   });
 });
 

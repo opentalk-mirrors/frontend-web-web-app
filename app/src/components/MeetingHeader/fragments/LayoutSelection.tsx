@@ -192,13 +192,15 @@ const LayoutSelection = () => {
             </ListItemIcon>
             {t('conference-view-speaker')}
           </MenuItem>
-          <MenuItem role="menuitemradio" aria-checked={fullscreenHandle.active} onClick={openFullscreenView}>
-            <ListItemIcon>{fullscreenHandle.active && <CheckIcon />}</ListItemIcon>
-            <ListItemIcon aria-hidden={true}>
-              <FullscreenViewIcon />
-            </ListItemIcon>
-            {t('conference-view-fullscreen')}
-          </MenuItem>
+          {fullscreenHandle.isFullScreenAvailable() && (
+            <MenuItem role="menuitemradio" aria-checked={fullscreenHandle.active} onClick={openFullscreenView}>
+              <ListItemIcon>{fullscreenHandle.active && <CheckIcon />}</ListItemIcon>
+              <ListItemIcon aria-hidden={true}>
+                <FullscreenViewIcon />
+              </ListItemIcon>
+              {t('conference-view-fullscreen')}
+            </MenuItem>
+          )}
           {isMobile && isMeetingNotesAvailable && (
             <MenuItem
               onClick={() => handleSelectedView(LayoutOptions.MeetingNotes)}
