@@ -738,6 +738,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
                 onClick={handleSubmit}
                 fullWidth
                 disabled={formik.isSubmitting || createEventIsLoading || updateEventIsLoading}
+                type="submit"
               >
                 {t(`global-save${existingEvent ? '-changes' : ''}`)}
               </Button>
