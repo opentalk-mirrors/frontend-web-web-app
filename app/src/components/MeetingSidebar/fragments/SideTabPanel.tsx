@@ -54,5 +54,6 @@ const SideTabPanel = forwardRef<unknown, SideTabPanelProps>(({ children, value, 
     </Box>
   );
 });
+SideTabPanel.displayName = 'SideTabPanel';
 
 export default SideTabPanel;

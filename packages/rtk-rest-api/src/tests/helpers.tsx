@@ -5,7 +5,6 @@
 import { Action, configureStore, EnhancedStore, Middleware, Reducer, Store } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { cleanup } from '@testing-library/react';
-import React from 'react';
 import { Provider } from 'react-redux';
 
 export function setupApiStore<

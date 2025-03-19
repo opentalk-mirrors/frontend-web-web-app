@@ -53,5 +53,6 @@ const ConsentNotification = forwardRef(
     );
   }
 );
+ConsentNotification.displayName = 'ConsentNotification';
 
 export default ConsentNotification;

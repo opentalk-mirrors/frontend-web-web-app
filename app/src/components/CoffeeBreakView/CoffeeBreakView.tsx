@@ -99,3 +99,4 @@ export const CoffeeBreakView = memo(({ roundBorders }: CoffeeBreakViewProps) => 
     </BackgroundCover>
   );
 });
+CoffeeBreakView.displayName = 'CoffeeBreakView';

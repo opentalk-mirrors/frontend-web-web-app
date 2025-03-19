@@ -37,7 +37,7 @@ import {
 import { BreakoutRoomId, FetchRequestError } from '../../types';
 import { composeRoomPath } from '../../utils/apiUtils';
 import { formikProps } from '../../utils/formikUtils';
-import { ContitionalToolTip } from '../ConditionalToolTip/ContitionalToolTip';
+import { ConditionalToolTip } from '../ConditionalToolTip/ConditionalToolTip';
 import OpentalkError from '../Error';
 import ImprintContainer from '../ImprintContainer';
 import SelfTest from '../SelfTest';
@@ -277,7 +277,7 @@ const LobbyView = () => {
               onSubmit={formik.handleSubmit}
               aria-label={t('joinform-title') as string}
             >
-              <ContitionalToolTip
+              <ConditionalToolTip
                 showToolTip={Boolean(disableDisplayNameField)}
                 title={t('joinform-display-name-field-disabled-tooltip')}
               >
@@ -288,7 +288,7 @@ const LobbyView = () => {
                   autoComplete="username"
                   disabled={disableDisplayNameField}
                 />
-              </ContitionalToolTip>
+              </ConditionalToolTip>
               {showPasswordField && (
                 <CommonTextField
                   {...formikProps('password', formik)}

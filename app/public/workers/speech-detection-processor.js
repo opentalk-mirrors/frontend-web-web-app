@@ -36,7 +36,7 @@ class SpeechDetectionProcessor extends AudioWorkletProcessor {
     };
   }
 
-  process(inputs, outputs, parameters) {
+  process(inputs, _outputs, _parameters) {
     if(this.closed) {
       return false;
     }

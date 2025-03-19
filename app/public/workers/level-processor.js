@@ -31,7 +31,7 @@ class LevelProcessor extends AudioWorkletProcessor {
     return (this._updateIntervalInMS / 1000) * sampleRate;
   }
 
-  process(inputs, outputs, parameters) {
+  process(inputs, _outputs, _parameters) {
     const input = inputs[0];
     // Note that the input will be down-mixed to mono; however, if no inputs are
     // connected then zero channels will be passed in.

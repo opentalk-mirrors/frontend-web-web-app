@@ -8,8 +8,7 @@
     "build": "shx rm -rf ./dist && rollup -c",
     "build-ts": "rm -rf /lib && pnpm build:esm && pnpm build:cjs",
     "build:esm": "tsc",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs",
-    "lint": "eslint src/ test/ --ext .ts,.tsx"
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs"
   },
   "types": "dist/index.d.ts",
   "declaration": true,
@@ -22,7 +21,6 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/rollup-plugin-peer-deps-external": "^2.2.5",
-    "eslint": "^8.57.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "7.4.0",
     "rollup": "^4.37.0",

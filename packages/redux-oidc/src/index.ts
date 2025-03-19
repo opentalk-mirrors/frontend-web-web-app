@@ -5,6 +5,7 @@ export { AuthTypeError } from './utils';
 export * from './store';
 export * from './authAdapter';
 export * from './authProvider';
+export * from './authContext';
 
 export * from './authCallbackComponent';
 export * from './utils';

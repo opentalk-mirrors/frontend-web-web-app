@@ -71,5 +71,6 @@ const TimeLimitNotification = forwardRef<HTMLDivElement, TimeLimitNotificationPr
     </SnackbarContent>
   );
 });
+TimeLimitNotification.displayName = 'TimeLimitNotification';
 
 export default TimeLimitNotification;

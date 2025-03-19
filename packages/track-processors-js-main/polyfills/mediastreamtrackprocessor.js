@@ -3,7 +3,7 @@ if (!self.MediaStreamTrackProcessor) {
     constructor({ track }) {
       if (track.kind == 'video') {
         this.readable = new ReadableStream({
-          async start(controller) {
+          async start(_controller) {
             this.video = document.createElement('video');
             this.video.srcObject = new MediaStream([track]);
             await Promise.all([
@@ -26,7 +26,7 @@ if (!self.MediaStreamTrackProcessor) {
         });
       } else if (track.kind == 'audio') {
         this.readable = new ReadableStream({
-          async start(controller) {
+          async start(_controller) {
             this.ac = new AudioContext();
             this.arrays = [];
             function worklet() {
