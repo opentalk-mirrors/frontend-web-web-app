@@ -7,7 +7,6 @@ import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { Track } from 'livekit-client';
 import { MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 
@@ -17,7 +16,6 @@ import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { MediaDescriptor } from '../../../modules/WebRTC';
-import type { RootState } from '../../../store';
 import {
   addPopoutStreamAccess,
   deleteLivekitPopoutStreamAccessToken,
@@ -74,9 +72,9 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const isVideoActive = participant?.isCameraEnabled;
   const isScreenShareOrVideoActive = isScreenShareActive || isVideoActive;
   const descriptor = isScreenShareActive ? screenDescriptor : videoDescriptor;
-  const displayName = useAppSelector((state: RootState) => selectParticipantName(state, participantId));
+  const displayName = useAppSelector((state) => selectParticipantName(state, participantId));
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
-  const popoutStreamAccess = useAppSelector((state: RootState) =>
+  const popoutStreamAccess = useAppSelector((state) =>
     selectLivekitPopoutStreamAccessByParticipantId(state, participantId)
   );
   const { t } = useTranslation();
@@ -130,11 +128,9 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
 
   const openInNewTab: MouseEventHandler = (event) => {
     event.stopPropagation();
-    batch(() => {
-      setChannelId(uuid());
-      dispatch(addPopoutStreamAccess(descriptor));
-      dispatch(requestPopoutStreamAccessToken.action());
-    });
+    setChannelId(uuid());
+    dispatch(addPopoutStreamAccess(descriptor));
+    dispatch(requestPopoutStreamAccessToken.action());
   };
 
   return (

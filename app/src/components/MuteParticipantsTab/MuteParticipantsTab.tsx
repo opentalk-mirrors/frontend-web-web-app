@@ -9,7 +9,6 @@ import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAnd
 import { SelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/SelectParticipantsItem';
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import type { RootState } from '../../store';
 import { selectMapRemotePaticipanstDisplayName } from '../../store/slices/participantsSlice';
 import { ParticipantId } from '../../types';
 
@@ -21,9 +20,7 @@ const MuteParticipantsTab = () => {
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
 
-  const participantNames = useAppSelector((state: RootState) =>
-    selectMapRemotePaticipanstDisplayName(state, unmutedParticipants)
-  );
+  const participantNames = useAppSelector((state) => selectMapRemotePaticipanstDisplayName(state, unmutedParticipants));
 
   const participantsList: SelectableParticipant[] = useMemo(() => {
     return unmutedParticipants

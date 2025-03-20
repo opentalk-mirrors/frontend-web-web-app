@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 
 import { confirmPresence } from '../../../api/types/outgoing/trainingParticipationReport';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -15,10 +14,8 @@ export const ParticipationConfirmationDialog = () => {
   const { t } = useTranslation();
 
   const handleConfirm = () => {
-    batch(() => {
-      dispatch(confirmPresence.action());
-      dispatch(presenceConfirmationDone());
-    });
+    dispatch(confirmPresence.action());
+    dispatch(presenceConfirmationDone());
   };
 
   return (

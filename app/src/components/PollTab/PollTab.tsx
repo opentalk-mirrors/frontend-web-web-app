@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../hooks';
-import type { RootState } from '../../store';
 import { selectSavedPollPerId } from '../../store/slices/pollSlice';
 import CreatePollForm from './fragments/CreatePollForm';
 import PollOverview from './fragments/PollOverview';
@@ -19,7 +18,7 @@ const PollOverviewContainer = styled(Stack)({
 const PollTab = () => {
   const [showPollForm, setShowPollForm] = useState(false);
   const [savedPollFormId, setSavedPollFormId] = useState<number | undefined>();
-  const formValues = useAppSelector((state: RootState) => selectSavedPollPerId(state, savedPollFormId));
+  const formValues = useAppSelector((state) => selectSavedPollPerId(state, savedPollFormId));
   const { t } = useTranslation();
 
   const handleOnClickSavedPollItem = (id: number | undefined) => {

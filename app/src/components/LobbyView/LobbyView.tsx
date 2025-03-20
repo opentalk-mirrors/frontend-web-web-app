@@ -11,7 +11,6 @@ import { uniqueId } from 'lodash';
 import { SnackbarKey } from 'notistack';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
@@ -170,10 +169,8 @@ const LobbyView = () => {
   const enterRoom = useCallback(
     async (displayName: string, password: string) => {
       if (joinWithoutMedia) {
-        batch(() => {
-          dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-          dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-        });
+        dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+        dispatch(startMedia({ kind: 'videoinput', enabled: false }));
       }
 
       return dispatch(

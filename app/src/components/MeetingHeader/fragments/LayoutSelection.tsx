@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import { SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 
 import { CheckIcon, FullscreenViewIcon, GridViewIcon, MeetingNotesIcon, SpeakerViewIcon } from '../../../assets/icons';
 import { IconButton } from '../../../commonComponents';
@@ -113,10 +112,8 @@ const LayoutSelection = () => {
 
   const handleSelectedView = (layout: LayoutOptions, order: GridViewOrder = GridViewOrder.FirstJoined) => {
     setAnchorElement(null);
-    batch(() => {
-      dispatch(updatedCinemaLayout(layout));
-      dispatch(updatedGridViewOrder(order));
-    });
+    dispatch(updatedCinemaLayout(layout));
+    dispatch(updatedGridViewOrder(order));
   };
 
   const theme = useTheme();

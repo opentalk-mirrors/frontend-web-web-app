@@ -4,7 +4,6 @@
 import { Box, Button, Grid, IconButton } from '@mui/material';
 import { FC, FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 
 import { vote as sendPollChoiceToAPI, UserChoice } from '../../../api/types/outgoing/poll';
 import { CloseIcon } from '../../../assets/icons';
@@ -52,11 +51,9 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (userSelection) {
-      batch(() => {
-        const pollId = poll.id;
-        dispatch(sendPollChoiceToAPI.action({ pollId, ...userSelection }));
-        dispatch(voted({ pollId, choice: userSelection }));
-      });
+      const pollId = poll.id;
+      dispatch(sendPollChoiceToAPI.action({ pollId, ...userSelection }));
+      dispatch(voted({ pollId, choice: userSelection }));
     }
   };
 

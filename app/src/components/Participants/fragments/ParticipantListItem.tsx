@@ -16,7 +16,6 @@ import { format } from 'date-fns';
 import { isEmpty, uniqueId } from 'lodash';
 import React, { CSSProperties, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { batch } from 'react-redux';
 
 import { Role } from '../../../api/types/incoming/control';
 import { grantModeratorRole, revokeModeratorRole } from '../../../api/types/outgoing/control';
@@ -193,10 +192,8 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
         notifications.info(t('meeting-notification-user-was-banned', { user: participant.displayName }));
         break;
       case ParticipationKind.Guest:
-        batch(() => {
-          dispatch(kickParticipant.action({ target: participant.id }));
-          dispatch(enableWaitingRoom.action());
-        });
+        dispatch(kickParticipant.action({ target: participant.id }));
+        dispatch(enableWaitingRoom.action());
         notifications.info(t('meeting-notification-user-was-kicked', { user: participant.displayName }));
         break;
       case ParticipationKind.Sip:
@@ -344,15 +341,13 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     {
       i18nKey: 'participant-menu-send-message',
       action: () => {
-        batch(() => {
-          dispatch(
-            chatConversationStateSet({
-              scope: ChatScope.Private,
-              targetId: participant.id,
-            })
-          );
-          dispatch(setCurrentMenuTab(MenuTab.Messages));
-        });
+        dispatch(
+          chatConversationStateSet({
+            scope: ChatScope.Private,
+            targetId: participant.id,
+          })
+        );
+        dispatch(setCurrentMenuTab(MenuTab.Messages));
       },
     },
 
