@@ -28,51 +28,75 @@ interface AssetTableProps {
   maxHeight?: string;
 }
 
+type AssetRowState = Record<
+  AssetId,
+  {
+    downloading: boolean;
+    progress: number;
+    deleting: boolean;
+  }
+>;
+
 /*
   If onDelete function is set => the assets are deletable and `Delete` button will be exposed in the UI
   Otherwise we show only the `Download` button
 */
 export const AssetTable = ({ assets, onDownload, onDelete, maxHeight = 'none' }: AssetTableProps) => {
   const { t } = useTranslation();
-  const [disabledRows, setDisabledRows] = useState<Record<AssetId, number>>({});
+  const [assetRows, setAssetRows] = useState<AssetRowState>({});
 
-  const setRow = (assetId: AssetId, progressPercentage?: number) =>
-    setDisabledRows((state) => {
-      const newList = { ...state };
-      if (progressPercentage === undefined) {
-        delete newList[assetId];
-      } else {
-        newList[assetId] = progressPercentage;
-      }
-      return newList;
-    });
+  const updateAssetRowState = (assetId: AssetId, newState: Partial<AssetRowState[AssetId]>) => {
+    setAssetRows((state) => ({
+      ...state,
+      [assetId]: {
+        ...state[assetId],
+        ...newState,
+      },
+    }));
+  };
 
   // While downloading we disable buttons in the relevant row
   const handleDownload = async ({ assetId, filename, fileSize }: Omit<AssetDownloadBaseInfo, 'onDownloadProgress'>) => {
-    setRow(assetId, 0);
-    await onDownload({
-      assetId,
-      filename,
-      fileSize,
-      updateDownloadProgress: (percentage) => setRow(assetId, percentage),
-    });
-    setRow(assetId);
+    try {
+      updateAssetRowState(assetId, { downloading: true, progress: 0, deleting: false });
+      await onDownload({
+        assetId,
+        filename,
+        fileSize,
+        updateDownloadProgress: (percentage) => {
+          updateAssetRowState(assetId, { downloading: true, progress: percentage, deleting: false });
+        },
+      });
+      updateAssetRowState(assetId, { downloading: false, progress: 0, deleting: false });
+    } catch (error) {
+      console.error('Error downloading asset', error);
+      updateAssetRowState(assetId, { downloading: false, progress: 0, deleting: false });
+    }
   };
 
   // While deleting we disable buttons in the relevant row
   const handleDelete = onDelete
     ? async (assetId: AssetId) => {
         if (onDelete) {
-          setRow(assetId, 0);
-          await onDelete(assetId);
-          setRow(assetId);
+          try {
+            updateAssetRowState(assetId, { deleting: true, downloading: false });
+            await onDelete(assetId);
+            setAssetRows((state) => {
+              const newState = { ...state };
+              delete newState[assetId];
+              return newState;
+            });
+          } catch (error) {
+            console.error('Error deleting asset', error);
+            updateAssetRowState(assetId, { deleting: false, downloading: false });
+          }
         }
       }
     : undefined;
 
   const renderTableRows = () => {
     return assets?.map((asset) => {
-      const rowPercentage = disabledRows[asset.id];
+      const rowState = assetRows[asset.id];
 
       return (
         <AssetTableRow
@@ -80,7 +104,9 @@ export const AssetTable = ({ assets, onDownload, onDelete, maxHeight = 'none' }:
           asset={asset}
           handleDownload={handleDownload}
           handleDelete={handleDelete}
-          progress={rowPercentage}
+          progress={rowState?.progress > 0 ? rowState.progress : undefined}
+          disabledDownload={rowState?.downloading}
+          disabledDelete={rowState?.deleting}
         />
       );
     });
