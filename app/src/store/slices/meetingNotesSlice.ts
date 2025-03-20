@@ -30,8 +30,5 @@ export const { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } = meetingNotesS
 
 const meetingNotesState = (state: RootState) => state.meetingNotes;
 export const selectMeetingNotesUrl = createSelector([meetingNotesState], (state) => state.meetingNotesUrl);
-export const selectIsMeetingNotesAvailable = createSelector([meetingNotesState], (state) =>
-  Boolean(state.meetingNotesUrl)
-);
 
 export default meetingNotesSlice.reducer;

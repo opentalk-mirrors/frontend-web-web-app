@@ -92,6 +92,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
   const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled('record'));
   const fullscreenHandle = useFullscreenContext();
+  const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
 
   const isTrainingParticipationReportModuleOn = useAppSelector(
     selectIsModuleEnabled(BackendModules.TrainingParticipationReport)
@@ -224,8 +225,11 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     toggleMicrophones,
     toggleChatItem,
     deleteGlobalChatItem,
-    exportAttendanceReportItem,
   ];
+
+  if (isMeetingReportAvailable) {
+    moderatorMenuItems.push(exportAttendanceReportItem);
+  }
 
   if (isRoomOwner && isTrainingParticipationReportModuleOn) {
     moderatorMenuItems.push(togglePresenceLogging);

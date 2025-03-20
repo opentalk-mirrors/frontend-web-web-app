@@ -149,7 +149,7 @@ export const tabs: Array<Tab> = [
       </Suspense>
     ),
     tooltipTranslationKey: 'moderationbar-button-meeting-notes-tooltip',
-    moduleKey: BackendModules.MeetingNotes,
+    moduleKey: BackendModules.MeetingReport,
     key: ModerationTabKey.MeetingNotes,
     titleKey: 'meeting-notes-tab-title',
   },

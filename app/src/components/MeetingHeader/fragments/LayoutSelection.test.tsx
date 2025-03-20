@@ -19,16 +19,11 @@ const mockFullscreenContext = {
   isFullScreenAvailable: jest.fn(),
 };
 
-jest.mock('../../../hooks/useFullscreenContext.ts', () => ({
-  useFullscreenContext: () => mockFullscreenContext,
-}));
+jest.mock('../../../hooks/useFullscreenContext.ts', () => ({ useFullscreenContext: () => mockFullscreenContext }));
 
 jest.mock('@mui/material', () => {
   const mui = jest.requireActual('@mui/material');
-  return {
-    ...mui,
-    useMediaQuery: jest.fn().mockReturnValue(false),
-  };
+  return { ...mui, useMediaQuery: jest.fn().mockReturnValue(false) };
 });
 
 const mockUseMediaQuery = useMediaQuery as jest.Mock;
@@ -45,17 +40,13 @@ describe('Layout selection menu', () => {
   const getButtonSelector = (name: string) => screen.getByRole('menuitemradio', { name, hidden: true });
 
   it('opens a menu when the open button is clicked', () => {
-    renderWithProviders(<LayoutSelection />, {
-      store,
-    });
+    renderWithProviders(<LayoutSelection />, { store });
     act(openMenu);
     const menu = screen.getByRole('menu', { hidden: true });
     expect(menu).toBeInTheDocument();
   });
   it('renders the correct buttons', () => {
-    renderWithProviders(<LayoutSelection />, {
-      store,
-    });
+    renderWithProviders(<LayoutSelection />, { store });
     act(openMenu);
     const gridViewButton = getButtonSelector('conference-view-grid');
     const speakerViewButton = getButtonSelector('conference-view-speaker');
@@ -69,9 +60,7 @@ describe('Layout selection menu', () => {
 
   it('renders fullscreen button if the fullscreen feature is available', () => {
     mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
-    renderWithProviders(<LayoutSelection />, {
-      store,
-    });
+    renderWithProviders(<LayoutSelection />, { store });
     act(openMenu);
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
@@ -82,9 +71,7 @@ describe('Layout selection menu', () => {
   it('opens fullscreen when clicking the fullscreen button', () => {
     mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
 
-    renderWithProviders(<LayoutSelection />, {
-      store,
-    });
+    renderWithProviders(<LayoutSelection />, { store });
     act(openMenu);
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
     const fullscreenMenuItem = getButtonSelector('conference-view-fullscreen');
@@ -96,9 +83,7 @@ describe('Layout selection menu', () => {
   it('does not render fullscreen button if fullscreen feature is unavailable', () => {
     mockFullscreenContext.isFullScreenAvailable = jest.fn(() => false);
 
-    renderWithProviders(<LayoutSelection />, {
-      store,
-    });
+    renderWithProviders(<LayoutSelection />, { store });
 
     act(openMenu);
 
@@ -112,19 +97,10 @@ describe('Layout selection menu', () => {
   it('renders meeting notes option on mobile when meeting notes are available', () => {
     mockUseMediaQuery.mockReturnValue(true);
     const { store } = configureStore({
-      initialState: {
-        meetingNotes: {
-          meetingNotesUrl: 'meeting.notes',
-        },
-      },
+      initialState: { config: { tariff: { modules: { meetingNotes: { features: [] } } } } },
     });
 
-    renderWithProviders(<LayoutSelection />, {
-      store,
-      provider: {
-        snackbar: true,
-      },
-    });
+    renderWithProviders(<LayoutSelection />, { store, provider: { snackbar: true } });
     act(openMenu);
 
     expect(mockUseMediaQuery).toHaveBeenCalled();
