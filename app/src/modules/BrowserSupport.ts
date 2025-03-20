@@ -16,7 +16,7 @@ enum Browsers {
   MicrosoftEdge = 'Microsoft Edge',
 }
 
-class BrowserSupport {
+export class BrowserSupport {
   private _bowser: Bowser.Parser.Parser;
 
   private _name: string;
