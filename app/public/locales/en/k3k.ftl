@@ -144,6 +144,7 @@ participant-search-label = Search participant
 
 no-group-participants-label = without group
 button-back-messages = Back
+participant-menu-open-label = Open participant menu
 participant-menu-send-message = Send direct message
 participant-menu-remove-participant = Remove participant
 participant-menu-move-to-waiting-room = Move participant to waiting room

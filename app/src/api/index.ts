@@ -161,13 +161,7 @@ const transformChatHistory = (
   const groupIds: GroupId[] = chatHistory.map((e) => e.name);
 
   const messages = chatHistory.flatMap((e) => {
-    return e.history.map(
-      (m): ChatMessage => ({
-        ...m,
-        group: e.name,
-        scope: ChatScope.Group,
-      })
-    );
+    return e.history.map((m): ChatMessage => ({ ...m, group: e.name, scope: ChatScope.Group }));
   });
 
   return { groupIds, messages };
@@ -544,12 +538,7 @@ const handleBreakoutMessage = (
           ...data,
           avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
         };
-        dispatch(
-          breakoutJoined({
-            data: modifiedData,
-            timestamp,
-          })
-        );
+        dispatch(breakoutJoined({ data: modifiedData, timestamp }));
       }
       break;
     case 'left':
@@ -732,10 +721,7 @@ const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMessageTyp
         const displayName = state.participants.entities[data.participantId]?.displayName || i18n.t('global-someone');
         if (data.kind) {
           notifications.warning(
-            i18n.t('legal-vote-report-issue-kind-notification', {
-              displayName: displayName,
-              kind: data.kind,
-            })
+            i18n.t('legal-vote-report-issue-kind-notification', { displayName: displayName, kind: data.kind })
           );
         } else {
           notifications.warning(
@@ -864,12 +850,7 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
       dispatch(hangUp());
       break;
     case 'display_name_changed':
-      dispatch(
-        participantsRename({
-          id: data.target,
-          displayName: data.newName,
-        })
-      );
+      dispatch(participantsRename({ id: data.target, displayName: data.newName }));
       if (data.target === state.user.uuid) {
         dispatch(setDisplayName(data.newName));
       }
@@ -1018,11 +999,7 @@ const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message
       break;
     case 'pdf_asset':
       dispatch(addWhiteboardAsset({ asset: { assetId: data.assetId, filename: data.filename } }));
-      notificationAction({
-        msg: i18next.t('whiteboard-new-pdf-message'),
-        variant: 'info',
-        ariaLive: 'polite',
-      });
+      notificationAction({ msg: i18next.t('whiteboard-new-pdf-message'), variant: 'info', ariaLive: 'polite' });
 
       break;
     default: {
@@ -1171,13 +1148,7 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
 const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Message, state: RootState) => {
   switch (data.message) {
     case 'whisper_group_created':
-      dispatch(
-        setSubroomAudioData({
-          whisperId: data.whisperId,
-          token: data.token,
-          participants: data.participants,
-        })
-      );
+      dispatch(setSubroomAudioData({ whisperId: data.whisperId, token: data.token, participants: data.participants }));
       break;
     case 'whisper_invite': {
       const isAlreadyInWhisperGroup = selectSubroomAudioState(state).whisperId;
@@ -1237,11 +1208,7 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
     case 'whisper_invite_declined': {
       const displayName = selectParticipantById(data.participantId)(state)?.displayName;
       dispatch(removeParticipant({ participantId: data.participantId }));
-      notificationAction({
-        msg: `${displayName} declined your invitation`,
-        variant: 'error',
-        ariaLive: 'assertive',
-      });
+      notificationAction({ msg: `${displayName} declined your invitation`, variant: 'error', ariaLive: 'assertive' });
       break;
     }
     case 'left_whisper_group':
