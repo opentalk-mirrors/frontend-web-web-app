@@ -4,7 +4,7 @@
 import { Chip, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { EventId, EventInvite, InviteStatus, UserRole } from '@opentalk/rest-api-rtk-query';
-import { RegisteredUser } from '@opentalk/rest-api-rtk-query/src/types/user';
+import { RegisteredUser, User } from '@opentalk/rest-api-rtk-query/src/types/user';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -125,6 +125,13 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
       </>
     ) : null;
 
+  const getLabel = (profile: User) => {
+    if (isRegisteredUser(profile)) {
+      return `${profile.firstname} ${profile.lastname}`;
+    }
+    return profile.email;
+  };
+
   const renderLabel = (eventInvite: EventInvite) => {
     if (isRegisteredUser(eventInvite.profile)) {
       return (
@@ -136,7 +143,7 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
           }}
         >
           <Typography variant="body2" noWrap>
-            {eventInvite.profile.firstname} {eventInvite.profile.lastname}
+            {getLabel(eventInvite.profile)}
           </Typography>
           {isHovered && isUpdatable && isCreator && eventInvite.status !== InviteStatus.Added ? (
             renderMoreIcon(eventInvite.profile)
@@ -172,7 +179,13 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
       key={eventInvite.profile.email}
       label={renderLabel(eventInvite)}
       avatar={renderAvatar(eventInvite)}
-      deleteIcon={<CloseIcon data-testid="InvitedParticipants-deleteButton" />}
+      deleteIcon={
+        <CloseIcon
+          aria-label={t('dashboard-invite-to-meeting-delete-participant-label', {
+            name: getLabel(eventInvite.profile),
+          })}
+        />
+      }
       onDelete={isHovered && isUpdatable ? onDelete : undefined}
     />
   );

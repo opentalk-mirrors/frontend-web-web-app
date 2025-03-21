@@ -864,6 +864,7 @@ dashboard-invite-to-meeting-copy-shared-folder-password-success = The password w
 dashboard-invite-to-meeting-livestream-link-label = Livestream-Link
 dashboard-invite-to-meeting-copy-livestream-link-aria-label = Copy livestream link for {$eventTitle}
 dashboard-invite-to-meeting-copy-livestream-link-success = The link was copied to your clipboard
+dashboard-invite-to-meeting-delete-participant-label = Remove {$name}
 
 dashboard-select-participants-textfield-placeholder = Type name or email address ( min. 3 characters )
 dashboard-select-participants-label-added = Added
