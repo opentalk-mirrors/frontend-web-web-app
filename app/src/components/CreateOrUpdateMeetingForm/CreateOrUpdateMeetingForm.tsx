@@ -18,7 +18,7 @@ import {
 import { Interval, addMinutes, areIntervalsOverlapping, formatRFC3339 } from 'date-fns';
 import { useFormik } from 'formik';
 import { FormikValues } from 'formik/dist/types';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -48,6 +48,7 @@ import { CreateOrUpdateMeetingFormikValues, DashboardDateTimePicker } from './fr
 import EventConflictDialog from './fragments/EventConflictDialog';
 import MeetingFormSwitch from './fragments/MeetingFormSwitch';
 import StreamingOptions from './fragments/StreamingOptions';
+import { TrainingParticipationReportSelect } from './fragments/TrainingParticipationReportSelect/TrainingParticipationReportSelect';
 
 interface CreateOrUpdateMeetingFormProps {
   existingEvent?: Event;
@@ -86,6 +87,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
 
   const { data: tariff } = useGetMeTariffQuery();
   const isStreamingEnabled = tariff && isFeatureEnabledPredicate('stream', tariff.modules);
+  const isTrainingParticipationReportEnabled = tariff?.modules.trainingParticipationReport;
 
   const navigate = useNavigate();
 
@@ -173,6 +175,25 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       }),
     }),
     e2eEncryption: yup.boolean().optional(),
+    trainingParticipationReport: yup.object().shape({
+      enabled: yup.boolean().required(),
+      parameter: yup.object().when('enabled', ([enabled]) => {
+        if (!enabled) {
+          return yup.object().optional();
+        }
+
+        return yup.object({
+          initialCheckpointDelay: yup.object().shape({
+            after: yup.number().min(0).required(),
+            within: yup.number().min(0).required(),
+          }),
+          checkpointInterval: yup.object().shape({
+            after: yup.number().min(60).required(),
+            within: yup.number().min(0).required(),
+          }),
+        });
+      }),
+    }),
   });
 
   const recurrenceFrequencyOptions: Array<FrequencyOption> = [
@@ -241,6 +262,27 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
         };
   };
 
+  // const getTPRInitialValue = () => {
+  //   console.debug('value in get initial: ', existingEvent?.trainingParticipationReport);
+  //   return existingEvent?.trainingParticipationReport
+  //     ? {
+  //         enabled: true,
+  //         parameter: existingEvent.trainingParticipationReport,
+  //       }
+  //     : {
+  //         enabled: false,
+  //       };
+  // };
+
+  const TPRValue = existingEvent?.trainingParticipationReport
+    ? {
+        enabled: true,
+        parameter: existingEvent.trainingParticipationReport,
+      }
+    : {
+        enabled: false,
+      };
+
   // We need to pass an empty array, if we want to disable streaming while updating an event
   const getStreamingPayload = (values: FormikValues) => {
     return values.streaming.enabled ? [values.streaming.platform] : [];
@@ -272,6 +314,8 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       showMeetingDetails: getShowMeetingDetailsInitialValue(),
       streaming: getStreamingInitialValue(),
       e2eEncryption: existingEvent?.room.e2EEncryption || false,
+      // trainingParticipationReport: getTPRInitialValue(),
+      trainingParticipationReport: TPRValue,
     },
     validationSchema,
     validateOnChange: false,
@@ -285,6 +329,25 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       }
     },
   });
+
+  const createTrainingParticipationReportPayload = () => {
+    const localValue = formik.values.trainingParticipationReport;
+    //null will explicitly force the backend to remove the previous value
+    //undefined will ignore the field in case we do not need any update
+    if (!localValue.enabled) {
+      return existingEvent?.trainingParticipationReport ? null : undefined;
+    }
+
+    if (
+      existingEvent?.trainingParticipationReport &&
+      isEqual(existingEvent.trainingParticipationReport, localValue.parameter)
+    ) {
+      return undefined;
+    }
+
+    //sending the value will create/update accordingly
+    return localValue.parameter;
+  };
 
   const onChangeStartDate = async (date: Date | null) => {
     if (!date) {
@@ -338,6 +401,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       hasSharedFolder: values.sharedFolder || false,
       streamingTargets: getStreamingPayload(values),
       e2eEncryption: values.e2eEncryption || false,
+      trainingParticipationReport: createTrainingParticipationReportPayload(),
     };
 
     if (values.recurrencePattern) {
@@ -689,6 +753,8 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
           />
 
           {isStreamingEnabled && <StreamingOptions formik={formik} />}
+
+          {isTrainingParticipationReportEnabled && <TrainingParticipationReportSelect formik={formik} />}
 
           {features.e2eEncryption && (
             <MeetingFormSwitch

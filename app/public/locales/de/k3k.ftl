@@ -949,7 +949,7 @@ dashboard-meeting-recurrence-daily = Täglich
 dashboard-meeting-recurrence-weekly = Wöchentlich
 dashboard-meeting-recurrence-bi-weekly = 14-Tägig
 dashboard-meeting-recurrence-monthly = Monatlich
-dashboard-meeting-recurrence-custom = Benutzerdefiniert ...
+dashboard-meeting-recurrence-custom = Benutzerdefiniert
 
 dashboard-recurrence-dialog-title = Benutzerdefinierte Meeting-Wiederholung
 dashboard-recurrence-dialog-frequency-label = Wiederholen alle
@@ -977,6 +977,20 @@ dashboard-recurrence-dialog-end-option-never = Nie
 dashboard-recurrence-dialog-end-option-on = Am
 dashboard-recurrence-dialog-save-button = Speichern
 dashboard-recurrence-dialog-close-button = Abbrechen
+
+dashboard-meeting-training-participation-report-switch = Teilnahmebericht für Schulungen
+dashboard-meeting-training-participation-report-option-every-thirty-min = Alle 30 Min. nachfragen
+dashboard-meeting-training-participation-report-option-every-sixty-min = Alle 60 Min. nachfragen
+dashboard-meeting-training-participation-report-option-thirty-to-sixty-min = Variabel alle 30 - 60 Min. nachfragen
+dashboard-meeting-training-participation-report-option-ninety-to-hundred-twenty-min = Variabel alle 90 - 120 Min. nachfragen
+dashboard-meeting-training-participation-report-option-custom = Benutzerdefiniert
+
+dashboard-custom-training-participation-report-dialog-title = Benutzerdefinierte Abfragezeiten
+dashboard-custom-training-participation-report-dialog-initial-timeout = Erste Bestätigungsabfrage variabel nach
+dashboard-custom-training-participation-report-dialog-interval-duration = Nachfolgende Abfragen variabel nach
+dashboard-custom-training-participation-report-dialog-to = bis
+dashboard-custom-training-participation-report-dialog-minutes = Minuten
+dashboard-custom-training-participation-report-dialog-error = Der Wert muss größer als {$min} sein
 
 dashboard-payment-status-downgraded = Achtung: Für Ihren Account ist derzeit keine gültige Zahlmethode hinterlegt.<br /> Die Nutzung ist derzeit auf den {$tariffName}-Tarif eingeschränkt.
 dashboard-add-payment-button = Jetzt auswählen
@@ -1216,8 +1230,8 @@ timer-not-done-icon-title = Nicht fertig
 participation-confirmation-dialog-title = Bestätigung der Schulungs-Teilnahme
 participation-confirmation-dialog-description = Sie nehmen an einer Schulung oder einem Kurs teil. Für den Teilnahmebericht wird die Anwesenheit wiederholt abgefragt.
 participation-confirmation-dialog-confirm-button = Anwesenheit bestätigen
-training-participation-logging-disable-button = Schulungs-Teilnahmeprotokollierung aktivieren
-training-participation-logging-enable-button = Schulungs-Teilnahmeprotokollierung deaktivieren
+training-participation-logging-disable-button = Schulungs-Teilnahmeprotokollierung deaktivieren
+training-participation-logging-enable-button = Schulungs-Teilnahmeprotokollierung aktivieren
 training-participation-report-pdf-asset-notification = <messageContainer>Der Teilnahmebericht wurde exportiert. Die entsprechende Datei befindet sich im Dashboard unter den <messageLink>Meeting Details</messageLink>.</messageContainer>
 presence-logging-enabled-notification = Schulungs-Teilnahmeprotokollierung aktiviert
 presence-logging-disabled-notification = Schulungs-Teilnahmeprotokollierung deaktiviert

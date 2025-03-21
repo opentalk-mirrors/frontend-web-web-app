@@ -1,0 +1,63 @@
+// SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
+//
+// SPDX-License-Identifier: EUPL-1.2
+import { RecurrencePattern } from '@opentalk/rest-api-rtk-query';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { Formik } from 'formik';
+
+import { TrainingParticipationReportSelect } from './TrainingParticipationReportSelect';
+
+const initialValues = {
+  trainingParticipationReport: {
+    enabled: true,
+  },
+  waitingRoom: false,
+  isTimeDependent: false,
+  startDate: '',
+  endDate: '',
+  recurrencePattern: '' as RecurrencePattern,
+  sharedFolder: false,
+  streaming: {
+    enabled: false,
+  },
+  showMeetingDetails: false,
+  e2eEncryption: false,
+};
+
+describe('Training participation report select', () => {
+  test('Select is not rendered when not enabled', async () => {
+    render(
+      <Formik initialValues={{ ...initialValues, trainingParticipationReport: { enabled: false } }} onSubmit={() => {}}>
+        {(formikProps) => <TrainingParticipationReportSelect formik={formikProps} />}
+      </Formik>
+    );
+
+    const selectButton = screen.queryByRole('combobox');
+    expect(selectButton).not.toBeInTheDocument();
+  });
+
+  test('Select is rendered and usable when enabled', () => {
+    render(
+      <Formik initialValues={initialValues} onSubmit={() => {}}>
+        {(formikProps) => <TrainingParticipationReportSelect formik={formikProps} />}
+      </Formik>
+    );
+
+    const selectButton = screen.getByRole('combobox');
+    expect(selectButton).toBeInTheDocument();
+
+    selectButton && fireEvent.mouseDown(selectButton);
+
+    const listbox = screen.getByRole('listbox');
+    expect(listbox).toBeInTheDocument();
+
+    const sixtyMinOption = screen.getByRole('option', {
+      name: 'dashboard-meeting-training-participation-report-option-every-sixty-min',
+    });
+
+    fireEvent.click(sixtyMinOption);
+
+    const select = screen.getByTestId('parameter-select').textContent?.replace(/\u200B/g, '');
+    expect(select).toBe('dashboard-meeting-training-participation-report-option-every-sixty-min');
+  });
+});

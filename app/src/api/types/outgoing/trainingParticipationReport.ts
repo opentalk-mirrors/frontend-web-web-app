@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
+
 import type { RootState } from '../../../store';
 import { createModule, Namespaced } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
@@ -20,32 +22,12 @@ export enum ParticipationLoggingState {
    */
   WaitingForConfirmation = 'waiting_for_confirmation',
 }
-
 export type ParticipationLogging = {
   state: ParticipationLoggingState;
 };
 
-export interface TimeRange {
-  /**
-   * The earliest number of seconds after which the checkpoint can be created. Must be a strictly positive number.
-   */
-  after: number;
-  /**
-   * The number of seconds within which the checkpoint can be created after the after value. Must be 0 or greater.
-   */
-  within: number;
-}
-
-export interface EnablePresenceLogging {
+export interface EnablePresenceLogging extends Partial<TrainingParticipationReportParameterSet> {
   action: 'enable_presence_logging';
-  /**
-   * default: { "after": 600, "within": 1200 }
-   */
-  initialCheckpointDelay?: TimeRange;
-  /**
-   * default: { "after": 6300, "within": 1800 }
-   */
-  checkpointInterval?: TimeRange;
 }
 
 export interface DisablePresenceLogging {

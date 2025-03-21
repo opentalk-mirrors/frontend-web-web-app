@@ -34,6 +34,27 @@ export interface SharedFolderData {
   readWrite?: SharedFolderCredentials;
 }
 
+export interface TimeRange {
+  /**
+   * The earliest number of seconds after which the checkpoint can be created. Must be 0 or greater.
+   */
+  after: number;
+  /**
+   * The number of seconds within which the checkpoint can be created after the after value. Must be 0 or greater.
+   */
+  within: number;
+}
+export interface TrainingParticipationReportParameterSet {
+  /**
+   * default: { "after": 600, "within": 1200 }
+   */
+  initialCheckpointDelay: TimeRange;
+  /**
+   * default: { "after": 6300, "within": 1800 }
+   */
+  checkpointInterval: TimeRange;
+}
+
 /**
  * EventRoomInfo in an Event object
  */
@@ -83,6 +104,7 @@ export interface CreateBaseEventPayload {
   showMeetingDetails?: boolean;
   hasSharedFolder?: boolean;
   streamingTargets?: Array<StreamingPlatform>;
+  trainingParticipationReport?: TrainingParticipationReportParameterSet;
 }
 
 /**
@@ -156,6 +178,7 @@ export interface UpdateEventPayload {
   showMeetingDetails?: boolean;
   hasSharedFolder?: boolean;
   streamingTargets?: Array<StreamingPlatform>;
+  trainingParticipationReport?: TrainingParticipationReportParameterSet | null;
 }
 
 /**
@@ -228,6 +251,7 @@ interface AbstractEvent extends BaseEvent {
   sharedFolder?: SharedFolderData;
   showMeetingDetails?: boolean;
   streamingTargets?: Array<StreamingPlatform>;
+  trainingParticipationReport?: TrainingParticipationReportParameterSet;
 }
 
 /**

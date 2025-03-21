@@ -171,3 +171,33 @@ export function formikDurationFieldProps<Values>(
     helperText: (hasError && (errorMessage as string)) || undefined,
   };
 }
+
+export function formikNumberFieldProps<Values>(
+  fieldName: string,
+  formik: FormikProps<Values>,
+  /**
+   * Duration value in minutes
+   *
+   * Default: 1
+   */
+  defaultValue?: number
+) {
+  const { values, handleBlur, handleChange } = formik;
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nextValue = parseInt(event.target.value);
+    if (Number.isNaN(nextValue)) {
+      handleChange({ ...event, target: { ...event.target, value: defaultValue } });
+      return;
+    }
+
+    handleChange(event);
+  };
+
+  return {
+    name: fieldName,
+    onChange: onChange,
+    onBlur: handleBlur,
+    value: get(values, fieldName, defaultValue ?? 1)?.toString(),
+  };
+}

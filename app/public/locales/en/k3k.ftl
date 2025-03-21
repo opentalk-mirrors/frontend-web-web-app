@@ -949,7 +949,7 @@ dashboard-meeting-recurrence-daily = Daily
 dashboard-meeting-recurrence-weekly = Weekly
 dashboard-meeting-recurrence-bi-weekly = Bi-Weekly
 dashboard-meeting-recurrence-monthly = Monthly
-dashboard-meeting-recurrence-custom = Custom ...
+dashboard-meeting-recurrence-custom = Custom
 
 dashboard-recurrence-dialog-title = Custom meeting repetition
 dashboard-recurrence-dialog-frequency-label = Repeat every
@@ -977,6 +977,20 @@ dashboard-recurrence-dialog-end-option-never = Never
 dashboard-recurrence-dialog-end-option-on = On
 dashboard-recurrence-dialog-save-button = Save
 dashboard-recurrence-dialog-close-button = Cancel
+
+dashboard-meeting-training-participation-report-switch = Training participation report
+dashboard-meeting-training-participation-report-option-every-thirty-min = Ask every 30 min
+dashboard-meeting-training-participation-report-option-every-sixty-min = Ask every 60 min
+dashboard-meeting-training-participation-report-option-thirty-to-sixty-min = Variable ask every 30 - 60 min
+dashboard-meeting-training-participation-report-option-ninety-to-hundred-twenty-min = Variable ask every 90 - 120 min
+dashboard-meeting-training-participation-report-option-custom = Custom
+
+dashboard-custom-training-participation-report-dialog-title = Custom query times
+dashboard-custom-training-participation-report-dialog-initial-timeout = First confirmation query variable after
+dashboard-custom-training-participation-report-dialog-interval-duration = Subsequent queries variable after
+dashboard-custom-training-participation-report-dialog-to = to
+dashboard-custom-training-participation-report-dialog-minutes = minutes
+dashboard-custom-training-participation-report-dialog-error = The value must be greater than {$min}
 
 dashboard-payment-status-downgraded = Attention: There is currently no valid payment method stored for your account.<br /> Currently you are restricted to the {$tariffName} plan.
 dashboard-add-payment-button = Add payment
