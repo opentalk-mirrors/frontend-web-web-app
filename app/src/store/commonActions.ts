@@ -4,7 +4,7 @@
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { InviteCode } from '@opentalk/rest-api-rtk-query/src/types';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
-import convertToCamelCase from 'camelcase-keys';
+import camelcaseKeys from 'camelcase-keys';
 import { Room } from 'livekit-client';
 import convertToSnakeCase from 'snakecase-keys';
 
@@ -35,7 +35,7 @@ export const login = createAsyncThunk<{ permission: Array<string> }, string, { s
       body: JSON.stringify(convertToSnakeCase({ idToken })),
     });
 
-    return convertToCamelCase(await response.json(), { deep: true });
+    return camelcaseKeys(await response.json(), { deep: true });
   }
 );
 

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import convertToCamelCase from 'camelcase-keys';
+import camelcaseKeys from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
 import { AuthTypeError, generateSerilizadError, storeToken } from '../utils';
@@ -39,7 +39,7 @@ export const login = createAsyncThunk('user/login', async (payload: LoginProps, 
         })
       );
     }
-    return convertToCamelCase(await response.json(), { deep: true });
+    return camelcaseKeys(await response.json(), { deep: true });
   } catch (error) {
     if (error instanceof SyntaxError) {
       // Unexpected token < in JSON
@@ -80,7 +80,7 @@ export const codeCallback = createAsyncThunk(
         );
       }
 
-      const data = convertToCamelCase(await response.json(), { deep: true });
+      const data = camelcaseKeys(await response.json(), { deep: true });
       storeToken(data);
       if (payload.baseUrl) {
         await dispatch(login({ idToken: data.idToken, baseUrl: payload.baseUrl }));
@@ -142,7 +142,7 @@ export const getNewToken = createAsyncThunk(
           })
         );
       }
-      const data = convertToCamelCase(await response.json(), { deep: true });
+      const data = camelcaseKeys(await response.json(), { deep: true });
       storeToken(data);
       if (payload.baseUrl) {
         dispatch(login({ idToken: data.idToken, baseUrl: payload.baseUrl }));

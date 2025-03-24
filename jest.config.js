@@ -47,6 +47,7 @@ module.exports = {
         '\\.(png|jpg|webp|ttf|woff|woff2|mp4)$': '<rootDir>/mocks/fileMock.js',
         '\\.svg\\?react$': '<rootDir>/mocks/svgrMock.js',
         '@mui/styled-engine': '<rootDir>/node_modules/@mui/styled-engine',
+        '^(camelcase-keys)$': '<rootDir>/mocks/camelcase-keys.js',
       },
       modulePaths: [],
       transformIgnorePatterns: ['/node_modules/(?!@heinlein-video/rrule*)'],
@@ -72,6 +73,9 @@ module.exports = {
       testEnvironment: 'jsdom',
       setupFilesAfterEnv: ['./packages/rtk-rest-api/src/setupTests.js'],
       testMatch: ['<rootDir>/packages/rtk-rest-api/**/?(*.)+(spec|test).[jt]s?(x)'],
+      moduleNameMapper: {
+        '^(camelcase-keys)$': '<rootDir>/mocks/camelcase-keys.js',
+      },
     },
   ],
 };
