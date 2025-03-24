@@ -36,6 +36,31 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
     this.update(opts);
   }
 
+  getVideoRectangle(canvas: OffscreenCanvas, frame: VideoFrame) {
+    const scaleWidth = canvas.width / frame.displayWidth;
+    const scaleHeight = canvas.height / frame.displayHeight;
+    const scaleFactor = Math.min(scaleWidth, scaleHeight);
+
+    const width = frame.displayWidth * scaleFactor;
+    const height = frame.displayHeight * scaleFactor;
+
+    const { x, y } = this.centerRectangle(canvas.width, canvas.height, width, height);
+
+    return { width, height, x, y };
+  }
+
+  centerRectangle(
+    outerWidth: number,
+    outerHeight: number,
+    innerWidth: number,
+    innerHeight: number,
+  ) {
+    return {
+      x: (outerWidth - innerWidth) / 2,
+      y: (outerHeight - innerHeight) / 2,
+    };
+  }
+
   async init({ outputCanvas, inputElement: inputVideo }: VideoTransformerInitOptions) {
     await super.init({ outputCanvas, inputElement: inputVideo });
 
@@ -127,6 +152,8 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
     if (!this.canvas || !this.ctx || !this.segmentationResults || !this.inputVideo) return;
     this.ctx.save();
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const frameRectangle = this.getVideoRectangle(this.canvas, frame);
+
     if (this.segmentationResults?.confidenceMasks) {
       this.ctx.filter = 'none';
       this.ctx.globalCompositeOperation = 'source-out';
@@ -135,7 +162,13 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
         this.segmentationResults.confidenceMasks,
         this.canvas,
       );
-      this.ctx?.drawImage(alphabitmap, 0, 0, this.canvas.width, this.canvas.height);
+      this.ctx?.drawImage(
+        alphabitmap,
+        frameRectangle.x,
+        frameRectangle.y,
+        frameRectangle.width,
+        frameRectangle.height,
+      );
 
       if (this.backgroundImage) {
         this.ctx.drawImage(
@@ -144,10 +177,10 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
           0,
           this.backgroundImage.width,
           this.backgroundImage.height,
-          0,
-          0,
-          this.canvas.width,
-          this.canvas.height,
+          frameRectangle.x,
+          frameRectangle.y,
+          frameRectangle.width,
+          frameRectangle.height,
         );
       } else {
         this.ctx.fillStyle = '#00FF00';
@@ -156,7 +189,13 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
 
       this.ctx.globalCompositeOperation = 'destination-over';
     }
-    this.ctx.drawImage(frame, 0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.drawImage(
+      frame,
+      frameRectangle.x,
+      frameRectangle.y,
+      frameRectangle.width,
+      frameRectangle.height,
+    );
     this.ctx.restore();
   }
 
