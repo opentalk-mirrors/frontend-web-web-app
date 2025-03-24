@@ -17,7 +17,7 @@ jest.mock('@livekit/components-react', () => ({
 }));
 
 describe('MuteParticipantsTab', () => {
-  const { store, dispatch } = mockStore(NUMBER_OF_PARTICIPANTS);
+  const { store, dispatchSpy } = mockStore(NUMBER_OF_PARTICIPANTS);
 
   beforeEach(() => {
     (useRemoteParticipants as jest.Mock).mockReturnValue(
@@ -51,7 +51,7 @@ describe('MuteParticipantsTab', () => {
 
     fireEvent.click(muteAllButton);
 
-    expect(dispatch.mock.calls).toContainEqual([
+    expect(dispatchSpy.mock.calls).toContainEqual([
       {
         payload: { participants: [...allParticipantIds] },
         type: 'signaling/livekit/force_mute',
@@ -79,7 +79,7 @@ describe('MuteParticipantsTab', () => {
 
     fireEvent.click(muteSelectedButton);
 
-    expect(dispatch.mock.calls).toContainEqual([
+    expect(dispatchSpy.mock.calls).toContainEqual([
       {
         payload: { participants: [participant1.identity, participant2.identity] },
         type: 'signaling/livekit/force_mute',
