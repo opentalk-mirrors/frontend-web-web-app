@@ -7,5 +7,5 @@ export const api = createApi({
   // highlight-start
   baseQuery: fetchBaseQuery({ baseUrl: '/' }),
   tagTypes: ['Events'],
-  endpoints: (build) => ({}),
+  endpoints: (_build) => ({}),
 });

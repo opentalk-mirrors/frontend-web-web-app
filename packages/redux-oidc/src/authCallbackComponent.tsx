@@ -1,10 +1,9 @@
 import { isEmpty } from 'lodash';
 import { ReactNode, useEffect } from 'react';
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { useAuthContext } from './authProvider';
+import { useAuthContext } from './authContext';
 import { selectAuthIsPending, selectIsAuthenticated } from './store';
 import { getAppDispatch } from './store';
 import { codeCallback } from './store/authActions';

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
-import { closeSnackbar, CustomContentProps, SnackbarContent } from 'notistack';
+import { closeSnackbar, CustomContentProps, SnackbarContent, SnackbarKey } from 'notistack';
 import { forwardRef, isValidElement, useCallback } from 'react';
 
 import { CloseButton } from '../CloseButton';
@@ -51,9 +51,13 @@ const StyledCloseButton = styled(CloseButton)(({ theme }) => ({
 
 interface CustomNotificationProps extends CustomContentProps {
   ariaLive?: 'assertive' | 'off' | 'polite';
+  id: string; // Ensure id is explicitly declared
+  action?: React.ReactNode | ((key: SnackbarKey) => React.ReactNode);
 }
 
 export const CustomNotification = forwardRef<HTMLDivElement, CustomNotificationProps>((props, ref) => {
+  const { action } = props;
+
   const handleDismiss = useCallback(() => {
     closeSnackbar(props.id);
   }, [props.id, closeSnackbar]);
@@ -61,12 +65,12 @@ export const CustomNotification = forwardRef<HTMLDivElement, CustomNotificationP
   const Icon = props.iconVariant[props.variant];
 
   const ActionButtons = () => {
-    if (isValidElement(props.action)) {
-      return props.action;
+    if (isValidElement(action)) {
+      return action;
     }
 
-    if (typeof props.action === 'function') {
-      return props.action(props.id);
+    if (typeof action === 'function') {
+      return action(props.id);
     }
 
     return <StyledCloseButton onClick={handleDismiss} />;
@@ -86,3 +90,4 @@ export const CustomNotification = forwardRef<HTMLDivElement, CustomNotificationP
     </StyledSnackbarContent>
   );
 });
+CustomNotification.displayName = 'CustomNotification';

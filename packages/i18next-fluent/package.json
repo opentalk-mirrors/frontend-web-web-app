@@ -20,16 +20,12 @@
     "i18next": "^24.2.3"
   },
   "devDependencies": {
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^10.1.1",
     "i18next": "^24.2.3",
     "typescript": "^5.8.2",
     "vite": "^6.2.3",
     "vite-plugin-dts": "^4.5.3"
   },
   "scripts": {
-    "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
-    "lint:tests": "eslint test/ --ext .js,.jsx,.ts,.tsx",
     "watch": "vite build --watch",
     "build": "vite build"
   },

@@ -171,5 +171,6 @@ const BinaryActionNotification = React.forwardRef<HTMLDivElement, BinaryActionNo
     );
   }
 );
+BinaryActionNotification.displayName = 'BinaryActionNotification';
 
 export default BinaryActionNotification;

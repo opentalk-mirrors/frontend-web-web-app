@@ -1,8 +1,0 @@
-/build
-/node_modules
-/cjs
-/esm
-/dist
-/fluent.js
-/fluent.min.js
-/example

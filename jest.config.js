@@ -71,7 +71,7 @@ module.exports = {
     {
       displayName: 'packages/rtk-rest-api',
       testEnvironment: 'jsdom',
-      setupFilesAfterEnv: ['./packages/rtk-rest-api/src/setupTests.js'],
+      setupFilesAfterEnv: ['./packages/rtk-rest-api/src/setupTests.ts'],
       testMatch: ['<rootDir>/packages/rtk-rest-api/**/?(*.)+(spec|test).[jt]s?(x)'],
       moduleNameMapper: {
         '^(camelcase-keys)$': '<rootDir>/mocks/camelcase-keys.js',

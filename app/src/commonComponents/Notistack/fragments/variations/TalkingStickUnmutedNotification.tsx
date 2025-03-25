@@ -48,3 +48,4 @@ export const TalkingStickUnmutedNotification = forwardRef(
     );
   }
 );
+TalkingStickUnmutedNotification.displayName = 'TalkingStickUnmutedNotification';

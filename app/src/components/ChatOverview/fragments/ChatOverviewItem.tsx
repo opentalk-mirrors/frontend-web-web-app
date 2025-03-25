@@ -42,7 +42,7 @@ interface IScopedChatItemProps {
 
 const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
   const participant = useAppSelector(selectParticipantById(chat.id as ParticipantId));
-  const date = new Date(chat.lastMessage?.timestamp) ?? Date.now;
+  const date = new Date(chat.lastMessage?.timestamp ?? Date.now());
   const formattedTime = useDateFormat(date, 'time');
   const getDisplayName = () => (isEmpty(participant) ? chat.id : participant?.displayName);
   const lastSeenTimestampCount = useAppSelector((state) => selectUnreadPersonalMessageCountByTarget(state, chat.id));

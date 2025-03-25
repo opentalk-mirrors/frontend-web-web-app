@@ -19,7 +19,7 @@ if (!window.MediaStreamTrackGenerator) {
         const dest = ac.createMediaStreamDestination();
         const [track] = dest.stream.getAudioTracks();
         track.writable = new WritableStream({
-          async start(controller) {
+          async start(_controller) {
             this.arrays = [];
             function worklet() {
               registerProcessor(

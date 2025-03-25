@@ -94,5 +94,6 @@ const ScreenPresenterVideo = React.forwardRef<HTMLDivElement, ScreenPresenterVid
     );
   }
 );
+ScreenPresenterVideo.displayName = 'ScreenPresenterVideo';
 
 export default ScreenPresenterVideo;

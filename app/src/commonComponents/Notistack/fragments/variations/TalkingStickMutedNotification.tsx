@@ -47,3 +47,4 @@ export const TalkingStickMutedNotification = forwardRef(
     );
   }
 );
+TalkingStickMutedNotification.displayName = 'TalkingStickMutedNotification';

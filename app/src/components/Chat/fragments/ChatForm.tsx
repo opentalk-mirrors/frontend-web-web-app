@@ -348,7 +348,11 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
   );
 
   if (!isChatEnabled) {
-    return <Tooltip title={t('chat-disabled-tooltip')} placement="top" children={renderForm} />;
+    return (
+      <Tooltip title={t('chat-disabled-tooltip')} placement="top">
+        {renderForm}
+      </Tooltip>
+    );
   }
 
   return renderForm;
