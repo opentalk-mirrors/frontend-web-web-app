@@ -189,11 +189,11 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2(encoding@0.1.13)
       linkify-react:
-        specifier: ^3.0.4
-        version: 3.0.4(linkifyjs@3.0.5)(react@18.3.1)
+        specifier: ^4.2.0
+        version: 4.2.0(linkifyjs@4.2.0)(react@18.3.1)
       linkifyjs:
-        specifier: ^3.0.5
-        version: 3.0.5
+        specifier: ^4.2.0
+        version: 4.2.0
       livekit-client:
         specifier: '=2.9.5'
         version: 2.9.5
@@ -4778,14 +4778,14 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
-  linkify-react@3.0.4:
-    resolution: {integrity: sha512-ar/fLlBw4/pbg5BmpH65dSXpGWhts/+BDV8tCdLN8Pd0P/vtHKjaEw9Gf4Za3Utpn5FhWlQyf57SWriPtoBHtw==}
+  linkify-react@4.2.0:
+    resolution: {integrity: sha512-dIcDGo+n4FP2FPIHDcqB7cUE+omkcEgQJpc7sNNP4+XZ9FUhFAkKjGnHMzsZM+B4yF93sK166z9K5cKTe/JpzA==}
     peerDependencies:
-      linkifyjs: ^3.0.0
+      linkifyjs: ^4.0.0
       react: '>= 15.0.0'
 
-  linkifyjs@3.0.5:
-    resolution: {integrity: sha512-1Y9XQH65eQKA9p2xtk+zxvnTeQBG7rdAXSkUG97DmuI/Xhji9uaUzaWxRj6rf9YC0v8KKHkxav7tnLX82Sz5Fg==}
+  linkifyjs@4.2.0:
+    resolution: {integrity: sha512-pCj3PrQyATaoTYKHrgWRF3SJwsm61udVh+vuls/Rl6SptiDhgE7ziUIudAedRY9QEfynmM7/RmLEfPUyw1HPCw==}
 
   lint-staged@15.5.0:
     resolution: {integrity: sha512-WyCzSbfYGhK7cU+UuDDkzUiytbfbi0ZdPy2orwtM75P3WTtQBzmG40cCxIa8Ii2+XjfxzLH6Be46tUfWS85Xfg==}
@@ -12370,12 +12370,12 @@ snapshots:
 
   lines-and-columns@1.2.4: {}
 
-  linkify-react@3.0.4(linkifyjs@3.0.5)(react@18.3.1):
+  linkify-react@4.2.0(linkifyjs@4.2.0)(react@18.3.1):
     dependencies:
-      linkifyjs: 3.0.5
+      linkifyjs: 4.2.0
       react: 18.3.1
 
-  linkifyjs@3.0.5: {}
+  linkifyjs@4.2.0: {}
 
   lint-staged@15.5.0:
     dependencies:
