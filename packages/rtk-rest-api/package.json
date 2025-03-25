@@ -28,7 +28,7 @@
     "react-dom": "^18.3.1",
     "react-redux": "^9.2.0",
     "rollup": "^2.79.2",
-    "type-fest": "^4.37.0",
+    "type-fest": "^4.38.0",
     "typescript": "^5.8.2",
     "uuid": "^11.1.0",
     "whatwg-fetch": "^3.6.20"
