@@ -142,7 +142,8 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
     const isPageReloading = sessionStorage.getItem('isPageReloading') === 'true';
 
     if (
-      [ConnectionState.Leaving, ConnectionState.ReadyToEnter, ConnectionState.Waiting].includes(connectionState) &&
+      connectionState !== ConnectionState.Leaving &&
+      [ConnectionState.ReadyToEnter, ConnectionState.Waiting].includes(connectionState) &&
       !isWhisperRoom &&
       !isPageReloading
     ) {
