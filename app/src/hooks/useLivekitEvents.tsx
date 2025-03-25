@@ -141,7 +141,11 @@ const useLivekitEvents = (room: Room, isWhisperRoom?: boolean) => {
   const handleRoomDisconnected = useCallback(() => {
     const isPageReloading = sessionStorage.getItem('isPageReloading') === 'true';
 
-    if (connectionState !== ConnectionState.Leaving && !isWhisperRoom && !isPageReloading) {
+    if (
+      [ConnectionState.Leaving, ConnectionState.ReadyToEnter, ConnectionState.Waiting].includes(connectionState) &&
+      !isWhisperRoom &&
+      !isPageReloading
+    ) {
       dispatch({ type: 'livekit/triggerReconnect' });
     }
   }, [dispatch, connectionState, isWhisperRoom]);
