@@ -20,13 +20,7 @@ import {
   UserId,
 } from '@opentalk/rest-api-rtk-query';
 import { AssetId, InviteCode, SipId } from '@opentalk/rest-api-rtk-query/src/types';
-import {
-  ConfigureStoreOptions,
-  Store,
-  combineReducers,
-  configureStore as configureStoreTlk,
-  createStore as createStoreTlk,
-} from '@reduxjs/toolkit';
+import { ConfigureStoreOptions, Store, combineReducers, configureStore as configureStoreTlk } from '@reduxjs/toolkit';
 import { RenderOptions, RenderResult, render as rtlRender } from '@testing-library/react';
 import i18n from 'i18next';
 import {
@@ -122,25 +116,20 @@ i18n.use(initReactI18next).init({
   },
 });
 
-export const createStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined) => {
-  const store = createStoreTlk(
-    combineReducers({ ...appReducers }),
-    options?.initialState && { ...options.initialState }
-  );
-
-  const dispatch = jest.fn(store.dispatch);
-  store.dispatch = dispatch;
-
-  return { store, dispatch };
+type MockReduxStore = {
+  store: ReturnType<typeof configureStoreTlk>;
+  dispatchSpy: jest.SpyInstance;
 };
 
-export const configureStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined) => {
+export const configureStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined): MockReduxStore => {
   const store = configureStoreTlk({
     reducer: combineReducers({ ...appReducers }),
     preloadedState: options?.initialState && { ...options.initialState },
   });
 
-  return { store };
+  const dispatchSpy = jest.spyOn(store, 'dispatch');
+
+  return { store, dispatchSpy };
 };
 
 interface Render {
@@ -263,7 +252,7 @@ export const mockStore = (
     ...options?.store?.initialState,
   };
 
-  return createStore({
+  return configureStore({
     initialState,
   });
 };

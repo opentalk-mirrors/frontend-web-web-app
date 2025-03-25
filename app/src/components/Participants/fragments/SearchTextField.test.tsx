@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen, fireEvent, cleanup } from '@testing-library/react';
 
-import { renderWithProviders, createStore } from '../../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import SearchTextField from './SearchTextField';
 import { items } from './constants';
 
 describe('SearchTextField', () => {
-  const { store, dispatch } = createStore();
+  const { store, dispatchSpy } = configureStore();
   const mockOnSearch = jest.fn();
   afterEach(() => cleanup());
 
@@ -63,6 +63,8 @@ describe('SearchTextField', () => {
 
     raisedHandButton && fireEvent.click(raisedHandButton);
 
-    expect(dispatch.mock.calls).toContainEqual([{ payload: 'raisedHandFirst', type: 'ui/setParticipantsSortOption' }]);
+    expect(dispatchSpy.mock.calls).toContainEqual([
+      { payload: 'raisedHandFirst', type: 'ui/setParticipantsSortOption' },
+    ]);
   });
 });

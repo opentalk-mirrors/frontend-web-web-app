@@ -133,7 +133,7 @@ describe('ThumbsRow', () => {
 
   // TODO: move this tests to Thumbnail component
   xtest('ThumbsRow shall fill the gap if a thumbnail participant leaves the meeting', () => {
-    const { store, dispatch } = mockStore(3);
+    const { store } = mockStore(3);
     const ids = store.getState().participants.ids;
 
     renderWithProviders(<ThumbsRow thumbsPerWindow={2} thumbWidth={340} />, { store });
@@ -156,7 +156,7 @@ describe('ThumbsRow', () => {
 
     // one visible participant is leaving (last one in the row)
     // now the first two participants must be visible + no slider buttons
-    dispatch(leave({ id: ids[2] as ParticipantId, timestamp: Date.now().toString() }));
+    store.dispatch(leave({ id: ids[2] as ParticipantId, timestamp: Date.now().toString() }));
 
     expect(screen.getByTestId(`thumbsVideo-${ids[0]}`)).toBeInTheDocument();
     expect(screen.getByTestId(`thumbsVideo-${ids[1]}`)).toBeInTheDocument();

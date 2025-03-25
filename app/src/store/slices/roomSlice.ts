@@ -10,7 +10,7 @@ import {
   createListenerMiddleware,
   createSlice,
 } from '@reduxjs/toolkit';
-import convertToCamelCase from 'camelcase-keys';
+import camelcaseKeys from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
 import type { AppDispatch, RootState } from '../';
@@ -127,7 +127,7 @@ export const fetchRoomByInviteId = createAsyncThunk<
       });
     }
 
-    return convertToCamelCase(await response.json(), { deep: true }) as InviteRoomVerifyResponse;
+    return camelcaseKeys(await response.json(), { deep: true }) as InviteRoomVerifyResponse;
   } catch (error) {
     return rejectWithValue({
       status: 500,
