@@ -13,7 +13,7 @@ import { eventHandlers, generateMockEvent, userHandlers } from './mocks/server';
 
 // This configures a request mocking server with the given request handlers.
 const server = setupServer(...eventHandlers, ...userHandlers);
-const api = createOpenTalkApiWithReactHooks(fetchQuery({ baseUrl: 'v1/' }));
+const api = createOpenTalkApiWithReactHooks(fetchQuery({ baseUrl: 'http://localhost/v1/' }));
 const storeRef = setupApiStore(api);
 const { useGetEventsQuery, useDeleteEventMutation } = api;
 

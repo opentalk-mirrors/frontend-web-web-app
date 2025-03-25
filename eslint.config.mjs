@@ -52,7 +52,7 @@ export default defineConfig([
   },
   {
     name: 'app',
-    files: ['app/**/*.{jsx,tsx}'],
+    files: ['app/**/*.{js,ts,jsx,tsx,}'],
     plugins: {
       react,
       jsxA11y,
@@ -73,14 +73,14 @@ export default defineConfig([
   },
   {
     name: 'redux-oidc',
-    files: ['packages/redux-oidc/**/*.{js,ts}'],
+    files: ['packages/redux-oidc/**/*.{js,ts,jsx,tsx}'],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
     },
   },
   {
     name: 'track-processors-js-main',
-    files: ['packages/track-processors-js-main/**/*.{js,ts}'],
+    files: ['packages/track-processors-js-main/**/*.{js,ts,jsx,tsx}'],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
     },

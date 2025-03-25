@@ -54,7 +54,7 @@ lint:prettier+eslint:
     - *setup-pnpm
   script:
     - pnpm install
-    - pnpm eslint --max-warnings 0
+    - pnpm lint
     - pnpm fmt:ci
 
 lint:circular-deps:

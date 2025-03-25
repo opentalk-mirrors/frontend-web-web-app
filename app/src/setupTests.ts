@@ -8,9 +8,8 @@
 import { TariffId } from '@opentalk/rest-api-rtk-query';
 import '@testing-library/jest-dom';
 import 'cross-fetch/polyfill';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { TextDecoder, TextEncoder } from 'node:util';
 import React from 'react';
 
 import { DefaultAvatarImage } from './store/slices/configSlice';
@@ -20,8 +19,6 @@ global.React = React;
 global.console = {
   ...console,
 };
-
-Object.assign(global, { TextDecoder, TextEncoder });
 
 const config = {
   controller: 'localhost:8000',
@@ -137,21 +134,19 @@ const config = {
 window.config = config;
 
 const handlers = [
-  rest.get('http://OP/.well-known/openid-configuration', async (req, res, ctx) => {
-    return res(
-      ctx.json({
-        issuer: 'http://localhost/',
-        authorization_endpoint: 'http://localhost/auth',
-        token_endpoint: 'http://localhost/token',
-        revocation_endpoint: 'revoke',
-      })
-    );
+  http.get('http://OP/.well-known/openid-configuration', async () => {
+    return HttpResponse.json({
+      issuer: 'http://localhost/',
+      authorization_endpoint: 'http://localhost/auth',
+      token_endpoint: 'http://localhost/token',
+      revocation_endpoint: 'revoke',
+    });
   }),
-  rest.get('http://localhost/locales/en-US/k3k.ftl', async (req, res, ctx) => {
-    return res(ctx.text('Mocked FTL Content'));
+  http.get('http://localhost/locales/en-US/k3k.ftl', async () => {
+    return HttpResponse.text('Mocked FTL Content');
   }),
-  rest.get('http://localhost/locales/en/k3k.ftl', async (req, res, ctx) => {
-    return res(ctx.text('Mocked FTL Content'));
+  http.get('http://localhost/locales/en/k3k.ftl', async () => {
+    return HttpResponse.text('Mocked FTL Content');
   }),
 ];
 
@@ -206,8 +201,6 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => {
     return {
       t: (i18nKey: string) => i18nKey,
-      // or with TypeScript:
-      //t: (i18nKey: string) => i18nKey,
       i18n: {
         changeLanguage: mockChangeLanguage,
         language: {

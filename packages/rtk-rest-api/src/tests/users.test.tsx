@@ -17,7 +17,7 @@ const server = setupServer(...eventHandlers, ...userHandlers);
 // Establish API mocking before all tests.
 const api = createOpenTalkApiWithReactHooks(
   fetchQuery({
-    baseUrl: 'v1/',
+    baseUrl: 'http://localhost/v1/',
   })
 );
 
