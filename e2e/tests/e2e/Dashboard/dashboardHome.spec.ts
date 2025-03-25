@@ -18,6 +18,38 @@ test.beforeEach('Navigate to dashboard', async ({ page, browserName }) => {
 });
 
 test.describe('Dashboard_Home', () => {
+  test('TC_002_Dashboard_Home_Plan new button', async ({ page }) => {
+    const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
+    await homePage.planNewMeetingButton.click();
+    const planMeetingPage = new PlanMeetingPage({ page });
+
+    // title text should be participant and participants
+    await expect(planMeetingPage.meetingTextAsTitle).toBeVisible();
+    await expect(planMeetingPage.participantTextAsTitle).toBeVisible();
+    await expect(planMeetingPage.meetingPageDescription).toBeVisible();
+    await expect(planMeetingPage.titleInputField).toBeVisible();
+    await expect(planMeetingPage.meetingDetailsInputField).toBeVisible();
+    await expect(planMeetingPage.passwordInputField).toBeVisible();
+    await expect(planMeetingPage.setDateTimeToggleButton).toBeChecked();
+    await expect(planMeetingPage.dateInputField.fromInputField).toBeVisible();
+    await expect(planMeetingPage.dateInputField.toInputField).toBeVisible();
+    await expect(planMeetingPage.meetingOccurrenceDropDown).toBeVisible();
+    await expect(planMeetingPage.meetingOccurrenceDropDown).toHaveText('No repetition');
+    await expect(planMeetingPage.waitingRoomToggleButton).not.toBeChecked();
+    await expect(planMeetingPage.createSharedFolderToggleButton).not.toBeChecked();
+    await expect(planMeetingPage.showMeetingDetailsToggleButton).toBeChecked();
+    await expect(planMeetingPage.livestreamToggleButton).not.toBeChecked();
+    // enable protection is only available in testing domain and not in CI
+    const baseUrl = process.env.INSTANCE_URL;
+    const parsedBaseUrl = new URL(baseUrl);
+    if (parsedBaseUrl.hostname.startsWith('testing')) {
+      await expect(planMeetingPage.enableProtectionToggleButton).not.toBeChecked();
+    }
+    await expect(planMeetingPage.createMeetingButton).toBeVisible();
+    await expect(planMeetingPage.cancelMeetingCreationButton).toBeVisible();
+  });
+
   test('TC_003_Dashboard_Home_Plan new_Step-1 Meeting_Textboxes: Title *, Details, Password', async ({ page }) => {
     const homePage = new HomePage({ page });
     await homePage.planNewMeetingButton.click();
