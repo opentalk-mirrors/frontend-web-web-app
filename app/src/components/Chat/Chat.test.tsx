@@ -4,15 +4,19 @@
 import { Store } from '@reduxjs/toolkit';
 import { screen, waitFor, fireEvent, act } from '@testing-library/react';
 
+import { AppDispatch } from '../../store';
 import { join, leave } from '../../store/slices/participantsSlice';
 import { ParticipantId, ParticipationKind, MeetingNotesAccess, WaitingState } from '../../types';
-import { renderWithProviders, createStore } from '../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import Chat from './Chat';
 
 describe('Chat component', () => {
-  let store: Store, dispatch: jest.Mock;
+  let store: Store;
+  let dispatch: AppDispatch;
+  let dispatchSpy: jest.SpiedFunction<AppDispatch>;
+
   beforeEach(() => {
-    const createdStore = createStore({
+    const createdStore = configureStore({
       initialState: {
         chat: {
           enabled: true,
@@ -35,7 +39,8 @@ describe('Chat component', () => {
       },
     });
     store = createdStore.store;
-    dispatch = createdStore.dispatch;
+    dispatch = createdStore.store.dispatch;
+    dispatchSpy = createdStore.dispatchSpy;
   });
 
   test('chat component should be displayed with encrypted message on initial load', () => {
@@ -112,7 +117,7 @@ describe('Chat component', () => {
     });
 
     await waitFor(() => {
-      expect(dispatch.mock.calls).toContainEqual([
+      expect(dispatchSpy.mock.calls).toContainEqual([
         {
           type: 'signaling/chat/send_message',
           payload: { content: 'Test', scope: 'global' },

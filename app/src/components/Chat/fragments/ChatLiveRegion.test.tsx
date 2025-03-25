@@ -6,7 +6,7 @@ import { screen, act } from '@testing-library/react';
 
 import { received } from '../../../store/slices/chatSlice';
 import { ChatScope, ParticipantId, ChatMessage } from '../../../types';
-import { renderWithProviders, createStore } from '../../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import ChatLiveRegion from './ChatLiveRegion';
 
 const OUR_UUID = '1234546';
@@ -28,7 +28,7 @@ jest.mock('./ChatAnnouncement', () => ({
 describe('ChatLiveRegion', () => {
   let store: Store, dispatch: Dispatch;
   beforeEach(() => {
-    const createdStore = createStore({
+    const createdStore = configureStore({
       initialState: {
         chat: {
           enabled: true,
@@ -46,7 +46,7 @@ describe('ChatLiveRegion', () => {
     });
 
     store = createdStore.store;
-    dispatch = createdStore.dispatch;
+    dispatch = createdStore.store.dispatch;
   });
   test('renders the live region', () => {
     renderWithProviders(<ChatLiveRegion />, { store });

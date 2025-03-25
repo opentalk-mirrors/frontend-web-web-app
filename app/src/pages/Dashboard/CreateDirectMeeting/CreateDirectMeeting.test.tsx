@@ -4,7 +4,12 @@
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { screen, cleanup, waitFor } from '@testing-library/react';
 
-import { createStore, eventMockedData, mockedPermanentRoomInvite, renderWithProviders } from '../../../utils/testUtils';
+import {
+  configureStore,
+  eventMockedData,
+  mockedPermanentRoomInvite,
+  renderWithProviders,
+} from '../../../utils/testUtils';
 import CreateDirectMeeting from './CreateDirectMeeting';
 
 const mockCreateEvent = () => ({
@@ -115,14 +120,14 @@ describe('Dashboard CreateDirectMeeting', () => {
   afterEach(() => cleanup());
 
   test('page will not crash', () => {
-    const { store } = createStore();
+    const { store } = configureStore();
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true } });
 
     expect(screen.getByText('dashboard-direct-meeting-title')).toBeInTheDocument();
   });
 
   test('link will be generated and filled into textfield', () => {
-    const { store } = createStore();
+    const { store } = configureStore();
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true } });
 
     expect(screen.getByDisplayValue(INVITE_LINK)).toBeInTheDocument();
@@ -136,7 +141,7 @@ describe('Dashboard CreateDirectMeeting', () => {
         writeText: mockWriteText,
       },
     });
-    const { store } = createStore();
+    const { store } = configureStore();
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true, mui: true } });
 
     const copyButton = screen.getByLabelText('dashboard-invite-to-meeting-copy-room-link-aria-label');
@@ -158,7 +163,7 @@ describe('Dashboard CreateDirectMeeting', () => {
         writeText: mockWriteText,
       },
     });
-    const { store } = createStore();
+    const { store } = configureStore();
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true, mui: true } });
 
     const copyButton = screen.getByLabelText('dashboard-invite-to-meeting-copy-guest-link-aria-label');

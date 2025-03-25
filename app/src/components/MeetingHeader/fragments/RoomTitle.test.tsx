@@ -5,14 +5,14 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { truncate } from 'lodash';
 
-import { renderWithProviders, createStore } from '../../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import RoomTitle from './RoomTitle';
 import { ROOM_TITLE_MAX_LENGTH } from './constants';
 
 describe('Room title', () => {
   test('should display the whole name in the title and in the tooltip', async () => {
     const allowedLengthName = 'a'.repeat(ROOM_TITLE_MAX_LENGTH);
-    const { store } = createStore({
+    const { store } = configureStore({
       initialState: {
         room: {
           eventInfo: {
@@ -38,7 +38,7 @@ describe('Room title', () => {
 
   test('should display dots after exceeding max length in the title and whole name in the tooltip', async () => {
     const exceedingMaxLengthName = 'a'.repeat(ROOM_TITLE_MAX_LENGTH + 1);
-    const { store } = createStore({
+    const { store } = configureStore({
       initialState: {
         room: {
           eventInfo: {
@@ -63,7 +63,7 @@ describe('Room title', () => {
     });
   });
   test('should render the info button if the eventInfo contains meeting details and if the room has roomInfo', () => {
-    const { store } = createStore({
+    const { store } = configureStore({
       initialState: {
         room: {
           eventInfo: {
@@ -104,7 +104,7 @@ describe('Room title', () => {
 
   test('should display fallback title in case room title is undefined', async () => {
     const truncatedFallbackTitle = truncate('fallback-room-title', { length: ROOM_TITLE_MAX_LENGTH });
-    const { store } = createStore({
+    const { store } = configureStore({
       initialState: {
         room: {
           eventInfo: undefined,
@@ -126,7 +126,7 @@ describe('Room title', () => {
   });
   test('should be rendered inside an h1 tag', () => {
     const truncatedFallbackTitle = truncate('fallback-room-title', { length: ROOM_TITLE_MAX_LENGTH });
-    const { store } = createStore({
+    const { store } = configureStore({
       initialState: {
         room: {
           eventInfo: undefined,

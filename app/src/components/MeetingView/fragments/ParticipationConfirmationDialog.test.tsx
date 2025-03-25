@@ -5,18 +5,18 @@ import { fireEvent, screen } from '@testing-library/react';
 
 import { confirmPresence } from '../../../api/types/outgoing/trainingParticipationReport';
 import { presenceConfirmationDone } from '../../../store/slices/roomSlice';
-import { createStore, renderWithProviders } from '../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import { ParticipationConfirmationDialog } from './ParticipationConfirmationDialog';
 
 describe('ParticipationConfirmationDialog', () => {
-  const { store: storeNotOngoing } = createStore({
+  const { store: storeNotOngoing } = configureStore({
     initialState: {
       room: {
         isPresenceConfirmationActive: false,
       },
     },
   });
-  const { store: storeOngoing, dispatch } = createStore({
+  const { store: storeOngoing, dispatchSpy } = configureStore({
     initialState: {
       room: {
         isPresenceConfirmationActive: true,
@@ -45,8 +45,8 @@ describe('ParticipationConfirmationDialog', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'participation-confirmation-dialog-confirm-button' }));
 
-    expect(dispatch).toHaveBeenCalledTimes(2);
-    expect(dispatch).toHaveBeenCalledWith(confirmPresence.action());
-    expect(dispatch).toHaveBeenCalledWith(presenceConfirmationDone());
+    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    expect(dispatchSpy).toHaveBeenCalledWith(confirmPresence.action());
+    expect(dispatchSpy).toHaveBeenCalledWith(presenceConfirmationDone());
   });
 });
