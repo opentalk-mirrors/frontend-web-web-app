@@ -4,7 +4,8 @@
 import type { VariantType } from 'notistack';
 
 import BinaryActionNotification from './BinaryActionNotification';
-import ConsentNotification, { showConsentNotification } from './ConsentNotification';
+import ConsentNotification from './ConsentNotification';
+import { showConsentNotification } from './ConsentNotification/utils';
 import { CustomNotification } from './CustomNotification';
 import { TalkingStickMutedNotification } from './TalkingStickMutedNotification';
 import { TalkingStickUnmutedNotification } from './TalkingStickUnmutedNotification';
