@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled } from '@mui/material';
+import { styled, Link as MUILink } from '@mui/material';
 import { Trans } from 'react-i18next';
 
-const Link = styled('a')(({ theme }) => ({
+const Link = styled(MUILink)(({ theme }) => ({
   color: theme.palette.common.white,
 }));
 
