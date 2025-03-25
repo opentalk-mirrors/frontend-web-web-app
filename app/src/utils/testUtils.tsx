@@ -116,7 +116,12 @@ i18n.use(initReactI18next).init({
   },
 });
 
-export const configureStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined) => {
+type MockReduxStore = {
+  store: ReturnType<typeof configureStoreTlk>;
+  dispatchSpy: jest.SpyInstance;
+};
+
+export const configureStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined): MockReduxStore => {
   const store = configureStoreTlk({
     reducer: combineReducers({ ...appReducers }),
     preloadedState: options?.initialState && { ...options.initialState },
