@@ -3,6 +3,9 @@
 # SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 #
 # SPDX-License-Identifier: EUPL-1.2
+
+HTML_ROOT=/usr/share/nginx/html
+
 ACTIVE_FEATURES="{
     userSearch: ${FEATURE_USER_SEARCH:-true},
     muteUsers: ${FEATURE_MUTE_USER:-true},
@@ -61,7 +64,7 @@ if [[ x"${KEYCLOAK_AUTHORITY}" != "x" ]]; then
     OIDC_ISSUER=$KEYCLOAK_AUTHORITY
 fi
 
-cat >/usr/share/nginx/html/config.js << EOF
+cat >$HTML_ROOT/config.js << EOF
 window.config = {
   logLevel: "${LOG_LEVEL:-info}",
   controller: "${CONTROLLER_HOST}",
@@ -116,6 +119,20 @@ window.config = {
   },
   settings: {
 	waitingRoomDefaultValue: ${WAITING_ROOM_DEFAULT_VALUE:-false}
+  }
+}
+EOF
+
+CONTROLLER_SCHEMA="https"
+if [ "$INSECURE" = "true" ]; then
+  CONTROLLER_SCHEMA="http"
+fi
+
+mkdir -p $HTML_ROOT/.well-known/opentalk
+cat >$HTML_ROOT/.well-known/opentalk/client << EOF
+{
+  "opentalk_controller": {
+    "base_url": "$CONTROLLER_SCHEMA://$CONTROLLER_HOST"
   }
 }
 EOF
