@@ -30,6 +30,37 @@ export class MeetingRoomPage {
     moderatorsFirstSortingOption: Locator;
   };
 
+  jumpLinks: {
+    skipToModerationPanelLink: Locator;
+    skipToMyMeetingMenuLink: Locator;
+    skipToPersonalControlPanelLink: Locator;
+  };
+
+  moderationTools: {
+    homeButton: Locator;
+    muteParticipantsButton: Locator;
+    resetRaisedHandsButton: Locator;
+    talkingStickButton: Locator;
+    pollButton: Locator;
+    votingButton: Locator;
+    meetingNotesButton: Locator;
+    whiteboardButton: Locator;
+    createBreakoutRoomsButton: Locator;
+    timerButton: Locator;
+    coffeeBreakButton: Locator;
+    debriefingButton: Locator;
+  };
+
+  chatButton: Locator;
+  messageButton: Locator;
+  searchInChatButton: Locator;
+  emojiPicker: Locator;
+  chatTextField: Locator;
+  chatSubmitButton: Locator;
+
+  burgerMenuButton: Locator;
+  securityMonitorButton: Locator;
+
   constructor({ page }: { page: Page }) {
     this.page = page;
     this.meetingRoomName = this.page.locator('h1').first();
@@ -57,6 +88,48 @@ export class MeetingRoomPage {
       activatedCameraFirstSortingOption: this.page.locator('#view-popover-menu > li').nth(4),
       moderatorsFirstSortingOption: this.page.locator('#view-popover-menu > li').nth(5),
     };
+
+    this.jumpLinks = {
+      skipToModerationPanelLink: this.page.getByRole('link', { name: 'Skip to Moderation panel' }),
+      skipToMyMeetingMenuLink: this.page.getByRole('link', { name: 'Skip to My meeting menu' }),
+      skipToPersonalControlPanelLink: this.page.getByRole('link', { name: 'Skip to Personal control panel' }),
+    };
+
+    this.moderationTools = {
+      homeButton: this.page.getByRole('tab', { name: 'Home' }),
+      muteParticipantsButton: this.page.getByRole('tab', { name: 'Mute participants' }),
+      resetRaisedHandsButton: this.page.getByRole('tab', { name: 'Reset raised hands' }),
+      talkingStickButton: this.page.getByRole('tab', { name: 'Talking stick' }),
+      pollButton: this.page.getByRole('tab', { name: 'Poll' }),
+      votingButton: this.page.getByRole('tab', { name: 'Voting' }),
+      meetingNotesButton: this.page.getByRole('tab', { name: 'Meeting notes' }),
+      whiteboardButton: this.page.getByRole('tab', { name: 'Whiteboard' }),
+      createBreakoutRoomsButton: this.page.getByRole('tab', { name: 'Create Breakout Rooms' }),
+      timerButton: this.page.getByRole('tab', { name: 'Timer' }),
+      coffeeBreakButton: this.page.getByRole('tab', { name: 'Coffee break' }),
+      debriefingButton: this.page.getByRole('tab', { name: 'Debriefing' }),
+    };
+
+    this.chatButton = this.page.getByRole('tab', { name: 'Chat' });
+    this.peopleButton = this.page.getByRole('tab', { name: 'People' });
+    this.messageButton = this.page.getByRole('tab', { name: 'Messages' });
+    this.searchInChatButton = this.page.getByLabel('Search in chat');
+    this.emojiPicker = this.page.getByRole('button', { name: 'open emoji picker' });
+    this.chatTextField = this.page.getByPlaceholder('Type a message');
+    this.chatSubmitButton = this.page.getByRole('button', { name: 'submit chat message' });
+
+    this.toolBar = {
+      handRaiseButton: this.page.getByRole('button', { name: 'Raise Your Hand' }),
+      turnOnScreenShareButton: this.page.getByRole('button', { name: 'Turn On Screen Share' }),
+      microphoneButton: this.page.getByRole('button', { name: 'Turn On Audio' }),
+      microphoneMoreOptionsMenuButton: this.page.getByRole('button', { name: 'additional options microphone' }),
+      videoButton: this.page.getByRole('button', { name: 'Turn On Video' }),
+      cameraMoreOptionButton: this.page.getByRole('button', { name: 'additional options camera' }),
+      moreOptionButton: this.page.getByRole('button', { name: 'More Options' }),
+      endMeetingButton: this.page.getByRole('button', { name: 'Leave Call' }),
+    };
+    this.burgerMenuButton = this.page.getByRole('button', { name: 'My meeting', exact: true });
+    this.securityMonitorButton = this.page.getByRole('button', { name: 'Show security monitor' });
   }
 
   allocateViewOptionLocatorsBasedOnSetup() {
@@ -94,5 +167,10 @@ export class MeetingRoomPage {
   async getPinnedParticipantNameInSpeakerView(): Promise<string> {
     const speakerViewContainer = await this.page.getByTestId('SpeakerWindow1'); //'SpeakerView-Container'
     return await speakerViewContainer.getByTestId('nameTile').innerText();
+  }
+
+  async renderMeetingRoom() {
+    await this.page.waitForLoadState();
+    await this.meetingRoomName.waitFor({ state: 'visible' });
   }
 }

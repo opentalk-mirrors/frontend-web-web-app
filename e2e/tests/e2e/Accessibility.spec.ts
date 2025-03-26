@@ -6,6 +6,7 @@ import { test, expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 import { LobbyRoomPage } from '../pages/LobbyRoomPage';
 import { MeetingPage } from '../pages/MeetingPage';
+import { MeetingRoomPage } from '../pages/MeetingRoomPage';
 
 test.describe('Accessibility', () => {
   test('TC_002_Lobby', async ({ page, browserName }) => {
@@ -55,5 +56,106 @@ test.describe('Accessibility', () => {
       await expect(lobbyRoomPage.dataProtectionLink).toBeFocused();
     }
     await lobbyPage.close();
+  });
+
+  test('TC_003_Meeting_Room', async ({ page, browserName }) => {
+    // Camera and Microphone permissions are not being granted in Firefox and Safari in CI
+    // Thus they cannot be accessed by keyboard "Tab"
+    // https://github.com/microsoft/playwright/issues/20563
+    test.skip(browserName === 'webkit' || browserName === 'firefox');
+    // launch OpenTalk
+    await page.goto(process.env.INSTANCE_URL);
+
+    // start new (adhoc) meeting
+    const homePage = new HomePage({ page });
+    await homePage.startNewMeetingButton.click();
+
+    const meetingPage = new MeetingPage({ page });
+    await meetingPage.goToAdhocMeetingLobbyAsModerator(true);
+
+    const lobbyRoomPage = new LobbyRoomPage({ page });
+    // from meeting-room-timer.spec.ts
+    // "We need to wait for the username to appear here because otherwise the tests will be flaky (see issue #1692)"
+    await expect(lobbyRoomPage.nameInputField).toBeVisible();
+
+    // enter meeting room
+    // need to wait for meetingbutton to be clickable
+    await page.waitForTimeout(4000);
+    await lobbyRoomPage.joinMeetingButton.click();
+    const meetingRoomPage = new MeetingRoomPage({ page });
+
+    // assert meeting room is shown
+    await expect(meetingRoomPage.meetingRoomName).toBeVisible();
+    await expect(await meetingRoomPage.getMeetingRoomName()).toContain('Ad-hoc Meeting');
+    await meetingRoomPage.renderMeetingRoom();
+    await meetingRoomPage.jumpLinks.skipToModerationPanelLink.focus();
+    await expect(meetingRoomPage.jumpLinks.skipToModerationPanelLink).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(meetingRoomPage.jumpLinks.skipToMyMeetingMenuLink).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(meetingRoomPage.jumpLinks.skipToPersonalControlPanelLink).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(meetingRoomPage.viewOptions.viewOptionsButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    // secure tick icon doesn't appear if server is running on http
+    if (!process.env.INSTANCE_URL.startsWith('http://')) {
+      await expect(meetingRoomPage.securityMonitorButton).toBeFocused();
+      await page.keyboard.press('Tab');
+    }
+    await expect(meetingRoomPage.burgerMenuButton).toBeFocused();
+    await page.keyboard.press('Tab');
+
+    const moderationButtons = [
+      meetingRoomPage.moderationTools.homeButton,
+      meetingRoomPage.moderationTools.muteParticipantsButton,
+      meetingRoomPage.moderationTools.resetRaisedHandsButton,
+      meetingRoomPage.moderationTools.talkingStickButton,
+      meetingRoomPage.moderationTools.pollButton,
+      meetingRoomPage.moderationTools.votingButton,
+      meetingRoomPage.moderationTools.meetingNotesButton,
+      meetingRoomPage.moderationTools.whiteboardButton,
+      meetingRoomPage.moderationTools.createBreakoutRoomsButton,
+      meetingRoomPage.moderationTools.timerButton,
+      meetingRoomPage.moderationTools.coffeeBreakButton,
+      meetingRoomPage.moderationTools.debriefingButton,
+    ];
+
+    for (const button of moderationButtons) {
+      await expect(button).toBeFocused();
+      await page.keyboard.press('ArrowDown');
+    }
+    await page.keyboard.press('Tab');
+    await expect(meetingRoomPage.chatButton).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(meetingRoomPage.peopleButton).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(meetingRoomPage.messageButton).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(meetingRoomPage.searchInChatButton).toBeFocused();
+    await page.keyboard.press('Tab');
+
+    await expect(meetingRoomPage.emojiPicker).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(meetingRoomPage.chatTextField).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(meetingRoomPage.chatSubmitButton).toBeFocused();
+    await page.keyboard.press('Tab');
+
+    const toolBarButtons = [
+      meetingRoomPage.toolBar.handRaiseButton,
+      meetingRoomPage.toolBar.turnOnScreenShareButton,
+      meetingRoomPage.toolBar.microphoneButton,
+      meetingRoomPage.toolBar.microphoneMoreOptionsMenuButton,
+      meetingRoomPage.toolBar.videoButton,
+      meetingRoomPage.toolBar.cameraMoreOptionButton,
+      meetingRoomPage.toolBar.moreOptionButton,
+      meetingRoomPage.toolBar.endMeetingButton,
+    ];
+
+    for (const button of toolBarButtons) {
+      await expect(button).toBeFocused();
+      await page.keyboard.press('Tab');
+    }
   });
 });
