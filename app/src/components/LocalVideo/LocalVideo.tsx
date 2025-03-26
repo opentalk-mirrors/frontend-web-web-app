@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { VideoTrack, useTracks } from '@livekit/components-react';
+import { VideoTrack, useLocalParticipant, useTracks } from '@livekit/components-react';
 import { CircularProgress, Grid, Typography, styled } from '@mui/material';
 import { LocalVideoTrack, Track } from 'livekit-client';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
@@ -82,9 +82,10 @@ interface LocalVideoProps extends PropsType {
 
 const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoPinned }: LocalVideoProps) => {
   const videoTrackRef = useTracks([Track.Source.Camera]).find((trackRef) => trackRef.participant.isLocal);
+  const { cameraTrack } = useLocalParticipant();
   const screenShareTrackRef = useTracks([Track.Source.ScreenShare]).find((trackRef) => trackRef.participant.isLocal);
-  const videoEnabled = useAppSelector(selectVideoEnabled);
-  const audioEnabled = useAppSelector(selectAudioEnabled);
+  const isVideoEnabled = useAppSelector(selectVideoEnabled);
+  const isAudioEnabled = useAppSelector(selectAudioEnabled);
   const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
   const videoDeviceId = useAppSelector(selectVideoDeviceId);
   const { t } = useTranslation();
@@ -96,22 +97,28 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
 
-  const isVideoEnabled = videoEnabled || false;
-  const isAudioEnabled = audioEnabled || false;
+  const outgoingScreenStream = screenShareTrackRef?.publication.track?.mediaStream || null;
   const screenShareEnabled = screenShareTrackRef?.participant.isScreenShareEnabled || false;
 
-  const outgoingVideoStream = videoTrackRef?.publication.track?.mediaStream || null;
-  let outgoingScreenStream: MediaStream | null = null;
-  if (screenShareTrackRef) {
-    outgoingScreenStream = screenShareTrackRef?.publication.track?.mediaStream || null;
-  }
+  const outgoingVideoStreamTrack = cameraTrack?.track?.mediaStreamTrack || null;
 
-  const isVideoRunning =
-    outgoingVideoStream?.getVideoTracks().find((t) => t.enabled && t.readyState === 'live') !== undefined;
+  const isVideoRunning = outgoingVideoStreamTrack?.readyState === 'live' && outgoingVideoStreamTrack?.enabled;
   const showLoadingSpinner =
-    isVideoEnabled && (outgoingVideoStream === null || !outgoingVideoStream?.active) && !isVideoRunning;
-  const isVideoMissing =
-    videoEnabled && videoTrackRef?.publication.track?.isMuted && !videoTrackRef?.publication.track.mediaStreamTrack;
+    isVideoEnabled && (outgoingVideoStreamTrack === null || outgoingVideoStreamTrack?.muted) && !isVideoRunning;
+  const isVideoMissing = isVideoEnabled && cameraTrack?.track?.isMuted && !cameraTrack?.track.mediaStreamTrack;
+
+  useEffect(() => {
+    const localVideoTrack = videoTrackRef?.publication.videoTrack;
+    if (localVideoTrack instanceof LocalVideoTrack) {
+      applyBackgroundEffectToTrack(localVideoTrack, videoBackgroundEffects, dispatch);
+    }
+  }, [
+    isVideoEnabled,
+    videoTrackRef?.publication.videoTrack,
+    videoBackgroundEffects.style,
+    videoBackgroundEffects.imageUrl,
+    videoDeviceId,
+  ]);
 
   const attachVideo = useCallback((refObject: RefObject<HTMLVideoElement>, stream: MediaStream | null) => {
     if (refObject.current !== null) {
@@ -121,20 +128,6 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
     }
   }, []);
 
-  useEffect(() => {
-    applyBackgroundEffectToTrack(
-      videoTrackRef?.publication.videoTrack as LocalVideoTrack,
-      videoBackgroundEffects,
-      dispatch
-    );
-  }, [
-    videoEnabled,
-    videoTrackRef?.publication.videoTrack,
-    videoBackgroundEffects.style,
-    videoBackgroundEffects.imageUrl,
-    videoDeviceId,
-  ]);
-
   const detachVideo = useCallback((refObject: RefObject<HTMLVideoElement>) => {
     if (refObject.current !== null) {
       refObject.current.srcObject = null;
@@ -143,26 +136,22 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
 
   useEffect(() => {
     if (screenShareEnabled && isVideoEnabled) {
-      attachVideo(videoThumbnailRef, outgoingVideoStream);
+      attachVideo(videoThumbnailRef, outgoingVideoStreamTrack);
       attachVideo(videoRef, outgoingScreenStream);
-      return;
-    }
-    if (isVideoEnabled) {
-      attachVideo(videoRef, outgoingVideoStream);
+    } else if (isVideoEnabled) {
+      attachVideo(videoRef, outgoingVideoStreamTrack);
       detachVideo(videoThumbnailRef);
-      return;
-    }
-    if (screenShareEnabled) {
+    } else if (screenShareEnabled) {
       attachVideo(videoRef, outgoingScreenStream);
       detachVideo(videoThumbnailRef);
-      return;
     }
-    videoTrackRef?.publication.track?.mediaStreamTrack.stop();
-    screenShareTrackRef?.publication.track?.mediaStreamTrack.stop();
-    detachVideo(videoRef);
-    detachVideo(videoThumbnailRef);
+
+    return () => {
+      detachVideo(videoRef);
+      detachVideo(videoThumbnailRef);
+    };
   }, [
-    outgoingVideoStream,
+    outgoingVideoStreamTrack,
     outgoingScreenStream,
     screenShareEnabled,
     attachVideo,

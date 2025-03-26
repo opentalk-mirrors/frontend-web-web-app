@@ -55,7 +55,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
   };
 
   const tooltipText = () => {
-    if (videoPermissionDenied === true) {
+    if (videoPermissionDenied) {
       return t('device-permission-denied');
     }
     if (cameraEnabled) {
