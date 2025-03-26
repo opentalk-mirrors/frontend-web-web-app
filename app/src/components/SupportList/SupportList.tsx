@@ -9,6 +9,7 @@ import {
   ListItemText,
   ListProps,
   MenuItem,
+  MenuItemProps,
   MenuList,
   MenuListProps,
   ThemeProvider,
@@ -18,10 +19,10 @@ import { ListItemButtonProps } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { BugIcon, HelpIcon, HelpSquareIcon, ExtendToTabIcon } from '../../assets/icons';
+import { BugIcon, ExtendToTabIcon, KeyboardIcon, MenubookIcon, ContactIcon } from '../../assets/icons';
 import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { useAppSelector } from '../../hooks';
-import { selectIsGlitchtipConfigured } from '../../store/slices/configSlice';
+import { selectContactSupportUrl, selectIsGlitchtipConfigured } from '../../store/slices/configSlice';
 import { USER_MANUAL_URL } from '../../utils/apiUtils';
 import { triggerGlitchtipManually } from '../../utils/glitchtipUtils';
 import ShortcutListDialog from '../Toolbar/fragments/ShortcutListDialog';
@@ -30,6 +31,7 @@ enum ListItemKeys {
   UserManual = 'user-manual',
   KeyboardShortcuts = 'keyboard-shortcuts',
   GlitchtipTrigger = 'glitchtip-trigger',
+  Support = 'support',
 }
 
 type AnchorItem = {
@@ -78,22 +80,24 @@ export const SupportList = ({
   const { t } = useTranslation();
   const isGlitchtipConfigured = useAppSelector(selectIsGlitchtipConfigured);
   const [isShortcutListDialogOpen, setIsShortcutListDialogOpen] = useState(false);
+  const contactSupportUrl = useAppSelector(selectContactSupportUrl);
 
   const items = useMemo(() => {
     const output: Item[] = [
       {
         key: ListItemKeys.UserManual,
         name: 'my-meeting-menu-user-manual',
-        icon: <HelpIcon fontSize="small" />,
+        icon: <MenubookIcon fontSize="small" />,
         componentProps: {
           href: USER_MANUAL_URL,
           target: '_blank',
+          onClick: () => window.open(USER_MANUAL_URL, '_blank'),
         },
       },
       {
         key: ListItemKeys.KeyboardShortcuts,
         name: 'my-meeting-menu-keyboard-shortcuts',
-        icon: <HelpSquareIcon fontSize="small" />,
+        icon: <KeyboardIcon fontSize="small" />,
         componentProps: {
           onClick: () => {
             setIsShortcutListDialogOpen(!isShortcutListDialogOpen);
@@ -114,8 +118,19 @@ export const SupportList = ({
       });
     }
 
+    output.push({
+      key: ListItemKeys.Support,
+      name: 'my-meeting-menu-support',
+      icon: <ContactIcon fontSize="small" />,
+      componentProps: {
+        href: contactSupportUrl,
+        target: '_blank',
+        onClick: () => window.open(contactSupportUrl, '_blank'),
+      },
+    });
+
     return output;
-  }, [isGlitchtipConfigured, isShortcutListDialogOpen]);
+  }, [isGlitchtipConfigured, isShortcutListDialogOpen, contactSupportUrl]);
 
   const willOpenNewTab = (item: Item) => {
     return 'target' in item.componentProps && item.componentProps.target === '_blank';
@@ -139,12 +154,10 @@ export const SupportList = ({
       <>
         <MenuList {...menuListProps} className={className}>
           {items.map((item) => (
-            <MenuItem key={item.key} sx={{ width: '100%' }}>
-              <ListItemButton disableGutters {...(item.componentProps as ListItemButtonProps)}>
-                {icons && <ListItemIcon>{item.icon}</ListItemIcon>}
-                <ListItemText primary={t(item.name)} slotProps={{ primary: { textAlign: 'left' } }} />
-                {renderEndAdornment(item)}
-              </ListItemButton>
+            <MenuItem key={item.key} sx={{ width: '100%' }} disableGutters {...(item.componentProps as MenuItemProps)}>
+              {icons && <ListItemIcon>{item.icon}</ListItemIcon>}
+              <ListItemText primary={t(item.name)} slotProps={{ primary: { textAlign: 'left' } }} />
+              {renderEndAdornment(item)}
             </MenuItem>
           ))}
         </MenuList>

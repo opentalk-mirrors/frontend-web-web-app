@@ -48,6 +48,7 @@ We have a super secret developer mode. You can activate it by manipulating the l
 | INSECURE                 | no       | false                                             | Whether the connections to the controller should be tls encrypted (http(s), ws(s)) WARNING! This is needed when connecting to a controller hosted on localhost without a TLS cert                     |
 | BASE_URL                 | yes      |                                                   | Base URL of the frontend                                                                                                                                                                              |
 | HELPDESK_URL             | yes      |                                                   | The URL to the helpdesk                                                                                                                                                                               |
+| CONTACT_SUPPORT_URL      | yes      |                                                   | The URL to the contact support page                                                                                                                                                                               |
 | ERROR_REPORT_ADDRESS     | yes      |                                                   | An email address, where the error reports should be send                                                                                                                                              |
 | IS_BETA_RELEASE           | no       | true                                              | This flag will show a beta badge for the application                                                                                                                                                  |
 | BETA_BADGE_URL           | no       |                                                   | add a link to the Badge                                                                                                                                                                               |
@@ -372,11 +373,11 @@ To build the image, execute in the root of the repository:
  docker build -f ci/Dockerfile . --tag <your tag>
 ```
 
-## Git Hooks 
+## Git Hooks
 
 By default, the git hooks configuration of the projects is being managed via [husky](https://typicode.github.io/husky/).
 
-They need to be activated once, via `pnpm prepare` script. 
+They need to be activated once, via `pnpm prepare` script.
 
 If, after activation, you want to skip git hooks for some reason, refer to [Skipping Git Hooks](https://typicode.github.io/husky/how-to.html#skipping-git-hooks).
 

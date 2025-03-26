@@ -23,6 +23,8 @@ const mockSelectIsGlitchtipConfigured = jest.fn();
 
 jest.mock('../../store/slices/configSlice', () => ({
   selectIsGlitchtipConfigured: () => mockSelectIsGlitchtipConfigured(),
+  selectHelpdeskUrl: () => 'https://example.com',
+  selectContactSupportUrl: () => 'https://example.com',
 }));
 
 describe('SupportList component', () => {
@@ -31,20 +33,20 @@ describe('SupportList component', () => {
     expect.assertions(0);
   });
   describe('children', () => {
-    test('should contain list with two list items when glitchtip is not configured.', () => {
-      render(<SupportList />);
-      const list = screen.getByRole('list');
-
-      expect(list).toBeInTheDocument();
-      expect(list.children).toHaveLength(2);
-    });
-    test('should contain list with two list items', () => {
-      mockSelectIsGlitchtipConfigured.mockReturnValue(true);
+    test('should contain list with three list items when glitchtip is not configured.', () => {
       render(<SupportList />);
       const list = screen.getByRole('list');
 
       expect(list).toBeInTheDocument();
       expect(list.children).toHaveLength(3);
+    });
+    test('should contain all items ', () => {
+      mockSelectIsGlitchtipConfigured.mockReturnValue(true);
+      render(<SupportList />);
+      const list = screen.getByRole('list');
+
+      expect(list).toBeInTheDocument();
+      expect(list.children).toHaveLength(4);
     });
     test('user manual list is containing open new tab image', () => {
       render(<SupportList />);

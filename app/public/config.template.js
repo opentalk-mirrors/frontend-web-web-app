@@ -8,6 +8,7 @@ window.config = {
   baseUrl: '${BASE_URL}',
   helpdeskUrl: '${HELPDESK_URL}',
   imprintUrl: '${IMPRINT_URL}',
+  contactSupportUrl: '${CONTACT_SUPPORT_URL}',
   dataProtectionUrl: '${DATA_PROTECTION_URL}',
   userSurveyUrl: '${USER_SURVEY_URL}',
   userSurveyApiKey: '${USER_SURVEY_API_KEY}',

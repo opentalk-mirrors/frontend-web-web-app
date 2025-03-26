@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import AccessablityIcon from './AccessablityIcon';
 import AddIcon from './AddIcon';
 import AddUserIcon from './AddUserIcon';
 import ArrowDownIcon from './ArrowDownIcon';
@@ -23,6 +24,7 @@ import CoffeeBreakIcon from './CoffeeBreakIcon';
 import ConnectionBadIcon from './ConnectionBadIcon';
 import ConnectionGoodIcon from './ConnectionGoodIcon';
 import ConnectionMediumIcon from './ConnectionMediumIcon';
+import ContactIcon from './ContactIcon';
 import CopyIcon from './CopyIcon';
 import DashboardLegalIcon from './DashboardLegalIcon';
 import DebriefingIcon from './DebriefingIcon';
@@ -47,6 +49,7 @@ import HomeIcon from './HomeIcon';
 import InfoIcon from './InfoIcon';
 import InfoOutlinedIcon from './InfoOutlinedIcon';
 import InviteIcon from './InviteIcon';
+import KeyboardIcon from './KeyboardIcon';
 import LegalBallotIcon from './LegalBallotIcon';
 import LiveIcon from './LiveIcon';
 import LockedIcon from './LockedIcon';
@@ -54,6 +57,7 @@ import LogoGradientIcon from './LogoGradientIcon';
 import LogoIcon from './LogoIcon';
 import MeetingNotesIcon from './MeetingNotesIcon';
 import MeetingsIcon from './MeetingsIcon';
+import MenubookIcon from './MenubookIcon';
 import MicOffIcon from './MicOffIcon';
 import MicOnIcon from './MicOnIcon';
 import ModeratorIcon from './ModeratorIcon';
@@ -101,6 +105,7 @@ import WhiteboardIcon from './WhiteboardIcon';
 import WoolBallIcon from './WoolBallIcon';
 
 export {
+  AccessablityIcon,
   AddIcon,
   AddUserIcon,
   ArrowDownIcon,
@@ -123,6 +128,7 @@ export {
   ConnectionBadIcon,
   ConnectionGoodIcon,
   ConnectionMediumIcon,
+  ContactIcon,
   CopyIcon,
   DashboardLegalIcon,
   DebriefingIcon,
@@ -147,6 +153,7 @@ export {
   InfoIcon,
   InfoOutlinedIcon,
   InviteIcon,
+  KeyboardIcon,
   LegalBallotIcon,
   LiveIcon,
   LockedIcon,
@@ -154,6 +161,7 @@ export {
   LogoIcon,
   MeetingNotesIcon,
   MeetingsIcon,
+  MenubookIcon,
   MicOffIcon,
   MicOnIcon,
   ModeratorIcon,
@@ -179,9 +187,9 @@ export {
   SecureIcon,
   SendMessageIcon,
   SettingsIcon,
-  SharedFolderIcon,
   ShareScreenOffIcon,
   ShareScreenOnIcon,
+  SharedFolderIcon,
   SignOutIcon,
   SortIcon,
   SpeakerQueueIcon,
