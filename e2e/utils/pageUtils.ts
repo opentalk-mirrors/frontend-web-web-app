@@ -55,9 +55,9 @@ export const createPageContextWithMultipleUsers = async ({
   const pages = await createMultiplePages({ context, pageAmount: userAmount });
   const roomURL = await createAdhocMeeting(page);
 
-  let userCounter = 0;
-  for (let page of pages) {
-    ++userCounter;
+  let _userCounter = 0;
+  for (const page of pages) {
+    ++_userCounter;
     await gotoLobby(page, roomURL);
     await page.getByRole('button', { name: 'Enter now' }).click();
     await expect(page.getByTestId('toolbarEndCallButton')).toBeVisible();

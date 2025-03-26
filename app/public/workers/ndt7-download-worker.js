@@ -7,6 +7,8 @@
 
 // Node doesn't have WebSocket defined, so it needs this library.
 if (typeof WebSocket === 'undefined') {
+  // The whole ndt stuff will be reworked at some point, for now we disable the eslint here
+  // eslint-disable-next-line  @typescript-eslint/no-require-imports
   global.WebSocket = require('isomorphic-ws');
 }
 

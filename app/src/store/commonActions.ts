@@ -6,9 +6,10 @@ import { InviteCode } from '@opentalk/rest-api-rtk-query/src/types';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
 import { Room } from 'livekit-client';
+import { closeSnackbar } from 'notistack';
 import convertToSnakeCase from 'snakecase-keys';
 
-import { notifications, stopTimeLimitNotification } from '../commonComponents';
+import { stopTimeLimitNotification } from '../commonComponents/Notistack/fragments/variations/TimeLimitNotification/utils';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { BreakoutRoomId, JoinSuccessInternalState } from '../types';
 import { getControllerBaseUrl } from '../utils/apiUtils';
@@ -63,7 +64,7 @@ export const hangUp = createAsyncThunk<void, void, { state: RootState }>('room/h
   // This ensures that all notifications visible to the user prior to hanging up
   // and being redirected to the lobby room are cleared up. If you need to show
   // notification after hanging up, make sure to call it after this function.
-  notifications.closeAll();
+  closeSnackbar();
   // A workaround to disable notifications about time limitation of the conference, as they
   // have they own timeout strategy
   stopTimeLimitNotification();

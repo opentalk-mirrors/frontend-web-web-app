@@ -74,7 +74,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   const ownAvatarUrl = useAppSelector(selectAvatarUrl);
   const theme = useTheme();
   const { t } = useTranslation();
-  const date = new Date(message?.timestamp) ?? Date.now;
+  const date = new Date(message?.timestamp ?? Date.now());
   const formattedTime = useDateFormat(date, 'time');
 
   const isItSingleEmojiMessage = useCallback(() => {

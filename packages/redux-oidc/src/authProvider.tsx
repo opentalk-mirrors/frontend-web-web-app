@@ -1,7 +1,8 @@
-import React, { createContext, FC, PropsWithChildren, useContext, useEffect } from 'react';
+import { FC, PropsWithChildren, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { AuthAdapter, AuthAdapterConfiguration, AuthenticationProviderUrls } from './authAdapter';
+import { AuthAdapter, AuthAdapterConfiguration } from './authAdapter';
+import { AuthContext } from './authContext';
 import { getNewToken } from './store/authActions';
 import {
   selectError,
@@ -14,21 +15,9 @@ import {
 } from './store/authSlice';
 import { AuthTypeError, calculateTokenRenewalTime, hasValidToken, pkceChallenge } from './utils';
 
-export interface AuthContextValues {
-  configuration: AuthAdapterConfiguration;
-  signIn: (redirectUrl?: string, codeChallenge?: string) => Promise<void>;
-  signOut: (signOutRedirectUrl?: string) => void;
-  getConfigurationEndpoints: () => Promise<AuthenticationProviderUrls>;
-  getBaseUrl: () => string;
-  getSavedRedirectUrl: () => string | undefined;
-  getNewRefreshToken: () => void;
-}
-
 export interface AuthProviderValues {
   configuration: AuthAdapterConfiguration;
 }
-
-export const AuthContext = createContext<AuthContextValues | undefined>(undefined);
 
 const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, configuration }) => {
   const dispatch = getAppDispatch();
@@ -123,9 +112,5 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
     </AuthContext.Provider>
   );
 };
-
-export function useAuthContext() {
-  return useContext(AuthContext);
-}
 
 export default AuthProvider;

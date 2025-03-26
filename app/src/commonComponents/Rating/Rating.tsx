@@ -24,5 +24,6 @@ const Rating = React.forwardRef<HTMLInputElement, RatingProps & FormProps>(
     );
   }
 );
+Rating.displayName = 'Rating';
 
 export default Rating;

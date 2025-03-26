@@ -42,5 +42,6 @@ const AdornmentIconButton = React.forwardRef<HTMLButtonElement, AdornmentIconBut
     </StyledIconButton>
   )
 );
+AdornmentIconButton.displayName = 'AdornmentIconButton';
 
 export default AdornmentIconButton;

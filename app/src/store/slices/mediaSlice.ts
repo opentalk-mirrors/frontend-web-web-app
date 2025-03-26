@@ -16,6 +16,7 @@ import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { FetchRequestError, ParticipantId, VideoSetting } from '../../types';
 import { MediaError, handleMediaPermissionError } from '../../utils/mediaErrorUtils';
 import { getDeviceId } from '../../utils/mediaUtils';
+import { hangUp } from '../commonActions';
 import { getLivekitRoom } from '../livekitRoom';
 
 export interface BackgroundConfig {
@@ -224,6 +225,10 @@ export const mediaSlice = createSlice({
         }
       }
       state.mediaChangeInProgress = null;
+    });
+    builder.addCase(hangUp.fulfilled, (state) => {
+      state.videoEnabled = false;
+      state.audioEnabled = false;
     });
   },
 });

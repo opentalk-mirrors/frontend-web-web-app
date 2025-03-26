@@ -93,5 +93,6 @@ const CopyTextField = forwardRef<HTMLInputElement, LinkFieldProps>(
     );
   }
 );
+CopyTextField.displayName = 'CopyTextField';
 
 export default CopyTextField;

@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { OptionsObject, SnackbarKey, enqueueSnackbar, closeSnackbar, SnackbarMessage } from 'notistack';
+import { OptionsObject, SnackbarKey, SnackbarMessage, closeSnackbar, enqueueSnackbar } from 'notistack';
 
 import SnackbarActionButtons from '../SnackbarActionButtons';
-import { SnackbarActionButtonProps, AdditionalButtonAttributes } from '../SnackbarActionButtons/SnackbarActionButtons';
+import type {
+  AdditionalButtonAttributes,
+  SnackbarActionButtonProps,
+} from '../SnackbarActionButtons/SnackbarActionButtons';
 
 export interface ISnackActionsProps extends OptionsObject, SnackbarActionButtonProps {}
 

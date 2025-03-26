@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 
-/* eslint-disable */
-/* tslint:disable */
-
 /**
  * Mock Service Worker (0.44.2).
  * @see https://github.com/mswjs/msw

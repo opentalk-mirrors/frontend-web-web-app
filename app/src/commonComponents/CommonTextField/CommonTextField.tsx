@@ -176,5 +176,6 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
     );
   }
 );
+CommonTextField.displayName = 'CommonTextField';
 
 export default CommonTextField;

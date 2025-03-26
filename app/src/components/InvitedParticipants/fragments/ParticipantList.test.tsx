@@ -25,7 +25,10 @@ const invitees = [
   },
 ];
 
-jest.mock('./UserRow', () => () => <div>UserRowMocked</div>);
+jest.mock('./UserRow', () => ({
+  __esModule: true,
+  default: () => <div>UserRowMocked</div>,
+}));
 
 const mockRemoveSelectedUser = jest.fn();
 

@@ -27,8 +27,7 @@ export enum SessionStatus {
 export function hasActiveSession() {
   const accessToken = localStorage.getItem('access_token');
   const refreshToken = localStorage.getItem('refresh_token');
-  const refreshExpiresIn = refreshToken && new Date(getTokenExpirationDate(refreshToken));
-
+  const refreshExpiresIn = refreshToken && getTokenExpirationDate(refreshToken);
   if (!accessToken || !refreshToken || !refreshExpiresIn) {
     return false;
   }
@@ -36,9 +35,8 @@ export function hasActiveSession() {
     return false;
   }
 
-  const refreshExpiresInDate = new Date(Number(refreshExpiresIn));
-  const currentDate = new Date();
-  if (currentDate > refreshExpiresInDate) {
+  const adjustedClientTimeMs = getAdjustedClientTime();
+  if (adjustedClientTimeMs > refreshExpiresIn) {
     return false;
   }
   return true;
@@ -51,15 +49,15 @@ export function hasValidToken(token: string | null) {
     return false;
   }
   const tokenExpirationTime = getTokenExpirationDate(token);
-  const currentDate = new Date();
+  const adjustedClientTimeMs = getAdjustedClientTime();
 
-  const expirationDate = new Date(tokenExpirationTime);
-  return currentDate < expirationDate;
+  return adjustedClientTimeMs < tokenExpirationTime;
 }
 
 export const storeToken = (payload: CodeResponse | RefreshTokenResponse) => {
   const { idToken, accessToken, refreshToken } = payload;
-
+  const serverTimeOffset = getTokenIssuedDateInMs(accessToken) - new Date().getTime();
+  localStorage.setItem('server_time_offset', String(serverTimeOffset));
   localStorage.setItem('id_token', idToken);
   localStorage.setItem('access_token', accessToken);
   localStorage.setItem('refresh_token', refreshToken);
@@ -69,7 +67,7 @@ export const clearApplicationStorage = () => {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('id_token');
-
+  localStorage.removeItem('server_time_offset');
   sessionStorage.removeItem('code_verifier');
 };
 
@@ -93,12 +91,23 @@ export const getTokenExpirationDate = (token: string) => {
   return tokenExpiration * 1000;
 };
 
+export const getTokenIssuedDateInMs = (token: string) => {
+  const tokenIssuedAt = jwtDecode(token).iat as number;
+  return tokenIssuedAt * 1000;
+};
+
+export const getAdjustedClientTime = () => {
+  const serverTimeOffset = Number(localStorage.getItem('server_time_offset')) || 0; // calculate server offset
+  const adjustedClientTimeMs = new Date().getTime() + serverTimeOffset;
+  return adjustedClientTimeMs;
+};
+
 export const calculateTokenRenewalTime = (token: string) => {
   const RESPONSE_TIME = 30000; //ms
   const tokenExpirationTime = getTokenExpirationDate(token);
-  const currentDate = new Date();
+  const adjustedClientTimeMs = getAdjustedClientTime();
 
-  const timeLeft = tokenExpirationTime - currentDate.getTime();
+  const timeLeft = tokenExpirationTime - adjustedClientTimeMs;
   const renewalTimeInterval = Math.max(timeLeft - RESPONSE_TIME, 0);
 
   return renewalTimeInterval;

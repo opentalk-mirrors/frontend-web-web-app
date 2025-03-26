@@ -77,13 +77,13 @@ const FontAwesome = (props: IFontAwesomeProps) => {
 
       <Typography variant="body1">
         Attribution is required by MIT, SIL OLF, and CC BY licenses. Downloaded Font Awesome Free files already contain
-        embedded comments with sufficient attribution, so you shouldn't need to do anything additional when using these
-        files normally.
+        embedded comments with sufficient attribution, so you shouldn&apos;t need to do anything additional when using
+        these files normally.
       </Typography>
 
       <Typography variant="body1">
-        We've kept attribution comments terse, so we ask that you do not actively work to remove them from files,
-        especially code. They're a great way for folks to learn about Font Awesome.
+        We&apos;ve kept attribution comments terse, so we ask that you do not actively work to remove them from files,
+        especially code. They&apos;re a great way for folks to learn about Font Awesome.
       </Typography>
     </CustomDialog>
   );

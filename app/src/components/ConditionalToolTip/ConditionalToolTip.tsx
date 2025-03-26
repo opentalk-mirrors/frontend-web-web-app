@@ -4,12 +4,16 @@
 import { Tooltip } from '@mui/material';
 import { ReactElement } from 'react';
 
-interface ContitionalToolTipProps {
+interface ConditionalToolTipProps {
   showToolTip: boolean;
   title?: string;
   children: ReactElement<JSX.Element, string>;
 }
-export const ContitionalToolTip: React.FC<ContitionalToolTipProps> = ({ showToolTip, title, children }) => {
+export const ConditionalToolTip: React.FC<ConditionalToolTipProps> = ({
+  showToolTip,
+  title,
+  children,
+}: ConditionalToolTipProps) => {
   if (showToolTip && title) {
     return (
       <Tooltip placement="top" title={title}>

@@ -105,5 +105,6 @@ const BreakoutRoomNotification = React.forwardRef<HTMLDivElement, IJoinNotificat
     );
   }
 );
+BreakoutRoomNotification.displayName = 'BreakoutRoomNotification';
 
 export default BreakoutRoomNotification;

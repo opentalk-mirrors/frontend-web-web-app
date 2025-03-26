@@ -14,7 +14,7 @@ import FullscreenView from './FullscreenView';
  * This is why we have to define exit mock function as var in order to hoist
  * on top of the mock call.
  */
-var mockExitCall = jest.fn();
+const mockExitCall = jest.fn();
 
 jest.mock('../../hooks/useFullscreenContext.ts', () => ({
   useFullscreenContext: () => ({
