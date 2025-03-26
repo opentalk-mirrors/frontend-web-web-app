@@ -153,7 +153,7 @@ const VideoMenu = ({ anchorEl, onClose, open }: VideoMenuProps) => {
   }, [open]);
 
   const sortedDevices = filteredDevices.sort((a, b) => a.label.localeCompare(b.label));
-  const showDeviceOptions = filteredDevices.length > 0;
+  const showDeviceOptions = filteredDevices.length > 0 || permissionDenied;
 
   return (
     <ThemeProvider theme={createOpenTalkTheme()}>
