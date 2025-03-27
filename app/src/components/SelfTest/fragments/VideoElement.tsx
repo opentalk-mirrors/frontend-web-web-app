@@ -11,6 +11,7 @@ import {
   selectVideoBackgroundEffects,
   selectVideoDeviceId,
   selectVideoEnabled,
+  setBackgroundEffectsLoading,
   setMediaChangeInProgress,
   setVideoDeviceId,
   startMedia,
@@ -87,7 +88,9 @@ const VideoElement = () => {
   }, [videoDeviceId, videoEnabled]);
 
   useEffect(() => {
-    applyBackgroundEffectToTrack(videoTrack, videoBackgroundEffects, dispatch);
+    applyBackgroundEffectToTrack(videoTrack, videoBackgroundEffects, (loading) => {
+      dispatch(setBackgroundEffectsLoading(loading));
+    });
   }, [videoTrack, videoBackgroundEffects.style, videoBackgroundEffects.imageUrl]);
 
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);

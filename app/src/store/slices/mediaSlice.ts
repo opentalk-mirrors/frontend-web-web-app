@@ -10,11 +10,13 @@ import {
   createSlice,
   isAnyOf,
 } from '@reduxjs/toolkit';
+import { Track } from 'livekit-client';
 
 import type { AppDispatch, RootState } from '../';
 import { RequestMute } from '../../api/types/incoming/media';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { FetchRequestError, ParticipantId, VideoSetting } from '../../types';
+import { applyBackgroundEffectToTrack } from '../../utils/applyBackgroundEffect';
 import { MediaError, handleMediaPermissionError } from '../../utils/mediaErrorUtils';
 import { getDeviceId } from '../../utils/mediaUtils';
 import { hangUp } from '../commonActions';
@@ -167,6 +169,21 @@ export const startMedia = createAsyncThunk<
   }
 });
 
+export const applyBackgroundEffect = createAsyncThunk<void, void, { state: RootState }>(
+  'media/applyBackgroundEffect',
+  async (_, { getState, dispatch }) => {
+    const state = getState();
+    const videoTrack = getLivekitRoom().localParticipant.getTrackPublication(Track.Source.Camera)?.videoTrack;
+    const videoBackgroundEffects = state.media.videoBackgroundEffects;
+
+    if (videoTrack) {
+      await applyBackgroundEffectToTrack(videoTrack, videoBackgroundEffects, (loading) => {
+        dispatch(setBackgroundEffectsLoading(loading));
+      });
+    }
+  }
+);
+
 export const initialState: MediaState = {
   qualityCap: VideoSetting.High,
   upstreamLimit: VideoSetting.High,
@@ -315,6 +332,18 @@ startAppListening({
     };
 
     localStorage.setItem('mediaChoices', JSON.stringify(updatedChoices));
+  },
+});
+
+startAppListening({
+  matcher: isAnyOf(setBackgroundEffects, setVideoDeviceId, startMedia.fulfilled),
+  effect: (_, listenerApi) => {
+    const { videoEnabled, videoBackgroundEffects } = listenerApi.getState().media;
+    const { accessToken } = listenerApi.getState().livekit;
+
+    if (videoEnabled && accessToken && !videoBackgroundEffects.loading) {
+      listenerApi.dispatch(applyBackgroundEffect());
+    }
   },
 });
 

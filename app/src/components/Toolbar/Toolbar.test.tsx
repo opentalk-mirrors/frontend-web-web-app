@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
-import { mockedParticipant } from '../../utils/testUtils';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import Toolbar from './Toolbar';
 
 jest.mock('@livekit/components-react', () => ({
@@ -59,7 +59,8 @@ jest.mock('./fragments/HandraiseButton', () => ({
 
 describe('Toolbar', () => {
   test('rendering of all buttons', () => {
-    render(<Toolbar />);
+    const { store } = configureStore();
+    renderWithProviders(<Toolbar />, { store });
 
     const container = screen.getByLabelText('landmark-complementary-toolbar');
     expect(container).toBeInTheDocument();

@@ -17,6 +17,7 @@ import {
   selectVideoBackgroundEffects,
   selectVideoDeviceId,
   selectVideoEnabled,
+  setBackgroundEffectsLoading,
 } from '../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
 import { selectDisplayName } from '../../store/slices/userSlice';
@@ -110,7 +111,9 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   useEffect(() => {
     const localVideoTrack = videoTrackRef?.publication.videoTrack;
     if (localVideoTrack instanceof LocalVideoTrack) {
-      applyBackgroundEffectToTrack(localVideoTrack, videoBackgroundEffects, dispatch);
+      applyBackgroundEffectToTrack(localVideoTrack, videoBackgroundEffects, (loading) => {
+        dispatch(setBackgroundEffectsLoading(loading));
+      });
     }
   }, [
     isVideoEnabled,
@@ -120,7 +123,7 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
     videoDeviceId,
   ]);
 
-  const attachVideo = useCallback((refObject: RefObject<HTMLVideoElement>, stream: MediaStream | null) => {
+  const attachVideo = useCallback((refObject: RefObject<HTMLVideoElement | null>, stream: MediaStream | null) => {
     if (refObject.current !== null) {
       refObject.current.volume = 0;
       refObject.current.srcObject = stream;
@@ -128,7 +131,7 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
     }
   }, []);
 
-  const detachVideo = useCallback((refObject: RefObject<HTMLVideoElement>) => {
+  const detachVideo = useCallback((refObject: RefObject<HTMLVideoElement | null>) => {
     if (refObject.current !== null) {
       refObject.current.srcObject = null;
     }
