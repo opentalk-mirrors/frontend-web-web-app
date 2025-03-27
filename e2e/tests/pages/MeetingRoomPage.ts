@@ -165,7 +165,7 @@ export class MeetingRoomPage {
   }
 
   async getPinnedParticipantNameInSpeakerView(): Promise<string> {
-    const speakerViewContainer = await this.page.getByTestId('SpeakerWindow1'); //'SpeakerView-Container'
+    const speakerViewContainer = await this.page.getByTestId('SpeakerWindow1').getByTestId('ParticipantWindow'); //'SpeakerView-Container'
     return await speakerViewContainer.getByTestId('nameTile').innerText();
   }
 

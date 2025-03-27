@@ -44,7 +44,7 @@ const joinMeetingRoomWithNGuests = async (
 };
 
 test.describe('MeetingRoom - adjust participant view', () => {
-  test.skip('TC_001_VideoRoom_ParticipantViewSettings_List', async ({ page, browserName }) => {
+  test('TC_001_VideoRoom_ParticipantViewSettings_List', async ({ page, browserName }) => {
     test.skip(browserName === 'webkit');
 
     // launch OpenTalk & start new (adhoc) meeting
@@ -138,6 +138,19 @@ test.describe('MeetingRoom - adjust participant view', () => {
 
     // check the speaker view and pin some users
     const defaultPinnedParticipant = await meetingRoomPage.getPinnedParticipantNameInSpeakerView();
+    // speaker is in first place
+    await expect(
+      await page
+        .getByTestId('SpeakerView-Container')
+        .getByTestId('ParticipantWindow')
+        .first()
+        .getByTestId('nameTile')
+        .innerText()
+    ).toBe(defaultPinnedParticipant);
+    // pinned user is shown first among all participant thumbs
+    await expect(
+      await page.getByTestId('ThumbsHolder').getByTestId('ParticipantWindow').nth(0).getByTestId('nameTile').innerText()
+    ).toBe(defaultPinnedParticipant);
     // pin some user (3rd participant)
     const pinnedParticipant = await meetingRoomPage.pinNthParticipantInSpeakerView(3);
     await expect(defaultPinnedParticipant).not.toBe(pinnedParticipant);
