@@ -41,6 +41,10 @@ http {
         location /static {
           add_header Cache-Control 'public, no-transform, immutable';
         }
+
+        location /.well-known/opentalk/client {
+          default_type application/json;
+        }
       }
     }
 }
