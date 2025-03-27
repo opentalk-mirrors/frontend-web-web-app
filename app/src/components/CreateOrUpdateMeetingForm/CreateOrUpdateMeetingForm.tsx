@@ -19,7 +19,7 @@ import { Interval, addMinutes, areIntervalsOverlapping, formatRFC3339 } from 'da
 import { useFormik } from 'formik';
 import { FormikValues } from 'formik/dist/types';
 import { isEmpty, isEqual } from 'lodash';
-import { useMemo, useRef, useState } from 'react';
+import { FormEvent, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -262,19 +262,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
         };
   };
 
-  // const getTPRInitialValue = () => {
-  //   console.debug('value in get initial: ', existingEvent?.trainingParticipationReport);
-  //   return existingEvent?.trainingParticipationReport
-  //     ? {
-  //         enabled: true,
-  //         parameter: existingEvent.trainingParticipationReport,
-  //       }
-  //     : {
-  //         enabled: false,
-  //       };
-  // };
-
-  const TPRValue = existingEvent?.trainingParticipationReport
+  const trainingParticipationReportValue = existingEvent?.trainingParticipationReport
     ? {
         enabled: true,
         parameter: existingEvent.trainingParticipationReport,
@@ -314,8 +302,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       showMeetingDetails: getShowMeetingDetailsInitialValue(),
       streaming: getStreamingInitialValue(),
       e2eEncryption: existingEvent?.room.e2EEncryption || false,
-      // trainingParticipationReport: getTPRInitialValue(),
-      trainingParticipationReport: TPRValue,
+      trainingParticipationReport: trainingParticipationReportValue,
     },
     validationSchema,
     validateOnChange: false,
@@ -552,7 +539,9 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
     formik.handleSubmit();
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
     if (!formik.values.isTimeDependent) {
       formik.handleSubmit();
       return;
@@ -614,7 +603,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
 
   return (
     <>
-      <Form onSubmit={formik.handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <Stack spacing={2}>
           <CommonTextField
             {...formikProps('title', formik)}
@@ -801,7 +790,6 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
             )}
             <Grid item>
               <Button
-                onClick={handleSubmit}
                 fullWidth
                 disabled={formik.isSubmitting || createEventIsLoading || updateEventIsLoading}
                 type="submit"
