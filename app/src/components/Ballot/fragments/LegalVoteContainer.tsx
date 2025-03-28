@@ -96,7 +96,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
         width: '100%',
       }}
     >
-      <Grid item xs={12} style={{ scrollBehavior: 'smooth' }}>
+      <Grid size={{ xs: 12 }} style={{ scrollBehavior: 'smooth' }}>
         <Box
           sx={{
             display: 'flex',
@@ -139,8 +139,8 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
           </IconButton>
         </Box>
       </Grid>
-      <Grid component="form" container item xs={12} onSubmit={submitLegalVoteOption}>
-        <Grid item xs={12}>
+      <Grid component="form" container size={{ xs: 12 }} onSubmit={submitLegalVoteOption}>
+        <Grid size={{ xs: 12 }}>
           <Fieldset>
             <legend>
               <LegendTitle variant="h2" component="h3">
@@ -157,7 +157,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
                 </Typography>
               )}
             </legend>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               {legalVote.votes &&
                 Object.keys(legalVote.votes).map(
                   (voteKey, index) =>
@@ -186,8 +186,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
         </Grid>
         {!isAllowedToVote && legalVote.allowedParticipants.length && (
           <Grid
-            item
-            xs={12}
+            size={{ xs: 12 }}
             container
             sx={{
               justifyContent: 'flex-start',
@@ -206,8 +205,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
         )}
         {isAllowedToVote && (
           <Grid
-            item
-            xs={12}
+            size={{ xs: 12 }}
             container
             sx={{
               my: 1,
@@ -226,7 +224,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
         )}
       </Grid>
       {legalVote.userVote?.votedAt && isAllowedToVote && (
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <VoteResultDate
             date={new Date(legalVote.userVote?.votedAt)}
             state={legalVote.state}
@@ -236,7 +234,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
         </Grid>
       )}
       {showTokenClipboard && legalVote.userVote?.votedAt && (
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <LegalVoteTokenClipboard
             name={legalVote.name}
             timestamp={legalVote.userVote?.votedAt}
@@ -246,7 +244,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
         </Grid>
       )}
       {showResultTable && (
-        <Grid ref={resultsRef} item xs={12}>
+        <Grid ref={resultsRef} size={{ xs: 12 }}>
           <VoteResultTable scrollToResults={scrollToResults} voteId={legalVote.id} />
         </Grid>
       )}

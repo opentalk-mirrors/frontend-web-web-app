@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { LocalizationProvider, LocalizationProviderProps } from '@mui/x-date-pickers';
-import { deDE, enUS } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { deDE, enUS } from '@mui/x-date-pickers/locales';
 import { Locale } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
 import enLocale from 'date-fns/locale/en-US';

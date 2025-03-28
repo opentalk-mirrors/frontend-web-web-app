@@ -188,33 +188,28 @@ export const RecurringEventDialog = ({
     >
       <DialogTitle id={RECURRING_DIALOG_LABEL_ID}>{t('dashboard-recurrence-dialog-title')}</DialogTitle>
       <DialogContent>
-        <Grid
-          container
-          sx={{
-            rowGap: 2,
-          }}
-        >
+        <Grid container rowGap={1}>
           <Grid
             container
+            size={12}
             sx={{
               alignItems: 'center',
+              flexGrow: 1,
             }}
           >
-            <Grid item sm={4}>
+            <Grid size={{ sm: 4 }}>
               <CommonLabel>{t('dashboard-recurrence-dialog-frequency-label')}</CommonLabel>
             </Grid>
-
             <Grid
               container
-              item
-              sm={8}
+              size={{ sm: 8 }}
               spacing={2}
               sx={{
                 justifyItems: 'baseline',
                 alignItems: 'center',
               }}
             >
-              <Grid item sm="auto">
+              <Grid size={{ sm: 'auto' }}>
                 <NumberInput
                   type="number"
                   value={interval.toString()}
@@ -222,7 +217,7 @@ export const RecurringEventDialog = ({
                   inputProps={{ min: 1 }}
                 />
               </Grid>
-              <Grid item sm="auto">
+              <Grid size={{ sm: 'auto' }}>
                 <Select value={rruleObject.freq} data-testid="frequency-select">
                   {recurrenceFrequency.map((entry) => (
                     <MenuItem
@@ -245,18 +240,19 @@ export const RecurringEventDialog = ({
               sx={{
                 alignItems: 'center',
               }}
+              size={12}
             >
-              <Grid item sm={4}>
+              <Grid size={{ sm: 4 }}>
                 <InputLabel>{t('dashboard-recurrence-dialog-frequency-details-label')}</InputLabel>
               </Grid>
               {renderFrequencyDetails()}
             </Grid>
           )}
-          <Grid container>
-            <Grid sm={4} item>
+          <Grid size={12} container>
+            <Grid size={{ sm: 4 }}>
               <EndOptionLabel>{t('dashboard-recurrence-dialog-end-label')}</EndOptionLabel>
             </Grid>
-            <Grid sm={8} container item>
+            <Grid size={{ sm: 8 }} container>
               <CustomEndOptions
                 rRuleObject={rruleObject}
                 updateRRuleObject={updateRRuleObject}

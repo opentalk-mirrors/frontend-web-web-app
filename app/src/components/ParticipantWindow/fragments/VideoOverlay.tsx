@@ -135,7 +135,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
 
   return (
     <OverlayContainer>
-      <IndicatorContainer item>
+      <IndicatorContainer>
         {active && (
           <>
             {userLayout === LayoutOptions.Speaker && (

@@ -639,7 +639,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
 
           <Collapse orientation="vertical" in={formik.values.isTimeDependent} unmountOnExit mountOnEnter>
             <Grid container columnSpacing={{ xs: 2, sm: 5 }}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <DashboardDateTimePicker
                   type="start"
                   formik={formik}
@@ -649,9 +649,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
                 />
               </Grid>
               <Grid
-                item
-                xs={12}
-                sm={6}
+                size={{ xs: 12, sm: 6 }}
                 sx={{
                   mt: { xs: 2, sm: 0 },
                 }}
@@ -660,9 +658,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
               </Grid>
 
               <Grid
-                item
-                xs={12}
-                sm={12}
+                size={{ xs: 12, sm: 12 }}
                 sx={{
                   mt: 2,
                 }}
@@ -756,7 +752,6 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
         </Stack>
         <Grid
           container
-          item
           spacing={2}
           sx={{
             justifyContent: 'space-between',
@@ -764,7 +759,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
             paddingRight: 1,
           }}
         >
-          <Grid item xs={12} sm="auto">
+          <Grid size={{ xs: 12, sm: 'auto' }}>
             {existingEvent && (
               <Button variant="text" color="secondary" endIcon={<ForwardIcon />} onClick={onForwardButtonClick}>
                 {t('dashboard-meeting-to-step', { step: 2 })}
@@ -773,22 +768,20 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
           </Grid>
           <Grid
             container
-            item
-            xs={12}
-            sm="auto"
+            size={{ xs: 12, sm: 'auto' }}
             spacing={3}
             sx={{
               flexDirection: { xs: 'column-reverse', sm: 'row' },
             }}
           >
             {!existingEvent && (
-              <Grid item>
+              <Grid>
                 <Button component={Link} to="/dashboard/" variant="outlined" color="secondary" fullWidth>
                   {t('dashboard-direct-meeting-button-cancel')}
                 </Button>
               </Grid>
             )}
-            <Grid item>
+            <Grid>
               <Button
                 fullWidth
                 disabled={formik.isSubmitting || createEventIsLoading || updateEventIsLoading}

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Grid, styled, Typography, Collapse, Stack, Tooltip, Hidden } from '@mui/material';
+import { Button, Grid, styled, Typography, Collapse, Tooltip } from '@mui/material';
 import { Event, EventId, isTimelessEvent, isEventException, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import { Property } from 'csstype';
 import { uniqueId } from 'lodash';
@@ -152,11 +152,7 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
   const getActionButtons = () => {
     if ((event as Event).inviteStatus === 'pending') {
       return (
-        <Stack
-          sx={{
-            flexDirection: 'row',
-          }}
-        >
+        <>
           <DeclineButton
             color="secondary"
             variant="outlined"
@@ -168,7 +164,7 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
           <Button color="secondary" onClick={acceptInvite} onMouseDown={(mouseEvent) => mouseEvent.stopPropagation()}>
             {t('global-accept')}
           </Button>
-        </Stack>
+        </>
       );
     }
 
@@ -237,11 +233,11 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
       columns={16}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
+      size="grow"
+      gap="2"
     >
       <Grid
-        item
-        xs="auto"
-        sm={1}
+        size={{ xs: 'auto', sm: 1 }}
         sx={{
           margin: 'auto',
         }}
@@ -249,9 +245,7 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
         {getIcons()}
       </Grid>
       <Grid
-        item
-        xs={12}
-        sm={3}
+        size={{ xs: 12, sm: 3 }}
         sx={{
           margin: 'auto',
         }}
@@ -259,9 +253,7 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
         {getTimePreview()}
       </Grid>
       <Grid
-        item
-        xs={16}
-        sm={3}
+        size={{ xs: 16, sm: 3 }}
         sx={{
           margin: 'auto',
         }}
@@ -272,33 +264,17 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
           </TitleTypography>
         </Tooltip>
       </Grid>
-      <Hidden xsDown>
-        <Grid
-          item
-          xs={16}
-          sm={3}
-          sx={{
-            margin: 'auto',
-          }}
-        >
-          <MaxWidthTypography maxWidth="50ch" variant="body1" fontWeight={400} noWrap translate="no">
-            {t('dashboard-home-created-by', { author: createdBy.displayName })}
-          </MaxWidthTypography>
-        </Grid>
-      </Hidden>
       <Grid
-        item
-        xs={16}
-        sm={4}
+        size={{ xs: 16, sm: 3 }}
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2,
-          justifyContent: 'flex-end',
-          paddingRight: 0,
-          textAlign: 'end',
+          margin: 'auto',
         }}
       >
+        <MaxWidthTypography maxWidth="50ch" variant="body1" fontWeight={400} noWrap translate="no">
+          {t('dashboard-home-created-by', { author: createdBy.displayName })}
+        </MaxWidthTypography>
+      </Grid>
+      <Grid size={{ xs: 16, sm: 4 }} container justifyContent="flex-end">
         {getActionButtons()}
       </Grid>
     </CardWrapper>

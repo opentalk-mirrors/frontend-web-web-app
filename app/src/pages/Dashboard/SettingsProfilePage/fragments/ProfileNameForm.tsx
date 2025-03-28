@@ -46,8 +46,8 @@ const ProfileNameForm = () => {
   return (
     <form onSubmit={formik.handleSubmit}>
       <Grid container spacing={3} direction="column" paddingBottom={0.5} paddingLeft={0.5}>
-        <Grid item container spacing={1} direction="column">
-          <Grid item>
+        <Grid container spacing={1} direction="column">
+          <Grid>
             <CommonTextField
               disabled={disallowCustomDisplayName}
               {...formikProps('displayName', formik)}
@@ -59,13 +59,13 @@ const ProfileNameForm = () => {
               required
             />
           </Grid>
-          <Grid item>
+          <Grid>
             <Typography variant="caption" component="p">
               {t('dashboard-settings-profile-input-hint')}
             </Typography>
           </Grid>
         </Grid>
-        <Grid item>
+        <Grid>
           <Button type="submit" disabled={isLoading || disallowCustomDisplayName}>
             {t('dashboard-settings-profile-button-save')}
           </Button>

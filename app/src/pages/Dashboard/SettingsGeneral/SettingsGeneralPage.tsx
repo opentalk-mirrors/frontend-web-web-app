@@ -19,7 +19,7 @@ const SettingsGeneralPage = () => {
     <>
       <VisuallyHiddenTitle label={pageHeading} component="h2" />
       <Grid container direction="column" data-testid="dashboardSettingsGeneral" spacing={5}>
-        <Grid item>
+        <Grid>
           <LanguageSelector />
         </Grid>
         {/* TODO add action ThemeSelector, currently has only presentation function

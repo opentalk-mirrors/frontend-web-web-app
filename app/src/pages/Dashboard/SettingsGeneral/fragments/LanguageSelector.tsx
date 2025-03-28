@@ -48,13 +48,13 @@ const LanguageSelector = () => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <Grid container item spacing={3} paddingBottom={0.5} paddingLeft={0.5}>
-        <Grid item xs={12}>
+      <Grid container spacing={3} paddingBottom={0.5} paddingLeft={0.5}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="h1" component="h3">
             {t('dashboard-settings-general-language')}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={5}>
+        <Grid size={{ xs: 12, sm: 5 }}>
           <CommonTextField
             {...formikProps('language', formik)}
             fullWidth
@@ -69,7 +69,7 @@ const LanguageSelector = () => {
             ))}
           </CommonTextField>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Button type="submit" disabled={isLoading}>
             {t('dashboard-settings-profile-button-save')}
           </Button>

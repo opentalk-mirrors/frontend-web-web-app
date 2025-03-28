@@ -21,6 +21,8 @@ import { handleMediaPermissionError } from '../../../utils/mediaErrorUtils';
 
 const Container = styled(Grid)({
   position: 'relative',
+  minWidth: '100%',
+  minHeight: '100%',
   '&::before': {
     content: '""',
     top: 0,

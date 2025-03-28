@@ -22,13 +22,13 @@ const SettingsAccountPage = () => {
     <>
       <VisuallyHiddenTitle label={pageHeading} component="h2" />
       <Grid container spacing={5} direction="column">
-        <Grid item container spacing={3}>
-          <Grid xs={12} item>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="h1" component="h2">
               {t('dashboard-settings-account-section-title')}
             </Typography>
           </Grid>
-          <Grid xs={12} item>
+          <Grid size={{ xs: 12 }}>
             <CommonTextField
               label={t('dashboard-settings-account-email-label')}
               value={data?.email}
@@ -36,7 +36,7 @@ const SettingsAccountPage = () => {
               fullWidth
             />
           </Grid>
-          <Grid xs={6} item>
+          <Grid size={{ xs: 6 }}>
             <CommonTextField
               label={t('dashboard-settings-account-firstname-label')}
               value={data?.firstname}
@@ -44,7 +44,7 @@ const SettingsAccountPage = () => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <CommonTextField
               label={t('dashboard-settings-account-familyname-label')}
               value={data?.lastname}
@@ -56,16 +56,16 @@ const SettingsAccountPage = () => {
 
         {changePassword.active && changePassword.url && (
           <>
-            <Grid item>
+            <Grid>
               <Divider />
             </Grid>
-            <Grid item container spacing={3} direction="column">
-              <Grid item>
+            <Grid container spacing={3} direction="column">
+              <Grid>
                 <Typography variant="h1" component="h2">
                   {t('global-password')}
                 </Typography>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Button color="secondary" href={changePassword.url}>
                   {t('dashboard-settings-account-change-password-button')}
                 </Button>

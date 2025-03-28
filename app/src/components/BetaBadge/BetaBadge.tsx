@@ -44,7 +44,7 @@ const BetaBadge = () => {
         {t('global-beta')}
       </Badge>
       <Popover
-        onBackdropClick={handlePopoverClose}
+        onClose={handlePopoverClose}
         open={open}
         anchorEl={badgeRef.current}
         anchorOrigin={{

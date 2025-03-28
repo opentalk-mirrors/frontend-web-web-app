@@ -54,13 +54,13 @@ const SelectParticipantsItem = ({ participant, onCheck }: SelectParticipantsItem
 
   return (
     <ListItem alignItems="flex-start">
-      <Grid container direction="row" wrap="nowrap">
-        <Grid item>
+      <Grid container direction="row" wrap="nowrap" sx={{ flexGrow: 1 }}>
+        <Grid sx={{ flexShrink: 0 }}>
           <ListItemAvatar>
             <Avatar src={avatarUrl}>{displayName}</Avatar>
           </ListItemAvatar>
         </Grid>
-        <Grid item zeroMinWidth xs>
+        <Grid size="grow">
           <FormControlLabel
             key={participant.identity}
             control={

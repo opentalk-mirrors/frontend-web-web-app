@@ -77,7 +77,7 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
           justifyContent: 'center',
         }}
       >
-        <Grid item xs>
+        <Grid size="grow">
           <Grid
             container
             spacing={1}
@@ -85,15 +85,15 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
               alignItems: 'end',
             }}
           >
-            <Grid item>
+            <Grid>
               <VoteState state={poll.state}>{t(`poll-overview-panel-status-${poll.state}`)}</VoteState>
             </Grid>
-            <Grid item>
+            <Grid>
               <Typography>{formattedTime}</Typography>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item sx={{ display: 'flex' }}>
+        <Grid sx={{ display: 'flex' }}>
           <Grid
             container
             spacing={1}
@@ -101,10 +101,10 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
               alignItems: 'flex-end',
             }}
           >
-            <Grid item>
+            <Grid>
               <DurationIcon />
             </Grid>
-            <Grid item>
+            <Grid>
               <Typography>
                 {poll.duration && poll.duration > 60 ? formatDuration(poll.duration) : poll.duration}
               </Typography>
@@ -112,8 +112,7 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
           </Grid>
         </Grid>
         <Grid
-          item
-          xs={12}
+          size={{ xs: 12 }}
           sx={{
             display: 'block',
           }}
@@ -124,25 +123,25 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
             isFinished={Boolean(poll.state !== 'active')}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Divider />
         </Grid>
-        <Grid item zeroMinWidth xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TopicTypography variant="body2" align="center">
             {truncate(poll.topic, { length: 120 })}
           </TopicTypography>
         </Grid>
-        <Grid item>
+        <Grid>
           <VoteCountContainer>
             <LegalBallotIcon />
             {getVotedNumber()}
           </VoteCountContainer>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Divider />
         </Grid>
         {poll.state === 'active' && (
-          <Grid item sx={{ marginLeft: 'auto' }}>
+          <Grid sx={{ marginLeft: 'auto' }}>
             <Button size="small" variant="contained" onClick={handleEnd}>
               {t('poll-overview-panel-button-end')}
             </Button>

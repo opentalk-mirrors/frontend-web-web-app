@@ -47,6 +47,7 @@ const ExpandingContainer = styled(Grid, {
   paddingTop: theme.spacing(2),
   overflow: 'hidden',
   maxHeight: visible ? '25rem' : 0,
+  display: visible ? '' : 'none',
   transitionDelay: '100ms',
   transition: 'all 600ms ease-out',
   paddingBottom: theme.spacing(1),
@@ -285,17 +286,17 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
           </CloseIconButton>
         </Box>
 
-        <Grid container>
+        <Grid container justifyContent="center">
           <Grid
             container
             direction="column"
             spacing={2}
             sx={{
               alignItems: 'center',
+              pb: 1,
             }}
           >
             <IconContainer
-              item
               container
               testCompleted={testCompleted}
               testResult={testResult()}
@@ -304,7 +305,7 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
               <TestIcon animated={!testCompleted} />
             </IconContainer>
             {!testCompleted && (
-              <Grid item>
+              <Grid>
                 <StyledTypography align="center" variant="body2">
                   {getMessage()}
                 </StyledTypography>
@@ -320,7 +321,7 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
             spacing={2}
             wrap="nowrap"
           >
-            <Grid item>
+            <Grid>
               <GridDiv>
                 <StyledTypography variant="body2">{t('speed-meter-download-label')}:</StyledTypography>
                 <ResultDiv quality={downloadQuality}>

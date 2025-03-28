@@ -26,6 +26,7 @@ stages:
 .setup-e2e-tests: &setup-e2e-tests
   image: mcr.microsoft.com/playwright:v1.51.1-jammy
   stage: e2e
+  when: manual
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   before_script:

@@ -38,7 +38,7 @@ export const CustomMonthlyOptions = ({ recurrenceStartDate, updateRRuleObject }:
   };
 
   return (
-    <Grid item sm={8} container>
+    <Grid size={{ xs: 12, sm: 4 }} container>
       <Select value={monthlyOption} autoWidth>
         <MenuItem
           value={monthlyDateText}
