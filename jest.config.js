@@ -37,10 +37,10 @@ module.exports = {
     {
       displayName: 'app',
       testEnvironment: 'jsdom',
-      roots: ['<rootDir>/app/src'],
+      roots: ['<rootDir>/app/src', '<rootDir>/app/utils'],
       setupFiles: ['<rootDir>/jest.config.js'],
       setupFilesAfterEnv: ['<rootDir>/app/src/setupTests.ts'],
-      testMatch: ['<rootDir>/app/src/**/?(*.)+(spec|test).[jt]s?(x)'],
+      testMatch: ['<rootDir>/app/**/?(*.)+(spec|test).[jt]s?(x)'],
       modulePathIgnorePatterns: ['<rootDir>/packages/*'],
       moduleDirectories: ['node_modules', '../app/node_modules'],
       moduleNameMapper: {
