@@ -5,8 +5,9 @@ import { test, expect } from '@playwright/test';
 
 import { HomePage } from '../pages/HomePage';
 import { LobbyRoomPage } from '../pages/LobbyRoomPage';
-import { MeetingPage } from '../pages/MeetingPage';
+import { MeetingInvitationPage } from '../pages/MeetingInvitationPage';
 import { MeetingRoomPage } from '../pages/MeetingRoomPage';
+import { PlanMeetingPage } from '../pages/PlanMeetingPage';
 import { SidebarPage } from '../pages/SidebarPage';
 
 const meetingTitle = 'test_meeting';
@@ -39,8 +40,8 @@ test.describe('Accessibility', () => {
     // cleaning anymeeting in dashboard
     await homePage.deleteAllCreatedMeetings(meetingTitle);
     await homePage.planNewMeetingButton.click();
-    const meetingPage = new MeetingPage({ page });
-    await meetingPage.createNewMeeting(meetingTitle, meetingRoomPassword);
+    const planMeetingPage = new PlanMeetingPage({ page });
+    await planMeetingPage.createNewMeeting(meetingTitle, meetingRoomPassword);
     createdMeetingStore.push(meetingTitle);
     await sidebarPage.homeButton.click();
     await homePage.markMeetingAsFavourite(meetingTitle);
@@ -88,8 +89,8 @@ test.describe('Accessibility', () => {
     await page.goto(baseUrl);
     const homePage = new HomePage({ page });
     await homePage.startNewMeetingButton.click();
-    const meetingPage = new MeetingPage({ page });
-    const lobbyPage = await meetingPage.goToMeetingLobby();
+    const meetingInvitationPage = new MeetingInvitationPage({ page });
+    const lobbyPage = await meetingInvitationPage.goToMeetingLobby();
     const lobbyRoomPage = new LobbyRoomPage({ page: lobbyPage });
     // checking whether the lobby page is fully loaded
     // microphone takes some time to load depending on browser
@@ -139,8 +140,8 @@ test.describe('Accessibility', () => {
     const homePage = new HomePage({ page });
     await homePage.startNewMeetingButton.click();
 
-    const meetingPage = new MeetingPage({ page });
-    await meetingPage.goToAdhocMeetingLobbyAsModerator(true);
+    const meetingInvitationPage = new MeetingInvitationPage({ page });
+    await meetingInvitationPage.goToAdhocMeetingLobbyAsModerator(true);
 
     const lobbyRoomPage = new LobbyRoomPage({ page });
     // from meeting-room-timer.spec.ts

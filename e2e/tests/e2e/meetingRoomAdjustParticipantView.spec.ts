@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
 
 import { HomePage } from '../pages/HomePage';
 import { LobbyRoomPage } from '../pages/LobbyRoomPage';
-import { MeetingPage } from '../pages/MeetingPage';
+import { MeetingInvitationPage } from '../pages/MeetingInvitationPage';
 import { MeetingRoomPage } from '../pages/MeetingRoomPage';
 
 const NUMBER_OF_GUESTS = 5;
@@ -53,8 +53,8 @@ test.describe('MeetingRoom - adjust participant view', () => {
     const homePage = new HomePage({ page });
     await homePage.startNewMeetingButton.click();
 
-    const meetingPage = new MeetingPage({ page });
-    await meetingPage.goToAdhocMeetingLobbyAsModerator(true);
+    const meetingInvitationPage = new MeetingInvitationPage({ page });
+    await meetingInvitationPage.goToAdhocMeetingLobbyAsModerator(true);
 
     const lobbyRoomPage = new LobbyRoomPage({ page });
     // from meeting-room-timer.spec.ts
@@ -103,8 +103,8 @@ test.describe('MeetingRoom - adjust participant view', () => {
     const homePage = new HomePage({ page });
     await homePage.startNewMeetingButton.click();
 
-    const meetingPage = new MeetingPage({ page });
-    const guestLink = await meetingPage.goToAdhocMeetingLobbyAsModeratorAndGetGuestLink(true);
+    const meetingInvitationPage = new MeetingInvitationPage({ page });
+    const guestLink = await meetingInvitationPage.goToAdhocMeetingLobbyAsModeratorAndGetGuestLink(true);
 
     const lobbyRoomPage = new LobbyRoomPage({ page });
     await expect(lobbyRoomPage.nameInputField).toBeVisible();

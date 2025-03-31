@@ -3,41 +3,53 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
-export class MeetingPage {
+export class MeetingInvitationPage {
   page: Page;
-  titleInputField: Locator;
-  passwordInputField: Locator;
-  createMeetingButton: Locator;
-  enterMeetingLobby: Locator;
   meetingLinkInputField: Locator;
+  phoneDialUpInputField: Locator;
   guestLinkInputField: Locator;
-  phoneDialInInputField: Locator;
+  passwordInputField: Locator;
+  inviteParticipantsInputField: Locator;
+  cancelMeetingButton: Locator;
   openMeetingRoomButton: Locator;
   warningDialogForDuplicateMeeting: Locator;
+  sendInvitationButton: Locator;
+  userInvitationDropDown: Locator;
+
+  adhocMeetingDescription = {
+    TitleText: 'Who do you want to invite to your meeting?',
+    disclaimer:
+      'Attention: This is an ad-hoc meeting, it will be automatically deleted after 24h and not shown in the dashboard',
+  };
+
+  createMeetingDescription = {
+    disclaimer: 'Required fields are marked with an asterisk. Please fill them out.',
+  };
 
   constructor({ page }: { page: Page }) {
     this.page = page;
-    this.titleInputField = this.page.getByPlaceholder('My new Meeting');
-    this.passwordInputField = this.page.getByPlaceholder('Strong password has at least');
-    this.createMeetingButton = this.page.getByRole('button', { name: 'Save' });
-    this.enterMeetingLobby = this.page.getByRole('button', { name: 'Enter now' });
     this.meetingLinkInputField = this.page.getByLabel('Meeting-Link');
+    this.phoneDialUpInputField = this.page.getByLabel('Phone Dial-in');
     this.guestLinkInputField = this.page.getByLabel('Guest-Link');
+    this.passwordInputField = this.page.getByLabel('Password', { exact: true });
+    this.inviteParticipantsInputField = this.page.locator('[data-testid="SelectParticipants"] input');
+    this.cancelMeetingButton = this.page.getByRole('button', { name: 'Cancel' });
     this.openMeetingRoomButton = this.page.getByRole('link', { name: 'Open Video Room' });
     this.warningDialogForDuplicateMeeting = this.page.getByText('Please confirm');
+    this.sendInvitationButton = this.page.getByRole('button', { name: 'Send Invitations' });
+    this.userInvitationDropDown = this.page.locator('div[role="presentation"]');
   }
 
-  async createNewMeeting(title: string, password: string): Promise<void> {
-    await this.titleInputField.click();
-    await this.titleInputField.fill(title);
-    await this.passwordInputField.click();
-    await this.passwordInputField.fill(password);
-    await this.createMeetingButton.click();
-    if (await this.warningDialogForDuplicateMeeting.isVisible()) {
-      await this.page.getByText('Create', { exact: true }).click();
-    }
-    // wait for meeting to full render in frontend
-    await this.page.waitForSelector('[aria-label="Only for registered users"]', { state: 'visible' });
+  async renderUpdateMeetingPage() {
+    // it takes some time for guestlink placeholder to have meeting url
+    let guestLink;
+    let i = 0;
+    do {
+      guestLink = await this.guestLinkInputField.getAttribute('value');
+      if (guestLink !== '-') break;
+      await this.page.waitForTimeout(500);
+      i++;
+    } while (guestLink === '-' && i < 10);
   }
 
   async goToAdhocMeetingLobbyAsModerator(closeMeetingTab?: boolean): Promise<void> {
