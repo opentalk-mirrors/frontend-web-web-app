@@ -24,6 +24,21 @@ export class HomePage {
       .click();
     const ariaLabel = `Add ${meetingTitle} to favorites`;
     await this.page.getByRole('menuitem', { name: ariaLabel }).click();
+    await this.getFavouriteMeetingSelector(meetingTitle).waitFor({ state: 'visible' });
+  }
+
+  getFavouriteMeetingSelector(meetingTitle: string): Locator {
+    return this.page.getByRole('link', { name: meetingTitle, exact: true });
+  }
+  getStartMeetingButton(meetingTitle: string): Locator {
+    return this.page.getByRole('link', { name: 'Start ' + meetingTitle, exact: true });
+  }
+
+  getThreeDotMenuOfMeeting(meetingTitle: string): Locator {
+    return this.page
+      .getByRole('listitem')
+      .filter({ hasText: meetingTitle })
+      .getByRole('button', { name: 'More Options' });
   }
 
   async deleteMeeting(meetingTitle: string): Promise<void> {
@@ -33,6 +48,14 @@ export class HomePage {
       .getByRole('button', { name: 'More Options' })
       .click();
     await this.page.getByRole('menuitem', { name: 'Delete' }).click();
-    await this.page.getByRole('button', { name: 'Delete' }).click();
+    await Promise.all([
+      this.page.waitForResponse(
+        (response) =>
+          response.request().url().includes('/events/') &&
+          response.request().method() === 'DELETE' &&
+          response.status() === 204
+      ),
+      this.page.getByRole('button', { name: 'Delete' }).click(),
+    ]);
   }
 }
