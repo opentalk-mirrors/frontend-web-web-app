@@ -19,7 +19,6 @@ import { selectAudioEnabled, startMedia } from '../store/slices/mediaSlice';
 import { selectShouldForceMuted } from '../store/slices/moderationSlice';
 import { useAppDispatch, useAppSelector } from './useCustomRedux';
 import { E2EEData } from './useE2EE';
-import useLivekitEvents from './useLivekitEvents';
 
 interface IUseRoomOptions {
   e2eeData: E2EEData;
@@ -68,24 +67,29 @@ const useRoom = ({ e2eeData, isWhisperRoom }: IUseRoomOptions): Room | undefined
 
   const room = useMemo(() => {
     const roomInstance = new Room(roomOptions);
-    !isWhisperRoom && setLivekitRoom(roomInstance);
+    return roomInstance;
+  }, [roomOptions]);
 
+  useEffect(() => {
+    if (!isWhisperRoom && room) {
+      setLivekitRoom(room, dispatch);
+    }
     // Mutes the user if microphones are disabled in conference
     if (shouldForceMuted && audioEnabled) {
       dispatch(startMedia({ kind: 'audioinput', enabled: false }));
     }
+  }, [room, isWhisperRoom]);
 
-    return roomInstance;
-  }, [roomOptions]);
-
-  if (e2eeEnabled && !room.isE2EEEnabled) {
-    keyProvider.setKey(e2eePassphrase);
-    room.setE2EEEnabled(true).catch((e) => {
-      if (e instanceof DeviceUnsupportedError) {
-        notifications.error(t('unsupported-browser-e2e-encryption-dialog-message'));
-      }
-    });
-  }
+  useEffect(() => {
+    if (e2eeEnabled && !room.isE2EEEnabled) {
+      keyProvider.setKey(e2eePassphrase);
+      room.setE2EEEnabled(true).catch((e) => {
+        if (e instanceof DeviceUnsupportedError) {
+          notifications.error(t('unsupported-browser-e2e-encryption-dialog-message'));
+        }
+      });
+    }
+  }, [e2eeEnabled, room]);
 
   useEffect(() => {
     const onPageLeave = async () => {
@@ -111,8 +115,6 @@ const useRoom = ({ e2eeData, isWhisperRoom }: IUseRoomOptions): Room | undefined
       });
     };
   }, [room.localParticipant.trackPublications]);
-
-  useLivekitEvents(room, isWhisperRoom);
 
   return room;
 };
