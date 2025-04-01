@@ -44,7 +44,6 @@ export const middleware: Array<Middleware> = [
   timerMiddleware.middleware,
   roomMiddleware.middleware,
   participantsMiddleware.middleware,
-  mediaMiddleware.middleware,
   livekitMiddleware.middleware,
 ];
 
