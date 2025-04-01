@@ -10,6 +10,33 @@ import { MeetingRoomPage } from '../pages/MeetingRoomPage';
 
 const NUMBER_OF_GUESTS = 5;
 
+const startAdhocMeetingAsModerator = async (page) => {
+  // launch OpenTalk & start new (adhoc) meeting
+  await page.goto(process.env.INSTANCE_URL);
+
+  const homePage = new HomePage({ page });
+  await homePage.startNewMeetingButton.click();
+
+  const meetingPage = new MeetingPage({ page });
+  const guestLink = await meetingPage.goToAdhocMeetingLobbyAsModeratorAndGetGuestLink(true);
+
+  const lobbyRoomPage = new LobbyRoomPage({ page });
+  await expect(lobbyRoomPage.nameInputField).toBeVisible();
+
+  // enter meeting room
+  await lobbyRoomPage.joinMeetingButton.click();
+  const meetingRoomPage = new MeetingRoomPage({ page });
+
+  // assert meeting room is shown
+  await expect(meetingRoomPage.meetingRoomName).toBeVisible();
+  await expect(await meetingRoomPage.getMeetingRoomName()).toContain('Ad-hoc Meeting');
+
+  // only moderator is present before guests join
+  await expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(1);
+
+  return { meetingRoomPage, guestLink };
+};
+
 const joinMeetingRoomAsGuest = async (context, guestLink: string, guestName: string): Promise<void> => {
   const joinAsGuestPage = await context.newPage();
   await joinAsGuestPage.goto(guestLink);
@@ -158,5 +185,34 @@ test.describe('MeetingRoom - adjust participant view', () => {
     // pin another user (2nd participant)
     const pinnedParticipant2 = await meetingRoomPage.pinNthParticipantInSpeakerView(2);
     await expect(await meetingRoomPage.getPinnedParticipantNameInSpeakerView()).toBe(pinnedParticipant2);
+  });
+
+  test('TC_004_VideoRoom_ParticipantViewSettings_List_GridView', async ({ page, context, browserName }) => {
+    test.skip(browserName === 'webkit');
+
+    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
+
+    // join with 5 guests (in separate browser instances)
+    await joinMeetingRoomWithNGuests(meetingRoomPage, context, guestLink, 'guest', NUMBER_OF_GUESTS);
+    await meetingRoomPage.peopleButton.click();
+    await expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(NUMBER_OF_GUESTS + 1);
+
+    // open grid view options besides the meeting room name
+    await meetingRoomPage.viewOptions.viewOptionsButton.waitFor();
+    await meetingRoomPage.viewOptions.viewOptionsButton.click();
+    await meetingRoomPage.viewOptions.gridViewOption.click(); // optional since grid view is activated by default
+    // tik is activated
+    await expect(await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.gridViewOption)).toBeTruthy();
+
+    // all 5 participant windows are centered
+    for (let i = 1; i <= NUMBER_OF_GUESTS; i++) {
+      await expect(await meetingRoomPage.getGridViewNthParticipantWindowAlignment(i)).toBe('center');
+    }
+    // all 5 participant windows have same size
+    const firstParticipantWindowSize = await meetingRoomPage.getGridViewNthParticipantWindowSize(1);
+    await expect(firstParticipantWindowSize).toBe(await meetingRoomPage.getGridViewNthParticipantWindowSize(2));
+    await expect(firstParticipantWindowSize).toBe(await meetingRoomPage.getGridViewNthParticipantWindowSize(3));
+    await expect(firstParticipantWindowSize).toBe(await meetingRoomPage.getGridViewNthParticipantWindowSize(4));
+    await expect(firstParticipantWindowSize).toBe(await meetingRoomPage.getGridViewNthParticipantWindowSize(5));
   });
 });
