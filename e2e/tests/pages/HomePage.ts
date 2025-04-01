@@ -25,6 +25,12 @@ export class HomePage {
     await this.favoriteMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
   }
 
+  async startAdhocMeeting(): Promise<Page> {
+    await this.startNewMeetingButton.click();
+    await this.page.waitForLoadState('domcontentloaded');
+    return this.page;
+  }
+
   async markMeetingAsFavourite(meetingTitle: string): Promise<void> {
     await this.getThreeDotMenuOfMeeting(meetingTitle).click();
     const ariaLabel = `Add ${meetingTitle} to favorites`;
@@ -35,6 +41,7 @@ export class HomePage {
   getFavouriteMeetingSelector(meetingTitle: string): Locator {
     return this.page.getByRole('link', { name: meetingTitle, exact: true });
   }
+
   getStartMeetingButton(meetingTitle: string): Locator {
     return this.page.getByRole('link', { name: 'Start ' + meetingTitle, exact: true }).first();
   }
