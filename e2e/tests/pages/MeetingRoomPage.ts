@@ -3,16 +3,20 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
-const selectors = {
-  viewPopoverMenu: '#view-popover-menu',
-  viewPopoverMenuListItem: '#view-popover-menu > li',
-  gridViewContainer: 'grid-container',
-  speakerViewContainer: 'SpeakerView-Container',
-  participantWindow: 'ParticipantWindow', // child element of 'cinemaCell'
-};
-
 export class MeetingRoomPage {
   page: Page;
+
+  selectors = {
+    viewPopoverMenu: '#view-popover-menu',
+    viewPopoverMenuListItem: '#view-popover-menu > li',
+    gridViewContainer: 'grid-container',
+    speakerViewContainer: 'SpeakerView-Container',
+    speakerViewParticipantsThumbsHolder: 'ThumbsHolder',
+    speakerWindow: 'SpeakerWindow1',
+    participantWindow: 'ParticipantWindow',
+    participantName: 'nameTile',
+  };
+
   meetingRoomName: Locator;
 
   toolBar: {
@@ -91,16 +95,16 @@ export class MeetingRoomPage {
 
     this.viewOptions = {
       viewOptionsButton: this.page.getByRole('button', { name: 'Select view' }),
-      viewAndSortingPopupMenu: this.page.locator(selectors.viewPopoverMenu),
+      viewAndSortingPopupMenu: this.page.locator(this.selectors.viewPopoverMenu),
       // get by role doesn't work for the menu items because the label is nested in a div and not part of the li element
-      gridViewOption: this.page.locator(selectors.viewPopoverMenuListItem).nth(0),
-      speakerViewOption: this.page.locator(selectors.viewPopoverMenuListItem).nth(1),
-      fullScreenViewOption: this.page.locator(selectors.viewPopoverMenuListItem).nth(2),
-      activatedCameraFirstSortingOption: this.page.locator(selectors.viewPopoverMenuListItem).nth(4),
-      moderatorsFirstSortingOption: this.page.locator(selectors.viewPopoverMenuListItem).nth(5),
-      gridViewContainer: this.page.getByTestId(selectors.gridViewContainer),
-      gridViewParticipantWindow: this.page.getByTestId(selectors.participantWindow),
-      speakerViewContainer: this.page.getByTestId(selectors.speakerViewContainer),
+      gridViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(0),
+      speakerViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(1),
+      fullScreenViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(2),
+      activatedCameraFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4),
+      moderatorsFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(5),
+      gridViewContainer: this.page.getByTestId(this.selectors.gridViewContainer),
+      gridViewParticipantWindow: this.page.getByTestId(this.selectors.participantWindow),
+      speakerViewContainer: this.page.getByTestId(this.selectors.speakerViewContainer),
     };
 
     this.jumpLinks = {
@@ -150,8 +154,10 @@ export class MeetingRoomPage {
     // correct differences between test server and local setup
     // constructor allocates locators to the UI version on test server, this function overwrites settings for local setup
     if (process.env.INSTANCE_URL.startsWith('http://')) {
-      this.viewOptions.activatedCameraFirstSortingOption = this.page.locator(selectors.viewPopoverMenuListItem).nth(3);
-      this.viewOptions.moderatorsFirstSortingOption = this.page.locator(selectors.viewPopoverMenuListItem).nth(4);
+      this.viewOptions.activatedCameraFirstSortingOption = this.page
+        .locator(this.selectors.viewPopoverMenuListItem)
+        .nth(3);
+      this.viewOptions.moderatorsFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4);
     }
   }
 
@@ -171,16 +177,38 @@ export class MeetingRoomPage {
   }
 
   async pinNthParticipantInSpeakerView(nth: number): Promise<string> {
-    const participantsThumbs = await this.page.getByTestId('ThumbsHolder');
-    const nthParticipantWindow = await participantsThumbs.getByTestId('ParticipantWindow').nth(nth - 1); // minus 1 because nth(0) is the first element
-    const nthParticipantName = await nthParticipantWindow.getByTestId('nameTile').innerText();
+    const participantsThumbs = await this.page.getByTestId(this.selectors.speakerViewParticipantsThumbsHolder);
+    const nthParticipantWindow = await participantsThumbs.getByTestId(this.selectors.participantWindow).nth(nth - 1); // minus 1 because nth(0) is the first element
+    const nthParticipantName = await nthParticipantWindow.getByTestId(this.selectors.participantName).innerText();
     await nthParticipantWindow.click();
     return nthParticipantName;
   }
 
   async getPinnedParticipantNameInSpeakerView(): Promise<string> {
-    const speakerViewContainer = await this.page.getByTestId('SpeakerWindow1').getByTestId('ParticipantWindow'); //'SpeakerView-Container'
-    return await speakerViewContainer.getByTestId('nameTile').innerText();
+    const speakerViewContainer = await this.page
+      .getByTestId(this.selectors.speakerWindow)
+      .getByTestId(this.selectors.participantWindow);
+    return await speakerViewContainer.getByTestId(this.selectors.participantName).innerText();
+  }
+
+  async getFirstParticipantNameInSpeakerView(): Promise<string> {
+    const participantName = await this.page
+      .getByTestId(this.selectors.speakerViewContainer)
+      .getByTestId(this.selectors.participantWindow)
+      .first()
+      .getByTestId(this.selectors.participantName)
+      .innerText();
+    return participantName;
+  }
+
+  async getThumbsNthParticipantNameInSpeakerView(nth: number): Promise<string> {
+    const participantName = await this.page
+      .getByTestId(this.selectors.speakerViewParticipantsThumbsHolder)
+      .getByTestId(this.selectors.participantWindow)
+      .nth(nth - 1) // minus 1 because nth(0) is the first element
+      .getByTestId(this.selectors.participantName)
+      .innerText();
+    return participantName;
   }
 
   async getGridViewNthParticipantWindowAlignment(nth: number): Promise<string> {
