@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
-import { EventId, RoomId } from '@opentalk/rest-api-rtk-query';
+import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import { useGetEventQuery, useGetMeQuery, useGetRoomQuery } from '../../../api/rest';
+import { useGetMeQuery, useGetRoomQuery } from '../../../api/rest';
 import { EndCallIcon } from '../../../assets/icons';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -53,7 +53,6 @@ const EndCallButton = () => {
   const eventInfo = useAppSelector(selectEventInfo);
   const requiresConfirmDialog = isMeetingCreator && !eventInfo?.isAdhoc;
   const fullscreenContext = useFullscreenContext();
-  const { data: eventData } = useGetEventQuery({ eventId: eventInfo?.id as EventId }, { skip: !requiresConfirmDialog });
 
   const hangUpHandler = useCallback(() => dispatch(hangUp()), [dispatch]);
 
@@ -83,7 +82,6 @@ const EndCallButton = () => {
           open={isConfirmDialogVisible}
           onClose={() => showConfirmDialog(false)}
           container={fullscreenContext.rootElement}
-          eventData={eventData}
         />
       )}
     </>
