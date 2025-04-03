@@ -449,8 +449,8 @@ importers:
         specifier: ^2.79.2
         version: 2.79.2
       type-fest:
-        specifier: ^4.38.0
-        version: 4.38.0
+        specifier: ^4.39.1
+        version: 4.39.1
       typescript:
         specifier: ^5.8.2
         version: 5.8.2
@@ -6590,6 +6590,10 @@ packages:
 
   type-fest@4.38.0:
     resolution: {integrity: sha512-2dBz5D5ycHIoliLYLi0Q2V7KRaDlH0uWIvmk7TYlAg5slqwiPv1ezJdZm1QEM0xgk29oYWMCbIG7E6gHpvChlg==}
+    engines: {node: '>=16'}
+
+  type-fest@4.39.1:
+    resolution: {integrity: sha512-uW9qzd66uyHYxwyVBYiwS4Oi0qZyUqwjU+Oevr6ZogYiXt99EOYtwvzMSLw1c3lYo2HzJsep/NB23iEVEgjG/w==}
     engines: {node: '>=16'}
 
   typed-array-buffer@1.0.3:
@@ -14166,6 +14170,8 @@ snapshots:
   type-fest@2.19.0: {}
 
   type-fest@4.38.0: {}
+
+  type-fest@4.39.1: {}
 
   typed-array-buffer@1.0.3:
     dependencies:
