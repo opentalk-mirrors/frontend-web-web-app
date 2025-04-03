@@ -1,5 +1,5 @@
 {
-	"compilerOptions": {
+  "compilerOptions": {
     "target": "es5",
     "lib": ["es6", "dom.iterable", "dom", "esnext"],
     "downlevelIteration": true,
@@ -18,8 +18,8 @@
     "jsx": "react-jsx",
     "sourceMap": true,
     "inlineSources": true,
-    "sourceRoot": "/"    
-
+    "sourceRoot": "/",
+    "types": ["./vite-env.d.ts"]
   },
   "include": ["src"]
 }

@@ -14,6 +14,7 @@ import {
   ThemeProvider,
   Typography,
 } from '@mui/material';
+import { SdkInfo } from '@sentry/browser';
 import { useFormik } from 'formik';
 import { pick } from 'lodash';
 import React, { useState } from 'react';
@@ -86,14 +87,14 @@ const GlitchtipErrorDialog = () => {
     onSubmit: async ({ email, name, comments }) => {
       const url = new URL(glitchtipConfig?.dsn || '');
 
-      const sdk = {
-        name: 'sentry.javascript.browser',
-        version: '7.60.0',
+      const sdk: SdkInfo = {
+        name: 'sentry.javascript.react',
+        version: __SENTRY_VERSION__,
       };
 
       if (event) {
         await fetch(
-          `${url.origin}/api${url.pathname}/envelope/?sentry_key=${url.username}&sentry_version=7&sentry_client=${sdk.name}/${sdk.version}`,
+          `${url.origin}/api${url.pathname}/envelope/?sentry_key=${url.username}&sentry_version=0&sentry_client=${sdk.name}/${sdk.version}`,
           {
             method: 'POST',
             body: `${JSON.stringify({
