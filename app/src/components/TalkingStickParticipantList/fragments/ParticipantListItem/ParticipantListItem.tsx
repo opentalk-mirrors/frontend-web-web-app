@@ -65,14 +65,15 @@ const ParticipantListItem = ({
         sx={{
           gap: 1,
           alignItems: 'center',
+          flexGrow: 1,
         }}
       >
-        <Grid item>
+        <Grid>
           <ListItemAvatar>
             <ParticipantAvatar src={avatarUrl}>{displayName}</ParticipantAvatar>
           </ListItemAvatar>
         </Grid>
-        <Grid item xs zeroMinWidth>
+        <Grid size="grow">
           <ListItemText
             primary={
               <Typography variant="body1" noWrap>

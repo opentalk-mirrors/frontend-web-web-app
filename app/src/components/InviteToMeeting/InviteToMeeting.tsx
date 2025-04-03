@@ -95,18 +95,19 @@ const InviteToMeeting = ({
     <Grid
       container
       direction="column"
-      spacing={2}
+      spacing={0}
       wrap="nowrap"
       sx={{
         justifyContent: 'space-between',
         overflow: 'auto',
+        pt: 1,
       }}
     >
-      <Grid container item spacing={3} direction="row">
+      <Grid container spacing={3} direction="row">
         <MeetingLinksAndPasswords event={existingEvent} />
         {!showOnlyLinkFields && features.userSearch && (
           <>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               {features.userSearch && (
                 <SelectParticipants
                   label={selectParticipantsLabel}
@@ -118,7 +119,7 @@ const InviteToMeeting = ({
                 />
               )}
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid size={{ xs: 12, sm: 12 }}>
               <InvitedParticipants
                 eventId={existingEvent.id}
                 selectedUsers={selectedUsers}
@@ -133,13 +134,12 @@ const InviteToMeeting = ({
       {!showOnlyLinkFields && (
         <Grid
           container
-          item
           spacing={2}
           sx={{
             justifyContent: { xs: 'center', sm: 'space-between' },
           }}
         >
-          <Grid item xs={12} sm="auto">
+          <Grid size={{ xs: 12, sm: 'auto' }}>
             {onBackButtonClick && (
               <StepButton variant="text" color="secondary" startIcon={<BackIcon />} onClick={onBackButtonClick}>
                 {t('dashboard-meeting-to-step', { step: 1 })}
@@ -148,21 +148,19 @@ const InviteToMeeting = ({
           </Grid>
           <Grid
             container
-            item
-            xs={12}
-            sm="auto"
+            size={{ xs: 12, sm: 'auto' }}
             spacing={3}
             sx={{
               flexDirection: { xs: 'column-reverse', sm: 'row' },
               padding: 1,
             }}
           >
-            <Grid item>
+            <Grid>
               <Button fullWidth color="secondary" variant="outlined" onClick={handleCancelMeetingPress}>
                 {t('global-cancel')}
               </Button>
             </Grid>
-            <Grid item>
+            <Grid>
               <Button
                 component={Link}
                 to={`/room/${existingEvent?.room.id}`}
@@ -174,7 +172,7 @@ const InviteToMeeting = ({
               </Button>
             </Grid>
             {features.userSearch && (
-              <Grid item>
+              <Grid>
                 <Button onClick={sendInvitations} disabled={!selectedUsers.length || sendingInvitation} fullWidth>
                   {t('dashboard-direct-meeting-button-send-invitations')}
                 </Button>

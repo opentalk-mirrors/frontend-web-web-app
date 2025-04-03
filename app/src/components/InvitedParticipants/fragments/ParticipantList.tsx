@@ -41,7 +41,7 @@ const ParticipantList = ({ isUpdatable, status, invitees, removeSelectedUser, ev
     }
   };
   return (
-    <Grid item xs={12} sm={4} data-testid="ParticipantList">
+    <Grid size={{ xs: 12, sm: 4 }} data-testid="ParticipantList">
       <Typography
         variant="body1"
         component="h3"

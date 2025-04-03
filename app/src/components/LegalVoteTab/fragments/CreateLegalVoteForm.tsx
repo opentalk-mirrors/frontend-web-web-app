@@ -109,7 +109,7 @@ const CreateLegalVoteForm = ({
         validationSchema: validationSchema,
         component: (formik) => (
           <Grid container spacing={1}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Stack
                 direction="row"
                 sx={{
@@ -130,14 +130,14 @@ const CreateLegalVoteForm = ({
                 />
               </Stack>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <CommonFormItem
                 {...formikSwitchProps('enableAbstain', formik)}
                 control={<Switch color="primary" />}
                 label={t('legal-vote-form-allow-abstain')}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <CommonFormItem
                 {...formikSwitchProps('autoClose', formik)}
                 control={
@@ -148,7 +148,7 @@ const CreateLegalVoteForm = ({
                 label={t('legal-vote-form-auto-stop')}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Select {...formikProps('kind', formik)} defaultValue={formik.initialValues['kind']} id="vote-kind">
                 {legalVoteOptions.map((kind) => (
                   <MenuItem key={kind} value={kind}>
@@ -157,7 +157,7 @@ const CreateLegalVoteForm = ({
                 ))}
               </Select>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <CommonTextField
                 {...formikProps('name', formik)}
                 label={t('legal-vote-title-label')}
@@ -165,7 +165,7 @@ const CreateLegalVoteForm = ({
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <CommonTextField
                 {...formikProps('subtitle', formik)}
                 label={t('legal-vote-subtitle-label')}
@@ -173,7 +173,7 @@ const CreateLegalVoteForm = ({
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <CommonTextField
                 {...formikProps('topic', formik)}
                 minRows={4}

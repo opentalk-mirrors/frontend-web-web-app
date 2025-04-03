@@ -77,7 +77,7 @@ export const PresenterOverlay = ({
 
   return (
     <OverlayContainer data-testid="screenShareVideoOverlay">
-      <IndicatorContainer item>
+      <IndicatorContainer>
         <OverlayIconButton onClick={changeVideoPosition} aria-label={t('indicator-change-position')} color="secondary">
           <ArrowIcon rotate={arrowIconDirection} />
         </OverlayIconButton>

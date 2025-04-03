@@ -60,7 +60,7 @@ const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
 
   const renderPrimaryText = () => (
     <Grid container direction="row" spacing={1}>
-      <Grid item zeroMinWidth xs>
+      <Grid size="grow">
         <Typography
           variant="body1"
           noWrap
@@ -72,7 +72,7 @@ const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
           {getDisplayName()}
         </Typography>
       </Grid>
-      <Grid item>
+      <Grid>
         <TimeTypography variant="caption" fontWeight={fontWeight}>
           {formattedTime}
         </TimeTypography>

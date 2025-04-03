@@ -86,10 +86,8 @@ const WaitingView = () => {
         >
           <Grid
             container
-            item
+            size={{ sm: 12, md: 'auto' }}
             direction="column"
-            sm={12}
-            md="auto"
             sx={{
               alignItems: 'center',
               mt: 0,

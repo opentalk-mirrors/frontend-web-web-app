@@ -74,8 +74,7 @@ export const CustomWeeklyOptions = ({ rRuleObject, updateRRuleObject }: CustomWe
 
   return (
     <Grid
-      item
-      sm={8}
+      size={{ sm: 8 }}
       container
       data-testid="weekly-options"
       sx={{

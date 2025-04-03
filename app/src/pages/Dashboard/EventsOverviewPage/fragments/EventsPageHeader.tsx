@@ -51,7 +51,6 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
         component="header"
         rowSpacing={0}
         columnSpacing={2}
-        columns={12}
         style={{ marginTop: resetMarginTop, marginLeft: resetMarginLeft }}
         data-testid="events-page-header-desktop"
         sx={{
@@ -59,10 +58,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
         }}
       >
         <Grid
-          item
-          container
-          xs="auto"
-          zeroMinWidth
+          size={{ xs: 'auto' }}
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -80,8 +76,6 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
           />
         </Grid>
         <Grid
-          item
-          zeroMinWidth
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -92,7 +86,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
           <CreateNewMeetingButton />
         </Grid>
         {isContainingRecurringEvents && (
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Typography
               variant="h2"
               component="h2"
@@ -122,17 +116,15 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
         }}
       >
         <Grid
-          item
           container
-          columns={12}
-          xs={12}
+          size={{ xs: 12 }}
           rowSpacing={0}
           columnSpacing={1}
           sx={{
             alignItems: 'center',
           }}
         >
-          <Grid item xs="auto">
+          <Grid size={{ xs: 'auto' }}>
             <EventPageFilters
               filters={filters}
               onFilterChange={onFilterChange}
@@ -140,7 +132,6 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
             />
           </Grid>
           <Grid
-            item
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -151,7 +142,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
             <CreateNewMeetingButton />
           </Grid>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="h1" component="h1">
             {title}
           </Typography>
@@ -184,8 +175,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
       }}
     >
       <Grid
-        item
-        xs={12}
+        size={{ xs: 12 }}
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -209,8 +199,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
       </Grid>
       {showTimePerspectiveFilter && (
         <Grid
-          item
-          xs={12}
+          size={{ xs: 12 }}
           sx={{
             mt: 1,
             display: 'flex',
@@ -222,7 +211,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
           <CreateNewMeetingButton />
         </Grid>
       )}
-      <Grid item xs={12}>
+      <Grid size={{ xs: 12 }}>
         {isContainingRecurringEvents && (
           <Typography
             variant="h2"

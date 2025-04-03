@@ -93,7 +93,7 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
           justifyContent: 'space-between',
         }}
       >
-        <Grid item>
+        <Grid>
           <Stack spacing={2}>
             {renderTimeString()}
 
@@ -113,7 +113,7 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
             {renderCreator()}
           </Stack>
         </Grid>
-        <Grid item>
+        <Grid>
           <MeetingPopover event={event} isMeetingCreator={isMeetingCreator} highlighted={highlighted} />
         </Grid>
       </Grid>

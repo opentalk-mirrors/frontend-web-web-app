@@ -54,7 +54,7 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
 
   return (
     <RadioGroup value={endOption} name="radio-buttons-group">
-      <Grid item>
+      <Grid>
         <FormControlLabel
           value={EndOption.Never}
           control={<Radio />}
@@ -64,13 +64,13 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
       </Grid>
       <Grid
         container
-        item
         sx={{
           alignItems: 'center',
           flexWrap: 'nowrap',
         }}
+        columnGap={2}
       >
-        <Grid item>
+        <Grid>
           <FormControlLabel
             value={EndOption.OnDate}
             control={<Radio />}
@@ -79,7 +79,6 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
           />
         </Grid>
         <Grid
-          item
           sx={{
             flexShrink: 1,
           }}

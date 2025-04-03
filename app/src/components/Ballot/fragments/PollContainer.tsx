@@ -86,7 +86,7 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
         width: '100%',
       }}
     >
-      <Grid item xs={12} style={{ scrollBehavior: 'smooth' }}>
+      <Grid size={{ xs: 12 }} style={{ scrollBehavior: 'smooth' }}>
         <Box
           sx={{
             display: 'flex',
@@ -113,8 +113,8 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
           </IconButton>
         </Box>
       </Grid>
-      <Grid component="form" container item xs={12} onSubmit={handleSubmit}>
-        <Grid item xs={12}>
+      <Grid component="form" container size={{ xs: 12 }} onSubmit={handleSubmit}>
+        <Grid size={{ xs: 12 }}>
           <Fieldset>
             <legend>
               <LegendTitle variant="body1" component="h4">
@@ -154,8 +154,7 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
           </Fieldset>
         </Grid>
         <Grid
-          item
-          xs={12}
+          size={{ xs: 12 }}
           container
           sx={{
             my: 1,

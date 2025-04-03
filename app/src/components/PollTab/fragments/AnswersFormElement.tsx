@@ -58,7 +58,7 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
       render={(arrayHelpers) => (
         <Grid container spacing={1}>
           {choices.map((answer: string, index: number) => (
-            <Grid item xs={12} key={index}>
+            <Grid size={{ xs: 12 }} key={index}>
               {editingIndex === index ? (
                 <Field
                   name={`${name}.${index}`}
@@ -107,7 +107,7 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
               )}
             </Grid>
           ))}
-          <Grid item>
+          <Grid>
             <Button
               size="small"
               type="button"

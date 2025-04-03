@@ -801,6 +801,14 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
           }),
         },
       },
+      MuiPickersLayout: {
+        styleOverrides: {
+          root: () => ({
+            display: 'flex',
+            flexDirection: 'column',
+          }),
+        },
+      },
       MuiPickersCalendarHeader: {
         styleOverrides: {
           labelContainer: () => ({

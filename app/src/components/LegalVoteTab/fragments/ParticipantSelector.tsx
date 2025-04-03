@@ -138,13 +138,13 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
   };
 
   const renderErrors = hasError && (
-    <Grid item>
+    <Grid>
       <FormHelperText error={hasError}>{error}</FormHelperText>
     </Grid>
   );
 
   const renderSearchUser = (
-    <Grid item xs={12}>
+    <Grid size={{ xs: 12 }}>
       <CommonTextField
         size="small"
         onChange={searchHandler}
@@ -162,8 +162,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
 
   const renderAllUsersButton = (
     <Grid
-      item
-      xs={12}
+      size={{ xs: 12 }}
       sx={{
         display: 'flex',
       }}
@@ -176,17 +175,16 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
 
   const renderParticipant = (participant: AllowedParticipant) => (
     <ListItem key={participant.id}>
-      <Grid container spacing={2} direction="row" wrap="nowrap">
-        <Grid item>
+      <Grid container spacing={2} direction="row" wrap="nowrap" sx={{ flexGrow: 1 }}>
+        <Grid>
           <ListItemAvatar>
             <ParticipantAvatar src={participant.avatarUrl}>{participant.displayName}</ParticipantAvatar>
           </ListItemAvatar>
         </Grid>
-        <Grid item xs zeroMinWidth>
+        <Grid size="grow">
           <ListItemText primary={<Typography noWrap>{participant.displayName}</Typography>} />
         </Grid>
         <Grid
-          item
           sx={{
             alignContent: 'flex-end',
           }}
@@ -203,7 +201,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
   );
 
   const renderPartricipants = (
-    <Grid item xs={12}>
+    <Grid size="grow">
       <CustomList>{participantsToShow.map(renderParticipant)}</CustomList>
     </Grid>
   );

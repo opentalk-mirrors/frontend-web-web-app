@@ -173,10 +173,10 @@ const DashboardTemplate = () => {
                       alignItems: 'center',
                     }}
                   >
-                    <Grid item>
+                    <Grid>
                       <Skeleton variant="circular" width={40} height={40} />
                     </Grid>
-                    <Grid item xs>
+                    <Grid size="grow">
                       <Skeleton variant="text" />
                     </Grid>
                   </Grid>

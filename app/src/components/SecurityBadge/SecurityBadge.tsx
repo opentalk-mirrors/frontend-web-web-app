@@ -86,10 +86,10 @@ const SecurityBadge = () => {
         alignItems: 'center',
       }}
     >
-      <Grid item xs={2}>
+      <Grid size={{ xs: 2 }}>
         <SecureIconBig warning />
       </Grid>
-      <Grid item xs={4}>
+      <Grid size={{ xs: 4 }}>
         <Typography>{t('secure-connection-message')}</Typography>
         <PopoverParagraph>{t(getBadgeTranslationKey())}</PopoverParagraph>
       </Grid>
@@ -104,22 +104,22 @@ const SecurityBadge = () => {
         alignItems: 'center',
       }}
     >
-      <CenteredGrid item xs={2}>
+      <CenteredGrid size={{ xs: 2 }}>
         <SecureIconBig />
       </CenteredGrid>
-      <Grid item xs={4}>
+      <Grid size={{ xs: 4 }}>
         <Typography>{t('secure-connection-message')}</Typography>
       </Grid>
-      <CenteredGrid item xs={2}>
+      <CenteredGrid size={{ xs: 2 }}>
         <CheckmarkIconBig />
       </CenteredGrid>
-      <Grid item xs={4}>
+      <Grid size={{ xs: 4 }}>
         <Typography>{t('secure-connection-registered-only')}</Typography>
       </Grid>
-      <CenteredGrid item xs={2}>
+      <CenteredGrid size={{ xs: 4 }}>
         <CheckmarkIconBig />
       </CenteredGrid>
-      <Grid item xs={4}>
+      <Grid size={{ xs: 4 }}>
         <Typography>{t('secure-connection-no-sip')}</Typography>
       </Grid>
     </Grid>

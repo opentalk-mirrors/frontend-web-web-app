@@ -309,7 +309,7 @@ const MeetingNotesTab = () => {
                 {t('poll-participant-list-button-select-all')}
               </Button>
             </Stack>
-            <ParticipantsListGrid zeroMinWidth item>
+            <ParticipantsListGrid>
               <List>
                 {getFilteredParticipants().map((participant) => (
                   <ListItem key={participant.id}>
