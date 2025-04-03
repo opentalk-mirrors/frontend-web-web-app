@@ -12,6 +12,7 @@ jest.mock('react-i18next', () => ({
 
 jest.mock('../../hooks', () => ({
   useAppSelector: (selector: () => unknown) => selector(),
+  useLocale: () => ({ code: 'en' }),
 }));
 
 jest.mock('../Toolbar/fragments/ShortcutListDialog', () => ({
@@ -38,7 +39,7 @@ describe('SupportList component', () => {
       const list = screen.getByRole('list');
 
       expect(list).toBeInTheDocument();
-      expect(list.children).toHaveLength(3);
+      expect(list.children).toHaveLength(4);
     });
     test('should contain all items ', () => {
       mockSelectIsGlitchtipConfigured.mockReturnValue(true);
@@ -46,17 +47,23 @@ describe('SupportList component', () => {
       const list = screen.getByRole('list');
 
       expect(list).toBeInTheDocument();
-      expect(list.children).toHaveLength(4);
+      expect(list.children).toHaveLength(5);
+    });
+    test('accessibility support list item is containing open new tab image', () => {
+      render(<SupportList />);
+      const accessibilitySupport = screen.getAllByRole('listitem')[0];
+      const openNewTabImage = within(accessibilitySupport).getByRole('img', { name: 'global-open-new-tab' });
+      expect(openNewTabImage).toBeInTheDocument();
     });
     test('user manual list is containing open new tab image', () => {
       render(<SupportList />);
-      const userManual = screen.getAllByRole('listitem')[0];
+      const userManual = screen.getAllByRole('listitem')[1];
       const openNewTabImage = within(userManual).getByRole('img', { name: 'global-open-new-tab' });
       expect(openNewTabImage).toBeInTheDocument();
     });
     test('keyboard shortcut list item is not containing open new tab image', () => {
       render(<SupportList />);
-      const keyboardShortcut = screen.getAllByRole('listitem')[1];
+      const keyboardShortcut = screen.getAllByRole('listitem')[2];
       const openNewTabImage = within(keyboardShortcut).queryByRole('img', { name: 'global-open-new-tab' });
       expect(openNewTabImage).not.toBeInTheDocument();
     });

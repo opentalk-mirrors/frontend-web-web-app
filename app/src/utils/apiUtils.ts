@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { InviteCode, RoomId, EventId } from '@opentalk/rest-api-rtk-query';
 
+import type { useLocale } from '../hooks';
 import type { ConfigState, DefaultAvatarImage } from '../store/slices/configSlice';
 import { BreakoutRoomId } from '../types';
 
@@ -111,4 +112,10 @@ export const addParameterToLibravatarUrl = (
 export const USER_MANUAL_URL = 'https://docs.opentalk.eu/user/manual/';
 export const openUserManual = () => {
   window.open(USER_MANUAL_URL, '_blank');
+};
+
+export const getAccessibilityUrl = (locale: ReturnType<typeof useLocale>) => {
+  return locale?.code.startsWith('en')
+    ? 'https://opentalk.eu/en/accessibility-statement'
+    : 'https://opentalk.eu/de/erklaerung-zur-barrierefreiheit';
 };
