@@ -27,15 +27,17 @@ test.describe('Accessibility', () => {
 
   test('TC_001_Dashboard', async ({ page, browserName }) => {
     const sidebarPage = new SidebarPage({ page });
-    const baseUrl = process.env.INSTANCE_URL;
-    await page.goto(baseUrl);
-    await expect(sidebarPage.homeButton).toBeVisible();
     const homePage = new HomePage({ page });
+    const baseUrl = process.env.INSTANCE_URL;
+    await homePage.navigateToHomePage();
+
     // Warning button in safari blocks the selector for creating new meeting
     if (browserName === 'webkit') {
       const closeButton = await page.getByRole('button', { name: 'Ok', exact: true });
       await closeButton.click();
     }
+    // cleaning anymeeting in dashboard
+    await homePage.deleteAllCreatedMeetings(meetingTitle);
     await homePage.planNewMeetingButton.click();
     const meetingPage = new MeetingPage({ page });
     await meetingPage.createNewMeeting(meetingTitle, meetingRoomPassword);

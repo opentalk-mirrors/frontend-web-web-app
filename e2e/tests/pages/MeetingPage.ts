@@ -13,6 +13,7 @@ export class MeetingPage {
   guestLinkInputField: Locator;
   phoneDialInInputField: Locator;
   openMeetingRoomButton: Locator;
+  warningDialogForDuplicateMeeting: Locator;
 
   constructor({ page }: { page: Page }) {
     this.page = page;
@@ -23,6 +24,7 @@ export class MeetingPage {
     this.meetingLinkInputField = this.page.getByLabel('Meeting-Link');
     this.guestLinkInputField = this.page.getByLabel('Guest-Link');
     this.openMeetingRoomButton = this.page.getByRole('link', { name: 'Open Video Room' });
+    this.warningDialogForDuplicateMeeting = this.page.getByText('Please confirm');
   }
 
   async createNewMeeting(title: string, password: string): Promise<void> {
@@ -31,6 +33,9 @@ export class MeetingPage {
     await this.passwordInputField.click();
     await this.passwordInputField.fill(password);
     await this.createMeetingButton.click();
+    if (await this.warningDialogForDuplicateMeeting.isVisible()) {
+      await this.page.getByText('Create', { exact: true }).click();
+    }
     // wait for meeting to full render in frontend
     await this.page.waitForSelector('[aria-label="Only for registered users"]', { state: 'visible' });
   }
