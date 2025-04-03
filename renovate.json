@@ -39,11 +39,18 @@
     },
     {
       "matchPackagePatterns": [
-        "i18next",
-        "i18next-*"
+        "^i18next"
       ],
       "groupName": "i18next",
       "groupSlug": "i18next"
+    },
+    {
+      "matchPackagePatterns": [
+        "^livekit",
+        "^@livekit"
+      ],
+      "groupName": "livekit",
+      "groupSlug": "livekit"
     }
   ]
 }
