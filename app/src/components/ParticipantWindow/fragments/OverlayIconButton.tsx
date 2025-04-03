@@ -25,11 +25,20 @@ export const OverlayIconButton = styled(IconButton)(({ theme }) => ({
     ':hover': {
       backgroundColor: theme.palette.primary.main,
     },
+    ':focus': {
+      outline: theme.palette.focus?.outline,
+      outlineOffset: theme.palette.focus?.outlineOffset,
+    },
   },
 
   '&.MuiIconButton-colorSecondary': {
     ':hover': {
-      backgroundColor: theme.palette.secondary.lighter,
+      color: theme.palette.secondary.contrastText,
+      backgroundColor: theme.palette.secondary.light,
+    },
+    ':focus': {
+      outline: theme.palette.focus?.outline,
+      outlineOffset: theme.palette.focus?.outlineOffset,
     },
   },
 }));
