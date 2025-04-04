@@ -231,7 +231,14 @@ const CreateRoomsForm = () => {
   };
 
   // todo include/exclude moderators
+  const hasSubmittedRef = useRef(false);
   const handleSubmit = (values: FormikValues) => {
+    if (hasSubmittedRef.current) {
+      return;
+    }
+
+    hasSubmittedRef.current = true;
+
     switch (values.expanded) {
       case AccordionOptions.Rooms:
         startByRooms(values);
