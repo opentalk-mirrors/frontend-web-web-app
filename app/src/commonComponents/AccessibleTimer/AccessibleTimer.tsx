@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
+import { Duration } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 

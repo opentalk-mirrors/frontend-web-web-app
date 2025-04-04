@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { PayloadAction, TypedStartListening, createListenerMiddleware, createSlice } from '@reduxjs/toolkit';
-import { intervalToDuration } from 'date-fns';
+import { Duration, intervalToDuration } from 'date-fns';
 import i18next from 'i18next';
 
 import type { AppDispatch, RootState } from '../';

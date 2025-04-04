@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Locale } from 'date-fns';
-import enUS from 'date-fns/locale/en-US/index.js';
+import { enUS } from 'date-fns/locale/en-US';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +21,7 @@ export default function useLocale() {
       if (language === 'de') {
         try {
           abortController.signal.throwIfAborted();
-          locale = await import(`date-fns/locale/de/index.js`).then((module) => module.default);
+          locale = await import(`date-fns/locale/de`).then((module) => module.de);
           abortController.signal.throwIfAborted();
           return locale;
         } catch {

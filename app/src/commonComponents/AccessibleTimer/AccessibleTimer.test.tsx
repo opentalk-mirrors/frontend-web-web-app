@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { render } from '@testing-library/react';
+import { Duration } from 'date-fns';
 
 import AccessibleTimer from './AccessibleTimer';
 import { LAST_SECONDS_OF_A_MINUTE, LAST_SECONDS_OF_TOTAL_TIME } from './constants';

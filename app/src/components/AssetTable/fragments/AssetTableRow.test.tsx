@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { within } from '@testing-library/dom';
 import { render, screen } from '@testing-library/react';
-import format from 'date-fns/format';
+import { format } from 'date-fns/format';
 
 import { formatBytes } from '../../../utils/numberUtils';
 import { mockedRoomAssets } from '../../../utils/testUtils';

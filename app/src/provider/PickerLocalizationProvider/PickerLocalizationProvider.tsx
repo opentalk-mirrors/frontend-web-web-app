@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { LocalizationProvider, LocalizationProviderProps } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { deDE, enUS } from '@mui/x-date-pickers/locales';
 import { Locale } from 'date-fns';
-import deLocale from 'date-fns/locale/de';
-import enLocale from 'date-fns/locale/en-US';
+import { de as deLocale } from 'date-fns/locale/de';
+import { enUS as enLocale } from 'date-fns/locale/en-US';
 import { useTranslation } from 'react-i18next';
 
 const dateLocaleMap = new Map([

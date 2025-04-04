@@ -1,23 +1,23 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { formatDuration, intervalToDuration } from 'date-fns';
+import { Interval, intervalToDuration } from 'date-fns';
 
 export const getISOStringWithoutMilliseconds = (date: Date) => date.toISOString().split('.')[0] + 'Z';
 
 export const getIntervalToDurationString = (interval: Interval) => {
   const duration = intervalToDuration(interval);
 
-  const zeroPad = (number: number) => String(number).padStart(2, '0');
+  const durationString = [duration.hours || 0, duration.minutes || 0, duration.seconds || 0]
+    .map((segment) => String(segment).padStart(2, '0'))
+    .join(' : ');
 
-  return formatDuration(duration, {
-    format: [duration.hours ? 'hours' : '', 'minutes', 'seconds'],
-    zero: true,
-    delimiter: ' : ',
-    locale: {
-      formatDistance: (_token, count) => zeroPad(count),
-    },
-  });
+  if (!duration.hours) {
+    // "00 : 00 : 00" -> "00 : 00"
+    return durationString.slice(5);
+  }
+
+  return durationString;
 };
 
 export const getRemainingTimeForInterval = (interval: Interval) => ({

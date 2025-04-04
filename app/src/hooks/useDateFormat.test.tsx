@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 // import { render, screen } from '@testing-library/react';
-import mockDe from 'date-fns/locale/de/index.js';
-import mockEn from 'date-fns/locale/en-US/index.js';
+import { de as mockDe } from 'date-fns/locale/de';
+import { enUS as mockEn } from 'date-fns/locale/en-US';
 
 import { useLocale, useDateFormat } from '.';
 
