@@ -32,7 +32,7 @@ const SettingsAccountPage = () => {
             <CommonTextField
               label={t('dashboard-settings-account-email-label')}
               value={data?.email}
-              disabled
+              InputProps={{ readOnly: true }}
               fullWidth
             />
           </Grid>
@@ -40,7 +40,7 @@ const SettingsAccountPage = () => {
             <CommonTextField
               label={t('dashboard-settings-account-firstname-label')}
               value={data?.firstname}
-              disabled
+              InputProps={{ readOnly: true }}
               fullWidth
             />
           </Grid>
@@ -48,7 +48,7 @@ const SettingsAccountPage = () => {
             <CommonTextField
               label={t('dashboard-settings-account-familyname-label')}
               value={data?.lastname}
-              disabled
+              InputProps={{ readOnly: true }}
               fullWidth
             />
           </Grid>
