@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import replace from '@rollup/plugin-replace';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import react from '@vitejs/plugin-react';
 import { execSync } from 'child_process';
 import fs from 'fs';
@@ -84,6 +85,14 @@ export default defineConfig(({ command, mode }) => {
       svgr({
         svgrOptions: {
           titleProp: true,
+        },
+      }),
+      // Put the Sentry vite plugin after all other plugins
+      sentryVitePlugin({
+        telemetry: false,
+        reactComponentAnnotation: {
+          enabled: true,
+          ignoredComponents: ['ThemeProvider'],
         },
       }),
     ],
