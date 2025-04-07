@@ -28,7 +28,7 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
     "shx": "^0.4.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "@reduxjs/toolkit": "^2.6.1",
