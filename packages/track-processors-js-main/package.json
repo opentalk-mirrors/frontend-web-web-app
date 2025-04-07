@@ -33,7 +33,7 @@
     "@types/dom-mediacapture-transform": "^0.1.11",
     "prettier": "^3.5.3",
     "tsup": "^8.4.0",
-    "typescript": "^5.8.2",
+    "typescript": "^5.8.3",
     "vite": "^6.2.5"
   }
 }

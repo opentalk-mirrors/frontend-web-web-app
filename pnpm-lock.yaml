@@ -102,7 +102,7 @@ importers:
         specifier: ^3.5.3
         version: 3.5.3
       typescript:
-        specifier: ^5.8.2
+        specifier: ^5.8.3
         version: 5.8.3
       typescript-eslint:
         specifier: ^8.29.0
@@ -310,7 +310,7 @@ importers:
         specifier: ^2.7.3
         version: 2.7.3(@types/node@22.14.0)(typescript@5.8.3)
       typescript:
-        specifier: ^5.8.2
+        specifier: ^5.8.3
         version: 5.8.3
       vite:
         specifier: ^6.2.5
@@ -326,7 +326,7 @@ importers:
         version: 0.19.0
     devDependencies:
       typescript:
-        specifier: ^5.8.2
+        specifier: ^5.8.3
         version: 5.8.3
       vite:
         specifier: ^6.2.5
@@ -348,7 +348,7 @@ importers:
         specifier: ^24.2.3
         version: 24.2.3(typescript@5.8.3)
       typescript:
-        specifier: ^5.8.2
+        specifier: ^5.8.3
         version: 5.8.3
       vite:
         specifier: ^6.2.5
@@ -406,7 +406,7 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       typescript:
-        specifier: ^5.8.2
+        specifier: ^5.8.3
         version: 5.8.3
 
   packages/rtk-rest-api:
@@ -455,7 +455,7 @@ importers:
         specifier: ^4.39.1
         version: 4.39.1
       typescript:
-        specifier: ^5.8.2
+        specifier: ^5.8.3
         version: 5.8.3
       uuid:
         specifier: ^11.1.0
@@ -492,7 +492,7 @@ importers:
         specifier: ^8.4.0
         version: 8.4.0(@microsoft/api-extractor@7.52.3(@types/node@22.14.0))(jiti@2.4.2)(postcss@8.5.3)(typescript@5.8.3)(yaml@2.7.1)
       typescript:
-        specifier: ^5.8.2
+        specifier: ^5.8.3
         version: 5.8.3
       vite:
         specifier: ^6.2.5
