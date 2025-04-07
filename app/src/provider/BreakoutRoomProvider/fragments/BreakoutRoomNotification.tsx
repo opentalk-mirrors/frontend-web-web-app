@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Stack, Typography, Box, styled } from '@mui/material';
+import { Box, Button, Stack, Typography, styled } from '@mui/material';
 import { isEmpty } from 'lodash';
-import { SnackbarKey, SnackbarMessage, SnackbarContent } from 'notistack';
-import React, { useState } from 'react';
+import { SnackbarContent, SnackbarKey, SnackbarMessage } from 'notistack';
+import React, { useRef, useState } from 'react';
 
 import { notifications } from '../../../commonComponents';
 import Countdown from './Countdown';
@@ -41,6 +41,8 @@ const BreakoutRoomNotification = React.forwardRef<HTMLDivElement, IJoinNotificat
   ({ message, actions, iconComponent: Icon, countdown, snackbarKey }, ref) => {
     const messageId = 'breakout-room-notification-message';
     const [alreadyClicked, setAlreadyClicked] = useState(false);
+    const hasSubmittedRef = useRef(false);
+
     const handleOnClick = (onClick: () => void) => {
       !alreadyClicked && onClick();
       setAlreadyClicked(true);
@@ -48,7 +50,8 @@ const BreakoutRoomNotification = React.forwardRef<HTMLDivElement, IJoinNotificat
     };
 
     const handleCountdownEnds = () => {
-      if (countdown !== undefined) {
+      if (countdown !== undefined && !hasSubmittedRef.current) {
+        hasSubmittedRef.current = true;
         countdown.action();
         notifications.close(snackbarKey);
       }
