@@ -36,9 +36,8 @@ module.exports = {
   projects: [
     {
       displayName: 'app',
-      testEnvironment: 'jsdom',
+      testEnvironment: 'jest-fixed-jsdom',
       roots: ['<rootDir>/app/src', '<rootDir>/app/utils'],
-      setupFiles: ['<rootDir>/jest.config.js'],
       setupFilesAfterEnv: ['<rootDir>/app/src/setupTests.ts'],
       testMatch: ['<rootDir>/app/**/?(*.)+(spec|test).[jt]s?(x)'],
       modulePathIgnorePatterns: ['<rootDir>/packages/*'],
@@ -48,6 +47,7 @@ module.exports = {
         '\\.svg\\?react$': '<rootDir>/mocks/svgrMock.js',
         '@mui/styled-engine': '<rootDir>/node_modules/@mui/styled-engine',
         '^(camelcase-keys)$': '<rootDir>/mocks/camelcase-keys.js',
+        uuid: require.resolve('uuid'),
       },
       modulePaths: [],
       transformIgnorePatterns: ['/node_modules/(?!@heinlein-video/rrule*)'],
@@ -55,26 +55,27 @@ module.exports = {
     },
     {
       displayName: 'packages/fluent_conv',
-      testEnvironment: 'jsdom',
+      testEnvironment: 'jest-fixed-jsdom',
       testMatch: ['<rootDir>/packages/fluent_conv/**/?(*.)+(spec|test).[jt]s?(x)'],
     },
     {
       displayName: 'packages/i18next-fluent',
-      testEnvironment: 'jsdom',
+      testEnvironment: 'jest-fixed-jsdom',
       testMatch: ['<rootDir>/packages/i18next-fluent/**/?(*.)+(spec|test).[jt]s?(x)'],
     },
     {
       displayName: 'packages/redux-oidc',
-      testEnvironment: 'jsdom',
+      testEnvironment: 'jest-fixed-jsdom',
       testMatch: ['<rootDir>/packages/redux-oidc/**/?(*.)+(spec|test).[jt]s?(x)'],
     },
     {
       displayName: 'packages/rtk-rest-api',
-      testEnvironment: 'jsdom',
+      testEnvironment: 'jest-fixed-jsdom',
       setupFilesAfterEnv: ['./packages/rtk-rest-api/src/setupTests.ts'],
       testMatch: ['<rootDir>/packages/rtk-rest-api/**/?(*.)+(spec|test).[jt]s?(x)'],
       moduleNameMapper: {
         '^(camelcase-keys)$': '<rootDir>/mocks/camelcase-keys.js',
+        uuid: require.resolve('uuid'),
       },
     },
   ],

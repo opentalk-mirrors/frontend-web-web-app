@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createSlice } from '@reduxjs/toolkit';
 import { BaseQueryApi, createApi } from '@reduxjs/toolkit/query';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 import fetchQuery, { stripUndefinedHeaderValues } from '../fetchQuery';
@@ -107,15 +107,16 @@ describe('fetchQuery', () => {
   describe('basic additional functionality', () => {
     it('camelCase keys in json responses', async () => {
       server.use(
-        rest.get('http://example.com/success', (_, res, ctx) =>
-          res.once(
-            ctx.json({
+        http.get(
+          'http://example.com/success',
+          () =>
+            HttpResponse.json({
               'kebab-case': 'kebab-case',
               camelCase: 'camelCase',
               snake_case: 'snake_case',
               UpperCamelCase: 'UpperCamelCase',
-            })
-          )
+            }),
+          { once: true }
         )
       );
       const req = baseQuery('/success', commonBaseQueryApi, {});
@@ -131,7 +132,7 @@ describe('fetchQuery', () => {
     });
 
     it('does not camelCase text responses', async () => {
-      server.use(rest.get('http://example.com/success', (_, res, ctx) => res.once(ctx.text('hallo'))));
+      server.use(http.get('http://example.com/success', () => HttpResponse.text('hallo'), { once: true }));
       const req = baseQuery({ url: '/success', responseHandler: 'text' }, commonBaseQueryApi, {});
       expect(req).toBeInstanceOf(Promise);
       const res = await req;
@@ -144,13 +145,19 @@ describe('fetchQuery', () => {
       let receivedParams;
 
       server.use(
-        rest.get('http://example.com/params', (req, res, ctx) => {
-          // Collect the searchParams into a KV Object
-          receivedParams = Array.from(req.url.searchParams.entries(), ([x, y]) => ({
-            [x]: y,
-          }));
-          return res.once(ctx.json(receivedParams));
-        })
+        http.get(
+          'http://example.com/params',
+          ({ request }) => {
+            // Collect the searchParams into a KV Object
+            const url = new URL(request.url);
+            const queryParams = url.searchParams.entries();
+            receivedParams = Array.from(queryParams, ([x, y]) => ({
+              [x]: y,
+            }));
+            return HttpResponse.json(receivedParams);
+          },
+          { once: true }
+        )
       );
       const req = baseQuery({ url: '/params', params: { perPage: 30 } }, commonBaseQueryApi, {});
 

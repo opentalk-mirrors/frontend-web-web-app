@@ -4,9 +4,11 @@
   "description": "OpenTalk Monorepo",
   "private": true,
   "scripts": {
-    "lint": "pnpm eslint",
-    "fmt": "pnpm prettier --write \"./*.{tsx,ts}\" \"./**/*.{tsx,ts}\"",
-    "fmt:ci": "pnpm prettier --check \"./*.{tsx,ts}\" \"./**/*.{tsx,ts}\"",
+    "lint": "eslint --max-warnings 0",
+    "lint:pre-commit": "pnpm lint",
+    "fmt": "prettier --write \"./*.{js,ts,jsx,tsx}\" \"./**/*.{js,ts,jsx,tsx}\"",
+    "fmt:ci": "prettier --check \"./*.{js,ts,jsx,tsx}\" \"./**/*.{js,ts,jsx,tsx}\"",
+    "fmt:pre-commit": "prettier --check",
     "deps:circular": "madge --circular .",
     "deps:unused": "knip --include dependencies,files",
     "start": "pnpm build:libs && pnpm --filter '@opentalk/opentalk' start",
@@ -22,7 +24,7 @@
     "test:unit:ci": "pnpm build:libs && jest --coverage --no-cache --silent --ci",
     "test:unit:ide": "jest",
     "test:e2e": "npx playwright test --config playwright.config.ts",
-    "clean": "del-cli app/node_modules packages/*/node_modules dist/app node_modules",
+    "clean": "del-cli app/node_modules packages/**/*/node_modules dist/app node_modules",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -50,6 +52,7 @@
     "husky": "^9.1.7",
     "jest-cli": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "jest-fixed-jsdom": "^0.0.9",
     "jest-junit": "^16.0.0",
     "knip": "^5.46.5",
     "licensee": "^11.1.1",

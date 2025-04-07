@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { v5 as uuidv5 } from 'uuid';
 
 import { CallIn, SipId } from '../../types';
@@ -137,44 +137,52 @@ const events: Array<Event> = [
 export const eventHandlers = [
   // Handles a POST /events request
 
-  rest.post<Event, never, Event>('/v1/events', (req, res, ctx) => {
+  http.post('/v1/events', ({ request }) => {
     let newEvent;
-    if (typeof req.body === 'string') {
-      newEvent = JSON.parse(req.body);
+    if (typeof request.body === 'string') {
+      newEvent = JSON.parse(request.body);
     }
-    return res(ctx.json({ ...events[0], ...newEvent }));
+    return HttpResponse.json({ ...events[0], ...newEvent });
   }),
 
   // Handles a GET /events request
-  rest.get('/v1/events', (req, res, ctx) => {
-    const perPage = req.url.searchParams.get('per_page') || 30;
+  http.get('/v1/events', ({ request }) => {
+    const url = new URL(request.url);
+    const perPage = url.searchParams.get('per_page') || 30;
     // Simple integer based cursor, mock implementation detail
-    const after = parseInt(req.url.searchParams.get('after') as string) || 1;
-    return res(
-      ctx.json(events),
-      ctx.set({
-        Link: [`<http://localhost/v1/events?per_page=${perPage}&after=${after + 1}>; rel="after"`],
-      })
-    );
+    const after = parseInt(url.searchParams.get('after') as string) || 1;
+    return HttpResponse.json(events, {
+      headers: {
+        Link: `<http://localhost/v1/events?per_page=${perPage}&after=${after + 1}>; rel="after"`,
+      },
+    });
   }),
 
   // Handles a GET /v1/events/:id request
-  rest.get<never, { eventId: string }, Event>('/v1/events/:eventId', (req, res, ctx) => {
-    const event = events.find((x) => x.id === req.params.eventId);
+  http.get<never, { eventId: string }, Event>('/v1/events/:eventId', ({ params }) => {
+    const { eventId } = params;
+    const event = events.find((x) => x.id === eventId);
     if (!event) {
-      return res(ctx.status(404));
+      return new HttpResponse(null, {
+        status: 404,
+      });
     }
-    return res(ctx.json(event));
+    return HttpResponse.json(event);
   }),
 
   // Handles a DELETE /v1/events/:id request
-  rest.delete<never, { eventId: string }, undefined>('/v1/events/:eventId', (req, res, ctx) => {
-    switch (req.params.eventId) {
+  http.delete<never, { eventId: string }, undefined>('/v1/events/:eventId', ({ params }) => {
+    const { eventId } = params;
+    switch (eventId) {
       case 'NOT_FOUND':
-        return res(ctx.status(404));
+        return new HttpResponse(null, {
+          status: 404,
+        });
       case 'SUCCESS':
       default:
-        return res(ctx.status(204));
+        return new HttpResponse(null, {
+          status: 204,
+        });
     }
   }),
 ];
@@ -182,19 +190,18 @@ export const eventHandlers = [
 const users: Array<User> = [generateMockUser(1), generateMockUser(2), generateMockUser(3)];
 export const userHandlers = [
   // Handles a GET /v1/users/me request
-  rest.get<never, never, User & { theme: string; language: string }>('/v1/users/me', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        ...users[0],
-        theme: 'string',
-        language: 'string',
-      })
-    );
+  http.get<never, never, User & { theme: string; language: string }>('/v1/users/me', () => {
+    return HttpResponse.json({
+      ...users[0],
+      theme: 'string',
+      language: 'string',
+    });
   }),
   // Handles a GET /v1/users/find?q= request
   // The filtering is mocked. The server impl is smarter with filtering
-  rest.get<never, never, Array<User>>('/v1/users/find', (req, res, ctx) => {
-    const q = req.url.searchParams.get('q')?.toLowerCase() || '';
+  http.get<never, never, Array<User>>('/v1/users/find', ({ request }) => {
+    const url = new URL(request.url);
+    const q = url.searchParams.get('q')?.toLowerCase() || '';
     const filtered = users.filter((x) => {
       return (
         x.display_name.toLowerCase().includes(q) ||
@@ -203,35 +210,45 @@ export const userHandlers = [
       );
     });
 
-    return res(ctx.json(filtered));
+    return HttpResponse.json(filtered);
   }),
 
   // Handles a PUT users/event_favorites/${eventId}
   // marks an event as favorite for the user
-  rest.put<never, { eventId: string }, undefined>('/v1/users/me/event_favorites/:eventId', (req, res, ctx) => {
-    switch (req.params.eventId) {
+  http.put<never, { eventId: string }, undefined>('/v1/users/me/event_favorites/:eventId', ({ params }) => {
+    const { eventId } = params;
+    switch (eventId) {
       case 'NOT_FOUND':
-        return res(ctx.status(404));
+        return new HttpResponse(undefined, {
+          status: 404,
+        });
       case 'SUCCESS':
       default:
-        return res(ctx.status(201));
+        return new HttpResponse(undefined, {
+          status: 201,
+        });
     }
   }),
 
   // Handles a PUT users/event_favorites/${eventId}
   // unmark an event as favorite for the user
-  rest.delete<never, { eventId: string }, undefined>('/v1/users/me/event_favorites/:eventId', (req, res, ctx) => {
-    switch (req.params.eventId) {
+  http.delete<never, { eventId: string }, undefined>('/v1/users/me/event_favorites/:eventId', ({ params }) => {
+    const { eventId } = params;
+    switch (eventId) {
       case 'NOT_FOUND':
-        return res(ctx.status(404));
+        return new HttpResponse(null, {
+          status: 404,
+        });
       case 'SUCCESS':
       default:
-        return res(ctx.status(204));
+        return new HttpResponse(null, {
+          status: 204,
+        });
     }
   }),
 ];
 
 export const baseQueryHandlers = [
-  rest.get('http://example.com/success', (_, res, ctx) => res(ctx.json({ value: 'success' }))),
-  rest.post('http://example.com/success', (_, res, ctx) => res(ctx.json({ value: 'success' }))),
+  http.get('http://example.com/success', () => HttpResponse.json({ value: 'success' })),
+  http.post('http://example.com/success', () => HttpResponse.json({ value: 'success' })),
 ];
