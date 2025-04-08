@@ -28,7 +28,7 @@ interface VoteResultTableProps {
 
 function VoteResultTable(props: VoteResultTableProps) {
   const { t } = useTranslation();
-  const vote = useAppSelector((state) => selectVoteById(state, props.voteId));
+  const vote = useAppSelector(selectVoteById(props.voteId));
 
   if (!vote || !vote.votes) {
     return null;
