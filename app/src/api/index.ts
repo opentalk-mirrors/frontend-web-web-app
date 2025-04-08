@@ -5,7 +5,7 @@ import { login } from '@opentalk/redux-oidc';
 import { StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import { Middleware, freeze, isAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
-import { kebabCase } from 'lodash';
+import { kebabCase, unionBy } from 'lodash';
 
 import {
   createStackedMessages,
@@ -287,9 +287,12 @@ const handleControlMessage = async (
       }
 
       if (data.breakout !== undefined) {
-        joinedParticipants = data.breakout.participants
-          .map((participant) => mapBreakoutToUiParticipant(state, participant, timestamp))
-          .concat(joinedParticipants);
+        const breakoutParticipants = data.breakout.participants.map((participant) =>
+          mapBreakoutToUiParticipant(state, participant, timestamp)
+        );
+        // We merge both arrays, removing duplications
+        // If a participant is already joined, we remove him from breakout array
+        joinedParticipants = unionBy(joinedParticipants, breakoutParticipants, 'id');
       }
 
       const serverTimeOffset = new Date(timestamp).getTime() - new Date().getTime();
