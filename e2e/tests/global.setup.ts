@@ -4,7 +4,7 @@
 import { test as setup } from '@playwright/test';
 
 import { LoginPage } from './pages/LoginPage';
-import { SettingPage } from './pages/SettingsPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 export const authUserFile = '.auth/user.json';
 
@@ -17,7 +17,7 @@ setup('authenticate and set english language', async ({ page }) => {
   // End of authentication steps.
   await page.context().storageState({ path: authUserFile });
 
-  const settingPage = new SettingPage(page);
+  const settingsPage = new SettingsPage(page);
   // Set language to english
-  await settingPage.switchToEnglish();
+  await settingsPage.switchToEnglish();
 });

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
-export class SettingPage {
+export class SettingsPage {
   readonly page: Page;
   readonly settingsLink: Locator;
   readonly generalLink: Locator;

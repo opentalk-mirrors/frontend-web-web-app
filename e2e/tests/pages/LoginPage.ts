@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
+import { HomePage } from '../pages/HomePage';
+
 export class LoginPage {
   page: Page;
   signInButton: Locator;
@@ -18,10 +20,11 @@ export class LoginPage {
 
   async gotoLoginPage() {
     await this.page.goto(process.env.INSTANCE_URL);
+    await this.signInButton.isVisible();
   }
 
   async login(username: string, password: string) {
-    await this.signInButton.isVisible();
+    const homePage = new HomePage({ page: this.page });
     await this.usernameInputField.fill(username);
     await this.usernameInputField.press('Tab');
     await this.passwordInputField.fill(password);
@@ -33,5 +36,6 @@ export class LoginPage {
       ),
       this.signInButton.click(),
     ]);
+    await homePage.favoriteMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
   }
 }
