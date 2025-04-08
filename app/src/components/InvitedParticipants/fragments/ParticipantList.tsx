@@ -4,7 +4,7 @@
 import { Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import { EventInvite, InviteStatus } from '@opentalk/rest-api-rtk-query';
-import { EventId } from '@opentalk/rest-api-rtk-query/src/types';
+import type { EventId } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
 
 import { useRevokeEventUserInviteMutation, useRevokeEventUserInviteByEmailMutation } from '../../../api/rest';

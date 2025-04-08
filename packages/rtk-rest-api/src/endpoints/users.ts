@@ -5,8 +5,10 @@ import type { EndpointBuilder } from '@reduxjs/toolkit/query';
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, FetchBaseQueryMeta } from '@reduxjs/toolkit/query';
 import snakeCaseKeys from 'snakecase-keys';
 
-import { UserMe, UpdateMePayload, BaseUser, EventId, Tag, Tags, User, UserId, UserOwnedAssets } from '../types';
+import { Tags, Tag, UserId } from '../types/common';
+import { EventId } from '../types/event';
 import { Tariff } from '../types/tariff';
+import { UserMe, UpdateMePayload, BaseUser, User, UserOwnedAssets } from '../types/user';
 
 export type FindUsersParams = {
   /**

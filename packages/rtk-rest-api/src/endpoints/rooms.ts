@@ -5,8 +5,10 @@ import type { EndpointBuilder, BaseQueryFn, FetchBaseQueryError, FetchBaseQueryM
 import { FetchArgs } from '@reduxjs/toolkit/query';
 import snakecaseKeys from 'snakecase-keys';
 
-import { AssetId, CreateRoomPayload, EventInfo, PrivateRoom, PublicRoom, Tag, Tags, UpdateRoomPayload } from '../types';
+import { AssetId, Tags, Tag } from '../types/common';
+import { EventInfo } from '../types/event';
 import {
+  CreateRoomPayload,
   CreateRoomInvitePayload,
   RoomAssets,
   RoomEventInfo,
@@ -15,6 +17,9 @@ import {
   RoomInvites,
   RoomSipConfigResponse,
   UpdateRoomSipConfigPayload,
+  PrivateRoom,
+  PublicRoom,
+  UpdateRoomPayload,
 } from '../types/room';
 import { StreamingPlatform, StreamingTargetId, StreamingTargetInfo } from '../types/streaming';
 import { Tariff } from '../types/tariff';

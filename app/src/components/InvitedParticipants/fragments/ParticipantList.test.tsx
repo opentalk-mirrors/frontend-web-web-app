@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Email, EventId, InviteStatus, UserId } from '@opentalk/rest-api-rtk-query';
-import { UserRole } from '@opentalk/rest-api-rtk-query/src/types';
+import type { Email, EventId, UserId } from '@opentalk/rest-api-rtk-query';
+import { UserRole, InviteStatus } from '@opentalk/rest-api-rtk-query';
 import { cleanup, screen } from '@testing-library/react';
 import { v4 as uuidv4 } from 'uuid';
 

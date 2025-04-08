@@ -4,7 +4,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query';
 import { createApi as createReactApi } from '@reduxjs/toolkit/query/react';
 
-import { tags } from '../types';
+import { tags } from '../types/common';
 import { addEventsEndpoints } from './events';
 import { addRoomEndpoints } from './rooms';
 import { addUserEndpoints } from './users';

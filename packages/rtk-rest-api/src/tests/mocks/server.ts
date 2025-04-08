@@ -4,7 +4,8 @@
 import { http, HttpResponse } from 'msw';
 import { v5 as uuidv5 } from 'uuid';
 
-import { CallIn, SipId } from '../../types';
+import { CallIn } from '../../types/common';
+import { SipId } from '../../types/room';
 
 type User = {
   id: string;
