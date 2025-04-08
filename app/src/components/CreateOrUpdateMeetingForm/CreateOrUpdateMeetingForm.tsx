@@ -301,7 +301,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
       sharedFolder: (existingEvent?.sharedFolder && Boolean(existingEvent.sharedFolder)) || false,
       showMeetingDetails: getShowMeetingDetailsInitialValue(),
       streaming: getStreamingInitialValue(),
-      e2eEncryption: existingEvent?.room.e2EEncryption || false,
+      e2eEncryption: existingEvent?.room.e2eEncryption || false,
       trainingParticipationReport: trainingParticipationReportValue,
     },
     validationSchema,

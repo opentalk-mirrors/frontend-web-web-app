@@ -18,11 +18,11 @@ export interface E2EEData {
   e2eeEnabled: boolean;
 }
 
-const useWorker = (e2eePassphrase: string, e2EEncryption?: boolean) => {
+const useWorker = (e2eePassphrase: string, e2eEncryption?: boolean) => {
   const [worker, setWorker] = useState<Worker | null>(null);
 
   useEffect(() => {
-    if (e2EEncryption && !worker && e2eePassphrase) {
+    if (e2eEncryption && !worker && e2eePassphrase) {
       const newWorker = new Worker(new URL('livekit-client/e2ee-worker', import.meta.url));
       setWorker(newWorker);
     }
@@ -30,7 +30,7 @@ const useWorker = (e2eePassphrase: string, e2EEncryption?: boolean) => {
       worker?.terminate();
       setWorker(null);
     };
-  }, [e2eePassphrase, e2EEncryption]);
+  }, [e2eePassphrase, e2eEncryption]);
 
   return worker;
 };
@@ -46,11 +46,11 @@ const useE2EE = (roomId: RoomId): E2EEData => {
     [roomData, e2eeSalt]
   );
 
-  const mainWorker = useWorker(e2eePassphrase, roomData?.e2EEncryption);
-  const whisperWorker = useWorker(e2eePassphrase, roomData?.e2EEncryption);
+  const mainWorker = useWorker(e2eePassphrase, roomData?.e2eEncryption);
+  const whisperWorker = useWorker(e2eePassphrase, roomData?.e2eEncryption);
 
   const e2eeEnabled = useMemo(() => {
-    return (roomData?.e2EEncryption || false) && !!(e2eePassphrase && mainWorker) && isE2EESupported();
+    return (roomData?.e2eEncryption || false) && !!(e2eePassphrase && mainWorker) && isE2EESupported();
   }, [roomData, e2eePassphrase, mainWorker]);
 
   return { mainWorker, whisperWorker, e2eePassphrase, e2eeEnabled };

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Container, IconButton, InputAdornment, ThemeProvider, styled, Stack } from '@mui/material';
+import { Button, Container, IconButton, InputAdornment, Stack, ThemeProvider, styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
@@ -124,7 +124,7 @@ const LobbyView = () => {
 
   const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
 
-  if (roomData?.e2EEncryption && !isE2EESupported()) {
+  if (roomData?.e2eEncryption && !isE2EESupported()) {
     notifications.error(t('unsupported-browser-e2e-encryption-dialog-message'));
   }
 

@@ -62,8 +62,7 @@ type EventRoomInfo = {
   id: RoomId;
   password?: string;
   waitingRoom: boolean;
-  // TODO - somehow this is `e2EEncryption` and not `e2eEncryption`
-  e2EEncryption: boolean;
+  e2eEncryption: boolean;
   callIn?: CallIn;
 };
 
@@ -356,7 +355,7 @@ export interface EventInfo {
   isAdhoc: boolean;
   meetingDetails?: MeetingDetails;
   roomId: RoomId;
-  e2EEncryption: boolean;
+  e2eEncryption: boolean;
 }
 
 /**

@@ -330,7 +330,7 @@ export const eventMockedData: TimelessEvent = {
   room: {
     id: uuidv4() as RoomId,
     waitingRoom: false,
-    e2EEncryption: false,
+    e2eEncryption: false,
   },
   type: EventType.Single,
   updatedBy: {
@@ -405,7 +405,7 @@ export const mockedRecurringEvent: RecurringEvent = {
   room: {
     id: '47cc8df7-b48e-4a56-87f8-92164613f74c' as RoomId,
     waitingRoom: false,
-    e2EEncryption: false,
+    e2eEncryption: false,
     callIn: {
       tel: '+49 30 - 577 10 231 9901',
       id: '4082652646' as SipId,
@@ -457,7 +457,7 @@ export const mockedSingleEvent: SingleEvent = {
   room: {
     id: '2f60df9e-c34e-4cfd-9dc9-e7ebb297583b' as RoomId,
     waitingRoom: false,
-    e2EEncryption: false,
+    e2eEncryption: false,
     callIn: {
       tel: '+49 30 - 577 10 231 9901',
       id: '0940955973' as SipId,
