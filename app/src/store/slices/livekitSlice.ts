@@ -227,12 +227,11 @@ const handleRoomConnected = async (room: Room, listenerApi: ListenerEffectAPI<Ro
 };
 
 const handleRoomDisconnected = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
-  const isPageReloading = sessionStorage.getItem('isPageReloading') === 'true';
   const connectionState = listenerApi.getState().room.connectionState;
+
   if (
     connectionState !== ConnectionState.Leaving &&
-    [ConnectionState.ReadyToEnter, ConnectionState.Waiting, ConnectionState.Online].includes(connectionState) &&
-    !isPageReloading
+    [ConnectionState.ReadyToEnter, ConnectionState.Waiting, ConnectionState.Online].includes(connectionState)
   ) {
     listenerApi.dispatch({ type: 'livekit/triggerReconnect' });
   }
