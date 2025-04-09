@@ -6,12 +6,16 @@ import { Slide, styled } from '@mui/material';
 import { RemoteParticipant, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useAppSelector } from '../../../hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/livekitSlice';
+import {
+  presenterVideoPositions,
+  selectPresenterVideoPosition,
+  setPresenterVideoPosition,
+} from '../../../store/slices/uiSlice';
 import { ParticipantId, VideoSetting } from '../../../types';
 import { AvatarContainer } from './AvatarContainer';
-import { PresenterVideoPosition } from './PresenterOverlay';
 import RemoteVideo from './RemoteVideo';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
 
@@ -30,6 +34,7 @@ interface ParticipantVideoProps {
 
 const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
   const participant = useParticipantContext() as RemoteParticipant;
+  const dispatch = useAppDispatch();
 
   const videoDescriptor = useMemo<MediaDescriptor>(
     () => ({ participantId, mediaType: Track.Source.Camera }),
@@ -47,9 +52,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
   const containerRef = useRef(null);
   const [isVideoPinned, setIsVideoPinned] = useState<boolean>(false);
   const [showPresenterVideo, setShowPresenterVideo] = useState<boolean>(!!presenterVideoIsActive);
-
-  const [presenterVideoPosition, setPresenterVideoPosition] = useState<PresenterVideoPosition>('bottomRight');
-  const positionsArray: Array<PresenterVideoPosition> = ['bottomLeft', 'upperRight', 'bottomRight'];
+  const presenterVideoPosition = useAppSelector(selectPresenterVideoPosition);
 
   const slideDirection = presenterVideoPosition === 'upperRight' ? 'down' : 'up';
   const isVisible = isVideoPinned || presenterVideoIsActive || showPresenterVideo;
@@ -76,9 +79,9 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
   const handleToggle = () => setIsVideoPinned((videoPinned) => !videoPinned);
 
   const movePresenterVideo = () => {
-    const currentIndex = positionsArray.indexOf(presenterVideoPosition);
+    const currentIndex = presenterVideoPositions.indexOf(presenterVideoPosition);
     const nextIndex = (currentIndex + 1) % 3;
-    setPresenterVideoPosition(positionsArray[nextIndex]);
+    dispatch(setPresenterVideoPosition(presenterVideoPositions[nextIndex]));
   };
 
   if (participant.isScreenShareEnabled) {

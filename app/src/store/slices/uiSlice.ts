@@ -32,6 +32,10 @@ interface ErrorDialog {
   showErrorDialog: boolean;
 }
 
+export const presenterVideoPositions = ['bottomLeft', 'upperRight', 'bottomRight'] as const;
+
+export type PresenterVideoPosition = (typeof presenterVideoPositions)[number];
+
 interface UIState {
   participantsSortOption: SortOption;
   showParticipantGroups: boolean;
@@ -61,6 +65,7 @@ interface UIState {
   isDrawerOpen: boolean;
   gridViewOrder: GridViewOrder;
   currentMenuTab: MenuTab;
+  presenterVideoPosition: PresenterVideoPosition;
 }
 
 const initialState: UIState = {
@@ -98,6 +103,7 @@ const initialState: UIState = {
   isDrawerOpen: false,
   gridViewOrder: GridViewOrder.FirstJoined,
   currentMenuTab: MenuTab.Chat,
+  presenterVideoPosition: 'bottomRight',
 };
 
 export const uiSlice = createSlice({
@@ -194,6 +200,9 @@ export const uiSlice = createSlice({
     setCurrentMenuTab: (state, { payload }: PayloadAction<MenuTab>) => {
       state.currentMenuTab = payload;
     },
+    setPresenterVideoPosition: (state, { payload }: PayloadAction<PresenterVideoPosition>) => {
+      state.presenterVideoPosition = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(leave, (state, { payload: { id } }: PayloadAction<{ id: ParticipantId }>) => {
@@ -280,6 +289,7 @@ export const {
   setIsDrawerOpen,
   updatedGridViewOrder,
   setCurrentMenuTab,
+  setPresenterVideoPosition,
 } = uiSlice.actions;
 
 export const actions = uiSlice.actions;
@@ -327,5 +337,6 @@ export const selectHaveSeenMobilePollsAndVotes = (state: RootState) => state.ui.
 export const selectIsDrawerOpen = (state: RootState) => state.ui.isDrawerOpen;
 export const selectGridViewOrder = (state: RootState) => state.ui.gridViewOrder;
 export const selectCurrentMenuTab = (state: RootState) => state.ui.currentMenuTab;
+export const selectPresenterVideoPosition = (state: RootState) => state.ui.presenterVideoPosition;
 
 export default uiSlice.reducer;

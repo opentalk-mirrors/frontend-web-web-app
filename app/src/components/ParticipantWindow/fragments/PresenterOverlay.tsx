@@ -10,11 +10,10 @@ import { BackIcon, PinIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
+import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
 import { ParticipantId } from '../../../types';
 import { OverlayIconButton } from './OverlayIconButton';
 import Statistics from './Statistics';
-
-export type PresenterVideoPosition = 'bottomLeft' | 'upperRight' | 'bottomRight';
 
 const OverlayContainer = styled(Grid)(({ theme }) => ({
   position: 'absolute',
