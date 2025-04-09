@@ -21,7 +21,7 @@
     "@livekit/protocol": "^1.35.0",
     "@livekit/track-processors": "workspace:*",
     "@m-lab/ndt7": "^0.0.6",
-    "@mui/material": "^7.0.1",
+    "@mui/material": "^7.0.2",
     "@mui/x-date-pickers": "^7.28.3",
     "@opentalk/fluent_conv": "workspace:*",
     "@opentalk/i18next-fluent": "workspace:*",
