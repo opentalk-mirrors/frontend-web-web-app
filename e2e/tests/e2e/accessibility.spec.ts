@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { test, expect } from '@playwright/test';
 
+import { closeWebkitPopUp } from '../helper/webkit';
 import { HomePage } from '../pages/HomePage';
 import { LobbyRoomPage } from '../pages/LobbyRoomPage';
 import { MeetingInvitationPage } from '../pages/MeetingInvitationPage';
@@ -34,8 +35,7 @@ test.describe('Accessibility', () => {
 
     // Warning button in safari blocks the selector for creating new meeting
     if (browserName === 'webkit') {
-      const closeButton = await page.getByRole('button', { name: 'Ok', exact: true });
-      await closeButton.click();
+      await closeWebkitPopUp({ page });
     }
     // cleaning anymeeting in dashboard
     await homePage.deleteAllCreatedMeetings(meetingTitle);
