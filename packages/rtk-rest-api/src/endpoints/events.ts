@@ -4,22 +4,20 @@
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, FetchBaseQueryMeta } from '@reduxjs/toolkit/query';
 import snakeCaseKeys from 'snakecase-keys';
 
+import { Tag, Tags, UserId, CursorPaginated, DateTime } from '../types/common';
 import {
+  UpdateEventPayload,
+  RescheduleEventPayload,
+  EventId,
+  EventInstanceId,
   Event,
   EventException,
   EventInstance,
   CreateEventPayload,
   CreateEventExceptionPayload,
-  Tags,
-  Tag,
-  CreateEventInvitePayload,
   UpdateEventInstancePayload,
-  UserId,
-  EventInvite,
-} from '../types';
-import { CursorPaginated, DateTime } from '../types';
-import { UpdateEventPayload, RescheduleEventPayload, EventId, EventInstanceId } from '../types/event';
-import { UpdateEventInvitePayload } from '../types/eventInvite';
+} from '../types/event';
+import { UpdateEventInvitePayload, CreateEventInvitePayload, EventInvite } from '../types/eventInvite';
 import { RevokeEmailUserPayload } from '../types/user';
 import { toCursorPaginated } from '../utils';
 import { CursorPaginationParams } from './common';
