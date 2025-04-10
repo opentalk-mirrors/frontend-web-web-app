@@ -4,6 +4,7 @@
 import { test, expect } from '@playwright/test';
 import { validate } from 'uuid';
 
+import { formatDate } from '../../helper/helper';
 import { closeWebkitPopUp } from '../../helper/webkit';
 import { HomePage } from '../../pages/HomePage';
 
@@ -157,5 +158,187 @@ test.describe('Dashboard_Home', () => {
     );
     await meetingPlanningPage.passwordInputField.fill(meetingPassword);
     await expect(meetingPlanningPage.passwordInputField).toHaveValue(meetingPassword);
+  });
+
+  test('TC_005_Dashboard_Home_Plan new_Step-1 Meeting_Meeting recurrence dropdown field', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(browserName === 'firefox');
+    const homePage = new HomePage({ page });
+    const planMeetingPage = await homePage.planNewMeeting();
+
+    await expect(planMeetingPage.meetingOccurrenceDropDown).toBeVisible();
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText('No repetition');
+
+    await planMeetingPage.clickOnMeetingRepetitionDropDown();
+    await expect(planMeetingPage.meetingOccurrenceOptions.noRepetition).toBeVisible();
+    await expect(planMeetingPage.meetingOccurrenceOptions.daily).toBeVisible();
+    await expect(planMeetingPage.meetingOccurrenceOptions.weekly).toBeVisible();
+    await expect(planMeetingPage.meetingOccurrenceOptions.biWeekly).toBeVisible();
+    await expect(planMeetingPage.meetingOccurrenceOptions.monthly).toBeVisible();
+    await expect(planMeetingPage.meetingOccurrenceOptions.custom).toBeVisible();
+    await planMeetingPage.clickOnmeetingOccurrenceOptionsNoRepetition();
+
+    // Select the Daily option available in the dropdown menu
+    await planMeetingPage.selectMeetingRepetition('Daily');
+    expect(await planMeetingPage.getMeetingOccurrenceDropDownExpansonState()).toBe('false');
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText('Daily');
+
+    // Click on the dropdown field and select the Weekly option available in the dropdown menu
+    await planMeetingPage.selectMeetingRepetition('Weekly');
+    expect(await planMeetingPage.getMeetingOccurrenceDropDownExpansonState()).toBe('false');
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText('Weekly');
+
+    // Again click on the dropdown field and select the Bi-Weekly option available in the dropdown menu
+    await planMeetingPage.selectMeetingRepetition('Bi-Weekly');
+    expect(await planMeetingPage.getMeetingOccurrenceDropDownExpansonState()).toBe('false');
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText('Bi-Weekly');
+
+    // Click on the dropdown field and select the Monthly option available in the dropdown menu
+    await planMeetingPage.selectMeetingRepetition('Monthly');
+    expect(await planMeetingPage.getMeetingOccurrenceDropDownExpansonState()).toBe('false');
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText('Monthly');
+
+    // Again click on the dropdown field and select the No repetition option available in the dropdown menu
+    await planMeetingPage.selectMeetingRepetition('No repetition');
+    expect(await planMeetingPage.getMeetingOccurrenceDropDownExpansonState()).toBe('false');
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText('No repetition');
+
+    // Click on the No repetition dropdown field and select the Custom ... option available in the dropdown menu
+    await planMeetingPage.selectMeetingRepetition('Custom');
+    await expect(planMeetingPage.customMeetingDiaglog).toBeVisible();
+    await expect(planMeetingPage.customMeetingRepetition.customMeetingDiaglogTitle).toBeVisible();
+    // Description as “Repeat every”
+    await expect(planMeetingPage.customMeetingRepetition.repeatEveryLabel).toBeVisible();
+    expect(await planMeetingPage.getNumberOfRepetitions()).toBe('1');
+    expect(await planMeetingPage.getRepetitionInterval()).toBe('Day');
+
+    await expect(planMeetingPage.customMeetingRepetition.recurrenceEndLabel).toBeVisible();
+    await expect(planMeetingPage.customMeetingRepetition.never).toBeChecked();
+    await expect(planMeetingPage.customMeetingRepetition.on).not.toBeChecked();
+
+    await expect(planMeetingPage.customMeetingRepetition.cancel).toBeVisible();
+    await expect(planMeetingPage.customMeetingRepetition.save).toBeVisible();
+
+    // Click on Save button with default selection of Repeat every 1 Day and Recurrence end Never
+    await planMeetingPage.saveCustomMeetingRepetition();
+
+    // Custom meeting repetition dialogue box should be closed
+    await expect(planMeetingPage.customMeetingDiaglog).not.toBeVisible();
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText('Every day');
+
+    // Open the Custom meeting repetition dialogue again and For Repeat every, choose 1 Week
+    await planMeetingPage.selectMeetingRepetition('Custom');
+    await planMeetingPage.selectCustomMeetingRepetition('Week');
+
+    // A new field with selectable options M, T, W, T, F, S, S should appear
+    const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+    for (const day of days) {
+      if (day === 'S' || day === 'T') {
+        await expect(page.getByRole('button', { name: day, exact: true })).toHaveCount(2);
+      } else {
+        await expect(page.getByRole('button', { name: day, exact: true })).toBeVisible();
+      }
+    }
+
+    const today = new Date().getDay();
+
+    for (const day of ['M', 'W', 'F']) {
+      if (day !== days[today]) {
+        await page.getByRole('button', { name: day, exact: true }).click();
+      }
+    }
+
+    // current day will be select by default. so this code makes sure other days except 'M', 'W' and 'F' are not selected.
+    if (!['M', 'W', 'F'].includes(days[today])) {
+      await page
+        .getByRole('button', { name: days[today], exact: true })
+        .nth(today === 2 || today === 0 ? 0 : 1)
+        .click();
+    }
+
+    // Selected specific days (e.g., Monday, Wednesday, Friday) should be highlighted
+    for (const day of ['M', 'W', 'F']) {
+      expect(
+        await page
+          .getByRole('button', { name: day, exact: true })
+          .getAttribute('class')
+          .then((a) => a.split(/\s+/).includes('MuiChip-filled'))
+      ).toBe(true);
+    }
+
+    await planMeetingPage.saveCustomMeetingRepetition();
+
+    await expect(planMeetingPage.customMeetingDiaglog).not.toBeVisible();
+
+    // Dropdown field name is updated as Every week on Monday, Wednesday, Friday
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText(
+      'Every week on Monday, Wednesday, Friday'
+    );
+
+    // Open the Custom meeting repetition dialogue again and For Repeat every, choose 1 Month
+    await planMeetingPage.selectMeetingRepetition('Custom');
+    await planMeetingPage.selectCustomMeetingRepetition('Month');
+
+    // A new field with dropdown field Monthly on [X] should appear
+    await expect(planMeetingPage.customMeetingRepetition.repeatOn).toBeVisible();
+    await expect(planMeetingPage.customMeetingRepetition.repeatOnMonthComboboxLabel).toBeVisible();
+
+    // Click on the dropdown field Monthly on [X]
+    await planMeetingPage.clickOnRepeatOnMonthComboboxLabel();
+
+    await expect(planMeetingPage.customMeetingRepetition.repeatOnMonthOption).toBeVisible();
+    await expect(planMeetingPage.customMeetingRepetition.repeatOnEveryOption).toBeVisible();
+
+    // Select any value here (Eg: Every month on the [X] day ) and click on Save button
+    await planMeetingPage.clickOnRepeatOnEveryOption();
+    await planMeetingPage.saveCustomMeetingRepetition();
+
+    // Custom meeting repetition dialogue box should be closed
+    expect(await planMeetingPage.getMeetingOccurrenceDropDownExpansonState()).toBe('false');
+
+    // Dropdown field name is updated as Every month on the [X] day
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText(/Every month on the \d\w+ \w+/);
+
+    // Open the Custom meeting repetition dialogue again
+    // - For Repeat every, choose 1 Year -> and click on Save button
+    await planMeetingPage.selectMeetingRepetition('Custom');
+    await planMeetingPage.selectCustomMeetingRepetition('Year');
+    await planMeetingPage.saveCustomMeetingRepetition();
+
+    // Custom meeting repetition dialogue box should be closed
+    expect(await planMeetingPage.getMeetingOccurrenceDropDownExpansonState()).toBe('false');
+
+    // Dropdown field name is updated as Every year
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText('Every year');
+
+    // Open the Custom meeting repetition dialogue again and For Repeat every, choose 2 Days
+    await planMeetingPage.selectMeetingRepetition('Custom');
+    await planMeetingPage.selectCustomMeetingRepetition('Day');
+    await planMeetingPage.setRecurrenceAmount('1', '2');
+
+    // Repeat every option should be selected as 2 Days
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText('Every 2 days');
+
+    const nextMonthDate = new Date();
+    nextMonthDate.setMonth(new Date().getMonth() + 1);
+
+    // Select Recurrence end on a date a month later (either by entering the date into the input field or selecting from the calendar icon)
+    await planMeetingPage.selectMeetingRepetition('Custom');
+    await planMeetingPage.enableRecurrence();
+    const formattedNextMonthDate = formatDate(nextMonthDate);
+    await planMeetingPage.customMeetingRepetition.recurrenceEndDate.fill(formattedNextMonthDate);
+
+    // Recurrence end on option should be selected as date a month later
+    await expect(planMeetingPage.customMeetingRepetition.recurrenceEndDate).toHaveValue(formattedNextMonthDate);
+
+    await planMeetingPage.saveCustomMeetingRepetition();
+
+    expect(await planMeetingPage.getMeetingOccurrenceDropDownExpansonState()).toBe('false');
+
+    // Dropdown button name is updated as Every 2 days until Month DD, YYYY
+    await expect(planMeetingPage.meetingOccurrenceOptions.selectedOption).toHaveText(/Every 2 days until \w+ \d+, \d+/);
   });
 });
