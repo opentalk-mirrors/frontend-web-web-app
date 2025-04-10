@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 
+import * as restAPI from '../../api/rest';
 import { generateInstanceId } from '../../utils/eventUtils';
 import { configureStore, renderWithProviders, mockedSingleEvent, mockedRecurringEvent } from '../../utils/testUtils';
 import CloseMeetingDialog, { CloseMeetingDialogProps } from './CloseMeetingDialog';
 
 const TEST_DATE = '2024-02-16T10:30:00Z';
 const VERIFY_TODAY_DATE = '20240216T103000Z';
+
+const mockRefetch = jest.fn();
 
 const dialogProps: CloseMeetingDialogProps = {
   open: true,
@@ -33,6 +36,7 @@ describe('CloseMeetingDialog', () => {
   const { store } = configureStore();
 
   test('should not render with open={false}', () => {
+    jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ refetch: mockRefetch });
     renderWithProviders(<CloseMeetingDialog {...dialogProps} open={false} />, {
       store,
       provider: { router: true, snackbar: true },
@@ -45,7 +49,8 @@ describe('CloseMeetingDialog', () => {
   });
 
   test('should render properly for single events', () => {
-    renderWithProviders(<CloseMeetingDialog {...dialogProps} eventData={mockedSingleEvent} />, {
+    jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedSingleEvent, refetch: mockRefetch });
+    renderWithProviders(<CloseMeetingDialog {...dialogProps} />, {
       store,
       provider: { router: true, snackbar: true },
     });
@@ -57,7 +62,8 @@ describe('CloseMeetingDialog', () => {
   });
 
   test('should render properly for recurring events', () => {
-    renderWithProviders(<CloseMeetingDialog {...dialogProps} eventData={mockedRecurringEvent} />, {
+    jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedRecurringEvent, refetch: mockRefetch });
+    renderWithProviders(<CloseMeetingDialog {...dialogProps} />, {
       store,
       provider: { router: true, snackbar: true },
     });

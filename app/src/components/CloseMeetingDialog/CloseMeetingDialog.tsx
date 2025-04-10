@@ -17,38 +17,48 @@ import {
   RadioGroup,
   Typography,
 } from '@mui/material';
-import { Event, EventStatus, EventType, RoomId } from '@opentalk/rest-api-rtk-query';
+import { EventId, EventStatus, EventType, RoomId } from '@opentalk/rest-api-rtk-query';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useDeleteEventMutation, useDeleteRoomMutation, useUpdateEventInstanceMutation } from '../../api/rest';
+import {
+  useDeleteEventMutation,
+  useDeleteRoomMutation,
+  useGetEventQuery,
+  useUpdateEventInstanceMutation,
+} from '../../api/rest';
 import { CloseIcon } from '../../assets/icons';
 import { notifications } from '../../commonComponents';
-import { useAppDispatch } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useFullscreenContext } from '../../hooks/useFullscreenContext';
 import { hangUp } from '../../store/commonActions';
+import { selectEventInfo } from '../../store/slices/roomSlice';
 import { EventDeletionType, generateInstanceId } from '../../utils/eventUtils';
 
 export interface CloseMeetingDialogProps {
   open: boolean;
   onClose: () => void;
   container: HTMLElement | null;
-  eventData?: Event;
 }
 
 const DIALOG_DESCRIPTION_ID = 'close-meeting-dialog-description-id';
 const DIALOG_TITLE_ID = 'close-meeting-dialog-label-id';
 
-export const CloseMeetingDialog = ({ open, onClose, eventData }: CloseMeetingDialogProps) => {
+export const CloseMeetingDialog = ({ open, onClose }: CloseMeetingDialogProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
   };
+  const eventInfo = useAppSelector(selectEventInfo);
   const [updateEventInstance] = useUpdateEventInstanceMutation();
   const [deleteRoom] = useDeleteRoomMutation();
-  const [deleteEvent] = useDeleteEventMutation();
+  const [deleteEvent, { isLoading: isDeleting, isSuccess: isDeleted }] = useDeleteEventMutation();
+  const { data: eventData } = useGetEventQuery(
+    { eventId: eventInfo?.id as EventId },
+    { skip: isDeleting || isDeleted }
+  );
   const [disableLeaveAndDeleteButton, setDisableLeaveAndDeleteButton] = useState(true);
   const [deletionMode, setDeletionMode] = useState<EventDeletionType | null>(null);
   const dispatch = useAppDispatch();
@@ -64,8 +74,8 @@ export const CloseMeetingDialog = ({ open, onClose, eventData }: CloseMeetingDia
 
   const handleHangUp = useCallback(() => dispatch(hangUp()), [dispatch]);
 
-  const eventId = eventData?.id;
   const handleDelete = async () => {
+    const eventId = eventData?.id;
     try {
       if (eventId) {
         await deleteEvent(eventId).unwrap();
