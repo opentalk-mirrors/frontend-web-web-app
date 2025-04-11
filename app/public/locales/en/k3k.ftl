@@ -480,6 +480,8 @@ field-duration-custom = Custom
 field-duration-custom-label = Custom duration
 field-duration-input-label = Enter custom duration (min)
 field-duration-chip-label = Duration {$duration} min
+field-duration-max-error = The value must be less than {$minutes} minutes
+field-duration-min-error = The value must be greater than {$minutes} minutes
 
 user-selection-button-back = back
 user-selection-button-cancel = Cancel

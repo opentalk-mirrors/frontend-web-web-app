@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { FormHelperText, styled } from '@mui/material';
+import { Box, FormHelperText, styled } from '@mui/material';
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -32,7 +32,10 @@ export const ErrorFormMessage: FC<ErrorFormMessageProps> = ({ helperText, id }) 
 
   return (
     <Container error id={id}>
-      <span>{t('global-error')}</span>:&nbsp;<span>{helperText}</span>
+      <span>{t('global-error')}</span>:&nbsp;
+      <Box component="span" flex={1}>
+        {helperText}
+      </Box>
     </Container>
   );
 };

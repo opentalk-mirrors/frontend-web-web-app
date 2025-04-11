@@ -27,8 +27,12 @@ interface DurationFieldProps extends IFormikCustomFieldPropsReturnDurationValue 
   durationOptions?: Array<DurationValueOptions>;
   ButtonProps?: ButtonProps;
   min?: number;
+  max?: number;
   allowEmpty?: boolean;
 }
+
+const MIN_DURATION_DEFAULT = 1;
+const MAX_DURATION_DEFAULT = 999;
 
 const DURATION_OPTIONS: Array<DurationValueOptions> = [null, 5, 10, 15, 30, 'custom'];
 
@@ -64,10 +68,12 @@ export const DurationField = ({
   ButtonProps,
   error,
   helperText,
-  min = 1,
+  min = MIN_DURATION_DEFAULT,
+  max = MAX_DURATION_DEFAULT,
   allowEmpty,
 }: DurationFieldProps) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const [customDurationFieldValue, setCustomDurationFieldValue] = React.useState<number | null>(
     value && durationOptions.includes(value) ? value : min
@@ -155,7 +161,19 @@ export const DurationField = ({
       setCustomDurationFieldValue(allowEmpty ? null : min);
       return;
     }
-    setCustomDurationFieldValue(Math.max(min, nextValue));
+
+    setCustomDurationFieldValue(Math.min(max, Math.max(min, nextValue)));
+
+    if (nextValue > max) {
+      setErrorMessage(t('field-duration-max-error', { minutes: max + 1 }));
+      return;
+    }
+    if (nextValue < min) {
+      setErrorMessage(t('field-duration-min-error', { minutes: min - 1 }));
+      return;
+    }
+    setErrorMessage('');
+    return;
   };
 
   const open = Boolean(anchorEl);
@@ -197,13 +215,14 @@ export const DurationField = ({
             <Stack spacing={1}>
               <NumberInput
                 type="number"
-                inputProps={{ min }}
+                inputProps={{ min, max, 'aria-describedby': 'duration-field-error' }}
                 onChange={handleInputChange}
                 value={customDurationFieldValue?.toString()}
               />
               <Typography variant="caption">{t('field-duration-input-label')}</Typography>
             </Stack>
           )}
+          <Box>{errorMessage && <ErrorFormMessage id="duration-field-error" helperText={errorMessage} />}</Box>
           <Stack
             sx={{
               flexDirection: 'row',
