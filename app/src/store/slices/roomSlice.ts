@@ -67,6 +67,7 @@ interface RoomState {
   hotkeysEnabled: boolean;
   isOwnedByCurrentUser: boolean;
   isPresenceConfirmationActive: boolean;
+  isDeleted: boolean;
 }
 
 export interface InviteRoomVerifyResponse {
@@ -95,6 +96,7 @@ const initialState: RoomState = {
   hotkeysEnabled: true,
   isOwnedByCurrentUser: false,
   isPresenceConfirmationActive: false,
+  isDeleted: false,
 };
 
 export enum InviteCodeErrorEnum {
@@ -178,6 +180,9 @@ export const roomSlice = createSlice({
     },
     presenceConfirmationDone: (state) => {
       state.isPresenceConfirmationActive = false;
+    },
+    setIsRoomDeleted: (state, { payload }) => {
+      state.isDeleted = payload;
     },
     roomReset: () => initialState,
   },
@@ -301,6 +306,7 @@ export const {
   roomReset,
   presenceConfirmationRequested,
   presenceConfirmationDone,
+  setIsRoomDeleted,
 } = actions;
 
 export const selectRoomPassword = (state: RootState) => state.room.password;
@@ -317,6 +323,7 @@ export const selectRoomInfo = (state: RootState) => state.room.roomInfo;
 export const selectHotkeysEnabled = (state: RootState) => state.room.hotkeysEnabled;
 export const selectIsRoomOwner = (state: RootState) => state.room.isOwnedByCurrentUser;
 export const selectIsParticipationConfirmationActive = (state: RootState) => state.room.isPresenceConfirmationActive;
+export const selectIsRoomDeleted = (state: RootState) => state.room.isDeleted;
 
 export default roomSlice.reducer;
 

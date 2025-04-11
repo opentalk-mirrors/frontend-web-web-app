@@ -82,6 +82,7 @@ import {
   presenceConfirmationRequested,
   readyToEnter,
   selectParticipantLimit,
+  setIsRoomDeleted,
 } from '../store/slices/roomSlice';
 import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
 import { streamUpdated } from '../store/slices/streamingSlice';
@@ -453,6 +454,7 @@ const handleControlMessage = async (
       break;
     }
     case 'room_deleted': {
+      dispatch(setIsRoomDeleted(true));
       break;
     }
     case 'moderator_role_granted':

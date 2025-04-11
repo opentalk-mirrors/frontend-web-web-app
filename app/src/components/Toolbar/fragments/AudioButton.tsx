@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MicOffIcon, MicOnIcon } from '../../../assets/icons';
-import { showConsentNotification, SuspenseLoading } from '../../../commonComponents';
+import { SuspenseLoading, showConsentNotification } from '../../../commonComponents';
 import { LIVEKIT_AUDIO_PERMISSION_NUMBER, ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
@@ -20,6 +20,7 @@ import {
   selectMediaChangeInProgress,
   startMedia,
 } from '../../../store/slices/mediaSlice';
+import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import AudioIndicator from './AudioIndicator';
 import AudioMenu from './AudioMenu';
@@ -45,6 +46,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
   const permissionDenied = useAppSelector(selectAudioPermissionDenied);
   const audioChangeInProgress = useAppSelector(selectAudioChangeInProgress);
   const mediaChangeInProgress = useAppSelector(selectMediaChangeInProgress);
+  const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -112,7 +114,9 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
         onClick={onClick}
         hasContext
         contextDisabled={mediaChangeInProgress || devices.length === 0}
-        disabled={!canPublishAudio || mediaChangeInProgress || devices.length === 0 || isLivekitUnavailable}
+        disabled={
+          !canPublishAudio || mediaChangeInProgress || devices.length === 0 || isLivekitUnavailable || isRoomDeleted
+        }
         openMenu={() => setShowMenu(true)}
         active={Boolean(microphoneEnabled && localAudioTrack)}
         isLobby={isLobby}

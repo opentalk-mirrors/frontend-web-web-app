@@ -1,12 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Tab as MuiTab, Tabs as MuiTabs, styled, Tooltip, Divider, Box } from '@mui/material';
+import { Box, Divider, Tab as MuiTab, Tabs as MuiTabs, Tooltip, styled } from '@mui/material';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ModerationTabKey } from '../../config/constants';
 import { Tab as TabProps } from '../../config/moderationTabs';
+import { useAppSelector } from '../../hooks';
+import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
 
 const INDICATOR_WIDTH_IN_PIXELS = 2;
 
@@ -98,6 +100,7 @@ export type ModerationSideToolbarProps = {
 
 const ModerationSideToolbar = ({ onSelect, displayedTabs, activeTab }: ModerationSideToolbarProps) => {
   const { t } = useTranslation();
+  const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
 
   const handleChange = useCallback(
     (_event: React.SyntheticEvent<Element, Event>, tabKey: ModerationTabKey) => {
@@ -124,7 +127,7 @@ const ModerationSideToolbar = ({ onSelect, displayedTabs, activeTab }: Moderatio
           }
           id={tab.key}
           value={tab.key}
-          disabled={tab.disabled}
+          disabled={tab.disabled || isRoomDeleted}
           aria-controls={`tabpanel-${tab.key}`}
         />
       )
