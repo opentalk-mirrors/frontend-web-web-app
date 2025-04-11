@@ -63,6 +63,14 @@ const Form = styled('form')({
 });
 
 const Select = styled(CommonTextField)(({ theme }) => ({
+  '& .MuiInputBase-input': {
+    minWidth: theme.typography.pxToRem(160),
+  },
+  '& .MuiFormLabel-root': {
+    minWidth: 'max-content',
+    backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing(0, 1),
+  },
   [theme.breakpoints.down('sm')]: {
     '& .MuiInputBase-input': {
       maxWidth: theme.typography.pxToRem(285),
