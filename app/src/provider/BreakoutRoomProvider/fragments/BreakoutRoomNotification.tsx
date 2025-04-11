@@ -100,7 +100,12 @@ const BreakoutRoomNotification = React.forwardRef<HTMLDivElement, IJoinNotificat
           >
             {renderActions()}
             {!isEmpty(countdown) && (
-              <Countdown duration={countdown?.duration} onCountdownEnds={handleCountdownEnds} ml={1.5} />
+              <Countdown
+                started={Date.now()}
+                duration={countdown?.duration}
+                onCountdownEnds={handleCountdownEnds}
+                ml={1.5}
+              />
             )}
           </Box>
         </Stack>

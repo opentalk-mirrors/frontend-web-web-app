@@ -2,35 +2,41 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, BoxProps, CircularProgress, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-
-import { useCountdown } from '../../../hooks';
+import { useEffect, useRef, useState } from 'react';
 
 const DURATION = 120;
 
 interface CountdownProps extends BoxProps {
-  started?: number;
+  started: number;
   duration?: number;
   onCountdownEnds?: () => void;
 }
 
-const Countdown = ({ started = Date.now(), duration, onCountdownEnds, ...rest }: CountdownProps) => {
-  const [actionCalled, setActionCalled] = useState(false);
-  const countdownDuration = duration ? duration : DURATION;
-  const { remainingTime, elapsedTime } = useCountdown({
-    isPlaying: true,
-    duration: countdownDuration,
-    initialTime: started,
-  });
+const calculateRemainingTime = (endTime: number) => {
+  return Math.max(0, (endTime - Date.now()) / 1000);
+};
+
+const Countdown = ({ started, duration, onCountdownEnds, ...rest }: CountdownProps) => {
+  const endTime = started + (duration ? duration : DURATION) * 1000;
+  const [remainingTime, setRemainingTime] = useState(calculateRemainingTime(endTime));
+  const progress = Math.min(100, (remainingTime / (duration ? duration : DURATION)) * 100);
+  const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (remainingTime === 0 && onCountdownEnds !== undefined && !actionCalled) {
-      onCountdownEnds();
-      setActionCalled(true);
-    }
-  }, [remainingTime, onCountdownEnds, actionCalled]);
+    intervalRef.current = setInterval(() => {
+      const timeLeft = calculateRemainingTime(endTime);
+      setRemainingTime(timeLeft);
 
-  const progress = 100 - (elapsedTime / countdownDuration) * 100;
+      if (timeLeft <= 0) {
+        onCountdownEnds && onCountdownEnds();
+        intervalRef.current && clearInterval(intervalRef.current);
+      }
+    }, 1000);
+
+    return () => {
+      intervalRef.current && clearInterval(intervalRef.current);
+    };
+  }, [endTime]);
 
   return (
     <Box
