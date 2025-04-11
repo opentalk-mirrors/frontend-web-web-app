@@ -59,10 +59,12 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
   const { open, event, onClose } = props;
   const { title } = event;
   const eventId = event.id as EventId;
-  const [deleteSharedFolder] = useDeleteEventSharedFolderMutation();
-  const [updateEventInstance] = useUpdateEventInstanceMutation();
-  const [deleteEvent] = useDeleteEventMutation();
+  const [deleteSharedFolder, { isLoading: isSubmittingDeleteEventShardedFolder }] =
+    useDeleteEventSharedFolderMutation();
+  const [updateEventInstance, { isLoading: isSubmittingUpdateEventInstance }] = useUpdateEventInstanceMutation();
+  const [deleteEvent, { isLoading: isSubmittingDeleteEvent }] = useDeleteEventMutation();
   const isFirstTryToDeleteSharedFolder = useRef(true);
+  const submitting = isSubmittingUpdateEventInstance || isSubmittingDeleteEvent || isSubmittingDeleteEventShardedFolder;
 
   const stopPropagation = (mouseEvent: React.MouseEvent<HTMLDivElement | HTMLButtonElement | HTMLAnchorElement>) => {
     mouseEvent.stopPropagation();
@@ -170,18 +172,27 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
     }
   }, [event]);
 
-  const handleActionButtons = async (action: EventDeletionType | null) => {
+  const handleActionButtons = (action: EventDeletionType | null) => {
     switch (action) {
-      case EventDeletionType.One:
+      case EventDeletionType.One: {
         if (isRecurringEvent(event)) {
-          await deleteMeetingInstance(event);
+          deleteMeetingInstance(event).finally(() => {
+            onClose();
+          });
         }
         break;
-      case EventDeletionType.All:
-        await deleteMeeting();
+      }
+      case EventDeletionType.All: {
+        deleteMeeting().finally(() => {
+          onClose();
+        });
         break;
+      }
+      default: {
+        onClose();
+        break;
+      }
     }
-    onClose();
   };
 
   return (
@@ -221,6 +232,7 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
             key={`${button.text}-${index}`}
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus={index === 0}
+            loading={submitting}
           >
             {button.text}
           </Button>
