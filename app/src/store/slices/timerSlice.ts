@@ -94,6 +94,7 @@ export const timerSlice = createSlice({
         state.readyCheckEnabled = timer.readyCheckEnabled;
         state.style = timer.style;
         state.participantsReady = participantsReady;
+        state.title = timer.title;
         if (timer.readyStatus === true) {
           state.participantsReady.push(participantId);
         }
