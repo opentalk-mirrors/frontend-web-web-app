@@ -79,7 +79,7 @@ const MeetingNotesTab = () => {
     newParticipants: MeetingNotesParticipant[],
     oldParticipants: MeetingNotesParticipant[]
   ) => {
-    let mergedParticipants: MeetingNotesParticipant[] = [];
+    let mergedParticipants: MeetingNotesParticipant[] = oldParticipants;
     const idProperty: keyof MeetingNotesParticipant = 'id';
 
     // Participants have joined the conference
