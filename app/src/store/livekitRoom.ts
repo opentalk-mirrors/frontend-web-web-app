@@ -8,8 +8,11 @@ import type { AppDispatch } from '.';
 
 let room: Room;
 
-export const setLivekitRoom = (newRoom: Room) => {
+export const setLivekitRoom = (newRoom: Room, dispatch?: AppDispatch) => {
   room = newRoom;
+  if (dispatch) {
+    dispatch(setLivekitAvailable());
+  }
 };
 
 export const getLivekitRoom = (dispatch?: AppDispatch): Room => {
@@ -24,3 +27,4 @@ export const getLivekitRoom = (dispatch?: AppDispatch): Room => {
 };
 
 export const setLivekitUnavailable = createAction<boolean>('livekit/set_livekit_unavailable');
+export const setLivekitAvailable = createAction('livekit/set_livekit_available');

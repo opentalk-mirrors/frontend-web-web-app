@@ -3,15 +3,16 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import LobbyView from '../../components/LobbyView';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import useE2EE from '../../hooks/useE2EE';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { usePreventSpaceKey } from '../../hooks/usePreventSpaceKey';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
+import { hangUp } from '../../store/commonActions';
 import { selectRoomConnectionState } from '../../store/slices/roomSlice';
 import RoomLoadingView from './fragments/RoomLoadingView';
 
@@ -26,8 +27,17 @@ const RoomPage = () => {
   const inviteCode = useInviteCode();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const connectionState: ConnectionState = useAppSelector(selectRoomConnectionState);
+  const dispatch = useAppDispatch();
 
   usePreventSpaceKey();
+
+  useEffect(() => {
+    return () => {
+      if (connectionState === ConnectionState.Online) {
+        dispatch(hangUp());
+      }
+    };
+  }, [connectionState]);
 
   if (!isAuthenticated && !inviteCode) {
     console.warn('meeting page - not logged in - redirect');
