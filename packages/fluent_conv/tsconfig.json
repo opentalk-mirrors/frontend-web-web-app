@@ -1,12 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src/*"],
+  "include": ["src"],
   "compilerOptions": {
-    "target": "es2018",
     "moduleResolution": "node",
     "isolatedModules": true,
     "baseUrl": ".",
     "rootDir": "./src",
     "declaration": true,
+    "composite": true
   }
 }

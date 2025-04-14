@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 	  "esModuleInterop": true,
 	  "lib": [
@@ -20,6 +21,7 @@
 	  "emitDeclarationOnly": true,
 	  "allowSyntheticDefaultImports": true,
 	  "forceConsistentCasingInFileNames": true,
+    "composite": true
 	},
 	"types": ["node", "jest", "@testing-library/jest-dom"],
 	"exclude": [

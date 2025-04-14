@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "sourceRoot": "/",
+    "types": ["./vite-env.d.ts"],
+    "composite": true
+  },
+  "references": [
+    { "path": "../packages/rtk-rest-api" },
+    { "path": "../packages/i18next-fluent" },
+    { "path": "../packages/redux-oidc" },
+  ],
+}

@@ -59,6 +59,17 @@ lint:prettier+eslint:
     - pnpm lint
     - pnpm fmt:ci
 
+lint:typecheck:
+  stage: lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  before_script:
+    - *setup-pnpm
+  script:
+    - pnpm install
+    - pnpm typecheck
+  allow_failure: true
+
 lint:circular-deps:
   stage: lint
   rules:

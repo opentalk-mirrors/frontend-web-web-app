@@ -90,6 +90,9 @@ export default defineConfig(({ command, mode }) => {
       // Put the Sentry vite plugin after all other plugins
       sentryVitePlugin({
         telemetry: false,
+        authToken: '1234567890',
+        org: '1234567890',
+        project: '1234567890',
         reactComponentAnnotation: {
           enabled: true,
           ignoredComponents: ['ThemeProvider'],

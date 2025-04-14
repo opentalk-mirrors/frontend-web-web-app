@@ -1,14 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src/**/*.ts", "src/index.ts"],
+  "include": ["src"],
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "types",
-    "target": "es6",
     "moduleResolution": "node",
     "isolatedModules": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "composite": true
   }
 }
