@@ -24,7 +24,7 @@ export const EventConflictDialog = ({ onConfirm, onCancel, event, isUpdate }: Ev
   const eventTitle = truncate(event.title, { length: 20 });
 
   return (
-    <Dialog open maxWidth="sm" fullWidth disablePortal onClose={onCancel}>
+    <Dialog open maxWidth="sm" fullWidth onClose={onCancel} disableRestoreFocus>
       <DialogTitle sx={{ textAlign: 'left' }}>{t('dashboard-create-meeting-dialog-title')}</DialogTitle>
       <Box
         sx={{
@@ -69,7 +69,8 @@ export const EventConflictDialog = ({ onConfirm, onCancel, event, isUpdate }: Ev
         <Button onClick={onConfirm} color="primary" variant="contained">
           {t(`dashboard-${isUpdate ? 'update' : 'create'}-meeting-dialog-ok`)}
         </Button>
-        <Button onClick={onCancel} color="secondary" variant="contained">
+        {/* eslint-disable jsx-a11y/no-autofocus  */}
+        <Button onClick={onCancel} color="secondary" variant="contained" autoFocus>
           {t('dashboard-create-meeting-dialog-cancel')}
         </Button>
       </DialogActions>
