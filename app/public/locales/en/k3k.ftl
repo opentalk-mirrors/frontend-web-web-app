@@ -445,14 +445,15 @@ no-votes-in-conference = There are no votes for this conference at the moment.
 
 room-title-info-button-aria-label = Share meeting details
 
-breakout-room-tab-title = Create Breakout Rooms
-breakout-room-form-field-rooms = number of rooms
-breakout-room-form-field-participants-per-room = participants per room
-breakout-room-form-field-random-distribution = random distribution
-breakout-room-form-field-include-moderators = include moderators
+breakout-room-tab-title = Breakout Rooms
+breakout-room-form-field-based-on = By number of
+breakout-room-form-field-rooms = Number of rooms
+breakout-room-form-field-participants-per-room = Participants per room
+breakout-room-form-field-random-distribution = Random distribution
+breakout-room-form-field-include-moderators = Include moderators
 
-breakout-room-form-error-min-room = too few rooms
-breakout-room-form-error-max-room = too many rooms
+breakout-room-form-error-min-rooms = too few rooms
+breakout-room-form-error-max-rooms = too many rooms
 breakout-room-form-error-min-participants = too few participants
 breakout-room-form-error-max-participants = too many participants
 breakout-room-form-error-expanded = please, open a menu
@@ -461,8 +462,8 @@ breakout-room-tab-by-rooms = By No. of Rooms
 breakout-room-tab-by-participants = By No. of Participants
 breakout-room-tab-by-groups = By Groups
 breakout-room-tab-by-moderators = By No. of Moderators
-breakout-room-create-button = Create Rooms
-breakout-room-create-button-disabled = Insufficient number of participants present in the conference
+breakout-room-start-button = Start rooms
+breakout-room-start-button-disabled = Insufficient number of participants present in the conference
 
 breakout-room-rooms-created-by-participants = Create {$rooms} Rooms
 breakout-room-assignable-participants-per-rooms = Assign {$participantsPerRoom} participants per room
@@ -656,6 +657,7 @@ global-minute = { $count ->
 }
 global-participant = Participant
 global-participants = Participants
+global-rooms = Rooms
 global-save = Save
 global-save-changes = Save changes
 global-password = Password

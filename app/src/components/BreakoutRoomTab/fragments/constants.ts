@@ -2,9 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 
-export enum AccordionOptions {
+export enum DropdownOptions {
   Rooms = 'rooms',
   Participants = 'participants',
-  Groups = 'groups',
-  Moderators = 'Moderators',
 }

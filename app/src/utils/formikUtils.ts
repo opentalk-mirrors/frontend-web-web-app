@@ -63,7 +63,7 @@ export function formikProps<Values>(fieldName: string, formik: FormikProps<Value
   const errorMessage = get(errors, fieldName);
   const hasError = Boolean(errorMessage);
 
-  return {
+  const props = {
     name: fieldName,
     onChange: handleChange,
     onBlur: handleBlur,
@@ -71,6 +71,8 @@ export function formikProps<Values>(fieldName: string, formik: FormikProps<Value
     error: hasError,
     helperText: (hasError && (errorMessage as string)) || undefined,
   };
+
+  return props;
 }
 
 export function formikSwitchProps<Values>(
