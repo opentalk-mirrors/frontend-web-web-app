@@ -4,7 +4,7 @@
 import { useLocalParticipantPermissions } from '@livekit/components-react';
 import { styled } from '@mui/material';
 import { LocalAudioTrack } from 'livekit-client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MicOffIcon, MicOnIcon } from '../../../assets/icons';
@@ -22,8 +22,8 @@ import {
 } from '../../../store/slices/mediaSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
+import MeetingSettingsDialog from '../../MeetingSettingsDialog';
 import AudioIndicator from './AudioIndicator';
-import AudioMenu from './AudioMenu';
 import ToolbarButton from './ToolbarButton';
 
 const MicOnStyled = styled(MicOnIcon)({
@@ -48,7 +48,6 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
   const mediaChangeInProgress = useAppSelector(selectMediaChangeInProgress);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
 
-  const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [canPublishAudio, setCanPublishAudio] = useState(true);
 
@@ -108,7 +107,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
   }, [isLobby, localParticipantPermissions, microphoneEnabled]);
 
   return (
-    <div ref={menuRef}>
+    <>
       <ToolbarButton
         tooltipTitle={tooltipText()}
         onClick={onClick}
@@ -128,8 +127,8 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
       >
         {indicator}
       </ToolbarButton>
-      <AudioMenu open={showMenu} onClose={() => setShowMenu(false)} anchorEl={menuRef.current} />
-    </div>
+      <MeetingSettingsDialog open={showMenu} onClose={() => setShowMenu(false)} setting="audio" />
+    </>
   );
 };
 

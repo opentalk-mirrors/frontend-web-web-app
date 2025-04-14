@@ -69,7 +69,7 @@ toggle-password-visibility = Passwortsichtbarkeit umschalten
 echotest-warn-no-echo-cancellation = Ihr Browser unterstützt keine Echo-Unterdrückung. Bitte nutzen Sie Kopfhörer um Rückkopplungen zu vermeiden.
 audiomenu-choose-input = Audioeingabegerät auswählen
 videomenu-choose-input = Kamera auswählen
-devicemenu-wait-for-permission = Warte auf Gerätefreigabe
+device-permission-pending = Warte auf Gerätefreigabe
 device-permission-denied = Gerätefreigabe verweigert. Bitte prüfen Sie Ihre Einstellungen.
 device-unable-to-start = Ihr Mediengerät kann nicht gestartet werden. Prüfen Sie, ob es durch eine andere Anwendung belegt ist oder wählen Sie ein anderes Gerät.
 quality-cap-setting = Videoqualität
@@ -87,6 +87,13 @@ videomenu-participant-videos = Teilnehmervideos
 localvideo-no-device = Keine Videocamera vorhanden oder freigegeben
 remotevideo-no-stream = Kein Videosignal
 videoroom-hidden-heading = Videoraum
+no-devices-found = Keine Geräte gefunden
+
+meeting-settings-title = Einstellungen
+audio-panel-title = Audio
+audio-settings-title = Ein- und Ausgabe von Audiosignalen
+video-settings-title = Ein- und Ausgabe von Videosignalen
+video-panel-title = Video
 
 participant-stream-broken-tooltip = Medienstrom unterbrochen
 participant-audio-broken-tooltip = Audiokanal unterbrochen

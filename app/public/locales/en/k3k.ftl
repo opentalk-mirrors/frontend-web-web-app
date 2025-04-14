@@ -69,7 +69,7 @@ toggle-password-visibility = toggle password visibility
 echotest-warn-no-echo-cancellation = Your Browser does not support echo canceling. Please use headphones to avoid audio feedback.
 audiomenu-choose-input = Choose audio input device
 videomenu-choose-input = Choose video input device
-devicemenu-wait-for-permission = Waiting for device permission
+device-permission-pending = Waiting for device permission
 device-permission-denied = Device permission denied. Please review your page settings.
 device-unable-to-start = Unable to start your media device, please check if its occupied by another application or select another device.
 quality-cap-setting = Quality Cap
@@ -87,6 +87,13 @@ videomenu-participant-videos = Participant videos
 localvideo-no-device = no video device found
 remotevideo-no-stream = no video stream
 videoroom-hidden-heading = Video Room
+no-devices-found = No devices found
+
+meeting-settings-title = Settings
+audio-panel-title = Audio
+audio-settings-title = Audio Input and Output
+video-settings-title = Video Input and Output
+video-panel-title = Video
 
 participant-stream-broken-tooltip = Mediastream broken
 participant-audio-broken-tooltip = Audio channel broken

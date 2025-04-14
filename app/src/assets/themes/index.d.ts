@@ -28,7 +28,7 @@ declare module '@mui/material/Box' {
   }
 }
 
-declare module '@mui/system' {
+declare module '@mui/material/styles' {
   interface Theme {
     borderRadius: {
       small: number | string;

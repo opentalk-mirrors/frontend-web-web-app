@@ -311,6 +311,40 @@ export const mockedScreenMediaDescriptor = (index: number) =>
     mediaType: Track.Source.ScreenShare,
   }) as MediaDescriptor;
 
+export const mockedAudioInputs: Array<MediaDeviceInfo> = [
+  {
+    deviceId: 'audioInput1',
+    groupId: 'group1',
+    kind: 'audioinput',
+    label: 'Audio Input 1',
+    toJSON: jest.fn(),
+  },
+  {
+    deviceId: 'audioInput2',
+    groupId: 'group1',
+    kind: 'audioinput',
+    label: 'Audio Input 2',
+    toJSON: jest.fn(),
+  },
+];
+
+export const mockedVideoInputs: Array<MediaDeviceInfo> = [
+  {
+    deviceId: 'videoInput1',
+    groupId: 'group1',
+    kind: 'videoinput',
+    label: 'Video Input 1',
+    toJSON: jest.fn(),
+  },
+  {
+    deviceId: 'videoInput2',
+    groupId: 'group1',
+    kind: 'videoinput',
+    label: 'Video Input 2',
+    toJSON: jest.fn(),
+  },
+];
+
 export const eventMockedData: TimelessEvent = {
   id: uuidv4() as EventId,
   createdAt: '2022-04-06T13:57:38.793602Z' as DateTime,
