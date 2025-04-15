@@ -87,8 +87,7 @@ const CopyTextField = forwardRef<HTMLInputElement, LinkFieldProps>(
         label={label}
         fullWidth
         value={value ? value.toString() : '-'}
-        disabled
-        InputProps={{ endAdornment: renderEndAdornment() }}
+        InputProps={{ endAdornment: renderEndAdornment(), readOnly: true }}
       />
     );
   }
