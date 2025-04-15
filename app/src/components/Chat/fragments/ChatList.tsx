@@ -84,7 +84,7 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
        * 2 pixels tolerance works for all tested use cases, when OS is configured to
        * scale up resolution, scrollTop provides float number instead of the integers.
        */
-      const BOTTOM_TOLERANCE_IN_PIXELS = 2;
+      const BOTTOM_TOLERANCE_IN_PIXELS = 3;
       const chatList = event.target as HTMLUListElement;
       const computedChatListStyle = window.getComputedStyle(chatList, '');
       const borderTopWidth = parseFloat(computedChatListStyle.getPropertyValue('border-top-width'));
@@ -92,7 +92,7 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
       isAtTheBottom.current =
         Math.abs(
           chatList.scrollHeight - chatList.clientHeight - chatList.scrollTop - borderTopWidth - borderBottomWidth
-        ) < BOTTOM_TOLERANCE_IN_PIXELS;
+        ) <= BOTTOM_TOLERANCE_IN_PIXELS;
     });
   }, []);
 
