@@ -12,7 +12,7 @@ import useE2EE from '../../hooks/useE2EE';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { usePreventSpaceKey } from '../../hooks/usePreventSpaceKey';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { hangUp } from '../../store/commonActions';
+import { exitingRoomContext } from '../../store/commonActions';
 import { selectRoomConnectionState } from '../../store/slices/roomSlice';
 import RoomLoadingView from './fragments/RoomLoadingView';
 
@@ -33,11 +33,9 @@ const RoomPage = () => {
 
   useEffect(() => {
     return () => {
-      if (connectionState === ConnectionState.Online) {
-        dispatch(hangUp());
-      }
+      dispatch(exitingRoomContext());
     };
-  }, [connectionState]);
+  }, []);
 
   if (!isAuthenticated && !inviteCode) {
     console.warn('meeting page - not logged in - redirect');

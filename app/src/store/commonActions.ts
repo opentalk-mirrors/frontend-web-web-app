@@ -78,3 +78,4 @@ export const hangUp = createAsyncThunk<void, void, { state: RootState }>('room/h
 });
 
 export const joinSuccess = createAction<JoinSuccessInternalState>('signaling/control/join_success');
+export const exitingRoomContext = createAction('room/exitingRoomContext');
