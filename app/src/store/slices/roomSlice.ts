@@ -27,7 +27,7 @@ import {
   TimerStyle,
 } from '../../types';
 import { fetchWithAuth, getControllerBaseUrl } from '../../utils/apiUtils';
-import { hangUp, joinSuccess, startRoom } from '../commonActions';
+import { exitingRoomContext, hangUp, joinSuccess, startRoom } from '../commonActions';
 import { started as automodStarted, stopped as automodStopped } from './automodSlice';
 import { startMedia } from './mediaSlice';
 import { timerStarted, timerStopped } from './timerSlice';
@@ -397,5 +397,15 @@ roomMiddleware.startListening({
     listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
     listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
     listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
+  },
+});
+
+roomMiddleware.startListening({
+  actionCreator: exitingRoomContext,
+  effect: (_, listenerApi) => {
+    const connectionState = listenerApi.getState().room.connectionState;
+    if (connectionState === ConnectionState.Online) {
+      listenerApi.dispatch(hangUp());
+    }
   },
 });
