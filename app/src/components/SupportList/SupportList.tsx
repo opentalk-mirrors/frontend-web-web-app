@@ -19,15 +19,23 @@ import { ListItemButtonProps } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { BugIcon, ExtendToTabIcon, KeyboardIcon, MenubookIcon, ContactIcon } from '../../assets/icons';
+import {
+  BugIcon,
+  ExtendToTabIcon,
+  KeyboardIcon,
+  MenubookIcon,
+  ContactIcon,
+  AccessablityIcon,
+} from '../../assets/icons';
 import { createOpenTalkTheme } from '../../assets/themes/opentalk';
-import { useAppSelector } from '../../hooks';
+import { useAppSelector, useLocale } from '../../hooks';
 import { selectContactSupportUrl, selectIsGlitchtipConfigured } from '../../store/slices/configSlice';
-import { USER_MANUAL_URL } from '../../utils/apiUtils';
+import { getAccessibilityUrl, USER_MANUAL_URL } from '../../utils/apiUtils';
 import { triggerGlitchtipManually } from '../../utils/glitchtipUtils';
 import ShortcutListDialog from '../Toolbar/fragments/ShortcutListDialog';
 
 enum ListItemKeys {
+  Accessibility = 'accessibility',
   UserManual = 'user-manual',
   KeyboardShortcuts = 'keyboard-shortcuts',
   GlitchtipTrigger = 'glitchtip-trigger',
@@ -81,9 +89,23 @@ export const SupportList = ({
   const isGlitchtipConfigured = useAppSelector(selectIsGlitchtipConfigured);
   const [isShortcutListDialogOpen, setIsShortcutListDialogOpen] = useState(false);
   const contactSupportUrl = useAppSelector(selectContactSupportUrl);
+  const locale = useLocale();
+  const accessibilityUrl = getAccessibilityUrl(locale);
 
   const items = useMemo(() => {
     const output: Item[] = [
+      {
+        key: ListItemKeys.Accessibility,
+        name: 'my-meeting-menu-accessibility',
+        icon: <AccessablityIcon />,
+        componentProps: {
+          href: accessibilityUrl,
+          target: '_blank',
+          onClick: () => {
+            window.open(accessibilityUrl, '_blank');
+          },
+        },
+      },
       {
         key: ListItemKeys.UserManual,
         name: 'my-meeting-menu-user-manual',

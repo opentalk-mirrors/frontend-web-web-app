@@ -1187,6 +1187,7 @@ landmark-complementary-tools = Hilfsmittel
 landmark-complementary-moderation-panel = Moderationsleiste
 landmark-complementary-toolbar = Persönliche Kontrollleiste
 
+my-meeting-menu-accessibility = Barrierefreiheit
 my-meeting-menu = Mein Meeting
 my-meeting-menu-keyboard-shortcuts = Tastaturkürzel
 my-meeting-menu-user-manual = Handbuch
