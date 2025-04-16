@@ -25,7 +25,7 @@ import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { startRoom } from '../../store/commonActions';
-import { selectDisallowCustomDisplayName, selectFeatures } from '../../store/slices/configSlice';
+import { selectDisallowCustomDisplayName, selectConfigFeatures } from '../../store/slices/configSlice';
 import { startMedia } from '../../store/slices/mediaSlice';
 import {
   InviteCodeErrorEnum,
@@ -103,7 +103,7 @@ const LobbyView = () => {
 
   const dispatch = useAppDispatch();
   const inviteState = useAppSelector(selectInviteState);
-  const { joinWithoutMedia } = useAppSelector(selectFeatures);
+  const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
   const showPasswordField = useAppSelector(selectPasswordRequired);
   const disallowCustomDisplayName = useAppSelector(selectDisallowCustomDisplayName);
   const isLoggedIn = useAppSelector(selectIsAuthenticated);

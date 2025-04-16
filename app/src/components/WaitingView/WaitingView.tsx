@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { enterRoom } from '../../api/types/outgoing/control';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { selectFeatures } from '../../store/slices/configSlice';
+import { selectConfigFeatures } from '../../store/slices/configSlice';
 import { startMedia } from '../../store/slices/mediaSlice';
 import { selectRoomConnectionState } from '../../store/slices/roomSlice';
 import ImprintContainer from '../ImprintContainer';
@@ -47,7 +47,7 @@ const WaitingView = () => {
   const connectionState = useAppSelector(selectRoomConnectionState);
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { joinWithoutMedia } = useAppSelector(selectFeatures);
+  const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
 
   const [isAutoJoinEnabled, setIsAutoJoinEnabled] = useState(true);
 

@@ -276,6 +276,7 @@ chat-disabled-tooltip = Der Chat wurde durch den Moderator deaktiviert
 more-menu-start-streaming = Livestream starten
 more-menu-stop-streaming = Livestream beenden
 more-menu-export-attendance-report = Teilnahmebericht exportieren
+more-menu-start-remote-control = Remote Control App starten
 
 microphones-enabled-notification = Der Moderator hat die Mikrofone wieder aktiviert
 microphones-disabled-notification = Der Moderator hat die Mikrofone deaktiviert
