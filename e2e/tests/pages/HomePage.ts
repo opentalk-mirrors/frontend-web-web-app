@@ -18,13 +18,7 @@ export class HomePage {
 
   async navigateToHomePage(): Promise<void> {
     const baseUrl = process.env.INSTANCE_URL;
-    await Promise.all([
-      this.page.waitForResponse(
-        (response) => response.request().method() === 'GET' && (response.status() === 200 || response.status() === 304)
-      ),
-      this.page.goto(baseUrl, { waitUntil: 'load' }),
-      this.page.waitForLoadState('networkidle'),
-    ]);
+    await Promise.all([this.page.goto(baseUrl), this.page.waitForLoadState('domcontentloaded')]);
   }
 
   async markMeetingAsFavourite(meetingTitle: string): Promise<void> {
@@ -70,7 +64,7 @@ export class HomePage {
           response.request().method() === 'GET' &&
           response.status() === 200
       ),
-      this.page.waitForLoadState('networkidle'),
+      this.page.waitForLoadState('domcontentloaded'),
     ]);
   }
 

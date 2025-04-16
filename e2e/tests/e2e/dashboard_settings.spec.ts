@@ -3,9 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { test, expect } from '@playwright/test';
 
+import { HomePage } from '../pages/HomePage';
+
 test.describe('79_Dashboard_Settings', () => {
   test('TC_001_Dashboard_Settings_General', async ({ page }) => {
-    await page.goto(`${process.env.INSTANCE_URL}/dashboard`);
+    const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
     await page.getByRole('link', { name: 'Settings' }).click();
     await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
 
@@ -42,7 +45,8 @@ test.describe('79_Dashboard_Settings', () => {
   });
 
   test('TC_002_Dashboard_Settings_Profile option', async ({ page }) => {
-    await page.goto(`${process.env.INSTANCE_URL}/dashboard`);
+    const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
     await page.getByRole('link', { name: 'Settings', exact: true }).click();
     await page.getByRole('link', { name: 'Profile' }).click();
     await expect(page.getByRole('heading', { name: 'Profile Picture' })).toBeVisible();
@@ -78,7 +82,8 @@ test.describe('79_Dashboard_Settings', () => {
 
   test('TC_003_Dashboard_Settings_Account option', async ({ page }) => {
     //verify the options/details available in Account option of Settings option in Dashboard
-    await page.goto(`${process.env.INSTANCE_URL}/dashboard`);
+    const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
     await page.getByRole('link', { name: 'Settings', exact: true }).click();
     await page.getByRole('link', { name: 'Account', exact: true }).click();
 
@@ -87,14 +92,15 @@ test.describe('79_Dashboard_Settings', () => {
     const familyNameField = page.getByLabel('Family Name');
 
     await expect(emailField).toHaveValue(process.env.USER_EMAIL);
-    await expect(emailField).toBeDisabled();
-    await expect(firstNameField).toBeDisabled();
-    await expect(familyNameField).toBeDisabled();
+    await expect(emailField).toHaveAttribute('readonly', '');
+    await expect(firstNameField).toHaveAttribute('readonly', '');
+    await expect(familyNameField).toHaveAttribute('readonly', '');
   });
 
   test('TC_004_Dashboard_Settings_Storage option', async ({ page }) => {
     //verify the options/details available in Account option of Settings option in Dashboard
-    await page.goto(`${process.env.INSTANCE_URL}/dashboard`);
+    const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
     await page.getByRole('link', { name: 'Settings', exact: true }).click();
     await page.getByRole('link', { name: 'Storage', exact: true }).click();
 
