@@ -21,7 +21,7 @@ path = [
     "tsconfig.base.json",
     "tsconfig.json",
     "mocks/fileMock.js",
-    "app/tsconfig.dev.json",
+    "app/tsconfig.json",
     "app/package.json",
     "app/tsconfig.json",
     "app/README.md",

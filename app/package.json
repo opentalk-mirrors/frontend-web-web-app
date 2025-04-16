@@ -5,11 +5,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "pnpm run create:dev && vite",
-    "start:hot": "pnpm run create:dev && HMR=true vite",
-    "build": "pnpm run create:dev && vite build",
-    "build:profiling": "pnpm run create:dev && BUILD_PATH=../dist-profiling vite build --mode profiling",
-    "create:dev": "node -e \"require('fs').writeFile('tsconfig.json', fs.readFileSync('tsconfig.dev.json'), function(err) { if (err) console.log(err); console.log('File successfully created from tsconfig.dev.json!') })\""
+    "start": "vite",
+    "start:hot": "HMR=true vite",
+    "build": "vite build",
+    "build:profiling": "BUILD_PATH=../dist-profiling vite build --mode profiling"
   },
   "dependencies": {
     "@date-io/date-fns": "^3.2.1",

@@ -1,5 +1,10 @@
 {
-  "compilerOptions": {
-    "esModuleInterop": true
-  }
+  "files": [],
+  "references": [
+    { "path": "app" },
+    { "path": "packages/fluent_conv" },
+    { "path": "packages/i18next-fluent" },
+    { "path": "packages/redux-oidc" },
+    { "path": "packages/rtk-rest-api" },
+  ]
 }
