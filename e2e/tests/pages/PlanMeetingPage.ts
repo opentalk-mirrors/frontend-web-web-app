@@ -53,7 +53,9 @@ export class PlanMeetingPage {
     await this.passwordInputField.click();
     await this.passwordInputField.fill(password);
     await this.createMeetingButton.click();
+
     // wait for meeting to full render in frontend
-    await this.page.waitForSelector('[aria-label="Only for registered users"]', { state: 'visible' });
+    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForSelector('[aria-label="Only for registered users"]', { state: 'visible', timeout: 5000 });
   }
 }
