@@ -90,7 +90,7 @@ export const DurationField = ({
 
   const renderButtonText = () => (value ? `${value} min` : t('field-duration-unlimited-time'));
   const getButtonAriaLabel = () =>
-    `${t('global-duration')} ${value ? `${value} min` : t('field-duration-unlimited-time')}`;
+    `${t('global-duration')} ${value ? value + ' ' + t('global-minute', { count: value }) : t('field-duration-unlimited-time')}`;
 
   const getChipLabel = (duration: DurationValueOptions) => {
     switch (duration) {
@@ -110,7 +110,7 @@ export const DurationField = ({
       case null:
         return t('field-duration-unlimited-time-label');
       default:
-        return t('field-duration-chip-label', { duration });
+        return duration + ' ' + t('global-minute', { count: duration });
     }
   };
 
