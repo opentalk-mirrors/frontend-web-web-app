@@ -426,7 +426,6 @@ e2e:chrome:
     USERNAME: ${E2E_CHROME_TEST_USERNAME}
     USER_EMAIL: ${E2E_CHROME_TEST_USER_EMAIL}
     PASSWORD: ${E2E_CHROME_TEST_USER_PASSWORD}
-  allow_failure: true
   script:
     - npx playwright install --with-deps
     - npx playwright test --project=chromium
@@ -443,7 +442,6 @@ e2e:firefox:
     USERNAME: ${E2E_FIREFOX_TEST_USERNAME}
     USER_EMAIL: ${E2E_FIREFOX_TEST_USER_EMAIL}
     PASSWORD: ${E2E_FIREFOX_TEST_USER_PASSWORD}
-  allow_failure: true
   script:
     - npx playwright install --with-deps
     - npx playwright test --project=firefox
@@ -460,7 +458,6 @@ e2e:webkit:
     USERNAME: ${E2E_WEBKIT_TEST_USERNAME}
     USER_EMAIL: ${E2E_WEBKIT_TEST_USER_EMAIL}
     PASSWORD: ${E2E_WEBKIT_TEST_USER_PASSWORD}
-  allow_failure: true
   script:
     - npx playwright install --with-deps
     - npx playwright test --project=webkit

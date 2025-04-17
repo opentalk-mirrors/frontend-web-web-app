@@ -42,4 +42,21 @@ export class LobbyRoomPage {
       tabindex = await this.microphoneButton.getAttribute('tabindex');
     }
   }
+
+  async waitForParticipantNameToBeVisibleInNameField(): Promise<void> {
+    // from meeting-room-timer.spec.ts
+    // "We need to wait for the username to appear here because otherwise the tests will be flaky (see issue #1692)"
+    let userName = '';
+    let counter = 0;
+    while (userName === '' && counter < 5) {
+      userName = await this.nameInputField.inputValue();
+      counter++;
+      await this.page.waitForTimeout(500);
+    }
+  }
+
+  async renderLobbyPageFully(): Promise<void> {
+    await this.nameInputField.isVisible();
+    await this.waitForParticipantNameToBeVisibleInNameField();
+  }
 }

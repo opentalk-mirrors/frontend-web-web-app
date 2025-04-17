@@ -18,9 +18,8 @@ const createdMeetingStore = [];
 test.describe('Accessibility', () => {
   test.afterEach(async ({ page }) => {
     if (createdMeetingStore.length === 1) {
-      await page.goto(process.env.INSTANCE_URL);
-      await expect(page.getByRole('link', { name: 'Home' })).toBeVisible();
       const homePage = new HomePage({ page });
+      await homePage.navigateToHomePage();
       await homePage.deleteMeeting(meetingTitle);
       createdMeetingStore.pop();
       await page.close();
@@ -43,7 +42,7 @@ test.describe('Accessibility', () => {
     const planMeetingPage = new PlanMeetingPage({ page });
     await planMeetingPage.createNewMeeting(meetingTitle, meetingRoomPassword);
     createdMeetingStore.push(meetingTitle);
-    await sidebarPage.homeButton.click();
+    await homePage.navigateToHomePage();
     await homePage.markMeetingAsFavourite(meetingTitle);
     await sidebarPage.getProfileLocator().focus();
     // cursor will now be in the beginning of tabable element
@@ -84,19 +83,17 @@ test.describe('Accessibility', () => {
     // Thus they cannot be accessed by keyboard "Tab"
     // https://github.com/microsoft/playwright/issues/20563
     test.skip(browserName === 'webkit' || browserName === 'firefox');
-    test.setTimeout(120000);
     const baseUrl = process.env.INSTANCE_URL;
-    await page.goto(baseUrl);
     const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
     await homePage.startNewMeetingButton.click();
     const meetingInvitationPage = new MeetingInvitationPage({ page });
     const lobbyPage = await meetingInvitationPage.goToMeetingLobby();
     const lobbyRoomPage = new LobbyRoomPage({ page: lobbyPage });
-    // checking whether the lobby page is fully loaded
-    // microphone takes some time to load depending on browser
-    await expect(lobbyRoomPage.nameInputField).toBeVisible();
-    await expect(lobbyRoomPage.microphoneButton).toBeEnabled();
+    await lobbyRoomPage.microphoneButton.isVisible();
     await lobbyRoomPage.isMicrophoneEnabled();
+    await lobbyRoomPage.renderLobbyPageFully();
+
     await lobbyPage.keyboard.press('Tab');
     await lobbyPage.keyboard.press('Tab');
     await expect(lobbyRoomPage.speedTestButton).toBeFocused();
@@ -133,24 +130,16 @@ test.describe('Accessibility', () => {
     // Thus they cannot be accessed by keyboard "Tab"
     // https://github.com/microsoft/playwright/issues/20563
     test.skip(browserName === 'webkit' || browserName === 'firefox');
-    // launch OpenTalk
-    await page.goto(process.env.INSTANCE_URL);
-
     // start new (adhoc) meeting
     const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
     await homePage.startNewMeetingButton.click();
 
     const meetingInvitationPage = new MeetingInvitationPage({ page });
     await meetingInvitationPage.goToAdhocMeetingLobbyAsModerator(true);
 
     const lobbyRoomPage = new LobbyRoomPage({ page });
-    // from meeting-room-timer.spec.ts
-    // "We need to wait for the username to appear here because otherwise the tests will be flaky (see issue #1692)"
-    await expect(lobbyRoomPage.nameInputField).toBeVisible();
-
-    // enter meeting room
-    // need to wait for meetingbutton to be clickable
-    await page.waitForTimeout(4000);
+    await lobbyRoomPage.renderLobbyPageFully();
     await lobbyRoomPage.joinMeetingButton.click();
     const meetingRoomPage = new MeetingRoomPage({ page });
 
