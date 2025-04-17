@@ -55,7 +55,7 @@ export class PlanMeetingPage {
     await this.createMeetingButton.click();
 
     // wait for meeting to full render in frontend
-    await this.page.waitForLoadState('domcontentloaded');
-    await this.page.waitForSelector('[aria-label="Only for registered users"]', { state: 'visible', timeout: 5000 });
+    await this.page.waitForLoadState('load');
+    await this.page.waitForSelector('[aria-label="Only for registered users"]', { state: 'visible', timeout: 30000 });
   }
 }

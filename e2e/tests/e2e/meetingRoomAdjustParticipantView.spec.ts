@@ -16,7 +16,7 @@ const joinMeetingRoomAsGuest = async (context, guestLink: string, guestName: str
 
   const guestLobbyRoomPage = new LobbyRoomPage({ page: joinAsGuestPage });
   await expect(guestLobbyRoomPage.nameInputField).toBeVisible();
-  guestLobbyRoomPage.nameInputField.fill(guestName);
+  await guestLobbyRoomPage.nameInputField.fill(guestName);
 
   await guestLobbyRoomPage.joinMeetingButton.click();
   const guestMeetingRoomPage = new MeetingRoomPage({ page: joinAsGuestPage });
@@ -48,18 +48,15 @@ test.describe('MeetingRoom - adjust participant view', () => {
     test.skip(browserName === 'webkit');
 
     // launch OpenTalk & start new (adhoc) meeting
-    await page.goto(process.env.INSTANCE_URL);
-
     const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
     await homePage.startNewMeetingButton.click();
 
     const meetingInvitationPage = new MeetingInvitationPage({ page });
     await meetingInvitationPage.goToAdhocMeetingLobbyAsModerator(true);
 
     const lobbyRoomPage = new LobbyRoomPage({ page });
-    // from meeting-room-timer.spec.ts
-    // "We need to wait for the username to appear here because otherwise the tests will be flaky (see issue #1692)"
-    await expect(lobbyRoomPage.nameInputField).toBeVisible();
+    await lobbyRoomPage.renderLobbyPageFully();
 
     // enter meeting room
     await lobbyRoomPage.joinMeetingButton.click();
@@ -98,16 +95,16 @@ test.describe('MeetingRoom - adjust participant view', () => {
     test.skip(browserName === 'webkit');
 
     // launch OpenTalk & start new (adhoc) meeting
-    await page.goto(process.env.INSTANCE_URL);
-
     const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
+
     await homePage.startNewMeetingButton.click();
 
     const meetingInvitationPage = new MeetingInvitationPage({ page });
     const guestLink = await meetingInvitationPage.goToAdhocMeetingLobbyAsModeratorAndGetGuestLink(true);
 
     const lobbyRoomPage = new LobbyRoomPage({ page });
-    await expect(lobbyRoomPage.nameInputField).toBeVisible();
+    await lobbyRoomPage.renderLobbyPageFully();
 
     // enter meeting room
     await lobbyRoomPage.joinMeetingButton.click();
