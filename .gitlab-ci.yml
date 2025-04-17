@@ -341,6 +341,36 @@ build:container-profiling:
       --force
       --digest-file ./profiling-digest.txt
 
+read-trivy-ignore-file:
+  stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+  script:
+    - echo "TRIVY_IGNORE_STR=$(
+         cat $CI_PROJECT_DIR/.trivyignore | sed -n 'H;${x;s/^\n//;s/\n/\\n/g;p}'
+      )"  > package.env
+  artifacts:
+    reports:
+      dotenv: package.env
+
+container-scanning:
+  needs:
+    - build:container
+    - read-trivy-ignore-file
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+  stage: build
+  variables:
+    PIPELINE_FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:latest
+    PIPELINE_PROJECT_WITH_NAMESPACE: $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+    PIPELINE_ADDITIONAL_LABELS: Frontend::Web App
+    PIPELINE_TRIVY_IGNORE_FILE_STR_VAR: TRIVY_IGNORE_STR
+  trigger:
+    project: opentalk/opentalk-devops/scan-container
+    strategy: depend
+    forward:
+      pipeline_variables: true
+
 deploy:review-app:
   stage: deploy
   dependencies:
