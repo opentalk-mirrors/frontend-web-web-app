@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, MenuList, MenuItem as MuiMenuItem, Popover as MuiPopover, Stack, styled } from '@mui/material';
-import { Event, EventException, EventId, InviteStatus } from '@opentalk/rest-api-rtk-query';
+import { Event, EventException, EventId, InviteStatus, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, createSearchParams } from 'react-router-dom';
 
 import {
   useAcceptEventInviteMutation,
@@ -92,8 +92,22 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
   const updateMeeting = () => {
     navigate(`/dashboard/meetings/update/${eventId}/0`, { state: { ...getReferrerRouterState(window.location) } });
   };
+
+  // For a recurring event we need to pass start and end dates of a particular event instance,
+  const getSearchParams = () => {
+    return isRecurringEvent(event) === true
+      ? createSearchParams({ start: event.startsAt.datetime, end: event.endsAt.datetime }).toString()
+      : undefined;
+  };
+
   const viewMeetingDetails = () => {
-    navigate(`/dashboard/meetings/${eventId}`, { state: { ...getReferrerRouterState(window.location) } });
+    navigate(
+      {
+        pathname: `/dashboard/meetings/${eventId}`,
+        search: getSearchParams(),
+      },
+      { state: { ...getReferrerRouterState(window.location) } }
+    );
   };
 
   const copyMeetingLink = (): void => {
