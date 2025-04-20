@@ -5,7 +5,8 @@ import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, Di
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { selectAudioEnabled, selectVideoEnabled, startMedia } from '../../store/slices/mediaSlice';
+import { startMedia } from '../../store/commonActions';
+import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/mediaSlice';
 import { abortedReconnection } from '../../store/slices/roomSlice';
 
 const ReconnectionDialog = () => {

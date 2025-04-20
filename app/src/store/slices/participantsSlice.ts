@@ -1,19 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  PayloadAction,
-  TypedStartListening,
-  UnknownAction,
-  createEntityAdapter,
-  createListenerMiddleware,
-  createSelector,
-  createSlice,
-} from '@reduxjs/toolkit';
+import { PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { Participant as RemoteParticipant } from 'livekit-client';
 
-import type { AppDispatch, RootState } from '../';
 import { notifications } from '../../commonComponents';
 import {
   BackendParticipant,
@@ -24,8 +16,11 @@ import {
   ParticipantInOtherRoom,
   Role,
   WaitingState,
+  LegalVote,
 } from '../../types';
 import { joinSuccess } from '../commonActions';
+import type { AppDispatch, RootState } from '../index';
+import type { StartAppListening } from '../listenerMiddleware';
 import { getLivekitRoom } from '../livekitRoom';
 import { selectCurrentBreakoutRoomId } from './breakoutSlice';
 import { received } from './chatSlice';
@@ -331,43 +326,81 @@ export const selectMapRemotePaticipanstDisplayName = createSelector(
   }
 );
 
-export const participantsMiddleware = createListenerMiddleware();
-type AppStartListening = TypedStartListening<RootState, AppDispatch>;
-
-const startAppListening = participantsMiddleware.startListening as AppStartListening;
-
-const isJoinOrLeaveAction = (
-  action: UnknownAction
-): action is PayloadAction<{ id: ParticipantId; participant: Participant }> =>
-  join.match(action) || leave.match(action);
-
-startAppListening({
-  matcher: isJoinOrLeaveAction,
-  effect: (action, listenerApi) => {
-    const { payload } = action;
-    const state = listenerApi.getOriginalState();
-    const { activeVote, votes } = state.legalVote;
-    if (!activeVote) {
-      return;
-    }
-    const activeVoteEntries = activeVote && votes.entities[activeVote.id];
-    const participantId = payload.id || payload.participant.id;
-    const participantWasAllowedToVote = activeVoteEntries?.allowedParticipants.includes(participantId);
-    const participantVoted =
-      activeVoteEntries?.votingRecord && Object.hasOwn(activeVoteEntries?.votingRecord, participantId);
-    const isModerator = state.user.role === Role.Moderator;
-
-    if (participantWasAllowedToVote && !participantVoted && isModerator) {
-      const participantName =
-        payload?.participant?.displayName || participantSelectors.selectById(state, participantId)?.displayName;
-
-      if (join.match(action)) {
-        notifications.warning(i18next.t('legal-vote-participant-joined-the-meeting', { participantName }));
-      } else if (leave.match(action)) {
-        notifications.warning(i18next.t('legal-vote-participant-left-the-meeting', { participantName }));
-      }
-    }
-  },
-});
-
 export default participantsSlice.reducer;
+
+/************************************************/
+/*                                              */
+/*                  Listeners                   */
+/*                                              */
+/************************************************/
+
+export const shouldShowNotification = (role: Role, participantId: ParticipantId, activeVoteEntry: LegalVote) => {
+  if (role !== Role.Moderator) {
+    return false;
+  }
+
+  const participantWasAllowedToVote = activeVoteEntry?.allowedParticipants.includes(participantId);
+  const participantVoted = activeVoteEntry?.votingRecord && Object.hasOwn(activeVoteEntry?.votingRecord, participantId);
+  return participantWasAllowedToVote && !participantVoted;
+};
+
+export const handleParticipantJoinDuringVoteEffect = (
+  action: ReturnType<typeof join>,
+  listenerApi: ListenerEffectAPI<RootState, AppDispatch>
+) => {
+  const state = listenerApi.getOriginalState();
+  const { payload } = action;
+  const { activeVote, votes } = state.legalVote;
+
+  if (!activeVote) {
+    return;
+  }
+
+  const activeVoteEntry = votes.entities[activeVote.id];
+  const participantId = payload.participant.id;
+
+  if (shouldShowNotification(state.user.role, participantId, activeVoteEntry)) {
+    const participantName = payload.participant.displayName;
+    notifications.warning(i18next.t('legal-vote-participant-joined-the-meeting', { participantName }));
+  }
+};
+
+export const handleParticipantLeaveDuringVoteEffect = (
+  action: ReturnType<typeof leave>,
+  listenerApi: ListenerEffectAPI<RootState, AppDispatch>
+) => {
+  const state = listenerApi.getOriginalState();
+  const { payload } = action;
+  const { activeVote, votes } = state.legalVote;
+
+  if (!activeVote) {
+    return;
+  }
+
+  const activeVoteEntry = votes.entities[activeVote.id];
+  const participantId = payload.id;
+
+  if (shouldShowNotification(state.user.role, participantId, activeVoteEntry)) {
+    const participantName = participantSelectors.selectById(state, participantId).displayName;
+    notifications.warning(i18next.t('legal-vote-participant-left-the-meeting', { participantName }));
+  }
+};
+
+const startParticipantLeaveDuringVoteListener = (startAppListening: StartAppListening) => {
+  startAppListening({
+    actionCreator: leave,
+    effect: handleParticipantLeaveDuringVoteEffect,
+  });
+};
+
+const startParticipantJoinDuringVoteListener = (startAppListening: StartAppListening) => {
+  startAppListening({
+    actionCreator: join,
+    effect: handleParticipantJoinDuringVoteEffect,
+  });
+};
+
+export const startParticipantsListeners = (startAppListening: StartAppListening) => {
+  startParticipantJoinDuringVoteListener(startAppListening);
+  startParticipantLeaveDuringVoteListener(startAppListening);
+};

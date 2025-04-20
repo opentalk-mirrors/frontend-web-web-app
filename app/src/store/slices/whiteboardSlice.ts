@@ -11,11 +11,11 @@ export interface ShowWhiteboardParam {
   url: string | undefined;
 }
 
-interface WhiteboardState {
+export type WhiteboardState = {
   isWhiteboardAvailable: boolean;
   whiteboardAssetList: Array<AssetRef>;
   whiteboardUrl?: string;
-}
+};
 
 const initialState: WhiteboardState = {
   isWhiteboardAvailable: false,

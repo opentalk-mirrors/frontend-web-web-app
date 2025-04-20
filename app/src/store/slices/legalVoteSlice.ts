@@ -50,13 +50,13 @@ interface ActiveVote {
   voteInfo?: UserVote;
 }
 
-interface State {
+export type State = {
   activeVote?: ActiveVote;
   currentShownVote?: LegalVoteId;
   votes: EntityState<LegalVote, LegalVoteId>;
   showResultWindow: boolean;
   savedLegalVotes: Array<SavedLegalVoteForm>;
-}
+};
 
 const newLegalVoteFromApiType = ({ legalVoteId, ...other }: VoteStarted): LegalVote => ({
   id: legalVoteId,

@@ -9,13 +9,13 @@ import { SuspenseLoading, showConsentNotification } from '../../../commonCompone
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
+import { startMedia } from '../../../store/commonActions';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import {
   selectMediaChangeInProgress,
   selectVideoChangeInProgress,
   selectVideoEnabled,
   selectVideoPermissionDenied,
-  startMedia,
 } from '../../../store/slices/mediaSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';

@@ -26,9 +26,8 @@ import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
 import log from '../../logger';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { startRoom } from '../../store/commonActions';
+import { startRoom, startMedia } from '../../store/commonActions';
 import { selectDisallowCustomDisplayName, selectConfigFeatures } from '../../store/slices/configSlice';
-import { startMedia } from '../../store/slices/mediaSlice';
 import {
   InviteCodeErrorEnum,
   fetchRoomByInviteId,

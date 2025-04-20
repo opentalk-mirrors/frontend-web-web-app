@@ -12,13 +12,13 @@ import { SuspenseLoading, showConsentNotification } from '../../../commonCompone
 import { LIVEKIT_AUDIO_PERMISSION_NUMBER, ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
+import { startMedia } from '../../../store/commonActions';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import {
   selectAudioChangeInProgress,
   selectAudioEnabled,
   selectAudioPermissionDenied,
   selectMediaChangeInProgress,
-  startMedia,
 } from '../../../store/slices/mediaSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';

@@ -215,3 +215,13 @@ jest.mock('react-i18next', () => ({
   },
   Trans: ({ i18nKey }: { children: React.ReactNode; i18nKey: string }) => i18nKey,
 }));
+
+jest.mock('i18next', () => {
+  const module = jest.requireActual('i18next');
+
+  return {
+    __esModule: true,
+    default: module,
+    t: (key: string) => key,
+  };
+});

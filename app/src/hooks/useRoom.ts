@@ -14,8 +14,9 @@ import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../commonComponents';
+import { startMedia } from '../store/commonActions';
 import { setLivekitRoom } from '../store/livekitRoom';
-import { selectAudioEnabled, startMedia } from '../store/slices/mediaSlice';
+import { selectAudioEnabled } from '../store/slices/mediaSlice';
 import { selectShouldForceMuted } from '../store/slices/moderationSlice';
 import { useAppDispatch, useAppSelector } from './useCustomRedux';
 import { E2EEData } from './useE2EE';

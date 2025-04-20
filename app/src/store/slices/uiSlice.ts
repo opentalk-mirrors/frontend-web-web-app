@@ -36,7 +36,7 @@ export const presenterVideoPositions = ['bottomLeft', 'upperRight', 'bottomRight
 
 export type PresenterVideoPosition = (typeof presenterVideoPositions)[number];
 
-interface UIState {
+export type UIState = {
   participantsSortOption: SortOption;
   showParticipantGroups: boolean;
   participantsSearchValue: string;
@@ -66,7 +66,7 @@ interface UIState {
   gridViewOrder: GridViewOrder;
   currentMenuTab: MenuTab;
   presenterVideoPosition: PresenterVideoPosition;
-}
+};
 
 const initialState: UIState = {
   participantsSortOption: SortOption.NameASC,

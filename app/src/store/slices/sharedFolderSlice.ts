@@ -7,11 +7,11 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '..';
 import { joinSuccess } from '../commonActions';
 
-interface SharedFolderState {
+export type SharedFolderState = {
   opened: boolean;
   sharedFolderData?: SharedFolderData;
   isAvailableIndicatorVisible: boolean;
-}
+};
 
 const initialState: SharedFolderState = {
   opened: false,

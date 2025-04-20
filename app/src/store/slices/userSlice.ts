@@ -10,12 +10,11 @@ import { sendChatMessage } from '../../api/types/outgoing/chat';
 import { lowerHand, raiseHand } from '../../api/types/outgoing/control';
 import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
-import { joinSuccess, login, startRoom } from '../commonActions';
-import { startMedia } from './mediaSlice';
+import { joinSuccess, login, startRoom, startMedia } from '../commonActions';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { connectionClosed, fetchRoomByInviteId } from './roomSlice';
 
-interface UserState {
+export type UserState = {
   uuid: ParticipantId | null;
   groups: GroupId[];
   role: Role;
@@ -26,7 +25,7 @@ interface UserState {
   joinedAt?: string;
   meetingNotesAccess: MeetingNotesAccess;
   isRoomOwner: boolean;
-}
+};
 
 const initialState: UserState = {
   uuid: null,

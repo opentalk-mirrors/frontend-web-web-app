@@ -4,6 +4,7 @@
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { InviteCode } from '@opentalk/rest-api-rtk-query/src/types';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
+import type { GetThunkAPI } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
 import { Room } from 'livekit-client';
 import { closeSnackbar } from 'notistack';
@@ -11,10 +12,14 @@ import convertToSnakeCase from 'snakecase-keys';
 
 import { stopTimeLimitNotification } from '../commonComponents/Notistack/fragments/variations/TimeLimitNotification/utils';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
-import { BreakoutRoomId, JoinSuccessInternalState } from '../types';
+import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
+import { BreakoutRoomId, JoinSuccessInternalState, FetchRequestError } from '../types';
 import { getControllerBaseUrl } from '../utils/apiUtils';
-import type { RootState } from './index';
+import { handleMediaPermissionError } from '../utils/mediaErrorUtils';
+import { getDeviceId } from '../utils/mediaUtils';
+import type { RootState, AppDispatch } from './index';
 import { getLivekitRoom } from './livekitRoom';
+import type { MediaDeviceKindExtended } from './slices/mediaSlice';
 
 export type RoomCredentials = {
   roomId: RoomId;
@@ -79,3 +84,106 @@ export const hangUp = createAsyncThunk<void, void, { state: RootState }>('room/h
 
 export const joinSuccess = createAction<JoinSuccessInternalState>('signaling/control/join_success');
 export const exitingRoomContext = createAction('room/exitingRoomContext');
+
+interface StartMediaInterface {
+  kind: MediaDeviceKindExtended;
+  enabled: boolean;
+  deviceId?: string;
+}
+
+interface FetchPermissionError extends FetchRequestError {
+  kind: MediaDeviceKindExtended;
+}
+
+export async function handleLocalMediaTrack({
+  thunkApi,
+  kind,
+  enabled,
+  deviceId,
+  inMeetingView,
+}: {
+  thunkApi: GetThunkAPI<{
+    state: RootState;
+    dispatch: AppDispatch;
+    rejectValue: { status: number; statusText: string; kind: MediaDeviceKindExtended };
+  }>;
+  kind: 'audioinput' | 'videoinput';
+  enabled: boolean;
+  deviceId?: string;
+  inMeetingView: boolean;
+}): Promise<StartMediaInterface | ReturnType<typeof thunkApi.rejectWithValue>> {
+  const payload: StartMediaInterface = { kind, enabled, deviceId };
+
+  if (inMeetingView) {
+    const room = getLivekitRoom();
+    const track =
+      kind === 'audioinput'
+        ? await room.localParticipant.setMicrophoneEnabled(enabled, { deviceId })
+        : await room.localParticipant.setCameraEnabled(enabled, { deviceId });
+
+    const mediaStreamTrack =
+      kind === 'audioinput' ? track?.audioTrack?.mediaStreamTrack : track?.videoTrack?.mediaStreamTrack;
+
+    if (mediaStreamTrack) {
+      payload.deviceId = getDeviceId(mediaStreamTrack);
+    }
+
+    return payload;
+  }
+
+  // Lobby
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      [kind === 'audioinput' ? 'audio' : 'video']: { deviceId },
+    });
+    const mediaTrack = kind === 'audioinput' ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0];
+
+    if (mediaTrack) {
+      payload.deviceId = getDeviceId(mediaTrack);
+      mediaTrack.stop();
+    }
+
+    return payload;
+  } catch (error) {
+    const mediaError = handleMediaPermissionError({ error, deviceId, kind });
+    return thunkApi.rejectWithValue({
+      status: 409,
+      statusText: mediaError.name,
+      kind,
+    });
+  }
+}
+
+export const startMedia = createAsyncThunk<
+  StartMediaInterface,
+  StartMediaInterface,
+  { state: RootState; rejectValue: FetchPermissionError }
+>('media/startMedia', async ({ kind, enabled, deviceId }, thunkApi) => {
+  const roomState = thunkApi.getState().room;
+  const inMeetingView =
+    roomState.connectionState === ConnectionState.Online || roomState.connectionState === ConnectionState.Leaving;
+  try {
+    switch (kind) {
+      case 'audioinput':
+      case 'videoinput':
+        return await handleLocalMediaTrack({ thunkApi, kind, enabled, deviceId, inMeetingView });
+
+      case 'screenshare':
+        if (inMeetingView) {
+          await getLivekitRoom().localParticipant.setScreenShareEnabled(enabled);
+        }
+        return {
+          kind,
+          enabled,
+        };
+      default:
+        return {
+          kind,
+          enabled,
+        };
+    }
+  } catch (error) {
+    const mediaError = handleMediaPermissionError({ error, deviceId, kind });
+    return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind });
+  }
+});

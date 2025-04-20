@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks';
 import useE2EE from '../../hooks/useE2EE';
 import useRoom from '../../hooks/useRoom';
-import { startMedia } from '../../store/slices/mediaSlice';
+import { startMedia } from '../../store/commonActions';
 import Video from './fragments/Video';
 import { useBroadcastChannel } from './hooks/useBroadcastChannel';
 

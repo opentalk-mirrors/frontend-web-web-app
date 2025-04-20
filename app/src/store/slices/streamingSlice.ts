@@ -23,10 +23,10 @@ const streamingAdapter = createEntityAdapter<StreamingTargetEntity, StreamingTar
   selectId: (streamTarget) => streamTarget.targetId,
 });
 
-interface StreamingState {
+export type StreamingState = {
   streams: EntityState<StreamingTargetEntity, StreamingTargetId>;
   consent?: boolean;
-}
+};
 
 const initialState: StreamingState = {
   streams: streamingAdapter.getInitialState(),
