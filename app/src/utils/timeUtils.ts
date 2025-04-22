@@ -28,3 +28,10 @@ export const getRemainingTimeForInterval = (interval: Interval) => ({
 export const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+export const formatCurrentTime = () => {
+  const now = new Date();
+  const time = now.toLocaleTimeString();
+  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+  return `${time}.${milliseconds}`;
+};

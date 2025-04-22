@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../commonComponents';
+import log from '../logger';
 import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
 import { selectAudioDeviceId, selectVideoDeviceId, setMediaChangeInProgress } from '../store/slices/mediaSlice';
 import { selectRoomConnectionState } from '../store/slices/roomSlice';
@@ -49,7 +50,7 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
       setPermissionDenied(false);
     } catch (error) {
       setLocalDevices([]);
-      console.debug(`Permission or ${kind} toggle failed: ${error}`);
+      log.debug(`Permission or ${kind} toggle failed: ${error}`);
       !permissionDenied &&
         notifications.warning(t('media-denied-warning', { mediaType: kind }), {
           preventDuplicate: true,

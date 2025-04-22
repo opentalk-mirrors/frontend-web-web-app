@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { AssetId, RoomId, BaseAsset, UserOwnedAsset } from '@opentalk/rest-api-rtk-query';
+import { AssetId, BaseAsset, RoomId, UserOwnedAsset } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
 
-import { useGetUserOwnedAssetsQuery, useDeleteRoomAssetMutation } from '../../../../api/rest';
+import { useDeleteRoomAssetMutation, useGetUserOwnedAssetsQuery } from '../../../../api/rest';
 import { notifications } from '../../../../commonComponents';
 import SuspenseLoading from '../../../../commonComponents/SuspenseLoading/SuspenseLoading';
 import AssetTable from '../../../../components/AssetTable';
 import { AssetDownloadBaseInfo, useDownloadRoomAsset } from '../../../../hooks/useDownloadRoomAsset';
+import log from '../../../../logger';
 
 export const UserAssetTable = () => {
   const { t } = useTranslation();
@@ -46,7 +47,7 @@ export const UserAssetTable = () => {
     const roomId = getRoomId(assetId);
     if (roomId) {
       return await deleteRoomAsset({ roomId, assetId }).catch((error) => {
-        console.error(`Error occured when deleting asset ${assetId}: `, error);
+        log.error(`Error occured when deleting asset ${assetId}: `, error);
         notifications.error(t('asset-delete-error'));
       });
     }

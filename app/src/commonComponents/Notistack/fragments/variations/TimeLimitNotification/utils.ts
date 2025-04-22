@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { SnackbarKey } from 'notistack';
 
+import log from '../../../../../logger';
 import { MINUTE_MS } from '../../../../../utils/timeFormatUtils';
 import { sleep } from '../../../../../utils/timeUtils';
 import { DEFAULT_AUTO_HIDE_DURATION, notifications } from '../../utils';
@@ -30,7 +31,7 @@ export const startTimeLimitNotification = (conferenceEndTimestamp: string) => {
   const updateNotification = async (minutes: number) => {
     if (timeLimitSnackBarKey) {
       notifications.close(timeLimitSnackBarKey);
-      console.debug(`Closed snackbar ${timeLimitSnackBarKey}`);
+      log.debug(`Closed snackbar ${timeLimitSnackBarKey}`);
 
       // we must wait between closing a snackbar and opening a new one
       // race condition in the notistack? Anyway, maybe even better from the UX point of view

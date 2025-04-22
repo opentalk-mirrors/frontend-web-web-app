@@ -25,6 +25,7 @@ jest.mock('livekit-client', () => ({
     },
   },
   VideoCaptureOptions: () => jest.fn(),
+  setLogExtension: () => jest.fn(),
 }));
 
 jest.mock('./fragments/EndCallButton', () => ({

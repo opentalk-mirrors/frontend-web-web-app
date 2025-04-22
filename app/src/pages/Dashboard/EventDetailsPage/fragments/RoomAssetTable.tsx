@@ -1,16 +1,17 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RoomId, AssetId } from '@opentalk/rest-api-rtk-query';
+import { AssetId, RoomId } from '@opentalk/rest-api-rtk-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useGetRoomAssetsQuery, useDeleteRoomAssetMutation } from '../../../../api/rest';
+import { useDeleteRoomAssetMutation, useGetRoomAssetsQuery } from '../../../../api/rest';
 import { notifications } from '../../../../commonComponents';
 import SuspenseLoading from '../../../../commonComponents/SuspenseLoading/SuspenseLoading';
 import AssetTable from '../../../../components/AssetTable';
-import { useDownloadRoomAsset, AssetDownloadBaseInfo } from '../../../../hooks/useDownloadRoomAsset';
-import { checkAssetPredicate, RecurrenceInstance } from '../../../../utils/eventUtils';
+import { AssetDownloadBaseInfo, useDownloadRoomAsset } from '../../../../hooks/useDownloadRoomAsset';
+import log from '../../../../logger';
+import { RecurrenceInstance, checkAssetPredicate } from '../../../../utils/eventUtils';
 
 interface RoomAssetTableProps {
   roomId: RoomId;
@@ -38,7 +39,7 @@ const RoomAssetTable = ({ roomId, isMeetingCreator, recurrenceInstance }: RoomAs
 
   const handleDelete = async (assetId: AssetId) => {
     return await deleteRoomAsset({ roomId, assetId }).catch((error) => {
-      console.error(`Error occured when deleting asset ${assetId}: `, error);
+      log.error(`Error occured when deleting asset ${assetId}: `, error);
       notifications.error(t('asset-delete-error'));
     });
   };

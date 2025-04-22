@@ -2,16 +2,17 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { AuthCallbackComponent, selectAuthIsPending } from '@opentalk/redux-oidc';
-import { useAuthContext, selectIsAuthenticated } from '@opentalk/redux-oidc';
+import { selectIsAuthenticated, useAuthContext } from '@opentalk/redux-oidc';
 import i18next from 'i18next';
 import React, { PropsWithChildren, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { To, useNavigate, Outlet, useParams } from 'react-router-dom';
+import { Outlet, To, useNavigate, useParams } from 'react-router-dom';
 
 import { notifications } from '../../commonComponents';
 import Error from '../../components/Error';
 import { useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
+import log from '../../logger';
 
 export const InvitePage = React.lazy(() => import('../../pages/InvitePage'));
 export const ExtendedTabPage = React.lazy(() => import('../../pages/ExtendedTabPage'));
@@ -53,7 +54,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   if (!isAuthenticated && !inviteCode) {
     auth?.signIn().catch((error) => {
-      console.error('failed to signIn:', error);
+      log.error('failed to signIn:', error);
       notifications.error(i18next.t('error-general'));
     });
     return null;

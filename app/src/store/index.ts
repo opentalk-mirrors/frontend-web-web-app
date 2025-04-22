@@ -8,6 +8,7 @@ import { merge } from 'lodash';
 
 import { apiMiddleware } from '../api';
 import { restApi, rtkQueryErrorLoggerMiddleware } from '../api/rest';
+import log, { setupLogLevel } from '../logger';
 import automodReducer from './slices/automodSlice';
 import breakoutReducer from './slices/breakoutSlice';
 import chatReducer from './slices/chatSlice';
@@ -51,7 +52,7 @@ const crashReporter: Middleware = (store) => (next) => (action) => {
   try {
     return next(action);
   } catch (err) {
-    console.error('Caught an exception!', err, {
+    log.error('Caught an exception!', err, {
       action,
       state: store.getState(),
     });
@@ -109,6 +110,8 @@ const store = configureStore({
 setupListeners(store.dispatch);
 
 setupAppDispatch(store.dispatch);
+
+setupLogLevel(store.getState().config.logLevel);
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;

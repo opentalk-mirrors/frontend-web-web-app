@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Box, Button } from '@mui/material';
+import { Box, Button, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { CopyIcon } from '../../assets/icons';
 import { CommonTextField, notifications } from '../../commonComponents';
 import { useDateFormat } from '../../hooks';
+import log from '../../logger';
 
 interface LegalVoteTokenClipboardProps {
   name: string;
@@ -38,7 +39,7 @@ ${props.token}
         notifications.success(t('legal-vote-token-copy-success'));
       })
       .catch((error) => {
-        console.error(error);
+        log.error(error);
       });
   }
 

@@ -4,6 +4,7 @@
 // Will be addressed in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2129
 import { styled } from '@mui/material';
 
+import log from '../../../logger';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 
 const ContentContainer = styled('div')(({ theme }) => ({
@@ -28,7 +29,7 @@ const ContentContainer = styled('div')(({ theme }) => ({
 // };
 
 export const StatisticsContent = ({ descriptor }: { descriptor: MediaDescriptor }) => {
-  console.error('TODO: livekit - StatisticsContent: ', descriptor);
+  log.error('TODO: livekit - StatisticsContent: ', descriptor);
 
   // const stats = useAppSelector(selectStatsById(descriptor));
   // if (stats === undefined) {

@@ -23,6 +23,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
+import log from '../../logger';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { startRoom } from '../../store/commonActions';
 import { selectDisallowCustomDisplayName, selectConfigFeatures } from '../../store/slices/configSlice';
@@ -193,7 +194,7 @@ const LobbyView = () => {
                 navigate(composeRoomPath(roomId, inviteCode, breakoutRoomId));
                 break;
               case StartRoomError.InvalidJson:
-                console.error('invalid json request in startRoom', e);
+                log.error('invalid json request in startRoom', e);
                 notifications.error(t('error-general'));
                 break;
               case StartRoomError.WrongRoomPassword:
@@ -213,11 +214,11 @@ const LobbyView = () => {
                 navigateToHome();
                 break;
               default:
-                console.error(`unknown error code ${e.code} in startRoom`, e);
+                log.error(`unknown error code ${e.code} in startRoom`, e);
                 notifications.error(t('error-general'));
             }
           } else {
-            console.error('unknown error in startRoom', e);
+            log.error('unknown error in startRoom', e);
             notifications.error(t('error-general'));
           }
         });

@@ -32,6 +32,7 @@ import { CloseIcon } from '../../assets/icons';
 import { notifications } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useFullscreenContext } from '../../hooks/useFullscreenContext';
+import log from '../../logger';
 import { hangUp } from '../../store/commonActions';
 import { selectEventInfo } from '../../store/slices/roomSlice';
 import { EventDeletionType, generateInstanceId } from '../../utils/eventUtils';
@@ -83,7 +84,7 @@ export const CloseMeetingDialog = ({ open, onClose }: CloseMeetingDialogProps) =
         await deleteRoom(roomId).unwrap();
       }
     } catch (e) {
-      console.debug('Error while deleting room or event:', e);
+      log.debug('Error while deleting room or event:', e);
     }
   };
 
@@ -109,7 +110,7 @@ export const CloseMeetingDialog = ({ open, onClose }: CloseMeetingDialogProps) =
       notifications.success(t('meeting-delete-successfully-deleted'));
       navigate('/dashboard');
     } catch (e) {
-      console.error('error on delete room meta data: %s', JSON.stringify(e));
+      log.error('error on delete room meta data: %s', JSON.stringify(e));
       notifications.error(t('meeting-delete-metadata-submit-error'));
     }
   };

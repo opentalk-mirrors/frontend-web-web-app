@@ -6,6 +6,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
 import type { RootState } from '../';
+import log from '../../logger';
 import { joinSuccess } from '../commonActions';
 
 // Map is not recommended by redux/immer
@@ -225,7 +226,7 @@ export const configSlice = createSlice({
   reducers: {
     update: (state, { payload }: PayloadAction<Config>) => {
       merge(state, payload);
-      console.debug('config updated to:', state, payload);
+      log.debug('config updated to:', state, payload);
     },
   },
   extraReducers: (builder) => {

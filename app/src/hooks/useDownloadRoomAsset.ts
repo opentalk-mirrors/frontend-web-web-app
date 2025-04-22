@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RoomId, AssetId } from '@opentalk/rest-api-rtk-query';
+import { AssetId, RoomId } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '.';
 import { notifications } from '../commonComponents';
+import log from '../logger';
 import { selectControllerUrl } from '../store/slices/configSlice';
 import { fetchWithAuth } from '../utils/apiUtils';
 
@@ -93,7 +94,7 @@ export const useDownloadRoomAsset = () => {
       fileSize,
       updateDownloadProgress: onDownloadProgress,
     }).catch((error) => {
-      console.error(`Error downloading asset ${assetId}: `, error);
+      log.error(`Error downloading asset ${assetId}: `, error);
       notifications.error(t('asset-download-error'));
     });
   };

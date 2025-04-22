@@ -29,11 +29,12 @@ import { Credentials } from '../../api/types/incoming/livekit';
 import { createNewAccessToken } from '../../api/types/outgoing/livekit';
 import { notifications } from '../../commonComponents';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../constants';
+import log from '../../logger';
 import { MediaDescriptor } from '../../modules/WebRTC';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { ParticipantId, VideoSetting } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
-import { setLivekitUnavailable, setLivekitAvailable } from '../livekitRoom';
+import { setLivekitAvailable, setLivekitUnavailable } from '../livekitRoom';
 import { getLivekitRoom } from '../livekitRoom';
 import { startMedia } from './mediaSlice';
 import { pinnedParticipantIdSet, pinnedRemoteScreenshare } from './uiSlice';
@@ -82,7 +83,7 @@ export const livekitSlice = createSlice({
       if (popoutStreamAccess) {
         popoutStreamAccess.token = payload;
       } else {
-        console.warn('cant find popoutStreamAccess to add token');
+        log.warn('cant find popoutStreamAccess to add token');
       }
     },
     deleteLivekitPopoutStreamAccessToken: (state, { payload }: PayloadAction<string>) => {
@@ -162,7 +163,7 @@ const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
       attempt++;
       const delay = calculateDelay(attempt);
 
-      console.debug(`Trying to reconnect to LiveKit room, attempt ${attempt}, delay ${delay}`);
+      log.debug(`Trying to reconnect to LiveKit room, attempt ${attempt}, delay ${delay}`);
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
 
@@ -170,7 +171,7 @@ const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
   };
 
   tryReconnect().catch((error) => {
-    console.error('Failed to reconnect to LiveKit:', error);
+    log.error('Failed to reconnect to LiveKit:', error);
   });
 };
 
@@ -260,7 +261,7 @@ const handleTrackUnpublished = (
 
 const handleTrackSubscribed = (_: RemoteTrack, publication: RemoteTrackPublication, participant: RemoteParticipant) => {
   if (publication.isEncrypted) {
-    console.debug(`subscribed encrypted ${publication.kind} stream from user with ID:`, participant.identity);
+    log.debug(`subscribed encrypted ${publication.kind} stream from user with ID:`, participant.identity);
   }
 };
 

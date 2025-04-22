@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import type { RootState } from '..';
 import {
@@ -11,15 +11,16 @@ import {
   VoteSuccessType,
   VoteUpdated,
 } from '../../api/types/incoming/legalVote';
+import log from '../../logger';
 import {
+  LegalVote,
   LegalVoteId,
   LegalVoteState,
-  LegalVote,
   SavedLegalVoteForm,
-  VoteCancelReason,
-  VotesInSlice,
-  VoteSummary,
   UserVote,
+  VoteCancelReason,
+  VoteSummary,
+  VotesInSlice,
 } from '../../types';
 import { joinSuccess } from '../commonActions';
 
@@ -32,7 +33,7 @@ const cancelReasonFromApiType = (cancel: VoteCanceled): readonly [VoteCancelReas
     } else if (cancel.reason === VoteCancelReason.RoomDestroyed) {
       return [VoteCancelReason.RoomDestroyed, undefined];
     } else {
-      console.error(new Error('Invalid Cancel Reason from legal-vote Cancel'));
+      log.error(new Error('Invalid Cancel Reason from legal-vote Cancel'));
       return;
     }
   }

@@ -4,6 +4,7 @@
 import { t } from 'i18next';
 
 import { notifications } from '../commonComponents/Notistack/fragments/utils';
+import log from '../logger';
 import type { MediaDeviceKindExtended } from '../store/slices/mediaSlice';
 
 export interface MediaPermissionErrorHandler {
@@ -16,7 +17,7 @@ export const handleMediaPermissionError = ({ error, kind, deviceId }: MediaPermi
   if (error instanceof DOMException) {
     switch (error.name) {
       case MediaError.AbortError:
-        console.debug(`AbortError: Failed to start ${kind} with device: ${deviceId}`);
+        log.debug(`AbortError: Failed to start ${kind} with device: ${deviceId}`);
         return error;
       case MediaError.NotAllowedError:
         notifications.warning(t('media-denied-warning', { mediaType: kind }), {
@@ -24,7 +25,7 @@ export const handleMediaPermissionError = ({ error, kind, deviceId }: MediaPermi
         });
         return error;
       default:
-        console.debug(`Failed to start ${kind} with device: ${deviceId}`);
+        log.debug(`Failed to start ${kind} with device: ${deviceId}`);
         notifications.warning(t('device-unable-to-start', { mediaType: kind }), {
           preventDuplicate: true,
         });

@@ -8,6 +8,7 @@ import { ApiErrorWithBody, StartRoomError } from '../../api/rest';
 import type { Message as IncomingMessage } from '../../api/types/incoming';
 import type { Message as ControlMessage } from '../../api/types/incoming/control';
 import type { Message as OutgoingMessage } from '../../api/types/outgoing';
+import log from '../../logger';
 import type { RoomCredentials } from '../../store/commonActions';
 import { getLivekitRoom } from '../../store/livekitRoom';
 import type { ConfigState } from '../../store/slices/configSlice';
@@ -132,7 +133,7 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
     config: ConfigState,
     resumptionToken?: string
   ): Promise<{ conferenceContext: ConferenceRoom; resumption: string }> {
-    console.debug('connect to room', roomCredentials, resumptionToken);
+    log.debug('connect to room', roomCredentials, resumptionToken);
     const { ticket, resumption } = await startRoom(roomCredentials, config, resumptionToken);
     const signaling = new SignalingSocket(getSignalingUrl(config), ticket);
     const conferenceContext = new ConferenceRoom(roomCredentials, signaling);
@@ -208,12 +209,12 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
   private signalingStateHandler = async (state: SignalingState) => {
     switch (state) {
       case 'connected':
-        console.debug('signaling connected');
+        log.debug('signaling connected');
         this.eventEmitter.emit('connected');
         break;
       case 'disconnected':
         {
-          console.error('signaling disconnected abnormally');
+          log.error('signaling disconnected abnormally');
 
           // TODO reconnect
           this.eventEmitter.emit('shutdown', { error: 9999 });
@@ -234,7 +235,7 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
   }
 
   public shutdown() {
-    console.info('shutdown conference context');
+    log.info('shutdown conference context');
     this.signaling.removeEventListener('message', this.signalingMessageHandler);
     this.signaling.removeEventListener('connectionstatechange', this.signalingStateHandler);
 

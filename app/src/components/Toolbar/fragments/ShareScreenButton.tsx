@@ -10,6 +10,7 @@ import { ShareScreenOffIcon, ShareScreenOnIcon } from '../../../assets/icons';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppSelector } from '../../../hooks';
+import log from '../../../logger';
 import browser from '../../../modules/BrowserSupport';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
@@ -51,7 +52,7 @@ const ShareScreenButton = () => {
     toggle().catch((error: Error) => {
       setPermissionDenied(true);
       if (error.name !== 'NotAllowedError') {
-        console.error('Error while screen sharing: ', error);
+        log.error('Error while screen sharing: ', error);
       }
     });
   };

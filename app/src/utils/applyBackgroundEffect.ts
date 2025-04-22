@@ -5,6 +5,7 @@
 import { BackgroundProcessor, ProcessorWrapper } from '@livekit/track-processors';
 import { LocalVideoTrack } from 'livekit-client';
 
+import log from '../logger';
 import { type BackgroundEffect } from '../store/slices/mediaSlice';
 
 export const BLUR_RADIUS = 10;
@@ -42,7 +43,7 @@ export const applyBackgroundEffectToTrack = async (
       await videoTrack?.stopProcessor();
     }
   } catch (error) {
-    console.error('Error applying background effect:', error);
+    log.error('Error applying background effect:', error);
   } finally {
     onLoadingChange(false);
   }

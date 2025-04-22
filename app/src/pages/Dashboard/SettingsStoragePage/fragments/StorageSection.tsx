@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { LinearProgress, Stack, Typography, styled, linearProgressClasses, Link } from '@mui/material';
+import { LinearProgress, Link, Stack, Typography, linearProgressClasses, styled } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useGetMeQuery, useGetMeTariffQuery } from '../../../../api/rest';
 import { useAppSelector } from '../../../../hooks';
+import log from '../../../../logger';
 import { selectAccountManagementUrl } from '../../../../store/slices/configSlice';
 import { formatBytes } from '../../../../utils/numberUtils';
 
@@ -94,7 +95,7 @@ const StorageUsage = () => {
 
   // shall never happen as controller shall always return this information
   if (usedStorage === undefined) {
-    console.error('Used storage value cannot be undefined');
+    log.error('Used storage value cannot be undefined');
     return null;
   }
 
