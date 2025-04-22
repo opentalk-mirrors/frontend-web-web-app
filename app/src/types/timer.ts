@@ -27,6 +27,7 @@ export interface TimerState {
   readyStatus: boolean;
   style: TimerStyle;
   timerId: string;
+  title?: string;
 }
 
 export type TimerIsReady = Pick<TimerState, 'readyStatus'>;
