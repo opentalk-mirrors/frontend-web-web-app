@@ -395,6 +395,14 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
                 color: theme.palette.primary.contrastText,
               },
             },
+            '&.Mui-readOnly': {
+              backgroundColor: 'transparent',
+              color: theme.palette.primary.contrastText,
+              borderColor: theme.palette.secondary.main,
+              '& .MuiSvgIcon-root': {
+                color: theme.palette.primary.contrastText,
+              },
+            },
             '&.Mui-error': {
               backgroundColor: mode === 'light' ? theme.palette.common.white : theme.palette.text.secondary,
               color: theme.palette.primary.contrastText,
