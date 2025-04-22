@@ -409,3 +409,15 @@ roomMiddleware.startListening({
     }
   },
 });
+
+roomMiddleware.startListening({
+  predicate(_action, currentState, originalState) {
+    return (
+      currentState.room.connectionState === ConnectionState.Failed &&
+      originalState.room.connectionState !== ConnectionState.Failed
+    );
+  },
+  effect: () => {
+    notifications.closeAll();
+  },
+});
