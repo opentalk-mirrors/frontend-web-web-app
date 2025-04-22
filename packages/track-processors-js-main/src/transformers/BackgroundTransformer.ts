@@ -173,10 +173,10 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
       if (this.backgroundImage) {
         this.ctx.drawImage(
           this.backgroundImage,
-          0,
-          0,
-          this.backgroundImage.width,
-          this.backgroundImage.height,
+          frameRectangle.x,
+          frameRectangle.y,
+          frameRectangle.width,
+          frameRectangle.height,
           frameRectangle.x,
           frameRectangle.y,
           frameRectangle.width,
