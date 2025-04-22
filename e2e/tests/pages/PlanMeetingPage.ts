@@ -19,6 +19,7 @@ export class PlanMeetingPage {
   meetingOccurrenceDropDown: Locator;
   meetingTextAsTitle: Locator;
   participantTextAsTitle: Locator;
+  meetingPageDescription: Locator;
 
   dateInputField: {
     fromInputField: Locator;
@@ -41,6 +42,9 @@ export class PlanMeetingPage {
     this.meetingOccurrenceDropDown = this.page.getByRole('combobox', { name: 'meeting recurrence' });
     this.meetingTextAsTitle = this.page.getByText('meeting', { exact: true });
     this.participantTextAsTitle = this.page.getByText('Participants');
+    this.meetingPageDescription = this.page.getByText(
+      'Required fields are marked with an asterisk. Please fill them out.'
+    );
     this.dateInputField = {
       fromInputField: this.page.getByText('from'),
       toInputField: this.page.getByText('to'),
