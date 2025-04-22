@@ -4,13 +4,13 @@
 import { screen, fireEvent, cleanup } from '@testing-library/react';
 
 import { idFromDescriptor } from '../../../modules/WebRTC';
+import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
 import {
   renderWithProviders,
   mockedParticipant,
   mockedVideoMediaDescriptor,
   mockStore,
 } from '../../../utils/testUtils';
-import { PresenterVideoPosition } from './PresenterOverlay';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
 
 jest.mock('@livekit/components-react', () => ({
