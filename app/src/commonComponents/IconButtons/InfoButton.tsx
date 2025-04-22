@@ -7,7 +7,7 @@ import { InfoOutlinedIcon } from '../../assets/icons';
 import IconButton from './IconButton';
 
 const InfoButtonStyle = styled(IconButton)(({ theme }) => ({
-  margin: theme.spacing(2, 0),
+  margin: 0,
   padding: theme.spacing(1),
   color: theme.palette.secondary.light,
   '&& svg': {
