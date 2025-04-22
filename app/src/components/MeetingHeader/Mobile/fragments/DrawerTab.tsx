@@ -1,18 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Typography, Box, Stack } from '@mui/material';
+import { styled, Typography, Box, Stack, Button } from '@mui/material';
 import { ReactNode } from 'react';
 
 import { Indicator } from '../../fragments/Indicator';
 
-const TabHeader = styled(Stack)(({ theme }) => ({
+const TabHeader = styled(Button)(({ theme }) => ({
   borderRadius: '1rem',
   padding: theme.spacing(1, 2),
   marginBottom: '0.5rem',
   borderWidth: '0.1rem',
   borderStyle: 'solid',
   borderColor: 'transparent',
+  justifyContent: 'flex-start',
 }));
 
 const Header = styled(TabHeader, {
@@ -81,7 +82,7 @@ const DrawerTab = ({ children, tabTitle, active, disabled, handleClick, showIndi
         </DisabledHeader>
       ) : (
         <>
-          <Header active={active} onClick={handleClick}>
+          <Header active={active} onClick={handleClick} disableFocusRipple>
             <Typography>{tabTitle}</Typography>
             {showIndicator && <TabIndicator />}
           </Header>
