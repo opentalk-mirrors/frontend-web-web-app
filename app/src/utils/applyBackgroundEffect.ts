@@ -5,8 +5,7 @@
 import { BackgroundProcessor, ProcessorWrapper } from '@livekit/track-processors';
 import { LocalVideoTrack } from 'livekit-client';
 
-import type { AppDispatch } from '../store';
-import { BackgroundEffect, setBackgroundEffectsLoading } from '../store/slices/mediaSlice';
+import { type BackgroundEffect } from '../store/slices/mediaSlice';
 
 export const BLUR_RADIUS = 10;
 
@@ -18,7 +17,7 @@ const assetPaths = {
 export const applyBackgroundEffectToTrack = async (
   videoTrack: LocalVideoTrack | undefined,
   videoBackgroundEffects: BackgroundEffect,
-  dispatch: AppDispatch
+  onLoadingChange: (loading: boolean) => void
 ) => {
   if (!videoTrack || videoTrack.isMuted) {
     return;
@@ -28,7 +27,7 @@ export const applyBackgroundEffectToTrack = async (
   const imagePath = videoBackgroundEffects.imageUrl;
   const processor = videoTrack?.getProcessor() as ProcessorWrapper<Record<string, unknown>>;
   try {
-    dispatch(setBackgroundEffectsLoading(true));
+    onLoadingChange(true);
     if (isBlurred && (!processor || processor?.name !== 'background-blur')) {
       const blurProcessor = BackgroundProcessor({ assetPaths, blurRadius: BLUR_RADIUS }, 'background-blur');
       await videoTrack?.setProcessor(blurProcessor);
@@ -45,6 +44,6 @@ export const applyBackgroundEffectToTrack = async (
   } catch (error) {
     console.error('Error applying background effect:', error);
   } finally {
-    dispatch(setBackgroundEffectsLoading(false));
+    onLoadingChange(false);
   }
 };
