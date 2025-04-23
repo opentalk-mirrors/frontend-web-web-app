@@ -5,7 +5,7 @@ import { RemoteParticipant, Participant } from 'livekit-client';
 import React, { createContext } from 'react';
 
 export type ExtendedFullScreenHandle = {
-  node: React.MutableRefObject<HTMLDivElement | null>;
+  node: React.RefObject<HTMLDivElement | null>;
   active: boolean;
   enter: (participant?: RemoteParticipant) => void;
   exit: () => void;
