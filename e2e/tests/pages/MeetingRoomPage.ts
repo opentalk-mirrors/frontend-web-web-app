@@ -5,6 +5,7 @@ import { Page, Locator } from '@playwright/test';
 
 export class MeetingRoomPage {
   page: Page;
+
   meetingRoomName: Locator;
 
   toolBar: {
@@ -28,6 +29,8 @@ export class MeetingRoomPage {
     fullScreenViewOption: Locator;
     activatedCameraFirstSortingOption: Locator;
     moderatorsFirstSortingOption: Locator;
+    gridViewParticipantWindow: Locator;
+    speakerViewContainer: Locator;
   };
 
   jumpLinks: {
@@ -61,6 +64,14 @@ export class MeetingRoomPage {
   burgerMenuButton: Locator;
   securityMonitorButton: Locator;
 
+  selectors = {
+    viewPopoverMenu: '#view-popover-menu',
+    viewPopoverMenuListItem: '#view-popover-menu > li',
+    gridViewContainer: 'grid-container',
+    speakerViewContainer: 'SpeakerView-Container',
+    participantWindow: 'ParticipantWindow',
+  };
+
   constructor({ page }: { page: Page }) {
     this.page = page;
     this.meetingRoomName = this.page.locator('h1').first();
@@ -80,13 +91,15 @@ export class MeetingRoomPage {
 
     this.viewOptions = {
       viewOptionsButton: this.page.getByRole('button', { name: 'Select view' }),
-      viewAndSortingPopupMenu: this.page.locator('#view-popover-menu'),
+      viewAndSortingPopupMenu: this.page.locator(this.selectors.viewPopoverMenu),
       // get by role doesn't work for the menu items because the label is nested in a div and not part of the li element
-      gridViewOption: this.page.locator('#view-popover-menu > li').nth(0),
-      speakerViewOption: this.page.locator('#view-popover-menu > li').nth(1),
-      fullScreenViewOption: this.page.locator('#view-popover-menu > li').nth(2),
-      activatedCameraFirstSortingOption: this.page.locator('#view-popover-menu > li').nth(4),
-      moderatorsFirstSortingOption: this.page.locator('#view-popover-menu > li').nth(5),
+      gridViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(0),
+      speakerViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(1),
+      fullScreenViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(2),
+      activatedCameraFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4),
+      moderatorsFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(5),
+      gridViewParticipantWindow: this.page.getByTestId(this.selectors.participantWindow),
+      speakerViewContainer: this.page.getByTestId(this.selectors.speakerViewContainer),
     };
 
     this.jumpLinks = {
@@ -136,8 +149,10 @@ export class MeetingRoomPage {
     // correct differences between test server and local setup
     // constructor allocates locators to the UI version on test server, this function overwrites settings for local setup
     if (process.env.INSTANCE_URL.startsWith('http://')) {
-      this.viewOptions.activatedCameraFirstSortingOption = this.page.locator('#view-popover-menu > li').nth(3);
-      this.viewOptions.moderatorsFirstSortingOption = this.page.locator('#view-popover-menu > li').nth(4);
+      this.viewOptions.activatedCameraFirstSortingOption = this.page
+        .locator(this.selectors.viewPopoverMenuListItem)
+        .nth(3);
+      this.viewOptions.moderatorsFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4);
     }
   }
 
@@ -165,8 +180,31 @@ export class MeetingRoomPage {
   }
 
   async getPinnedParticipantNameInSpeakerView(): Promise<string> {
-    const speakerViewContainer = await this.page.getByTestId('SpeakerWindow1').getByTestId('ParticipantWindow'); //'SpeakerView-Container'
-    return await speakerViewContainer.getByTestId('nameTile').innerText();
+    const speakerWindow = await this.page.getByTestId('SpeakerWindow1').getByTestId('ParticipantWindow'); //'SpeakerWindow1' //'SpeakerView-Container'
+    const speakerNameTile = await speakerWindow.getByTestId('nameTile');
+    if (await speakerNameTile.isVisible()) {
+      return await speakerNameTile.innerText();
+    } else {
+      return '';
+    }
+  }
+
+  async getGridViewNthParticipantWindowAlignment(nth: number): Promise<string> {
+    const gridViewParticipantWindowAlignment = await this.viewOptions.gridViewParticipantWindow
+      .nth(nth - 1) // minus 1 because nth(0) is the first
+      .evaluate((el) => {
+        return window.getComputedStyle(el).getPropertyValue('align-items');
+      });
+    return gridViewParticipantWindowAlignment;
+  }
+
+  async getGridViewNthParticipantWindowSize(nth: number): Promise<string> {
+    const gridViewParticipantWindowSize = await this.viewOptions.gridViewParticipantWindow
+      .nth(nth - 1) // minus 1 because nth(0) is the first
+      .evaluate((el) => {
+        return window.getComputedStyle(el).getPropertyValue('width'); // only evaluating width, same could be done with height
+      });
+    return gridViewParticipantWindowSize;
   }
 
   async renderMeetingRoom() {
