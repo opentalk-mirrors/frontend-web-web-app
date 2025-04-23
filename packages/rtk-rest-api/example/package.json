@@ -37,7 +37,7 @@
     "@types/node": "^22.14.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
-    "msw": "^2.7.4",
+    "msw": "^2.7.5",
     "react-scripts": "^5.0.1"
   },
   "msw": {
