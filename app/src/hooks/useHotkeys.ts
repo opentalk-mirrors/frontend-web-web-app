@@ -29,6 +29,9 @@ import { selectTimerStyle } from '../store/slices/timerSlice';
 import { selectHotkeysEnabled } from '../store/slices/uiSlice';
 import { RoomMode, TimerStyle } from '../types';
 
+//To be continued in https://git.opentalk.dev/opentalk/product/feature-requests/-/issues/125
+const REMEMBER_MICROPHONE_STATE = false;
+
 enum PushToTalkState {
   Whisper = 'whisper',
   Conference = 'conference',
@@ -52,12 +55,13 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
 
   const startingAudio = useRef<Promise<void> | undefined>();
   const stoppingAudio = useRef<Promise<void> | undefined>();
+  const microphoneStateCache = useRef<boolean>();
   const [pushToTalkState, setPushToTalkState] = useState(PushToTalkState.Inactive);
 
   const hotkeysEnabled = useAppSelector(selectHotkeysEnabled);
   const timerStyle = useAppSelector(selectTimerStyle);
   const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).subroomAudio;
-  const isWhisperingPossible = useAppSelector(selectSubroomAudioState);
+  const isWhisperingPossible = useAppSelector(selectSubroomAudioState).whisperId;
 
   const hotkeysActive = hotkeysEnabled && timerStyle !== TimerStyle.CoffeeBreak;
 
@@ -86,13 +90,16 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
 
   const pushToWhisper = useCallback(
     async (type: 'keyup' | 'keydown') => {
-      if (!isWhisperingPossible.whisperId) {
+      if (!isWhisperingPossible) {
         return;
       }
       switch (type) {
         case 'keydown': {
           toggleAudio(false);
           if (pushToTalkState === PushToTalkState.Inactive) {
+            if (REMEMBER_MICROPHONE_STATE) {
+              microphoneStateCache.current = audioEnabled;
+            }
             dispatch(setIsWhisperActive(true));
             await whisperRoom?.localParticipant.setMicrophoneEnabled(true);
             setPushToTalkState(PushToTalkState.Whisper);
@@ -104,6 +111,9 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
             dispatch(setIsWhisperActive(false));
             await whisperRoom?.localParticipant.setMicrophoneEnabled(false);
             setPushToTalkState(PushToTalkState.Inactive);
+            if (REMEMBER_MICROPHONE_STATE) {
+              toggleAudio(microphoneStateCache.current);
+            }
           }
           break;
         }
