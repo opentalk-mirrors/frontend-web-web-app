@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { hangUp } from '../../../store/commonActions';
 import { selectEventInfo } from '../../../store/slices/roomSlice';
+import { selectIsGuest } from '../../../store/slices/userSlice';
 import { isRegisteredUser } from '../../../utils/typeGuardUtils';
 import CloseMeetingDialog from '../../CloseMeetingDialog';
 import ToolbarButton from './ToolbarButton';
@@ -43,8 +44,9 @@ const EndCallButton = () => {
   };
 
   const isLoggedInUser = useAppSelector(selectIsAuthenticated);
-  const { data: me } = useGetMeQuery(undefined, { skip: !isLoggedInUser });
-  const { data: roomData } = useGetRoomQuery(roomId, { skip: !isLoggedInUser });
+  const isGuestUser = useAppSelector(selectIsGuest);
+  const { data: me } = useGetMeQuery(undefined, { skip: !isLoggedInUser || isGuestUser });
+  const { data: roomData } = useGetRoomQuery(roomId, { skip: !isLoggedInUser || isGuestUser });
   const dispatch = useAppDispatch();
 
   const [isConfirmDialogVisible, showConfirmDialog] = useState(false);
