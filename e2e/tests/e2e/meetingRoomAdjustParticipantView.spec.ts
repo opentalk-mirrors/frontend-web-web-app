@@ -12,15 +12,16 @@ const NUMBER_OF_GUESTS = 5;
 
 const startAdhocMeetingAsModerator = async (page) => {
   // launch OpenTalk & start new (adhoc) meeting
+  await page.goto(process.env.INSTANCE_URL);
+
   const homePage = new HomePage({ page });
-  await homePage.navigateToHomePage();
-  await homePage.startAdhocMeeting();
+  await homePage.startNewMeetingButton.click();
 
   const meetingInvitationPage = new MeetingInvitationPage({ page });
   const guestLink = await meetingInvitationPage.goToAdhocMeetingLobbyAsModeratorAndGetGuestLink(true);
 
   const lobbyRoomPage = new LobbyRoomPage({ page });
-  await expect(lobbyRoomPage.nameInputField).toBeVisible();
+  await expect(lobbyRoomPage.nameInputField).toBeVisible(); // needed because of flakyness (see issue #1692)
 
   // enter meeting room
   await lobbyRoomPage.joinMeetingButton.click();
@@ -73,24 +74,7 @@ test.describe('MeetingRoom - adjust participant view', () => {
   test('TC_001_VideoRoom_ParticipantViewSettings_List', async ({ page, browserName }) => {
     test.skip(browserName === 'webkit');
 
-    // launch OpenTalk & start new (adhoc) meeting
-    const homePage = new HomePage({ page });
-    await homePage.navigateToHomePage();
-    await homePage.startAdhocMeeting();
-
-    const meetingInvitationPage = new MeetingInvitationPage({ page });
-    await meetingInvitationPage.goToAdhocMeetingLobbyAsModerator(true);
-
-    const lobbyRoomPage = new LobbyRoomPage({ page });
-    await lobbyRoomPage.renderLobbyPageFully();
-
-    // enter meeting room
-    await lobbyRoomPage.joinMeetingButton.click();
-    const meetingRoomPage = new MeetingRoomPage({ page });
-
-    // assert meeting room is shown
-    await expect(meetingRoomPage.meetingRoomName).toBeVisible();
-    await expect(await meetingRoomPage.getMeetingRoomName()).toContain('Ad-hoc Meeting');
+    const { meetingRoomPage } = await startAdhocMeetingAsModerator(page);
 
     // work around for differences between test server and local setup
     meetingRoomPage.allocateViewOptionLocatorsBasedOnSetup();
@@ -120,24 +104,12 @@ test.describe('MeetingRoom - adjust participant view', () => {
   test('TC_002_VideoRoom_ParticipantViewSettings_List_SpeakerView', async ({ page, context, browserName }) => {
     test.skip(browserName === 'webkit');
 
-    // launch OpenTalk & start new (adhoc) meeting
-    const homePage = new HomePage({ page });
-    await homePage.navigateToHomePage();
-    await homePage.startAdhocMeeting();
+    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
 
-    const meetingInvitationPage = new MeetingInvitationPage({ page });
-    const guestLink = await meetingInvitationPage.goToAdhocMeetingLobbyAsModeratorAndGetGuestLink(true);
-
-    const lobbyRoomPage = new LobbyRoomPage({ page });
-    await lobbyRoomPage.renderLobbyPageFully();
-
-    // enter meeting room
-    await lobbyRoomPage.joinMeetingButton.click();
-    const meetingRoomPage = new MeetingRoomPage({ page });
-
-    // assert meeting room is shown
-    await expect(meetingRoomPage.meetingRoomName).toBeVisible();
-    await expect(await meetingRoomPage.getMeetingRoomName()).toContain('Ad-hoc Meeting');
+    // join with 5 guests (in separate browser instances)
+    await joinMeetingRoomWithNGuests(meetingRoomPage, context, guestLink, 'guest', NUMBER_OF_GUESTS);
+    await meetingRoomPage.peopleButton.click();
+    await expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(NUMBER_OF_GUESTS + 1);
 
     // open grid view options besides the meeting room name
     await meetingRoomPage.viewOptions.viewOptionsButton.waitFor();
@@ -150,29 +122,12 @@ test.describe('MeetingRoom - adjust participant view', () => {
     await meetingRoomPage.viewOptions.speakerViewOption.click();
     await expect(await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.speakerViewOption)).toBeTruthy();
 
-    // only moderator is present before guests join
-    await expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(1);
-
-    // join with 5 guests (in separate browser instances)
-    await joinMeetingRoomWithNGuests(meetingRoomPage, context, guestLink, 'guest', NUMBER_OF_GUESTS);
-    await meetingRoomPage.peopleButton.click();
-    await expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(NUMBER_OF_GUESTS + 1);
-
     // check the speaker view and pin some users
     const defaultPinnedParticipant = await meetingRoomPage.getPinnedParticipantNameInSpeakerView();
     // speaker is in first place
-    await expect(
-      await page
-        .getByTestId('SpeakerView-Container')
-        .getByTestId('ParticipantWindow')
-        .first()
-        .getByTestId('nameTile')
-        .innerText()
-    ).toBe(defaultPinnedParticipant);
+    await expect(await meetingRoomPage.getFirstParticipantNameInSpeakerView()).toBe(defaultPinnedParticipant);
     // pinned user is shown first among all participant thumbs
-    await expect(
-      await page.getByTestId('ThumbsHolder').getByTestId('ParticipantWindow').nth(0).getByTestId('nameTile').innerText()
-    ).toBe(defaultPinnedParticipant);
+    await expect(await meetingRoomPage.getThumbsNthParticipantNameInSpeakerView(1)).toBe(defaultPinnedParticipant);
     // pin some user (3rd participant)
     const pinnedParticipant = await meetingRoomPage.pinNthParticipantInSpeakerView(3);
     await expect(defaultPinnedParticipant).not.toBe(pinnedParticipant);

@@ -6,6 +6,17 @@ import { Page, Locator } from '@playwright/test';
 export class MeetingRoomPage {
   page: Page;
 
+  selectors = {
+    viewPopoverMenu: '#view-popover-menu',
+    viewPopoverMenuListItem: '#view-popover-menu > li',
+    gridViewContainer: 'grid-container',
+    speakerViewContainer: 'SpeakerView-Container',
+    speakerViewParticipantsThumbsHolder: 'ThumbsHolder',
+    speakerWindow: 'SpeakerWindow1',
+    participantWindow: 'ParticipantWindow',
+    participantName: 'nameTile',
+  };
+
   meetingRoomName: Locator;
 
   toolBar: {
@@ -29,6 +40,7 @@ export class MeetingRoomPage {
     fullScreenViewOption: Locator;
     activatedCameraFirstSortingOption: Locator;
     moderatorsFirstSortingOption: Locator;
+    gridViewContainer: Locator;
     gridViewParticipantWindow: Locator;
     speakerViewContainer: Locator;
   };
@@ -98,6 +110,7 @@ export class MeetingRoomPage {
       fullScreenViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(2),
       activatedCameraFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4),
       moderatorsFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(5),
+      gridViewContainer: this.page.getByTestId(this.selectors.gridViewContainer),
       gridViewParticipantWindow: this.page.getByTestId(this.selectors.participantWindow),
       speakerViewContainer: this.page.getByTestId(this.selectors.speakerViewContainer),
     };
@@ -172,21 +185,38 @@ export class MeetingRoomPage {
   }
 
   async pinNthParticipantInSpeakerView(nth: number): Promise<string> {
-    const participantsThumbs = await this.page.getByTestId('ThumbsHolder');
-    const nthParticipantWindow = await participantsThumbs.getByTestId('ParticipantWindow').nth(nth - 1); // minus 1 because nth(0) is the first element
-    const nthParticipantName = await nthParticipantWindow.getByTestId('nameTile').innerText();
+    const participantsThumbs = await this.page.getByTestId(this.selectors.speakerViewParticipantsThumbsHolder);
+    const nthParticipantWindow = await participantsThumbs.getByTestId(this.selectors.participantWindow).nth(nth - 1); // minus 1 because nth(0) is the first element
+    const nthParticipantName = await nthParticipantWindow.getByTestId(this.selectors.participantName).innerText();
     await nthParticipantWindow.click();
     return nthParticipantName;
   }
 
   async getPinnedParticipantNameInSpeakerView(): Promise<string> {
-    const speakerWindow = await this.page.getByTestId('SpeakerWindow1').getByTestId('ParticipantWindow'); //'SpeakerWindow1' //'SpeakerView-Container'
-    const speakerNameTile = await speakerWindow.getByTestId('nameTile');
-    if (await speakerNameTile.isVisible()) {
-      return await speakerNameTile.innerText();
-    } else {
-      return '';
-    }
+    const speakerViewContainer = await this.page
+      .getByTestId(this.selectors.speakerWindow)
+      .getByTestId(this.selectors.participantWindow);
+    return await speakerViewContainer.getByTestId(this.selectors.participantName).innerText();
+  }
+
+  async getFirstParticipantNameInSpeakerView(): Promise<string> {
+    const participantName = await this.page
+      .getByTestId(this.selectors.speakerViewContainer)
+      .getByTestId(this.selectors.participantWindow)
+      .first()
+      .getByTestId(this.selectors.participantName)
+      .innerText();
+    return participantName;
+  }
+
+  async getThumbsNthParticipantNameInSpeakerView(nth: number): Promise<string> {
+    const participantName = await this.page
+      .getByTestId(this.selectors.speakerViewParticipantsThumbsHolder)
+      .getByTestId(this.selectors.participantWindow)
+      .nth(nth - 1) // minus 1 because nth(0) is the first element
+      .getByTestId(this.selectors.participantName)
+      .innerText();
+    return participantName;
   }
 
   async getGridViewNthParticipantWindowAlignment(nth: number): Promise<string> {
