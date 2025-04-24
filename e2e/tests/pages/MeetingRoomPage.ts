@@ -6,17 +6,6 @@ import { Page, Locator } from '@playwright/test';
 export class MeetingRoomPage {
   page: Page;
 
-  selectors = {
-    viewPopoverMenu: '#view-popover-menu',
-    viewPopoverMenuListItem: '#view-popover-menu > li',
-    gridViewContainer: 'grid-container',
-    speakerViewContainer: 'SpeakerView-Container',
-    speakerViewParticipantsThumbsHolder: 'ThumbsHolder',
-    speakerWindow: 'SpeakerWindow1',
-    participantWindow: 'ParticipantWindow',
-    participantName: 'nameTile',
-  };
-
   meetingRoomName: Locator;
 
   toolBar: {
@@ -29,8 +18,6 @@ export class MeetingRoomPage {
     moreOptionButton: Locator;
     endMeetingButton: Locator;
   };
-
-  peopleButton: Locator;
 
   viewOptions: {
     viewOptionsButton: Locator;
@@ -67,6 +54,7 @@ export class MeetingRoomPage {
   };
 
   chatButton: Locator;
+  peopleButton: Locator;
   messageButton: Locator;
   searchInChatButton: Locator;
   emojiPicker: Locator;
@@ -81,7 +69,10 @@ export class MeetingRoomPage {
     viewPopoverMenuListItem: '#view-popover-menu > li',
     gridViewContainer: 'grid-container',
     speakerViewContainer: 'SpeakerView-Container',
+    speakerViewParticipantsThumbsHolder: 'ThumbsHolder',
+    speakerWindow: 'SpeakerWindow1',
     participantWindow: 'ParticipantWindow',
+    participantName: 'nameTile',
   };
 
   constructor({ page }: { page: Page }) {
@@ -98,8 +89,6 @@ export class MeetingRoomPage {
       moreOptionButton: this.page.getByRole('button', { name: 'More Options' }),
       endMeetingButton: this.page.getByRole('button', { name: 'Leave Call' }),
     };
-
-    this.peopleButton = this.page.getByRole('tab', { name: 'People' });
 
     this.viewOptions = {
       viewOptionsButton: this.page.getByRole('button', { name: 'Select view' }),
@@ -173,6 +162,25 @@ export class MeetingRoomPage {
     return await this.meetingRoomName.textContent();
   }
 
+  async displayViewOptionsMenu(): Promise<void> {
+    await this.viewOptions.viewOptionsButton.waitFor();
+    await this.viewOptions.viewOptionsButton.click();
+    await this.viewOptions.viewAndSortingPopupMenu.waitFor();
+    await this.viewOptions.viewAndSortingPopupMenu.isVisible();
+  }
+
+  async selectGridViewOption(): Promise<void> {
+    await this.viewOptions.gridViewOption.click();
+  }
+
+  async selectSpeakerViewOption(): Promise<void> {
+    await this.viewOptions.speakerViewOption.click();
+  }
+
+  async selectPeopleTab(): Promise<void> {
+    await this.peopleButton.click();
+  }
+
   async hasTickIcon(element: Locator): Promise<boolean> {
     // if menu item has a tick, count should be 1, else 0
     return (await element.locator('div').first().locator('svg').count()) === 1;
@@ -193,10 +201,15 @@ export class MeetingRoomPage {
   }
 
   async getPinnedParticipantNameInSpeakerView(): Promise<string> {
-    const speakerViewContainer = await this.page
+    const speakerWindow = await this.page
       .getByTestId(this.selectors.speakerWindow)
       .getByTestId(this.selectors.participantWindow);
-    return await speakerViewContainer.getByTestId(this.selectors.participantName).innerText();
+    const speakerNameTile = await speakerWindow.getByTestId(this.selectors.participantName);
+    if (await speakerNameTile.isVisible()) {
+      return await speakerNameTile.innerText();
+    } else {
+      return '';
+    }
   }
 
   async getFirstParticipantNameInSpeakerView(): Promise<string> {

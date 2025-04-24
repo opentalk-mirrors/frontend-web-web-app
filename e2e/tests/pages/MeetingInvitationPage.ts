@@ -40,38 +40,39 @@ export class MeetingInvitationPage {
     this.userInvitationDropDown = this.page.locator('div[role="presentation"]');
   }
 
-  async renderUpdateMeetingPage() {
+  async waitForGuestLinkToRender(): Promise<boolean> {
     // it takes some time for guestlink placeholder to have meeting url
-    let guestLink;
-    let i = 0;
-    do {
-      guestLink = await this.guestLinkInputField.getAttribute('value');
-      if (guestLink !== '-') break;
-      await this.page.waitForTimeout(500);
-      i++;
-    } while (guestLink === '-' && i < 10);
-  }
-
-  async goToAdhocMeetingLobbyAsModerator(closeMeetingTab?: boolean): Promise<void> {
-    // the optional parameter closes the meeting setup tab, by default it is false, meaning the tab won't be closed
-    const meetingLink = await this.meetingLinkInputField.inputValue();
-    await this.startMeetingHelper(closeMeetingTab);
-    await this.page.goto(meetingLink);
-  }
-
-  async goToAdhocMeetingLobbyAsModeratorAndGetGuestLink(closeMeetingTab?: boolean): Promise<string> {
-    const meetingLink = await this.meetingLinkInputField.inputValue();
-    // guest link is initially '-' and proper link only gets inserted into input field after a little moment
-    // await this.page.waitForTimeout(100);
     let guestLink = await this.guestLinkInputField.inputValue();
     let i = 0;
     while (guestLink === '-' && i++ < 10) {
       await this.page.waitForTimeout(500);
       guestLink = await this.guestLinkInputField.inputValue();
     }
-    await this.startMeetingHelper(closeMeetingTab);
-    await this.page.goto(meetingLink);
+    return guestLink != '-';
+  }
+
+  async getGuestLink(): Promise<string> {
+    let guestLink = '';
+    if (await this.waitForGuestLinkToRender()) {
+      guestLink = await this.guestLinkInputField.inputValue();
+    }
     return guestLink;
+  }
+
+  async navigateToMeetingLobby(): Promise<Page> {
+    const meetingLink = await this.meetingLinkInputField.inputValue();
+    await Promise.all([
+      this.page.goto(meetingLink),
+      this.page.waitForLoadState('domcontentloaded', { timeout: 10_000 }),
+    ]);
+    return this.page;
+  }
+
+  async goToAdhocMeetingLobbyAsModerator(closeMeetingTab?: boolean): Promise<void> {
+    // the optional parameter closes the meeting setup tab, by default it is false, meaning the tab won't be closed
+    const meetingLink = await this.meetingLinkInputField.inputValue();
+    await this.startAdhocMeetingHelper(closeMeetingTab);
+    await this.page.goto(meetingLink);
   }
 
   async goToMeetingLobby(): Promise<Page> {
@@ -82,11 +83,11 @@ export class MeetingInvitationPage {
     return popupPromise;
   }
 
-  async startMeetingHelper(closeTab: boolean): Promise<void> {
+  async startAdhocMeetingHelper(closeTab: boolean): Promise<void> {
     const popupPromise = this.page.waitForEvent('popup');
     await this.openMeetingRoomButton.click();
     const meetingSetupPage = await popupPromise;
-    await meetingSetupPage.waitForLoadState();
+    await meetingSetupPage.waitForLoadState('domcontentloaded');
     if (closeTab) {
       await meetingSetupPage.close();
     }
