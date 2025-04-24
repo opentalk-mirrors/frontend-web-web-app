@@ -21,11 +21,11 @@ jest.mock('../Toolbar/fragments/ShortcutListDialog', () => ({
 }));
 
 const mockSelectIsGlitchtipConfigured = jest.fn();
+const mockSelectContactSupportUrl = jest.fn();
 
 jest.mock('../../store/slices/configSlice', () => ({
   selectIsGlitchtipConfigured: () => mockSelectIsGlitchtipConfigured(),
-  selectHelpdeskUrl: () => 'https://example.com',
-  selectContactSupportUrl: () => 'https://example.com',
+  selectContactSupportUrl: () => mockSelectContactSupportUrl(),
 }));
 
 describe('SupportList component', () => {
@@ -34,20 +34,43 @@ describe('SupportList component', () => {
     expect.assertions(0);
   });
   describe('children', () => {
-    test('should contain list with three list items when glitchtip is not configured.', () => {
+    test('list renders accessibility, user manual, keyboard shortcuts and report a bug elements by default', () => {
       render(<SupportList />);
       const list = screen.getByRole('list');
 
       expect(list).toBeInTheDocument();
-      expect(list.children).toHaveLength(4);
+      expect(list.children).toHaveLength(3);
+      expect(within(list).getByText('my-meeting-menu-accessibility')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-user-manual')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-keyboard-shortcuts')).toBeInTheDocument();
+      expect(within(list).queryByText('my-meeting-menu-glitchtip-trigger')).not.toBeInTheDocument();
+      expect(within(list).queryByText('my-meeting-menu-support')).not.toBeInTheDocument();
     });
-    test('should contain all items ', () => {
+    test('list renders glitchtip, if it"s configured', () => {
       mockSelectIsGlitchtipConfigured.mockReturnValue(true);
       render(<SupportList />);
       const list = screen.getByRole('list');
 
       expect(list).toBeInTheDocument();
-      expect(list.children).toHaveLength(5);
+      expect(list.children).toHaveLength(4);
+      expect(within(list).getByText('my-meeting-menu-accessibility')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-user-manual')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-keyboard-shortcuts')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-glitchtip-trigger')).toBeInTheDocument();
+      expect(within(list).queryByText('my-meeting-menu-support')).not.toBeInTheDocument();
+    });
+    test('list renders support, if it"s configured', () => {
+      mockSelectContactSupportUrl.mockReturnValue('https://example.com');
+      render(<SupportList />);
+      const list = screen.getByRole('list');
+
+      expect(list).toBeInTheDocument();
+      expect(list.children).toHaveLength(4);
+      expect(within(list).getByText('my-meeting-menu-accessibility')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-user-manual')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-keyboard-shortcuts')).toBeInTheDocument();
+      expect(within(list).queryByText('my-meeting-menu-glitchtip-trigger')).not.toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-support')).toBeInTheDocument();
     });
     test('accessibility support list item is containing open new tab image', () => {
       render(<SupportList />);
