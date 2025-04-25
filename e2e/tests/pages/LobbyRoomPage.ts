@@ -43,6 +43,13 @@ export class LobbyRoomPage {
     }
   }
 
+  async enterMeetingRoom(): Promise<Page> {
+    await this.joinMeetingButton.isVisible();
+    await this.joinMeetingButton.click();
+    await this.page.waitForLoadState('domcontentloaded');
+    return this.page;
+  }
+
   async waitForParticipantNameToBeVisibleInNameField(): Promise<void> {
     // from meeting-room-timer.spec.ts
     // "We need to wait for the username to appear here because otherwise the tests will be flaky (see issue #1692)"
