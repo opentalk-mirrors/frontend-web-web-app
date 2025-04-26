@@ -45,6 +45,7 @@ export interface Config {
   insecure?: boolean;
   baseUrl?: string;
   helpdeskUrl?: string;
+  contactSupportUrl?: string;
   userSurveyUrl?: string;
   userSurveyApiKey?: string;
   errorReportAddress: string;
@@ -97,8 +98,8 @@ export type ConfigState = {
   controller: string;
   insecure: boolean;
   baseUrl: string;
-  helpdeskUrl: string;
-  contactSupportUrl: string;
+  helpdeskUrl?: string;
+  contactSupportUrl?: string;
   userSurveyUrl?: string;
   userSurveyApiKey?: string;
   beta: Beta;
@@ -162,8 +163,8 @@ export const initialState: ConfigState = {
   controller: 'CONTROLLER',
   insecure: false,
   baseUrl: 'http://localhost',
-  helpdeskUrl: 'HELPDESK',
-  contactSupportUrl: 'CONTACT_SUPPORT',
+  helpdeskUrl: undefined,
+  contactSupportUrl: undefined,
   userSurveyUrl: undefined,
   userSurveyApiKey: undefined,
   errorReportAddress: 'report@opentalk.eu',

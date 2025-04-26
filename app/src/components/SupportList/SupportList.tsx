@@ -140,16 +140,18 @@ export const SupportList = ({
       });
     }
 
-    output.push({
-      key: ListItemKeys.Support,
-      name: 'my-meeting-menu-support',
-      icon: <ContactIcon fontSize="small" />,
-      componentProps: {
-        href: contactSupportUrl,
-        target: '_blank',
-        onClick: () => window.open(contactSupportUrl, '_blank'),
-      },
-    });
+    if (contactSupportUrl) {
+      output.push({
+        key: ListItemKeys.Support,
+        name: 'my-meeting-menu-support',
+        icon: <ContactIcon fontSize="small" />,
+        componentProps: {
+          href: contactSupportUrl,
+          target: '_blank',
+          onClick: () => window.open(contactSupportUrl, '_blank'),
+        },
+      });
+    }
 
     return output;
   }, [isGlitchtipConfigured, isShortcutListDialogOpen, contactSupportUrl]);

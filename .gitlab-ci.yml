@@ -412,6 +412,7 @@ deploy:review-app:
       --set webapp.imprintUrl=https://opentalk.eu/en/terms-of-use
       --set webapp.dataProtectionUrl=https://opentalk.eu/en/data-protection
       --set webapp.helpdeskUrl=https://opentalk.eu/docs/user/
+      --set webapp.contactSupportUrl=https://opentalk.eu/en/contact-our-support-team
       --set webapp.sentryDsn=$SENTRY_DSN_TESTING
       --set webapp.livekit.domain=livekit.review-latest.kube.opentalk.run
       --set-string
