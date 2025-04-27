@@ -13,7 +13,7 @@ describe('<PopoverButton />', () => {
   const titleLabel = 'popover-title';
   const popoverTitleId = 'popover-title-id';
 
-  test('should render the button with provided icon and label', () => {
+  it('should render the button with provided icon and label', () => {
     render(
       <PopoverButton
         icon={icon}
@@ -29,7 +29,7 @@ describe('<PopoverButton />', () => {
     expect(button).toHaveTextContent('Icon');
   });
 
-  test('should open the popover when button is clicked', () => {
+  it('should open the popover when button is clicked', () => {
     render(
       <PopoverButton
         icon={icon}
@@ -49,7 +49,7 @@ describe('<PopoverButton />', () => {
     expect(screen.getByText('Popover Content')).toBeInTheDocument();
   });
 
-  test('should close the popover when button is clicked again', async () => {
+  it('should close the popover when button is clicked again', async () => {
     render(
       <PopoverButton
         icon={icon}
@@ -77,7 +77,7 @@ describe('<PopoverButton />', () => {
     });
   });
 
-  test('should open the popover when "Enter" key is pressed on the button', async () => {
+  it('should open the popover when "Enter" key is pressed on the button', async () => {
     render(
       <PopoverButton
         icon={icon}
@@ -103,7 +103,7 @@ describe('<PopoverButton />', () => {
     });
   });
 
-  test('should open the popover when "Space" key is pressed on the button', async () => {
+  it('should open the popover when "Space" key is pressed on the button', async () => {
     render(
       <PopoverButton
         icon={icon}
@@ -129,7 +129,7 @@ describe('<PopoverButton />', () => {
     });
   });
 
-  test('should close the popover when "Escape" key is pressed', async () => {
+  it('should close the popover when "Escape" key is pressed', async () => {
     render(
       <PopoverButton
         icon={icon}
@@ -155,7 +155,7 @@ describe('<PopoverButton />', () => {
     });
   });
 
-  test('should render the title with the provided titleLabel and popoverTitleId', async () => {
+  it('should render the title with the provided titleLabel and popoverTitleId', async () => {
     render(
       <PopoverButton
         icon={icon}

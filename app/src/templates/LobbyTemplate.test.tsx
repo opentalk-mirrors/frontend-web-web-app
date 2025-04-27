@@ -15,19 +15,19 @@ jest.mock('./fragments/BrowserCompatibilityInfo', () => ({
 
 describe('LobbyTemplate', () => {
   afterEach(() => cleanup());
-  test('licenses are not displayed by default', () => {
+  it('licenses are not displayed by default', () => {
     render(<LobbyTemplate />);
 
     expect(screen.queryByTestId('LegalContainer')).toBeNull();
   });
 
-  test('licenses are displayed on demand', () => {
+  it('licenses are displayed on demand', () => {
     render(<LobbyTemplate legal />);
 
     expect(screen.getByTestId('LegalContainer')).toBeInTheDocument();
   });
 
-  test('template renders children', () => {
+  it('template renders children', () => {
     render(
       <LobbyTemplate>
         <div data-testid="test-child" />

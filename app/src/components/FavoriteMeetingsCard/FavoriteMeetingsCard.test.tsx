@@ -19,7 +19,7 @@ const dummyMeetings = [
 
 describe('favorite meetings card', () => {
   afterEach(() => cleanup());
-  test('is empty when no meetings available', () => {
+  it('is empty when no meetings available', () => {
     renderWithProviders(
       <BrowserRouter>
         <FavoriteMeetingsCard meetings={[]} />
@@ -29,7 +29,7 @@ describe('favorite meetings card', () => {
 
     expect(screen.getByTestId('empty-entry')).toBeInTheDocument();
   });
-  test('contains all favorited meetings', () => {
+  it('contains all favorited meetings', () => {
     renderWithProviders(
       <BrowserRouter>
         <FavoriteMeetingsCard meetings={dummyMeetings} />

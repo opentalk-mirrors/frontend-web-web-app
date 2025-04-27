@@ -8,6 +8,10 @@ import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import MenuButton from './MoreButton';
 import MoreMenu from './MoreMenu';
 
+// Switch off the rule, as it doesn't recognize assertion in the utility helper function
+// Maybe it's a bug or maybe it's not a good practice to use this kind of helper function
+/* eslint-disable jest/expect-expect */
+
 describe('<MoreButton />', () => {
   const { store } = configureStore();
 
@@ -19,14 +23,14 @@ describe('<MoreButton />', () => {
     }
   };
 
-  test('render MoreMenuButton component', () => {
+  it('renders MoreMenuButton component', () => {
     renderWithProviders(<MenuButton />, { store, provider: { snackbar: true } });
 
     expect(screen.getByTestId('toolbarMenuButton')).toBeInTheDocument();
     expect(screen.queryByTestId('moreMenu')).not.toBeInTheDocument();
   });
 
-  test('render moreMenu after clicking on MoreMenuButton', () => {
+  it('renders moreMenu after clicking on MoreMenuButton', () => {
     renderWithProviders(<MenuButton />, { store, provider: { snackbar: true } });
     const button = screen.getByTestId('toolbarMenuButton');
     expect(button).toBeInTheDocument();
@@ -46,19 +50,19 @@ describe('<MoreButton />', () => {
       });
     });
 
-    test('if the waiting room is inactive the enable waiting room option should be visible and the disable waiting room option should not be visible', () => {
+    it('shows the enable waiting room option and does not show the disable waiting room option, if the waiting room is inactive', () => {
       checkMenuItem('more-menu-enable-waiting-room');
       checkMenuItem('more-menu-disable-waiting-room', true);
     });
 
-    test('the meeting notes export option should not be visible if the meeting notes module is disabled', () => {
+    it('does not show meeting notes export option, if the meeting notes module is disabled', () => {
       checkMenuItem('more-menu-export-attendance-report', true);
     });
     describe('training participation report options', () => {
       describe('if the module is enabled', () => {
         const config = { tariff: { modules: { trainingParticipationReport: { features: [] } } } };
 
-        test('the enable training participation logging button should be visible if the logging is disabled, and the disable button should not be visible', () => {
+        it('shows the enable training participation logging button, if the logging is disabled, and does not show the disable button', () => {
           const { store: storeWithModules } = configureStore({ initialState: { ...moderatorState, config } });
           renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
             store: storeWithModules,
@@ -67,7 +71,7 @@ describe('<MoreButton />', () => {
           checkMenuItem('training-participation-logging-enable-button');
           checkMenuItem('training-participation-logging-disable-button', true);
         });
-        test('the disable training participation logging button should be visible if the logging is enabled, and the enable button should not be visible', () => {
+        it('shows the disable training participation logging button, if the logging is enabled, and does not show the enable button', () => {
           const { store: storeWithModules } = configureStore({
             initialState: {
               ...moderatorState,
@@ -87,13 +91,13 @@ describe('<MoreButton />', () => {
         });
       });
       describe('if the module is disabled', () => {
-        test('no training participation options should be visible', () => {
+        it('does not show training participation options', () => {
           checkMenuItem('training-participation-logging-enable-button', true);
           checkMenuItem('training-participation-logging-disable-button', true);
         });
       });
     });
-    test('if handraises are disabled the enable handraises option should be visible and the disable handraises option should not be visible', () => {
+    it('shows enable handraises option and does not show the disable handraises option, if handraises are disabled', () => {
       const { store } = configureStore({
         initialState: {
           ...moderatorState,
@@ -110,15 +114,15 @@ describe('<MoreButton />', () => {
       checkMenuItem('more-menu-turn-handraises-on');
       checkMenuItem('more-menu-turn-handraises-off', true);
     });
-    test('if handraises are enabled the disable handraises option should be visible and the enable handraises option should not be visible', () => {
+    it('shows the disable handraises option and does not show the enable handraises option, if handraises are enabled', () => {
       checkMenuItem('more-menu-turn-handraises-on', true);
       checkMenuItem('more-menu-turn-handraises-off');
     });
-    test('if microphones are enabled the disable microphones option should be visible and the enable microphones option should not be visible', () => {
+    it('shows the disable microphones option and does not show the enable microphones option, if microphones are enabled', () => {
       checkMenuItem('more-menu-disable-microphones');
       checkMenuItem('more-menu-enable-microphones', true);
     });
-    test('if microphones are disabled the enable microphones option should be visible and the disable microphones option should not be visible', () => {
+    it('shows the enable microphones option and does not show the disable microphones, if microphones are disabled', () => {
       const { store } = configureStore({
         initialState: {
           ...moderatorState,
@@ -133,7 +137,7 @@ describe('<MoreButton />', () => {
       checkMenuItem('more-menu-enable-microphones');
     });
 
-    test('if the waiting room is active the disable waiting room option should be visible and the enable waiting room option should not be visible', () => {
+    it('shows the disable waiting room option and does not show the enable waiting room option, if the waiting room is active', () => {
       const { store } = configureStore({
         initialState: {
           user: { role: Role.Moderator },
@@ -148,7 +152,7 @@ describe('<MoreButton />', () => {
       checkMenuItem('more-menu-disable-waiting-room');
     });
 
-    test('the meeting notes export option should be visible if the meeting notes module is enabled', () => {
+    it('shows the meeting notes export option, if the meeting notes module is enabled', () => {
       const { store } = configureStore({
         initialState: { ...moderatorState, config: { tariff: { modules: { meetingReport: { features: [] } } } } },
       });
@@ -165,7 +169,7 @@ describe('<MoreButton />', () => {
       window.localStorage.setItem('devMode', 'true');
     });
 
-    test('shows success notification when show test info option is clicked', () => {
+    it('shows success notification when show test info option is clicked', () => {
       renderWithProviders(<MoreMenu open anchorEl={document.createElement('div')} onClose={jest.fn()} />, {
         store,
         provider: { mui: true, snackbar: true },
@@ -180,7 +184,7 @@ describe('<MoreButton />', () => {
       expect(notificationMessage.parentElement).toHaveClass('notistack-MuiContent-success');
     });
 
-    test('shows error notification when show test error option is clicked', () => {
+    it('shows error notification when show test error option is clicked', () => {
       renderWithProviders(<MoreMenu open anchorEl={document.createElement('div')} onClose={jest.fn()} />, {
         store,
         provider: { mui: true, snackbar: true },
@@ -194,7 +198,7 @@ describe('<MoreButton />', () => {
       expect(notificationMessage.parentElement).toHaveAttribute('role', 'alert');
       expect(notificationMessage.parentElement).toHaveClass('notistack-MuiContent-error');
     });
-    test('training participation button should be in MoreMenu when module trainingParticipationReport is defined', () => {
+    it('shows training participation button if module trainingParticipationReport is defined', () => {
       const { store: storeWithModules } = configureStore({
         initialState: {
           user: { role: Role.Moderator },

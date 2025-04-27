@@ -29,14 +29,14 @@ afterEach(() => {
 });
 
 describe('SpeakerWindow', () => {
-  test('SpeakerWindow is not rendered with zero participants', () => {
+  it('SpeakerWindow is not rendered with zero participants', () => {
     const { store } = mockStore(0);
     renderWithProviders(<SpeakerWindow />, { store, provider: { mui: true } });
 
     expect(screen.queryByTestId('ParticipantWindow')).not.toBeInTheDocument();
   });
 
-  test('SpeakerWindow is rendered with one participant', () => {
+  it('SpeakerWindow is rendered with one participant', () => {
     const { store } = mockStore(1);
     renderWithProviders(<SpeakerWindow />, { store, provider: { mui: true } });
 

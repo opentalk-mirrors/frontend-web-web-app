@@ -13,7 +13,7 @@ jest.mock('../../../hooks', () => ({
 }));
 
 describe('VoteResultRow', () => {
-  test('can render', () => {
+  it('can render', () => {
     render(<VoteResultRow participantId="" selectedVote="no" token="test-token" />, {
       wrapper: ({ children }) => (
         <table>

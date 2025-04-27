@@ -20,7 +20,7 @@ const mockUseGetMeQuery = useGetMeQuery as jest.Mock;
 const mockUseGetMeTariffQuery = useGetMeTariffQuery as jest.Mock;
 
 describe('Storage Section', () => {
-  test('renders storage section for limited max storage and used half capacity', () => {
+  it('renders storage section for limited max storage and used half capacity', () => {
     const { store } = configureStore();
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
@@ -45,7 +45,7 @@ describe('Storage Section', () => {
     expect(storageMessage).toBeInTheDocument();
   });
 
-  test('renders storage section for limited max storage and used full capacity', () => {
+  it('renders storage section for limited max storage and used full capacity', () => {
     const { store } = configureStore();
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
@@ -70,7 +70,7 @@ describe('Storage Section', () => {
     expect(storageMessage).toBeInTheDocument();
   });
 
-  test('renders storage section for limited max storage and storage is empty', () => {
+  it('renders storage section for limited max storage and storage is empty', () => {
     const { store } = configureStore();
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
@@ -95,7 +95,7 @@ describe('Storage Section', () => {
     expect(storageMessage).toBeInTheDocument();
   });
 
-  test('renders storage section for unlimited max storage', () => {
+  it('renders storage section for unlimited max storage', () => {
     const { store } = configureStore();
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {

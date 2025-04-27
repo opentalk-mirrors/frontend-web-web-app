@@ -25,7 +25,7 @@ const initialValues = {
 };
 
 describe('Training participation report select', () => {
-  test('Select is not rendered when not enabled', async () => {
+  it('Select is not rendered when not enabled', async () => {
     render(
       <Formik initialValues={{ ...initialValues, trainingParticipationReport: { enabled: false } }} onSubmit={() => {}}>
         {(formikProps) => <TrainingParticipationReportSelect formik={formikProps} />}
@@ -36,7 +36,7 @@ describe('Training participation report select', () => {
     expect(selectButton).not.toBeInTheDocument();
   });
 
-  test('Select is rendered and usable when enabled', () => {
+  it('Select is rendered and usable when enabled', () => {
     render(
       <Formik initialValues={initialValues} onSubmit={() => {}}>
         {(formikProps) => <TrainingParticipationReportSelect formik={formikProps} />}

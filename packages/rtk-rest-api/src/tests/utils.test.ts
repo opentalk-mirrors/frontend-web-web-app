@@ -42,7 +42,7 @@ describe('extractRelations', () => {
 });
 
 describe('joinUrls', () => {
-  test('correctly joins constiations of relative urls', () => {
+  it('correctly joins constiations of relative urls', () => {
     expect(joinUrls('/api/', '/banana')).toBe('/api/banana');
     expect(joinUrls('/api/', 'banana')).toBe('/api/banana');
 
@@ -56,7 +56,7 @@ describe('joinUrls', () => {
     expect(joinUrls('/api/', undefined)).toBe('/api/');
   });
 
-  test('correctly joins constiations of absolute urls', () => {
+  it('correctly joins constiations of absolute urls', () => {
     expect(joinUrls('https://example.com/api', 'banana')).toBe('https://example.com/api/banana');
     expect(joinUrls('https://example.com/api', '/banana')).toBe('https://example.com/api/banana');
 
@@ -64,7 +64,7 @@ describe('joinUrls', () => {
     expect(joinUrls('https://example.com/api/', '/banana/')).toBe('https://example.com/api/banana/');
   });
 
-  test('return empty string fro empty input', () => {
+  it('return empty string fro empty input', () => {
     expect(joinUrls(undefined, undefined)).toBe('');
     expect(joinUrls('', '')).toBe('');
   });

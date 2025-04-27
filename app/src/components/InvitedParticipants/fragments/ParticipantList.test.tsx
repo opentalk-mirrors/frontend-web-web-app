@@ -37,7 +37,7 @@ describe('ParticipantList', () => {
 
   afterEach(() => cleanup());
 
-  test('will render without errors', () => {
+  it('will render without errors', () => {
     renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}
@@ -52,7 +52,7 @@ describe('ParticipantList', () => {
     expect(screen.getByTestId('ParticipantList')).toBeInTheDocument();
   });
 
-  test('render UserRow component', () => {
+  it('render UserRow component', () => {
     renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}
@@ -67,7 +67,7 @@ describe('ParticipantList', () => {
     expect(screen.getByTestId('ParticipantListBox').children).toHaveLength(1);
   });
 
-  test('render accept status title', () => {
+  it('render accept status title', () => {
     renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}
@@ -82,7 +82,7 @@ describe('ParticipantList', () => {
     expect(screen.getByText(`dashboard-meeting-details-page-participant-${InviteStatus.Accepted}`)).toBeInTheDocument();
   });
 
-  test('render declined status title', () => {
+  it('render declined status title', () => {
     renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}
@@ -97,7 +97,7 @@ describe('ParticipantList', () => {
     expect(screen.getByText(`dashboard-meeting-details-page-participant-${InviteStatus.Declined}`)).toBeInTheDocument();
   });
 
-  test('render open/pending status title', () => {
+  it('render open/pending status title', () => {
     renderWithProviders(
       <ParticipantList
         eventId={'SOME_EVENT_ID' as EventId}

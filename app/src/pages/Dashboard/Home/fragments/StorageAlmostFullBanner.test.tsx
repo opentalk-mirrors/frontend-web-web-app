@@ -29,7 +29,7 @@ const { store } = configureStore({
 });
 
 describe('Storage almost full Banner', () => {
-  test('shows nothing for unlimited storage', () => {
+  it('shows nothing for unlimited storage', () => {
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
         usedStorage: MAX_LIMITED_STORAGE_IN_MB * 1000 * 1000,
@@ -47,7 +47,7 @@ describe('Storage almost full Banner', () => {
     expect(screen.queryByText(/./)).not.toBeInTheDocument();
   });
 
-  test('shows nothing for used storage beyond critical', () => {
+  it('shows nothing for used storage beyond critical', () => {
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
         usedStorage: CRITICAL_USED_STORAGE_IN_MB * 1000 * 1000 - 1,
@@ -65,7 +65,7 @@ describe('Storage almost full Banner', () => {
     expect(screen.queryByText(/./)).not.toBeInTheDocument();
   });
 
-  test('renders payment banner for critical used storage and buttons functionality', async () => {
+  it('renders payment banner for critical used storage and buttons functionality', async () => {
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
         usedStorage: CRITICAL_USED_STORAGE_IN_MB * 1000 * 1000,

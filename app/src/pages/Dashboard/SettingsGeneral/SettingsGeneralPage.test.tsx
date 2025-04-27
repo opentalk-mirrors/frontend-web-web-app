@@ -17,7 +17,7 @@ jest.mock('../../../api/rest', () => ({
 }));
 
 describe('Dashboard SettingsGeneralPage', () => {
-  test('render page without crashing', () => {
+  it('renders page without crashing', () => {
     const { store } = configureStore();
     renderWithProviders(<SettingsGeneralPage />, { store });
 

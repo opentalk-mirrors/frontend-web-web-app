@@ -10,11 +10,11 @@ jest.mock('../../modules/BrowserSupport');
 const mockHandleClick = jest.fn();
 
 describe('ConfirmBrowserDialog', () => {
-  test('rendered without crash', () => {
+  it('renders without crash', () => {
     render(<ConfirmBrowserDialog handleClick={mockHandleClick} />);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
-  test('handle click is fired', () => {
+  it('handles click', () => {
     render(<ConfirmBrowserDialog handleClick={mockHandleClick} />);
 
     const submitButton = screen.getByRole('button', { name: /wrong-browser-dialog-ok/i });

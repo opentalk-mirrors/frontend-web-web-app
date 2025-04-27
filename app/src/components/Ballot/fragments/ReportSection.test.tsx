@@ -20,23 +20,22 @@ const mockLegalVote = {
 };
 
 describe('ReportSection', () => {
-  test('can render without an error', () => {
+  it('can render without an error', () => {
     render(<ReportSection legalVoteId={mockLegalVote.id} />);
     expect(screen.getByText('legal-vote-report-issue-title').tagName).toBe('BUTTON');
   });
 
-  test('expands on button click', () => {
+  it('expands on button click', () => {
     render(<ReportSection legalVoteId={mockLegalVote.id} />);
 
     fireEvent.click(screen.getByText('legal-vote-report-issue-title'));
 
     const elements = screen.getAllByText('legal-vote-report-issue-title');
     expect(elements.length).toBe(2);
-    // expect(elements[0]).not.toBeVisible(); // button is made offscreen but we don't have tools to detect that
     expect(elements[1].tagName).toBe('H3');
   });
 
-  test('collapses on cancel button click', () => {
+  it('collapses on cancel button click', () => {
     render(<ReportSection legalVoteId={mockLegalVote.id} />);
 
     fireEvent.click(screen.getByText('legal-vote-report-issue-title'));
@@ -45,7 +44,7 @@ describe('ReportSection', () => {
     expect(screen.getByText('legal-vote-report-issue-title').tagName).toBe('BUTTON');
   });
 
-  test('can submit description', async () => {
+  it('can submit description', async () => {
     renderWithProviders(<ReportSection legalVoteId={mockLegalVote.id} />, { provider: { snackbar: true, mui: true } });
 
     fireEvent.click(screen.getByText('legal-vote-report-issue-title'));

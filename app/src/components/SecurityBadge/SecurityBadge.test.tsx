@@ -10,7 +10,7 @@ import SecurityBadge from './SecurityBadge';
 
 const NUMBER_OF_PARTICIPANTS = 2;
 describe('<SecurityBadge />', () => {
-  test('should open popover on button click', () => {
+  it('should open popover on button click', () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
     renderWithProviders(<SecurityBadge />, { store });
 
@@ -24,7 +24,7 @@ describe('<SecurityBadge />', () => {
     const popoverTitle = screen.getByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).toBeInTheDocument();
   });
-  test('should close popover if its opened and button is clicked again', () => {
+  it('should close popover if its opened and button is clicked again', () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
     renderWithProviders(<SecurityBadge />, { store });
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
@@ -42,7 +42,7 @@ describe('<SecurityBadge />', () => {
     const popoverTitle = screen.queryByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).not.toBeInTheDocument();
   });
-  test('should open popover if button is focused and "Enter" pressed', async () => {
+  it('should open popover if button is focused and "Enter" pressed', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
     renderWithProviders(<SecurityBadge />, { store });
 
@@ -58,7 +58,7 @@ describe('<SecurityBadge />', () => {
     const popoverTitle = screen.getByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).toBeInTheDocument();
   });
-  test('should open popover if button is focused and "Space" pressed', async () => {
+  it('should open popover if button is focused and "Space" pressed', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
     renderWithProviders(<SecurityBadge />, { store });
 
@@ -74,7 +74,7 @@ describe('<SecurityBadge />', () => {
     const popoverTitle = screen.getByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).toBeInTheDocument();
   });
-  test('should close popover if its opened and "Escape" pressed', async () => {
+  it('should close popover if its opened and "Escape" pressed', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
     renderWithProviders(<SecurityBadge />, { store });
 
@@ -94,7 +94,7 @@ describe('<SecurityBadge />', () => {
 
     expect(popoverTitle).not.toBeInTheDocument();
   });
-  test('should show the guest participant popover message when a guest is present', async () => {
+  it('should show the guest participant popover message when a guest is present', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, { participantKinds: [ParticipationKind.Guest] });
     renderWithProviders(<SecurityBadge />, { store });
 
@@ -109,7 +109,7 @@ describe('<SecurityBadge />', () => {
 
     expect(screen.queryByText('secure-connection-guests')).not.toBeInTheDocument();
   });
-  test('should show the sip participant popover message when a sip user is present', async () => {
+  it('should show the sip participant popover message when a sip user is present', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, { participantKinds: [ParticipationKind.Sip] });
     renderWithProviders(<SecurityBadge />, { store });
 
@@ -125,7 +125,7 @@ describe('<SecurityBadge />', () => {
 
     expect(screen.queryByText('secure-connection-sip')).not.toBeInTheDocument();
   });
-  test('should show the mixed popover message when a sip user and a guest user is present', async () => {
+  it('should show the mixed popover message when a sip user and a guest user is present', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {
       participantKinds: [ParticipationKind.Sip, ParticipationKind.Guest],
     });

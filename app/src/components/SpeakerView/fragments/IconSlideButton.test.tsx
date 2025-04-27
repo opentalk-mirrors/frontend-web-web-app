@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 describe('IconSlideButton', () => {
-  test('right IconSlideButton is rendered', () => {
+  it('renders right IconSlideButton correctly', () => {
     const slideRight = jest.fn();
 
     render(<IconSlideButton direction="right" onClick={slideRight} />);
@@ -23,7 +23,7 @@ describe('IconSlideButton', () => {
     expect(slideRight).toHaveBeenCalled();
   });
 
-  test('left IconSlideButton is rendered', () => {
+  it('renders left IconSlideButton correctly', () => {
     const slideLeft = jest.fn();
 
     render(<IconSlideButton direction="left" onClick={slideLeft} />);

@@ -13,7 +13,7 @@ const acceptButtonFn = jest.fn();
 const declineButtonFn = jest.fn();
 
 describe('ConsentNotification', () => {
-  test('component DOM structure', () => {
+  it('renders correctly', () => {
     render(<ConsentNotification style={{}} onAcceptButton={acceptButtonFn} onDeclineButton={declineButtonFn} />);
     const element = screen.getByRole('alertdialog');
     expect(element).toBeInTheDocument();
@@ -21,7 +21,7 @@ describe('ConsentNotification', () => {
     expect(screen.getByText('consent-message')).toHaveAttribute('id', describedByElement);
   });
 
-  test('button responsiveness', () => {
+  it('calls callback functions on button click', () => {
     render(<ConsentNotification style={{}} onAcceptButton={acceptButtonFn} onDeclineButton={declineButtonFn} />);
     fireEvent.click(screen.getByText('consent-accept'));
     fireEvent.click(screen.getByText('consent-decline'));

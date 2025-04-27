@@ -36,7 +36,7 @@ jest.mock('./FavoriteMeetings', () => ({
 }));
 
 describe('MobileHome', () => {
-  test('renders header and all elements ', () => {
+  it('renders header and all elements', () => {
     const pageHeading = 'heading';
     render(<DesktopHome pageHeading={pageHeading} />);
 

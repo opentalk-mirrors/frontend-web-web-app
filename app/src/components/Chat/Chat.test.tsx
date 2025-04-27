@@ -43,14 +43,14 @@ describe('Chat component', () => {
     dispatchSpy = createdStore.dispatchSpy;
   });
 
-  test('chat component should be displayed with encrypted message on initial load', () => {
+  it('displays encrypted message on initial load', () => {
     renderWithProviders(<Chat />, { store });
 
     expect(screen.getByTestId('chat')).toBeInTheDocument();
     expect(screen.getByTestId('no-messages')).toBeInTheDocument();
   });
 
-  test('should display event message when user join conversation', async () => {
+  it('displays event message when user join conversation', async () => {
     window.HTMLElement.prototype.scrollIntoView = jest.fn();
     renderWithProviders(<Chat />, { store });
 
@@ -83,7 +83,7 @@ describe('Chat component', () => {
     });
   });
 
-  test('should display event message when user leave conversation', async () => {
+  it('should display event message when user leave conversation', async () => {
     window.HTMLElement.prototype.scrollIntoView = jest.fn();
     renderWithProviders(<Chat />, { store });
 
@@ -103,7 +103,7 @@ describe('Chat component', () => {
     });
   });
 
-  test('should dispatch action when user send messsage', async () => {
+  it('should dispatch action when user send messsage', async () => {
     window.HTMLElement.prototype.scrollIntoView = jest.fn();
     renderWithProviders(<Chat />, { store });
 
@@ -126,7 +126,7 @@ describe('Chat component', () => {
     });
   });
 
-  test('should display error if input is empty on sumbit', async () => {
+  it('should display error if input is empty on sumbit', async () => {
     renderWithProviders(<Chat />, { store });
 
     const message = screen.getByPlaceholderText('chat-input-placeholder');
@@ -143,7 +143,7 @@ describe('Chat component', () => {
     });
   });
 
-  test('should autofocus message input when `autoFocusMessageInput` property is specified', () => {
+  it('should autofocus message input when `autoFocusMessageInput` property is specified', () => {
     renderWithProviders(<Chat autoFocusMessageInput={true} />, { store });
 
     expect(document.activeElement?.tagName).toBe('TEXTAREA');

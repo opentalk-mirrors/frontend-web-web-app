@@ -9,7 +9,7 @@ import InviteGuestDialog from './InviteGuestDialog';
 describe('<InviteGuestDialog />', () => {
   const { store } = configureStore();
 
-  test('render InviteGuestDialog component when flag open is true', () => {
+  it('render InviteGuestDialog component when flag open is true', () => {
     renderWithProviders(<InviteGuestDialog open />, { store, provider: { mui: true } });
 
     expect(screen.getByText('dialog-invite-guest-title')).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe('<InviteGuestDialog />', () => {
     expect(screen.getByRole('button', { name: 'dialog-invite-guest-button-submit' })).toBeInTheDocument();
   });
 
-  test('with flag open={false} component should not be rendered', () => {
+  it('with flag open={false} component should not be rendered', () => {
     renderWithProviders(<InviteGuestDialog open={false} />, { store });
 
     expect(screen.queryByText('dialog-invite-guest-title')).not.toBeInTheDocument();

@@ -16,7 +16,7 @@ describe('should check if message is event type', () => {
     target: '' as ParticipantId,
   };
 
-  test('should return false', () => {
+  it('should return false', () => {
     expect(isEventMessage(chatMessage)).toBeFalsy();
   });
 
@@ -27,7 +27,7 @@ describe('should check if message is event type', () => {
     event: 'joined',
   };
 
-  test('should return true', () => {
+  it('should return true', () => {
     expect(isEventMessage(eventMessage)).toBeTruthy();
   });
 });

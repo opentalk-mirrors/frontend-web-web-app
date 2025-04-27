@@ -6,7 +6,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { TalkingStickUnmutedNotification } from './TalkingStickUnmutedNotification';
 
 describe('TalkingStickUnmutedNotification', () => {
-  test('component DOM structure', () => {
+  it('renders correctly', () => {
     render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={false} onNext={jest.fn()} />);
 
     const element = screen.getByRole('alertdialog');
@@ -16,12 +16,12 @@ describe('TalkingStickUnmutedNotification', () => {
     expect(screen.getByText('talking-stick-unmuted-notification')).toHaveAttribute('id', describedByElement);
   });
 
-  test('shows different text on last speaker', () => {
+  it('shows different text on last speaker', () => {
     render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={true} onNext={jest.fn()} />);
     expect(screen.getByText('talking-stick-unmuted-notification-last-participant')).toBeInTheDocument();
   });
 
-  test('button responsiveness', () => {
+  it('calls callback functions on button click', () => {
     const nextButtonFn = jest.fn();
     render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={false} onNext={nextButtonFn} />);
 

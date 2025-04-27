@@ -48,11 +48,11 @@ describe('SelectParticipants', () => {
 
   afterEach(() => cleanup());
 
-  test('will render without errors', () => {
+  it('will render without errors', () => {
     expect(screen.getByTestId('SelectParticipants')).toBeInTheDocument();
   });
 
-  test.skip('sends API request after delay when typed more than 3 characters.', async () => {
+  it.skip('sends API request after delay when typed more than 3 characters.', async () => {
     await waitFor(() => {
       const input = screen.getByRole('combobox');
       fireEvent.change(input, { target: { value: 'test' } });
@@ -66,7 +66,7 @@ describe('SelectParticipants', () => {
     );
   });
 
-  test.skip('click on suggested participant will move him to added list', async () => {
+  it.skip('click on suggested participant will move him to added list', async () => {
     const autocomplete = screen.getByTestId('SelectParticipants');
     const input = within(autocomplete).getByLabelText('Test');
     expect(screen.queryByTestId('SelectedParticipant')).not.toBeInTheDocument();
@@ -82,7 +82,7 @@ describe('SelectParticipants', () => {
     expect(screen.getByTestId('SelectedParticipant')).not.toBeEmptyDOMElement();
   });
 
-  test.skip('click on delete will move the user back to the suggested list', async () => {
+  it.skip('click on delete will move the user back to the suggested list', async () => {
     const autocomplete = screen.getByTestId('SelectParticipants');
     const input = within(autocomplete).getByLabelText('Test');
 

@@ -20,7 +20,7 @@ const dialogProps: CloseMeetingDialogProps = {
 };
 
 describe('generate instance id', () => {
-  test('should generate an instance id with the date of test date', () => {
+  it('should generate an instance id with the date of test date', () => {
     const startTimeInEventFormat = new Date(TEST_DATE);
 
     const instanceId = generateInstanceId({
@@ -35,7 +35,7 @@ describe('generate instance id', () => {
 describe('CloseMeetingDialog', () => {
   const { store } = configureStore();
 
-  test('should not render with open={false}', () => {
+  it('should not render with open={false}', () => {
     jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ refetch: mockRefetch });
     renderWithProviders(<CloseMeetingDialog {...dialogProps} open={false} />, {
       store,
@@ -48,7 +48,7 @@ describe('CloseMeetingDialog', () => {
     expect(screen.queryByText('meeting-delete-metadata-button-leave-without-delete')).not.toBeInTheDocument();
   });
 
-  test('should render properly for single events', () => {
+  it('should render properly for single events', () => {
     jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedSingleEvent, refetch: mockRefetch });
     renderWithProviders(<CloseMeetingDialog {...dialogProps} />, {
       store,
@@ -61,7 +61,7 @@ describe('CloseMeetingDialog', () => {
     expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
   });
 
-  test('should render properly for recurring events', () => {
+  it('should render properly for recurring events', () => {
     jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedRecurringEvent, refetch: mockRefetch });
     renderWithProviders(<CloseMeetingDialog {...dialogProps} />, {
       store,

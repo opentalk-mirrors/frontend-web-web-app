@@ -6,7 +6,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { TalkingStickMutedNotification } from './TalkingStickMutedNotification';
 
 describe('TalkingStickMutedNotification', () => {
-  test('component DOM structure', () => {
+  it('renders correctly', () => {
     render(<TalkingStickMutedNotification style={{}} onUnmute={jest.fn()} onNext={jest.fn()} />);
     const element = screen.getByRole('alertdialog');
     expect(element).toBeInTheDocument();
@@ -14,7 +14,7 @@ describe('TalkingStickMutedNotification', () => {
     expect(screen.getByText('talking-stick-speaker-announcement')).toHaveAttribute('id', describedByElement);
   });
 
-  test('button responsiveness', () => {
+  it('calls callback functions on button click', () => {
     const unmuteButtonFn = jest.fn();
     const nextButtonFn = jest.fn();
     render(<TalkingStickMutedNotification style={{}} onUnmute={unmuteButtonFn} onNext={nextButtonFn} />);

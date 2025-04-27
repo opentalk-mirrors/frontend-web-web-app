@@ -23,11 +23,12 @@ describe('<SortPopoverMenu />', () => {
     DEFAULT_PROPS.onClose.mockClear();
   });
 
-  test('should render with mandatory properties.', () => {
+  it('should render with mandatory properties.', () => {
     render(<SortPopoverMenu {...DEFAULT_PROPS} />);
+    expect(screen.getByRole('menu')).toBeInTheDocument();
   });
 
-  test('should render given items.', () => {
+  it('should render given items.', () => {
     const items = [
       { i18nKey: 'option-1', type: 'Option 1' },
       { i18nKey: 'option-2', type: 'Option 2' },
@@ -41,7 +42,7 @@ describe('<SortPopoverMenu />', () => {
     expect(container).toContainElement(screen.getByText(items[1].i18nKey));
   });
 
-  test('should execute onChange callback when option is selected.', () => {
+  it('should execute onChange callback when option is selected.', () => {
     const items = [{ i18nKey: 'option-1', type: 'Option 1' }];
     const props = { ...DEFAULT_PROPS, items };
 

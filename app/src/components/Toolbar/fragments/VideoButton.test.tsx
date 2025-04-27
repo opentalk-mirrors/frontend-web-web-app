@@ -18,7 +18,7 @@ jest.mock('@livekit/components-react', () => ({
 }));
 
 describe('Video Button', () => {
-  test('Button is disabled if isLivekitUnavailable is true', async () => {
+  it('Button is disabled if isLivekitUnavailable is true', async () => {
     const { store } = configureStore({
       initialState: {
         livekit: {

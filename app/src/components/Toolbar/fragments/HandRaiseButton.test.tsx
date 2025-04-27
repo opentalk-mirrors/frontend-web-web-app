@@ -11,13 +11,13 @@ describe('<HandraiseButton />', () => {
   afterEach(() => cleanup());
   const { store, dispatchSpy } = configureStore();
 
-  test('should render HandraiseButton component', () => {
+  it('should render HandraiseButton component', () => {
     renderWithProviders(<HandraiseButton />, { store });
 
     expect(screen.getByTestId('toolbarHandraiseButton')).toBeInTheDocument();
   });
 
-  test('should dispatch raise_hand by clicking on HandraiseButton', () => {
+  it('should dispatch raise_hand by clicking on HandraiseButton', () => {
     renderWithProviders(<HandraiseButton />, { store });
     const endButton = screen.getByTestId('toolbarHandraiseButton');
     expect(endButton).toBeInTheDocument();

@@ -46,20 +46,20 @@ describe('EditEventsPage', () => {
     mockUseNavigate.mockReturnValue(mockNavigate);
   });
 
-  test('renders page title', () => {
+  it('renders page title', () => {
     render(<EditEventsPage />);
 
     expect(screen.getByText('dashboard-meetings-create-title')).toHaveProperty('tagName', 'H1');
   });
 
-  test('renders CreateOrUpdateMeetingForm when active step is 0', () => {
+  it('renders CreateOrUpdateMeetingForm when active step is 0', () => {
     render(<EditEventsPage />);
 
     expect(screen.getByTestId('CreateOrUpdateMeetingForm')).toBeInTheDocument();
     expect(screen.queryByTestId('InviteToMeeting')).not.toBeInTheDocument();
   });
 
-  test('renders InviteToMeeting when active step is 1', () => {
+  it('renders InviteToMeeting when active step is 1', () => {
     mockUseParams.mockReturnValue({
       eventId: null,
       formStep: '1',
@@ -71,7 +71,7 @@ describe('EditEventsPage', () => {
     expect(screen.getByTestId('InviteToMeeting')).toBeInTheDocument();
   });
 
-  test('navigates to create page on error', () => {
+  it('navigates to create page on error', () => {
     mockUseLazyGetEventQuery.mockReturnValue([() => {}, { data: null, isLoading: false, error: new Error('') }]);
 
     render(<EditEventsPage />);

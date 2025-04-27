@@ -12,7 +12,7 @@ jest.mock('../../commonComponents', () => ({
 }));
 
 describe('showWithLinkNotification', () => {
-  test('should call notifications.toast with WithLinkNotification component and correct options', () => {
+  it('should call notifications.toast with WithLinkNotification component and correct options', () => {
     const props = {
       translationKey: 'test.translation.key',
       url: 'https://example.com',

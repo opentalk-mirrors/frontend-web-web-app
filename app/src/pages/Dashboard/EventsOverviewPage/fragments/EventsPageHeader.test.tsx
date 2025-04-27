@@ -54,7 +54,7 @@ describe('Events Page Header tests', () => {
   });
 
   describe('mobile', () => {
-    test('can render', () => {
+    it('can render', () => {
       render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
 
       expect(screen.getByTestId('events-page-header-mobile')).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe('Events Page Header tests', () => {
   });
 
   describe('tablet', () => {
-    test('can render', () => {
+    it('can render', () => {
       mockUseMediaQuery.mockReturnValueOnce(false).mockReturnValueOnce(true);
       render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
 
@@ -71,7 +71,7 @@ describe('Events Page Header tests', () => {
   });
 
   describe('desktop', () => {
-    test('can render', () => {
+    it('can render', () => {
       mockUseMediaQuery.mockReturnValueOnce(true).mockReturnValueOnce(false);
       render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
 

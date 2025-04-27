@@ -79,7 +79,7 @@ jest.mock('../../../api/rest', () => ({
 }));
 
 describe('OverviewCard', () => {
-  test('component is rendered without crashing', () => {
+  it('component is rendered without crashing', () => {
     renderWithProviders(<OverviewCard isMeetingCreator={false} event={mockedMeeting} />, {
       provider: { router: true, mui: true },
     });
@@ -88,7 +88,7 @@ describe('OverviewCard', () => {
     expect(screen.getByRole('img', { name: 'global-favorite' })).toBeInTheDocument();
   });
 
-  test('component is not marked as favorite', () => {
+  it('component is not marked as favorite', () => {
     renderWithProviders(<OverviewCard isMeetingCreator={false} event={{ ...mockedMeeting, isFavorite: false }} />, {
       provider: { router: true, mui: true },
     });
@@ -98,7 +98,7 @@ describe('OverviewCard', () => {
   });
 
   // TODO UNIT TEST Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
-  test('pending invite displays right action buttons', () => {
+  it('pending invite displays right action buttons', () => {
     renderWithProviders(<OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />, {
       provider: { router: true, mui: true },
     });
@@ -110,7 +110,7 @@ describe('OverviewCard', () => {
     expect(declineButton).toBeInTheDocument();
   });
 
-  test('click on pending invite accept button should triger right action', () => {
+  it('click on pending invite accept button should triger right action', () => {
     renderWithProviders(<OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />, {
       provider: { router: true, mui: true },
     });
@@ -121,7 +121,7 @@ describe('OverviewCard', () => {
     expect(mockAcceptEventInvite).toHaveBeenCalledTimes(1);
   });
 
-  test('click on pending invite decline button should triger right action', () => {
+  it('click on pending invite decline button should triger right action', () => {
     renderWithProviders(<OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />, {
       provider: { router: true, mui: true },
     });
@@ -132,7 +132,7 @@ describe('OverviewCard', () => {
     expect(mockDeclineEventInvite).toHaveBeenCalledTimes(1);
   });
 
-  test('click on more menu should display popup with edit, fav and delete options for meeting creator', () => {
+  it('click on more menu should display popup with edit, fav and delete options for meeting creator', () => {
     renderWithProviders(<OverviewCard isMeetingCreator={true} event={mockedMeeting} />, {
       provider: { router: true, mui: true },
     });

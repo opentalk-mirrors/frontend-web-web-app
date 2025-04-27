@@ -46,7 +46,7 @@ describe('testing vote results', () => {
     multipleChoice: true,
   };
 
-  test('component should render wothout breaking', () => {
+  it('should render wothout breaking', () => {
     renderWithProviders(<VoteResult {...voteResultsProps} />, { store, provider: { mui: true } });
     const yesRadioButton = screen.getByRole('radio', { name: voteResultsProps.title });
 
@@ -55,16 +55,16 @@ describe('testing vote results', () => {
     expect(screen.getByText('50.0%')).toBeInTheDocument();
   });
 
-  test('on click should fire onVote event', () => {
+  it('should fire onVote event on click', () => {
     renderWithProviders(<VoteResult {...voteResultsProps} />, { store, provider: { mui: true } });
     const yesRadioButton = screen.getByRole('radio', { name: voteResultsProps.title });
     expect(yesRadioButton).toBeInTheDocument();
     fireEvent.click(yesRadioButton);
     expect(yesRadioButton).toBeChecked();
-    expect(voteResultsProps.onVote).toBeCalledTimes(1);
+    expect(voteResultsProps.onVote).toHaveBeenCalledTimes(1);
   });
 
-  test('component should render checkbox if multiple choice is passed', () => {
+  it('should render checkbox if multiple choice is passed', () => {
     renderWithProviders(<VoteResult {...pollProps} />, { store, provider: { mui: true } });
     const yesCheckbox = screen.getByRole('checkbox', { name: pollProps.title });
 

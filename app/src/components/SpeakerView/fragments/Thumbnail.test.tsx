@@ -28,7 +28,7 @@ describe('Thumbnail', () => {
     cleanup();
   });
 
-  test('ThumbnailContainer rendered width one participant', () => {
+  it('ThumbnailContainer rendered width one participant', () => {
     const { store } = mockStore(1);
 
     const ids = store.getState().participants.ids;

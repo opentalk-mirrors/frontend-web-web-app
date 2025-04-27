@@ -43,14 +43,14 @@ describe('ProfileNameForm', () => {
     });
   });
 
-  test('page will not crash', () => {
+  it('renders without crash', () => {
     const { store } = configureStore();
     renderWithProviders(<ProfileNameForm />, { store });
 
-    expect(screen.getByRole('textbox', { name: 'dashboard-settings-profile-name-label' }));
+    expect(screen.getByRole('textbox', { name: 'dashboard-settings-profile-name-label' })).toBeInTheDocument();
   });
 
-  test('empty displayName will show error', async () => {
+  it('shows error on empty display name', async () => {
     const { store } = configureStore();
     renderWithProviders(<ProfileNameForm />, { store });
 
@@ -64,7 +64,7 @@ describe('ProfileNameForm', () => {
     });
   });
 
-  test('click on submit button will trigger updateMe', async () => {
+  it('triggers update on submit button', async () => {
     const { store } = configureStore();
     renderWithProviders(<ProfileNameForm />, { store });
 
@@ -78,7 +78,7 @@ describe('ProfileNameForm', () => {
     });
   });
 
-  test('click on submit button will not trigger updateMe on invalid form input', async () => {
+  it('does not trigger update on save button if form input is invalid', async () => {
     const { store } = configureStore();
     renderWithProviders(<ProfileNameForm />, { store });
 
@@ -94,7 +94,7 @@ describe('ProfileNameForm', () => {
     });
   });
 
-  test('successful triggers a notification', async () => {
+  it('triggers success notification', async () => {
     const { store } = configureStore();
     renderWithProviders(<ProfileNameForm />, { store });
 
@@ -106,7 +106,7 @@ describe('ProfileNameForm', () => {
     });
   });
 
-  test('triggers error notification on failure', async () => {
+  it('triggers error notification', async () => {
     mockUpdateMe.mockReturnValueOnce({
       unwrap: () => Promise.reject(),
     });

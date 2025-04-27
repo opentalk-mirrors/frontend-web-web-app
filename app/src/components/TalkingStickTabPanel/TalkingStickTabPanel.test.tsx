@@ -19,21 +19,21 @@ describe('<TalkingStickTabPanel />', () => {
   describe('automod inactive', () => {
     const { store, dispatchSpy } = mockStore(NUMBER_OF_PARTICIPANTS, { video: true, screen: true });
 
-    test('should render start button', () => {
+    it('should render start button', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
       const startButton = screen.getByRole('button', { name: 'global-start-now' });
       expect(startButton).toBeInTheDocument();
     });
 
-    test('should render include moderator checkbox, which is set by default', () => {
+    it('should render include moderator checkbox, which is set by default', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
       const includeModerator = screen.getByRole('checkbox', { name: 'talking-stick-include-moderator-switch' });
       expect(includeModerator).toHaveAttribute('value', 'true');
     });
 
-    test('should unset include moderator checkbox, on user click ', () => {
+    it('should unset include moderator checkbox, on user click', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
       const includeModerator = screen.getByRole('checkbox', { name: 'talking-stick-include-moderator-switch' });
@@ -43,7 +43,7 @@ describe('<TalkingStickTabPanel />', () => {
       expect(includeModerator).toHaveAttribute('value', 'false');
     });
 
-    test('should not render skip speaker and stop button', () => {
+    it('should not render skip speaker and stop button', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
       const skipSpeakerButton = screen.queryByRole('button', { name: 'talking-stick-skip-speaker' });
@@ -53,7 +53,7 @@ describe('<TalkingStickTabPanel />', () => {
       expect(stopButton).not.toBeInTheDocument();
     });
 
-    test('should dispatch correct user by click on global-start-now button', () => {
+    it('should dispatch correct user by click on global-start-now button', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store });
 
       const startButton = screen.getByRole('button', { name: 'global-start-now' });
@@ -83,7 +83,7 @@ describe('<TalkingStickTabPanel />', () => {
       automodActive: true,
     });
 
-    test('should not render start button and include moderator checkbox', () => {
+    it('should not render start button and include moderator checkbox', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store });
 
       const startButton = screen.queryByRole('button', { name: 'global-start-now' });
@@ -93,7 +93,7 @@ describe('<TalkingStickTabPanel />', () => {
       expect(includeModerator).not.toBeInTheDocument();
     });
 
-    test('should render skip speaker and stop button', () => {
+    it('should render skip speaker and stop button', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store });
 
       const skipSpeakerButton = screen.getByRole('button', { name: 'talking-stick-skip-speaker' });
@@ -103,7 +103,7 @@ describe('<TalkingStickTabPanel />', () => {
       expect(stopButton).toBeInTheDocument();
     });
 
-    test('should fire stop action by click stop button', () => {
+    it('should fire stop action by click stop button', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store });
 
       const stopButton = screen.getByRole('button', { name: 'global-stop' });
@@ -117,7 +117,7 @@ describe('<TalkingStickTabPanel />', () => {
       });
     });
 
-    test('should fire skip speaker action by click skip speaker button', () => {
+    it('should fire skip speaker action by click skip speaker button', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store });
 
       const skipSpeakerButton = screen.getByRole('button', { name: 'talking-stick-skip-speaker' });

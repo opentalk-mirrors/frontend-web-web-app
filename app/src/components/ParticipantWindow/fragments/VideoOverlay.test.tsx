@@ -36,7 +36,7 @@ describe('VideoOverlay general', () => {
     (useRemoteParticipant as jest.Mock).mockReturnValue(mockedDefaultRemoteParticipant);
   });
 
-  test('does not render any button if overlay is not active', () => {
+  it('does not render any button if overlay is not active', () => {
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={false} />, {
       store,
       provider: { snackbar: true },
@@ -44,7 +44,7 @@ describe('VideoOverlay general', () => {
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
-  test('renders fullscreen button if overlay is active', () => {
+  it('renders fullscreen button if overlay is active', () => {
     mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
@@ -55,7 +55,7 @@ describe('VideoOverlay general', () => {
     const fullscreenButton = screen.getByRole('button', { name: 'indicator-fullscreen-open' });
     expect(fullscreenButton).toBeInTheDocument();
   });
-  test('does not render fullscreen button if fullscreen feature is unavailable', () => {
+  it('does not render fullscreen button if fullscreen feature is unavailable', () => {
     mockFullscreenContext.isFullScreenAvailable = jest.fn(() => false);
 
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
@@ -71,7 +71,7 @@ describe('VideoOverlay general', () => {
 describe('VideoOverlay extend tab', () => {
   const { store } = configureStore();
 
-  test('does not render extend new tab button if participant neither shares screen nor camera', () => {
+  it('does not render extend new tab button if participant neither shares screen nor camera', () => {
     (useRemoteParticipant as jest.Mock).mockReturnValue({
       ...mockedDefaultRemoteParticipant,
       isScreenShareEnabled: false,
@@ -86,7 +86,7 @@ describe('VideoOverlay extend tab', () => {
     const extendNewTabButton = screen.queryByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).not.toBeInTheDocument();
   });
-  test('renders extend new tab button if participant shares screen', () => {
+  it('renders extend new tab button if participant shares screen', () => {
     (useRemoteParticipant as jest.Mock).mockReturnValue({
       ...mockedDefaultRemoteParticipant,
       isScreenShareEnabled: true,
@@ -101,7 +101,7 @@ describe('VideoOverlay extend tab', () => {
     const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).toBeInTheDocument();
   });
-  test('renders extend new tab button if participant enabled camera', () => {
+  it('renders extend new tab button if participant enabled camera', () => {
     (useRemoteParticipant as jest.Mock).mockReturnValue({
       ...mockedDefaultRemoteParticipant,
       isScreenShareEnabled: false,
@@ -116,7 +116,7 @@ describe('VideoOverlay extend tab', () => {
     const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).toBeInTheDocument();
   });
-  test('renders extend new tab button if participant shares screen AND enabled camera', () => {
+  it('renders extend new tab button if participant shares screen AND enabled camera', () => {
     (useRemoteParticipant as jest.Mock).mockReturnValue({
       ...mockedDefaultRemoteParticipant,
       isScreenShareEnabled: true,

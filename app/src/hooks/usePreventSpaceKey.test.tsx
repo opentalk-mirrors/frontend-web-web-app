@@ -31,7 +31,7 @@ describe('usePreventSpaceKey', () => {
     beforeEach(() => {
       (useHotkeysActive as jest.Mock).mockReturnValue(true);
     });
-    test('preventing space key for a button', async () => {
+    it('prevents space key for a button', async () => {
       const handleChange = jest.fn();
       render(<WithButton handleChange={handleChange} />);
 
@@ -41,7 +41,7 @@ describe('usePreventSpaceKey', () => {
       await userEvent.keyboard('[Space]');
       expect(handleChange).not.toHaveBeenCalled();
     });
-    test('preventing space key for a switch', async () => {
+    it('prevents space key for a switch', async () => {
       const handleChange = jest.fn();
       render(<WithSwitch handleChange={handleChange} />);
 
@@ -57,7 +57,7 @@ describe('usePreventSpaceKey', () => {
     beforeEach(() => {
       (useHotkeysActive as jest.Mock).mockReturnValue(false);
     });
-    test('not preventing space key for a button', async () => {
+    it('does not prevent space key for a button', async () => {
       const handleChange = jest.fn();
       render(<WithButton handleChange={handleChange} />);
 
@@ -67,7 +67,7 @@ describe('usePreventSpaceKey', () => {
       await userEvent.keyboard('[Space]');
       expect(handleChange).toHaveBeenCalled();
     });
-    test('not preventing space key for a switch', async () => {
+    it('does not prevent space key for a switch', async () => {
       const handleChange = jest.fn();
       render(<WithSwitch handleChange={handleChange} />);
 

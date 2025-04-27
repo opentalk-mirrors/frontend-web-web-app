@@ -16,10 +16,10 @@ jest.mock('./fragments/ThumbsRow', () => ({
   default: () => <div></div>,
 }));
 
-describe('speaker view', () => {
+describe('SpeakerView', () => {
   afterEach(cleanup);
 
-  test('SpeakerView is rendered', () => {
+  it('renders SpeakerView correctly', () => {
     const { store } = mockStore(0);
     renderWithProviders(<SpeakerView />, { store });
 

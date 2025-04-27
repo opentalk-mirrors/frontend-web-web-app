@@ -15,10 +15,9 @@ jest.mock('../../commonComponents/SearchAndSelectParticipantsTab', () => ({
   SearchAndSelectParticipantsTab: () => <div data-testid="searchAndSelectParticipantsTab"></div>,
 }));
 
-describe('Reset all raised hands', () => {
-  const { store } = mockStore(0);
-
-  test('ResetRaisedHands component will render properly', () => {
+describe('Reset Hand Raises Tab', () => {
+  it('renders ResetRaisedHands component properly', () => {
+    const { store } = mockStore(0);
     renderWithProviders(<ResetHandraisesTab />, { store });
 
     expect(screen.getByTestId('searchAndSelectParticipantsTab')).toBeInTheDocument();

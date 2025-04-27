@@ -22,7 +22,7 @@ jest.mock('@livekit/components-react', () => ({
 describe('Audio Button', () => {
   const { store } = configureStore();
 
-  test('Button is disabled if microphones are disabled', async () => {
+  it('Button is disabled if microphones are disabled', async () => {
     (useLocalParticipantPermissions as jest.Mock).mockReturnValue({
       canPublishSources: [],
     });
@@ -33,7 +33,7 @@ describe('Audio Button', () => {
     expect(audioButton).toBeDisabled();
   });
 
-  test('Button is enabled if microphones are enabled', () => {
+  it('Button is enabled if microphones are enabled', () => {
     (useLocalParticipantPermissions as jest.Mock).mockReturnValue({
       canPublishSources: [LIVEKIT_AUDIO_PERMISSION_NUMBER],
     });
@@ -45,7 +45,7 @@ describe('Audio Button', () => {
     expect(audioButton).not.toBeDisabled();
   });
 
-  test('Button is disabled if isLivekitUnavailable is true', async () => {
+  it('Button is disabled if isLivekitUnavailable is true', async () => {
     const { store } = configureStore({
       initialState: {
         livekit: {

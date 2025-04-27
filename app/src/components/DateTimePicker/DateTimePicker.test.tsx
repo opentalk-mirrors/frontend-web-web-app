@@ -32,7 +32,7 @@ describe('render <DateTimePicker />', () => {
     jest.restoreAllMocks();
   });
 
-  test('render DateTimePicker component with german localization', async () => {
+  it('renders DateTimePicker component with german localization', async () => {
     // eslint disabled is needed because of recursion type definitions inside the library
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     jest.spyOn(require('react-i18next'), 'useTranslation').mockReturnValue({
@@ -51,7 +51,7 @@ describe('render <DateTimePicker />', () => {
     expect(input.value).toBe(deFormattedDate);
   });
 
-  test('render DateTimePicker placeholder value on clear button click', () => {
+  it('renders DateTimePicker placeholder value on clear button click', () => {
     renderWithProviders(<DateTimePicker {...clearableDateTimePickerProps} />, { store, provider: { mui: true } });
 
     const input: HTMLInputElement = screen.getByRole('textbox');

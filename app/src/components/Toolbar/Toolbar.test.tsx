@@ -58,7 +58,7 @@ jest.mock('./fragments/HandraiseButton', () => ({
 }));
 
 describe('Toolbar', () => {
-  test('rendering of all buttons', () => {
+  it('renders buttons', () => {
     const { store } = configureStore();
     renderWithProviders(<Toolbar />, { store });
 

@@ -11,13 +11,13 @@ const DEFAULT_PROPS: LinkFieldProps = {
 };
 
 describe('CopyTextField', () => {
-  test('can render', () => {
+  it('can render', () => {
     render(<CopyTextField {...DEFAULT_PROPS} />);
 
     expect(screen.getByLabelText(DEFAULT_PROPS.label)).toBeInTheDocument();
   });
 
-  test('renders spinner when loading', () => {
+  it('renders spinner when loading', () => {
     render(<CopyTextField {...DEFAULT_PROPS} isLoading />);
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();

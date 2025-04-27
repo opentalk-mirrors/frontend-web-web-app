@@ -28,7 +28,7 @@ describe('MuteParticipantsTab', () => {
     );
   });
 
-  test(`component will render only unmuted participants`, async () => {
+  it(`component will render only unmuted participants`, async () => {
     renderWithProviders(<MuteParticipantsTab />, { store, provider: { mui: true } });
 
     const muteAllButton = screen.getByRole('button', { name: /global-all/i });
@@ -42,7 +42,7 @@ describe('MuteParticipantsTab', () => {
     expect(participantsList).toHaveLength(UNMUTED_PARTICIPANTS);
   });
 
-  test('click on muteAll button should dispatch moderator_mute action', async () => {
+  it('click on muteAll button should dispatch moderator_mute action', async () => {
     renderWithProviders(<MuteParticipantsTab />, { store, provider: { mui: true } });
     const allParticipantIds = [mockedParticipant(0).identity, mockedParticipant(1).identity];
 
@@ -59,7 +59,7 @@ describe('MuteParticipantsTab', () => {
     ]);
   });
 
-  test('click on muteSelected button should dispatch moderator_mute action only for selected participant', async () => {
+  it('click on muteSelected button should dispatch moderator_mute action only for selected participant', async () => {
     renderWithProviders(<MuteParticipantsTab />, { store, provider: { mui: true } });
 
     const participant1 = mockedParticipant(0);

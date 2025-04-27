@@ -6,7 +6,7 @@ import { render, screen } from '@testing-library/react';
 import VisuallyHiddenTitle from './VisuallyHiddenTitle';
 
 describe('Visually Hidden Title', () => {
-  test('should render as the given component', () => {
+  it('should render as the given component', () => {
     render(<VisuallyHiddenTitle component="h2" label="messages" />);
 
     const renderedVisuallyHiddenTitle = screen.getByRole('heading');

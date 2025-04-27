@@ -10,7 +10,7 @@ import RoomTitle from './RoomTitle';
 import { ROOM_TITLE_MAX_LENGTH } from './constants';
 
 describe('Room title', () => {
-  test('should display the whole name in the title and in the tooltip', async () => {
+  it('should display the whole name in the title and in the tooltip', async () => {
     const allowedLengthName = 'a'.repeat(ROOM_TITLE_MAX_LENGTH);
     const { store } = configureStore({
       initialState: {
@@ -36,7 +36,7 @@ describe('Room title', () => {
     });
   });
 
-  test('should display dots after exceeding max length in the title and whole name in the tooltip', async () => {
+  it('should display dots after exceeding max length in the title and whole name in the tooltip', async () => {
     const exceedingMaxLengthName = 'a'.repeat(ROOM_TITLE_MAX_LENGTH + 1);
     const { store } = configureStore({
       initialState: {
@@ -62,7 +62,7 @@ describe('Room title', () => {
       expect(tooltip).toHaveTextContent(exceedingMaxLengthName);
     });
   });
-  test('should render the info button if the eventInfo contains meeting details and if the room has roomInfo', () => {
+  it('should render the info button if the eventInfo contains meeting details and if the room has roomInfo', () => {
     const { store } = configureStore({
       initialState: {
         room: {
@@ -102,7 +102,7 @@ describe('Room title', () => {
     expect(InfoButton).toBeVisible();
   });
 
-  test('should display fallback title in case room title is undefined', async () => {
+  it('should display fallback title in case room title is undefined', async () => {
     const truncatedFallbackTitle = truncate('fallback-room-title', { length: ROOM_TITLE_MAX_LENGTH });
     const { store } = configureStore({
       initialState: {
@@ -124,7 +124,7 @@ describe('Room title', () => {
       expect(tooltip).toHaveTextContent('fallback-room-title');
     });
   });
-  test('should be rendered inside an h1 tag', () => {
+  it('should be rendered inside an h1 tag', () => {
     const truncatedFallbackTitle = truncate('fallback-room-title', { length: ROOM_TITLE_MAX_LENGTH });
     const { store } = configureStore({
       initialState: {

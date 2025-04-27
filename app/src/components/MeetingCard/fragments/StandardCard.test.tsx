@@ -49,7 +49,7 @@ jest.mock('../../../api/rest', () => ({
 describe('Standard Card', () => {
   const { store } = configureStore();
 
-  test('render component without crashing', () => {
+  it('render component without crashing', () => {
     renderWithProviders(<StandardCard {...dummyMeetingCardData} />, { store, provider: { router: true } });
 
     expect(screen.getByRole('link', { name: 'dashboard-home-join-label' })).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe('Standard Card', () => {
     expect(screen.getByRole('img', { name: 'global-favorite' })).toBeInTheDocument();
   });
 
-  test('card is not marked as favorite with flag favorite={false}, svg fav should not be in document', () => {
+  it('card is not marked as favorite with flag favorite={false}, svg fav should not be in document', () => {
     renderWithProviders(
       <StandardCard {...dummyMeetingCardData} event={{ ...dummyMeetingCardData.event, isFavorite: false }} />,
       { store, provider: { router: true } }
@@ -68,7 +68,7 @@ describe('Standard Card', () => {
     expect(screen.queryByRole('img', { name: 'global-favorite' })).not.toBeInTheDocument();
   });
 
-  test('click on more menu should display popup with edit, fav and delete option for meeting creator', async () => {
+  it('click on more menu should display popup with edit, fav and delete option for meeting creator', async () => {
     renderWithProviders(<StandardCard {...dummyMeetingCardData} />, { store, provider: { router: true } });
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
 
@@ -84,7 +84,7 @@ describe('Standard Card', () => {
     });
   });
 
-  test('when user is not creator, meeting is marked as fav, click on more menu should display popup with remove favorite option', async () => {
+  it('when user is not creator, meeting is marked as fav, click on more menu should display popup with remove favorite option', async () => {
     renderWithProviders(<StandardCard {...dummyMeetingCardData} isMeetingCreator={false} />, {
       store,
       provider: { router: true },
@@ -102,7 +102,7 @@ describe('Standard Card', () => {
     });
   });
 
-  test('when user is not creator, meeting is not marked as fav, click on more menu should display popup with add favorite option', async () => {
+  it('when user is not creator, meeting is not marked as fav, click on more menu should display popup with add favorite option', async () => {
     renderWithProviders(
       <StandardCard
         {...dummyMeetingCardData}

@@ -8,7 +8,7 @@ import FeedbackDialog from './FeedbackDialog';
 
 describe('FeedbackDialog', () => {
   const { store } = mockStore(1);
-  test('dialog will render properly with flag open={true}', () => {
+  it('dialog will render properly with flag open={true}', () => {
     renderWithProviders(<FeedbackDialog open />, { store });
     expect(screen.getByText('feedback-dialog-title')).toBeInTheDocument();
     expect(screen.getByText('feedback-dialog-rating-function-range')).toBeInTheDocument();
@@ -27,7 +27,7 @@ describe('FeedbackDialog', () => {
     expect(submitButton).toBeInTheDocument();
   });
 
-  test('changing description input value should have new value', () => {
+  it('changing description input value should have new value', () => {
     renderWithProviders(<FeedbackDialog open />, { store });
     const descriptionInput = screen.getByRole('textbox', { name: /feedback-dialog-label-liked/i });
     expect(descriptionInput).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe('FeedbackDialog', () => {
   // Omitting this unit test as I am struggling to get the rating
   // component to work with the label rework. On the other hand,
   // component is working as expected in the browser.
-  test.skip('rating component should have 5 stars, and on click should make it checked', () => {
+  it.skip('rating component should have 5 stars, and on click should make it checked', () => {
     renderWithProviders(<FeedbackDialog open />, { store });
     const rating = screen.getByText('feedback-dialog-rating-handling');
     expect(rating).toBeInTheDocument();
@@ -57,7 +57,7 @@ describe('FeedbackDialog', () => {
     expect(screen.getAllByRole('radio', { checked: true })).toHaveLength(1);
   });
 
-  test('component with flag open={false}, should not render component', () => {
+  it('component with flag open={false}, should not render component', () => {
     renderWithProviders(<FeedbackDialog open={false} />, { store });
     expect(screen.queryByText('feedback-dialog-title')).not.toBeInTheDocument();
     expect(screen.queryByText('feedback-dialog-headline')).not.toBeInTheDocument();

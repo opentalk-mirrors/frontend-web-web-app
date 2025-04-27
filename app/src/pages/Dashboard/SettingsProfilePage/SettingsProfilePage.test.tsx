@@ -25,7 +25,7 @@ jest.mock('../../../api/rest', () => ({
 }));
 
 describe('SettingsProfilePage', () => {
-  test('page will not crash', () => {
+  it('page will not crash', () => {
     const { store } = configureStore();
     renderWithProviders(<SettingsProfilePage />, { store, provider: { mui: true } });
 

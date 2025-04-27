@@ -14,7 +14,7 @@ const mockHandleDownload = jest.fn();
 const mockHandleDelete = jest.fn();
 
 // checks all the text content inside a row
-export const checkRowTextContent = (
+const checkRowTextContent = (
   row: HTMLElement,
   isHeader: boolean,
   name: string,
@@ -44,7 +44,7 @@ const checkAssetActionButtons = (row: HTMLElement, deletable: boolean) => {
 
 describe('AssetTableRow', () => {
   const asset = mockedRoomAssets[0];
-  test('renders asset with both action buttons', () => {
+  it('renders asset with both action buttons', () => {
     const deletable = true;
     render(<AssetTableRow asset={asset} handleDownload={mockHandleDownload} handleDelete={mockHandleDelete} />);
     const tableRow = screen.getByRole('row');
@@ -74,7 +74,7 @@ describe('AssetTableRow', () => {
     expect(mockHandleDelete).toHaveBeenCalledWith(asset.id);
   });
 
-  test('disables buttons from the parent', () => {
+  it('disables buttons from the parent', () => {
     render(
       <AssetTableRow
         asset={asset}

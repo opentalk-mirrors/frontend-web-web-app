@@ -78,7 +78,7 @@ describe('UserRow', () => {
 
   afterEach(() => cleanup());
 
-  test('will render without errors', () => {
+  it('renders without errors', () => {
     renderWithProviders(
       <UserRow
         eventId={'SOME_EVENT_ID' as EventId}
@@ -93,7 +93,7 @@ describe('UserRow', () => {
     expect(screen.getByTestId('UserRow')).toBeInTheDocument();
   });
 
-  test('will not render more menu if isUpdatable is false', () => {
+  it('shows more menu when isUpdatable is true', () => {
     renderWithProviders(
       <UserRow
         eventId={'SOME_EVENT_ID' as EventId}
@@ -109,7 +109,7 @@ describe('UserRow', () => {
     expect(screen.getByTestId('MoreIconButton')).toBeInTheDocument();
   });
 
-  test('will not render more menu if user is not creator', () => {
+  it('does not render more menu if user is not creator', () => {
     mockUseGetEventQuery.mockReturnValue({
       isLoading: false,
       data: {
@@ -133,7 +133,7 @@ describe('UserRow', () => {
     expect(screen.queryByTestId('MoreIconButton')).not.toBeInTheDocument();
   });
 
-  test('click on more button will open menu', () => {
+  it('opens menu when clicking on more button', () => {
     renderWithProviders(
       <UserRow
         eventId={'SOME_EVENT_ID' as EventId}
@@ -150,7 +150,7 @@ describe('UserRow', () => {
     expect(screen.getByTestId('MoreMenu')).toBeInTheDocument();
   });
 
-  test('more menu renders grant moderator menu item and calls update event with grant parameter', () => {
+  it('renders grant moderator menu item and calls update event with grant parameter', () => {
     renderWithProviders(
       <UserRow
         eventId={'SOME_EVENT_ID' as EventId}
@@ -176,7 +176,7 @@ describe('UserRow', () => {
     });
   });
 
-  test('more menu renders revoke menu item and calls update event with revoke parameter', () => {
+  it('renders revoke menu item and calls update event with revoke parameter', () => {
     renderWithProviders(
       <UserRow
         eventId={'SOME_EVENT_ID' as EventId}

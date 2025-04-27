@@ -11,7 +11,7 @@ describe('SelectParticipantsItem', () => {
   const { store } = mockStore(1, { video: true, screen: true });
   const participant = { ...mockedLivekitParticipant(0), selected: false } as SelectableParticipant;
 
-  test('SelectParticipantsItem should render properly without crashing', async () => {
+  it('should render properly without crashing', async () => {
     renderWithProviders(<SelectParticipantsItem participant={participant} onCheck={handleCheck} />, {
       store,
       provider: { mui: true },
@@ -22,7 +22,7 @@ describe('SelectParticipantsItem', () => {
     expect(screen.getByLabelText(participant.name as string)).toBeInTheDocument();
   });
 
-  test('click on checkBox should trigger onCheck()', async () => {
+  it('should set checkbox on user click', async () => {
     renderWithProviders(<SelectParticipantsItem participant={participant} onCheck={handleCheck} />, {
       store,
       provider: { mui: true },
@@ -35,5 +35,3 @@ describe('SelectParticipantsItem', () => {
     expect(handleCheck).toHaveBeenCalledTimes(1);
   });
 });
-
-export {};

@@ -7,7 +7,7 @@ import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import MenuTabs from './MenuTabs';
 
 describe('MenuTabs Component', () => {
-  test('render MenuTabs component without crashing and initialy Chat Tab is selected', () => {
+  it('render MenuTabs component without crashing and initialy Chat Tab is selected', () => {
     const { store } = configureStore();
     renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
@@ -35,7 +35,7 @@ describe('MenuTabs Component', () => {
     expect(screen.getByPlaceholderText('chat-input-placeholder')).toBeInTheDocument();
   });
 
-  test('click on MessageTab should mark tab as selected', () => {
+  it('click on MessageTab should mark tab as selected', () => {
     const { store } = configureStore();
     renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
@@ -56,7 +56,7 @@ describe('MenuTabs Component', () => {
 
   // TODO UNIT TEST  Warning: `NaN` is an invalid value for the `height` css style property. (root element is not available in unit tests)
 
-  test('click on PeopleTab should mark tab as selected', async () => {
+  it('click on PeopleTab should mark tab as selected', async () => {
     const { store } = configureStore();
     renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 

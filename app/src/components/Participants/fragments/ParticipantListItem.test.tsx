@@ -79,13 +79,13 @@ describe('participant context menu', () => {
   describe('when the user is not a moderator', () => {
     const { store } = mockStore(1);
 
-    test('the opened menu on a participant should contain a send message option', () => {
+    it('should contain a send message option in the opened menu on a participant', () => {
       openMenu(store);
 
       const sendMessageButton = screen.queryByRole('menuitem', { name: 'participant-menu-send-message' });
       expect(sendMessageButton).toBeInTheDocument();
     });
-    test('the opened menu on a participant should not contain the moderator options', () => {
+    it('should not contain the moderator options in the opened menu on a participant', () => {
       openMenu(store);
       const removeParticipantOption = screen.queryByRole('menuitem', {
         name: 'participant-menu-remove-participant',
@@ -113,11 +113,11 @@ describe('participant context menu', () => {
       openMenu(store);
     });
 
-    test('the opened menu on a participant should contain the remove participant option', () => {
+    it('should contain the remove participant option in the opened menu on a participant', () => {
       const removeParticipantOption = screen.getByRole('menuitem', { name: 'participant-menu-remove-participant' });
       expect(removeParticipantOption).toBeInTheDocument();
     });
-    test('the opened menu on a participant should contain the move participant to waiting room option', () => {
+    it('should contain the move participant to waiting room option in the opened menu on a participant', () => {
       const moveParticipantToWaitingRoomOption = screen.getByRole('menuitem', {
         name: 'participant-menu-move-to-waiting-room',
       });
@@ -128,13 +128,13 @@ describe('participant context menu', () => {
       beforeEach(() => {
         openMenu(store);
       });
-      test('the opened menu on a participant should contain the rename participant option', () => {
+      it('should contain the rename participant option in the opened menu on a participant', () => {
         const renameParticipantOption = screen.getByRole('menuitem', {
           name: 'participant-menu-rename',
         });
         expect(renameParticipantOption).toBeInTheDocument();
       });
-      test('the opened menu on a participant should contain the grant presenter role option', () => {
+      it('should contain the grant presenter role option in the opened menu on a participant', () => {
         const grantPresenterRoleOption = screen.getByRole('menuitem', {
           name: 'grant-presenter-role',
         });
@@ -146,13 +146,13 @@ describe('participant context menu', () => {
       beforeEach(() => {
         openMenu(store);
       });
-      test('the opened menu on a participant should contain the grant moderator option', () => {
+      it('should contain the grant moderator option in the opened menu on a participant', () => {
         const grantModeratorOption = screen.getByRole('menuitem', {
           name: 'participant-menu-grant-moderator',
         });
         expect(grantModeratorOption).toBeInTheDocument();
       });
-      test('the opened menu on a participant should contain the grant presenter role option', () => {
+      it('should contain the grant presenter role option in the opened menu on a participant', () => {
         const grantPresenterRoleOption = screen.getByRole('menuitem', {
           name: 'grant-presenter-role',
         });
@@ -167,13 +167,13 @@ describe('participant context menu', () => {
       openMenu(store);
     });
 
-    test('clicking on the ... button on a participant list item should open a menu ', () => {
+    it('should open a menu on clicking on the ... button on a participant list item', () => {
       const menu = screen.getByRole('presentation');
       expect(menu).toBeInTheDocument();
     });
 
     describe('and the whisper module is disabled', () => {
-      test('the opened menu should not contain a whisper invite option', () => {
+      it('should not contain a whisper invite option in the opened menu', () => {
         const whisperInviteButton = screen.queryByRole('menuitem', { name: 'participant-menu-start-whisper' });
         expect(whisperInviteButton).not.toBeInTheDocument();
       });
@@ -182,7 +182,7 @@ describe('participant context menu', () => {
     describe('and the whisper module is enabled', () => {
       const { store } = mockStore(4, { store: WHISPER_MODULE_ENABLED_STORE });
 
-      test('the opened menu should contain a whisper invite button', () => {
+      it('should contain a whisper invite button in the opened menu', () => {
         openMenu(store);
         const whisperInviteButton = screen.getByRole('menuitem', { name: 'participant-menu-start-whisper' });
         expect(whisperInviteButton).toBeInTheDocument();
@@ -221,7 +221,7 @@ describe('participant context menu', () => {
       return menuButton;
     };
 
-    test('a menu button on the user themselves should be available', () => {
+    it('should enable a menu button on the user themselves', () => {
       const userMenuButton = getUserMenuButton();
       act(() => userMenuButton.click());
       const userMenu = screen.getByRole('presentation');
@@ -231,24 +231,29 @@ describe('participant context menu', () => {
     describe('the opened context menu on the user list item', () => {
       beforeEach(() => {
         renderEachParticipant(store);
+      });
+
+      it('should not contain an invite option', () => {
         const userMenuButton = getUserMenuButton();
         expect(userMenuButton).toBeInTheDocument();
         act(() => userMenuButton.click());
-      });
 
-      test('should not contain an invite option', () => {
         const whisperInviteOption = screen.queryByRole('menuitem', { name: 'participant-menu-start-whisper' });
 
         expect(whisperInviteOption).not.toBeInTheDocument();
       });
-      test('should contain a leave whisper group option', () => {
+      it('should contain a leave whisper group option', () => {
+        const userMenuButton = getUserMenuButton();
+        expect(userMenuButton).toBeInTheDocument();
+        act(() => userMenuButton.click());
+
         const leaveWhisperGroupOption = screen.getByRole('menuitem', { name: 'participant-menu-leave-whisper' });
 
         expect(leaveWhisperGroupOption).toBeInTheDocument();
       });
     });
     describe('the opened context menu on a participant list item of a participant in the same whisper group', () => {
-      test('should not display an invite to whisper group option', () => {
+      it('should not display an invite to whisper group option', () => {
         renderEachParticipant(store);
         const whisperPartnerMenuButton = getParticipantMenuButton();
         expect(whisperPartnerMenuButton).toBeInTheDocument();
@@ -259,7 +264,7 @@ describe('participant context menu', () => {
       });
     });
     describe('the opened context menu on participant list item of a participant not in the whisper group', () => {
-      test('should contain an invite to whisper group option', () => {
+      it('should contain an invite to whisper group option', () => {
         const { store } = mockStore(3, {
           store: IN_WHISPER_GROUP_STORE,
         });
@@ -276,7 +281,7 @@ describe('participant context menu', () => {
 
         expect(inviteWhisperPartnerOption).toBeInTheDocument();
       });
-      test('should not contain an invite to whisper group option on sip participants', () => {
+      it('should not contain an invite to whisper group option on sip participants', () => {
         const { store } = mockStore(3, {
           store: IN_WHISPER_GROUP_STORE,
           participantKinds: [ParticipationKind.User, ParticipationKind.User, ParticipationKind.Sip],

@@ -35,7 +35,7 @@ jest.mock('../../api/rest', () => ({
   }),
 }));
 
-describe('LobbyForm', () => {
+describe('LobbyView', () => {
   const { store } = configureStore({
     initialState: {
       auth: { isAuthed: true },
@@ -48,7 +48,7 @@ describe('LobbyForm', () => {
     jest.resetAllMocks();
   });
 
-  test('rendering of self test and join form', () => {
+  it('renders self test and join form correctly', () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const selftest = screen.getByTestId('self-test');
@@ -57,7 +57,7 @@ describe('LobbyForm', () => {
     expect(form).toBeInTheDocument();
   });
 
-  test('rendering of the form input fields', () => {
+  it('renders the form input fields correctly', () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
@@ -73,7 +73,7 @@ describe('LobbyForm', () => {
     expect(passVisibilityToggle).toBeInTheDocument();
   });
 
-  test('rendering of the submit button, which is enabled by default', () => {
+  it('renders the submit button, which is enabled by default', () => {
     const useInviteCodeMock = jest.spyOn(UseInviteCodeModule, 'useInviteCode');
     useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
 
@@ -84,7 +84,7 @@ describe('LobbyForm', () => {
     expect(submitButton).not.toHaveAttribute('disabled');
   });
 
-  test('submit button is disabled if user is not logged in', () => {
+  it('disables submit button when user is not logged in', () => {
     const { store } = configureStore({
       initialState: {
         user: { loggedIn: false, role: Role.User },
@@ -97,7 +97,7 @@ describe('LobbyForm', () => {
     expect(submitButton).toHaveAttribute('disabled');
   });
 
-  test('adding values to input fileds and click on submit should submit added values', async () => {
+  it('submits added values when input fields are filled and submit button is clicked', async () => {
     const USERNAME = 'lobbyForm testUserName*7';
     const PASSWORD = 'lobbyFormPassword (*';
 
@@ -126,7 +126,7 @@ describe('LobbyForm', () => {
     */
   });
 
-  test('click on toggle visibility button should show the password', async () => {
+  it('shows the password when toggle visibility button is clicked', async () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
@@ -137,7 +137,7 @@ describe('LobbyForm', () => {
     expect(passwordInput).toHaveAttribute('type', 'text');
   });
 
-  test('name field prefilled from displayName', () => {
+  it('prefills name field from displayName', () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     expect(screen.getByPlaceholderText('lobby-name-placeholder')).toHaveDisplayValue('Test');

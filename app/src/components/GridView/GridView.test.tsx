@@ -23,7 +23,7 @@ jest.mock('@livekit/components-react', () => ({
 }));
 
 describe('GridView', () => {
-  test('render GridView', () => {
+  it('render GridView', () => {
     const { store } = mockStore(1);
     renderWithProviders(<GridView />, { store });
 

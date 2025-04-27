@@ -15,14 +15,14 @@ jest.mock('../Toolbar/fragments/EndCallButton', () => {
 });
 
 describe.skip('MeetingSidebar', () => {
-  test('placeholder test', () => {
+  it('placeholder test', () => {
     expect(1 + 1).toEqual(2);
   });
   //WARNING: Skip does not prevent the test from failing so we have temporarily commented out the tests.
   //TODO: Investigate and fix tests as part of https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1402
   // afterEach(() => cleanup());
 
-  // test('render MeetingSidebar component without crashing for user with role of moderator', async () => {
+  // it('render MeetingSidebar component without crashing for user with role of moderator', async () => {
   // const { store } = createStore({
   //   initialState: {
   //     auth: { isAuthed: true },
@@ -42,7 +42,7 @@ describe.skip('MeetingSidebar', () => {
   //   expect(screen.getByTestId('Toolbar')).toHaveAttribute('role', 'tablist');
   // });
 
-  // test('render MeetingSidebar component without crashing for user with role of guest', async () => {
+  // it('render MeetingSidebar component without crashing for user with role of guest', async () => {
   //   const { store } = createStore({
   //     initialState: {
   //       auth: { isAuthed: true },
