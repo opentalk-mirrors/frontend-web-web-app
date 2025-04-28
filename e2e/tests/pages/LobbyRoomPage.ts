@@ -44,6 +44,7 @@ export class LobbyRoomPage {
   }
 
   async enterMeetingRoom(): Promise<Page> {
+    await this.renderLobbyPageFully();
     await this.joinMeetingButton.isVisible();
     await this.joinMeetingButton.click();
     await this.page.waitForLoadState('domcontentloaded');

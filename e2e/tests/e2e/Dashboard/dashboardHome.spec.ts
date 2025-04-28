@@ -2,10 +2,40 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { test, expect } from '@playwright/test';
+import { validate } from 'uuid';
 
 import { closeWebkitPopUp } from '../../helper/webkit';
 import { HomePage } from '../../pages/HomePage';
+import { LobbyRoomPage } from '../../pages/LobbyRoomPage';
+import { MeetingInvitationPage } from '../../pages/MeetingInvitationPage';
 import { PlanMeetingPage } from '../../pages/PlanMeetingPage';
+
+const isRoomIdValid = (url: string): boolean => {
+  const meetingRoomUrl = new URL(url);
+  const splitPath = meetingRoomUrl.pathname.split('/');
+
+  const roomId = splitPath[splitPath.length - 1];
+  return splitPath.includes('room') && validate(roomId);
+};
+
+const getUserToInviteInMeeting = (browserName: string): string => {
+  const baseUrl = process.env.INSTANCE_URL;
+  const parsedBaseUrl = new URL(baseUrl);
+  let inviteUser;
+  if (parsedBaseUrl.hostname === 'localhost') {
+    inviteUser = 'Alice Adams';
+  } else if (parsedBaseUrl.hostname.startsWith('testing')) {
+    // for testing setup
+    inviteUser = 'Time Limit';
+  } else {
+    // for ci setup
+    inviteUser = 'Test Chrome';
+    if (browserName !== 'firefox') {
+      inviteUser = 'Test Firefox';
+    }
+  }
+  return inviteUser;
+};
 
 test.beforeEach('Navigate to dashboard', async ({ page, browserName }) => {
   const homePage = new HomePage({ page });
@@ -18,6 +48,62 @@ test.beforeEach('Navigate to dashboard', async ({ page, browserName }) => {
 });
 
 test.describe('Dashboard_Home', () => {
+  test('TC_001_Dashboard_Home_Start new', async ({ page, browserName }) => {
+    const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
+    const meetingInvitationPage = new MeetingInvitationPage({ page: await homePage.startAdhocMeeting() });
+    await meetingInvitationPage.waitForGuestLinkToRender();
+    await expect(await meetingInvitationPage.getAdhocMeetingDescriptionTitleText()).toBeVisible();
+    await expect(await meetingInvitationPage.getAdhocMeetingDescriptionDisclaimer()).toBeVisible();
+    await expect(meetingInvitationPage.meetingLinkInputField).toBeVisible();
+    await expect(meetingInvitationPage.phoneDialInInputField).toBeVisible();
+    await expect(meetingInvitationPage.guestLinkInputField).toBeVisible();
+    await expect(meetingInvitationPage.passwordInputField).toBeVisible();
+    await expect(meetingInvitationPage.inviteParticipantsInputField).toBeVisible();
+    await expect(meetingInvitationPage.cancelMeetingButton).toBeVisible();
+    await expect(meetingInvitationPage.openMeetingRoomButton).toBeVisible();
+    await expect(meetingInvitationPage.sendInvitationButton).toBeVisible();
+
+    // send invitation is disabled by default
+    await expect(meetingInvitationPage.sendInvitationButton).toBeDisabled();
+    const meetingLink = await meetingInvitationPage.meetingLinkInputField.inputValue();
+    expect(isRoomIdValid(meetingLink)).toBeTruthy();
+    const guestInvitationLink = await meetingInvitationPage.guestLinkInputField.inputValue();
+    expect(isRoomIdValid(guestInvitationLink)).toBeTruthy();
+
+    const phoneNumber = await meetingInvitationPage.phoneDialInInputField.inputValue();
+    // default phone number depends on configuration
+    // therefore only check if that field is not empty
+    expect(phoneNumber).not.toBe('');
+    const passwordField = await meetingInvitationPage.passwordInputField.inputValue();
+    expect(passwordField).toEqual('-');
+
+    expect(await meetingInvitationPage.getInviteParticipantMeetingLinkPlaceHolderText()).toBe(
+      'Type name or email address ( min. 3 characters )'
+    );
+    await meetingInvitationPage.fillUserDetailForMeetingInvitation('nonexistentuser');
+    await expect(await meetingInvitationPage.getUserFromUserInvitationDropDown()).toBe('No result');
+    const invitedUser = getUserToInviteInMeeting(browserName);
+    await meetingInvitationPage.fillUserDetailForMeetingInvitation(invitedUser);
+
+    // there will be username and userEmail as text element that comes in innertext. Thus, need to trim
+    await expect(await meetingInvitationPage.getUserFromUserInvitationDropDown()).toBe(invitedUser);
+
+    await meetingInvitationPage.selectUserFromInvitationDropDownToInviteToMeeting();
+    await expect(await meetingInvitationPage.getInvitedParticipant(invitedUser)).toBeVisible();
+    await expect(meetingInvitationPage.sendInvitationButton).toBeEnabled();
+
+    await meetingInvitationPage.sendMeetingInvitation();
+    await expect(await meetingInvitationPage.getNotificationTextAfterInvitingUser()).toBeVisible();
+
+    const lobbyPage = await meetingInvitationPage.goToMeetingLobby();
+    const lobbyRoomPage = new LobbyRoomPage({ page: lobbyPage });
+    await expect(lobbyRoomPage.nameInputField).toBeVisible();
+
+    await meetingInvitationPage.cancelMeeting();
+    await expect(homePage.startNewMeetingButton).toBeVisible();
+  });
+
   test('TC_002_Dashboard_Home_Plan new button', async ({ page }) => {
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
