@@ -5,7 +5,6 @@ import useDateFormat from './useDateFormat';
 import useLocale from './useLocale';
 
 export { useDisplayName } from './ui';
-export * from './time';
 export { default as useRemainingDurationOfTimer } from './useRemainingDurationOfTimer';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`

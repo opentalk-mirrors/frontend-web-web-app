@@ -251,9 +251,6 @@ importers:
       snakecase-keys:
         specifier: ^8.0.1
         version: 8.0.1
-      use-elapsed-time:
-        specifier: ^3.0.4
-        version: 3.0.4(react@18.3.1)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -6288,11 +6285,6 @@ packages:
 
   url-parse@1.5.10:
     resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
-
-  use-elapsed-time@3.0.4:
-    resolution: {integrity: sha512-q9b9j0K1SfsX2B9vzfRYkNyn2kBV5YBh9oJ/+XnIPKFjLbjvnF2PnJ/08HWPfCKKBWGz8d1qAfmXiYxWAseklw==}
-    peerDependencies:
-      react: '>=16.8.0'
 
   use-sync-external-store@1.5.0:
     resolution: {integrity: sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A==}
@@ -13419,10 +13411,6 @@ snapshots:
     dependencies:
       querystringify: 2.2.0
       requires-port: 1.0.0
-
-  use-elapsed-time@3.0.4(react@18.3.1):
-    dependencies:
-      react: 18.3.1
 
   use-sync-external-store@1.5.0(react@18.3.1):
     dependencies:
