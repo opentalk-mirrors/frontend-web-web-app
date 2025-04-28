@@ -13,7 +13,10 @@ describe('FormWrapper Component', () => {
     error: false,
   };
 
-  test('render component without crashing', () => {
+  // Remove eslint comment after solving
+  // https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2632
+  /* eslint-disable jest/expect-expect */
+  it('renders component without crashing', () => {
     render(
       <FormWrapper {...formWrapperTestProps}>
         <></>

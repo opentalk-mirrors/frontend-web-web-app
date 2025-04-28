@@ -9,7 +9,7 @@ import MoreButton from './MoreButton';
 describe('<MoreButton />', () => {
   const { store } = configureStore();
 
-  test('render MoreButton component', () => {
+  it('renders MoreButton component', () => {
     renderWithProviders(<MoreButton />, { store, provider: { snackbar: true } });
 
     expect(screen.getByTestId('toolbarMenuButton')).toBeInTheDocument();

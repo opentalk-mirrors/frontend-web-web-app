@@ -9,7 +9,7 @@ import MyMeetingMenu from './MyMeetingMenu';
 jest.mock('../../../utils/apiUtils');
 
 describe('My Meeting Menu', () => {
-  test('render menu and all default menu items on button click', () => {
+  it('renders menu and all default menu items on button click', () => {
     const { store } = configureStore();
     renderWithProviders(<MyMeetingMenu />, { store });
 
@@ -28,7 +28,7 @@ describe('My Meeting Menu', () => {
     expect(shortcutsMenuItem).toBeInTheDocument();
   });
 
-  test('Report error button is not visible if glitchtip is not configured', () => {
+  it('does not show Report error button if glitchtip is not configured', () => {
     const { store } = configureStore({
       initialState: {
         config: {
@@ -46,7 +46,7 @@ describe('My Meeting Menu', () => {
     expect(reportBugMenuItem).not.toBeInTheDocument();
   });
 
-  test('Report error button is visible when glitchtip dsn is configured', () => {
+  it('shows Report error button when glitchtip dsn is configured', () => {
     const { store } = configureStore({
       initialState: {
         config: {
@@ -65,7 +65,7 @@ describe('My Meeting Menu', () => {
     expect(reportBugMenuItem).toBeInTheDocument();
   });
 
-  test('click on User Manual option opens user manual', () => {
+  it('opens user manual when clicking on User Manual option', () => {
     const { store } = configureStore();
     renderWithProviders(<MyMeetingMenu />, { store });
 

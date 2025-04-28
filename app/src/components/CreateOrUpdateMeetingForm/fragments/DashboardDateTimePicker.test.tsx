@@ -48,13 +48,13 @@ describe('DashboardDateTimePicker', () => {
       { provider: { mui: true } }
     );
 
-  test('rendered textfield and helperText', () => {
+  it('renders textfield and helperText correctly', () => {
     renderComponent();
     expect(screen.getByText('dashboard-meeting-date-start')).toBeInTheDocument();
     expect(screen.getByText('Custom helper text')).toBeInTheDocument();
   });
 
-  test('onChange is called if date is changed', () => {
+  it('calls onChange when date is changed', () => {
     renderComponent();
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: '2025-12-31T12:00' } });
@@ -62,12 +62,12 @@ describe('DashboardDateTimePicker', () => {
     expect(mockOnChange).toHaveBeenCalled();
   });
 
-  test('start: error message is shown if an error occurred', () => {
+  it('displays error message when start time has an error', () => {
     renderComponent('start', { startDate: 'invalid date' });
     expect(screen.getByText('invalid date')).toBeInTheDocument();
   });
 
-  test('start: error message is shown if an error occurred', () => {
+  it('displays error message when end time has an error', () => {
     renderComponent('end', { endDate: 'invalid date' });
     expect(screen.getByText('invalid date')).toBeInTheDocument();
   });

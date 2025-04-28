@@ -37,7 +37,7 @@ jest.mock('../../../templates/DashboardTemplate', () => ({
 describe('Dashboard EventsPage', () => {
   afterEach(() => cleanup());
 
-  test('it will render 1 Accordion', () => {
+  it('will render 1 Accordion', () => {
     const { store } = configureStore();
     renderWithProviders(<EventsPage />, { store, provider: { mui: true, router: true } });
 
@@ -47,15 +47,15 @@ describe('Dashboard EventsPage', () => {
 });
 
 describe('Unit test filterByTimePeriod function used for grouping the events by timePeriod', () => {
-  test('filterByTimePeriod function should return month', () => {
+  it('returns month on month filtering', () => {
     expect(filterByTimePeriod(TimeFilter.Month, '2022-04-06T13:57:38.793602Z' as DateTime)).toBe('April 2022');
   });
 
-  test('filterByTimePeriod function should return day', () => {
+  it('returns month on day filtering', () => {
     expect(filterByTimePeriod(TimeFilter.Day, '2022-04-06T13:57:38.793602Z' as DateTime)).toBe('April 6, 2022');
   });
 
-  test('filterByTimePeriod function should return week', () => {
+  it('returns week on week filtering', () => {
     expect(filterByTimePeriod(TimeFilter.Week, '2022-04-06T13:57:38.793602Z' as DateTime)).toBe(
       'global-calendar-week: 14 (04/04/2022 - 04/10/2022)'
     );

@@ -28,7 +28,7 @@ const { store } = configureStore({
 });
 
 describe('Payment Status Banner', () => {
-  test('show nothing for default tariff', () => {
+  it('shows nothing for default tariff', () => {
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
         tariffStatus: 'default',
@@ -38,7 +38,7 @@ describe('Payment Status Banner', () => {
     renderWithProviders(<PaymentStatusBanner />, { store });
     expect(screen.queryByText(/./)).not.toBeInTheDocument();
   });
-  test('show payment status warning for downgraded tariff and navigate user to payment administration on button click', async () => {
+  it('shows payment status warning for downgraded tariff and navigates user to payment administration on button click', async () => {
     mockUseGetMeQuery.mockImplementation(() => ({
       data: {
         tariffStatus: 'downgraded',

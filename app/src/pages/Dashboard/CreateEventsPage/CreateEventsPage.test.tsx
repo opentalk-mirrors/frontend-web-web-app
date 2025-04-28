@@ -13,17 +13,17 @@ jest.mock('../../../components/CreateOrUpdateMeetingForm', () => ({
 }));
 
 describe('CreateEventsPage', () => {
-  test('renders <h1 />', () => {
+  it('renders <h1 />', () => {
     render(<CreateEventsPage />);
     expect(screen.getByText('dashboard-meetings-create-title')).toHaveProperty('tagName', 'H1');
   });
 
-  test('renders CreateOrUpdateMeetingForm when active step is 0', () => {
+  it('renders CreateOrUpdateMeetingForm when active step is 0', () => {
     render(<CreateEventsPage />);
     expect(screen.getByTestId('CreateOrUpdateMeetingForm')).toBeInTheDocument();
   });
 
-  test('hides CreateOrUpdateMeetingForm when active step is 1', () => {
+  it('hides CreateOrUpdateMeetingForm when active step is 1', () => {
     render(<CreateEventsPage />);
     fireEvent.click(screen.getByTestId('CreateOrUpdateMeetingForm'));
 

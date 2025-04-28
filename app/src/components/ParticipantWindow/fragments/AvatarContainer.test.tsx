@@ -12,7 +12,7 @@ describe('render <AvatarContainer />', () => {
   const participant = mockedParticipant(0);
   const initials = getInitials(participant.displayName, 3);
 
-  test('should render AvatarContainer component with initial', () => {
+  it('should render AvatarContainer component with initial', () => {
     const { store } = mockStore(1);
     renderWithProviders(<AvatarContainer participantId={participant.id} />, { store, provider: { mui: true } });
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
@@ -20,7 +20,7 @@ describe('render <AvatarContainer />', () => {
     expect(screen.getByText(initials)).toBeInTheDocument();
   });
 
-  test('render with isSipParticipant flag should not render initials', () => {
+  it('render with isSipParticipant flag should not render initials', () => {
     const { store } = mockStore(1, { participantKinds: [ParticipationKind.Sip] });
     renderWithProviders(<AvatarContainer participantId={participant.id} />, { store, provider: { mui: true } });
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();

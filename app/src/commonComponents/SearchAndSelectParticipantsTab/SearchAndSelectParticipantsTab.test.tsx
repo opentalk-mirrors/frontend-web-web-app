@@ -14,7 +14,7 @@ describe('Select Participants Tab', () => {
   const mockHandleSearchChange = jest.fn();
   const mockHandleSelectParticipant = jest.fn();
 
-  test('should call passed functions', () => {
+  it('should call passed functions', () => {
     render(
       <SearchAndSelectParticipantsTab
         handleAllClick={mockHandleAllClick}
@@ -35,7 +35,7 @@ describe('Select Participants Tab', () => {
     expect(mockHandleAllClick).toHaveBeenCalled();
     expect(mockHandleSelectedClick).toHaveBeenCalled();
   });
-  test('should call handleSearchChange on input', () => {
+  it('should call handleSearchChange on input', () => {
     render(
       <SearchAndSelectParticipantsTab
         handleAllClick={mockHandleAllClick}
@@ -52,7 +52,7 @@ describe('Select Participants Tab', () => {
     fireEvent.change(searchInput, { target: { value: 'a' } });
     expect(mockHandleSearchChange).toHaveBeenCalledWith('a');
   });
-  test('should render participants', () => {
+  it('should render participants', () => {
     const participants = [1, 2, 3].map((value) => ({
       ...mockedLivekitParticipant(value),
       selected: false,
@@ -73,7 +73,7 @@ describe('Select Participants Tab', () => {
     expect(participantsList).toHaveLength(participants.length);
   });
 
-  test('should call handleSelectParticipant when a checkbox is clicked', () => {
+  it('should call handleSelectParticipant when a checkbox is clicked', () => {
     const participants = [1, 2, 3].map((value) => ({
       ...mockedLivekitParticipant(value),
       selected: false,

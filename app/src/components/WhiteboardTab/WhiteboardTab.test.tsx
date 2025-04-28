@@ -50,20 +50,20 @@ describe('WhiteboardTab', () => {
     );
   };
 
-  test('renders whiteboard assets as links', () => {
+  it('renders whiteboard assets as links', () => {
     renderComponent();
     expect(screen.getByRole('button', { name: pdfFile })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: pngFile })).toBeInTheDocument();
   });
 
-  test('dispatches startWhiteboard when start button is clicked', () => {
+  it('dispatches startWhiteboard when start button is clicked', () => {
     renderComponent();
     const startButton = screen.getByRole('button', { name: 'whiteboard-start-whiteboard-button' });
     fireEvent.click(startButton);
     expect(dispatchSpy).toHaveBeenCalledWith(startWhiteboard.action());
   });
 
-  test('dispatches generateWhiteboardPdf when create PDF button is clicked', () => {
+  it('dispatches generateWhiteboardPdf when create PDF button is clicked', () => {
     const configuredStore = configureStore({
       initialState: {
         whiteboard: { whiteboardAssetList: [], isWhiteboardAvailable: true },
@@ -79,7 +79,7 @@ describe('WhiteboardTab', () => {
     expect(dispatchSpy).toHaveBeenCalledWith(generateWhiteboardPdf.action());
   });
 
-  test('calls downloadAsset function when clicking on a file link', () => {
+  it('calls downloadAsset function when clicking on a file link', () => {
     const mockDownload = jest.fn();
     (useDownloadRoomAsset as jest.Mock).mockReturnValue(mockDownload);
 

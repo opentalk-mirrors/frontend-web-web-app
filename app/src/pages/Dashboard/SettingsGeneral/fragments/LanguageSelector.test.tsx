@@ -33,10 +33,10 @@ jest.mock('../../../../api/rest', () => ({
   ],
 }));
 
-describe('LanguageSelector component', () => {
+describe('LanguageSelector', () => {
   const { store } = configureStore();
   afterEach(() => cleanup());
-  test('render component without crashing', () => {
+  it('renders without crashing', () => {
     renderWithProviders(<LanguageSelector />, { store });
 
     expect(screen.getByDisplayValue('en-US')).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe('LanguageSelector component', () => {
     expect(screen.getByRole('combobox', { name: 'dashboard-settings-general-language' })).toBeInTheDocument();
   });
 
-  test('click on Save button should trigger mockUpdateMe', async () => {
+  it('updates on Save button', async () => {
     renderWithProviders(<LanguageSelector />, { store });
 
     const saveButton = screen.getByRole('button', { name: /dashboard-settings-profile-button-save/i });
@@ -56,7 +56,7 @@ describe('LanguageSelector component', () => {
     });
   });
 
-  test('successful UpdateMe should triggers a success notification', async () => {
+  it('triggers a success notification on successful update', async () => {
     renderWithProviders(<LanguageSelector />, { store, provider: { snackbar: true } });
 
     const saveButton = screen.getByRole('button', { name: /dashboard-settings-profile-button-save/i });

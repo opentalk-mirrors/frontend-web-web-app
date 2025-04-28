@@ -79,7 +79,7 @@ describe('InvitedParticipants', () => {
     jest.clearAllMocks();
   });
 
-  test('will render without errors', () => {
+  it('will render without errors', () => {
     renderWithProviders(<InvitedParticipants eventId={'SOME_EVENT_ID' as EventId} isUpdatable={true} />, {
       store,
       provider: { mui: true },
@@ -88,7 +88,7 @@ describe('InvitedParticipants', () => {
     expect(screen.getByTestId('InvitedParticipants')).toBeInTheDocument();
   });
 
-  test('render 3 ParticipantList components', () => {
+  it('render 3 ParticipantList components', () => {
     renderWithProviders(<InvitedParticipants eventId={'SOME_EVENT_ID' as EventId} isUpdatable={true} />, {
       store,
       provider: { mui: true },

@@ -16,7 +16,7 @@ describe('TalkingStickSortButton', () => {
     DEFAULT_PROPS.onChange.mockClear();
   });
 
-  test('should reveal sort popover when button is clicked.', () => {
+  it('should reveal sort popover when button is clicked.', () => {
     render(<TalkingStickSortButton {...DEFAULT_PROPS} />);
     const button = screen.getByText('sort-name-asc');
     fireEvent.click(button);

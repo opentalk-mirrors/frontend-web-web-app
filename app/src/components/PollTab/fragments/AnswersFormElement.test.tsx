@@ -31,12 +31,12 @@ describe('AnswersFormElement', () => {
 
   afterAll(() => cleanup());
 
-  test('unconditionally renders', () => {
+  it('renders without errors', () => {
     render(<AnswersFormElement name="test-name" />);
     expect(screen.getByText('poll-input-choices')).toHaveProperty('tagName', 'BUTTON');
   });
 
-  test('is disabled in edit mode', () => {
+  it('is disabled in edit mode', () => {
     mockUseFormikContext.mockReturnValue({
       errors: [],
       values: {

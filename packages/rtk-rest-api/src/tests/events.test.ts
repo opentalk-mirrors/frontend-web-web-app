@@ -29,7 +29,7 @@ afterAll(() => server.close());
 
 describe('Event Endpoints', () => {
   describe('GET', () => {
-    test('should return multiple events', async () => {
+    it('should return multiple events', async () => {
       const { result } = renderHook(() => useGetEventsQuery({}), {
         wrapper: storeRef.wrapper,
       });
@@ -42,7 +42,7 @@ describe('Event Endpoints', () => {
       expect(event?.data).toContainEqual(camelcaseKeysDeep(generateMockEvent(1, 'untimed')));
     });
 
-    test('should be paginated', async () => {
+    it('should be paginated', async () => {
       const { result } = renderHook(() => useGetEventsQuery({}), {
         wrapper: storeRef.wrapper,
       });
@@ -55,7 +55,7 @@ describe('Event Endpoints', () => {
       expect(events?.after).toBeDefined();
     });
 
-    test('should accept after cursor', async () => {
+    it('should accept after cursor', async () => {
       const { result } = renderHook(() => useGetEventsQuery({ after: '1' }), {
         wrapper: storeRef.wrapper,
       });
@@ -70,7 +70,7 @@ describe('Event Endpoints', () => {
   });
 
   describe('DELETE', () => {
-    test('success useDeleteEventMutation', async () => {
+    it('success useDeleteEventMutation', async () => {
       const { result } = renderHook(() => useDeleteEventMutation(), {
         wrapper: storeRef.wrapper,
       });
@@ -89,7 +89,7 @@ describe('Event Endpoints', () => {
       expect(data.endpointName).toEqual('deleteEvent');
     });
 
-    test('failing useDeleteEventMutation', async () => {
+    it('failing useDeleteEventMutation', async () => {
       const { result } = renderHook(() => useDeleteEventMutation(), {
         wrapper: storeRef.wrapper,
       });

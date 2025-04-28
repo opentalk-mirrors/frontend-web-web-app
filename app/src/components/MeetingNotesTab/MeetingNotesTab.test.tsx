@@ -20,14 +20,14 @@ describe.skip('MeetingNotesTab component tests', () => {
 
   afterAll(() => cleanup());
 
-  test('MeetingNotesTab component should be rendered without breaking', async () => {
+  it('MeetingNotesTab component should be rendered without breaking', async () => {
     await render(<MeetingNotesTab />, store);
     const nextButton = screen.getByRole('button', { name: /meeting-notes-invite-send-button/i });
     expect(nextButton).toBeInTheDocument();
     expect(nextButton).toBeDisabled();
   });
 
-  test('When there is a selected user send invitation button should be enable', async () => {
+  it('When there is a selected user send invitation button should be enable', async () => {
     const setState = jest.fn();
     jest.spyOn(React, 'useState').mockImplementationOnce(() => [initialUserValue, setState]);
 
@@ -38,7 +38,7 @@ describe.skip('MeetingNotesTab component tests', () => {
     expect(sendInvitationButton).toBeEnabled();
   });
 
-  test('Click on send invitation button should dispatch right action', async () => {
+  it('Click on send invitation button should dispatch right action', async () => {
     const sendInvitations = jest.fn();
     // const realUseState = React.useState;
     // jest.spyOn(React, 'useState').mockImplementationOnce(() => realUseState(initialUserValue));

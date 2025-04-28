@@ -23,7 +23,7 @@ describe('<ToolbarButton />', () => {
     isLobby: false,
   };
 
-  test('render ToolbarButton with context and children', () => {
+  it('renders ToolbarButton with context and children', () => {
     render(
       <ToolbarButton {...toolbarButtonProps}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
@@ -35,7 +35,7 @@ describe('<ToolbarButton />', () => {
     expect(screen.getByRole('button', { name: 'toolbarToggleButton' })).toBeInTheDocument();
   });
 
-  test('render ToolbarButton without context', () => {
+  it('renders ToolbarButton without context', () => {
     render(
       <ToolbarButton {...toolbarButtonProps} hasContext={false}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
@@ -47,7 +47,7 @@ describe('<ToolbarButton />', () => {
     expect(screen.queryByRole('button', { name: 'toolbarToggleButton' })).not.toBeInTheDocument();
   });
 
-  test('testing click on ToolbarButton', () => {
+  it('handles click events on ToolbarButton', () => {
     render(
       <ToolbarButton {...toolbarButtonProps} onClick={handleClick}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
@@ -62,7 +62,7 @@ describe('<ToolbarButton />', () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  test('testing click on disabled ToolbarButton', () => {
+  it('does not trigger click events when ToolbarButton is disabled', () => {
     render(
       <ToolbarButton {...toolbarButtonProps} openMenu={handleClick} disabled>
         <MicOnIcon data-testid="toolbarChildrenTest" />
@@ -78,7 +78,7 @@ describe('<ToolbarButton />', () => {
     expect(handleClick).not.toHaveBeenCalled();
   });
 
-  test('testing click on ToggleToolbarButton', () => {
+  it('handles click events on ToggleToolbarButton', () => {
     render(
       <ToolbarButton {...toolbarButtonProps} openMenu={handleClick}>
         <MicOnIcon data-testid="toolbarChildrenTest" />

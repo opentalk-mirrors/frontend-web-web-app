@@ -48,17 +48,17 @@ describe('ChatLiveRegion', () => {
     store = createdStore.store;
     dispatch = createdStore.store.dispatch;
   });
-  test('renders the live region', () => {
+  it('renders the live region', () => {
     renderWithProviders(<ChatLiveRegion />, { store });
 
     expect(screen.getByRole('log')).toBeInTheDocument();
   });
-  test('does not announce messages, that were received before live region were rendered', () => {
+  it('does not announce messages, that were received before live region were rendered', () => {
     renderWithProviders(<ChatLiveRegion />, { store });
 
     expect(screen.queryByTestId('chat-announcement')).not.toBeInTheDocument();
   });
-  test('announces messages from other users, that were received after live region were rendered', () => {
+  it('announces messages from other users, that were received after live region were rendered', () => {
     renderWithProviders(<ChatLiveRegion />, { store });
 
     const mockNewGlobalMessage: ChatMessage = {
@@ -73,7 +73,7 @@ describe('ChatLiveRegion', () => {
 
     expect(screen.getByTestId('chat-announcement')).toBeInTheDocument();
   });
-  test('ignores messages from us, that were received after live region were rendered', () => {
+  it('ignores messages from us, that were received after live region were rendered', () => {
     renderWithProviders(<ChatLiveRegion />, { store });
 
     const mockNewGlobalMessageFromUs: ChatMessage = {

@@ -72,7 +72,7 @@ describe('DesktopDialogContent', () => {
 
     window.config.version = version;
   });
-  it('renders all panels as tablist and tabs ', () => {
+  it('renders all panels as tablist and tabs', () => {
     renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
     const tabList = screen.getByRole('tablist', { name: 'meeting-settings-title' });
     expect(tabList).toBeInTheDocument();

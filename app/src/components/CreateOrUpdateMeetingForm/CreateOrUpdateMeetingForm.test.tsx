@@ -72,7 +72,7 @@ jest.mock('../../api/rest', () => ({
 describe('Dashboard CreateOrUpdateMeetingForm', () => {
   afterEach(() => cleanup());
 
-  test('page will not crash', () => {
+  it('page will not crash', () => {
     const { store } = configureStore();
     renderWithProviders(<CreateOrUpdateMeetingForm onForwardButtonClick={mockOnForwardButtonClick} />, {
       store,
@@ -82,7 +82,7 @@ describe('Dashboard CreateOrUpdateMeetingForm', () => {
     expect(screen.getAllByText('dashboard-meeting-textfield-title')[0]).toBeInTheDocument();
   });
 
-  test('updateEvent will be called with the right payload', async () => {
+  it('updateEvent will be called with the right payload', async () => {
     const { store } = configureStore();
     renderWithProviders(<CreateOrUpdateMeetingForm existingEvent={mockEvent} />, {
       store,

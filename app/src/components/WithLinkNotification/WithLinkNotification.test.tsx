@@ -20,7 +20,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 describe('WithLinkNotification', () => {
-  test('renders notification with a link when URL is provided', () => {
+  it('renders notification with a link when URL is provided', () => {
     const props: NotificationProps = {
       translationKey: 'test.translation',
       url: 'https://example.com',
@@ -34,7 +34,7 @@ describe('WithLinkNotification', () => {
     expect(linkElement).toHaveAttribute('target', '_blank');
   });
 
-  test('renders notification without a link when URL is not provided', () => {
+  it('renders notification without a link when URL is not provided', () => {
     const props: NotificationProps = {
       translationKey: 'test.translation',
     };

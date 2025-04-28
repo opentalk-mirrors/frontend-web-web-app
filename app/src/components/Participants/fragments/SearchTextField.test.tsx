@@ -12,7 +12,7 @@ describe('SearchTextField', () => {
   const mockOnSearch = jest.fn();
   afterEach(() => cleanup());
 
-  test('render SearchTextField component without crashing', () => {
+  it('render SearchTextField component without crashing', () => {
     renderWithProviders(<SearchTextField onSearch={mockOnSearch} />, { store });
     const searchInput = screen.getByRole('textbox', { name: 'participant-search-label' });
 
@@ -20,14 +20,14 @@ describe('SearchTextField', () => {
     expect(screen.queryByRole('button', { name: /sort-by/i })).not.toBeInTheDocument();
   });
 
-  test('render SearchTextField component with showSort flag', () => {
+  it('render SearchTextField component with showSort flag', () => {
     renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store });
     const sortButton = screen.getByRole('button', { name: /sort-by/i });
 
     expect(sortButton).toBeInTheDocument();
   });
 
-  test('add value into input should trigger onSearch()', () => {
+  it('add value into input should trigger onSearch()', () => {
     renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store });
     const searchInput = screen.getByRole('textbox', { name: 'participant-search-label' });
 
@@ -36,11 +36,11 @@ describe('SearchTextField', () => {
 
     fireEvent.change(searchInput, { target: { value: 'testing...' } });
 
-    expect(mockOnSearch).toBeCalledWith('testing...');
-    expect(mockOnSearch).toBeCalledTimes(1);
+    expect(mockOnSearch).toHaveBeenCalledWith('testing...');
+    expect(mockOnSearch).toHaveBeenCalledTimes(1);
   });
 
-  test('click on sortButton should open menu with list of sortOptionItems', () => {
+  it('click on sortButton should open menu with list of sortOptionItems', () => {
     renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store });
     const sortButton = screen.getByRole('button', { name: /sort-by/i });
     expect(sortButton).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe('SearchTextField', () => {
     items.map((item) => expect(screen.getByRole('menuitem', { name: item.i18nKey })).toBeInTheDocument());
   });
 
-  test('click on sort-raised-hand item should dispatch setParticipantsSortOption with raisedHandFirst', () => {
+  it('click on sort-raised-hand item should dispatch setParticipantsSortOption with raisedHandFirst', () => {
     renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store });
     const sortButton = screen.getByRole('button', { name: /sort-by/i });
     expect(sortButton).toBeInTheDocument();

@@ -25,7 +25,7 @@ describe('NameTile with activated media', () => {
     ]);
   });
 
-  test('render NameTile component with audio on', () => {
+  it('render NameTile component with audio on', () => {
     renderWithProviders(<NameTile displayName={participant.displayName} participantId={participant.id} />, {
       provider: { mui: true },
     });
@@ -35,7 +35,7 @@ describe('NameTile with activated media', () => {
     expect(screen.queryByTestId('micOff')).not.toBeInTheDocument();
   });
 
-  test('render NameTile component with video on', () => {
+  it('render NameTile component with video on', () => {
     renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
       provider: { mui: true },
     });
@@ -45,7 +45,7 @@ describe('NameTile with activated media', () => {
     expect(screen.queryByTestId('camOff')).not.toBeInTheDocument();
   });
 
-  test('render NameTile component with video and audio on', () => {
+  it('render NameTile component with video and audio on', () => {
     renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
       provider: { mui: true },
     });
@@ -66,7 +66,7 @@ describe('NameTile with deactivated media', () => {
     (useParticipants as jest.Mock).mockReturnValue([participant]);
   });
 
-  test('render NameTile component with audio off', () => {
+  it('render NameTile component with audio off', () => {
     renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
       provider: { mui: true },
     });
@@ -76,7 +76,7 @@ describe('NameTile with deactivated media', () => {
     expect(screen.getByTestId('micOff')).toBeInTheDocument();
   });
 
-  test('render NameTile component with video off', () => {
+  it('render NameTile component with video off', () => {
     renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
       provider: { mui: true },
     });
@@ -92,7 +92,7 @@ describe('NameTile with local media state', () => {
   const displayName = participant.displayName;
   beforeEach(() => cleanup());
 
-  test('render NameTile component with local video on', () => {
+  it('render NameTile component with local video on', () => {
     renderWithProviders(<NameTile localVideoOn localAudioOn={false} displayName={displayName} />, {
       provider: { mui: true },
     });
@@ -103,7 +103,7 @@ describe('NameTile with local media state', () => {
     expect(screen.queryByTestId('camOff')).not.toBeInTheDocument();
   });
 
-  test('render NameTile component with local audio on', () => {
+  it('render NameTile component with local audio on', () => {
     renderWithProviders(<NameTile localAudioOn localVideoOn={false} displayName={displayName} />, {
       provider: { mui: true },
     });
@@ -114,7 +114,7 @@ describe('NameTile with local media state', () => {
     expect(screen.queryByTestId('camOff')).toBeInTheDocument();
   });
 
-  test('render NameTile component with local video and audio on', () => {
+  it('render NameTile component with local video and audio on', () => {
     renderWithProviders(<NameTile localVideoOn localAudioOn displayName={displayName} />, { provider: { mui: true } });
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();

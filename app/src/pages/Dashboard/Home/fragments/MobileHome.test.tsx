@@ -37,13 +37,13 @@ jest.mock('./FavoriteMeetings', () => ({
 }));
 
 describe('MobileHome', () => {
-  test('renders header buttons', () => {
+  it('renders header buttons', () => {
     render(<MobileHome />);
     expect(screen.getByTestId('adhoc-button')).toBeInTheDocument();
     expect(screen.getByTestId('join-meeting-dialog')).toBeInTheDocument();
     expect(screen.getByTestId('new-meeting-button')).toBeInTheDocument();
   });
-  test('renders view selector and current meetings by default', () => {
+  it('renders view selector and current meetings by default', () => {
     render(<MobileHome />);
     const viewSelector = screen.getByRole('combobox', { name: 'dashboard-meeting-mobile-view-select' });
     expect(viewSelector).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe('MobileHome', () => {
 
     expect(screen.getByTestId('current-meetings')).toBeInTheDocument();
   });
-  test('renders current and favorite options in the view selector menu', async () => {
+  it('renders current and favorite options in the view selector menu', async () => {
     render(<MobileHome />);
 
     const viewSelector = screen.getByRole('combobox', { name: 'dashboard-meeting-mobile-view-select' });
@@ -65,7 +65,7 @@ describe('MobileHome', () => {
     expect(options[0]).toHaveTextContent('dashboard-current-meetings');
     expect(options[1]).toHaveTextContent('dashboard-favorite-meetings');
   });
-  test('renders favorite meetings on user selection', async () => {
+  it('renders favorite meetings on user selection', async () => {
     render(<MobileHome />);
 
     const viewSelector = screen.getByRole('combobox', { name: 'dashboard-meeting-mobile-view-select' });

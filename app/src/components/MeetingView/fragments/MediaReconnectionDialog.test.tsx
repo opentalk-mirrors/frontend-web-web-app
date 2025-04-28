@@ -9,14 +9,14 @@ import MediaReconnectionDialog from './MediaReconnectionDialog';
 describe('MediaReconnectionDialog', () => {
   const { store, dispatchSpy } = configureStore();
 
-  test('will render without errors', async () => {
+  it('will render without errors', async () => {
     renderWithProviders(<MediaReconnectionDialog />, { store, provider: { mui: true } });
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'breakout-room-notification-button-leave' })).toBeInTheDocument();
   });
 
-  test('will call hangup', async () => {
+  it('will call hangup', async () => {
     renderWithProviders(<MediaReconnectionDialog />, { store, provider: { mui: true } });
 
     fireEvent.click(screen.getByRole('button', { name: 'breakout-room-notification-button-leave' }));

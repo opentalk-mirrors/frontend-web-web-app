@@ -6,7 +6,7 @@ import { render, screen } from '@testing-library/react';
 import VoteResultCountRow from './VoteResultCountRow';
 
 describe('VoteResultCountRow', () => {
-  test('can render', () => {
+  it('can render', () => {
     render(<VoteResultCountRow total={10} />, {
       wrapper: ({ children }) => (
         <table>

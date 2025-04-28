@@ -25,7 +25,7 @@ jest.mock('../SelfTest', () => ({
 describe('Waiting view', () => {
   afterEach(() => cleanup());
 
-  test('Enter button is disabled if ConnectionState is Waiting', () => {
+  it('Enter button is disabled if ConnectionState is Waiting', () => {
     const { store } = configureStore({
       initialState: {
         room: { connectionState: ConnectionState.ReadyToEnter },

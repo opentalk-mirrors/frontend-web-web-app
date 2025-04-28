@@ -26,7 +26,7 @@ const MESSAGE = 'testMessage';
 
 describe('BreakoutRoomNotification', () => {
   afterEach(() => cleanup());
-  test('render all items', () => {
+  it('render all items', () => {
     const { store } = configureStore();
     renderWithProviders(
       <BreakoutRoomNotification
@@ -42,7 +42,7 @@ describe('BreakoutRoomNotification', () => {
     expect(screen.getByText(ACTIONS[1].text)).toBeInTheDocument();
   });
 
-  test('action called once', () => {
+  it('action called once', () => {
     const { store } = configureStore();
     renderWithProviders(
       <BreakoutRoomNotification
@@ -63,7 +63,7 @@ describe('BreakoutRoomNotification', () => {
     expect(actionFn).toHaveBeenCalledTimes(1);
   });
 
-  test('close after click on an action', () => {
+  it('close after click on an action', () => {
     const { store } = configureStore();
     renderWithProviders(
       <BreakoutRoomNotification

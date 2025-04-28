@@ -56,7 +56,7 @@ describe('LegalVoteContainer', () => {
     kind: LegalVoteKind.RollCall,
   };
 
-  test('can render', () => {
+  it('can render', () => {
     renderWithProviders(<LegalVoteContainer legalVote={legalVote} onClose={jest.fn()} isAllowedToVote />, {
       provider: { mui: true },
     });
@@ -65,16 +65,16 @@ describe('LegalVoteContainer', () => {
     expect(screen.getByText(legalVote.topic ?? '')).toBeInTheDocument();
   });
 
-  test('executes onClose callback when close button is clicked.', () => {
+  it('executes onClose callback when close button is clicked.', () => {
     const onClose = jest.fn();
     renderWithProviders(<LegalVoteContainer legalVote={legalVote} onClose={onClose} isAllowedToVote />, {
       provider: { mui: true },
     });
     fireEvent.click(screen.getByLabelText('global-close-dialog'));
-    expect(onClose).toBeCalled();
+    expect(onClose).toHaveBeenCalled();
   });
 
-  test('shows message to user who is not allowed to vote', () => {
+  it('shows message to user who is not allowed to vote', () => {
     const vote: LegalVote = {
       ...legalVote,
       allowedParticipants: ['our-id' as ParticipantId],
@@ -85,7 +85,7 @@ describe('LegalVoteContainer', () => {
     expect(screen.getByText('legal-vote-not-selected')).toBeInTheDocument();
   });
 
-  test('shows submit button to user who can place a vote', () => {
+  it('shows submit button to user who can place a vote', () => {
     const mockedUuid = 'mocked-uuid';
     const vote: LegalVote = {
       ...legalVote,
@@ -103,7 +103,7 @@ describe('LegalVoteContainer', () => {
     expect(screen.getByText('global-submit')).toBeInTheDocument();
   });
 
-  test('can show result table', () => {
+  it('can show result table', () => {
     const mockedUuid = 'mocked-uuid';
     const vote: LegalVote = {
       ...legalVote,

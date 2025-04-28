@@ -14,19 +14,19 @@ const mockDialogProps: RecurringEventDialogProps = {
 };
 
 describe('Custom Recurrence Dialog', () => {
-  test('Dialog renders correctly', () => {
+  it('renders correctly', () => {
     render(<RecurringEventDialog {...mockDialogProps} />);
 
     expect(screen.getByTestId('recurrence-dialog')).toBeInTheDocument();
   });
 
-  test('Dialog does not render if not open', () => {
+  it('does not render if not open', () => {
     render(<RecurringEventDialog {...mockDialogProps} open={false} />);
 
     expect(screen.queryByTestId('recurrence-dialog')).not.toBeInTheDocument();
   });
 
-  test('Month content renders correctly', () => {
+  it('renders correctly month content', () => {
     render(<RecurringEventDialog {...mockDialogProps} />);
 
     //For some reason after updating MUI version and <Select> swapping to role="combobox" getting it by role and name is not possible
@@ -57,7 +57,7 @@ describe('Custom Recurrence Dialog', () => {
     expect(monthSelectButton).toBeInTheDocument();
   });
 
-  test('Week content renders correctly', () => {
+  it('renders correctly week content', () => {
     renderWithProviders(<RecurringEventDialog {...mockDialogProps} />, { provider: { mui: true } });
 
     const selectButtons = screen.getAllByRole('combobox');
@@ -81,7 +81,7 @@ describe('Custom Recurrence Dialog', () => {
     expect(screen.getByTestId('weekly-options')).toBeInTheDocument();
   });
 
-  test('Date selection is enabled after selecting option "On"', () => {
+  it('enables date selection after selecting option "On"', () => {
     render(<RecurringEventDialog {...mockDialogProps} />);
 
     const datePickerInput = screen.getByRole('textbox');

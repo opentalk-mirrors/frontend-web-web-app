@@ -37,7 +37,7 @@ jest.mock('./fragments/ToolbarContainer', () => ({
 describe('SelfTest', () => {
   const { store } = configureStore();
 
-  test('render SelfTest component without crashing', () => {
+  it('renders SelfTest component without crashing', () => {
     renderWithProviders(
       <SelfTest>
         <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />
@@ -59,7 +59,7 @@ describe('SelfTest', () => {
     expect(screen.queryByTestId('toolbarEndCallButton')).not.toBeInTheDocument();
   });
 
-  test('render SelfTest header as h2', () => {
+  it('renders SelfTest header as h2', () => {
     renderWithProviders(
       <SelfTest>
         <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />
@@ -71,7 +71,7 @@ describe('SelfTest', () => {
     expect(headerElement.tagName).toBe('H2');
   });
 
-  test('render room title as h1', () => {
+  it('renders room title as h1', () => {
     renderWithProviders(
       <SelfTest>
         <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />

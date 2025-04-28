@@ -116,24 +116,24 @@ jest.mock('../../../components/SelectParticipants/SelectParticipants', () => ({
   },
 }));
 
-describe('Dashboard CreateDirectMeeting', () => {
+describe('CreateDirectMeeting', () => {
   afterEach(() => cleanup());
 
-  test('page will not crash', () => {
+  it('should render without crash', () => {
     const { store } = configureStore();
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true } });
 
     expect(screen.getByText('dashboard-direct-meeting-title')).toBeInTheDocument();
   });
 
-  test('link will be generated and filled into textfield', () => {
+  it('generates link and fills it into textfield', () => {
     const { store } = configureStore();
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true } });
 
     expect(screen.getByDisplayValue(INVITE_LINK)).toBeInTheDocument();
   });
 
-  test('click on copy icon will copy the link', async () => {
+  it('copies the link', async () => {
     const mockWriteText = jest.fn((value) => Promise.resolve(value));
     Object.defineProperty(navigator, 'clipboard', {
       writable: true,
@@ -155,7 +155,7 @@ describe('Dashboard CreateDirectMeeting', () => {
     });
   });
 
-  test('click on copy guest invite icon will copy the guest link, if link exists', async () => {
+  it('copies the guest link, if link exists', async () => {
     const mockWriteText = jest.fn((value) => Promise.resolve(value));
     Object.defineProperty(navigator, 'clipboard', {
       writable: true,

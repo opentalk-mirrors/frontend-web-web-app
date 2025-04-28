@@ -11,7 +11,7 @@ jest.mock('../../hooks/useUpdateDocumentTitle', () => ({
 }));
 
 describe('DataProtectionPage', () => {
-  test('renders without crash', () => {
+  it('renders without crash', () => {
     render(<DataProtectionPage />);
 
     expect(screen.getByRole('heading', { name: 'dashboard-legal-data-protection' })).toBeInTheDocument();

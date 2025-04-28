@@ -18,7 +18,7 @@ const mockDialogProps: CustomTrainingParticipationReportDialogProps = {
 };
 
 describe('Custom Recurrence Dialog', () => {
-  test('Dialog renders correctly', () => {
+  it('Dialog renders correctly', () => {
     render(<CustomTrainingParticipationReportDialog {...mockDialogProps} />);
 
     expect(screen.getByTestId('custom-training-participation-report-dialog')).toBeInTheDocument();

@@ -30,12 +30,12 @@ describe('<EndCallButton />', () => {
     jest.clearAllMocks();
   });
 
-  test('should render EndCallButton component', () => {
+  it('should render EndCallButton component', () => {
     renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
     expect(screen.getByTestId('toolbarEndCallButton')).toBeInTheDocument();
   });
 
-  test('If creator of meeting click on EndCallButton, popup should be displayed with delete room option', () => {
+  it('If creator of meeting click on EndCallButton, popup should be displayed with delete room option', () => {
     renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
     const endButton = screen.getByTestId('toolbarEndCallButton');
     expect(endButton).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe('<EndCallButton />', () => {
     expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
   });
 
-  test('should dispatch leave by clicking on leaveWithoutDeletingButton', () => {
+  it('should dispatch leave by clicking on leaveWithoutDeletingButton', () => {
     renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
     const endButton = screen.getByTestId('toolbarEndCallButton');
     expect(endButton).toBeInTheDocument();
@@ -76,7 +76,7 @@ describe('<EndCallButton />', () => {
     });*/
   });
 
-  test('should dispatch delete and leave by clicking on deleteMeeting button', () => {
+  it('should dispatch delete and leave by clicking on deleteMeeting button', () => {
     renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
     const endButton = screen.getByTestId('toolbarEndCallButton');
 

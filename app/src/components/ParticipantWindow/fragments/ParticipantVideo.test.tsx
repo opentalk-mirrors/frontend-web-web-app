@@ -42,13 +42,13 @@ describe('ParticipantVideo', () => {
   afterEach(() => cleanup());
 
   //TODO UNIT TESTS rewrite the tests
-  test('render participantVideo component', () => {
+  it('render participantVideo component', () => {
     renderWithProviders(<ParticipantVideo {...ParticipantWindowProps} />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
   });
 
-  test('render participantVideo component with video stream only', () => {
+  it('render participantVideo component with video stream only', () => {
     const { store } = mockStore(1, { video: true, screen: false });
     const participant = mockedParticipant(0);
     renderWithProviders(<ParticipantVideo {...ParticipantWindowProps} participantId={participant.id} />, {
@@ -59,7 +59,7 @@ describe('ParticipantVideo', () => {
     expect(screen.queryByTestId('participantSreenShareVideo')).not.toBeInTheDocument();
   });
 
-  test('render participantVideo component without any stream should only display avatar component', () => {
+  it('render participantVideo component without any stream should only display avatar component', () => {
     const { store } = mockStore(1, { video: false, screen: false });
     const participant = mockedParticipant(0);
     renderWithProviders(<ParticipantVideo {...ParticipantWindowProps} participantId={participant.id} />, {

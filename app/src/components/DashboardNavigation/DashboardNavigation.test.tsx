@@ -62,26 +62,25 @@ describe('dashboard navigation', () => {
       },
     },
   });
-  test('displays the primary navigation', () => {
+  it('displays the primary navigation', () => {
     renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
 
     expect(screen.getByTestId('PrimaryNavigation')).toBeInTheDocument();
   });
 
-  test('populates primary navigation', () => {
+  it('populates primary navigation', () => {
     renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
 
     expect(screen.getAllByTestId('PrimaryNavItem')).toHaveLength(routes.length);
   });
 
-  test('has closed secondary navigation by default', () => {
+  it('has closed secondary navigation by default', () => {
     renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
 
     expect(screen.queryByTestId('SecondaryNavigation')).toBeNull();
   });
 
-  // commented out in case of this setTimeout causes problems in infects other tests for some reason
-  test.skip('opens and closes secondary navigation', () => {
+  it.skip('opens and closes secondary navigation', () => {
     renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
     const button = screen.getAllByTestId('PrimaryNavItem')[0];
 
@@ -94,7 +93,7 @@ describe('dashboard navigation', () => {
     expect(screen.queryByTestId('SecondaryNavigation')).toBeNull();
   });
 
-  test('populates secondary navigation', () => {
+  it('populates secondary navigation', () => {
     renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
     const secondaryRoutes = routes[0].childRoutes ? routes[0].childRoutes.length : 0;
 

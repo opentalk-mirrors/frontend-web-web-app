@@ -17,12 +17,12 @@ jest.mock('@livekit/components-react', () => ({
 
 describe('<ShareScreenButton />', () => {
   const { store } = configureStore();
-  test('render ShareScreenButton component', () => {
+  it('render ShareScreenButton component', () => {
     renderWithProviders(<ShareScreenButton />, { store });
     expect(screen.getByTestId('toolbarShareScreenButton')).toBeInTheDocument();
   });
 
-  test('ShareScreenButton not visible on devices that not support share screen feature', () => {
+  it('ShareScreenButton not visible on devices that not support share screen feature', () => {
     if ('getDisplayMedia' in global.navigator.mediaDevices) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { getDisplayMedia, ...mediaDevicesProps } = global.navigator.mediaDevices;
@@ -35,7 +35,7 @@ describe('<ShareScreenButton />', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  test('Button is disabled if isLivekitUnavailable is true', async () => {
+  it('Button is disabled if isLivekitUnavailable is true', async () => {
     const { store } = configureStore({
       initialState: {
         livekit: {

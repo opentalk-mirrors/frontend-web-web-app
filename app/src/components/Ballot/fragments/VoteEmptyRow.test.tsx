@@ -6,7 +6,7 @@ import { render, screen } from '@testing-library/react';
 import VoteEmptyRow from './VoteEmptyRow';
 
 describe('VoteEmptyRow', () => {
-  test('can render', () => {
+  it('can render', () => {
     render(<VoteEmptyRow />, {
       wrapper: ({ children }) => (
         <table>

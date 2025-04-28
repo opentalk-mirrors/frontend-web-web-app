@@ -32,7 +32,7 @@ afterEach(() => {
 });
 
 describe('ThumbsRow', () => {
-  test('ThumbsRow - zero participants', () => {
+  it('ThumbsRow - zero participants', () => {
     const { store } = mockStore(0);
     renderWithProviders(<ThumbsRow thumbsPerWindow={5} thumbWidth={340} />, { store });
 
@@ -44,7 +44,7 @@ describe('ThumbsRow', () => {
     expect(screen.queryByLabelText('navigate-to-right')).not.toBeInTheDocument();
   });
 
-  test('ThumbsRow - one participant', () => {
+  it('ThumbsRow - one participant', () => {
     const { store } = mockStore(1);
 
     renderWithProviders(<ThumbsRow thumbsPerWindow={1} thumbWidth={340} />, { store });
@@ -60,7 +60,7 @@ describe('ThumbsRow', () => {
     expect(screen.queryByLabelText('navigate-to-right')).not.toBeInTheDocument();
   });
 
-  test('ThumbsRow - twelve participants - appearance', () => {
+  it('ThumbsRow - twelve participants - appearance', () => {
     const { store } = mockStore(12);
 
     // 12 participants but 5 thumbs per window
@@ -101,7 +101,7 @@ describe('ThumbsRow', () => {
   });
 
   // TODO: move this tests to Thumbnail component
-  xtest('ThumbsRow - five participants - clicks', () => {
+  it.skip('ThumbsRow - five participants - clicks', () => {
     const { store } = mockStore(5);
     const ids = store.getState().participants.ids;
 
@@ -132,7 +132,7 @@ describe('ThumbsRow', () => {
   });
 
   // TODO: move this tests to Thumbnail component
-  xtest('ThumbsRow shall fill the gap if a thumbnail participant leaves the meeting', () => {
+  it.skip('ThumbsRow shall fill the gap if a thumbnail participant leaves the meeting', () => {
     const { store } = mockStore(3);
     const ids = store.getState().participants.ids;
 

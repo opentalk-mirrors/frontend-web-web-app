@@ -34,9 +34,9 @@ afterEach(() => server.resetHandlers());
 // Clean up after the tests are finished.
 afterAll(() => server.close());
 
-describe('', () => {
+describe('users', () => {
   describe('useGetMeQuery', () => {
-    test('should return event', async () => {
+    it('should return event', async () => {
       const { useGetMeQuery } = api;
       const { result } = renderHook(() => useGetMeQuery(), {
         wrapper: storeRef.wrapper,
@@ -52,7 +52,7 @@ describe('', () => {
   });
 
   describe('useFindUsersQuery', () => {
-    test('should return users', async () => {
+    it('should return users', async () => {
       const { useFindUsersQuery } = api;
       const { result } = renderHook(() => useFindUsersQuery({ q: 'Number 2' }), {
         wrapper: storeRef.wrapper,
@@ -68,7 +68,7 @@ describe('', () => {
   });
 
   describe('useMarkFavoriteEventMutation', () => {
-    test('mark event successful', async () => {
+    it('mark event successful', async () => {
       const { useMarkFavoriteEventMutation } = api;
       const { result } = renderHook(() => useMarkFavoriteEventMutation(), {
         wrapper: storeRef.wrapper,
@@ -88,7 +88,7 @@ describe('', () => {
       expect(data.endpointName).toEqual('markFavoriteEvent');
     });
 
-    test('mark event unsuccessful', async () => {
+    it('mark event unsuccessful', async () => {
       const { useMarkFavoriteEventMutation } = api;
       const { result } = renderHook(() => useMarkFavoriteEventMutation(), {
         wrapper: storeRef.wrapper,
@@ -111,7 +111,7 @@ describe('', () => {
   });
 
   describe('useUnmarkFavoriteEventMutation', () => {
-    test('mark event successful', async () => {
+    it('mark event successful', async () => {
       const { useUnmarkFavoriteEventMutation } = api;
       const { result } = renderHook(() => useUnmarkFavoriteEventMutation(), {
         wrapper: storeRef.wrapper,
@@ -131,7 +131,7 @@ describe('', () => {
       expect(data.endpointName).toEqual('unmarkFavoriteEvent');
     });
 
-    test('mark event unsuccessful', async () => {
+    it('mark event unsuccessful', async () => {
       const { useUnmarkFavoriteEventMutation } = api;
       const { result } = renderHook(() => useUnmarkFavoriteEventMutation(), {
         wrapper: storeRef.wrapper,

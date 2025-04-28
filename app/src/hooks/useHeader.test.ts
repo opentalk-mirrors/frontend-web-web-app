@@ -12,7 +12,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('useHeader', () => {
-  test('should return the header context from useOutletContext', () => {
+  it('should return the header context from useOutletContext', () => {
     const mockContext = {
       header: '<div>Mock Header</div>',
       setHeader: jest.fn(),

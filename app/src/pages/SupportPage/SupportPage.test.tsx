@@ -11,7 +11,7 @@ jest.mock('../../hooks/useUpdateDocumentTitle', () => ({
 }));
 
 describe('SupportPage', () => {
-  test('renders without crash', () => {
+  it('renders without crash', () => {
     render(<SupportPage />);
 
     expect(screen.getByRole('heading', { name: 'dashboard-help-support' })).toBeInTheDocument();

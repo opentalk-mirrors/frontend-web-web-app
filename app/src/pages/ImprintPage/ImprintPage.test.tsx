@@ -11,7 +11,7 @@ jest.mock('../../hooks/useUpdateDocumentTitle', () => ({
 }));
 
 describe('ImprintPage', () => {
-  test('renders without crash', () => {
+  it('renders without crash', () => {
     render(<ImprintPage />);
 
     expect(screen.getByRole('heading', { name: 'dashboard-legal-imprint' })).toBeInTheDocument();

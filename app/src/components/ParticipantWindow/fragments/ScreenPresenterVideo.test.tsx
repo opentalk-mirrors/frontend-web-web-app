@@ -41,7 +41,7 @@ describe('ScreenPresenterVideo Component', () => {
   const { store } = mockStore(1, { video: true, screen: true });
   afterEach(() => cleanup());
 
-  test('render component without crashing', () => {
+  it('render component without crashing', () => {
     renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('sharedPresenterVideo')).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe('ScreenPresenterVideo Component', () => {
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
   });
 
-  test("mouse over presenter's video should display presenter's overlay", () => {
+  it("mouse over presenter's video should display presenter's overlay", () => {
     renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });
     const screenShareVideo = screen.getByTestId('sharedPresenterVideo');
 
@@ -65,7 +65,7 @@ describe('ScreenPresenterVideo Component', () => {
     expect(screen.getByTestId('screenShareVideoOverlay')).toBeInTheDocument();
   });
 
-  test("click on pinIcon in presenter's overlay should trigger togglePinVideo()", () => {
+  it("click on pinIcon in presenter's overlay should trigger togglePinVideo()", () => {
     renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} togglePin={handleClick} />, {
       store,
       provider: { mui: true },
@@ -87,7 +87,7 @@ describe('ScreenPresenterVideo Component', () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  test("click on change position icon in presenter's overlay should trigger changeVideoPosition()", () => {
+  it("click on change position icon in presenter's overlay should trigger changeVideoPosition()", () => {
     renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} changeVideoPosition={handleClick} />, {
       store,
       provider: { mui: true },
@@ -111,7 +111,7 @@ describe('ScreenPresenterVideo Component', () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  test("render component with presenter's video off should display avatar component", () => {
+  it("render component with presenter's video off should display avatar component", () => {
     const { store } = mockStore(1, { video: false, screen: true });
     renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });
 

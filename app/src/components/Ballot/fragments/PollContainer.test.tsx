@@ -54,7 +54,7 @@ describe('PollContainer', () => {
     startTime: new Date().toISOString(),
   };
 
-  test('renders expected elements', () => {
+  it('renders expected elements', () => {
     render(<PollContainer poll={poll} onClose={jest.fn()} />);
 
     expect(screen.getByText(poll.topic)).toBeInTheDocument();
@@ -62,13 +62,13 @@ describe('PollContainer', () => {
     expect(screen.getByText('global-submit')).toBeInTheDocument();
   });
 
-  test('has disabled submit button when no option is selected', () => {
+  it('has disabled submit button when no option is selected', () => {
     render(<PollContainer poll={poll} onClose={jest.fn()} />);
 
     expect(screen.getByText('global-submit')).toBeDisabled();
   });
 
-  test('has submit button enabled when option is selected', () => {
+  it('has submit button enabled when option is selected', () => {
     render(<PollContainer poll={poll} onClose={jest.fn()} />);
 
     fireEvent.click(screen.getByText('Option A'));
@@ -76,7 +76,7 @@ describe('PollContainer', () => {
     expect(screen.getByText('global-submit')).not.toBeDisabled();
   });
 
-  test('has submit button disabled when choise is submitted.', () => {
+  it('has submit button disabled when choise is submitted.', () => {
     render(<PollContainer poll={{ ...poll, voted: true }} onClose={jest.fn()} />);
 
     fireEvent.click(screen.getByText('Option A'));
@@ -84,7 +84,7 @@ describe('PollContainer', () => {
     expect(screen.getByText('global-submit')).toBeDisabled();
   });
 
-  test('executed onClose callback when close button is clicked', () => {
+  it('executed onClose callback when close button is clicked', () => {
     const onClose = jest.fn();
     render(<PollContainer poll={poll} onClose={onClose} />);
 

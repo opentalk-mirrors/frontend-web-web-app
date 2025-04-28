@@ -24,7 +24,7 @@ describe('ParticipationConfirmationDialog', () => {
     },
   });
 
-  test('show dialog if confirmationCheckpointOngoing is true', () => {
+  it('show dialog if confirmationCheckpointOngoing is true', () => {
     renderWithProviders(<ParticipationConfirmationDialog />, { store: storeOngoing, provider: { mui: true } });
 
     expect(screen.getByText('participation-confirmation-dialog-title')).toBeInTheDocument();
@@ -34,13 +34,13 @@ describe('ParticipationConfirmationDialog', () => {
     ).toBeInTheDocument();
   });
 
-  test('hide dialog if confirmationCheckpointOngoing is false', () => {
+  it('hide dialog if confirmationCheckpointOngoing is false', () => {
     renderWithProviders(<ParticipationConfirmationDialog />, { store: storeNotOngoing, provider: { mui: true } });
 
     expect(screen.queryByText('participation-confirmation-dialog-title')).not.toBeInTheDocument();
   });
 
-  test('dispatch correct actions if button is clicked', () => {
+  it('dispatch correct actions if button is clicked', () => {
     renderWithProviders(<ParticipationConfirmationDialog />, { store: storeOngoing });
 
     fireEvent.click(screen.getByRole('button', { name: 'participation-confirmation-dialog-confirm-button' }));

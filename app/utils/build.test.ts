@@ -4,7 +4,7 @@
 import { cleanPackageVersion } from './build';
 
 describe('build utils', () => {
-  test.each([
+  it.each([
     ['^1.51.1'],
     ['~1.51.1'],
     ['1.51.1'],

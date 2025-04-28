@@ -15,7 +15,7 @@ const mockEvents = [
 ];
 
 describe('EventsOverview', () => {
-  test('page will not crash', () => {
+  it('page will not crash', () => {
     const { store } = configureStore();
     renderWithProviders(
       <EventsOverview
@@ -30,7 +30,7 @@ describe('EventsOverview', () => {
     expect(screen.getAllByTestId('EventAccordion')).toHaveLength(1);
   });
 
-  test('Accordion Title should be in the document', () => {
+  it('does not render the accordion title', () => {
     const { store } = configureStore();
     renderWithProviders(
       <EventsOverview

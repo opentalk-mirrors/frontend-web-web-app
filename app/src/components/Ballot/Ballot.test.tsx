@@ -28,7 +28,7 @@ jest.mock('./fragments/ReportSection', () => ({
 
 // SPDX-License-Identifier: EUPL-1.2
 describe('Ballot', () => {
-  test('empty render on missing ids.', () => {
+  it('renders empty on missing ids', () => {
     (mockUseAppSelector as jest.Mock).mockReturnValue(undefined);
     render(<Ballot />);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -39,7 +39,7 @@ describe('Ballot', () => {
       (mockUseAppSelector as jest.Mock).mockReset();
     });
 
-    test('can render poll dialog', () => {
+    it('can render poll dialog', () => {
       (mockUseAppSelector as jest.Mock)
         .mockReturnValueOnce(undefined) // voteIdToShow
         .mockReturnValueOnce(undefined) // pollIdToShow
@@ -51,7 +51,7 @@ describe('Ballot', () => {
       expect(screen.getByTestId('poll-container')).toBeInTheDocument();
     });
 
-    test('can render legal vote dialog with report section', () => {
+    it('can render legal vote dialog with report section', () => {
       (mockUseAppSelector as jest.Mock)
         .mockReturnValueOnce(undefined) // voteIdToShow
         .mockReturnValueOnce(undefined) // pollIdToShow
@@ -66,7 +66,7 @@ describe('Ballot', () => {
       expect(screen.getByTestId('report-section')).toBeInTheDocument();
     });
 
-    test('executes onClose callback on escape key', () => {
+    it('executes onClose callback on escape key', () => {
       (mockUseAppSelector as jest.Mock)
         .mockReturnValueOnce(undefined) // voteIdToShow
         .mockReturnValueOnce(undefined) // pollIdToShow
@@ -76,7 +76,7 @@ describe('Ballot', () => {
       render(<Ballot />);
       const dialog = screen.getByRole('dialog');
       fireEvent.keyDown(dialog, { key: 'Escape', code: 'Escape', charCode: 0 });
-      expect(mockDispatch).toBeCalledTimes(3);
+      expect(mockDispatch).toHaveBeenCalledTimes(3);
     });
   });
 });

@@ -38,7 +38,7 @@ const mockUseHeader = useHeader as jest.Mock;
 describe('Home', () => {
   beforeEach(() => mockUseHeader.mockReturnValue({ setHeader: jest.fn() }));
 
-  test('renders desktop view', () => {
+  it('renders desktop view', () => {
     const isDesktop = true;
     mockUseIsDesktop.mockReturnValue(isDesktop);
 
@@ -47,7 +47,7 @@ describe('Home', () => {
     expect(screen.getByTestId('desktop-home')).toBeInTheDocument();
   });
 
-  test('renders mobile view', () => {
+  it('renders mobile view', () => {
     const isDesktop = false;
     mockUseIsDesktop.mockReturnValue(isDesktop);
 
@@ -55,12 +55,12 @@ describe('Home', () => {
     expect(screen.getByTestId('mobile-home')).toBeInTheDocument();
   });
 
-  test('updates the document title', () => {
+  it('updates the document title', () => {
     render(<Home />);
     expect(useUpdateDocumentTitle).toHaveBeenCalledWith('dashboard-current-meetings');
   });
 
-  test('renders the banner container into the document header', () => {
+  it('renders the banner container into the document header', () => {
     const mockSetHeader = jest.fn();
     mockUseHeader.mockReturnValue({ setHeader: mockSetHeader });
 

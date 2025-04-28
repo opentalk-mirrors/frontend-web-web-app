@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import eslint from '@eslint/js';
+import jest from 'eslint-plugin-jest';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -17,7 +18,7 @@ export default defineConfig([
     '**/coverage/**',
     'app/public/tflite/**',
     'app/public/config.js',
-    'packages/rtk-rest-api/example/**'
+    'packages/rtk-rest-api/example/**',
   ]),
   eslint.configs.recommended,
   tseslint.configs.recommended,
@@ -31,7 +32,7 @@ export default defineConfig([
       react: {
         version: 'detect',
       },
-    },      
+    },
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -48,6 +49,22 @@ export default defineConfig([
         },
       ],
       '@typescript-eslint/no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
+    },
+  },
+  {
+    name: 'jest',
+    settings: {
+      jest: {
+        version: 'detect',
+      },
+    },
+    files: ['**/*.test.{ts,tsx}'],
+    ...jest.configs['flat/recommended'],
+    rules: {
+      ...jest.configs['flat/recommended'].rules,
+      'jest/no-commented-out-tests': 'off',
+      'jest/no-disabled-tests': 'off',
+      'jest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
     },
   },
   {

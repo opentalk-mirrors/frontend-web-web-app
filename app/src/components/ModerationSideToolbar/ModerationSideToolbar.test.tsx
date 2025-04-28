@@ -46,21 +46,21 @@ describe('ModerationSideToolbar', () => {
     jest.clearAllMocks();
   });
 
-  test('renders all tabs and dividers correctly', () => {
+  it('renders all tabs and dividers correctly', () => {
     renderComponent();
     expect(screen.getByTestId('chat-icon')).toBeInTheDocument();
     expect(screen.getByTestId('poll-icon')).toBeInTheDocument();
     expect(screen.getByRole('presentation')).toBeInTheDocument(); // Divider
   });
 
-  test('calls onSelect with correct tabKey when a tab is clicked', () => {
+  it('calls onSelect with correct tabKey when a tab is clicked', () => {
     renderComponent();
     const chatTab = screen.getByRole('tab', { name: /vote/i });
     fireEvent.click(chatTab);
     expect(mockOnSelect).toHaveBeenCalledWith('vote');
   });
 
-  test('renders tooltip content using translation keys', () => {
+  it('renders tooltip content using translation keys', () => {
     renderComponent();
 
     expect(screen.getByLabelText('tooltip.chat')).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe('ModerationSideToolbar', () => {
     expect(screen.getByLabelText('tooltip.vote')).toBeInTheDocument();
   });
 
-  test('disabled tab cannot be clicked', () => {
+  it('prevents clicking on disabled tab', () => {
     renderComponent();
     const disabledTab = screen.getByRole('tab', { name: /tooltip.poll/i });
     fireEvent.click(disabledTab);

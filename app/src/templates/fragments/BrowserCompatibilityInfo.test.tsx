@@ -17,7 +17,7 @@ jest.mock('../../components/ConfirmBrowserDialog/ConfirmBrowserDialog', () => ({
 }));
 
 describe('BrowserCompatibilityInfo', () => {
-  test('render children', () => {
+  it('renders children', () => {
     (browser.isBrowserConfirmed as jest.Mock).mockReturnValue(true);
 
     const TestChild = () => <div role="contentinfo" />;
@@ -29,7 +29,7 @@ describe('BrowserCompatibilityInfo', () => {
 
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
   });
-  test('render ConfirmBrowserDialog', () => {
+  it('renders ConfirmBrowserDialog', () => {
     (browser.isBrowserConfirmed as jest.Mock).mockReturnValue(false);
 
     const TestChild = () => <div role="contentinfo" />;
@@ -41,13 +41,13 @@ describe('BrowserCompatibilityInfo', () => {
 
     expect(screen.getByRole('document')).toBeInTheDocument();
   });
-  test('notification will be shown for safari', () => {
+  it('shows notification for safari', () => {
     (browser.isSafari as jest.Mock).mockReturnValue(true);
     render(<BrowserCompatibilityInfo />);
 
     expect(notificationAction).toHaveBeenCalledTimes(1);
   });
-  test('notification will be not shown for non-safari', () => {
+  it('does not show notification for for non-safari', () => {
     (browser.isSafari as jest.Mock).mockReturnValue(false);
     render(<BrowserCompatibilityInfo />);
 
