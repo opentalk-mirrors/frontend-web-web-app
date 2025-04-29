@@ -122,13 +122,16 @@ const ModerationSideToolbar = ({ onSelect, displayedTabs, activeTab }: Moderatio
           key={tab.key}
           icon={
             <Tooltip placement="right" title={renderTooltipTitle(tab)}>
-              <Box component="span">{tab.icon}</Box>
+              <Box component="span" sx={{ p: 1 }}>
+                {tab.icon}
+              </Box>
             </Tooltip>
           }
           id={tab.key}
           value={tab.key}
           disabled={tab.disabled || isRoomDeleted}
           aria-controls={`tabpanel-${tab.key}`}
+          sx={{ padding: 0 }}
         />
       )
     );
