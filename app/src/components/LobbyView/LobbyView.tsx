@@ -19,6 +19,7 @@ import { HiddenIcon, VisibleIcon } from '../../assets/icons';
 import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { CommonTextField as DefaultCommonTextField, notifications } from '../../commonComponents';
 import SuspenseLoading from '../../commonComponents/SuspenseLoading/SuspenseLoading';
+import { DISPLAY_NAME_MAX_CHARACTERS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
@@ -97,7 +98,6 @@ const showWrongPasswordNotification = () => {
 };
 
 const JOIN_FORM_ID = 'join-form';
-const DISPLAY_NAME_MAX_CHARACTERS = 100;
 
 const LobbyView = () => {
   const { t } = useTranslation();
