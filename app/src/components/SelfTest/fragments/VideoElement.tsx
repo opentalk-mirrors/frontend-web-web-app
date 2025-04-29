@@ -90,7 +90,16 @@ const VideoElement = () => {
   useEffect(() => {
     applyBackgroundEffectToTrack(videoTrack, videoBackgroundEffects, (loading) => {
       dispatch(setBackgroundEffectsLoading(loading));
-    });
+    })
+      .then((stream) => {
+        if (videoRef.current && stream) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.playsInline = true;
+        }
+      })
+      .catch((error) => {
+        console.error('Error starting processor', error);
+      });
   }, [videoTrack, videoBackgroundEffects.style, videoBackgroundEffects.imageUrl]);
 
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);

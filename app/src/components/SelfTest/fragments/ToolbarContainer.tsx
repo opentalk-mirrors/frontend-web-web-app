@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ProcessorWrapper } from '@livekit/track-processors';
 import { Stack, styled, useMediaQuery, useTheme } from '@mui/material';
 import { LocalAudioTrack } from 'livekit-client';
 import { ReactNode } from 'react';
@@ -10,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { BackIcon } from '../../../assets/icons';
 import { CircularIconButton as CircularIconButtonDefault } from '../../../commonComponents';
 import useNavigateToHome from '../../../hooks/useNavigateToHome';
+import { isBackgroundEffectSupported } from '../../../utils/mediaUtils';
 import AudioButton from '../../Toolbar/fragments/AudioButton';
 import BlurScreenButton from '../../Toolbar/fragments/BlurScreenButton';
 import VideoButton from '../../Toolbar/fragments/VideoButton';
@@ -60,8 +60,6 @@ const ToolbarContainer = ({ children, actionButton, localAudioTrack, waitingRoom
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const isBackgroundAndBlurringSupported = ProcessorWrapper.isSupported;
-
   return (
     <Container>
       <Stack
@@ -81,7 +79,7 @@ const ToolbarContainer = ({ children, actionButton, localAudioTrack, waitingRoom
         <ButtonStack spacing={2} direction="row" waitingRoom={waitingRoom}>
           <AudioButton isLobby localAudioTrack={localAudioTrack} />
           <VideoButton isLobby />
-          {isBackgroundAndBlurringSupported && <BlurScreenButton isLobby />}
+          {isBackgroundEffectSupported() && <BlurScreenButton isLobby />}
           {waitingRoom && actionButton}
         </ButtonStack>
         {!waitingRoom && actionButton}

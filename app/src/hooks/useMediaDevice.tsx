@@ -26,7 +26,7 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
   const videoDeviceId = useAppSelector(selectVideoDeviceId);
   const audioDeviceId = useAppSelector(selectAudioDeviceId);
   const dispatch = useAppDispatch();
-  const { devices, setActiveMediaDevice } = useMediaDeviceSelect({
+  const { devices, setActiveMediaDevice, activeDeviceId } = useMediaDeviceSelect({
     kind,
     requestPermissions: false,
   });
@@ -34,10 +34,10 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
 
   useEffect(() => {
     if (connectionState === ConnectionState.Online || connectionState === ConnectionState.Leaving) {
-      if (kind === 'audioinput' && audioDeviceId) {
+      if (kind === 'audioinput' && audioDeviceId && activeDeviceId !== audioDeviceId) {
         setActiveMediaDevice(audioDeviceId);
       }
-      if (kind === 'videoinput' && videoDeviceId) {
+      if (kind === 'videoinput' && videoDeviceId && activeDeviceId !== videoDeviceId) {
         setActiveMediaDevice(videoDeviceId);
       }
     }

@@ -179,7 +179,7 @@ export const applyBackgroundEffect = createAsyncThunk<void, void, { state: RootS
     if (videoTrack) {
       await applyBackgroundEffectToTrack(videoTrack, videoBackgroundEffects, (loading) => {
         dispatch(setBackgroundEffectsLoading(loading));
-      });
+      }); // let errors bubble up as rejected state;
     }
   }
 );
