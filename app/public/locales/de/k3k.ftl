@@ -445,24 +445,25 @@ no-votes-in-conference = Es gibt keine Abstimmungen in dieser Konferenz im Momen
 
 room-title-info-button-aria-label = Meetingdetails teilen
 
-breakout-room-tab-title = Breakout-Räume erstellen
+breakout-room-tab-title = Breakout-Räume
+breakout-room-form-field-based-on = Nach Anzahl der
 breakout-room-form-field-rooms = Anzahl der Räume
 breakout-room-form-field-participants-per-room = Anzahl der Teilnehmer
 breakout-room-form-field-random-distribution = zufällige Zuweisung
 breakout-room-form-field-include-moderators = inklusive Moderatoren
 
-breakout-room-form-error-min-room = zu wenig Räume
-breakout-room-form-error-max-room = zu viele Räume
+breakout-room-form-error-min-rooms = zu wenig Räume
+breakout-room-form-error-max-rooms = zu viele Räume
 breakout-room-form-error-min-participants = zu wenig Teilnehmer
-breakout-room-form-error-max-room = zu viele Teilnehmer
+breakout-room-form-error-max-participants = zu viele Teilnehmer
 breakout-room-form-error-expanded = Bitte öffne ein Menü
 
 breakout-room-tab-by-rooms = Nach Anzahl der Räume
 breakout-room-tab-by-participants = Nach Anzahl der Teilnehmer
 breakout-room-tab-by-groups = Nach Gruppen
 breakout-room-tab-by-moderators = Nach Moderatoren
-breakout-room-create-button = Räume erstellen
-breakout-room-create-button-disabled = Unzureichende Anzahl an Konferenzteilnehmern
+breakout-room-start-button = Räume starten
+breakout-room-start-button-disabled = Unzureichende Anzahl an Konferenzteilnehmern
 
 breakout-room-rooms-created-by-participants = {$rooms} Räume
 breakout-room-assignable-participants-per-rooms = Weise {$participantsPerRoom} Teilnehmer pro Raum zu
@@ -656,6 +657,7 @@ global-minute = { $count ->
 }
 global-participant = Teilnehmer
 global-participants = Teilnehmer
+global-rooms = Räume
 global-save = Speichern
 global-save-changes = Änderungen speichern
 global-password = Passwort

@@ -1,298 +1,303 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, styled } from '@mui/material';
-import { FormikProps } from 'formik';
-import { FormikWizard, Step } from 'formik-wizard-form';
-import { FormikValues } from 'formik/dist/types';
+import { Box, Button, MenuItem, Select, Stack, Switch, styled } from '@mui/material';
+import { FormikValues, useFormik } from 'formik';
 import i18next from 'i18next';
-import { get, shuffle } from 'lodash';
-import React, { useCallback, useRef } from 'react';
+import { reduce, shuffle } from 'lodash';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 
 import { start } from '../../../api/types/outgoing/breakout';
-import { BackIcon, NoOfParticipantsIcon, NoOfRoomsIcon } from '../../../assets/icons';
-import { AccordionItem, ErrorFormMessage, notifications } from '../../../commonComponents';
+import {
+  CommonFormItem,
+  CommonTextField,
+  DurationField,
+  ErrorFormMessage,
+  notifications,
+} from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectCombinedParticipantsAndUser, selectCombinedParticipantsAndUserCount } from '../../../store/selectors';
 import { Participant } from '../../../types';
 import { spliceIntoChunks } from '../../../utils/arrayUtils';
+import { formikDurationFieldProps, formikProps, formikSwitchProps } from '../../../utils/formikUtils';
+import { generateUniqueId } from '../../../utils/stringUtils';
 import { Seconds } from '../../../utils/tsUtils';
-import CreateByParticipantsForm from './CreateByParticipantsForm';
-import CreateByRoomsForm from './CreateByRoomsForm';
-import ParticipantsSelector, { BreakoutRoomWithFullParticipants } from './ParticipantsSelector';
-import { AccordionOptions } from './constants';
-
-type Expanded = string | false;
+import { DurationFieldWrapper } from '../../DurationFieldWrapper';
+import TextWithDivider from '../../TextWithDivider';
+import ParticipantsSelector from './ParticipantsSelector';
+import { DropdownOptions } from './constants';
 
 const Form = styled('form')({
   flex: 1,
   overflow: 'hidden',
 });
 
-class HandleSubmit extends React.Component<{ handleNext: () => void; formik: FormikProps<FormikValues> }> {
-  componentDidMount() {
-    if (this.props.formik.submitCount === 0) {
-      this.props.handleNext();
-    }
-  }
-  render() {
-    return null;
-  }
+const NumberInput = styled(CommonTextField)(({ theme }) => ({
+  width: '4rem',
+  '& input': {
+    paddingRight: theme.spacing(0),
+    textAlign: 'center',
+  },
+}));
+
+const validationSchema = Yup.object({
+  selectionMode: Yup.mixed<DropdownOptions>()
+    .oneOf([...Object.values(DropdownOptions)], i18next.t('breakout-room-form-error-expanded'))
+    .required(i18next.t('breakout-room-form-error-expanded')),
+  rooms: Yup.number().when('selectionMode', ([selectionMode], schema, context) =>
+    selectionMode === DropdownOptions.Rooms
+      ? schema
+          .min(2, i18next.t('breakout-room-form-error-min-rooms'))
+          .max(context.context.maxRooms, i18next.t('breakout-room-form-error-max-rooms'))
+      : schema
+  ),
+  participantsPerRoom: Yup.number().when('selectionMode', ([selectionMode], schema, context) =>
+    selectionMode === DropdownOptions.Participants
+      ? schema
+          .min(2, i18next.t('breakout-room-form-error-min-participants'))
+          .max(context.context.maxParticipantsPerRoom, i18next.t('breakout-room-form-error-max-participants'))
+      : schema
+  ),
+});
+
+export interface BreakoutRoomWithFullParticipants {
+  name: string;
+  assignments: Participant[];
 }
 
-const validationSchema = () =>
-  Yup.object({
-    expanded: Yup.mixed<AccordionOptions>()
-      .oneOf([...Object.values(AccordionOptions)], i18next.t('breakout-room-form-error-expanded'))
-      .required(i18next.t('breakout-room-form-error-expanded')),
-    rooms: Yup.object().when('expanded', ([expanded], schema) =>
-      expanded === AccordionOptions.Rooms
-        ? schema.shape({
-            rooms: Yup.number().min(2, i18next.t('breakout-room-form-error-min-room')),
-          })
-        : schema
-    ),
-    participants: Yup.object().when('expanded', ([expanded], schema) =>
-      expanded === AccordionOptions.Participants
-        ? schema.shape({
-            participantsPerRoom: Yup.number().min(2, i18next.t('breakout-room-form-error-min-participants')),
-          })
-        : schema
-    ),
-  });
+interface CreateRoomsFormikValues {
+  selectionMode: DropdownOptions;
+  duration?: Seconds;
+  distribution: boolean;
+  assignments: BreakoutRoomWithFullParticipants[];
+  rooms: number;
+  participantsPerRoom: number;
+  maxParticipantsPerRoom: number;
+  maxRooms: number;
+}
+
+const MINIMUM_PARTICIPANTS_PER_ROOM = 2;
+const MINIMUM_NUMBER_OF_ROOMS = 2;
 
 const CreateRoomsForm = () => {
-  const [expanded, setExpanded] = React.useState<Expanded>(false);
-  const dispatch = useAppDispatch();
-  const participantsTotal = useAppSelector(selectCombinedParticipantsAndUserCount);
-  const participants = useAppSelector(selectCombinedParticipantsAndUser);
-  const insufficientParticipants = participantsTotal < 4;
   const { t } = useTranslation();
-  const handleNextRef = useRef<() => void>();
-  const handlePrevRef = useRef<() => void>();
-
-  const handleNext = useCallback(() => {
-    if (insufficientParticipants) {
-      notifications.error(t('breakout-room-create-button-disabled'));
-      return;
-    }
-
-    handleNextRef.current?.();
-  }, [insufficientParticipants, t]);
-
-  const handleChange =
-    (panel: string, formik: FormikProps<FormikValues>) => (event: React.ChangeEvent<unknown>, newExpanded: boolean) => {
-      const expanded = newExpanded ? panel : false;
-      setExpanded(expanded);
-      formik.setFieldValue('expanded', expanded);
-      formik.setErrors({});
-    };
-
-  const handleStepBackOnParticipantSelector = (formik: FormikProps<FormikValues>) => {
-    handlePrevRef.current?.();
-    formik.setFieldValue(`${formik.values.expanded}.assignments`, []);
-  };
-
-  const steps: Step[] = React.useMemo(
-    () => [
-      {
-        component: (formik) => (
-          <Box
-            sx={{
-              overflow: 'auto',
-              height: '100%',
-            }}
-          >
-            <AccordionItem
-              onChange={handleChange(AccordionOptions.Rooms, formik)}
-              option={AccordionOptions.Rooms}
-              expanded={expanded === AccordionOptions.Rooms}
-              summaryText={t('breakout-room-tab-by-rooms')}
-              summaryIcon={<NoOfRoomsIcon />}
-              headingComponent="h4"
-            >
-              <CreateByRoomsForm formName={AccordionOptions.Rooms} handleNext={handleNext} />
-            </AccordionItem>
-            <AccordionItem
-              onChange={handleChange(AccordionOptions.Participants, formik)}
-              option={AccordionOptions.Participants}
-              expanded={expanded === AccordionOptions.Participants}
-              summaryText={t('breakout-room-tab-by-participants')}
-              summaryIcon={<NoOfParticipantsIcon />}
-              headingComponent="h4"
-            >
-              <CreateByParticipantsForm formName={AccordionOptions.Participants} handleNext={handleNext} />
-            </AccordionItem>
-            {formik.errors.expanded && <ErrorFormMessage helperText={t(formik.errors.expanded as string)} />}
-          </Box>
-        ),
-        validationSchema: validationSchema(),
-      },
-      {
-        component: (formik) => {
-          const formState = get(formik.values, formik.values.expanded, undefined);
-          return formState.distribution ? (
-            <HandleSubmit handleNext={handleNextRef.current as () => void} formik={formik} />
-          ) : (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                flex: 1,
-                height: '100%',
-                gap: 1,
-              }}
-            >
-              <Box>
-                <Button
-                  variant="text"
-                  size="small"
-                  startIcon={<BackIcon />}
-                  onClick={() => handleStepBackOnParticipantSelector(formik)}
-                >
-                  {t('user-selection-button-back')}
-                </Button>
-              </Box>
-              <Box
-                sx={{
-                  overflow: 'hidden',
-                  flex: 1,
-                }}
-              >
-                <ParticipantsSelector
-                  onSubmit={handleNextRef.current as () => void}
-                  formName={formik.values.expanded}
-                  name={`${formik.values.expanded}.assignments`}
-                />
-              </Box>
-            </Box>
-          );
-        },
-      },
-    ],
-    [expanded, t, handleNext]
-  );
+  const dispatch = useAppDispatch();
+  const participants = useAppSelector(selectCombinedParticipantsAndUser);
+  const participantsTotal = useAppSelector(selectCombinedParticipantsAndUserCount);
+  const insufficientParticipants = participantsTotal < 4;
+  const [error, setError] = useState<string | null>(null);
 
   const generateRandomAssignments = (rooms: number) => {
-    const shuffledParticipants = shuffle(participants);
-    const chunkedParticipants: Array<Array<Participant>> = spliceIntoChunks(shuffledParticipants, rooms);
-
-    const breakoutRoomAssignments: BreakoutRoomWithFullParticipants[] = chunkedParticipants.map(
-      (participants, index) => ({
-        name: t('room', { roomNumber: index + 1 }),
-        assignments: participants,
-      })
-    );
-    return breakoutRoomAssignments;
+    const shuffled = shuffle(participants);
+    return spliceIntoChunks(shuffled, rooms).map((group, i) => ({
+      name: t('room', { roomNumber: i + 1 }),
+      assignments: group,
+    }));
   };
 
-  const mapParticipantsToParticipantIds = (participants: Participant[]) =>
-    participants.map((participant) => participant.id);
+  const mapToIds = (participants: Participant[]) => participants.map((p) => p.id);
 
-  const startByRooms = (values: FormikValues) => {
-    const { duration, rooms, assignments, distribution } = get(values, values.expanded, undefined);
-    let assignedParticipants = assignments as BreakoutRoomWithFullParticipants[];
-    if (distribution) {
-      assignedParticipants = generateRandomAssignments(rooms);
-    }
+  const toRoomPayload = (assignments: BreakoutRoomWithFullParticipants[]) =>
+    assignments.map((room) => ({
+      ...room,
+      assignments: mapToIds(room.assignments),
+    }));
 
-    dispatch(
-      start.action({
-        duration: duration ? ((duration * 60) as Seconds) : undefined,
-        strategy: 'manual',
-        rooms: assignedParticipants.map((breakoutRoom) => ({
-          ...breakoutRoom,
-          assignments: mapParticipantsToParticipantIds(breakoutRoom.assignments),
-        })),
-      })
-    );
-  };
-
-  const startByParticipants = (values: FormikValues) => {
-    const { duration, participantsPerRoom, assignments, distribution } = get(values, values.expanded, undefined);
-    const rooms = Math.floor(participantsTotal / participantsPerRoom);
-    let assignedParticipants = assignments as BreakoutRoomWithFullParticipants[];
-    if (distribution) {
-      assignedParticipants = generateRandomAssignments(rooms);
-    }
-
-    dispatch(
-      start.action({
-        duration: duration ? ((duration * 60) as Seconds) : undefined,
-        strategy: 'manual',
-        rooms: assignedParticipants.map((breakoutRoom) => ({
-          ...breakoutRoom,
-          assignments: mapParticipantsToParticipantIds(breakoutRoom.assignments),
-        })),
-      })
-    );
-  };
-
-  // todo include/exclude moderators
-  const hasSubmittedRef = useRef(false);
-  const handleSubmit = (values: FormikValues) => {
-    if (hasSubmittedRef.current) {
+  const handleSubmit = (values: CreateRoomsFormikValues, { setSubmitting }: FormikValues) => {
+    if (insufficientParticipants) {
+      notifications.error(t('breakout-room-start-button-disabled'));
+      setSubmitting(false);
       return;
     }
 
-    hasSubmittedRef.current = true;
+    const { duration, assignments, distribution } = values;
 
-    switch (values.expanded) {
-      case AccordionOptions.Rooms:
-        startByRooms(values);
-        break;
-      case AccordionOptions.Participants:
-        startByParticipants(values);
-        break;
-      case AccordionOptions.Groups:
-      case AccordionOptions.Moderators:
-      default:
+    const calculatedRooms =
+      values.selectionMode === DropdownOptions.Rooms
+        ? values.rooms
+        : Math.floor(participantsTotal / values.participantsPerRoom);
+
+    const actualAssignments = distribution ? generateRandomAssignments(calculatedRooms) : assignments;
+
+    dispatch(
+      start.action({
+        duration,
+        strategy: 'manual',
+        rooms: toRoomPayload(actualAssignments),
+      })
+    );
+
+    setSubmitting(false);
+  };
+
+  const maxParticipantsPerRoom = Math.max(2, Math.floor(participantsTotal / MINIMUM_PARTICIPANTS_PER_ROOM));
+  const maxRooms = Math.max(2, Math.floor(participantsTotal / MINIMUM_NUMBER_OF_ROOMS));
+
+  const formik = useFormik<CreateRoomsFormikValues>({
+    initialValues: {
+      selectionMode: DropdownOptions.Rooms,
+      duration: undefined,
+      distribution: false,
+      assignments: [],
+      rooms: 2,
+      participantsPerRoom: 2,
+      maxParticipantsPerRoom,
+      maxRooms,
+    },
+    validationSchema,
+    validateOnChange: true,
+    validateOnBlur: false,
+    onSubmit: handleSubmit,
+  });
+
+  const ariaId = generateUniqueId();
+
+  const { calculatedParticipantsPerRoom, roomCreationInfoText } = useMemo(() => {
+    if (formik.values.selectionMode === DropdownOptions.Rooms) {
+      const calculatedParticipantsPerRoom = Math.max(2, Math.floor(participantsTotal / formik.values.rooms + 0.5));
+      return {
+        calculatedParticipantsPerRoom,
+        roomCreationInfoText: t('breakout-room-rooms-created-by-participants', { rooms: formik.values.rooms }),
+      };
+    }
+
+    return {
+      calculatedParticipantsPerRoom: formik.values.participantsPerRoom,
+      roomCreationInfoText: t('breakout-room-assignable-participants-per-rooms', {
+        participantsPerRoom: `${formik.values.participantsPerRoom}-${formik.values.participantsPerRoom + 1}`,
+      }),
+    };
+  }, [formik.values.selectionMode, formik.values.rooms, formik.values.participantsPerRoom, participantsTotal, t]);
+
+  const allParticipantsAssigned = () => {
+    const assignedParticipantsCount = reduce(
+      formik.values.assignments,
+      (acc, { assignments }) => acc + assignments.length,
+      0
+    );
+    return assignedParticipantsCount === participants.length;
+  };
+
+  const validateAssignments = (maxPerRoom: number) => {
+    const valid =
+      formik.values.assignments.every(
+        ({ assignments }) => assignments.length > 0 && assignments.length <= maxPerRoom
+      ) && allParticipantsAssigned();
+    return {
+      valid,
+      error: valid ? null : t('user-selection-error-invalid-room-assignments'),
+    };
+  };
+
+  const validateBreakoutRoomAssignment = (): { valid: boolean; error: string | null } => {
+    if (formik.values.selectionMode === DropdownOptions.Rooms) {
+      return validateAssignments(Math.ceil(participants.length / formik.values.rooms));
+    }
+    if (formik.values.selectionMode === DropdownOptions.Participants) {
+      return validateAssignments(calculatedParticipantsPerRoom);
+    }
+    return {
+      valid: true,
+      error: null,
+    };
+  };
+
+  const customSubmit = () => {
+    if (formik.values.distribution) {
+      formik.handleSubmit();
+      return;
+    }
+
+    const { valid, error } = validateBreakoutRoomAssignment();
+    if (valid) {
+      formik.handleSubmit();
+    } else {
+      setError(error);
     }
   };
 
   return (
-    <FormikWizard
-      initialValues={{
-        rooms: {
-          duration: undefined,
-          rooms: 2,
-          distribution: false,
-          includeModerators: false,
-          assignments: [],
-        },
-        participants: {
-          duration: undefined,
-          participantsPerRoom: 2,
-          distribution: false,
-          includeModerators: false,
-          assignments: [],
-        },
-        groups: {
-          duration: undefined,
-          includeModerators: false,
-        },
-        moderators: {
-          duration: undefined,
-          distribution: false,
-          includeModerators: true,
-          assignments: [],
-        },
-      }}
-      onSubmit={handleSubmit}
-      validateOnNext
-      activeStepIndex={0}
-      steps={steps}
-      validateOnBlur={false}
-      validateOnChange={false}
-    >
-      {({ renderComponent, handlePrev, handleNext }) => {
-        handleNextRef.current = handleNext;
-        handlePrevRef.current = handlePrev;
-        return <Form>{renderComponent()}</Form>;
-      }}
-    </FormikWizard>
+    <Form onSubmit={formik.handleSubmit} sx={{ overflow: 'auto' }}>
+      <Box sx={{ marginBottom: 2 }}>
+        <Stack
+          spacing={2}
+          direction="column"
+          sx={{
+            justifyContent: 'flex-start',
+          }}
+        >
+          <DurationFieldWrapper>
+            <DurationField
+              {...formikDurationFieldProps('duration', formik, 0)}
+              ButtonProps={{
+                size: 'small',
+              }}
+              min={0}
+            />
+          </DurationFieldWrapper>
+          <CommonFormItem
+            {...formikProps('selectionMode', formik)}
+            label={t('breakout-room-form-field-based-on')}
+            control={
+              <Select labelId={`${ariaId}-selectionMode`} name="selectionMode">
+                <MenuItem value={DropdownOptions.Rooms}>{t('global-rooms')}</MenuItem>
+                <MenuItem value={DropdownOptions.Participants}>{t('global-participants')}</MenuItem>
+              </Select>
+            }
+          />
+          {formik.values.selectionMode === DropdownOptions.Participants ? (
+            <CommonFormItem
+              {...formikProps('participantsPerRoom', formik)}
+              label={t('breakout-room-form-field-participants-per-room')}
+              control={
+                <NumberInput
+                  type="number"
+                  slotProps={{ htmlInput: { min: 2, max: formik.values.maxParticipantsPerRoom } }}
+                />
+              }
+            />
+          ) : (
+            <CommonFormItem
+              {...formikProps('rooms', formik)}
+              label={t('breakout-room-form-field-rooms')}
+              control={<NumberInput type="number" slotProps={{ htmlInput: { min: 2, max: formik.values.maxRooms } }} />}
+            />
+          )}
+          <CommonFormItem
+            {...formikSwitchProps('distribution', formik)}
+            control={<Switch color="primary" />}
+            label={t('breakout-room-form-field-random-distribution')}
+          />
+          <TextWithDivider variant="caption" id={ariaId}>
+            {roomCreationInfoText}
+          </TextWithDivider>
+        </Stack>
+        {typeof formik.errors.selectionMode === 'string' && (
+          <ErrorFormMessage helperText={t(formik.errors.selectionMode)} />
+        )}
+      </Box>
+      {!formik.values.distribution && (
+        <Box sx={{ marginBottom: 2 }}>
+          <ParticipantsSelector
+            onChange={(value) => formik.setFieldValue('assignments', value)}
+            assignments={formik.values.assignments}
+            selectionMode={formik.values.selectionMode}
+            rooms={formik.values.rooms}
+            participantsPerRoom={formik.values.participantsPerRoom}
+          />
+        </Box>
+      )}
+      <Button onClick={customSubmit} disabled={formik.isSubmitting}>
+        {t('breakout-room-start-button')}
+      </Button>
+      {error && (
+        <Box>
+          <ErrorFormMessage helperText={error} />
+        </Box>
+      )}
+    </Form>
   );
 };
 

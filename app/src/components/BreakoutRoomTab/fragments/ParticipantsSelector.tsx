@@ -1,19 +1,18 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, Typography, styled } from '@mui/material';
-import { useField, useFormikContext } from 'formik';
+import { Box, Typography, styled } from '@mui/material';
 import i18n from 'i18next';
-import { get, includes, isEmpty, reduce, xorBy } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { includes, isEmpty, xorBy } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { AccordionItem, ErrorFormMessage } from '../../../commonComponents';
+import { AccordionItem } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectCombinedParticipantsAndUser } from '../../../store/selectors';
 import { Participant } from '../../../types';
+import type { BreakoutRoomWithFullParticipants } from './CreateRoomsForm';
 import ParticipantsEditor from './ParticipantsEditor';
-import { AccordionOptions } from './constants';
+import { DropdownOptions } from './constants';
 
 const UserNameContainer = styled('div')(({ theme }) => ({
   '& > *': {
@@ -24,32 +23,27 @@ const UserNameContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export interface BreakoutRoomWithFullParticipants {
-  name: string;
-  assignments: Participant[];
-}
-
 interface IParticipantsSelectorProps {
-  name: string;
-  formName?: string;
-  onSubmit: () => void;
+  assignments: BreakoutRoomWithFullParticipants[];
+  selectionMode: DropdownOptions;
+  rooms: number;
+  participantsPerRoom: number;
+  onChange: (value: BreakoutRoomWithFullParticipants[]) => void;
 }
 
-const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelectorProps) => {
-  const getFormName = useCallback((name: string) => (formName ? `${formName}.${name}` : name), [formName]);
-  const [field, meta, helpers] = useField(name);
-  const { values } = useFormikContext();
-  const [error, setError] = useState<string | null>(null);
+const ParticipantsSelector = ({
+  assignments,
+  selectionMode,
+  rooms,
+  participantsPerRoom,
+  onChange,
+}: IParticipantsSelectorProps) => {
   const participants = useAppSelector(selectCombinedParticipantsAndUser);
   const [unassignedParticipants, setUnassignedParticipants] = useState<Participant[]>(participants);
   const [assignedParticipants, setAssignedParticipants] = useState<Array<BreakoutRoomWithFullParticipants>>(
-    field.value || []
+    assignments || []
   );
-  const [expanded, setExpanded] = useState<false | string>(false);
-  const expandedRef = useRef<AccordionOptions>(get(values, 'expanded', AccordionOptions.Rooms));
-  const roomsRef = useRef<number>(get(values, getFormName('rooms'), 1));
-  const participantsTotal = useRef<number>(participants.length);
-  const { t } = useTranslation();
+  const [expandedPanels, setExpandedPanels] = useState<string[]>([]);
 
   const handleSetUnAssignedParticipants = useCallback(
     (breakoutRooms: Array<BreakoutRoomWithFullParticipants>, allParticipants: Participant[]) => {
@@ -61,19 +55,19 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
 
   useEffect(() => {
     setAssignedParticipants((prevAssignedParticipants) => {
-      prevAssignedParticipants = prevAssignedParticipants.map((prevAssignedParticipant) => ({
+      const newAssignments = prevAssignedParticipants.map((prevAssignedParticipant) => ({
         ...prevAssignedParticipant,
         assignments: prevAssignedParticipant.assignments.filter((assignment) => includes(participants, assignment)),
       }));
-      handleSetUnAssignedParticipants(prevAssignedParticipants, participants);
-      return prevAssignedParticipants;
+      handleSetUnAssignedParticipants(newAssignments, participants);
+      return newAssignments;
     });
   }, [participants, handleSetUnAssignedParticipants]);
 
   const initRooms = useCallback((roomCount: number) => {
     const breakoutRooms: Array<{ name: string; assignments: Participant[] }> = Array(roomCount)
       .fill(null)
-      .map((roomId, index) => ({
+      .map((_, index) => ({
         name: i18n.t('room', { roomNumber: index + 1 }),
         assignments: [],
       }));
@@ -81,102 +75,27 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
   }, []);
 
   useEffect(() => {
-    if (isEmpty(field.value)) {
-      let rooms: number;
-      switch (expandedRef.current) {
-        case AccordionOptions.Rooms:
-          rooms = roomsRef.current;
+    if (isEmpty(assignments)) {
+      let assigned_rooms: number;
+      switch (selectionMode) {
+        case DropdownOptions.Rooms:
+          assigned_rooms = Math.max(2, rooms);
           break;
-        case AccordionOptions.Participants: {
-          const participantsPerRoom = get(values, getFormName('participantsPerRoom'), 1);
-          rooms = Math.floor(participantsTotal.current / participantsPerRoom);
+        case DropdownOptions.Participants: {
+          const safeParticipantsPerRoom = Math.max(2, participantsPerRoom);
+          assigned_rooms = Math.floor(participants.length / safeParticipantsPerRoom);
           break;
         }
-        case AccordionOptions.Moderators:
-        case AccordionOptions.Groups:
-          // todo get all moderator count and add init with moderators as dividers here
-          rooms = 4;
-          break;
       }
-      initRooms(rooms);
+
+      initRooms(assigned_rooms);
     }
-  }, [field.value, getFormName, initRooms, values]);
-
-  const allParticipantsAssigned = () => {
-    const assignments: BreakoutRoomWithFullParticipants[] = field.value;
-    const assignedParticipantsCount = reduce(assignments, (acc, { assignments }) => acc + assignments.length, 0);
-    return assignedParticipantsCount === participants.length;
-  };
-
-  const validateRoomsByRooms = () => {
-    const assignments: BreakoutRoomWithFullParticipants[] = field.value;
-
-    const rooms = get(values, getFormName('rooms'), 1);
-    const maxParticipantsPerRoom = Math.floor(participants.length / rooms + 0.5);
-
-    const valid =
-      assignments.every(({ assignments }) => assignments.length > 0 && assignments.length <= maxParticipantsPerRoom) &&
-      allParticipantsAssigned();
-    return {
-      valid,
-      error: valid ? null : i18n.t('user-selection-error-invalid-room-assignments'),
-    };
-  };
-
-  const validateRoomsByParticipants = () => {
-    const assignments: BreakoutRoomWithFullParticipants[] = field.value;
-
-    const participantsPerRoom = get(values, getFormName('participantsPerRoom'), 1);
-    const valid =
-      assignments.every(({ assignments }) => assignments.length > 0 && assignments.length <= participantsPerRoom) &&
-      allParticipantsAssigned();
-    return {
-      valid,
-      error: valid ? null : i18n.t('user-selection-error-invalid-room-assignments'),
-    };
-  };
-
-  const validateBreakoutRoomAssignment = (): { valid: boolean; error: string | null } => {
-    const expandedForm: AccordionOptions = get(values, 'expanded', AccordionOptions.Rooms);
-
-    if (expandedForm === AccordionOptions.Rooms) {
-      return validateRoomsByRooms();
-    }
-    if (expandedForm === AccordionOptions.Participants) {
-      return validateRoomsByParticipants();
-    }
-    return {
-      valid: true,
-      error: null,
-    };
-  };
-
-  const customSubmit = () => {
-    const { valid, error } = validateBreakoutRoomAssignment();
-    if (valid) {
-      onSubmit();
-    } else {
-      setError(error);
-    }
-  };
-
-  const handleExpandedChange = (event: React.SyntheticEvent<Element, Event>, newExpanded: boolean, panel: string) => {
-    if (
-      !(
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLSpanElement ||
-        event.target instanceof HTMLLabelElement
-      )
-    ) {
-      const expanded = newExpanded ? panel : false;
-      setExpanded(expanded);
-    }
-  };
+  }, [assignments, initRooms, selectionMode, participantsPerRoom, rooms, participants.length]);
 
   const handleChange = useCallback(
     (breakoutRoomName: string, assignedParticipants: Participant[]) => {
       setAssignedParticipants((prevAssignedParticipants) => {
-        prevAssignedParticipants = prevAssignedParticipants.map((prevAssignedParticipant) => {
+        const newAssignments = prevAssignedParticipants.map((prevAssignedParticipant) => {
           if (breakoutRoomName === prevAssignedParticipant.name) {
             return {
               ...prevAssignedParticipant,
@@ -185,28 +104,54 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
           }
           return prevAssignedParticipant;
         });
-        helpers.setValue(prevAssignedParticipants);
-        handleSetUnAssignedParticipants(prevAssignedParticipants, participants);
-        return prevAssignedParticipants;
+        onChange(newAssignments);
+        handleSetUnAssignedParticipants(newAssignments, participants);
+        return newAssignments;
       });
     },
-    [helpers, participants, handleSetUnAssignedParticipants]
+    [onChange, participants, handleSetUnAssignedParticipants]
   );
 
-  const renderRooms = () => {
+  const RenderedRooms = useMemo(() => {
+    const handleExpandedChange = (event: React.SyntheticEvent<Element, Event>, newExpanded: boolean, panel: string) => {
+      if (
+        !(
+          event.target instanceof HTMLInputElement ||
+          event.target instanceof HTMLSpanElement ||
+          event.target instanceof HTMLLabelElement
+        )
+      ) {
+        setExpandedPanels((prevExpanded) => {
+          if (newExpanded) {
+            return prevExpanded.includes(panel) ? prevExpanded : [...prevExpanded, panel];
+          }
+
+          return prevExpanded.filter((p) => p !== panel);
+        });
+      }
+    };
+
+    const handleParticipantsEditorChange = (roomName: string, participants: Participant[]) => {
+      handleChange(roomName, participants);
+      setExpandedPanels((prevExpanded) => {
+        if (participants.length > 0) {
+          return prevExpanded.includes(roomName) ? prevExpanded : [...prevExpanded, roomName];
+        }
+        return prevExpanded.filter((p) => p !== roomName);
+      });
+    };
+
     return assignedParticipants.map(({ name, assignments }) => (
       <AccordionItem
         key={name}
         onChange={(event, newExpanded) => handleExpandedChange(event, newExpanded, name)}
-        option={AccordionOptions.Rooms}
-        expanded={expanded === name}
+        option={DropdownOptions.Rooms}
+        expanded={expandedPanels.includes(name)}
         summaryText={`${name} (${assignments.length})`}
         summaryAdditionalComponent={
           <ParticipantsEditor
             title={name}
-            onChange={(participants) => {
-              handleChange(name, participants);
-            }}
+            onChange={(participants) => handleParticipantsEditorChange(name, participants)}
             unAssignedParticipants={unassignedParticipants}
             assignedParticipants={assignments}
           />
@@ -222,7 +167,7 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
         </UserNameContainer>
       </AccordionItem>
     ));
-  };
+  }, [assignedParticipants, expandedPanels, handleChange, unassignedParticipants]);
 
   return (
     <Box
@@ -230,7 +175,7 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 1,
+        gap: 2,
         height: '100%',
       }}
     >
@@ -239,6 +184,7 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
           flex: 1,
           height: '100%',
           overflow: 'hidden',
+          borderRadius: 2,
         }}
       >
         <Box
@@ -247,17 +193,8 @@ const ParticipantsSelector = ({ name, formName, onSubmit }: IParticipantsSelecto
             height: '100%',
           }}
         >
-          {renderRooms()}
+          {RenderedRooms}
         </Box>
-      </Box>
-      {meta.error ||
-        (error && (
-          <Box>
-            <ErrorFormMessage helperText={meta.error || error} />
-          </Box>
-        ))}
-      <Box>
-        <Button onClick={customSubmit}>{t('breakout-room-create-button')}</Button>
       </Box>
     </Box>
   );
