@@ -2,7 +2,8 @@
     "ignoreDependencies": [
         "@mediapipe/holistic",
         "@types/dom-mediacapture-transform",
-        "licensee"
+        "licensee",
+        "fast-xml-parser"
     ],
     "ignore": [
         ".pa11y-local.js",
@@ -11,7 +12,8 @@
         "e2e/tests/smoke/login.smoke.ts",
         "packages/track-processors-js-main/src/transformers/MediaPipeHolisticTrackerTransformer.ts",
         "packages/rtk-rest-api/example/**",
-        "public/**"
+        "public/**",
+        "ci/modifyJUnitReportForTestRail.ts"
     ],
     "jest": {
         "config": "jest.config.js"

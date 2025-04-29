@@ -13,9 +13,10 @@ stages:
   - test
   - prepare-artifact
   - build
-  - deploy
-  - cleanup
+  - review-app
   - e2e
+  - testrail
+  - cleanup
 
 .setup-pnpm: &setup-pnpm
   - npm install -g corepack@latest
@@ -25,16 +26,41 @@ stages:
     corepack prepare "pnpm@$PNPM_VERSION" --activate
   - pnpm config set store-dir .pnpm-store
 
-.setup-e2e-tests: &setup-e2e-tests
+.e2e-default-setup: &e2e-default-setup
   image: mcr.microsoft.com/playwright:v1.52.0-jammy
   stage: e2e
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   before_script:
     - *setup-pnpm
     - pnpm install
+  variables:
+    INSTANCE_URL: https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "chromium"
+      variables:
+        USERNAME: ${E2E_CHROME_TEST_USERNAME}
+        USER_EMAIL: ${E2E_CHROME_TEST_USER_EMAIL}
+        PASSWORD: ${E2E_CHROME_TEST_USER_PASSWORD}
+        PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+        PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "webkit"
+      variables:
+        USERNAME: ${E2E_WEBKIT_TEST_USERNAME}
+        USER_EMAIL: ${E2E_WEBKIT_TEST_USER_EMAIL}
+        PASSWORD: ${E2E_WEBKIT_TEST_USER_PASSWORD}
+        PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+        PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "firefox"
+      variables:
+        USERNAME: ${E2E_FIREFOX_TEST_USERNAME}
+        USER_EMAIL: ${E2E_FIREFOX_TEST_USER_EMAIL}
+        PASSWORD: ${E2E_FIREFOX_TEST_USER_PASSWORD}
+        PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+        PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+  parallel:
+    matrix:
+      - BROWSER: [chromium, firefox, webkit]
 
-analyze:code_review:
+code_review:
   stage: analyze
   when: manual
   rules:
@@ -48,7 +74,7 @@ analyze:code_review:
   script:
     - npm run review -- -id $CI_MERGE_REQUEST_IID
 
-lint:prettier+eslint:
+prettier+eslint:
   stage: lint
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -59,7 +85,7 @@ lint:prettier+eslint:
     - pnpm lint
     - pnpm fmt:ci
 
-lint:typecheck:
+typecheck:
   stage: lint
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -70,7 +96,7 @@ lint:typecheck:
     - pnpm typecheck
   allow_failure: true
 
-lint:circular-deps:
+circular-deps:
   stage: lint
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -80,7 +106,7 @@ lint:circular-deps:
     - pnpm install
     - pnpm deps:circular
 
-lint:yaml:
+yaml:
   stage: lint
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -88,7 +114,7 @@ lint:yaml:
     - apk add --no-cache yamllint
   script: yamllint .
 
-lint:compliance:
+compliance:
   stage: lint
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -99,7 +125,7 @@ lint:compliance:
   script:
     - pnpm licensee --production --errors-only
 
-lint:licensing:
+licensing:
   stage: lint
   image:
     name: fsfe/reuse:5.0.2
@@ -109,7 +135,7 @@ lint:licensing:
   script:
     - reuse lint
 
-lint:audit:
+audit:
   stage: lint
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -119,7 +145,7 @@ lint:audit:
     - pnpm audit --prod
   allow_failure: true
 
-lint:commit:
+commit:
   stage: lint
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -129,7 +155,7 @@ lint:commit:
   script:
     - npx commitlint --from $CI_MERGE_REQUEST_DIFF_BASE_SHA --to HEAD --verbose
 
-lint:unused-deps:
+unused-deps:
   stage: lint
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -140,7 +166,7 @@ lint:unused-deps:
   script:
     - pnpm knip --include dependencies
 
-lint:unused-files:
+unused-files:
   stage: lint
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -151,7 +177,7 @@ lint:unused-files:
   script:
     - pnpm knip --include files
 
-lint:commit-signature:
+commit-signature:
   stage: lint
   needs: []
   rules:
@@ -168,7 +194,7 @@ lint:commit-signature:
       | tr -d '\n'
       | grep -q -v -e "N" -e "B"
 
-trigger_changelog_preview:
+trigger-changelog-preview:
   stage: trigger
   needs: []
   rules:
@@ -181,7 +207,7 @@ trigger_changelog_preview:
     PIPELINE_MERGE_REQUEST_IID: $CI_MERGE_REQUEST_IID
   trigger: opentalk/tools/check-changelog
 
-test:unit-tests:
+unit-tests:
   stage: test
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -202,7 +228,7 @@ test:unit-tests:
         - junit.xml
   coverage: /All files[^\|]*\|[^\|]*\s+([\d\.]+)/
 
-prepare-artifact:build:
+build:
   stage: prepare-artifact
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -220,7 +246,7 @@ prepare-artifact:build:
       - dist/*
     expire_in: 1 days
 
-prepare-artifact:build-profiling:
+build-profiling:
   stage: prepare-artifact
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -239,12 +265,12 @@ prepare-artifact:build-profiling:
     expire_in: 1 days
 
 # Upload Source Maps to our glitchtip instance when a tag is created and pushed to main
-prepare-artifact:upload-sourcemaps:
+upload-sourcemaps:
   stage: prepare-artifact
   dependencies:
-    - prepare-artifact:build
+    - build
   needs:
-    - prepare-artifact:build
+    - build
   rules:
     - if: $CI_COMMIT_TAG && $CI_PROJECT_ROOT_NAMESPACE == 'opentalk'
   before_script:
@@ -264,11 +290,11 @@ prepare-artifact:upload-sourcemaps:
       - dist/*
     expire_in: 1 days
 
-build:container:
+container:
   stage: build
   dependencies:
-    - prepare-artifact:upload-sourcemaps
-    - prepare-artifact:build
+    - upload-sourcemaps
+    - build
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: ['']
@@ -313,10 +339,10 @@ build:container:
       - digest.txt
     expire_in: 1 days
 
-build:container-profiling:
+container-profiling:
   stage: build
   dependencies:
-    - prepare-artifact:build-profiling
+    - build-profiling
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: ['']
@@ -355,7 +381,7 @@ read-trivy-ignore-file:
 
 container-scanning:
   needs:
-    - build:container
+    - container
     - read-trivy-ignore-file
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
@@ -371,10 +397,10 @@ container-scanning:
     forward:
       pipeline_variables: true
 
-deploy:review-app:
-  stage: deploy
+deploy:
+  stage: review-app
   dependencies:
-    - build:container
+    - container
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   image: alpine/helm:3.18.0
@@ -420,57 +446,127 @@ deploy:review-app:
       -n review-latest --wait
     - echo "https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run"
 
-e2e:chrome:
-  <<: *setup-e2e-tests
-  variables:
-    INSTANCE_URL: https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run
-    USERNAME: ${E2E_CHROME_TEST_USERNAME}
-    USER_EMAIL: ${E2E_CHROME_TEST_USER_EMAIL}
-    PASSWORD: ${E2E_CHROME_TEST_USER_PASSWORD}
+browser-smoke:
+  <<: *e2e-default-setup
   script:
     - npx playwright install --with-deps
-    - npx playwright test --project=chromium
+    - npx playwright test --project=smoke-$BROWSER
+  after_script:
+    - npx ts-node ./ci/modifyJUnitReportForTestRail.ts
   artifacts:
     when: always
     paths:
-      - test-results/**/*.zip
+      - html-report
     expire_in: 7 days
+  allow_failure: true
 
-e2e:firefox:
-  <<: *setup-e2e-tests
-  # must be delete after tests are fixed
-  when: manual
-  variables:
-    INSTANCE_URL: https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run
-    USERNAME: ${E2E_FIREFOX_TEST_USERNAME}
-    USER_EMAIL: ${E2E_FIREFOX_TEST_USER_EMAIL}
-    PASSWORD: ${E2E_FIREFOX_TEST_USER_PASSWORD}
+browser:
+  <<: *e2e-default-setup
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "chromium" && $CI_COMMIT_MESSAGE =~ /test\(e2e\)/
+      variables:
+        USERNAME: ${E2E_CHROME_TEST_USERNAME}
+        USER_EMAIL: ${E2E_CHROME_TEST_USER_EMAIL}
+        PASSWORD: ${E2E_CHROME_TEST_USER_PASSWORD}
+        PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+        PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "webkit" && $CI_COMMIT_MESSAGE =~ /test\(e2e\)/
+      variables:
+        USERNAME: ${E2E_WEBKIT_TEST_USERNAME}
+        USER_EMAIL: ${E2E_WEBKIT_TEST_USER_EMAIL}
+        PASSWORD: ${E2E_WEBKIT_TEST_USER_PASSWORD}
+        PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+        PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "firefox" && $CI_COMMIT_MESSAGE =~ /test\(e2e\)/
+      variables:
+        USERNAME: ${E2E_FIREFOX_TEST_USERNAME}
+        USER_EMAIL: ${E2E_FIREFOX_TEST_USER_EMAIL}
+        PASSWORD: ${E2E_FIREFOX_TEST_USER_PASSWORD}
+        PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+        PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
   script:
     - npx playwright install --with-deps
-    - npx playwright test --project=firefox
+    - npx playwright test --project=$BROWSER
+  after_script:
+    - npx ts-node ./ci/modifyJUnitReportForTestRail.ts
   artifacts:
     when: always
     paths:
-      - test-results/**/*.zip
+      - junit
+      - html-report
     expire_in: 7 days
+  allow_failure: true
 
-e2e:webkit:
-  <<: *setup-e2e-tests
+browser-nightly:
+  <<: *e2e-default-setup
   variables:
-    INSTANCE_URL: https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run
-    USERNAME: ${E2E_WEBKIT_TEST_USERNAME}
-    USER_EMAIL: ${E2E_WEBKIT_TEST_USER_EMAIL}
-    PASSWORD: ${E2E_WEBKIT_TEST_USER_PASSWORD}
+    INSTANCE_URL: https://testing.opentalk.eu/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'scheduled' && $BROWSER == "chromium"
+      variables:
+        USERNAME: ${E2E_CHROME_TEST_USERNAME}
+        USER_EMAIL: ${E2E_CHROME_TEST_USER_EMAIL}
+        PASSWORD: ${E2E_CHROME_TEST_USER_PASSWORD}
+        PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+        PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+    - if: $CI_PIPELINE_SOURCE == 'scheduled' && $BROWSER == "webkit"
+      variables:
+        USERNAME: ${E2E_WEBKIT_TEST_USERNAME}
+        USER_EMAIL: ${E2E_WEBKIT_TEST_USER_EMAIL}
+        PASSWORD: ${E2E_WEBKIT_TEST_USER_PASSWORD}
+        PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+        PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+    - if: $CI_PIPELINE_SOURCE == 'scheduled' && $BROWSER == "firefox"
+      variables:
+        USERNAME: ${E2E_FIREFOX_TEST_USERNAME}
+        USER_EMAIL: ${E2E_FIREFOX_TEST_USER_EMAIL}
+        PASSWORD: ${E2E_FIREFOX_TEST_USER_PASSWORD}
+        PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
+        PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
   script:
     - npx playwright install --with-deps
-    - npx playwright test --project=webkit
+    - npx playwright test --project=$BROWSER
+  after_script:
+    - npx ts-node ./ci/modifyJUnitReportForTestRail.ts
   artifacts:
     when: always
     paths:
-      - test-results/**/*.zip
+      - junit
+      - html-report
+    expire_in: 7 days
+  allow_failure: true
+
+merge-and-upload-test-results:
+  stage: testrail
+  image: python:latest
+  needs:
+    - browser-nightly
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'scheduled'
+  before_script:
+    - pip install junitparser trcli
+  script: |
+    mkdir ./merged-reports
+    junitparser merge \
+      ./junit/junit-$CI_MERGE_REQUEST_IID-chromium.xml \
+      ./junit/junit-$CI_MERGE_REQUEST_IID-webkit.xml \
+      ./junit/junit-$CI_MERGE_REQUEST_IID-firefox.xml \
+      ./merged-reports/combined-report.xml
+    trcli -y \
+      -h https://opentalk.testrail.com/ \
+      --project "Automated Tests" \
+      -u $TESTRAIL_EMAIL \
+      -p $TESTRAIL_PASSWORD \
+      parse_junit \
+      -f "./merged-reports/combined-report.xml" \
+      --run-description "URL: $CI_PIPELINE_URL" \
+      --title "Automated Nightly Tests from GitLab CI/CD"
+  artifacts:
+    paths:
+      - merged-reports
     expire_in: 7 days
 
-cleanup:review-app:
+review-app:
   stage: cleanup
   rules:
     - if: $CI_MERGE_REQUEST_EVENT_TYPE == "close"

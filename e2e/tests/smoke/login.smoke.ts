@@ -13,7 +13,7 @@ test('Login with valid credentials (username)', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Username or email' }).press('Tab');
   await page.getByRole('textbox', { name: 'Password' }).fill(process.env.PASSWORD);
   await page.getByRole('button', { name: 'Sign In' }).click();
-  await expect(page.getByRole('link', { name: /(Start|Starten)$/ }).nth(1)).toBeVisible();
+  await expect(page.getByRole('link', { name: /Start new|Starten/ })).toBeVisible();
 });
 
 test('Login with valid credentials (email)', async ({ page }) => {
@@ -23,7 +23,7 @@ test('Login with valid credentials (email)', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Username or email' }).press('Tab');
   await page.getByRole('textbox', { name: 'Password' }).fill(process.env.PASSWORD);
   await page.getByRole('button', { name: 'Sign In' }).click();
-  await expect(page.getByRole('link', { name: /(Start|Starten)$/ }).nth(1)).toBeVisible();
+  await expect(page.getByRole('link', { name: /(Start new|Starten)$/ })).toBeVisible();
 });
 
 test('Login with invalid credentials', async ({ page }) => {
@@ -33,5 +33,5 @@ test('Login with invalid credentials', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Username or email' }).press('Tab');
   await page.getByRole('textbox', { name: 'Password' }).fill('wrong_password');
   await page.getByRole('button', { name: 'Sign In' }).click();
-  await expect(page.locator('#input-error')).toContainText('Invalid username or password.');
+  await expect(page.getByText('Invalid username or password.')).toBeVisible();
 });

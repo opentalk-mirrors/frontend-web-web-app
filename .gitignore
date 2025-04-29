@@ -172,10 +172,13 @@ public/*config.js
 
 ### Sentry/Glitchtip Config
 .sentryclirc
+
+### Test and Reports
 /test-results/
-/playwright-report/
 /blob-report/
+/html-report/
+/junit/
+/playwright-report/
 /playwright/.cache/
 serve.json
-
 gl-sast-report.json
