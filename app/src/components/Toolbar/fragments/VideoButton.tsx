@@ -92,7 +92,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
       >
         <ButtonIcon />
       </ToolbarButton>
-      <MeetingSettingsDialog open={showMenu} onClose={() => setShowMenu(false)} setting="video" />
+      <MeetingSettingsDialog open={showMenu} onClose={() => setShowMenu(false)} setting="camera" />
     </div>
   );
 };

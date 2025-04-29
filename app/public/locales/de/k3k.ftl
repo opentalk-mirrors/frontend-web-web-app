@@ -68,6 +68,10 @@ toggle-password-visibility = Passwortsichtbarkeit umschalten
 
 echotest-warn-no-echo-cancellation = Ihr Browser unterstützt keine Echo-Unterdrückung. Bitte nutzen Sie Kopfhörer um Rückkopplungen zu vermeiden.
 audiomenu-choose-input = Audioeingabegerät auswählen
+screen-share-menu-choose-resolution = Max. Bildschirmauflösung auswählen
+screen-share-menu-choose-resolution-subtitle = Höhere Auflösungen können die CPU- oder GPU-Auslastung beim Kodieren deutlich erhöhen.
+screen-share-menu-choose-optimization = Profil zur Kodierungsoptimierung
+screen-share-menu-choose-content-type-subtitle = Wählen Sie den Inhaltstyp aus, um die Kodierung basierend auf dem geteilten Medium zu optimieren.
 videomenu-choose-input = Kamera auswählen
 device-permission-pending = Warte auf Gerätefreigabe
 device-permission-denied = Gerätefreigabe verweigert. Bitte prüfen Sie Ihre Einstellungen.
@@ -92,8 +96,10 @@ no-devices-found = Keine Geräte gefunden
 meeting-settings-title = Einstellungen
 audio-panel-title = Audio
 audio-settings-title = Ein- und Ausgabe von Audiosignalen
-video-settings-title = Ein- und Ausgabe von Videosignalen
-video-panel-title = Video
+camera-settings-title = Ein- und Ausgabe von Videosignalen
+camera-panel-title = Kamera
+screen-share-panel-title = Bildschirmfreigabe
+screen-share-panel-resolution-changed = Sie müssen die Bildschirmfreigabe neu starten, damit die Änderungen wirksam werden.
 
 participant-stream-broken-tooltip = Medienstrom unterbrochen
 participant-audio-broken-tooltip = Audiokanal unterbrochen

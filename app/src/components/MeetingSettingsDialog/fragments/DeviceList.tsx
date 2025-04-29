@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ListItemIcon, ListItemText, MenuList, Typography, MenuItem, styled, ListSubheader } from '@mui/material';
-import { useMemo, ReactNode } from 'react';
+import { ListItemIcon, ListItemText, ListSubheader, MenuItem, MenuList, Typography, styled } from '@mui/material';
+import { ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DoneIcon } from '../../../assets/icons';
@@ -20,7 +20,7 @@ export interface DeviceListProps {
   subheader: DeviceListSubheader;
 }
 
-const StyledMenuList = styled(MenuList)(({ theme }) => ({
+export const StyledMenuList = styled(MenuList)(({ theme }) => ({
   paddingRight: theme.spacing(1.5),
   '& .MuiSvgIcon-root': {
     color: theme.palette.text.primary,
@@ -39,7 +39,7 @@ const StyledMenuList = styled(MenuList)(({ theme }) => ({
   },
 }));
 
-const DeviceListMenuItem = styled(MenuItem)(() => ({
+export const DeviceListMenuItem = styled(MenuItem)(() => ({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   fontSize: '0.875rem',

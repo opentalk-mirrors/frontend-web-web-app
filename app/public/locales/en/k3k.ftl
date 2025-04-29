@@ -67,8 +67,12 @@ copy-url-to-clipboard = copy URL to clipboard
 toggle-password-visibility = toggle password visibility
 
 echotest-warn-no-echo-cancellation = Your Browser does not support echo canceling. Please use headphones to avoid audio feedback.
-audiomenu-choose-input = Choose audio input device
-videomenu-choose-input = Choose video input device
+audiomenu-choose-input = Choose Audio Input Device
+screen-share-menu-choose-resolution = Choose Maximum Screen Resolution
+screen-share-menu-choose-resolution-subtitle = Higher resolutions can significantly increase CPU or GPU usage during encoding.
+screen-share-menu-choose-content-type = Encoding Optimization Profile
+screen-share-menu-choose-content-type-subtitle = Select the content type to optimize encoding based on the type of media you're sharing.
+videomenu-choose-input = Choose Video Input Device
 device-permission-pending = Waiting for device permission
 device-permission-denied = Device permission denied. Please review your page settings.
 device-unable-to-start = Unable to start your media device, please check if its occupied by another application or select another device.
@@ -92,8 +96,10 @@ no-devices-found = No devices found
 meeting-settings-title = Settings
 audio-panel-title = Audio
 audio-settings-title = Audio Input and Output
-video-settings-title = Video Input and Output
-video-panel-title = Video
+camera-settings-title = Video Input and Output
+camera-panel-title = Camera
+screen-share-panel-title = Screen Share
+screen-share-panel-resolution-changed = You need to restart screen sharing for the changes to take effect.
 
 participant-stream-broken-tooltip = Mediastream broken
 participant-audio-broken-tooltip = Audio channel broken

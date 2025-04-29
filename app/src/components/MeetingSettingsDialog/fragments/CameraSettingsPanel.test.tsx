@@ -6,7 +6,7 @@ import { screen } from '@testing-library/react';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import { mockedVideoInputs } from '../../../utils/testUtils';
-import { VideoSettingsPanel } from './VideoSettingsPanel';
+import CameraSettingsPanel from './CameraSettingsPanel';
 
 jest.mock('./DeviceManager', () => ({
   ...jest.requireActual('./DeviceManager'),
@@ -29,8 +29,8 @@ describe('AudioSettingsPanel', () => {
   // This test should be enhanced and fixed in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2678
   it.skip('renders title and device manager', async () => {
     const { store } = configureStore();
-    renderWithProviders(<VideoSettingsPanel />, { store });
-    expect(screen.getByRole('heading', { name: 'video-settings-title' })).toBeInTheDocument();
+    renderWithProviders(<CameraSettingsPanel />, { store });
+    expect(screen.getByRole('heading', { name: 'camera-settings-title' })).toBeInTheDocument();
     expect(screen.getByTestId('MockDeviceManager')).toBeInTheDocument();
   });
 });

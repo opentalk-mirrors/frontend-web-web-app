@@ -4,7 +4,7 @@
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { styled, Stack, Divider, Tab, Button, DialogContent, DialogTitle, Typography, IconButton } from '@mui/material';
+import { Button, DialogContent, DialogTitle, Divider, IconButton, Stack, Tab, Typography, styled } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ const DesktopSettingsContainer = styled(Stack)(({ theme }) => ({
   borderRadius: theme.borderRadius.medium,
   backgroundColor: theme.palette.background.default,
   '&&': { margin: 0 },
-  height: '20rem',
+  height: '50rem',
 }));
 
 const DesktopSettingsTitle = styled(Typography)(({ theme }) => ({

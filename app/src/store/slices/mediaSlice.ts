@@ -15,6 +15,30 @@ import { getLivekitRoom } from '../livekitRoom';
 import { enteredWaitingRoom } from './roomSlice';
 import { timerStarted } from './timerSlice';
 
+export interface ScreenShareConfig {
+  resolution?: ScreenShareResolution;
+  contentHint?: ContentHint;
+}
+
+export enum ContentHint {
+  Text = 'text',
+  Motion = 'motion',
+}
+
+export enum ScreenShareResolution {
+  R720p = '720p',
+  R1080p = '1080p',
+  R1440p = '1440p',
+  R2160p = '2160p',
+}
+
+export const ScreenShareResolutionValues = {
+  [ScreenShareResolution.R720p]: { width: 1280, height: 720 },
+  [ScreenShareResolution.R1080p]: { width: 1920, height: 1080 },
+  [ScreenShareResolution.R1440p]: { width: 2560, height: 1440 },
+  [ScreenShareResolution.R2160p]: { width: 3840, height: 2160 },
+};
+
 export interface BackgroundConfig {
   style: 'blur' | 'color' | 'image' | 'off';
   color?: string;
@@ -45,6 +69,7 @@ export type MediaState = {
   audioEnabled: boolean;
   audioDeviceId?: string;
   videoBackgroundEffects: BackgroundEffect;
+  screenShareConfig?: ScreenShareConfig;
   mediaChangeInProgress: MediaDeviceKindExtended | null;
   permissionDenied: {
     audio: boolean;
@@ -62,6 +87,10 @@ export const initialState: MediaState = {
   videoEnabled: false,
   audioEnabled: false,
   videoBackgroundEffects: { style: 'off', loading: false },
+  screenShareConfig: {
+    resolution: ScreenShareResolution.R1080p,
+    contentHint: ContentHint.Text,
+  },
   mediaChangeInProgress: null,
   permissionDenied: {
     audio: false,
@@ -79,6 +108,9 @@ export const mediaSlice = createSlice({
     },
     setBackgroundEffectsLoading: (state, { payload }: PayloadAction<boolean>) => {
       state.videoBackgroundEffects.loading = payload;
+    },
+    setScreenShareConfig: (state, { payload }: PayloadAction<ScreenShareConfig>) => {
+      state.screenShareConfig = payload;
     },
     setUpstreamLimit: (state, { payload }: PayloadAction<VideoSetting>) => {
       state.upstreamLimit = payload;
@@ -157,6 +189,7 @@ export const mediaSlice = createSlice({
 export const {
   setBackgroundEffects,
   setBackgroundEffectsLoading,
+  setScreenShareConfig,
   notificationShown,
   setVideoEnabled,
   setAudioEnabled,
@@ -175,6 +208,7 @@ export const selectVideoDeviceId = (state: RootState) => state.media.videoDevice
 export const selectAudioEnabled = (state: RootState) => state.media.audioEnabled;
 export const selectVideoEnabled = (state: RootState) => state.media.videoEnabled;
 export const selectVideoBackgroundEffects = (state: RootState) => state.media.videoBackgroundEffects;
+export const selectScreenShareConfig = (state: RootState) => state.media.screenShareConfig;
 export const selectAudioPermissionDenied = (state: RootState) => state.media.permissionDenied.audio;
 export const selectVideoPermissionDenied = (state: RootState) => state.media.permissionDenied.video;
 export const selectScreensharePermissionDenied = (state: RootState) => state.media.permissionDenied.screenshare;

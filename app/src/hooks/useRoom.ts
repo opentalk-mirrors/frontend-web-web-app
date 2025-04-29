@@ -52,7 +52,8 @@ const useRoom = ({ e2eeData, isWhisperRoom }: IUseRoomOptions): Room | undefined
         },
         dynacast: true,
         disconnectOnPageLeave: false,
-        adaptiveStream: true,
+        // adaptiveStream: true,
+        adaptiveStream: { pixelDensity: 'screen' },
         videoCaptureDefaults: {
           resolution: VideoPresets.h720.resolution,
         },

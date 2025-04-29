@@ -16,7 +16,7 @@ const SETTING_PANELS: Array<SettingsPanel> = [
     component: <span>Audio tab panel</span>,
   },
   {
-    value: 'video',
+    value: 'camera',
     component: <span data-testid={CUSTOM_PANEL_CONTENT_ID}>Some text</span>,
   },
 ];
