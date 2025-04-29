@@ -143,6 +143,7 @@ type CanceledVote = NonCustomCanceledVote | CustomCanceledVote;
 export enum VoteInvalidReason {
   AbstainDisabled = 'abstain_disabled',
   VoteCountInconsistent = 'vote_count_inconsistent',
+  ProtocolInconsistent = 'protocol_inconsistent',
 }
 interface InvalidVoteSummary extends VoteSummaryBase {
   state: LegalVoteState.Invalid;
