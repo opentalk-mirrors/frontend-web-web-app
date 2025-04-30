@@ -7,7 +7,6 @@ import { validate } from 'uuid';
 import { closeWebkitPopUp } from '../../helper/webkit';
 import { HomePage } from '../../pages/HomePage';
 import { LobbyRoomPage } from '../../pages/LobbyRoomPage';
-import { MeetingInvitationPage } from '../../pages/MeetingInvitationPage';
 import { PlanMeetingPage } from '../../pages/PlanMeetingPage';
 
 const isRoomIdValid = (url: string): boolean => {
@@ -51,7 +50,7 @@ test.describe('Dashboard_Home', () => {
   test('TC_001_Dashboard_Home_Start new', async ({ page, browserName }) => {
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
-    const meetingInvitationPage = new MeetingInvitationPage({ page: await homePage.startAdhocMeeting() });
+    const meetingInvitationPage = await homePage.startAdhocMeeting();
     await meetingInvitationPage.waitForGuestLinkToRender();
     await expect(await meetingInvitationPage.getAdhocMeetingDescriptionTitleText()).toBeVisible();
     await expect(await meetingInvitationPage.getAdhocMeetingDescriptionDisclaimer()).toBeVisible();
@@ -85,8 +84,6 @@ test.describe('Dashboard_Home', () => {
     await expect(await meetingInvitationPage.getUserFromUserInvitationDropDown()).toBe('No result');
     const invitedUser = getUserToInviteInMeeting(browserName);
     await meetingInvitationPage.fillUserDetailForMeetingInvitation(invitedUser);
-
-    // there will be username and userEmail as text element that comes in innertext. Thus, need to trim
     await expect(await meetingInvitationPage.getUserFromUserInvitationDropDown()).toBe(invitedUser);
 
     await meetingInvitationPage.selectUserFromInvitationDropDownToInviteToMeeting();
@@ -96,9 +93,9 @@ test.describe('Dashboard_Home', () => {
     await meetingInvitationPage.sendMeetingInvitation();
     await expect(await meetingInvitationPage.getNotificationTextAfterInvitingUser()).toBeVisible();
 
-    const lobbyPage = await meetingInvitationPage.goToMeetingLobby();
-    const lobbyRoomPage = new LobbyRoomPage({ page: lobbyPage });
+    const lobbyRoomPage = new LobbyRoomPage({ page: await meetingInvitationPage.goToMeetingLobby() });
     await expect(lobbyRoomPage.nameInputField).toBeVisible();
+    await lobbyRoomPage.page.close();
 
     await meetingInvitationPage.cancelMeeting();
     await expect(homePage.startNewMeetingButton).toBeVisible();

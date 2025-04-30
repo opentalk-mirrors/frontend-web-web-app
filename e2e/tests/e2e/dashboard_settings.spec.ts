@@ -44,12 +44,15 @@ test.describe('79_Dashboard_Settings', () => {
     await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
   });
 
-  test.skip('TC_002_Dashboard_Settings_Profile option', async ({ page }) => {
+  test.skip('TC_002_Dashboard_Settings_Profile option', async ({ page, browserName }) => {
+    test.skip(browserName === 'webkit');
+
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
     await page.getByRole('link', { name: 'Settings', exact: true }).click();
     await page.getByRole('link', { name: 'Profile' }).click();
     await expect(page.getByRole('heading', { name: 'Profile Picture' })).toBeVisible();
+    await page.getByRole('textbox', { name: 'Profile Name' }).isVisible();
     const profileName = await page.getByRole('textbox', { name: 'Profile Name' }).inputValue();
     await expect(page.getByRole('main').getByRole('img', { name: profileName })).toBeVisible();
     await expect(page.getByLabel('Profile Name')).toBeVisible();
@@ -70,6 +73,8 @@ test.describe('79_Dashboard_Settings', () => {
     await expect(page.getByRole('textbox', { name: 'Profile Name' })).toHaveValue(`${profileName}-TEST`);
 
     await page.getByRole('button', { name: 'Save' }).click();
+    const alertMessage = await page.getByRole('alert').filter({ hasText: 'Your settings' });
+    await expect(alertMessage).toBeVisible();
     await expect(page.getByText('Your settings have been saved successfully.')).toBeVisible();
     await expect(page.getByRole('navigation').getByText(`${profileName}-TEST`)).toBeVisible();
 

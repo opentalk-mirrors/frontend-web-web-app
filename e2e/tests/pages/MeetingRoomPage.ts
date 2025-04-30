@@ -250,7 +250,7 @@ export class MeetingRoomPage {
     return gridViewParticipantWindowSize;
   }
 
-  async renderMeetingRoom() {
+  async renderMeetingRoom(): Promise<void> {
     await this.page.waitForLoadState();
     await this.meetingRoomName.waitFor({ state: 'visible' });
   }

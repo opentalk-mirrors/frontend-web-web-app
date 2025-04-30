@@ -5,8 +5,6 @@ import { test, expect } from '@playwright/test';
 
 import { HomePage } from '../pages/HomePage';
 import { LobbyRoomPage } from '../pages/LobbyRoomPage';
-import { MeetingInvitationPage } from '../pages/MeetingInvitationPage';
-import { MeetingRoomPage } from '../pages/MeetingRoomPage';
 
 const NUMBER_OF_GUESTS = 5;
 
@@ -14,13 +12,13 @@ const startAdhocMeetingAsModerator = async (page) => {
   // launch OpenTalk & start new (adhoc) meeting
   const homePage = new HomePage({ page });
   await homePage.navigateToHomePage();
-  const meetingInvitationPage = new MeetingInvitationPage({ page: await homePage.startAdhocMeeting() });
+  const meetingInvitationPage = await homePage.startAdhocMeeting();
   const guestLink = await meetingInvitationPage.getGuestLink();
-  const lobbyRoomPage = new LobbyRoomPage({ page: await meetingInvitationPage.navigateToMeetingLobby() });
+  const lobbyRoomPage = await meetingInvitationPage.navigateToMeetingLobby();
   await expect(lobbyRoomPage.nameInputField).toBeVisible(); // needed because of flakyness (see issue #1692)
 
   // enter meeting room & assert meeting room is shown
-  const meetingRoomPage = new MeetingRoomPage({ page: await lobbyRoomPage.enterMeetingRoom() });
+  const meetingRoomPage = await lobbyRoomPage.enterMeetingRoom();
   await meetingRoomPage.meetingRoomName.isVisible();
   await expect(await meetingRoomPage.getMeetingRoomName()).toContain('Ad-hoc Meeting');
 
@@ -41,7 +39,7 @@ const joinMeetingRoomAsGuest = async (context, guestLink: string, guestName: str
   await guestLobbyRoomPage.nameInputField.fill(guestName);
 
   // enter meeting room & assert meeting room is shown
-  const guestMeetingRoomPage = new MeetingRoomPage({ page: await guestLobbyRoomPage.enterMeetingRoom() });
+  const guestMeetingRoomPage = await guestLobbyRoomPage.enterMeetingRoom();
   await guestMeetingRoomPage.meetingRoomName.waitFor();
   await expect(guestMeetingRoomPage.meetingRoomName).toBeVisible();
 };

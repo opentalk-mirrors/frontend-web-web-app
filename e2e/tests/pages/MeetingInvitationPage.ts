@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
+import { LobbyRoomPage } from './LobbyRoomPage';
+
 export class MeetingInvitationPage {
   page: Page;
   meetingLinkInputField: Locator;
@@ -74,10 +76,14 @@ export class MeetingInvitationPage {
   }
 
   async selectUserFromInvitationDropDownToInviteToMeeting(): Promise<void> {
+    await this.userInvitationDropDown.isVisible();
     await this.userInvitationDropDown.click();
   }
 
   async cancelMeeting(): Promise<void> {
+    console.log('h1 while cancelMeeting is called: ' + (await this.page.locator('h1').first().textContent())); // page seems to be on lobby page when this is called
+    await this.cancelMeetingButton.isVisible();
+    console.log('cancel meeting: ' + (await this.cancelMeetingButton.textContent()));
     await this.cancelMeetingButton.click();
   }
 
@@ -97,13 +103,13 @@ export class MeetingInvitationPage {
     return guestLink;
   }
 
-  async navigateToMeetingLobby(): Promise<Page> {
+  async navigateToMeetingLobby(): Promise<LobbyRoomPage> {
     const meetingLink = await this.meetingLinkInputField.inputValue();
     await Promise.all([
       this.page.goto(meetingLink),
       this.page.waitForLoadState('domcontentloaded', { timeout: 10_000 }),
     ]);
-    return this.page;
+    return new LobbyRoomPage({ page: this.page });
   }
 
   async goToAdhocMeetingLobbyAsModerator(closeMeetingTab?: boolean): Promise<void> {
