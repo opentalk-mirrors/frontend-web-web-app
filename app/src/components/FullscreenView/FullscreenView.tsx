@@ -35,7 +35,6 @@ const LocalVideoContainer = styled(Box)(({ theme }) => ({
   top: theme.spacing(2),
   left: theme.spacing(2),
   width: '18%',
-  maxHeight: '20%',
   zIndex: theme.zIndex.mobileStepper,
 }));
 
