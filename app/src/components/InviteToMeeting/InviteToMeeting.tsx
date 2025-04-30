@@ -13,7 +13,7 @@ import { BackIcon } from '../../assets/icons';
 import { notifications } from '../../commonComponents';
 import SelectParticipants from '../../components/SelectParticipants';
 import { useAppSelector } from '../../hooks';
-import { selectFeatures } from '../../store/slices/configSlice';
+import { selectConfigFeatures } from '../../store/slices/configSlice';
 import InvitedParticipants from '../InvitedParticipants';
 import { ParticipantOption } from '../SelectParticipants';
 import MeetingLinksAndPasswords from './fragments/MeetingLinksAndPasswords';
@@ -42,7 +42,7 @@ const InviteToMeeting = ({
   const [creatEventInvitation, { isLoading: sendingInvitation }] = useCreateEventInviteMutation();
 
   const [deleteEvent] = useDeleteEventMutation();
-  const features = useAppSelector(selectFeatures);
+  const features = useAppSelector(selectConfigFeatures);
   const { t } = useTranslation();
   const navigate = useNavigate();
 

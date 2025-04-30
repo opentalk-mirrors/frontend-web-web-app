@@ -34,7 +34,7 @@ import {
 import { ForwardIcon } from '../../assets/icons';
 import { CommonTextField, notificationAction, notifications } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
-import { selectFeatures, selectWaitingRoomDefault } from '../../store/slices/configSlice';
+import { selectConfigFeatures, selectWaitingRoomDefault } from '../../store/slices/configSlice';
 import { appendRecurringEventInstances } from '../../utils/eventUtils';
 import { formikProps, formikSwitchProps } from '../../utils/formikUtils';
 import getReferrerRouterState from '../../utils/getReferrerRouterState';
@@ -106,7 +106,7 @@ const CreateOrUpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: Crea
 
   const defaultStartDate = roundToUpper30();
   const defaultEndDate = addMinutes(defaultStartDate, DEFAULT_MINUTES_DIFFERENCE);
-  const features = useAppSelector(selectFeatures);
+  const features = useAppSelector(selectConfigFeatures);
   const [isFirstTryToCreateSharedFolder, setIsFirstTryToCreateSharedFolder] = useState(true);
   const [isFirstTryToDeleteSharedFolder, setIsFirstTryToDeleteSharedFolder] = useState(true);
   const event = useRef<Event | undefined>(undefined);

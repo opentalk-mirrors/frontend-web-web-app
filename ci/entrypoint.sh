@@ -14,6 +14,7 @@ ACTIVE_FEATURES="{
     joinWithoutMedia: ${FEATURE_JOIN_WITHOUT_MEDIA:-false},
     sharedFolder: ${FEATURE_SHARED_FOLDER:-false},
     e2eEncryption: ${FEATURE_E2E_ENCRYPTION:-false},
+    innovafoneAPI: ${FEATURE_INNOVAFONE_API:-false},
 }"
 
 DEFAULT_VIDEO_BACKGROUNDS="[

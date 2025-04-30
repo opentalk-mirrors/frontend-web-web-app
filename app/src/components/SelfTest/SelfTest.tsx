@@ -18,7 +18,7 @@ import { useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
-import { selectFeatures } from '../../store/slices/configSlice';
+import { selectConfigFeatures } from '../../store/slices/configSlice';
 import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/mediaSlice';
 import { BreakoutRoomId } from '../../types';
 import MyMeetingMenu from '../MeetingHeader/fragments/MyMeetingMenu';
@@ -119,7 +119,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const isMobile = useIsMobile();
   const [localAudioTrack, setLocalAudioTrack] = useState<LocalAudioTrack | undefined>();
   const [mounted, setMounted] = useState(false);
-  const { joinWithoutMedia } = useAppSelector(selectFeatures);
+  const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
   const videoEnabled = useAppSelector(selectVideoEnabled);
   const audioEnabled = useAppSelector(selectAudioEnabled);
 

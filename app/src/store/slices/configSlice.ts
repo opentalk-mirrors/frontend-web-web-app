@@ -32,8 +32,8 @@ export enum FeaturesKeys {
   JoinWithoutMedia = 'joinWithoutMedia',
   Debriefing = 'debriefing',
   SharedFolder = 'sharedFolder',
-  SubroomAudio = 'subroomAudio',
   E2eEncryption = 'e2eEncryption',
+  InnovafoneAPI = 'innovafoneAPI',
 }
 
 type Features = {
@@ -196,6 +196,8 @@ export const initialState: ConfigState = {
     resetHandraises: true,
     debriefing: true,
     addUser: false,
+    e2eEncryption: false,
+    innovafoneAPI: false,
   },
   settings: {
     waitingRoomDefaultValue: true,
@@ -244,13 +246,10 @@ export const selectControllerUrl = (state: RootState) => {
 };
 export const selectHelpdeskUrl = (state: RootState) => state.config.helpdeskUrl;
 export const selectContactSupportUrl = (state: RootState) => state.config.contactSupportUrl;
-export const selectWsController = (state: RootState) => state.config.insecure;
 export const selectOidcConfig = (state: RootState) => state.config.oidcConfig;
 export const selectSpeedTestConfig = (state: RootState) => state.config.speedTest;
-export const selectFeatures = (state: RootState) => state.config.features;
-export const selectSubroomAudioFeature = (state: RootState) => state.config.features.subroomAudio;
+export const selectConfigFeatures = (state: RootState) => state.config.features;
 export const selectVideoBackgrounds = (state: RootState) => state.config.videoBackgrounds;
-export const selectMaxVideoBandwidth = (state: RootState) => state.config.maxVideoBandwidth;
 export const selectLibravatarDefaultImage = (state: RootState) => state.config.libravatarDefaultImage;
 export const selectUserSurveyUrl = (state: RootState) => state.config.userSurveyUrl;
 export const selectIsBetaRelease = (state: RootState) => state.config.beta.isBeta;
@@ -271,12 +270,6 @@ export const selectIsProviderActive = (state: RootState) => state.config.provide
 export const selectDataProtectionUrl = (state: RootState) => state.config.dataProtectionUrl;
 export const selectGlitchtipConfig = (state: RootState) => state.config.glitchtip;
 export const selectIsGlitchtipConfigured = (state: RootState) => Boolean(state.config.glitchtip?.dsn);
-export const selectShowmprintContainer = (state: RootState) => {
-  if (state.config.imprintUrl || state.config.dataProtectionUrl) {
-    return true;
-  }
-  return false;
-};
 export const selectWaitingRoomDefault = (state: RootState) => state.config.settings.waitingRoomDefaultValue;
 
 export default configSlice.reducer;

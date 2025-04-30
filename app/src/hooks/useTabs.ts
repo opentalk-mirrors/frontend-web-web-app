@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ModerationTabKey } from '../config/constants';
 import { Tab, tabs as initialTabs } from '../config/moderationTabs';
-import { selectEnabledModulesList, selectFeatures } from '../store/slices/configSlice';
+import { selectEnabledModulesList, selectConfigFeatures } from '../store/slices/configSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { selectTimerStyle } from '../store/slices/timerSlice';
 import { selectActiveTab, setActiveTab } from '../store/slices/uiSlice';
@@ -17,7 +17,7 @@ import { useAppDispatch, useAppSelector } from './useCustomRedux';
 // otherwise it will cause circular dependencies
 const useTabs = () => {
   const [tabs, setTabs] = useState<Tab[]>([]);
-  const features = useAppSelector(selectFeatures);
+  const features = useAppSelector(selectConfigFeatures);
   const enabledModulesList = useAppSelector(selectEnabledModulesList);
   const enabledModules = useMemo(() => Object.keys(enabledModulesList).map((module) => module), [enabledModulesList]);
   const timerStyle = useAppSelector(selectTimerStyle);

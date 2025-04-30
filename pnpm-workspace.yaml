@@ -6,3 +6,6 @@
 packages:
   - app
   - packages/*
+
+onlyBuiltDependencies:
+  - msw

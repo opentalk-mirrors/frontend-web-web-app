@@ -41,6 +41,7 @@ import {
   TimerIcon,
   TrashIcon,
 } from '../../../assets/icons';
+import ShareScreenOnIcon from '../../../assets/icons/ShareScreenOnIcon';
 import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import {
   ParticipantAvatar,
@@ -51,7 +52,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
-import { selectIsFeatureEnabled, selectIsModuleEnabled } from '../../../store/slices/configSlice';
+import { selectConfigFeatures, selectIsFeatureEnabled, selectIsModuleEnabled } from '../../../store/slices/configSlice';
 import {
   selectMicrophonesEnabled,
   selectRaiseHandsEnabled,
@@ -93,6 +94,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled('record'));
   const fullscreenHandle = useFullscreenContext();
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
+  const configFeatures = useAppSelector(selectConfigFeatures);
 
   const isTrainingParticipationReportModuleOn = useAppSelector(
     selectIsModuleEnabled(BackendModules.TrainingParticipationReport)
@@ -468,6 +470,23 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         <Divider />
         {isModerator && renderMenuItems(moderatorMenuItems)}
         {isDevMode() && renderMenuItems(devMenuItems)}
+        {configFeatures?.innovafoneAPI && (
+          <MenuList>
+            <ToolbarMenuItem
+              key="more-menu-start-remote-control"
+              onClick={() => {
+                window.open('com.innovaphone.myapps:remotecontrol', '_blank');
+              }}
+            >
+              <ListItemIcon>
+                <ShareScreenOnIcon />
+              </ListItemIcon>
+              <Typography variant="inherit" noWrap>
+                {t('more-menu-start-remote-control')}
+              </Typography>
+            </ToolbarMenuItem>
+          </MenuList>
+        )}
       </ToolbarMenu>
       <InviteGuestDialog open={showInviteModal} onClose={() => setShowInviteModal(false)} />
     </ThemeProvider>

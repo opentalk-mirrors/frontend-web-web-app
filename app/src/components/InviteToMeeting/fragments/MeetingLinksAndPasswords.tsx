@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCreateRoomInviteMutation, useGetMeQuery, useGetRoomInvitesQuery } from '../../../api/rest';
 import { useAppSelector } from '../../../hooks';
-import { selectBaseUrl, selectFeatures } from '../../../store/slices/configSlice';
+import { selectBaseUrl, selectConfigFeatures } from '../../../store/slices/configSlice';
 import { composeInviteUrl } from '../../../utils/apiUtils';
 import MeetingLinkField from './MeetingLinkField';
 import { FieldKeys } from './constants';
@@ -45,7 +45,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
   const [createRoomInvite] = useCreateRoomInviteMutation();
 
   const roomPassword = event.room.password?.trim() || undefined;
-  const features = useAppSelector(selectFeatures);
+  const features = useAppSelector(selectConfigFeatures);
 
   const streamingTargets = event.streamingTargets;
   const streamingTargetURL = useMemo(() => {
