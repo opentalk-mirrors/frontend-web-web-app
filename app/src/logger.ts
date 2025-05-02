@@ -4,8 +4,7 @@
 import { setLogLevel as setLiveKitLogLevel } from 'livekit-client';
 import log, { LogLevelDesc } from 'loglevel';
 
-import store from './store';
-import { selectLogLevel } from './store/slices/configSlice';
+import { formatCurrentTime } from './utils/timeUtils';
 
 enum LogLevel {
   trace = 0,
@@ -23,8 +22,36 @@ enum LoggerNames {
 
 const loggers: Record<string, log.Logger> = {};
 
+const levelColors: Record<string, string> = {
+  trace: 'color: #89BCB5',
+  debug: 'color: #B294BB',
+  info: 'color: #B4BD68',
+  warn: 'color: #F0C574',
+  error: 'color: #CC6566',
+};
+
+const loggerStyles: Record<string, string> = {
+  opentalk: 'color: #D1E545;',
+  livekit: 'color: #1FD5F9;',
+};
+
 Object.values(LoggerNames).forEach((name) => {
   const logger = log.getLogger(name);
+
+  const originalFactory = logger.methodFactory;
+
+  logger.methodFactory = (methodName, logLevel, loggerName) => {
+    const rawMethod = originalFactory(methodName, logLevel, loggerName);
+
+    const loggerString = String(loggerName);
+    const prefix = `%c[${formatCurrentTime()}] %c[${methodName.toUpperCase()}] %c[${loggerString}]`;
+    const levelStyle = levelColors[methodName as LogLevelDesc] || '';
+    const loggerStyle = loggerStyles[loggerString] || '';
+
+    return rawMethod.bind(logger, `${prefix}`, 'color: #a9a9a9;', levelStyle, loggerStyle);
+  };
+
+  logger.setLevel(logger.getLevel());
   loggers[name] = logger;
 });
 
@@ -32,8 +59,8 @@ Object.values(LoggerNames).forEach((name) => {
  * Configure initial log levels based on config
  * e.g. "info,livekit=debug".
  */
-function configureLogLevels() {
-  const envLogLevel = selectLogLevel(store.getState()) || 'info';
+export function setupLogLevel(logLevel?: string) {
+  const envLogLevel = logLevel || 'info';
 
   // Parse LOG_LEVEL format (e.g., "info,livekit=debug")
   const moduleLevels = envLogLevel.split(',').map((entry) => entry.trim());
@@ -45,10 +72,10 @@ function configureLogLevels() {
 
     if (isValidLogLevel(level)) {
       if (module === 'opentalk') {
-        log.setLevel(level);
-        loggers[LoggerNames.OpenTalk].setLevel(level as LogLevelDesc);
+        log.setDefaultLevel(level);
+        loggers[LoggerNames.OpenTalk].setDefaultLevel(level as LogLevelDesc);
       } else if (loggers[module]) {
-        loggers[module].setLevel(level);
+        loggers[module].setDefaultLevel(level);
         if (module === LoggerNames.Livekit) {
           setLiveKitLogging(level);
         }
@@ -119,4 +146,4 @@ export const exposeSetLogLevel = () => {
   };
 };
 
-configureLogLevels();
+export default loggers[LoggerNames.OpenTalk];

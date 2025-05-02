@@ -6,6 +6,7 @@ import convertToSnakeCase from 'snakecase-keys';
 
 import type { Message as IncomingMessage } from '../../api/types/incoming';
 import type { Message as OutgoingMessage } from '../../api/types/outgoing';
+import log from '../../logger';
 import { NamespacedIncoming } from '../../types';
 import { BaseEventEmitter } from '../EventListener';
 
@@ -123,14 +124,14 @@ export class SignalingSocket extends BaseEventEmitter<SignalingConnectionEvent> 
 
   public disconnect = () => {
     if (!this.isOpen()) {
-      console.warn('disconnect signaling when not connected');
+      log.warn('disconnect signaling when not connected');
     }
     this.socket.close(1000, 'Normal Shutdown');
   };
 
   // For closure status codes see: https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
   private onClose = (e: CloseEvent) => {
-    console.debug(`signaling socket closed with ${e.code}: ${e.reason}`);
+    log.debug(`signaling socket closed with ${e.code}: ${e.reason}`);
     clearInterval(this.heartbeatIntervalId);
     clearTimeout(this.closeSignalingTimeoutId);
     this.socket.onmessage = null;
@@ -138,7 +139,7 @@ export class SignalingSocket extends BaseEventEmitter<SignalingConnectionEvent> 
 
     // TODO remove
     if (this._debugReconnect) {
-      console.info(`Debug action: mimic signaling websocket connection error`);
+      log.info('Debug action: mimic signaling websocket connection error');
       this.eventEmitter.emit('connectionstatechange', 'disconnected');
       return;
     }
@@ -155,15 +156,15 @@ export class SignalingSocket extends BaseEventEmitter<SignalingConnectionEvent> 
       case 1007: // Unsupported payload
       case 1012: // Server restart
       case 1013: // Try again later
-        console.warn(`Connection Lost: Signaling websocket closed with reason ${e.code}: ${e.reason}`);
+        log.warn(`Connection Lost: Signaling websocket closed with reason ${e.code}: ${e.reason}`);
         this.eventEmitter.emit('connectionstatechange', 'disconnected');
         break;
       case 4999: // custom error code when heartbeat is failing (can't reach a signaling response)
-        console.warn(`Connection Lost: Signaling websocket closed with reason ${e.code}: ${e.reason}`);
+        log.warn(`Connection Lost: Signaling websocket closed with reason ${e.code}: ${e.reason}`);
         this.eventEmitter.emit('connectionstatechange', 'disconnected');
         break;
       default:
-        console.error(`Connection Lost: Signaling websocket closed with reason ${e.code}: ${e.reason}`);
+        log.error(`Connection Lost: Signaling websocket closed with reason ${e.code}: ${e.reason}`);
         this.eventEmitter.emit('connectionstatechange', 'closed');
         break;
     }

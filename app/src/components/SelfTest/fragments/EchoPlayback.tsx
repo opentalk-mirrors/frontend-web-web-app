@@ -8,10 +8,11 @@ import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import log from '../../../logger';
 import { EchoTest, EchoTestState } from '../../../modules/WebRTC/EchoTest';
 import {
-  selectAudioEnabled,
   selectAudioDeviceId,
+  selectAudioEnabled,
   setAudioDeviceId,
   setMediaChangeInProgress,
   startMedia,
@@ -45,7 +46,7 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
           if (audioRef.current) {
             audioRef.current.srcObject = instance.outStream || null;
           } else {
-            console.error('No audio element found.');
+            log.error('No audio element found.');
           }
           break;
         case 'closed':
@@ -54,7 +55,7 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
           }
           break;
         default:
-          console.error('Unknown state change');
+          log.error('Unknown state change');
       }
     },
     []
@@ -97,7 +98,7 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
     echoTest.addEventListener('stateChanged', echoChangeHandler);
     localAudioTrack.mediaStream &&
       echoTest.connect(localAudioTrack.mediaStream).catch((e) => {
-        console.error('Failed to connect EchoTest', e);
+        log.error('Failed to connect EchoTest', e);
       });
 
     return () => {

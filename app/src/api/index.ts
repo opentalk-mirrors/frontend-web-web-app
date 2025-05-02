@@ -20,6 +20,7 @@ import { createStreamUpdatedNotification } from '../components/StreamUpdatedNoti
 import { showWithLinkNotification } from '../components/WithLinkNotification';
 import LayoutOptions from '../enums/LayoutOptions';
 import i18n from '../i18n';
+import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
@@ -467,7 +468,7 @@ const handleControlMessage = async (
     }
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown control message type: ${dataString}`);
+      log.error(`Unknown control message type: ${dataString}`);
     }
   }
 };
@@ -504,11 +505,11 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
         case 'invalid_candidate':
         case 'invalid_configure_request':
         case 'permission_denied':
-          console.error(`Media Error: ${data}`);
+          log.error(`Media Error: ${data}`);
           notifications.error(i18next.t('error-general'));
           throw new Error(`Media Error: ${error}`);
         default:
-          console.error(`Media Error: ${data}`);
+          log.error(`Media Error: ${data}`);
           throw new Error(`Media Error: ${error}`);
       }
     }
@@ -554,7 +555,7 @@ const handleBreakoutMessage = (
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown breakout message type: ${dataString}`);
+      log.error(`Unknown breakout message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -680,7 +681,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown automod message type: ${dataString}`);
+      log.error(`Unknown automod message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -744,7 +745,7 @@ const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMessageTyp
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown legal vote message type: ${dataString}`);
+      log.error(`Unknown legal vote message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -768,12 +769,12 @@ const handlePollVoteMessage = (dispatch: AppDispatch, data: poll.Message) => {
       break;
     case 'error':
       // todo error handling in BE seems to be wrong
-      console.error('Poll error message', data);
+      log.error('Poll error message', data);
       // dispatchError(data.error.replace('_', '-'));
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown poll message type: ${dataString}`);
+      log.error(`Unknown poll message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -869,7 +870,7 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown moderation message type: ${dataString}`);
+      log.error(`Unknown moderation message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -930,7 +931,7 @@ const handleMeetingNotesMessage = (
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown meeting notes message type: ${dataString}`);
+      log.error(`Unknown meeting notes message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -958,7 +959,7 @@ const handleMeetingReportMessage = (dispatch: AppDispatch, data: meetingReport.M
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown meeting report message type: ${dataString}`);
+      log.error(`Unknown meeting report message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -984,7 +985,7 @@ const handleTimerMessage = (dispatch: AppDispatch, data: timer.Message) => {
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown timer message type: ${dataString}`);
+      log.error(`Unknown timer message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -1009,7 +1010,7 @@ const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown timer message type: ${dataString}`);
+      log.error(`Unknown timer message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -1042,7 +1043,7 @@ const handleChatMessage = (dispatch: AppDispatch, data: chat.ChatMessage, timest
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown chat message type: ${dataString}`);
+      log.error(`Unknown chat message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -1080,7 +1081,7 @@ const handleStreamingMessage = (dispatch: AppDispatch, data: streaming.Message, 
     }
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown recording message type: ${dataString}`);
+      log.error(`Unknown recording message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -1093,7 +1094,7 @@ const handleSharedFolderMessage = (dispatch: AppDispatch, data: sharedFolder.Mes
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown shared_folder message type: ${dataString}`);
+      log.error(`Unknown shared_folder message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -1137,14 +1138,14 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
           dispatch(setLivekitUnavailable(true));
           break;
         default:
-          console.error(`Livekit Error: ${data}`);
+          log.error(`Livekit Error: ${data}`);
           throw new Error(`Livekit Error: ${error}`);
       }
       break;
     }
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown livekit message type: ${dataString}`);
+      log.error(`Unknown livekit message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
@@ -1226,13 +1227,13 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
       const error = data.error;
       switch (error) {
         default:
-          console.error(`Livekit Error: ${data}`);
+          log.error(`Livekit Error: ${data}`);
           throw new Error(`Livekit Error: ${error}`);
       }
     }
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown subroom audio message type: ${dataString}`);
+      log.error(`Unknown subroom audio message type: ${dataString}`);
     }
   }
 };
@@ -1307,7 +1308,7 @@ const handleTrainingParticipationReportMessage = (
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      console.error(`Unknown training participation report message type: ${dataString}`);
+      log.error(`Unknown training participation report message type: ${dataString}`);
     }
   }
 };
@@ -1331,7 +1332,7 @@ const onMessage =
         break;
       case 'media':
         handleMediaMessage(dispatch, message.payload, getState()).catch((e) => {
-          console.error('Error in handleMediaMessage:', e);
+          log.error('Error in handleMediaMessage:', e);
         });
         break;
       case 'automod':
@@ -1443,7 +1444,7 @@ export const apiMiddleware: Middleware = ({
       .addCase(startRoom.pending, () => {
         const conferenceContext = getCurrentConferenceRoom();
         if (conferenceContext !== undefined) {
-          console.info('switching room -- webRTC was running, shutting down');
+          log.info('switching room -- webRTC was running, shutting down');
           shutdownConferenceContext();
         }
       })

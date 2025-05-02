@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import log from '../../logger';
 import { BaseEventEmitter } from '../EventListener';
 
 /*
@@ -37,7 +38,7 @@ export class EchoTest extends BaseEventEmitter<EchoTestEvent> {
     }
     const task = otherPeerConnection.addIceCandidate(event.candidate);
     task.catch((e) => {
-      console.error(`Failed to add ICE Candidate: ${e.toString()}`);
+      log.error(`Failed to add ICE Candidate: ${e.toString()}`);
     });
     return task;
   };
@@ -63,11 +64,11 @@ export class EchoTest extends BaseEventEmitter<EchoTestEvent> {
     stream.getTracks().forEach((track) => this.connectionOut.addTrack(track, stream));
 
     const offerTask = this.connectionOut.createOffer(this.offerOptions);
-    offerTask.catch((e) => console.error('createOffer Failed', e));
+    offerTask.catch((e) => log.error('createOffer Failed', e));
 
     const offer = await offerTask;
     const setDescriptionTask = this.setDescription(offer);
-    setDescriptionTask.catch((e) => console.error('setDescription Failed', offer, e));
+    setDescriptionTask.catch((e) => log.error('setDescription Failed', offer, e));
     const answer = await setDescriptionTask;
     await this.onCreateAnswerSuccess(answer);
     this.eventEmitter.emit('stateChanged', 'connected');

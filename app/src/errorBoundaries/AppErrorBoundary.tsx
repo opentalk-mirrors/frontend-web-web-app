@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import React, { ErrorInfo, ReactNode } from 'react';
 
+import log from '../logger';
 import AppErrorPage from './fragments';
 
 interface Props {
@@ -28,7 +29,7 @@ class AppErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.errorInfo = errorInfo;
-    console.error('AppErrorBoundary:', error, errorInfo);
+    log.error('AppErrorBoundary:', error, errorInfo);
     this.setState(() => {
       return { error: error, errorInfo: errorInfo };
     });

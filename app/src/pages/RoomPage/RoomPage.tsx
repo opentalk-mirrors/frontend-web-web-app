@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import useE2EE from '../../hooks/useE2EE';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { usePreventSpaceKey } from '../../hooks/usePreventSpaceKey';
+import log from '../../logger';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { exitingRoomContext } from '../../store/commonActions';
 import { selectRoomConnectionState } from '../../store/slices/roomSlice';
@@ -38,11 +39,11 @@ const RoomPage = () => {
   }, []);
 
   if (!isAuthenticated && !inviteCode) {
-    console.warn('meeting page - not logged in - redirect');
+    log.warn('meeting page - not logged in - redirect');
     return <LobbyView />;
   }
 
-  console.debug('connection: ', connectionState);
+  log.debug('connection: ', connectionState);
 
   switch (connectionState) {
     // Regular state machine flow
@@ -64,7 +65,7 @@ const RoomPage = () => {
     case ConnectionState.Blocked:
       return <RoomLoadingView />;
     default:
-      console.error('room state unknown', connectionState);
+      log.error('room state unknown', connectionState);
       return <LobbyView />;
   }
 };

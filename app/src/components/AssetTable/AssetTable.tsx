@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Paper, styled } from '@mui/material';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled } from '@mui/material';
 import { AssetId, BaseAsset } from '@opentalk/rest-api-rtk-query';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AssetDownloadBaseInfo } from '../../hooks/useDownloadRoomAsset';
+import log from '../../logger';
 import { AssetTableRow } from './fragments/AssetTableRow';
 
 // `component` prop lost when wrapping with `styled`
@@ -69,7 +70,7 @@ export const AssetTable = ({ assets, onDownload, onDelete, maxHeight = 'none' }:
       });
       updateAssetRowState(assetId, { downloading: false, progress: 0, deleting: false });
     } catch (error) {
-      console.error('Error downloading asset', error);
+      log.error('Error downloading asset', error);
       updateAssetRowState(assetId, { downloading: false, progress: 0, deleting: false });
     }
   };
@@ -87,7 +88,7 @@ export const AssetTable = ({ assets, onDownload, onDelete, maxHeight = 'none' }:
               return newState;
             });
           } catch (error) {
-            console.error('Error deleting asset', error);
+            log.error('Error deleting asset', error);
             updateAssetRowState(assetId, { deleting: false, downloading: false });
           }
         }
