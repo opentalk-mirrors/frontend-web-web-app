@@ -752,7 +752,7 @@ dashboard-join-meeting = Join the meeting
 dashboard-sign-in = Sign in
 
 dashboard-settings-general-notification-save-success = Your settings have been saved successfully.
-dashboard-settings-general-notification-save-error = Your settings couln't be saved.
+dashboard-settings-general-notification-save-error = Your settings couldn't be saved.
 dashboard-settings-general-language = Language
 dashboard-settings-general-appearance = Appearance
 dashboard-settings-general-notifications = Notifications
