@@ -8,6 +8,7 @@ import * as yup from 'yup';
 
 import { useGetMeQuery, useUpdateMeMutation } from '../../../../api/rest';
 import { notifications, CommonTextField } from '../../../../commonComponents';
+import { DISPLAY_NAME_MAX_CHARACTERS } from '../../../../constants';
 import { useAppSelector } from '../../../../hooks';
 import { selectDisallowCustomDisplayName } from '../../../../store/slices/configSlice';
 import { formikProps } from '../../../../utils/formikUtils';
@@ -22,6 +23,7 @@ const ProfileNameForm = () => {
     displayName: yup
       .string()
       .trim()
+      .max(DISPLAY_NAME_MAX_CHARACTERS, t('lobby-name-max-error', { max: DISPLAY_NAME_MAX_CHARACTERS }))
       .required(t('field-error-required', { fieldName: t('dashboard-settings-profile-name-label') })),
   });
 
