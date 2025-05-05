@@ -201,7 +201,7 @@ importers:
         specifier: ^25.0.2
         version: 25.0.2(typescript@5.8.3)
       i18next-browser-languagedetector:
-        specifier: ^8.0.5
+        specifier: ^8.1.0
         version: 8.1.0
       i18next-http-backend:
         specifier: ^3.0.2
