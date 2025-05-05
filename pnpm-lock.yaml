@@ -90,7 +90,7 @@ importers:
         specifier: ^16.0.0
         version: 16.0.0
       knip:
-        specifier: ^5.51.1
+        specifier: ^5.53.0
         version: 5.53.0(@types/node@22.15.3)(typescript@5.8.3)
       licensee:
         specifier: ^11.1.1
