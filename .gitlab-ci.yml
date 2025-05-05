@@ -377,7 +377,7 @@ deploy:review-app:
     - build:container
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  image: alpine/helm:3.17.2
+  image: alpine/helm:3.17.3
   tags:
     - kubernetes
   before_script:
@@ -477,7 +477,7 @@ cleanup:review-app:
         $CI_PIPELINE_SOURCE == 'push'
   allow_failure: true
   image:
-    name: alpine/helm:3.17.2
+    name: alpine/helm:3.17.3
     entrypoint: ['']
   tags:
     - kubernetes
