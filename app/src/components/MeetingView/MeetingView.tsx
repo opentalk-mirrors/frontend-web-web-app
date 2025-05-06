@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { styled } from '@mui/material';
+import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { memo, useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { useAppSelector } from '../../hooks';
-import { E2EEData } from '../../hooks/useE2EE';
+import useE2EE from '../../hooks/useE2EE';
 import { useHotkeys } from '../../hooks/useHotkeys';
 import useRoom from '../../hooks/useRoom';
 import { selectLivekitAccessToken, selectLivekitPublicUrl } from '../../store/slices/livekitSlice';
@@ -53,11 +55,11 @@ const WhisperContext = styled(LiveKitRoom)(() => {
 const CachedTimerPopover = memo(TimerPopover);
 const CachedInnerLayout = memo(InnerLayout);
 
-interface MeetingViewProps {
-  e2eeData: E2EEData;
-}
-
-const MeetingView = ({ e2eeData }: MeetingViewProps) => {
+const MeetingView = () => {
+  const { roomId } = useParams<'roomId'>() as {
+    roomId: RoomId;
+  };
+  const e2eeData = useE2EE(roomId);
   const livekitAccessToken = useAppSelector(selectLivekitAccessToken);
   const publicUrl = useAppSelector(selectLivekitPublicUrl);
   const whisperToken = useAppSelector(selectSubroomAudioToken);
