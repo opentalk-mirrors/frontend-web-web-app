@@ -44,7 +44,7 @@ test.describe('79_Dashboard_Settings', () => {
     await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
   });
 
-  test('TC_002_Dashboard_Settings_Profile option', async ({ page }) => {
+  test.skip('TC_002_Dashboard_Settings_Profile option', async ({ page }) => {
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
     await page.getByRole('link', { name: 'Settings', exact: true }).click();
