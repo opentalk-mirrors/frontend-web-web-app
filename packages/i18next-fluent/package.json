@@ -17,10 +17,10 @@
     "@opentalk/fluent_conv": "workspace:*"
   },
   "peerDependencies": {
-    "i18next": "^25.0.2"
+    "i18next": "^25.1.1"
   },
   "devDependencies": {
-    "i18next": "^25.0.2",
+    "i18next": "^25.1.1",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-plugin-dts": "^4.5.3"
