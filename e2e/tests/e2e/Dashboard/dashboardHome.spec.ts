@@ -6,8 +6,6 @@ import { validate } from 'uuid';
 
 import { closeWebkitPopUp } from '../../helper/webkit';
 import { HomePage } from '../../pages/HomePage';
-import { LobbyRoomPage } from '../../pages/LobbyRoomPage';
-import { PlanMeetingPage } from '../../pages/PlanMeetingPage';
 
 const isRoomIdValid = (url: string): boolean => {
   const meetingRoomUrl = new URL(url);
@@ -18,8 +16,7 @@ const isRoomIdValid = (url: string): boolean => {
 };
 
 const getUserToInviteInMeeting = (browserName: string): string => {
-  const baseUrl = process.env.INSTANCE_URL;
-  const parsedBaseUrl = new URL(baseUrl);
+  const parsedBaseUrl = new URL(process.env.INSTANCE_URL);
   let inviteUser;
   if (parsedBaseUrl.hostname === 'localhost') {
     inviteUser = 'Alice Adams';
@@ -52,6 +49,7 @@ test.describe('Dashboard_Home', () => {
     await homePage.navigateToHomePage();
     const meetingInvitationPage = await homePage.startAdhocMeeting();
     await meetingInvitationPage.waitForGuestLinkToRender();
+
     await expect(await meetingInvitationPage.getAdhocMeetingDescriptionTitleText()).toBeVisible();
     await expect(await meetingInvitationPage.getAdhocMeetingDescriptionDisclaimer()).toBeVisible();
     await expect(meetingInvitationPage.meetingLinkInputField).toBeVisible();
@@ -62,9 +60,8 @@ test.describe('Dashboard_Home', () => {
     await expect(meetingInvitationPage.cancelMeetingButton).toBeVisible();
     await expect(meetingInvitationPage.openMeetingRoomButton).toBeVisible();
     await expect(meetingInvitationPage.sendInvitationButton).toBeVisible();
-
-    // send invitation is disabled by default
     await expect(meetingInvitationPage.sendInvitationButton).toBeDisabled();
+
     const meetingLink = await meetingInvitationPage.meetingLinkInputField.inputValue();
     expect(isRoomIdValid(meetingLink)).toBeTruthy();
     const guestInvitationLink = await meetingInvitationPage.guestLinkInputField.inputValue();
@@ -93,7 +90,7 @@ test.describe('Dashboard_Home', () => {
     await meetingInvitationPage.sendMeetingInvitation();
     await expect(await meetingInvitationPage.getNotificationTextAfterInvitingUser()).toBeVisible();
 
-    const lobbyRoomPage = new LobbyRoomPage({ page: await meetingInvitationPage.goToMeetingLobby() });
+    const lobbyRoomPage = await meetingInvitationPage.goToMeetingLobbyPage();
     await expect(lobbyRoomPage.nameInputField).toBeVisible();
     await lobbyRoomPage.page.close();
 
@@ -104,10 +101,8 @@ test.describe('Dashboard_Home', () => {
   test('TC_002_Dashboard_Home_Plan new button', async ({ page }) => {
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
-    await homePage.planNewMeetingButton.click();
-    const planMeetingPage = new PlanMeetingPage({ page });
+    const planMeetingPage = await homePage.planNewMeeting();
 
-    // title text should be participant and participants
     await expect(planMeetingPage.meetingTextAsTitle).toBeVisible();
     await expect(planMeetingPage.participantTextAsTitle).toBeVisible();
     await expect(planMeetingPage.meetingPageDescription).toBeVisible();
@@ -123,9 +118,9 @@ test.describe('Dashboard_Home', () => {
     await expect(planMeetingPage.createSharedFolderToggleButton).not.toBeChecked();
     await expect(planMeetingPage.showMeetingDetailsToggleButton).toBeChecked();
     await expect(planMeetingPage.livestreamToggleButton).not.toBeChecked();
+
     // enable protection is only available in testing domain and not in CI
-    const baseUrl = process.env.INSTANCE_URL;
-    const parsedBaseUrl = new URL(baseUrl);
+    const parsedBaseUrl = new URL(process.env.INSTANCE_URL);
     if (parsedBaseUrl.hostname.startsWith('testing')) {
       await expect(planMeetingPage.enableProtectionToggleButton).not.toBeChecked();
     }
@@ -134,33 +129,32 @@ test.describe('Dashboard_Home', () => {
   });
 
   test('TC_003_Dashboard_Home_Plan new_Step-1 Meeting_Textboxes: Title *, Details, Password', async ({ page }) => {
-    const homePage = new HomePage({ page });
-    await homePage.planNewMeetingButton.click();
-    const planMeetingPage = new PlanMeetingPage({ page });
-    await planMeetingPage.titleInputField.click();
-    await expect(planMeetingPage.titleInputField).toHaveAttribute('placeHolder', 'My new Meeting');
-
     const meetingTitle = 'test-meeting';
+    const meetingDetail = 'This is a test meeting';
+    const meetingPassword = 'test@1234';
+
+    const homePage = new HomePage({ page });
+    await homePage.navigateToHomePage();
+    const planMeetingPage = await homePage.planNewMeeting();
+
+    await planMeetingPage.selectTitleInputField();
+    await expect(planMeetingPage.titleInputField).toHaveAttribute('placeHolder', 'My new Meeting');
     await planMeetingPage.titleInputField.fill(meetingTitle);
     await expect(planMeetingPage.titleInputField).toHaveValue(meetingTitle);
 
-    await planMeetingPage.meetingDetailsInputField.click();
+    await planMeetingPage.selectMeetingDetailsInputField();
     await expect(planMeetingPage.meetingDetailsInputField).toHaveAttribute(
       'placeHolder',
       'What is your meeting about?'
     );
-
-    const meetingDetail = 'This is a test meeting';
     await planMeetingPage.meetingDetailsInputField.fill(meetingDetail);
     await expect(planMeetingPage.meetingDetailsInputField).toHaveValue(meetingDetail);
 
-    await planMeetingPage.passwordInputField.click();
+    await planMeetingPage.selectPasswordInputField();
     await expect(planMeetingPage.passwordInputField).toHaveAttribute(
       'placeHolder',
       'Strong password has at least 8 characters'
     );
-
-    const meetingPassword = 'test@1234';
     await planMeetingPage.passwordInputField.fill(meetingPassword);
     await expect(planMeetingPage.passwordInputField).toHaveValue(meetingPassword);
   });
