@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ProcessorWrapper } from '@livekit/track-processors';
 import {
   Stack,
   styled,
@@ -31,6 +30,7 @@ import {
 import { mirroredVideoSet, selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
 import { VideoSetting } from '../../../types';
 import { DeviceId } from '../../../types/device';
+import { isBackgroundEffectSupported } from '../../../utils/mediaUtils';
 import { MenuSectionTitle } from '../../Toolbar/fragments/ToolbarMenuUtils';
 import DeviceManager from './DeviceManager';
 import { DevicePermissionState } from './constants';
@@ -120,8 +120,6 @@ export const VideoSettingsPanel = () => {
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [devices]);
 
-  const isBackgroundAndBlurringSupported = ProcessorWrapper.isSupported;
-
   const isBlurred = videoBackgroundEffects.style === 'blur';
 
   const setBlur = (enabled: boolean) => {
@@ -197,7 +195,7 @@ export const VideoSettingsPanel = () => {
           <MenuSectionTitle>{t('videomenu-background')}</MenuSectionTitle>
           <FormGroup>
             <BackgroundOptionsContainer spacing={1}>
-              {isBackgroundAndBlurringSupported && (
+              {isBackgroundEffectSupported() && (
                 <FormControlLabel
                   control={
                     <CommonSwitch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />
@@ -227,7 +225,7 @@ export const VideoSettingsPanel = () => {
         </>
       )}
 
-      {showDeviceOptions && isBackgroundAndBlurringSupported && videoBackgrounds.length > 0 && (
+      {showDeviceOptions && isBackgroundEffectSupported() && videoBackgrounds.length > 0 && (
         <>
           <Divider variant="middle" />
           <Typography

@@ -109,15 +109,22 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   const isVideoMissing = isVideoEnabled && cameraTrack?.track?.isMuted && !cameraTrack?.track.mediaStreamTrack;
 
   useEffect(() => {
-    const localVideoTrack = videoTrackRef?.publication.videoTrack;
+    const localVideoTrack = cameraTrack?.track as LocalVideoTrack;
     if (localVideoTrack instanceof LocalVideoTrack) {
-      applyBackgroundEffectToTrack(localVideoTrack, videoBackgroundEffects, (loading) => {
-        dispatch(setBackgroundEffectsLoading(loading));
+      applyBackgroundEffectToTrack(
+        localVideoTrack,
+        videoBackgroundEffects,
+        (loading) => {
+          dispatch(setBackgroundEffectsLoading(loading));
+        },
+        videoDeviceId
+      ).catch((error) => {
+        console.error('Error starting background processor', error);
       });
     }
   }, [
     isVideoEnabled,
-    videoTrackRef?.publication.videoTrack,
+    cameraTrack?.track,
     videoBackgroundEffects.style,
     videoBackgroundEffects.imageUrl,
     videoDeviceId,
@@ -139,10 +146,10 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
 
   useEffect(() => {
     if (screenShareEnabled && isVideoEnabled) {
-      attachVideo(videoThumbnailRef, outgoingVideoStreamTrack);
+      attachVideo(videoThumbnailRef, cameraTrack?.track?.mediaStream || null);
       attachVideo(videoRef, outgoingScreenStream);
     } else if (isVideoEnabled) {
-      attachVideo(videoRef, outgoingVideoStreamTrack);
+      attachVideo(videoRef, cameraTrack?.track?.mediaStream || null);
       detachVideo(videoThumbnailRef);
     } else if (screenShareEnabled) {
       attachVideo(videoRef, outgoingScreenStream);
@@ -193,8 +200,8 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
             />
           )}
           <NameTile
-            localAudioOn={fullscreenMode ? isAudioEnabled : true}
-            localVideoOn={fullscreenMode ? isVideoEnabled : true}
+            localAudioOn={!fullscreenMode || isAudioEnabled}
+            localVideoOn={!fullscreenMode || isVideoEnabled}
             displayName={displayName || ''}
             className="positionBottom"
           />

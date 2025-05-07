@@ -3,12 +3,13 @@ import BackgroundTransformer, {
   BackgroundOptions,
   SegmenterOptions,
 } from './transformers/BackgroundTransformer';
-import { isFirefoxBrowser } from './utils';
 
 // Polyfilling for now work only for Firefox (above v130).
 // Check theImageSegmenter.baseOption.delegate for adding segmentation to CPU to work on Firefox in BackgroundTransform.ts.
-if (isFirefoxBrowser) {
+if (typeof MediaStreamTrackGenerator === 'undefined') {
   require('../polyfills/mediastreamtrackgenerator');
+}
+if (typeof MediaStreamTrackProcessor === 'undefined') {
   require('../polyfills/mediastreamtrackprocessor');
 }
 
@@ -25,7 +26,11 @@ export const VirtualBackground = (imagePath: string, segmenterOptions?: Segmente
 };
 
 export const BackgroundProcessor = (options: BackgroundOptions, name = 'background-processor') => {
-  const isProcessorSupported = ProcessorWrapper.isSupported && BackgroundTransformer.isSupported;
+  const isTransformerSupported = BackgroundTransformer.isSupported;
+  if (!isTransformerSupported) {
+    throw new Error('background transformer is not supported in this browser');
+  }
+  const isProcessorSupported = ProcessorWrapper.isSupported;
   if (!isProcessorSupported) {
     throw new Error('processor is not supported in this browser');
   }
