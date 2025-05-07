@@ -127,10 +127,10 @@ importers:
         version: 2.7.999
       '@livekit/components-core':
         specifier: ^0.12.4
-        version: 0.12.4(livekit-client@2.11.4)(tslib@2.8.1)
+        version: 0.12.4(livekit-client@2.10.0)(tslib@2.8.1)
       '@livekit/components-react':
         specifier: ^2.9.3
-        version: 2.9.3(livekit-client@2.11.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tslib@2.8.1)
+        version: 2.9.3(livekit-client@2.10.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tslib@2.8.1)
       '@livekit/protocol':
         specifier: ^1.37.1
         version: 1.37.1
@@ -213,8 +213,8 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
       livekit-client:
-        specifier: '=2.11.4'
-        version: 2.11.4
+        specifier: '=2.10.0'
+        version: 2.10.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -4735,6 +4735,10 @@ packages:
     resolution: {integrity: sha512-vsBzcU4oE+v0lj4FhVLzr9dBTv4/fHIa57l+GCwovP8MoFNZJTOhGU8PXd4v2VJCbECAaijBiHntiekFMLvo0g==}
     engines: {node: '>=18.0.0'}
 
+  livekit-client@2.10.0:
+    resolution: {integrity: sha512-JASed3gLyr6Ros4lSFpRQSYPlxSjX0Pv/rSmHb3mxo+iqYOW5bPSdkM5wPbV8R+Te5gKu0xAO5ObyWgRdAHTdw==}
+    deprecated: This version has a bug in connection handling for older browsers
+
   livekit-client@2.11.4:
     resolution: {integrity: sha512-V82NdyhHo3iBxxQmPTk95Fe2+VZMABWZL56t9oZmMgycoF8li8gs/KG7yyDsKki50EeKLgwOmlwqx/Xf0pc0+Q==}
 
@@ -8277,19 +8281,19 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@livekit/components-core@0.12.4(livekit-client@2.11.4)(tslib@2.8.1)':
+  '@livekit/components-core@0.12.4(livekit-client@2.10.0)(tslib@2.8.1)':
     dependencies:
       '@floating-ui/dom': 1.6.13
-      livekit-client: 2.11.4
+      livekit-client: 2.10.0
       loglevel: 1.9.1
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@livekit/components-react@2.9.3(livekit-client@2.11.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tslib@2.8.1)':
+  '@livekit/components-react@2.9.3(livekit-client@2.10.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tslib@2.8.1)':
     dependencies:
-      '@livekit/components-core': 0.12.4(livekit-client@2.11.4)(tslib@2.8.1)
+      '@livekit/components-core': 0.12.4(livekit-client@2.10.0)(tslib@2.8.1)
       clsx: 2.1.1
-      livekit-client: 2.11.4
+      livekit-client: 2.10.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       tslib: 2.8.1
@@ -11956,6 +11960,18 @@ snapshots:
       log-update: 6.1.0
       rfdc: 1.4.1
       wrap-ansi: 9.0.0
+
+  livekit-client@2.10.0:
+    dependencies:
+      '@livekit/mutex': 1.1.1
+      '@livekit/protocol': 1.36.1
+      events: 3.3.0
+      loglevel: 1.9.2
+      sdp-transform: 2.15.0
+      ts-debounce: 4.0.0
+      tslib: 2.8.1
+      typed-emitter: 2.1.0
+      webrtc-adapter: 9.0.3
 
   livekit-client@2.11.4:
     dependencies:
