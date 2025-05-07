@@ -17,7 +17,7 @@
     "snakecase-keys": "^8.0.1"
   },
   "devDependencies": {
-    "@reduxjs/toolkit": "^2.7.0",
+    "@reduxjs/toolkit": "^2.8.0",
     "@testing-library/react": "^16.3.0",
     "msw": "^2.7.6",
     "react": "^18.3.1",
@@ -31,7 +31,7 @@
     "whatwg-fetch": "^3.6.20"
   },
   "peerDependencies": {
-    "@reduxjs/toolkit": "^2.7.0",
+    "@reduxjs/toolkit": "^2.8.0",
     "react-redux": "^9.2.0"
   },
   "files": [
