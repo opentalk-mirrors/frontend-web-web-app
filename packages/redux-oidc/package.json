@@ -14,7 +14,7 @@
   "declarationDir": "types",
   "emitDeclarationOnly": true,
   "devDependencies": {
-    "@reduxjs/toolkit": "^2.7.0",
+    "@reduxjs/toolkit": "^2.8.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "7.5.3",
     "typescript": "^5.8.3",
@@ -22,7 +22,7 @@
     "vite-plugin-dts": "^4.5.3"
   },
   "peerDependencies": {
-    "@reduxjs/toolkit": "^2.7.0",
+    "@reduxjs/toolkit": "^2.8.0",
     "react": "^18.3.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "7.5.3"
