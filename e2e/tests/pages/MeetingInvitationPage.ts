@@ -70,7 +70,7 @@ export class MeetingInvitationPage {
   async getUserFromUserInvitationDropDown(): Promise<string> {
     // dropdown text will return username and email in the html node
     const dropDownUserDetail = await this.userInvitationDropDown.allInnerTexts();
-    // in webkit, dropdown innertext,has newline character before username
+    // in webkit, dropdown innertext has newline character before username
     const userDetail = dropDownUserDetail.toString().replace(/\n/, '');
     return userDetail.split('\n')[0];
   }
@@ -81,9 +81,7 @@ export class MeetingInvitationPage {
   }
 
   async cancelMeeting(): Promise<void> {
-    console.log('h1 while cancelMeeting is called: ' + (await this.page.locator('h1').first().textContent())); // page seems to be on lobby page when this is called
     await this.cancelMeetingButton.isVisible();
-    console.log('cancel meeting: ' + (await this.cancelMeetingButton.textContent()));
     await this.cancelMeetingButton.click();
   }
 
@@ -125,6 +123,14 @@ export class MeetingInvitationPage {
     const moderatorPage = await popupPromise;
     await moderatorPage.waitForLoadState();
     return popupPromise;
+  }
+
+  async goToMeetingLobbyPage(): Promise<LobbyRoomPage> {
+    const popupPromise = this.page.waitForEvent('popup');
+    await this.openMeetingRoomButton.click();
+    const lobbyRoomPage = await popupPromise;
+    await lobbyRoomPage.waitForLoadState();
+    return new LobbyRoomPage({ page: lobbyRoomPage });
   }
 
   async startAdhocMeetingHelper(closeTab: boolean): Promise<void> {

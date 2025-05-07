@@ -62,4 +62,19 @@ export class PlanMeetingPage {
     await this.page.waitForLoadState('load');
     await this.page.waitForSelector('[aria-label="Only for registered users"]', { state: 'visible', timeout: 30000 });
   }
+
+  async selectTitleInputField(): Promise<void> {
+    await this.titleInputField.isVisible();
+    await this.titleInputField.click();
+  }
+
+  async selectMeetingDetailsInputField(): Promise<void> {
+    await this.meetingDetailsInputField.isVisible();
+    await this.meetingDetailsInputField.click();
+  }
+
+  async selectPasswordInputField(): Promise<void> {
+    await this.passwordInputField.isVisible();
+    await this.passwordInputField.click();
+  }
 }
