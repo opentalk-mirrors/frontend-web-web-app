@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
+import { MeetingRoomPage } from './MeetingRoomPage';
+
 export class LobbyRoomPage {
   page: Page;
   speedTestButton: Locator;
@@ -43,12 +45,12 @@ export class LobbyRoomPage {
     }
   }
 
-  async enterMeetingRoom(): Promise<Page> {
-    await this.renderLobbyPageFully();
+  async enterMeetingRoom(): Promise<MeetingRoomPage> {
+    await this.renderLobbyPage();
     await this.joinMeetingButton.isVisible();
     await this.joinMeetingButton.click();
-    await this.page.waitForLoadState('domcontentloaded');
-    return this.page;
+    await this.page.waitForLoadState('load');
+    return new MeetingRoomPage({ page: this.page });
   }
 
   async waitForParticipantNameToBeVisibleInNameField(): Promise<void> {
@@ -63,8 +65,8 @@ export class LobbyRoomPage {
     }
   }
 
-  async renderLobbyPageFully(): Promise<void> {
-    await this.nameInputField.isVisible();
+  async renderLobbyPage(): Promise<void> {
+    await this.nameInputField.waitFor({ state: 'visible' });
     await this.waitForParticipantNameToBeVisibleInNameField();
   }
 }

@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
+import { MeetingInvitationPage } from './MeetingInvitationPage';
+import { PlanMeetingPage } from './PlanMeetingPage';
+
 export class HomePage {
   page: Page;
   planNewMeetingButton: Locator;
@@ -19,16 +22,21 @@ export class HomePage {
   }
 
   async navigateToHomePage(): Promise<void> {
-    const baseUrl = process.env.INSTANCE_URL;
-    await Promise.all([this.page.goto(baseUrl), this.page.waitForLoadState('load')]);
+    await Promise.all([this.page.goto(process.env.INSTANCE_URL), this.page.waitForLoadState('load')]);
     // for dashboard page to be fully loaded, favorite meeting box should be rendered fully
     await this.favoriteMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
   }
 
-  async startAdhocMeeting(): Promise<Page> {
+  async planNewMeeting(): Promise<PlanMeetingPage> {
+    await this.planNewMeetingButton.click();
+    await this.page.waitForLoadState('load');
+    return new PlanMeetingPage({ page: this.page });
+  }
+
+  async startAdhocMeeting(): Promise<MeetingInvitationPage> {
     await this.startNewMeetingButton.click();
-    await this.page.waitForLoadState('domcontentloaded');
-    return this.page;
+    await this.page.waitForLoadState('load');
+    return new MeetingInvitationPage({ page: this.page });
   }
 
   async markMeetingAsFavourite(meetingTitle: string): Promise<void> {
