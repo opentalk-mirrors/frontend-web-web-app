@@ -41,4 +41,17 @@ export class HelpPage {
     }
     return this.context.pages()[2];
   }
+
+  async navigateToSupport(): Promise<Page> {
+    await this.supportLink.click();
+    await new Promise((res) => setTimeout(res, 5_000));
+    const allOpenPages = this.context.pages();
+
+    for (const page of allOpenPages) {
+      if ((await page.title()) === 'Contact our support team | OpenTalk') {
+        return page;
+      }
+    }
+    return this.context.pages()[2];
+  }
 }
