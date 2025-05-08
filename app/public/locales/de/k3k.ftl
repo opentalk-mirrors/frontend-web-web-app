@@ -480,6 +480,8 @@ field-duration-custom = Andere Dauer
 field-duration-custom-label = Andere Dauer
 field-duration-input-label = Eigene Zeit eingeben (Min)
 field-duration-chip-label = Dauer {$duration} min.
+field-duration-max-error = Der Wert darf nicht größer als {$minutes} Minuten sein
+field-duration-min-error = Der Wert darf nicht kleiner als {$minutes} Minuten sein
 
 user-selection-button-back = zurück
 user-selection-button-cancel = Abbrechen
