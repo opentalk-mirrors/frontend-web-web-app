@@ -846,6 +846,7 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
       notifications.info(i18next.t('debriefing-started-notification'));
       break;
     case 'session_ended':
+      dispatch(hangUp());
       notifications.info(
         i18next.t(
           state.user.role === Role.Moderator
@@ -853,7 +854,6 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
             : 'debriefing-session-ended-notification'
         )
       );
-      dispatch(hangUp());
       break;
     case 'display_name_changed':
       dispatch(participantsRename({ id: data.target, displayName: data.newName }));
