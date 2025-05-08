@@ -26,7 +26,7 @@ function formatSeconds(seconds: number): string {
   return output.join('');
 }
 
-export default function LegalVoteCountdown({ active, duration, startTime, ...boxProps }: VoteCountdownProps) {
+export default function VoteAndPollCountdown({ active, duration, startTime, ...boxProps }: VoteCountdownProps) {
   const [counter, setCounter] = useState<string>('');
 
   useEffect(() => {
