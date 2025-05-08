@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { List as MuiList, ListItem as MuiListItem, ListItemText, styled, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { useAppSelector } from '../../../hooks';
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import { selectDataProtectionUrl, selectImprintUrl, selectHelpdeskUrl } from '../../../store/slices/configSlice';
-import { openUserManual } from '../../../utils/apiUtils';
+import { USER_MANUAL_URL } from '../../../utils/apiUtils';
 
 export interface SecondaryRoute {
   path: string;
@@ -102,21 +102,22 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
     }
   };
 
-  const handleNavigation = (path: string) => {
+  const getUrl = (path: string): string => {
     switch (path) {
       case 'imprint':
-        window.open(imprintUrl, getTarget(path));
-        break;
+        return imprintUrl ?? '';
       case 'data-protection':
-        window.open(dataProtectionUrl, getTarget(path));
-        break;
+        return dataProtectionUrl ?? '';
       case 'support':
-        window.open(helpdeskUrl, getTarget(path));
-        break;
+        return helpdeskUrl ?? '';
       case 'user-manual':
-        openUserManual();
-        break;
+        return USER_MANUAL_URL ?? '';
+      default:
+        return '';
     }
+  };
+
+  const handleNavigation = () => {
     if (!isDesktop) {
       setActiveNavbar(false);
     }
@@ -135,6 +136,9 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
     return true;
   };
 
+  const getHref = (submenu: string | undefined, path: string, target: string) =>
+    target === '_blank' ? getUrl(path) : `${submenu}/${path}`;
+
   const NavItems = () => (
     <List>
       {routes &&
@@ -146,9 +150,8 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
             return (
               <ListItem key={path}>
                 <NavItem
-                  as={target === '_self' ? NavLink : Link}
-                  to={`${submenu}/${path}`}
-                  onClick={() => handleNavigation(path)}
+                  to={getHref(submenu, path, target)}
+                  onClick={handleNavigation}
                   data-testid="SecondaryNavItem"
                   aria-controls={target === '_self' ? 'main-content-dashboard' : undefined}
                   target={target}
