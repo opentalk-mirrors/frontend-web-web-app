@@ -58,7 +58,7 @@
     "jest-junit": "^16.0.0",
     "knip": "^5.55.1",
     "licensee": "^11.1.1",
-    "lint-staged": "^15.5.2",
+    "lint-staged": "^16.0.0",
     "madge": "^8.0.0",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3",
