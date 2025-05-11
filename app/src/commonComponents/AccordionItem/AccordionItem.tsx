@@ -9,19 +9,17 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-import { kebabCase } from 'lodash';
-import React, { SyntheticEvent } from 'react';
+import { uniqueId } from 'lodash';
+import React, { SyntheticEvent, useState } from 'react';
 
 import { ArrowDownIcon } from '../../assets/icons';
 
-interface IAccordionProps<T extends string> {
+interface AccordionItemProps {
   onChange: (event: SyntheticEvent<Element, Event>, newExpanded: boolean) => void;
-  option: T;
   expanded: boolean;
   defaultExpanded?: boolean;
   summaryText: string;
-  summaryIcon?: React.ReactNode;
-  summaryAdditionalComponent?: React.ReactNode;
+  summaryEndAdornment?: React.ReactNode;
   children: React.ReactNode;
   headingComponent?: React.ElementType;
 }
@@ -87,17 +85,16 @@ const SummaryText = styled(Typography)<{ component: string }>(({ theme }) => ({
   padding: theme.spacing(1, 0),
 }));
 
-function AccordionItem<T extends string>({
+function AccordionItem({
   onChange,
-  option,
   expanded,
   defaultExpanded = false,
   summaryText,
-  summaryIcon,
   children,
-  summaryAdditionalComponent: summaryButton,
+  summaryEndAdornment,
   headingComponent,
-}: IAccordionProps<T>) {
+}: AccordionItemProps) {
+  const [id] = useState(() => uniqueId('ot-accordion-'));
   return (
     <Accordion
       square
@@ -106,20 +103,17 @@ function AccordionItem<T extends string>({
       onChange={onChange}
       slotProps={{ heading: { component: headingComponent } }}
     >
-      <Box sx={{ display: 'flex' }}>
-        <AccordionSummary
-          aria-controls={`${kebabCase(option)}-content`}
-          id={`${kebabCase(option)}-header`}
-          expandIcon={<ArrowDownIcon />}
-          sx={{ flexGrow: 1 }}
-        >
-          {summaryIcon && summaryIcon}
-          <SummaryText component="span" variant="caption">
-            {summaryText}
-          </SummaryText>
-        </AccordionSummary>
-        {summaryButton && <Box sx={{ pt: 0.5, whiteSpace: 'nowrap' }}>{summaryButton}</Box>}
-      </Box>
+      <AccordionSummary
+        aria-controls={`${id}-content`}
+        id={`${id}-header`}
+        expandIcon={<ArrowDownIcon />}
+        sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}
+      >
+        <SummaryText component="span" variant="caption" sx={{ flexGrow: 1 }}>
+          {summaryText}
+        </SummaryText>
+        {summaryEndAdornment && <Box sx={{ pt: 0.5, whiteSpace: 'nowrap' }}>{summaryEndAdornment}</Box>}
+      </AccordionSummary>
       <AccordionDetails>{children}</AccordionDetails>
     </Accordion>
   );

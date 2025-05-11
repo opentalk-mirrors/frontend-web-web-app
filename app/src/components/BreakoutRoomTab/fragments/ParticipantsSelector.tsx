@@ -145,10 +145,9 @@ const ParticipantsSelector = ({
       <AccordionItem
         key={name}
         onChange={(event, newExpanded) => handleExpandedChange(event, newExpanded, name)}
-        option={DropdownOptions.Rooms}
         expanded={expandedPanels.includes(name)}
         summaryText={`${name} (${assignments.length})`}
-        summaryAdditionalComponent={
+        summaryEndAdornment={
           <ParticipantsEditor
             title={name}
             onChange={(participants) => handleParticipantsEditorChange(name, participants)}
