@@ -1,26 +1,21 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  GetThunkAPI,
-  PayloadAction,
-  TypedStartListening,
-  createAsyncThunk,
-  createListenerMiddleware,
-  createSlice,
-  isAnyOf,
-} from '@reduxjs/toolkit';
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { isAnyOf } from '@reduxjs/toolkit';
 import { Track } from 'livekit-client';
 
-import type { AppDispatch, RootState } from '../';
 import { RequestMute } from '../../api/types/incoming/media';
-import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { FetchRequestError, ParticipantId, VideoSetting } from '../../types';
+import { ParticipantId, VideoSetting } from '../../types';
+import { TimerStyle } from '../../types';
 import { applyBackgroundEffectToTrack } from '../../utils/applyBackgroundEffect';
-import { MediaError, handleMediaPermissionError } from '../../utils/mediaErrorUtils';
-import { getDeviceId } from '../../utils/mediaUtils';
-import { hangUp } from '../commonActions';
+import { MediaError } from '../../utils/mediaErrorUtils';
+import { hangUp, startMedia } from '../commonActions';
+import type { RootState } from '../index';
+import type { StartAppListening } from '../listenerMiddleware';
 import { getLivekitRoom } from '../livekitRoom';
+import { enteredWaitingRoom } from './roomSlice';
+import { timerStarted } from './timerSlice';
 
 export interface BackgroundConfig {
   style: 'blur' | 'color' | 'image' | 'off';
@@ -47,7 +42,7 @@ export interface BackgroundEffect extends BackgroundConfig {
   loading?: boolean;
 }
 
-interface MediaState {
+export type MediaState = {
   qualityCap: VideoSetting;
   upstreamLimit: VideoSetting;
   requestMuteNotification?: MuteNotification;
@@ -63,111 +58,9 @@ interface MediaState {
     video: boolean;
     screenshare: boolean;
   };
-}
+};
 
 export type MediaDeviceKindExtended = MediaDeviceKind | 'screenshare';
-export interface StartMediaInterface {
-  kind: MediaDeviceKindExtended;
-  enabled: boolean;
-  deviceId?: string;
-}
-
-export interface FetchPermissionError extends FetchRequestError {
-  kind: MediaDeviceKindExtended;
-}
-
-async function handleLocalMediaTrack({
-  thunkApi,
-  kind,
-  enabled,
-  deviceId,
-  inMeetingView,
-}: {
-  thunkApi: GetThunkAPI<{
-    state: RootState;
-    dispatch: AppDispatch;
-    rejectValue: { status: number; statusText: string; kind: MediaDeviceKindExtended };
-  }>;
-  kind: 'audioinput' | 'videoinput';
-  enabled: boolean;
-  deviceId?: string;
-  inMeetingView: boolean;
-}): Promise<StartMediaInterface | ReturnType<typeof thunkApi.rejectWithValue>> {
-  const payload: StartMediaInterface = { kind, enabled, deviceId };
-
-  if (inMeetingView) {
-    const room = getLivekitRoom();
-    const track =
-      kind === 'audioinput'
-        ? await room.localParticipant.setMicrophoneEnabled(enabled, { deviceId })
-        : await room.localParticipant.setCameraEnabled(enabled, { deviceId });
-
-    const mediaStreamTrack =
-      kind === 'audioinput' ? track?.audioTrack?.mediaStreamTrack : track?.videoTrack?.mediaStreamTrack;
-
-    if (mediaStreamTrack) {
-      payload.deviceId = getDeviceId(mediaStreamTrack);
-    }
-
-    return payload;
-  }
-
-  // Lobby
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      [kind === 'audioinput' ? 'audio' : 'video']: { deviceId },
-    });
-    const mediaTrack = kind === 'audioinput' ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0];
-
-    if (mediaTrack) {
-      payload.deviceId = getDeviceId(mediaTrack);
-      mediaTrack.stop();
-    }
-
-    return payload;
-  } catch (error) {
-    const mediaError = handleMediaPermissionError({ error, deviceId, kind });
-    return thunkApi.rejectWithValue({
-      status: 409,
-      statusText: mediaError.name,
-      kind,
-    });
-  }
-}
-
-export const startMedia = createAsyncThunk<
-  StartMediaInterface,
-  StartMediaInterface,
-  { state: RootState; rejectValue: FetchPermissionError }
->('media/startMedia', async ({ kind, enabled, deviceId }, thunkApi) => {
-  const roomState = thunkApi.getState().room;
-  const inMeetingView =
-    roomState.connectionState === ConnectionState.Online || roomState.connectionState === ConnectionState.Leaving;
-  try {
-    switch (kind) {
-      case 'audioinput':
-      case 'videoinput':
-        return await handleLocalMediaTrack({ thunkApi, kind, enabled, deviceId, inMeetingView });
-
-      case 'screenshare':
-        if (inMeetingView) {
-          await getLivekitRoom().localParticipant.setScreenShareEnabled(enabled);
-        }
-        return {
-          kind,
-          enabled,
-        };
-      default:
-        return {
-          kind,
-          enabled,
-        };
-    }
-  } catch (error) {
-    const mediaError = handleMediaPermissionError({ error, deviceId, kind });
-    return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind });
-  }
-});
 
 export const applyBackgroundEffect = createAsyncThunk<void, void, { state: RootState }>(
   'media/applyBackgroundEffect',
@@ -315,38 +208,6 @@ export const selectMediaChangeInProgress = (state: RootState) => state.media.med
 
 export const actions = mediaSlice.actions;
 
-export const mediaMiddleware = createListenerMiddleware();
-type AppStartListening = TypedStartListening<RootState, AppDispatch>;
-
-const startAppListening = mediaMiddleware.startListening as AppStartListening;
-
-startAppListening({
-  matcher: isAnyOf(setBackgroundEffects, setAudioDeviceId, setVideoDeviceId),
-  effect: (_, listenerApi) => {
-    const { videoBackgroundEffects, videoDeviceId, audioDeviceId } = listenerApi.getState().media;
-
-    const updatedChoices = {
-      videoBackgroundEffects,
-      videoDeviceId,
-      audioDeviceId,
-    };
-
-    localStorage.setItem('mediaChoices', JSON.stringify(updatedChoices));
-  },
-});
-
-startAppListening({
-  matcher: isAnyOf(setBackgroundEffects, setVideoDeviceId, startMedia.fulfilled),
-  effect: (_, listenerApi) => {
-    const { videoEnabled, videoBackgroundEffects } = listenerApi.getState().media;
-    const { accessToken } = listenerApi.getState().livekit;
-
-    if (videoEnabled && accessToken && !videoBackgroundEffects.loading) {
-      listenerApi.dispatch(applyBackgroundEffect());
-    }
-  },
-});
-
 export const reHydrateSlice = () => {
   const storageItem = localStorage.getItem('mediaChoices');
   if (storageItem !== null) {
@@ -357,3 +218,77 @@ export const reHydrateSlice = () => {
 };
 
 export default mediaSlice.reducer;
+
+/************************************************/
+/*                                              */
+/*                  Listeners                   */
+/*                                              */
+/************************************************/
+
+const startDisableMediaOnCoffeeBreakListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: timerStarted,
+    effect: (action, listenerApi) => {
+      const room = getLivekitRoom();
+
+      //Avoid sending reconfigure if both video and audio tracks are not active
+      const isAnyMediaTrackEnabled = room.localParticipant.isMicrophoneEnabled || room.localParticipant.isCameraEnabled;
+      const isShareScreenEnabled = room.localParticipant.isScreenShareEnabled;
+
+      if (action.payload.style === TimerStyle.CoffeeBreak) {
+        if (isAnyMediaTrackEnabled) {
+          listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+          listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+        }
+        if (isShareScreenEnabled) {
+          listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
+        }
+      }
+    },
+  });
+
+const startDisableMediaOnWaitingRoomListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: enteredWaitingRoom,
+    effect: (_, listenerApi) => {
+      listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+      listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+      listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
+    },
+  });
+
+const startMediaChoiceListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    matcher: isAnyOf(setBackgroundEffects, setAudioDeviceId, setVideoDeviceId),
+    effect: (_, listenerApi) => {
+      const { videoBackgroundEffects, videoDeviceId, audioDeviceId } = listenerApi.getState().media;
+
+      const updatedChoices = {
+        videoBackgroundEffects,
+        videoDeviceId,
+        audioDeviceId,
+      };
+
+      localStorage.setItem('mediaChoices', JSON.stringify(updatedChoices));
+    },
+  });
+
+const startApplyBackgroundEffectListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    matcher: isAnyOf(setBackgroundEffects, setVideoDeviceId, startMedia.fulfilled),
+    effect: (_, listenerApi) => {
+      const { videoEnabled, videoBackgroundEffects } = listenerApi.getState().media;
+      const { accessToken } = listenerApi.getState().livekit;
+
+      if (videoEnabled && accessToken && !videoBackgroundEffects.loading) {
+        listenerApi.dispatch(applyBackgroundEffect());
+      }
+    },
+  });
+
+export const startMediaListeners = (startAppListening: StartAppListening) => {
+  startDisableMediaOnCoffeeBreakListener(startAppListening);
+  startDisableMediaOnWaitingRoomListener(startAppListening);
+  startMediaChoiceListener(startAppListening);
+  startApplyBackgroundEffectListener(startAppListening);
+};

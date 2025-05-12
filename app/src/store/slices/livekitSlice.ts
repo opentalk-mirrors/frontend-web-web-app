@@ -4,14 +4,8 @@
 // Redux has limitations with non-serializable data, like the LiveKit room object, as it can cause issues with state persistence.
 // We've decided to use a separate slice and declare an exception in the store for now.
 import { ParticipantPermission } from '@livekit/protocol';
-import {
-  ListenerEffectAPI,
-  PayloadAction,
-  createListenerMiddleware,
-  createSelector,
-  createSlice,
-  isAnyOf,
-} from '@reduxjs/toolkit';
+import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
+import { isAnyOf, ListenerEffectAPI } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import {
   ConnectionState as LivekitConnectionState,
@@ -24,7 +18,6 @@ import {
   Track,
 } from 'livekit-client';
 
-import type { AppDispatch, RootState } from '../';
 import { Credentials } from '../../api/types/incoming/livekit';
 import { createNewAccessToken } from '../../api/types/outgoing/livekit';
 import { notifications } from '../../commonComponents';
@@ -32,12 +25,13 @@ import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../constants';
 import log from '../../logger';
 import { MediaDescriptor } from '../../modules/WebRTC';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { ParticipantId, VideoSetting } from '../../types';
-import { hangUp, joinSuccess } from '../commonActions';
-import { setLivekitAvailable, setLivekitUnavailable } from '../livekitRoom';
-import { getLivekitRoom } from '../livekitRoom';
-import { startMedia } from './mediaSlice';
-import { pinnedParticipantIdSet, pinnedRemoteScreenshare } from './uiSlice';
+import { VideoSetting } from '../../types';
+import type { ParticipantId } from '../../types';
+import { hangUp, joinSuccess, startMedia } from '../commonActions';
+import type { RootState, AppDispatch } from '../index';
+import type { StartAppListening } from '../listenerMiddleware';
+import { setLivekitUnavailable, setLivekitAvailable, getLivekitRoom } from '../livekitRoom';
+import { pinnedRemoteScreenshare, pinnedParticipantIdSet } from './uiSlice';
 
 type PopoutStreamAccess = {
   mediaDescriptor: MediaDescriptor;
@@ -46,13 +40,13 @@ type PopoutStreamAccess = {
 
 type PopoutStreamAccesses = Array<PopoutStreamAccess>;
 
-interface LivekitState {
+export type LivekitState = {
   unavailable: boolean;
   accessToken: string | undefined;
   publicUrl: string | undefined;
   popoutStreamAccesses: PopoutStreamAccesses;
   qualityCap: VideoSetting;
-}
+};
 
 const initialState: LivekitState = {
   unavailable: false,
@@ -141,7 +135,11 @@ export const selectQualityCap = (state: RootState) => state.livekit.qualityCap;
 
 export default livekitSlice.reducer;
 
-export const livekitMiddleware = createListenerMiddleware<RootState, AppDispatch>();
+/************************************************/
+/*                                              */
+/*                  Listeners                   */
+/*                                              */
+/************************************************/
 
 const BASE_RETRY_DELAY = 500;
 const MAX_RETRY_DELAY = 20000;
@@ -174,45 +172,6 @@ const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
     log.error('Failed to reconnect to LiveKit:', error);
   });
 };
-
-livekitMiddleware.startListening({
-  type: 'livekit/triggerReconnect',
-  effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
-    if (!listenerApi.getState().room.isDeleted) {
-      reconnect(listenerApi);
-    }
-  },
-});
-
-livekitMiddleware.startListening({
-  matcher: isAnyOf(setLivekitAvailable, hangUp.fulfilled),
-  effect: (action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
-    const room = getLivekitRoom();
-    if (setLivekitAvailable.match(action)) {
-      room
-        .on(RoomEvent.Connected, () => handleRoomConnected(room, listenerApi))
-        .on(RoomEvent.Disconnected, () => handleRoomDisconnected(listenerApi))
-        .on(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, listenerApi))
-        .on(RoomEvent.TrackUnpublished, (pub, participant) => handleTrackUnpublished(pub, participant, listenerApi))
-        .on(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
-        .on(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
-          handlePermissionChanged(previousPermissions, participant, listenerApi)
-        )
-        .on(RoomEvent.ConnectionStateChanged, (state) => handleConnectionStateChanged(state, listenerApi));
-    } else if (hangUp.fulfilled.match(action)) {
-      room
-        .off(RoomEvent.Connected, () => handleRoomConnected(room, listenerApi))
-        .off(RoomEvent.Disconnected, () => handleRoomDisconnected(listenerApi))
-        .off(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, listenerApi))
-        .off(RoomEvent.TrackUnpublished, (pub, participant) => handleTrackUnpublished(pub, participant, listenerApi))
-        .off(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
-        .off(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
-          handlePermissionChanged(previousPermissions, participant, listenerApi)
-        )
-        .off(RoomEvent.ConnectionStateChanged, (state) => handleConnectionStateChanged(state, listenerApi));
-    }
-  },
-});
 
 const handleRoomConnected = async (room: Room, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
   listenerApi.dispatch(setLivekitUnavailable(false));
@@ -304,4 +263,50 @@ const handleConnectionStateChanged = (
   } else if (state === LivekitConnectionState.Connected && isLivekitUnavailable) {
     listenerApi.dispatch(setLivekitUnavailable(false));
   }
+};
+
+const startReconnectOnLivekitTriggerListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    type: 'livekit/triggerReconnect',
+    effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      if (!listenerApi.getState().room.isDeleted) {
+        reconnect(listenerApi);
+      }
+    },
+  });
+
+const startToggleEmitterListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    matcher: isAnyOf(setLivekitAvailable, hangUp.fulfilled),
+    effect: (action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      const room = getLivekitRoom();
+      if (setLivekitAvailable.match(action)) {
+        room
+          .on(RoomEvent.Connected, () => handleRoomConnected(room, listenerApi))
+          .on(RoomEvent.Disconnected, () => handleRoomDisconnected(listenerApi))
+          .on(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, listenerApi))
+          .on(RoomEvent.TrackUnpublished, (pub, participant) => handleTrackUnpublished(pub, participant, listenerApi))
+          .on(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
+          .on(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
+            handlePermissionChanged(previousPermissions, participant, listenerApi)
+          )
+          .on(RoomEvent.ConnectionStateChanged, (state) => handleConnectionStateChanged(state, listenerApi));
+      } else if (hangUp.fulfilled.match(action)) {
+        room
+          .off(RoomEvent.Connected, () => handleRoomConnected(room, listenerApi))
+          .off(RoomEvent.Disconnected, () => handleRoomDisconnected(listenerApi))
+          .off(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, listenerApi))
+          .off(RoomEvent.TrackUnpublished, (pub, participant) => handleTrackUnpublished(pub, participant, listenerApi))
+          .off(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
+          .off(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
+            handlePermissionChanged(previousPermissions, participant, listenerApi)
+          )
+          .off(RoomEvent.ConnectionStateChanged, (state) => handleConnectionStateChanged(state, listenerApi));
+      }
+    },
+  });
+
+export const startLivekitListeners = (startAppListening: StartAppListening) => {
+  startReconnectOnLivekitTriggerListener(startAppListening);
+  startToggleEmitterListener(startAppListening);
 };

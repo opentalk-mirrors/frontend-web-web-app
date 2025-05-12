@@ -49,12 +49,12 @@ const pollAdapter = createEntityAdapter<Poll>({
   },
 });
 
-interface State {
+export type State = {
   pollIdToShow?: PollId;
   polls: EntityState<Poll, PollId>;
   savedPolls: PollFormValues[];
   showResult: boolean;
-}
+};
 
 export const pollSlice = createSlice({
   name: 'poll',

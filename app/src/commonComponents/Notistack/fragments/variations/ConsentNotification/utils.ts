@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { sendStreamConsentSignal } from '../../../../../api/types/outgoing/streaming';
 import type { AppDispatch } from '../../../../../store';
-import { startMedia } from '../../../../../store/slices/mediaSlice';
+import { startMedia } from '../../../../../store/commonActions';
 import { notifications } from '../../utils';
 
 export const showConsentNotification = (dispatch: AppDispatch) =>

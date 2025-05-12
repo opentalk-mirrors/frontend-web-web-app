@@ -8,13 +8,13 @@ import { ParticipationLoggingState } from '../../api/types/outgoing/trainingPart
 import { ForceMute, ForceMuteType } from '../../types';
 import { joinSuccess } from '../commonActions';
 
-interface ModerationState {
+export type ModerationState = {
   hasHandUp: boolean;
   handUpdatedAt?: string;
   raiseHandsEnabled: boolean;
   forceMute: ForceMute;
   trainingParticipationReportEnabled: boolean;
-}
+};
 
 const initialState: ModerationState = {
   hasHandUp: false,

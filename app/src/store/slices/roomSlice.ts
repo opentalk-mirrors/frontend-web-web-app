@@ -1,19 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { AuthTypeError, authError } from '@opentalk/redux-oidc';
+import { authError, AuthTypeError } from '@opentalk/redux-oidc';
 import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
-import {
-  ListenerEffectAPI,
-  PayloadAction,
-  createAsyncThunk,
-  createListenerMiddleware,
-  createSlice,
-} from '@reduxjs/toolkit';
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { ListenerEffectAPI } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
-import type { AppDispatch, RootState } from '../';
 import { StartRoomError } from '../../api/rest';
 import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
 import { notifications } from '../../commonComponents';
@@ -27,9 +21,10 @@ import {
   TimerStyle,
 } from '../../types';
 import { fetchWithAuth, getControllerBaseUrl } from '../../utils/apiUtils';
-import { exitingRoomContext, hangUp, joinSuccess, startRoom } from '../commonActions';
+import { hangUp, joinSuccess, startRoom } from '../commonActions';
+import type { AppDispatch, RootState } from '../index';
+import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted, stopped as automodStopped } from './automodSlice';
-import { startMedia } from './mediaSlice';
 import { timerStarted, timerStopped } from './timerSlice';
 
 interface InviteState extends FetchRequestState {
@@ -38,18 +33,7 @@ interface InviteState extends FetchRequestState {
   inviteCode?: InviteCode;
 }
 
-/**
- * List of errors for which we should not attempt to reconnect automatically
- */
-//Error in state and list should probably be typed (StartRoomError, websocket errors and any other if they are possible)
-const reconnectExceptionErrorList: Array<string> = [
-  StartRoomError.WrongRoomPassword,
-  StartRoomError.Forbidden,
-  StartRoomError.NotFound,
-  StartRoomError.BadRequest,
-];
-
-interface RoomState {
+export type RoomState = {
   roomId?: RoomId;
   password?: string;
   invite: InviteState;
@@ -68,7 +52,7 @@ interface RoomState {
   isOwnedByCurrentUser: boolean;
   isPresenceConfirmationActive: boolean;
   isDeleted: boolean;
-}
+};
 
 export interface InviteRoomVerifyResponse {
   roomId: RoomId;
@@ -327,7 +311,22 @@ export const selectIsRoomDeleted = (state: RootState) => state.room.isDeleted;
 
 export default roomSlice.reducer;
 
-export const roomMiddleware = createListenerMiddleware<RootState, AppDispatch>();
+/************************************************/
+/*                                              */
+/*                  Listeners                   */
+/*                                              */
+/************************************************/
+
+/**
+ * List of errors for which we should not attempt to reconnect automatically
+ */
+//Error in state and list should probably be typed (StartRoomError, websocket errors and any other if they are possible)
+const reconnectExceptionErrorList: Array<string> = [
+  StartRoomError.WrongRoomPassword,
+  StartRoomError.Forbidden,
+  StartRoomError.NotFound,
+  StartRoomError.BadRequest,
+];
 
 function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
   const RECONNECT_DELAY = 5000; //ms
@@ -367,57 +366,37 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
   }
 }
 
-roomMiddleware.startListening({
-  type: 'room/start/rejected',
-  effect: (_action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => reconnect(listenerApi),
-});
+const startReconnectOnStartRoomErrorListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: startRoom.rejected,
+    effect: (_action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => reconnect(listenerApi),
+  });
 
-type ConnectionClosedAction = Partial<ReturnType<typeof connectionClosed>>;
-roomMiddleware.startListening({
-  type: 'room/connectionClosed',
-  effect: (action: ConnectionClosedAction, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
-    if (action.payload?.errorCode) {
-      return reconnect(listenerApi);
-    }
-  },
-});
+const startReconnectOnConnectionClosedListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: connectionClosed,
+    effect: (action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      if (action.payload?.errorCode) {
+        return reconnect(listenerApi);
+      }
+    },
+  });
 
-roomMiddleware.startListening({
-  type: 'room/hangup/rejected',
-  effect: (action: { type: string; error?: { message: string } }) => {
-    if (action.error) {
-      notifications.error(action.error.message);
-    }
-  },
-});
+const startCloseAllNotificationsOnFailedConnectionListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    predicate(_action, currentState, originalState) {
+      return (
+        currentState.room.connectionState === ConnectionState.Failed &&
+        originalState.room.connectionState !== ConnectionState.Failed
+      );
+    },
+    effect: () => {
+      notifications.closeAll();
+    },
+  });
 
-roomMiddleware.startListening({
-  actionCreator: enteredWaitingRoom,
-  effect: (_, listenerApi) => {
-    listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-    listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-    listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
-  },
-});
-
-roomMiddleware.startListening({
-  actionCreator: exitingRoomContext,
-  effect: (_, listenerApi) => {
-    const connectionState = listenerApi.getState().room.connectionState;
-    if (connectionState === ConnectionState.Online) {
-      listenerApi.dispatch(hangUp());
-    }
-  },
-});
-
-roomMiddleware.startListening({
-  predicate(_action, currentState, originalState) {
-    return (
-      currentState.room.connectionState === ConnectionState.Failed &&
-      originalState.room.connectionState !== ConnectionState.Failed
-    );
-  },
-  effect: () => {
-    notifications.closeAll();
-  },
-});
+export const startRoomListeners = (startAppListening: StartAppListening) => {
+  startReconnectOnStartRoomErrorListener(startAppListening);
+  startReconnectOnConnectionClosedListener(startAppListening);
+  startCloseAllNotificationsOnFailedConnectionListener(startAppListening);
+};

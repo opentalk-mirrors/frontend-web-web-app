@@ -42,6 +42,7 @@ import { SnackbarProvider } from '../commonComponents';
 import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
 import FullscreenProvider from '../provider/FullscreenProvider';
 import { appReducers } from '../store';
+import type { RootState } from '../store';
 import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
 import { Poll } from '../store/slices/pollSlice';
 import {
@@ -117,7 +118,7 @@ i18n.use(initReactI18next).init({
 });
 
 type MockReduxStore = {
-  store: ReturnType<typeof configureStoreTlk>;
+  store: ReturnType<typeof configureStoreTlk<RootState>>;
   dispatchSpy: jest.SpyInstance;
 };
 

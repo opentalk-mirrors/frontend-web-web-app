@@ -1,19 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { PayloadAction, TypedStartListening, createListenerMiddleware, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { ListenerEffectAPI } from '@reduxjs/toolkit';
 import { Duration, intervalToDuration } from 'date-fns';
 import i18next from 'i18next';
 
-import type { AppDispatch, RootState } from '../';
 import { ReadyToContinue } from '../../api/types/incoming/timer';
 import { notifications } from '../../commonComponents';
 import { ParticipantId, TimerKind, TimerStopKind, TimerStyle, Timestamp } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
-import { getLivekitRoom } from '../livekitRoom';
-import { startMedia } from './mediaSlice';
+import type { AppDispatch, RootState } from '../index';
+import type { StartAppListening } from '../listenerMiddleware';
 
-interface State {
+export type State = {
   startedAt?: Timestamp;
   timerId?: string;
   endsAt?: Timestamp;
@@ -24,7 +24,7 @@ interface State {
   style?: TimerStyle;
   totalDuration?: Duration;
   timerStopKind?: TimerStopKind;
-}
+};
 
 const initialState: State = {
   startedAt: undefined,
@@ -130,50 +130,40 @@ export const selectCoffeeBreakTimerId = (state: RootState) =>
 
 export default timerSlice.reducer;
 
-export const timerMiddleware = createListenerMiddleware();
-type AppStartListening = TypedStartListening<RootState, AppDispatch>;
+/************************************************/
+/*                                              */
+/*                  Listeners                   */
+/*                                              */
+/************************************************/
 
-const startAppListening = timerMiddleware.startListening as AppStartListening;
-
-startAppListening({
-  actionCreator: timerStarted,
-  effect: (action, listenerApi) => {
-    const room = getLivekitRoom();
-
-    //Avoid sending reconfigure if both video and audio tracks are not active
-    const isAnyMediaTrackEnabled = room.localParticipant.isMicrophoneEnabled || room.localParticipant.isCameraEnabled;
-    const isShareScreenEnabled = room.localParticipant.isScreenShareEnabled;
-
-    if (action.payload.style === TimerStyle.CoffeeBreak) {
-      if (isAnyMediaTrackEnabled) {
-        listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-        listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-      }
-      if (isShareScreenEnabled) {
-        listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
-      }
+export const handleNotificationOnTimerStoppedEffect = (
+  action: ReturnType<typeof timerStopped>,
+  listenerApi: ListenerEffectAPI<RootState, AppDispatch>
+) => {
+  const timerStyle = listenerApi.getOriginalState().timer.style;
+  if (timerStyle === TimerStyle.Normal) {
+    switch (action.payload.kind) {
+      case TimerStopKind.Expired:
+        notifications.info(i18next.t('timer-notification-ran-out'));
+        break;
+      case TimerStopKind.ByModerator:
+        notifications.info(i18next.t('timer-notification-stopped'));
+        break;
+      case TimerStopKind.CreatorLeft:
+        break;
     }
-  },
-});
+  }
+  if (timerStyle === TimerStyle.CoffeeBreak) {
+    notifications.info(i18next.t('coffee-break-notification'));
+  }
+};
 
-startAppListening({
-  actionCreator: timerStopped,
-  effect: (action, listenerApi) => {
-    const timerStyle = listenerApi.getOriginalState().timer.style;
-    if (timerStyle === TimerStyle.Normal) {
-      switch (action.payload.kind) {
-        case TimerStopKind.Expired:
-          notifications.info(i18next.t('timer-notification-ran-out'));
-          break;
-        case TimerStopKind.ByModerator:
-          notifications.info(i18next.t('timer-notification-stopped'));
-          break;
-        case TimerStopKind.CreatorLeft:
-          break;
-      }
-    }
-    if (timerStyle === TimerStyle.CoffeeBreak) {
-      notifications.info(i18next.t('coffee-break-notification'));
-    }
-  },
-});
+const startNotificationOnTimerStopListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: timerStopped,
+    effect: handleNotificationOnTimerStoppedEffect,
+  });
+
+export const startTimerListeners = (startAppListening: StartAppListening) => {
+  startNotificationOnTimerStopListener(startAppListening);
+};

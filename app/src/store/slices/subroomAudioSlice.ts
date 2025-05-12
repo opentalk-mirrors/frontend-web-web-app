@@ -9,12 +9,12 @@ import { leaveWhisperGroup } from '../../api/types/outgoing/subroomAudio';
 import { ParticipantId, WhisperId, WhisperParticipant, WhisperParticipantState } from '../../types';
 import { hangUp } from '../commonActions';
 
-interface SubroomAudioState {
+export type SubroomAudioState = {
   token: string | undefined;
   whisperId: WhisperId | undefined;
   participants: WhisperParticipant[];
   isWhisperActive: boolean;
-}
+};
 
 const initialState: SubroomAudioState = {
   token: undefined,

@@ -10,12 +10,12 @@ import { notifications } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import log from '../../../logger';
 import { EchoTest, EchoTestState } from '../../../modules/WebRTC/EchoTest';
+import { startMedia } from '../../../store/commonActions';
 import {
   selectAudioDeviceId,
   selectAudioEnabled,
   setAudioDeviceId,
   setMediaChangeInProgress,
-  startMedia,
 } from '../../../store/slices/mediaSlice';
 import { handleMediaPermissionError } from '../../../utils/mediaErrorUtils';
 

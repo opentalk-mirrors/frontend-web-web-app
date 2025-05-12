@@ -18,10 +18,11 @@ import {
   HOTKEYS,
 } from '../constants';
 import { useFullscreenContext } from '../hooks/useFullscreenContext';
+import { startMedia } from '../store/commonActions';
 import { selectIsUserMicDisabled } from '../store/selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker } from '../store/slices/automodSlice';
 import { selectEnabledModulesList } from '../store/slices/configSlice';
-import { selectAudioEnabled, selectVideoEnabled, startMedia } from '../store/slices/mediaSlice';
+import { selectAudioEnabled, selectVideoEnabled } from '../store/slices/mediaSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../store/slices/streamingSlice';
 import { selectSubroomAudioState, setIsWhisperActive } from '../store/slices/subroomAudioSlice';

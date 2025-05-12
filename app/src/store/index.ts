@@ -9,6 +9,7 @@ import { merge } from 'lodash';
 import { apiMiddleware } from '../api';
 import { restApi, rtkQueryErrorLoggerMiddleware } from '../api/rest';
 import log, { setupLogLevel } from '../logger';
+import { listenerMiddleware } from './listenerMiddleware';
 import automodReducer from './slices/automodSlice';
 import breakoutReducer from './slices/breakoutSlice';
 import chatReducer from './slices/chatSlice';
@@ -16,23 +17,22 @@ import { initialState as initialConfig } from './slices/configSlice';
 import configReducer from './slices/configSlice';
 import eventReducer from './slices/eventSlice';
 import legalVoteReducer from './slices/legalVoteSlice';
-import livekitReducer, { livekitMiddleware } from './slices/livekitSlice';
+import livekitReducer from './slices/livekitSlice';
 import mediaReducer, {
-  mediaMiddleware,
   initialState as InitialMediaState,
   reHydrateSlice as mediaRehydrateSlice,
 } from './slices/mediaSlice';
 import meetingNotesReducer from './slices/meetingNotesSlice';
 import moderationReducer from './slices/moderationSlice';
-import participantsReducer, { participantsMiddleware } from './slices/participantsSlice';
+import participantsReducer from './slices/participantsSlice';
 import pollReducer from './slices/pollSlice';
-import roomReducer, { roomMiddleware } from './slices/roomSlice';
+import roomReducer from './slices/roomSlice';
 import sharedFolderReducer from './slices/sharedFolderSlice';
 import slotReducer from './slices/slotSlice';
 import speedMeterReducer from './slices/speedMeterSlice';
 import streamingReducer from './slices/streamingSlice';
 import subroomAudioReducer from './slices/subroomAudioSlice';
-import timerReducer, { timerMiddleware } from './slices/timerSlice';
+import timerReducer from './slices/timerSlice';
 import uiReducer from './slices/uiSlice';
 import userReducer from './slices/userSlice';
 import whiteboardReducer from './slices/whiteboardSlice';
@@ -41,11 +41,7 @@ export const middleware: Array<Middleware> = [
   apiMiddleware,
   restApi.middleware,
   rtkQueryErrorLoggerMiddleware,
-  mediaMiddleware.middleware,
-  timerMiddleware.middleware,
-  roomMiddleware.middleware,
-  participantsMiddleware.middleware,
-  livekitMiddleware.middleware,
+  listenerMiddleware.middleware,
 ];
 
 const crashReporter: Middleware = (store) => (next) => (action) => {

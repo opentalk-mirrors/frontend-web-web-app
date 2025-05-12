@@ -24,7 +24,7 @@ import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
-import { hangUp, joinSuccess, startRoom } from '../store/commonActions';
+import { hangUp, joinSuccess, startRoom, startMedia } from '../store/commonActions';
 import { setLivekitUnavailable } from '../store/livekitRoom';
 import { getLivekitRoom } from '../store/livekitRoom';
 import {
@@ -601,7 +601,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           dispatch(automod.selectNext.action());
         }
       }
-      dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
       break;
     }
     case 'stopped': {
@@ -617,7 +617,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
         ariaLive: 'polite',
       });
 
-      dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
       break;
     }
     // case 'start_animation':
@@ -629,7 +629,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
     case 'speaker_updated': {
       const room = getLivekitRoom();
       if (data.speaker !== state.user.uuid) {
-        dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: false }));
+        dispatch(startMedia({ kind: 'audioinput', enabled: false }));
         dispatch(setAsInactiveSpeaker());
       }
       notifications.close(nextId);
@@ -662,7 +662,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           notifications.showTalkingStickMutedNotification({
             onUnmute: async () => {
               notifications.close(currentId);
-              dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: true }));
+              dispatch(startMedia({ kind: 'audioinput', enabled: true }));
               notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
             },
             onNext: () => {
@@ -1119,7 +1119,7 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
       notifications.warning(
         i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
       );
-      dispatch(mediaStore.startMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
       dispatch(mediaStore.notificationShown());
       return;
     }

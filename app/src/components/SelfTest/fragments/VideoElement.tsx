@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { startMedia } from '../../../store/commonActions';
 import {
   selectVideoBackgroundEffects,
   selectVideoDeviceId,
@@ -14,7 +15,6 @@ import {
   setBackgroundEffectsLoading,
   setMediaChangeInProgress,
   setVideoDeviceId,
-  startMedia,
 } from '../../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
 import { applyBackgroundEffectToTrack } from '../../../utils/applyBackgroundEffect';
