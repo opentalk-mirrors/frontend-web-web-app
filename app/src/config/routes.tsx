@@ -134,6 +134,7 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
       },
       {
         path: 'help',
+        element: <Outlet />,
         children: [
           { path: 'user-manual', element: <UserManualPage /> },
           { path: 'support', element: <SupportPage /> },
