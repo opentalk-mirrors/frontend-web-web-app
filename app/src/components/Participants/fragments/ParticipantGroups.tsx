@@ -32,7 +32,6 @@ const ParticipantGroups = (props: StackProps) => {
       <>
         <AccordionItem
           onChange={() => toggle(groupId)}
-          option={`participant-group-${groupId}`}
           expanded={isExpanded}
           defaultExpanded={true}
           summaryText={groupId}
@@ -53,7 +52,7 @@ const ParticipantGroups = (props: StackProps) => {
     );
 
     return accordions;
-  }, [] as JSX.Element[]);
+  }, [] as React.JSX.Element[]);
 
   return (
     <Stack

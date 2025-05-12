@@ -88,7 +88,6 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
           savedPolls: !prevState.savedPolls,
         }))
       }
-      option={t('poll-overview-saved-polls')}
       expanded={accordionState.savedPolls}
       summaryText={t('poll-overview-saved-polls')}
       headingComponent="h4"
@@ -111,7 +110,6 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
           createdPolls: !prevState.createdPolls,
         }))
       }
-      option={t('poll-overview-created-polls')}
       expanded={accordionState.createdPolls}
       summaryText={t('poll-overview-created-polls')}
       headingComponent="h4"

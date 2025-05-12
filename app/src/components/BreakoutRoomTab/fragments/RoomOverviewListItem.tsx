@@ -52,12 +52,11 @@ const RoomOverviewListItem = ({ joinRoom, groupedParticipants, breakoutRoomId }:
   return (
     <AccordionItem
       onChange={handleAccordionChange}
-      option="breakout-room-overview"
       expanded={expanded}
       defaultExpanded={true}
       summaryText={breakoutRoom?.name ?? ''}
       headingComponent="h5"
-      summaryAdditionalComponent={
+      summaryEndAdornment={
         currentBreakoutRoomId !== breakoutRoomId && (
           <MuiButton variant="text" size="small" onClick={handleJoinRoom}>
             {t('moderator-join-breakout-room')}
