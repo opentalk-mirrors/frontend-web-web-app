@@ -14,8 +14,10 @@ import {
   isRecurringEvent,
   isTimelessEvent,
   RecurringEvent,
+  SingleEvent,
+  EventId,
 } from '@opentalk/rest-api-rtk-query';
-import { addMonths, Interval, isWithinInterval, subMonths } from 'date-fns';
+import { addMonths, Interval, isWithinInterval, subMonths, areIntervalsOverlapping } from 'date-fns';
 import { cloneDeep, findIndex, orderBy } from 'lodash';
 
 import { getISOStringWithoutMilliseconds } from './timeUtils';
@@ -145,6 +147,49 @@ export const appendRecurringEventInstances = (
     });
 
   return events;
+};
+
+/**
+ * Finds an overlapping for a current event in an array of events.
+ * @param {Date} currentEventStart - start time of the current event.
+ * @param {Date} currentEventEnd - end time of the current event
+ * @param {Array<Event | EventException>} events - array of events to check for overlaps.
+ * @returns returns the first event that overlaps with the current event, or undefined if no overlap is found.
+ */
+export const findOverlappingEvent = (
+  currentEventStart: Date,
+  currentEventEnd: Date,
+  events: Event[] | EventException[],
+  currentEventId?: EventId
+): SingleEvent | RecurringEvent | undefined => {
+  if (events.length > 0) {
+    const potentialOverlappingEvents: Array<SingleEvent | RecurringEvent> = appendRecurringEventInstances(
+      events
+    ).filter((event) => !isTimelessEvent(event)) as Array<SingleEvent | RecurringEvent>;
+
+    const currentEventInterval: Interval = {
+      start: currentEventStart,
+      end: currentEventEnd,
+    };
+
+    const validOverlappingEventFound = potentialOverlappingEvents.find((event) => {
+      const overlappingEventInterval: Interval = {
+        start: new Date(event.startsAt.datetime),
+        end: new Date(event.endsAt.datetime),
+      };
+
+      return (
+        areIntervalsOverlapping(currentEventInterval, overlappingEventInterval) &&
+        (currentEventId ? event.id !== currentEventId : true)
+      );
+    });
+
+    if (validOverlappingEventFound) {
+      return validOverlappingEventFound;
+    }
+  }
+
+  return undefined;
 };
 
 /**

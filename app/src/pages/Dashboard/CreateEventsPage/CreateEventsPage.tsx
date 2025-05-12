@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Step, StepLabel, Stepper, styled, Typography } from '@mui/material';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CreateOrUpdateMeetingForm from '../../../components/CreateOrUpdateMeetingForm';
+import { CreateMeetingForm } from '../../../components/MeetingForms';
 import { RequiredFieldsInfo } from '../../../components/RequiredFieldsInfo';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
@@ -30,7 +29,6 @@ const CapitalizedStepLabel = styled(StepLabel)({
 });
 
 const CreateEventsPage = () => {
-  const [activeStep, setActiveStep] = useState(0);
   const { t } = useTranslation();
   const pageHeading = t('dashboard-meetings-create-title');
 
@@ -52,7 +50,7 @@ const CreateEventsPage = () => {
       <Typography component="h1">{pageHeading}</Typography>
       <StepperHeader />
       <RequiredFieldsInfo />
-      {activeStep === 0 && <CreateOrUpdateMeetingForm onForwardButtonClick={() => setActiveStep(1)} />}
+      <CreateMeetingForm />
     </Container>
   );
 };

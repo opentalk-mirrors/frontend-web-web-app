@@ -20,7 +20,7 @@ interface TrainingParticipationReport {
   enabled: boolean;
   parameter?: TrainingParticipationReportParameterSet;
 }
-export interface CreateOrUpdateMeetingFormikValues {
+export interface MeetingFormValues {
   title?: string;
   description?: string;
   waitingRoom: boolean;
@@ -40,7 +40,7 @@ export interface CreateOrUpdateMeetingFormikValues {
 type DashboardDateTimePickerProps = {
   id?: string;
   onChange(date: Date): void;
-  formik: FormikProps<CreateOrUpdateMeetingFormikValues>;
+  formik: FormikProps<MeetingFormValues>;
   type: 'start' | 'end';
   //Extend min date so we can pass it down.
   //If more props needed we could add more to the Pick or define the whole props of type DateTimePickerProps.

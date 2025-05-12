@@ -9,8 +9,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useLazyGetEventQuery } from '../../../api/rest';
 import { EditIcon } from '../../../assets/icons';
-import CreateOrUpdateMeetingForm from '../../../components/CreateOrUpdateMeetingForm';
 import InviteToMeeting from '../../../components/InviteToMeeting';
+import { UpdateMeetingForm } from '../../../components/MeetingForms';
 import { RequiredFieldsInfo } from '../../../components/RequiredFieldsInfo';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
@@ -48,13 +48,15 @@ const ActiveStep = styled(Step)(({ theme }) => ({
   },
 }));
 
+const MAX_INVITEES = 10;
+
 const EditEventsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(1);
   const [getEvent, { data: event, isLoading, error }] = useLazyGetEventQuery();
   const { eventId, formStep } = useParams<'eventId' | 'formStep'>() as { eventId: EventId; formStep: string };
-  const eventQuery = useMemo(() => ({ eventId: eventId, inviteesMax: 10 }), [eventId]);
+  const eventQuery = useMemo(() => ({ eventId: eventId, inviteesMax: MAX_INVITEES }), [eventId]);
   const pageHeading = t('dashboard-meetings-create-title');
   useUpdateDocumentTitle(pageHeading);
 
@@ -114,9 +116,7 @@ const EditEventsPage = () => {
       <Typography component="h1">{pageHeading}</Typography>
       <StepperHeader />
       <RequiredFieldsInfo />
-      {activeStep === 0 && (
-        <CreateOrUpdateMeetingForm existingEvent={event} onForwardButtonClick={() => setActiveStep(1)} />
-      )}
+      {activeStep === 0 && <UpdateMeetingForm existingEvent={event} onForwardButtonClick={() => setActiveStep(1)} />}
       {activeStep === 1 && event && (
         <InviteToMeeting
           isUpdatable={true}
