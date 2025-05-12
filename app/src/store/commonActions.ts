@@ -11,6 +11,7 @@ import { closeSnackbar } from 'notistack';
 import convertToSnakeCase from 'snakecase-keys';
 
 import { stopTimeLimitNotification } from '../commonComponents/Notistack/fragments/variations/TimeLimitNotification/utils';
+import { BackgroundBlur } from '../modules/Media/BackgroundBlur';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
 import { BreakoutRoomId, JoinSuccessInternalState, FetchRequestError } from '../types';
@@ -99,7 +100,7 @@ export async function handleLocalMediaTrack({
   thunkApi,
   kind,
   enabled,
-  deviceId,
+  deviceId: deviceIdOption,
   inMeetingView,
 }: {
   thunkApi: GetThunkAPI<{
@@ -112,23 +113,48 @@ export async function handleLocalMediaTrack({
   deviceId?: string;
   inMeetingView: boolean;
 }): Promise<StartMediaInterface | ReturnType<typeof thunkApi.rejectWithValue>> {
-  const payload: StartMediaInterface = { kind, enabled, deviceId };
+  const state = thunkApi.getState();
+  const storedDeviceId = (() => {
+    switch (kind) {
+      case 'audioinput':
+        return state.media.audioDeviceId;
+      case 'videoinput':
+        return state.media.videoDeviceId;
+      default:
+        return undefined;
+    }
+  })();
+
+  const deviceId = deviceIdOption || storedDeviceId;
+  const result: StartMediaInterface = { kind, enabled, deviceId };
 
   if (inMeetingView) {
-    const room = getLivekitRoom();
-    const track =
-      kind === 'audioinput'
-        ? await room.localParticipant.setMicrophoneEnabled(enabled, { deviceId })
-        : await room.localParticipant.setCameraEnabled(enabled, { deviceId });
+    const localParticipant = getLivekitRoom().localParticipant;
+    try {
+      const track =
+        kind === 'audioinput'
+          ? await localParticipant.setMicrophoneEnabled(enabled, { deviceId })
+          : await localParticipant.setCameraEnabled(enabled, {
+              deviceId,
+              processor: new BackgroundBlur(thunkApi.getState().media.videoBackgroundEffects),
+            });
 
-    const mediaStreamTrack =
-      kind === 'audioinput' ? track?.audioTrack?.mediaStreamTrack : track?.videoTrack?.mediaStreamTrack;
+      const mediaStreamTrack =
+        kind === 'audioinput' ? track?.audioTrack?.mediaStreamTrack : track?.videoTrack?.mediaStreamTrack;
 
-    if (mediaStreamTrack) {
-      payload.deviceId = getDeviceId(mediaStreamTrack);
+      if (mediaStreamTrack) {
+        result.deviceId = await track?.videoTrack?.getDeviceId();
+      }
+    } catch (error) {
+      const mediaError = handleMediaPermissionError({ error, deviceId, kind });
+      return thunkApi.rejectWithValue({
+        status: 409,
+        statusText: mediaError.name,
+        kind,
+      });
     }
 
-    return payload;
+    return result;
   }
 
   // Lobby
@@ -139,11 +165,11 @@ export async function handleLocalMediaTrack({
     const mediaTrack = kind === 'audioinput' ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0];
 
     if (mediaTrack) {
-      payload.deviceId = getDeviceId(mediaTrack);
+      result.deviceId = getDeviceId(mediaTrack);
       mediaTrack.stop();
     }
 
-    return payload;
+    return result;
   } catch (error) {
     const mediaError = handleMediaPermissionError({ error, deviceId, kind });
     return thunkApi.rejectWithValue({
@@ -159,9 +185,10 @@ export const startMedia = createAsyncThunk<
   StartMediaInterface,
   { state: RootState; rejectValue: FetchPermissionError }
 >('media/startMedia', async ({ kind, enabled, deviceId }, thunkApi) => {
-  const roomState = thunkApi.getState().room;
+  const state = thunkApi.getState();
   const inMeetingView =
-    roomState.connectionState === ConnectionState.Online || roomState.connectionState === ConnectionState.Leaving;
+    state.room.connectionState === ConnectionState.Online || state.room.connectionState === ConnectionState.Leaving;
+
   try {
     switch (kind) {
       case 'audioinput':

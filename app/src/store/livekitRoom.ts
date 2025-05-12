@@ -20,7 +20,7 @@ export const getLivekitRoom = (dispatch?: AppDispatch): Room => {
     if (dispatch) {
       dispatch(setLivekitUnavailable(true));
     }
-    throw Error('[LiveKit]: Room was not set');
+    console.warn('[LiveKit]: Room was not set');
   }
 
   return room;

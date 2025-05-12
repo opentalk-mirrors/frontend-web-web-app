@@ -1,24 +1,20 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { usePreviewTracks } from '@livekit/components-react';
 import { CircularProgress, Grid, Typography, styled } from '@mui/material';
-import { LocalVideoTrack, createLocalVideoTrack } from 'livekit-client';
-import { useEffect, useRef, useState } from 'react';
+import { LocalVideoTrack, Track } from 'livekit-client';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { startMedia } from '../../../store/commonActions';
+import { useAppSelector } from '../../../hooks';
+import { BackgroundBlur } from '../../../modules/Media/BackgroundBlur';
 import {
   selectVideoBackgroundEffects,
   selectVideoDeviceId,
   selectVideoEnabled,
-  setBackgroundEffectsLoading,
-  setMediaChangeInProgress,
-  setVideoDeviceId,
 } from '../../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
-import { applyBackgroundEffectToTrack } from '../../../utils/applyBackgroundEffect';
-import { handleMediaPermissionError } from '../../../utils/mediaErrorUtils';
 
 const Container = styled(Grid)({
   position: 'relative',
@@ -30,7 +26,7 @@ const Container = styled(Grid)({
     left: 0,
     display: 'block',
     height: 0,
-    width: '0',
+    width: 0,
     paddingBottom: 'calc(9/16 * 100%)',
   },
 });
@@ -48,8 +44,7 @@ const Video = styled('video', {
   shouldForwardProp: (prop) => !['noRoundedCorners', 'mirroringEnabled'].includes(prop as string),
 })<{ noRoundedCorners?: boolean; mirroringEnabled?: boolean }>(({ theme, noRoundedCorners, mirroringEnabled }) => ({
   position: 'absolute',
-  width: 'inherit',
-  height: 'inherit',
+  minHeight: '100%',
   maxWidth: '100%',
   maxHeight: '100%',
   borderRadius: noRoundedCorners ? 0 : theme.borderRadius.medium,
@@ -61,58 +56,28 @@ const VideoElement = () => {
   const videoEnabled = useAppSelector(selectVideoEnabled);
   const videoDeviceId = useAppSelector(selectVideoDeviceId);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const dispatch = useAppDispatch();
   const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
-
-  const [videoTrack, setLocalVideoTrack] = useState<LocalVideoTrack | undefined>();
-
-  useEffect(() => {
-    if (videoEnabled) {
-      dispatch(setMediaChangeInProgress('videoinput'));
-      createLocalVideoTrack({ deviceId: videoDeviceId })
-        .then((videoTrack) => {
-          setLocalVideoTrack(videoTrack);
-          const usedDeviceId = videoTrack.constraints.deviceId as string;
-          if (usedDeviceId !== videoDeviceId) {
-            dispatch(setVideoDeviceId(usedDeviceId));
-          }
-        })
-        .catch((error) => {
-          dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-          handleMediaPermissionError({ error, deviceId: videoDeviceId, kind: 'videoinput' });
-        })
-        .finally(() => {
-          dispatch(setMediaChangeInProgress(null));
-        });
-    }
-  }, [videoDeviceId, videoEnabled]);
-
-  useEffect(() => {
-    applyBackgroundEffectToTrack(videoTrack, videoBackgroundEffects, (loading) => {
-      dispatch(setBackgroundEffectsLoading(loading));
-    })
-      .then((stream) => {
-        if (videoRef.current && stream) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.playsInline = true;
-        }
-      })
-      .catch((error) => {
-        console.error('Error starting processor', error);
-      });
-  }, [videoTrack, videoBackgroundEffects.style, videoBackgroundEffects.imageUrl]);
-
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
+
+  const videoProcessor = new BackgroundBlur(videoBackgroundEffects);
+
+  const previewTracks = usePreviewTracks({
+    video: videoEnabled && { deviceId: videoDeviceId, processor: videoProcessor },
+  });
+
+  const videoTrack = useMemo(
+    () => previewTracks?.filter((track) => track.kind === Track.Kind.Video)[0] as LocalVideoTrack,
+    [previewTracks]
+  );
 
   const isVideoMissing = videoEnabled && videoTrack?.isMuted;
 
   useEffect(() => {
-    if (videoRef.current && videoTrack) {
+    if (videoTrack && videoRef.current) {
       videoTrack.unmute();
       videoTrack.attach(videoRef.current);
     }
     return () => {
-      videoTrack?.mediaStreamTrack.stop();
       videoTrack?.detach();
     };
   }, [videoTrack]);

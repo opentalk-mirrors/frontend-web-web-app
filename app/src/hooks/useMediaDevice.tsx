@@ -4,15 +4,13 @@
 //
 import { useMediaDeviceSelect } from '@livekit/components-react';
 import { Room } from 'livekit-client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../commonComponents';
 import log from '../logger';
-import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
-import { selectAudioDeviceId, selectVideoDeviceId, setMediaChangeInProgress } from '../store/slices/mediaSlice';
-import { selectRoomConnectionState } from '../store/slices/roomSlice';
-import { useAppDispatch, useAppSelector } from './useCustomRedux';
+import { setMediaChangeInProgress } from '../store/slices/mediaSlice';
+import { useAppDispatch } from './useCustomRedux';
 
 interface MediaPermissionsConstraints {
   kind: MediaDeviceKind;
@@ -23,25 +21,11 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
   const { t } = useTranslation();
   const [permissionDenied, setPermissionDenied] = useState<boolean | 'pending'>(false);
   const [localDevices, setLocalDevices] = useState<MediaDeviceInfo[]>([]);
-  const videoDeviceId = useAppSelector(selectVideoDeviceId);
-  const audioDeviceId = useAppSelector(selectAudioDeviceId);
   const dispatch = useAppDispatch();
-  const { devices, setActiveMediaDevice, activeDeviceId } = useMediaDeviceSelect({
+  const { devices, setActiveMediaDevice } = useMediaDeviceSelect({
     kind,
     requestPermissions: false,
   });
-  const connectionState: ConnectionState = useAppSelector(selectRoomConnectionState);
-
-  useEffect(() => {
-    if (connectionState === ConnectionState.Online || connectionState === ConnectionState.Leaving) {
-      if (kind === 'audioinput' && audioDeviceId && activeDeviceId !== audioDeviceId) {
-        setActiveMediaDevice(audioDeviceId);
-      }
-      if (kind === 'videoinput' && videoDeviceId && activeDeviceId !== videoDeviceId) {
-        setActiveMediaDevice(videoDeviceId);
-      }
-    }
-  }, [kind, videoDeviceId, audioDeviceId, setActiveMediaDevice, connectionState]);
 
   const loadLocalDevices = async () => {
     dispatch(setMediaChangeInProgress(kind));
@@ -50,7 +34,7 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
       setPermissionDenied(false);
     } catch (error) {
       setLocalDevices([]);
-      log.debug(`Permission or ${kind} toggle failed: ${error}`);
+      log.warn(`Permission or ${kind} toggle failed: ${error}`);
       !permissionDenied &&
         notifications.warning(t('media-denied-warning', { mediaType: kind }), {
           preventDuplicate: true,

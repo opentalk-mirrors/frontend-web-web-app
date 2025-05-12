@@ -77,17 +77,15 @@ export default class ProcessorWrapper<TransformerOptions extends Record<string, 
       throw new TypeError('Expected both canvas and processor to be defined after setup');
     }
 
-    let readableStream = this.processor.readable;
-
-    await this.transformer.init({
+    this.transformer.init({
       outputCanvas: this.canvas,
       inputElement: this.sourceDummy as HTMLVideoElement,
     });
-    readableStream = readableStream.pipeThrough(this.transformer!.transformer!);
-
-    readableStream
+    // no need to await, will stop when the input ends.
+    this.processor.readable
+      .pipeThrough(this.transformer!.transformer!)
       .pipeTo(this.trackGenerator.writable)
-      .catch((e) => console.error('error when trying to pipe', e))
+      .catch((e) => console.error('video processing error during pipeTo', e))
       .finally(() => this.destroy());
     this.processedTrack = this.trackGenerator as MediaStreamVideoTrack;
   }

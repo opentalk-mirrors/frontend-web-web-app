@@ -64,7 +64,8 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
   useEffect(() => {
     if (audioEnabled || activeDeviceId !== audioDeviceId) {
       dispatch(setMediaChangeInProgress('audioinput'));
-      createLocalAudioTrack({ deviceId: audioDeviceId })
+      const deviceId = audioDeviceId === 'default' ? undefined : audioDeviceId;
+      createLocalAudioTrack({ deviceId })
         .then((audioTrack) => {
           setLocalAudioTrack(audioTrack);
           const usedDeviceId = audioTrack.constraints.deviceId as string;

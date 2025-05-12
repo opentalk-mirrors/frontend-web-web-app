@@ -31,6 +31,7 @@ import { hangUp, joinSuccess, startMedia } from '../commonActions';
 import type { RootState, AppDispatch } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { setLivekitUnavailable, setLivekitAvailable, getLivekitRoom } from '../livekitRoom';
+import { setVideoDeviceId, setAudioDeviceId } from './mediaSlice';
 import { pinnedRemoteScreenshare, pinnedParticipantIdSet } from './uiSlice';
 
 type PopoutStreamAccess = {
@@ -267,12 +268,18 @@ const handleConnectionStateChanged = (
   }
 };
 
-const startReconnectOnLivekitTriggerListener = (startAppListening: StartAppListening) =>
+const deviceChangeOnLivekitTriggerListener = (startAppListening: StartAppListening) =>
   startAppListening({
-    type: 'livekit/triggerReconnect',
-    effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
-      if (!listenerApi.getState().room.isDeleted) {
-        reconnect(listenerApi);
+    matcher: isAnyOf(setVideoDeviceId, setAudioDeviceId),
+    effect: (action) => {
+      const room = getLivekitRoom();
+      if (room) {
+        if (setVideoDeviceId.match(action) && action.payload) {
+          room.switchActiveDevice('videoinput', action.payload);
+        }
+        if (setAudioDeviceId.match(action) && action.payload) {
+          room.switchActiveDevice('audioinput', action.payload);
+        }
       }
     },
   });
@@ -308,7 +315,18 @@ const startToggleEmitterListener = (startAppListening: StartAppListening) =>
     },
   });
 
+const startReconnectOnLivekitTriggerListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    type: 'livekit/triggerReconnect',
+    effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      if (!listenerApi.getState().room.isDeleted) {
+        reconnect(listenerApi);
+      }
+    },
+  });
+
 export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startReconnectOnLivekitTriggerListener(startAppListening);
   startToggleEmitterListener(startAppListening);
+  deviceChangeOnLivekitTriggerListener(startAppListening);
 };
