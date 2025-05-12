@@ -2,13 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
-import { RoomId } from '@opentalk/rest-api-rtk-query';
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 
 import LobbyView from '../../components/LobbyView';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import useE2EE from '../../hooks/useE2EE';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { usePreventSpaceKey } from '../../hooks/usePreventSpaceKey';
 import log from '../../logger';
@@ -20,11 +17,6 @@ import RoomLoadingView from './fragments/RoomLoadingView';
 const MeetingView = React.lazy(() => import('../../components/MeetingView'));
 const WaitingView = React.lazy(() => import('../../components/WaitingView'));
 const RoomPage = () => {
-  const { roomId } = useParams<'roomId'>() as {
-    roomId: RoomId;
-  };
-  const e2eeData = useE2EE(roomId);
-
   const inviteCode = useInviteCode();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const connectionState: ConnectionState = useAppSelector(selectRoomConnectionState);
@@ -54,16 +46,15 @@ const RoomPage = () => {
       return <LobbyView />;
     case ConnectionState.Starting:
     case ConnectionState.Failed:
+    case ConnectionState.Blocked:
       return <RoomLoadingView />;
     case ConnectionState.Online:
     case ConnectionState.Leaving:
-      return <MeetingView e2eeData={e2eeData} />;
+      return <MeetingView />;
     // Exception states
     case ConnectionState.ReadyToEnter:
     case ConnectionState.Waiting:
       return <WaitingView />;
-    case ConnectionState.Blocked:
-      return <RoomLoadingView />;
     default:
       log.error('room state unknown', connectionState);
       return <LobbyView />;
