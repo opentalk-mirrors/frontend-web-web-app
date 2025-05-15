@@ -35,7 +35,7 @@ const CustomMenuItem = styled(MenuItem)(() => ({
 }));
 
 interface ResultsItemProps extends MenuItemProps {
-  item: LegalVote | Poll;
+  item: Pick<LegalVote, 'name' | 'id' | 'state'> | Pick<Poll, 'topic' | 'id' | 'state' | 'choices'>;
 }
 
 //Props are passed for accessibility reasons, autofocus doesn't get recognized otherwise and we cannot navigate into the list.
@@ -43,7 +43,7 @@ interface ResultsItemProps extends MenuItemProps {
 const ResultsItem = ({ item, ...props }: ResultsItemProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const openItem = (item: LegalVote | Poll) => {
+  const openItem = (item: Pick<LegalVote, 'id'> | Pick<Poll, 'id'>) => {
     dispatch(setVoteOrPollIdToShow(item.id));
   };
 
@@ -52,7 +52,7 @@ const ResultsItem = ({ item, ...props }: ResultsItemProps) => {
   return (
     <CustomMenuItem {...props} onClick={() => openItem(item)} role="menuitem">
       <ListItemIcon>{Object.hasOwn(item, 'choices') ? <PollIcon /> : <LegalBallotIcon />}</ListItemIcon>
-      <ListItemText primaryTypographyProps={{ noWrap: true }} primary={label} />
+      <ListItemText slotProps={{ primary: { noWrap: true } }} primary={label} />
       <Chip
         size="medium"
         label={t(`global-state-${item.state}`)}

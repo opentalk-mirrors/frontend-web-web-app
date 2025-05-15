@@ -21,8 +21,8 @@ import {
   setPaginationPage,
   toggleDebugMode,
   updatedCinemaLayout,
+  selectIsCurrentWhiteboardHighlighted,
 } from '../../../store/slices/uiSlice';
-import { selectIsCurrentWhiteboardHighlighted } from '../../../store/slices/uiSlice';
 import { selectIsWhiteboardAvailable } from '../../../store/slices/whiteboardSlice';
 import LayoutSelection from './LayoutSelection';
 import { MeetingHeaderButton } from './MeetingHeaderButton';
