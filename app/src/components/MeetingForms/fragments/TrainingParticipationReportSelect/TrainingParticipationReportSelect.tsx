@@ -10,12 +10,12 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonTextField } from '../../../../commonComponents';
 import { formikMinimalProps } from '../../../../utils/formikUtils';
-import { CreateOrUpdateMeetingFormikValues } from '../DashboardDateTimePicker';
+import { MeetingFormValues } from '../DashboardDateTimePicker';
 import MeetingFormSwitch from '../MeetingFormSwitch';
 import { CustomTrainingParticipationReportDialog } from './CustomTrainingParticipationReportDialog';
 
 interface TrainingParticipationReportSelectProps {
-  formik: FormikProps<CreateOrUpdateMeetingFormikValues>;
+  formik: FormikProps<MeetingFormValues>;
 }
 
 enum TrainingParticipationReportConfigOptions {

@@ -8,6 +8,7 @@ export type {
   UserId,
   AssetId,
   Email,
+  DateTimeWithTimezone,
   DateTime,
   Tags,
   PagePaginated,

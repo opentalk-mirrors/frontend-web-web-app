@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { useLazyGetEventQuery } from '../../../api/rest';
@@ -12,10 +12,10 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }));
 
-jest.mock('../../../components/CreateOrUpdateMeetingForm', () => ({
+jest.mock('../../../components/MeetingForms', () => ({
   __esModule: true,
-  default: ({ onForwardButtonClick }: { onForwardButtonClick: () => void }) => (
-    <button data-testid="CreateOrUpdateMeetingForm" onClick={onForwardButtonClick} />
+  UpdateMeetingForm: ({ onForwardButtonClick }: { onForwardButtonClick: () => void }) => (
+    <button data-testid="UpdateMeetingForm" onClick={onForwardButtonClick} />
   ),
 }));
 
@@ -30,49 +30,70 @@ jest.mock('../../../api/rest', () => ({
 
 const mockUseParams = useParams as jest.Mock;
 const mockUseLazyGetEventQuery = useLazyGetEventQuery as jest.Mock;
+const mockLazyGetEvent = jest.fn();
 const mockUseNavigate = useNavigate as jest.Mock;
 const mockNavigate = jest.fn();
+
+const mockEventId = 'db61b29b-b944-422d-b20f-6ed4158aad4d';
 
 describe('EditEventsPage', () => {
   beforeEach(() => {
     // Since we are using 'resetMocks: true,' property globally, we have to redeclare return value on each run.
     mockUseParams.mockReturnValue({
-      eventId: null,
+      eventId: mockEventId,
       formStep: '0',
     });
 
-    mockUseLazyGetEventQuery.mockReturnValue([() => {}, { data: {}, isLoading: false, error: null }]);
+    mockUseLazyGetEventQuery.mockReturnValue([mockLazyGetEvent, { data: {}, isLoading: false, error: null }]);
 
     mockUseNavigate.mockReturnValue(mockNavigate);
   });
 
-  it('renders page title', () => {
+  it('sets document title', () => {
     render(<EditEventsPage />);
-
-    expect(screen.getByText('dashboard-meetings-create-title')).toHaveProperty('tagName', 'H1');
+    expect(document.title).toBe('dashboard-meetings-create-title in OpenTalk');
   });
 
-  it('renders CreateOrUpdateMeetingForm when active step is 0', () => {
+  it('renders heading', () => {
+    render(<EditEventsPage />);
+    expect(screen.getByRole('heading', { name: 'dashboard-meetings-create-title', level: 1 })).toBeInTheDocument();
+  });
+
+  it('queries the event with the passed event id and default max inivitees number', async () => {
     render(<EditEventsPage />);
 
-    expect(screen.getByTestId('CreateOrUpdateMeetingForm')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockLazyGetEvent).toHaveBeenCalledWith({
+        eventId: mockEventId,
+        inviteesMax: 10,
+      });
+    });
+  });
+
+  it('renders update meeting form when active step is 0', () => {
+    render(<EditEventsPage />);
+
+    expect(screen.getByTestId('UpdateMeetingForm')).toBeInTheDocument();
     expect(screen.queryByTestId('InviteToMeeting')).not.toBeInTheDocument();
   });
 
-  it('renders InviteToMeeting when active step is 1', () => {
+  it('renders invite to meeting form when active step is 1', () => {
     mockUseParams.mockReturnValue({
-      eventId: null,
+      eventId: mockEventId,
       formStep: '1',
     });
 
     render(<EditEventsPage />);
 
-    expect(screen.queryByTestId('CreateOrUpdateMeetingForm')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('UpdateMeetingForm')).not.toBeInTheDocument();
     expect(screen.getByTestId('InviteToMeeting')).toBeInTheDocument();
   });
 
   it('navigates to create page on error', () => {
-    mockUseLazyGetEventQuery.mockReturnValue([() => {}, { data: null, isLoading: false, error: new Error('') }]);
+    mockUseLazyGetEventQuery.mockReturnValue([
+      mockLazyGetEvent,
+      { data: null, isLoading: false, error: new Error('') },
+    ]);
 
     render(<EditEventsPage />);
 

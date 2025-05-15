@@ -9,11 +9,11 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonTextField } from '../../../commonComponents';
 import { formikProps, formikSwitchProps } from '../../../utils/formikUtils';
-import { CreateOrUpdateMeetingFormikValues } from './DashboardDateTimePicker';
+import { MeetingFormValues } from './DashboardDateTimePicker';
 import MeetingFormSwitch from './MeetingFormSwitch';
 
 interface StreamingOptionsProps {
-  formik: FormikProps<CreateOrUpdateMeetingFormikValues>;
+  formik: FormikProps<MeetingFormValues>;
 }
 
 const OptionsRow = styled(Stack)(({ theme }) => ({

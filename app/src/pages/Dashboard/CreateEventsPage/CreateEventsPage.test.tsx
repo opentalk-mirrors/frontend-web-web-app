@@ -1,32 +1,44 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import CreateEventsPage from './CreateEventsPage';
 
-jest.mock('../../../components/CreateOrUpdateMeetingForm', () => ({
+jest.mock('../../../components/MeetingForms', () => ({
   __esModule: true,
-  default: ({ onForwardButtonClick }: { onForwardButtonClick: () => void }) => (
-    <button data-testid="CreateOrUpdateMeetingForm" onClick={onForwardButtonClick} />
-  ),
+  CreateMeetingForm: () => <div data-testid="CreateMeetingForm" />,
+}));
+
+jest.mock('../../../components/RequiredFieldsInfo', () => ({
+  __esModule: true,
+  RequiredFieldsInfo: () => <div data-testid="RequiredFieldsInfo" />,
 }));
 
 describe('CreateEventsPage', () => {
-  it('renders <h1 />', () => {
+  it('sets document title', () => {
     render(<CreateEventsPage />);
-    expect(screen.getByText('dashboard-meetings-create-title')).toHaveProperty('tagName', 'H1');
+    expect(document.title).toBe('dashboard-meetings-create-title in OpenTalk');
   });
 
-  it('renders CreateOrUpdateMeetingForm when active step is 0', () => {
+  it('renders heading', () => {
     render(<CreateEventsPage />);
-    expect(screen.getByTestId('CreateOrUpdateMeetingForm')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'dashboard-meetings-create-title', level: 1 })).toBeInTheDocument();
   });
 
-  it('hides CreateOrUpdateMeetingForm when active step is 1', () => {
+  it('renders form progress steps', () => {
     render(<CreateEventsPage />);
-    fireEvent.click(screen.getByTestId('CreateOrUpdateMeetingForm'));
+    expect(screen.getByText('global-meeting')).toBeInTheDocument();
+    expect(screen.getByText('global-participants')).toBeInTheDocument();
+  });
 
-    expect(screen.queryByTestId('CreateOrUpdateMeetingForm')).not.toBeInTheDocument();
+  it('renders the required info fields', () => {
+    render(<CreateEventsPage />);
+    expect(screen.getByTestId('RequiredFieldsInfo')).toBeInTheDocument();
+  });
+
+  it('renders create meeting form', () => {
+    render(<CreateEventsPage />);
+    expect(screen.getByTestId('CreateMeetingForm')).toBeInTheDocument();
   });
 });
