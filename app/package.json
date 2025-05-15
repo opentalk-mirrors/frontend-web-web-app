@@ -27,7 +27,7 @@
     "@opentalk/i18next-fluent": "workspace:*",
     "@opentalk/redux-oidc": "workspace:*",
     "@opentalk/rest-api-rtk-query": "workspace:*",
-    "@reduxjs/toolkit": "^2.8.1",
+    "@reduxjs/toolkit": "^2.8.2",
     "@sentry/browser": "^9.17.0",
     "@sentry/react": "^9.17.0",
     "bowser": "^2.11.0",
