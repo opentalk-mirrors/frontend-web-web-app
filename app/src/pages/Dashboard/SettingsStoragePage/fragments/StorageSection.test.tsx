@@ -32,6 +32,7 @@ describe('Storage Section', () => {
         quotas: {
           maxStorage: MAX_LIMITED_STORAGE_IN_MB * 1000 * 1000,
         },
+        modules: {},
       },
     }));
 
@@ -57,6 +58,7 @@ describe('Storage Section', () => {
         quotas: {
           maxStorage: MAX_LIMITED_STORAGE_IN_MB * 1000 * 1000,
         },
+        modules: {},
       },
     }));
 
@@ -66,7 +68,7 @@ describe('Storage Section', () => {
     expect(progressBar).toBeInTheDocument();
     expect(progressBar).toHaveAttribute('aria-valuenow', '100');
 
-    const storageMessage = screen.getByText('dashboard-settings-storage-usage-limited-full');
+    const storageMessage = screen.getByTestId('dashboard-settings-storage-full');
     expect(storageMessage).toBeInTheDocument();
   });
 
@@ -82,6 +84,7 @@ describe('Storage Section', () => {
         quotas: {
           maxStorage: MAX_LIMITED_STORAGE_IN_MB * 1000 * 1000,
         },
+        modules: {},
       },
     }));
 
@@ -107,6 +110,7 @@ describe('Storage Section', () => {
         quotas: {
           maxStorage: undefined,
         },
+        modules: {},
       },
     }));
 

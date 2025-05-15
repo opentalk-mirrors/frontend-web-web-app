@@ -38,10 +38,11 @@ export enum BackendModules {
 export type Modules = { [value in BackendModules]?: { features: Array<string> } };
 
 export type RecordingFeatures = 'stream' | 'record';
+export type CoreFeatures = 'call_in' | 'storage_upgradable';
 /**
  * Union type that contains features from different modules. Has to be manually extended.
  */
-export type BackendFeatures = RecordingFeatures;
+export type BackendFeatures = RecordingFeatures | CoreFeatures;
 
 export type TariffId = Opaque<string, 'tariffId'>;
 

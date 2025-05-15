@@ -767,12 +767,16 @@ dashboard-settings-profile-input-hint = Geben Sie einen Namen ein, der anderen a
 dashboard-settings-profile-button-save = Änderungen speichern
 
 dashboard-settings-storage-usage-limited-free = {$usedStorage} von {$maxStorage} belegt
-dashboard-settings-storage-usage-limited-full = {$usedStorage} von {$maxStorage} belegt - Speicher voll. Bitte löschen Sie Dateien oder machen Sie ein Tarifupgrade <planUpgradeLink>HIER</planUpgradeLink>
+dashboard-settings-storage-usage-limited-full = {$usedStorage} von {$maxStorage} belegt - Speicher voll.
+dashboard-settings-storage-usage-delete = Bitte löschen Sie Dateien.
+dashboard-settings-storage-usage-upgrade = Bitte löschen Sie Dateien oder führen Sie eine Tarifupgrade durch <planUpgradeLink>HIER</planUpgradeLink>.
 dashboard-settings-storage-usage-unlimited = {$usedStorage} belegt
 dashboard-settings-storage-usage-loading = Speicherbelegung wird geladen
 dashboard-settings-storage-assets = Meine Dateien
 
-dashboard-storage-almost-full-message = Achtung: Ihr Speicher ist fast voll. Funktionen wie das Aufzeichnen und Erstellen von PDFs funktionieren möglicherweise nicht.<br /> Bitte löschen Sie Dateien oder führen Sie eine Tarifupgrade durch.
+dashboard-storage-almost-full-message = Achtung: Ihr Speicher ist fast voll. Funktionen wie das Aufzeichnen und Erstellen von PDFs funktionieren möglicherweise nicht.
+dashboard-storage-almost-full-message-delete = Bitte löschen Sie Dateien.
+dashboard-storage-almost-full-message-upgrade = Bitte löschen Sie Dateien oder führen Sie eine Tarifupgrade durch.
 
 dashboard-meeting-card-error = Fehler beim ermitteln des Meeting-Zeitraumes
 dashboard-meeting-card-all-day = ganztags

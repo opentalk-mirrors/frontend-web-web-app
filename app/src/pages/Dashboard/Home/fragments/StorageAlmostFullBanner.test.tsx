@@ -40,6 +40,7 @@ describe('Storage almost full Banner', () => {
         quotas: {
           maxStorage: undefined,
         },
+        modules: {},
       },
     }));
 
@@ -58,6 +59,7 @@ describe('Storage almost full Banner', () => {
         quotas: {
           maxStorage: MAX_LIMITED_STORAGE_IN_MB * 1000 * 1000,
         },
+        modules: {},
       },
     }));
 
@@ -75,6 +77,11 @@ describe('Storage almost full Banner', () => {
       data: {
         quotas: {
           maxStorage: MAX_LIMITED_STORAGE_IN_MB * 1000 * 1000,
+        },
+        modules: {
+          core: {
+            features: ['storage_upgradable'],
+          },
         },
       },
     }));
@@ -97,5 +104,29 @@ describe('Storage almost full Banner', () => {
     // Test link to the storage section
     const storageLink = screen.getByRole('link', { name: 'dashboard-settings-storage' });
     expect(storageLink).toHaveAttribute('href', STORAGE_SECTION_PATH);
+  });
+  it('does not render upgrade button when storage is not upgradable', async () => {
+    mockUseGetMeQuery.mockImplementation(() => ({
+      data: {
+        usedStorage: CRITICAL_USED_STORAGE_IN_MB * 1000 * 1000,
+      },
+    }));
+    mockUseGetMeTariffQuery.mockImplementation(() => ({
+      data: {
+        quotas: {
+          maxStorage: MAX_LIMITED_STORAGE_IN_MB * 1000 * 1000,
+        },
+        modules: {
+          core: {
+            features: [],
+          },
+        },
+      },
+    }));
+
+    renderWithProviders(<StorageAlmostFullBanner />, { store, provider: { mui: true, router: true } });
+
+    const upgradeButton = screen.queryByRole('button', { name: 'global-upgrade' });
+    expect(upgradeButton).not.toBeInTheDocument();
   });
 });

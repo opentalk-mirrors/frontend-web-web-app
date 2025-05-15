@@ -767,12 +767,16 @@ dashboard-settings-profile-input-hint = Enter a name (such as your first name, f
 dashboard-settings-profile-button-save = Save
 
 dashboard-settings-storage-usage-limited-free = {$usedStorage} of {$maxStorage} used
-dashboard-settings-storage-usage-limited-full = {$usedStorage} of {$maxStorage} used - storage full. Please delete files or make a plan upgrade <planUpgradeLink>HERE</planUpgradeLink>
+dashboard-settings-storage-usage-limited-full = {$usedStorage} of {$maxStorage} used - storage full.
+dashboard-settings-storage-usage-delete = Please delete files.
+dashboard-settings-storage-usage-upgrade = Please delete files or make a plan upgrade <planUpgradeLink>HERE</planUpgradeLink>.
 dashboard-settings-storage-usage-unlimited = {$usedStorage} used
 dashboard-settings-storage-usage-loading = Loading storage usage
 dashboard-settings-storage-assets = My Files
 
-dashboard-storage-almost-full-message = Attention: Your storage is almost full. Functions like recording and creating PDF may not work.<br /> Please delete files or make a plan upgrade.
+dashboard-storage-almost-full-message = Attention: Your storage is almost full. Functions like recording and creating PDF may not work.
+dashboard-storage-almost-full-message-delete = Please delete files.
+dashboard-storage-almost-full-message-upgrade = Please delete files or make a plan upgrade.
 
 dashboard-meeting-card-error = Error detecting the meeting duration
 dashboard-meeting-card-all-day = All-day
