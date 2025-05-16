@@ -82,7 +82,7 @@ const SecurityBadge = () => {
       spacing={2}
       columns={6}
       sx={{
-        maxWidth: '24rem',
+        width: '24rem',
         alignItems: 'center',
       }}
     >
@@ -100,7 +100,7 @@ const SecurityBadge = () => {
       container
       columns={6}
       sx={{
-        maxWidth: '24rem',
+        width: '24rem',
         alignItems: 'center',
       }}
     >
@@ -116,7 +116,7 @@ const SecurityBadge = () => {
       <Grid size={{ xs: 4 }}>
         <Typography>{t('secure-connection-registered-only')}</Typography>
       </Grid>
-      <CenteredGrid size={{ xs: 4 }}>
+      <CenteredGrid size={{ xs: 2 }}>
         <CheckmarkIconBig />
       </CenteredGrid>
       <Grid size={{ xs: 4 }}>
