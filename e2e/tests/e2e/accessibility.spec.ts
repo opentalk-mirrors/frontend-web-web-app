@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { test, expect } from '@playwright/test';
 
+import { startAdhocMeetingAsModerator } from '../helper/meetingHelpers';
 import { closeWebkitPopUp } from '../helper/webkit';
 import { HomePage } from '../pages/HomePage';
-import { LobbyRoomPage } from '../pages/LobbyRoomPage';
 import { SidebarPage } from '../pages/SidebarPage';
 
 const meetingTitle = 'test_meeting';
@@ -126,12 +126,7 @@ test.describe('Accessibility_General', () => {
     // https://github.com/microsoft/playwright/issues/20563
     test.skip(browserName === 'webkit' || browserName === 'firefox');
 
-    const homePage = new HomePage({ page });
-    await homePage.navigateToHomePage();
-    const meetingInvitationPage = await homePage.startAdhocMeeting();
-    await meetingInvitationPage.goToAdhocMeetingLobbyAsModerator(true);
-    const lobbyRoomPage = new LobbyRoomPage({ page });
-    const meetingRoomPage = await lobbyRoomPage.enterMeetingRoom();
+    const { meetingRoomPage } = await startAdhocMeetingAsModerator(page);
 
     // assert meeting room is shown
     await expect(meetingRoomPage.meetingRoomName).toBeVisible();
