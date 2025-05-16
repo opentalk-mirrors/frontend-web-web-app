@@ -2,6 +2,9 @@
 #
 # SPDX-License-Identifier: EUPL-1.2
 
+# Copilot data
+.github
+
 # private config
 .pre-commit-config.yaml
 !example/git_hooks/.pre-commit-config.yaml
