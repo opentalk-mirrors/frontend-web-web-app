@@ -18,6 +18,8 @@ import {
   SingleEvent,
   TimelessEvent,
   UserId,
+  PlatformKind,
+  StreamingTarget,
 } from '@opentalk/rest-api-rtk-query';
 import { AssetId, InviteCode, SipId } from '@opentalk/rest-api-rtk-query/src/types';
 import { ConfigureStoreOptions, Store, combineReducers, configureStore as configureStoreTlk } from '@reduxjs/toolkit';
@@ -602,4 +604,12 @@ export const mockLegalVote: LegalVote = {
   name: 'Fake legal vote',
   initiatorId: 'asd' as ParticipantId,
   maxVotes: 0,
+};
+
+export const mockedStreamingTarget: StreamingTarget = {
+  name: 'Custom Streaming Platform',
+  kind: PlatformKind.Custom,
+  streamingKey: '123',
+  publicUrl: '123',
+  streamingEndpoint: new URL('https://example.com'),
 };

@@ -6,7 +6,7 @@ import { Opaque } from 'type-fest';
 import { CallIn, DateTimeWithTimezone, EntityBase, InviteStatus } from './common';
 import { EventInvite } from './eventInvite';
 import { InviteCode, RoomId } from './room';
-import { StreamingPlatform } from './streaming';
+import { StreamingTarget } from './streaming';
 
 export type EventId = Opaque<string, 'eventId'>;
 export type EventInstanceId = Opaque<string, 'eventInstanceId'>;
@@ -102,7 +102,7 @@ export interface CreateBaseEventPayload {
   isAdhoc?: boolean;
   showMeetingDetails?: boolean;
   hasSharedFolder?: boolean;
-  streamingTargets?: Array<StreamingPlatform>;
+  streamingTargets?: Array<StreamingTarget>;
   trainingParticipationReport?: TrainingParticipationReportParameterSet;
 }
 
@@ -176,7 +176,7 @@ export interface UpdateEventPayload {
   isAdhoc?: boolean;
   showMeetingDetails?: boolean;
   hasSharedFolder?: boolean;
-  streamingTargets?: Array<StreamingPlatform>;
+  streamingTargets?: Array<StreamingTarget>;
   trainingParticipationReport?: TrainingParticipationReportParameterSet | null;
 }
 
@@ -249,7 +249,7 @@ interface AbstractEvent extends BaseEvent {
   inviteStatus: InviteStatus;
   sharedFolder?: SharedFolderData;
   showMeetingDetails?: boolean;
-  streamingTargets?: Array<StreamingPlatform>;
+  streamingTargets?: Array<StreamingTarget>;
   trainingParticipationReport?: TrainingParticipationReportParameterSet;
 }
 

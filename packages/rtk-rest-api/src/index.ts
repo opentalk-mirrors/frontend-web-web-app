@@ -22,7 +22,7 @@ export type { Modules, RecordingFeatures, BackendFeatures, TariffId, Tariff } fr
 export { BackendModules } from './types/tariff';
 export type {
   StreamingTargetId,
-  StreamingPlatform,
+  StreamingTarget,
   StreamingTargetInfo,
   StreamingTargetStatusInfo,
   StreamUpdatedMessage,

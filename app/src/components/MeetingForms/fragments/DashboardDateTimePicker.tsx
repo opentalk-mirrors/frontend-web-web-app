@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack } from '@mui/material';
-import { RecurrencePattern, StreamingPlatform } from '@opentalk/rest-api-rtk-query';
+import type { RecurrencePattern, StreamingTarget } from '@opentalk/rest-api-rtk-query';
 import { TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -14,9 +14,9 @@ import { DateTimePickerProps } from '../../DateTimePicker/DateTimePicker';
 
 export interface Streaming {
   enabled: boolean;
-  streamingTarget?: StreamingPlatform;
+  streamingTarget?: StreamingTarget;
 }
-interface TrainingParticipationReport {
+export interface TrainingParticipationReport {
   enabled: boolean;
   parameter?: TrainingParticipationReportParameterSet;
 }
