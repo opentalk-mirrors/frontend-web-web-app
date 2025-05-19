@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Event } from '@opentalk/rest-api-rtk-query';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -16,22 +15,26 @@ import { createPayload } from './utils/payloadUtils';
 const CreateMeetingForm = () => {
   const { t } = useTranslation();
   const [createEvent, { isLoading: createEventIsLoading }] = useCreateEventMutation();
-  const event = useRef<Event | undefined>(undefined);
+  const isCreating = useRef(false);
   const navigate = useNavigate();
 
   const handleCreateEvent = async (values: MeetingFormValues) => {
-    const payload = createPayload(values);
+    // prevents creating several same events, in case a form submitted multiple times
+    if (isCreating.current) {
+      return;
+    }
+    isCreating.current = true;
     try {
-      // prevents new events to be saved as a second event
-      if (event.current === undefined) {
-        event.current = await createEvent(payload).unwrap();
-      }
-      notifications.success(t('dashboard-meeting-notification-success-create', { event: event.current?.title }));
-      navigate(`/dashboard/meetings/update/${event.current?.id}/1`, {
+      const payload = createPayload(values);
+      const event = await createEvent(payload).unwrap();
+      notifications.success(t('dashboard-meeting-notification-success-create', { event: event.title }));
+      navigate(`/dashboard/meetings/update/${event.id}/1`, {
         state: { ...getReferrerRouterState(window.location) },
       });
     } catch (_err) {
       notifications.error(t('dashboard-meeting-notification-error'));
+    } finally {
+      isCreating.current = false;
     }
   };
 
