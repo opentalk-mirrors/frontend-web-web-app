@@ -9,7 +9,6 @@ import { useUpdateEventMutation } from '../../api/rest';
 import { notifications } from '../../commonComponents';
 import { MeetingFormValues } from './fragments/DashboardDateTimePicker';
 import MeetingForm from './fragments/MeetingForm';
-import { useSharedFolderUpdate } from './hooks/useSharedFolderUpdate';
 import { createPayload } from './utils/payloadUtils';
 
 interface UpdateMeetingFormProps {
@@ -22,9 +21,7 @@ const UpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: UpdateMeetin
   const [updateEvent, { isLoading: updateEventIsLoading }] = useUpdateEventMutation();
   const isUpdating = useRef(false);
 
-  const { handleUpdateSharedFolder } = useSharedFolderUpdate();
-
-  const handleUpdateEvent = async (values: MeetingFormValues, handleFormSubmit: () => void) => {
+  const handleUpdateEvent = async (values: MeetingFormValues) => {
     // prevents updating the event, until previous update has been finished,
     // in case child form submitted multiple times
     if (isUpdating.current) {
@@ -33,12 +30,6 @@ const UpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: UpdateMeetin
     isUpdating.current = true;
     try {
       const payload = createPayload(values, existingEvent);
-      const isSuccess = await handleUpdateSharedFolder(existingEvent, values, handleFormSubmit);
-      if (isSuccess === false) {
-        // the error is being handled in the shared folder hook,
-        // so we can just exit here gracefully
-        return;
-      }
       const event = await updateEvent({
         eventId: existingEvent.id,
         ...payload,
