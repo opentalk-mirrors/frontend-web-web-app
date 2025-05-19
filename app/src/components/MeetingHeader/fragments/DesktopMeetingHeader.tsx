@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Pagination, styled } from '@mui/material';
+import { Divider, Pagination, styled } from '@mui/material';
 import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -77,6 +77,13 @@ const HeaderContainer = styled('div', {
   [theme.breakpoints.down('lg')]: {
     justifyContent: justifyContentLgDown ? justifyContentLgDown : 'center',
   },
+}));
+
+const HeaderDivider = styled(Divider)(({ theme }) => ({
+  height: '1.2rem',
+  alignSelf: 'center',
+  backgroundColor: theme.palette.secondary.dark,
+  margin: theme.spacing(0, 1),
 }));
 
 const LogoContainer = styled(HeaderContainer)(({ theme }) => ({
@@ -175,6 +182,7 @@ const DesktopMeetingHeader = () => {
   );
 
   const isPaginationVisible = pageCount > 1;
+  const showPagination = isPaginationVisible && selectedLayout === LayoutOptions.Grid;
 
   const renderMeetingNotesButton = () => {
     return (
@@ -216,7 +224,7 @@ const DesktopMeetingHeader = () => {
           <RoomTitle />
           <LayoutSelection />
         </RoomTitleContainer>
-        {selectedLayout === LayoutOptions.Grid && isPaginationVisible && (
+        {showPagination && (
           <HeaderItem>
             <HeaderPagination
               count={isPaginationVisible ? pageCount : 0}
@@ -231,9 +239,9 @@ const DesktopMeetingHeader = () => {
             />
           </HeaderItem>
         )}
-
         {isAnyFeatureActive && (
           <>
+            <HeaderDivider orientation="vertical" />
             {showWhiteboardIcon && renderWhiteboardButton()}
             {meetingNotesUrl && selectedLayout !== LayoutOptions.MeetingNotes && renderMeetingNotesButton()}
             {isSharedFolderAvailable && <SharedFolderPopover />}
