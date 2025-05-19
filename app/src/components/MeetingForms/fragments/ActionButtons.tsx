@@ -10,10 +10,16 @@ import { ForwardIcon } from '../../../assets/icons';
 interface ActionButtonsProps {
   isExistingEvent: boolean;
   disableSaveButton: boolean;
+  disableCancelButton?: boolean;
   onForwardButtonClick?: () => void;
 }
 
-const ActionButtons = ({ isExistingEvent, disableSaveButton, onForwardButtonClick }: ActionButtonsProps) => {
+const ActionButtons = ({
+  isExistingEvent,
+  disableSaveButton,
+  disableCancelButton,
+  onForwardButtonClick,
+}: ActionButtonsProps) => {
   const { t } = useTranslation();
   return (
     <Grid
@@ -42,7 +48,14 @@ const ActionButtons = ({ isExistingEvent, disableSaveButton, onForwardButtonClic
       >
         {!isExistingEvent && (
           <Grid>
-            <Button component={Link} to="/dashboard/" variant="outlined" color="secondary" fullWidth>
+            <Button
+              component={Link}
+              to="/dashboard/"
+              variant="outlined"
+              color="secondary"
+              fullWidth
+              disabled={disableCancelButton}
+            >
               {t('dashboard-direct-meeting-button-cancel')}
             </Button>
           </Grid>
