@@ -5,6 +5,7 @@ import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { RootState } from '..';
+import { LeftReason } from '../../api/types/incoming/control';
 import { ParticipantId } from '../../types';
 import { setChatSettings } from './chatSlice';
 import { join as participantJoin, leave as participantLeave } from './participantsSlice';
@@ -15,6 +16,7 @@ export interface RoomEvent {
   timestamp: string;
   target: ParticipantId;
   event: 'joined' | 'left' | 'chat_enabled' | 'chat_disabled';
+  reason?: LeftReason;
 }
 
 const eventAdapter = createEntityAdapter<RoomEvent, string>({
@@ -26,8 +28,8 @@ export const eventSlice = createSlice({
   initialState: eventAdapter.getInitialState(),
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(participantLeave, (state, { payload: { id, timestamp } }) => {
-      eventAdapter.addOne(state, { event: 'left', timestamp, target: id, id: uuidv4() });
+    builder.addCase(participantLeave, (state, { payload: { id, timestamp, reason } }) => {
+      eventAdapter.addOne(state, { event: 'left', timestamp, target: id, id: uuidv4(), reason });
     });
     builder.addCase(
       participantJoin,

@@ -20,6 +20,8 @@ export enum Role {
   Moderator = 'moderator',
 }
 
+export type LeftReason = 'kicked' | 'banned' | 'quit';
+
 export interface JoinBlocked {
   message: 'join_blocked';
   reason: 'participant-limit-reached';
@@ -31,6 +33,7 @@ export interface Joined extends BackendParticipant {
 
 export interface Left extends AssociatedParticipant {
   message: 'left';
+  reason: LeftReason;
 }
 
 export interface Update extends BackendParticipant {

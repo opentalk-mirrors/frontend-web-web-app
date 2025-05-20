@@ -151,6 +151,10 @@ participant-search-label = Search participant
 
 no-group-participants-label = without group
 button-back-messages = Back
+participant-remove-dialog-title = Remove participant
+participant-remove-dialog-content = Are you sure you want to remove {$name} from the meeting?
+participant-remove-dialog-cancel = Cancel
+participant-remove-dialog-confirm = Confirm
 participant-menu-open-label = Open participant menu
 participant-menu-send-message = Send direct message
 participant-menu-remove-participant = Remove participant
@@ -520,6 +524,7 @@ participant-hand-raise-text = Hand raised {$handUpdated}
 participant-last-active-text = Last Active {$lastActive}
 participant-joined-event = joined the call at {$time}
 participant-left-event = left the call at {$time}
+participant-removed-event = was removed from the meeting
 
 poll-overview-button-create-poll = Create new poll
 poll-tab-title = Polls
@@ -1014,7 +1019,7 @@ dashboard-add-payment-button = Add payment
 meeting-notification-kicked = You were removed from the meeting
 meeting-notification-banned = You were banned from the meeting
 meeting-notification-moved-to-waiting-room = You have been moved to the waiting room. Please wait for a moment, you will be brought back shortly.
-meeting-notification-user-was-kicked = You successfully removed {$user} from the meeting
+meeting-notification-user-was-kicked = You successfully removed {$user} from the meeting at {$time}
 meeting-notification-user-was-banned = You successfully banned {$user} from the meeting
 meeting-notification-user-moved-to-waiting-room = The waiting room is activated. The participant has been successfully moved to the waiting room.
 meeting-notification-user-was-accepted = You successfully accepted {$user} in the meeting
