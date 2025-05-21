@@ -8,9 +8,7 @@ import { startAdhocMeetingAsModerator, joinMeetingRoomWithNGuests } from '../hel
 const NUMBER_OF_GUESTS = 5;
 
 test.describe('MeetingRoom - adjust participant view', () => {
-  test('TC_001_VideoRoom_ParticipantViewSettings_List', async ({ page, browserName }) => {
-    test.skip(browserName === 'webkit');
-
+  test('TC_001_VideoRoom_ParticipantViewSettings_List', async ({ page }) => {
     const { meetingRoomPage } = await startAdhocMeetingAsModerator(page);
 
     // work around for differences between test server and local setup
@@ -96,5 +94,107 @@ test.describe('MeetingRoom - adjust participant view', () => {
     for (let i = 2; i <= NUMBER_OF_GUESTS; i++) {
       await expect(firstParticipantWindowSize).toBe(await meetingRoomPage.getGridViewNthParticipantWindowSize(i));
     }
+  });
+
+  test('TC_005_VideoRoom_ParticipantViewSettings_List_Sorting', async ({ page, context, browserName }) => {
+    test.skip(browserName === 'webkit');
+    test.skip(browserName === 'firefox');
+    // in firefox one needs to give permission to turn camera on therefore skip firefox until solution for this is found
+
+    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
+    const firstJoinedParticipantName = await meetingRoomPage.getUserName();
+
+    // join with 5 guests (in separate browser instances)
+    const guestPages = await joinMeetingRoomWithNGuests(meetingRoomPage, context, guestLink, 'guest', NUMBER_OF_GUESTS);
+    await meetingRoomPage.selectPeopleTab();
+    await expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(NUMBER_OF_GUESTS + 1);
+    const firstGuestMeetingRoomPage = guestPages[0];
+    const secondGuestMeetingRoomPage = guestPages[1];
+
+    // work around for differences in grid view options between test server and local setup
+    meetingRoomPage.allocateViewOptionLocatorsBasedOnSetup();
+    secondGuestMeetingRoomPage.allocateViewOptionLocatorsBasedOnSetup();
+
+    // turn on the camera of one guest & assert video from the guest is shown
+    await expect(await meetingRoomPage.isCameraOn()).toBeFalsy();
+    await expect(await firstGuestMeetingRoomPage.isCameraOn()).toBeFalsy();
+    await expect(await secondGuestMeetingRoomPage.isCameraOn()).toBeFalsy();
+    await firstGuestMeetingRoomPage.turnCameraOn();
+    await expect(await firstGuestMeetingRoomPage.isCameraOn()).toBeTruthy();
+
+    // as moderator, open grid view options besides the meeting room name & select activated camera first
+    await meetingRoomPage.displayViewOptionsMenu();
+    await expect(
+      await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.activatedCameraFirstSortingOption)
+    ).toBeFalsy();
+    await meetingRoomPage.selectActivatedCameraFirstSortingOption();
+    await expect(
+      await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.activatedCameraFirstSortingOption)
+    ).toBeTruthy();
+
+    // assert that guest user with the activated camera is on the first position on the left side
+    await expect(await meetingRoomPage.isGridViewNthParticipantCameraOn(1)).toBeTruthy();
+    // and for all other participants camera is not activated
+    for (let i = 2; i <= NUMBER_OF_GUESTS; i++) {
+      await expect(await meetingRoomPage.isGridViewNthParticipantCameraOn(i)).toBeFalsy();
+    }
+
+    // as guest, open grid view options besides the meeting room name & select moderators first
+    // test on second guest because moderator would be shown by default in first position for the first guest
+    await secondGuestMeetingRoomPage.displayViewOptionsMenu();
+    await expect(
+      await secondGuestMeetingRoomPage.hasTickIcon(secondGuestMeetingRoomPage.viewOptions.moderatorsFirstSortingOption)
+    ).toBeFalsy();
+    await secondGuestMeetingRoomPage.selectModertorsFirstSortingOption();
+    await expect(
+      await secondGuestMeetingRoomPage.hasTickIcon(secondGuestMeetingRoomPage.viewOptions.moderatorsFirstSortingOption)
+    ).toBeTruthy();
+
+    // assert that the moderator is now on the first position
+    const moderatorName = await meetingRoomPage.getUserName();
+    const moderatorFirstViewFirstPositionName = await secondGuestMeetingRoomPage.getNthParticipantNameInGridView(1);
+    await expect(moderatorFirstViewFirstPositionName).toBe(moderatorName);
+
+    // as moderator, change to speaker view & assert that sorting resets after changing the view
+    await meetingRoomPage.displayViewOptionsMenu();
+    await expect(await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.speakerViewOption)).toBeFalsy();
+    await meetingRoomPage.selectSpeakerViewOption();
+    await expect(await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.speakerViewOption)).toBeTruthy();
+    await expect(await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.gridViewOption)).toBeFalsy();
+    await expect(await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.fullScreenViewOption)).toBeFalsy();
+    await expect(
+      await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.activatedCameraFirstSortingOption)
+    ).toBeFalsy();
+    await expect(
+      await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.moderatorsFirstSortingOption)
+    ).toBeFalsy();
+
+    // assert active speaker is first shown
+    await firstGuestMeetingRoomPage.turnAudioOn();
+    const activeParticipantName = await firstGuestMeetingRoomPage.getUserName();
+    const speakerViewFirstPositionName = await meetingRoomPage.getPinnedParticipantNameInSpeakerView();
+    await expect(speakerViewFirstPositionName).toBe(activeParticipantName);
+    // assert that without an active speaker, the moderator is shown
+    // see https://git.opentalk.dev/opentalk/qa/reports/-/work_items/355#note_215290
+    // assertion must be done on a guest page (though not first guest because first guest would not be visible on it's own page)
+    // and view of guest page needs to be switched to speaker view
+    await firstGuestMeetingRoomPage.turnCameraOff();
+    await firstGuestMeetingRoomPage.turnAudioOff();
+    await secondGuestMeetingRoomPage.displayViewOptionsMenu();
+    await secondGuestMeetingRoomPage.selectSpeakerViewOption();
+    const speakerViewNoActiveParticipantFirstPositionName =
+      await secondGuestMeetingRoomPage.getPinnedParticipantNameInSpeakerView();
+    await expect(speakerViewNoActiveParticipantFirstPositionName).toBe(moderatorName);
+    await firstGuestMeetingRoomPage.turnCameraOn(); // reset camera
+
+    // change back to grid view
+    await meetingRoomPage.displayViewOptionsMenu();
+    await expect(await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.gridViewOption)).toBeFalsy();
+    await meetingRoomPage.selectGridViewOption();
+    await expect(await meetingRoomPage.hasTickIcon(meetingRoomPage.viewOptions.gridViewOption)).toBeTruthy();
+
+    // as guest, assert order is set by default on first joined
+    const gridViewFirstPositionName = await firstGuestMeetingRoomPage.getNthParticipantNameInGridView(1);
+    await expect(gridViewFirstPositionName).toBe(firstJoinedParticipantName);
   });
 });

@@ -29,7 +29,11 @@ export const startAdhocMeetingAsModerator = async (
   return { meetingRoomPage, guestLink };
 };
 
-export const joinMeetingRoomAsGuest = async (context, guestLink: string, guestName: string): Promise<void> => {
+export const joinMeetingRoomAsGuest = async (
+  context,
+  guestLink: string,
+  guestName: string
+): Promise<MeetingRoomPage> => {
   // create new browser instance & launch OpenTalk with guest link
   const newPage = await context.newPage();
   await newPage.goto(guestLink);
@@ -43,6 +47,8 @@ export const joinMeetingRoomAsGuest = async (context, guestLink: string, guestNa
   const guestMeetingRoomPage = await guestLobbyRoomPage.enterMeetingRoom();
   await guestMeetingRoomPage.meetingRoomName.waitFor();
   await expect(guestMeetingRoomPage.meetingRoomName).toBeVisible();
+
+  return guestMeetingRoomPage;
 };
 
 export const joinMeetingRoomWithNGuests = async (
@@ -51,14 +57,14 @@ export const joinMeetingRoomWithNGuests = async (
   guestLink: string,
   guestBaseName: string,
   numberOfGuests: number
-): Promise<number> => {
-  const initialNumberOfParticipants = await page.getNumberOfParticipantsInMeeting();
+): Promise<MeetingRoomPage[]> => {
+  const guestMeetingRoomPages: MeetingRoomPage[] = [];
 
   for (let i = 1; i <= numberOfGuests; i++) {
     const guestUserName = guestBaseName + i;
-    await joinMeetingRoomAsGuest(context, guestLink, guestUserName);
+    const guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, guestUserName);
+    guestMeetingRoomPages.push(guestMeetingRoomPage);
   }
 
-  const numberOfParticipantsAfterJoining = await page.getNumberOfParticipantsInMeeting();
-  return numberOfParticipantsAfterJoining - initialNumberOfParticipants;
+  return guestMeetingRoomPages;
 };
