@@ -32,7 +32,9 @@ export class Fluent implements I18nFormatModule {
     this.options = { ...i18nextOptions, ...options, ...this.options, ...getDefaults() };
 
     this.store = new BundleStore(this.options, i18next);
-    if (this.options.bindI18nStore) this.store.bind();
+    if (this.options.bindI18nStore) {
+      this.store.bind();
+    }
     i18next.fluent = this;
   }
 
@@ -40,10 +42,14 @@ export class Fluent implements I18nFormatModule {
     const bundle = this.store.getBundle(lng, ns);
     const isAttr = key.indexOf('.') > -1;
 
-    if (!res) return key;
+    if (!res) {
+      return key;
+    }
 
     const useRes = isAttr ? res.attributes[key.split('.')[1]] : res.value;
-    if (!bundle || !useRes) return key;
+    if (!bundle || !useRes) {
+      return key;
+    }
     return bundle.formatPattern(useRes, options);
   }
 
@@ -51,7 +57,9 @@ export class Fluent implements I18nFormatModule {
     const bundle = this.store.getBundle(lng, ns);
     const useKey = key.indexOf('.') > -1 ? key.split('.')[0] : key;
 
-    if (!bundle) return undefined;
+    if (!bundle) {
+      return undefined;
+    }
     return bundle.getMessage(useKey);
   }
 

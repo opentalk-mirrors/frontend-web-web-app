@@ -58,7 +58,9 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
 
     // TODO: we need a common interface for messages and events in order not to use 'any'.
     return combinedMessageAndEvents.reduce((output, record: ChatMessageType | RoomEvent) => {
-      if (Object.prototype.hasOwnProperty.call(record, 'event')) return output;
+      if (Object.prototype.hasOwnProperty.call(record, 'event')) {
+        return output;
+      }
       // TODO: naive approach that fails for languages such as turkish, spanish, french
       // as we cannot search for words such as "mañana" with "manana" or "Günaydın" with "gunaydin".
       // this should be extended if we start introducing new languages. One potential solution

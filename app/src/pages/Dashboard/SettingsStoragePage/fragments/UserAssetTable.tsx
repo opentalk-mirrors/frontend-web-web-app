@@ -53,9 +53,13 @@ export const UserAssetTable = () => {
     }
   };
 
-  if (isLoading) return <SuspenseLoading />;
+  if (isLoading) {
+    return <SuspenseLoading />;
+  }
 
-  if (isError || !userAssets || userAssets.length === 0) return null;
+  if (isError || !userAssets || userAssets.length === 0) {
+    return null;
+  }
 
   const assets = userAssets.map(mapUserOwnedAssetToBaseAsset);
 

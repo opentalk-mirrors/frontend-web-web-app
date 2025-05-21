@@ -21,13 +21,17 @@ export function ftlToJsParse(str: string, params: Params = { respectComments: tr
 
   const result = parsed.body.reduce<FluentIJs>((acc, segment) => {
     const serializedSegment = serialize(segment);
-    if (!serializedSegment) return acc;
+    if (!serializedSegment) {
+      return acc;
+    }
     if (
       (serializedSegment.attributes && serializedSegment.attributes.length) ||
       (serializedSegment.comment && params.respectComments)
     ) {
       const inner: InnerFluentJs = { value: serializedSegment.value };
-      if (serializedSegment.comment) inner[serializedSegment.comment.key] = serializedSegment.comment.value;
+      if (serializedSegment.comment) {
+        inner[serializedSegment.comment.key] = serializedSegment.comment.value;
+      }
       if (serializedSegment.attributes && serializedSegment.attributes.length) {
         serializedSegment.attributes.forEach((attr) => {
           inner[attr.key] = attr.value;

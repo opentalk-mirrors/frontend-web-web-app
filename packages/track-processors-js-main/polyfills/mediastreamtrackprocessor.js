@@ -49,7 +49,9 @@ if (!self.MediaStreamTrackProcessor) {
             );
           },
           async pull(controller) {
-            while (!this.arrays.length) await new Promise((r) => (this.node.port.onmessage = r));
+            while (!this.arrays.length) {
+              await new Promise((r) => (this.node.port.onmessage = r));
+            }
             const [channels] = this.arrays.shift();
             const joined = new Float32Array(channels.reduce((a, b) => a + b.length, 0));
             channels.reduce((offset, a) => (joined.set(a, offset), offset + a.length), 0);

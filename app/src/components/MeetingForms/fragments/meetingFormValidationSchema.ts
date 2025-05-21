@@ -60,7 +60,7 @@ export const meetingFormValidationSchema = yup.object({
   showMeetingDetails: yup.boolean().optional(),
   streaming: yup.object().shape({
     enabled: yup.boolean().required(),
-    platform: yup.object().when('enabled', ([enabled], schema) => {
+    streamingTarget: yup.object().when('enabled', ([enabled], schema) => {
       if (!enabled) {
         return yup.object().optional();
       }

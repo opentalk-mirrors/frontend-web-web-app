@@ -48,7 +48,9 @@ export class LevelNode extends AudioWorkletNode {
     this._updateIntervalInMS = updateIntervalInMS;
 
     this.port.onmessage = (event) => {
-      if (event.data.level) this._level = event.data as SignalLevel;
+      if (event.data.level) {
+        this._level = event.data as SignalLevel;
+      }
     };
     this.port.start();
   }

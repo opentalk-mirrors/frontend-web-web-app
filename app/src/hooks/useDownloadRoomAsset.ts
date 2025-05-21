@@ -45,11 +45,15 @@ const downloadRoomAsset = async ({
     let loadedBytes = 0;
     const done = false;
 
-    if (!reader) return;
+    if (!reader) {
+      return;
+    }
 
     while (!done) {
       const { done: streamDone, value } = await reader.read();
-      if (streamDone) break;
+      if (streamDone) {
+        break;
+      }
 
       loadedBytes += value.length;
       onDownloadProgress?.((loadedBytes / fileSize) * 100);

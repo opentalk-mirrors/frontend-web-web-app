@@ -98,7 +98,7 @@ const ChatOverview = () => {
       </Stack>
     );
 
-  if (chatConversationState.scope !== undefined && chatConversationState.targetId !== undefined)
+  if (chatConversationState.scope !== undefined && chatConversationState.targetId !== undefined) {
     return (
       <Container alignItems="flex-start" spacing={1}>
         <AdjustedButton
@@ -119,6 +119,7 @@ const ChatOverview = () => {
         />
       </Container>
     );
+  }
 
   const open = Boolean(anchorEl);
 

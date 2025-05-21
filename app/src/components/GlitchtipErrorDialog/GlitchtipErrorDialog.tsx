@@ -41,6 +41,12 @@ const StacktracePaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
+export type UserFeedbackFormValues = {
+  email: string;
+  name: string;
+  comments: string;
+};
+
 const GlitchtipErrorDialog = () => {
   const [dataHasBeenSent, setDataHasBeenSent] = useState(false);
   const showErrorDialog = useAppSelector(selectShowErrorDialog);
@@ -75,7 +81,7 @@ const GlitchtipErrorDialog = () => {
     return yup.mixed().notRequired();
   });
 
-  const formik = useFormik({
+  const formik = useFormik<UserFeedbackFormValues>({
     initialValues: {
       email: '',
       name: '',

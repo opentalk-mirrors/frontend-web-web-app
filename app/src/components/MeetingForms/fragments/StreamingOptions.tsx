@@ -65,7 +65,7 @@ const StreamingOptions = ({ formik }: StreamingOptionsProps) => {
       <Collapse orientation="vertical" in={streamingEnabled} unmountOnExit mountOnEnter>
         <OptionsRow>
           <CommonTextField
-            {...formikProps('streaming.platform.kind', formik)}
+            {...formikProps('streaming.streamingTarget.kind', formik)}
             label={t('dashboard-meeting-livestream-platform-label')}
             select
             defaultValue=""
@@ -83,22 +83,22 @@ const StreamingOptions = ({ formik }: StreamingOptionsProps) => {
             </MenuItem>
           </CommonTextField>
           <CommonTextField
-            {...formikProps('streaming.platform.name', formik)}
+            {...formikProps('streaming.streamingTarget.name', formik)}
             label={t('dashboard-meeting-livestream-platform-name-label')}
             placeholder={t('dashboard-meeting-livestream-platform-name-placeholder')}
           />
           <CommonTextField
-            {...formikProps('streaming.platform.publicUrl', formik)}
+            {...formikProps('streaming.streamingTarget.publicUrl', formik)}
             label={t('dashboard-meeting-livestream-public-url-label')}
             placeholder={t('global-URL-placeholder')}
           />
           <CommonTextField
-            {...formikProps('streaming.platform.streamingEndpoint', formik)}
+            {...formikProps('streaming.streamingTarget.streamingEndpoint', formik)}
             label={t('dashboard-meeting-livestream-streaming-endpoint-label')}
             placeholder={t('dashboard-meeting-livestream-streaming-endpoint-placeholder')}
           />
           <CommonTextField
-            {...formikProps('streaming.platform.streamingKey', formik)}
+            {...formikProps('streaming.streamingTarget.streamingKey', formik)}
             label={t('dashboard-meeting-livestream-streaming-key-label')}
             placeholder={t('dashboard-meeting-livestream-streaming-key-placeholder')}
           />

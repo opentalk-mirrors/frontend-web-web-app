@@ -44,9 +44,13 @@ const RoomAssetTable = ({ roomId, isMeetingCreator, recurrenceInstance }: RoomAs
     });
   };
 
-  if (isLoading) return <SuspenseLoading />;
+  if (isLoading) {
+    return <SuspenseLoading />;
+  }
 
-  if (isError || !filteredAssets || filteredAssets.length === 0) return null;
+  if (isError || !filteredAssets || filteredAssets.length === 0) {
+    return null;
+  }
 
   return (
     <AssetTable

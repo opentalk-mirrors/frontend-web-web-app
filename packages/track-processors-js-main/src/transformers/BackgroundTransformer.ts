@@ -149,7 +149,9 @@ export default class BackgroundProcessor extends VideoTransformer<BackgroundOpti
   }
 
   async drawVirtualBackground(frame: VideoFrame) {
-    if (!this.canvas || !this.ctx || !this.segmentationResults || !this.inputVideo) return;
+    if (!this.canvas || !this.ctx || !this.segmentationResults || !this.inputVideo) {
+      return;
+    }
     this.ctx.save();
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     const frameRectangle = this.getVideoRectangle(this.canvas, frame);

@@ -28,6 +28,25 @@ interface IFormikPropsReturnValue extends IFormikCommonPropsReturnValue {
   value: string | undefined;
 }
 
+/*
+ * A utility type, which extracts the keys of a Formik form values object
+ * and creates a string literal type that represents the paths to those keys.
+ * Used for a type-safe access to nested properties in Formik's values.
+ * For example, if the form values object has the following structure:
+ * {
+ *   user: {
+ *     name: string;
+ *     age: number;
+ *   };
+ * }
+ * The type would produce the following string literal type:
+ * "user.name" | "user.age"
+ */
+
+type FormikPaths<T> = T extends object
+  ? { [K in keyof T]: `${Exclude<K, symbol>}${'' | `.${FormikPaths<T[K]>}`}` }[keyof T]
+  : never;
+
 export interface IFormikSwitchPropsReturnValue extends IFormikCommonPropsReturnValue {
   checked: boolean;
   onKeyDown: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
@@ -47,36 +66,62 @@ export interface IFormikRatingPropsReturnValue extends IFormikCommonPropsReturnV
   value: number | null | undefined;
 }
 
-export function formikMinimalProps<Values>(fieldName: string, formik: FormikProps<Values>): IFormikPropsReturnValue {
+export function formikMinimalProps<Values>(
+  fieldName: FormikPaths<Values>,
+  formik: FormikProps<Values>
+): IFormikPropsReturnValue {
   const { values, handleBlur, handleChange } = formik;
+
+  const getValue = () => {
+    const raw = get(values, fieldName);
+    if (typeof raw === 'string') {
+      return raw;
+    }
+    if (typeof raw === 'number') {
+      return String(raw);
+    }
+    return '';
+  };
 
   return {
     name: fieldName,
     onChange: handleChange,
     onBlur: handleBlur,
-    value: get(values, fieldName) ?? '',
+    value: getValue(),
   };
 }
 
-export function formikProps<Values>(fieldName: string, formik: FormikProps<Values>): IFormikPropsReturnValue {
+export function formikProps<Values>(
+  fieldName: FormikPaths<Values>,
+  formik: FormikProps<Values>
+): IFormikPropsReturnValue {
   const { values, handleBlur, handleChange, errors } = formik;
   const errorMessage = get(errors, fieldName);
   const hasError = Boolean(errorMessage);
 
-  const props = {
+  const getValue = () => {
+    const raw = get(values, fieldName);
+    if (typeof raw === 'string') {
+      return raw;
+    }
+    if (typeof raw === 'number') {
+      return String(raw);
+    }
+    return '';
+  };
+
+  return {
     name: fieldName,
     onChange: handleChange,
     onBlur: handleBlur,
-    value: get(values, fieldName) ?? '',
+    value: getValue(),
     error: hasError,
     helperText: (hasError && (errorMessage as string)) || undefined,
   };
-
-  return props;
 }
 
 export function formikSwitchProps<Values>(
-  fieldName: string,
+  fieldName: FormikPaths<Values>,
   formik: FormikProps<Values>
 ): IFormikSwitchPropsReturnValue {
   const { values, handleBlur, handleChange, errors } = formik;
@@ -84,9 +129,7 @@ export function formikSwitchProps<Values>(
   const errorMessage = get(errors, fieldName);
   const hasError = Boolean(errorMessage);
 
-  const isChecked = () => {
-    return get(values, fieldName) ?? false;
-  };
+  const isChecked = () => get(values, fieldName) === true;
 
   return {
     name: fieldName,
@@ -105,7 +148,7 @@ export function formikSwitchProps<Values>(
 }
 
 export function formikDateTimePickerProps<Values>(
-  fieldName: string,
+  fieldName: FormikPaths<Values>,
   formik: FormikProps<Values>
 ): IFormikDateTimePickerPropsReturnValue {
   const { values, handleBlur, handleChange, errors, setFieldValue } = formik;
@@ -113,9 +156,12 @@ export function formikDateTimePickerProps<Values>(
   const errorMessage = get(errors, fieldName);
   const hasError = Boolean(errorMessage);
 
+  const rawValue = get(values, fieldName);
+  const value: string | number = typeof rawValue === 'number' || typeof rawValue === 'string' ? rawValue : '';
+
   return {
     name: fieldName,
-    value: get(values, fieldName) ?? '',
+    value,
     onChange: handleChange,
     onBlur: handleBlur,
     error: hasError,
@@ -125,7 +171,7 @@ export function formikDateTimePickerProps<Values>(
 }
 
 export function formikRatingProps<Values>(
-  fieldName: string,
+  fieldName: FormikPaths<Values>,
   formik: FormikProps<Values>
 ): IFormikRatingPropsReturnValue {
   const { values, handleBlur, handleChange, errors } = formik;
@@ -133,23 +179,34 @@ export function formikRatingProps<Values>(
   const errorMessage = get(errors, fieldName);
   const hasError = Boolean(errorMessage);
 
+  const getValue = () => {
+    const raw = get(values, fieldName);
+    if (typeof raw === 'number') {
+      return raw;
+    }
+    if (typeof raw === 'string') {
+      return parseInt(raw, 10);
+    }
+    return 0;
+  };
+
   return {
     name: fieldName,
     onChange: handleChange,
     onBlur: handleBlur,
     error: hasError,
-    value: parseInt(get(values, fieldName) ?? 0),
+    value: getValue(),
     helperText: (hasError && (errorMessage as string)) || undefined,
   };
 }
 
-export function formikGetValue<Values>(fieldName: string, formik: FormikProps<Values>, defaultValue = '') {
+export function formikGetValue<Values>(fieldName: FormikPaths<Values>, formik: FormikProps<Values>, defaultValue = '') {
   const { values } = formik;
   return get(values, fieldName, defaultValue);
 }
 
 export function formikDurationFieldProps<Values>(
-  fieldName: string,
+  fieldName: FormikPaths<Values>,
   formik: FormikProps<Values>,
   /**
    * Duration value in minutes
@@ -175,7 +232,7 @@ export function formikDurationFieldProps<Values>(
 }
 
 export function formikNumberFieldProps<Values>(
-  fieldName: string,
+  fieldName: FormikPaths<Values>,
   formik: FormikProps<Values>,
   /**
    * Duration value in minutes

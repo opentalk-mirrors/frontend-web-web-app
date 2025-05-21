@@ -71,7 +71,9 @@ export class BundleStore {
   bind() {
     if (this.i18next) {
       this.i18next.store.on('added', (lng, ns) => {
-        if (!this.i18next?.isInitialized) return;
+        if (!this.i18next?.isInitialized) {
+          return;
+        }
         this.createBundleFromI18next(lng, ns);
       });
 

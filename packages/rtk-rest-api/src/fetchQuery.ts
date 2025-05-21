@@ -22,7 +22,9 @@ function isRecord(obj: unknown): obj is Record<string | number | symbol, unknown
 export function stripUndefinedHeaderValues(
   obj: Headers | string[][] | Record<string, string | undefined>
 ): HeadersInit | undefined {
-  if (obj === undefined || obj instanceof Headers) return obj;
+  if (obj === undefined || obj instanceof Headers) {
+    return obj;
+  }
 
   if (isRecord(obj)) {
     return stripUndefinedRecordValues(obj);
@@ -191,7 +193,9 @@ function fetchQuery({
           }
         ),
       ]);
-      if (handleResponseError) throw handleResponseError;
+      if (handleResponseError) {
+        throw handleResponseError;
+      }
     } catch (e) {
       return {
         error: {

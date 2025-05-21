@@ -68,7 +68,9 @@ export default function js2ftl(resources: FluentIJs, cb?: (err: Error | null, re
       parts.push(addValue(k, value.value));
 
       Object.entries(value).forEach(([innerK, innerValue]) => {
-        if (innerK === 'comment' || innerK === 'value') return;
+        if (innerK === 'comment' || innerK === 'value') {
+          return;
+        }
         if (typeof innerValue !== 'string') {
           throw new Error(`Inner value ${innerK} with attributes had no value. Found: ${innerValue}`);
         }
@@ -79,6 +81,8 @@ export default function js2ftl(resources: FluentIJs, cb?: (err: Error | null, re
     })
     .join('');
 
-  if (cb) cb(null, ftl);
+  if (cb) {
+    cb(null, ftl);
+  }
   return ftl;
 }

@@ -65,7 +65,9 @@ const EventDetailsPage = () => {
   const pageHeading = event?.title || t('fallback-room-title') || '';
   useUpdateDocumentTitle(pageHeading);
 
-  if (isLoading || isFetching) return <SuspenseLoading />;
+  if (isLoading || isFetching) {
+    return <SuspenseLoading />;
+  }
 
   if (isError) {
     notifications.error(t('error-unauthorized'));
@@ -73,7 +75,9 @@ const EventDetailsPage = () => {
     return null;
   }
 
-  if (!event) return null;
+  if (!event) {
+    return null;
+  }
 
   const getTimeInformationString = () => {
     if (event.isTimeIndependent) {
