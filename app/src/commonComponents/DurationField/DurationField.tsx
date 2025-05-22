@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, ButtonProps, Chip as MuiChip, Popover, Stack, styled, Typography } from '@mui/material';
 import { isNumber } from 'lodash';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ClockIcon } from '../../assets/icons';
@@ -70,7 +70,6 @@ export const DurationField = ({
   helperText,
   min = MIN_DURATION_DEFAULT,
   max = MAX_DURATION_DEFAULT,
-  allowEmpty,
 }: DurationFieldProps) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -84,6 +83,12 @@ export const DurationField = ({
 
   const showCustomDurationField = selectedChip === 'custom';
 
+  useEffect(() => {
+    if (showCustomDurationField && !customDurationFieldValue) {
+      setCustomDurationFieldValue(min);
+    }
+  }, [showCustomDurationField]);
+
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
@@ -92,6 +97,11 @@ export const DurationField = ({
   const handlePopoverClose = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     setAnchorEl(null);
+  };
+
+  const handleChipSelect = (duration: DurationValueOptions) => {
+    setSelectedChip(duration);
+    setErrorMessage('');
   };
 
   const renderButtonText = () => (value ? `${value} min` : t('field-duration-unlimited-time'));
@@ -134,7 +144,7 @@ export const DurationField = ({
         return (
           <Chip
             label={getChipLabel(duration)}
-            onClick={() => setSelectedChip(duration)}
+            onClick={() => handleChipSelect(duration)}
             variant={selectedChip === duration ? 'filled' : 'outlined'}
             aria-selected={selectedChip === duration}
             aria-label={getChipAriaLabel(duration)}
@@ -156,11 +166,6 @@ export const DurationField = ({
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextValue = parseInt(event.target.value);
-    if (Number.isNaN(nextValue)) {
-      // If input is invalid, unless we allow empty field, we fallback to the minimum allowed value.
-      setCustomDurationFieldValue(allowEmpty ? null : min);
-      return;
-    }
 
     setCustomDurationFieldValue(Math.min(max, Math.max(min, nextValue)));
 
@@ -168,7 +173,7 @@ export const DurationField = ({
       setErrorMessage(t('field-duration-max-error', { minutes: max + 1 }));
       return;
     }
-    if (nextValue < min) {
+    if ((Number.isNaN(nextValue) && min) || nextValue < min) {
       setErrorMessage(t('field-duration-min-error', { minutes: min - 1 }));
       return;
     }
@@ -238,6 +243,7 @@ export const DurationField = ({
               /* When session duration popover is open we want to focus it so screen reader can tell the content. */
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
+              disabled={errorMessage.length > 0}
             >
               {t('field-duration-button-save')}
             </Button>
