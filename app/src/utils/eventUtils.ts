@@ -269,10 +269,14 @@ export const checkAssetPredicate = (assetCreatedAt: DateTime, recurrenceInstance
   const nextInstance = rrule.after(new Date(end)) as Date | null;
 
   // No previous instance, and asset is before the current instance end
-  if (!prevInstance && assetDateInMs < endInMs) return true;
+  if (!prevInstance && assetDateInMs < endInMs) {
+    return true;
+  }
 
   // No next instance, and asset is after the current instance start
-  if (!nextInstance && assetDateInMs > startInMs) return true;
+  if (!nextInstance && assetDateInMs > startInMs) {
+    return true;
+  }
 
   const interval = calculateInterval(startInMs, endInMs, prevInstance?.getTime(), nextInstance?.getTime());
 

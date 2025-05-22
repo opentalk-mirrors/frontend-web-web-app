@@ -7,7 +7,9 @@ export const getRandomNumber = (max = 1) => {
 };
 
 export const formatBitRate = (bitRate?: number): string => {
-  if (bitRate === undefined) return '-';
+  if (bitRate === undefined) {
+    return '-';
+  }
 
   if (bitRate > 1000000) {
     const mRate = bitRate / 1000000;

@@ -21,8 +21,12 @@ class LevelProcessor extends AudioWorkletProcessor {
     this._closed = false;
 
     this.port.onmessage = (event) => {
-      if (event.data.updateIntervalInMS) this._updateIntervalInMS = event.data.updateIntervalInMS;
-      if (event.data.close) this._closed = true;
+      if (event.data.updateIntervalInMS) { 
+        this._updateIntervalInMS = event.data.updateIntervalInMS; 
+      }
+      if (event.data.close) { 
+        this._closed = true; 
+      }
     };
   }
 

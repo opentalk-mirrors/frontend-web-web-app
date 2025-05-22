@@ -43,7 +43,9 @@ const PopoverButton = ({ icon, content, buttonLabel, titleLabel, popoverTitleId 
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key === ' ') event.stopPropagation();
+    if (event.key === ' ') {
+      event.stopPropagation();
+    }
   };
 
   const open = Boolean(anchorEl);

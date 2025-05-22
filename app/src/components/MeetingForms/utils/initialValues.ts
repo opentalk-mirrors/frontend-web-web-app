@@ -10,12 +10,13 @@ import { addMinutes } from 'date-fns';
 import roundToUpper30 from '../../../utils/roundToUpper30';
 import { CommonFrequencies } from '../../../utils/rruleUtils';
 import { DEFAULT_MINUTES_DIFFERENCE } from '../constants';
+import { MeetingFormValues, Streaming } from '../fragments/DashboardDateTimePicker';
 
 export const getInitialValues = (
   memoizedRecurrencePattern: RecurrencePattern | false,
   isWaitingRoomEnabledByDefault: boolean,
   existingEvent?: Event
-) => {
+): MeetingFormValues => {
   const defaultStartDate = roundToUpper30();
   const defaultEndDate = addMinutes(defaultStartDate, DEFAULT_MINUTES_DIFFERENCE);
 
@@ -35,11 +36,11 @@ export const getInitialValues = (
         enabled: false,
       };
 
-  const getStreamingInitialValue = () => {
+  const getStreamingInitialValue = (): Streaming => {
     return existingEvent?.streamingTargets
       ? {
           enabled: true,
-          platform: existingEvent.streamingTargets[0],
+          streamingTarget: existingEvent.streamingTargets[0],
         }
       : {
           enabled: false,

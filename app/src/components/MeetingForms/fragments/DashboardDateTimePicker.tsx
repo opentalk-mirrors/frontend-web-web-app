@@ -12,7 +12,7 @@ import { generateUniqueId } from '../../../utils/stringUtils';
 import DateTimePicker from '../../DateTimePicker';
 import { DateTimePickerProps } from '../../DateTimePicker/DateTimePicker';
 
-interface Streaming {
+export interface Streaming {
   enabled: boolean;
   streamingTarget?: StreamingPlatform;
 }

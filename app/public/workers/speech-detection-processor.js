@@ -32,7 +32,9 @@ class SpeechDetectionProcessor extends AudioWorkletProcessor {
     this.closed = false;
 
     this.port.onmessage = (event) => {
-      if (event.data.close) this.closed = true;
+      if (event.data.close) { 
+        this.closed = true; 
+      }
     };
   }
 

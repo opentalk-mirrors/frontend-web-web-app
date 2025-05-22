@@ -24,7 +24,9 @@ const ProgressBar = ({ endTime, startTime, isFinished }: IProps) => {
         const fullTime = endTime - startTime;
         const currentTime = Date.now() - startTime;
         setProgress((oldProgress) => {
-          if (oldProgress >= 100) return 100;
+          if (oldProgress >= 100) {
+            return 100;
+          }
           return Math.round((currentTime / fullTime) * 100);
         });
       }, 1000);

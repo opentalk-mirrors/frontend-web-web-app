@@ -65,5 +65,5 @@ export const createTrainingParticipationReportPayload = (values: FormikValues, e
 };
 
 export const createStreamingPayload = (values: FormikValues) => {
-  return values.streaming.enabled ? [values.streaming.platform] : [];
+  return values.streaming.enabled ? [values.streaming.streamingTarget] : [];
 };

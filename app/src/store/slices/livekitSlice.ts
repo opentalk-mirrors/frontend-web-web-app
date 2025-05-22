@@ -229,7 +229,9 @@ const handlePermissionChanged = (
   participant: RemoteParticipant | LocalParticipant,
   listenerApi: ListenerEffectAPI<RootState, AppDispatch>
 ) => {
-  if (!participant.isLocal) return;
+  if (!participant.isLocal) {
+    return;
+  }
 
   const currentPermissions = participant.permissions?.canPublishSources;
   if (previousPermissions && currentPermissions) {

@@ -180,7 +180,9 @@ const ToolbarButton = ({
             isActive={active}
             onClick={(event) => {
               event.stopPropagation();
-              if (openMenu) openMenu();
+              if (openMenu) {
+                openMenu();
+              }
             }}
             isLobby={isLobby}
             aria-label={contextTitle}

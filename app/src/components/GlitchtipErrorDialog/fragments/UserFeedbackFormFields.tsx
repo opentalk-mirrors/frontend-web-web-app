@@ -8,12 +8,13 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonTextField } from '../../../commonComponents';
 import { formikProps } from '../../../utils/formikUtils';
+import type { UserFeedbackFormValues } from '../GlitchtipErrorDialog';
 
-interface UserFeedbackFormFieldsProps<Values> {
-  formik: FormikProps<Values>;
+interface UserFeedbackFormFieldsProps {
+  formik: FormikProps<UserFeedbackFormValues>;
 }
 
-function UserFeedbackFormFields<Values>({ formik }: UserFeedbackFormFieldsProps<Values>) {
+function UserFeedbackFormFields({ formik }: UserFeedbackFormFieldsProps) {
   const { t } = useTranslation();
 
   return (

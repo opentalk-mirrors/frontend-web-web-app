@@ -14,7 +14,9 @@ import { checkConfigError } from './utils/configUtils';
 
 const App = () => {
   const hasConfigError = checkConfigError();
-  if (hasConfigError) return <ErrorConfigPage />;
+  if (hasConfigError) {
+    return <ErrorConfigPage />;
+  }
 
   return (
     <Router basename={new URL(window.config.baseUrl).pathname}>

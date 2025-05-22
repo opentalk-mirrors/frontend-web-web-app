@@ -83,7 +83,9 @@ const ActionButton = styled(Button)(({ theme }) => ({
 let wrongPasswordSnackBarKey: SnackbarKey | undefined = undefined;
 
 const showWrongPasswordNotification = () => {
-  if (wrongPasswordSnackBarKey) return;
+  if (wrongPasswordSnackBarKey) {
+    return;
+  }
   wrongPasswordSnackBarKey = notifications.toast(`${i18next.t('joinform-wrong-room-password')}`, {
     //Unique key is used to guarantee we will show a notification if user repeatedly inputs a wrong password
     key: uniqueId(),
