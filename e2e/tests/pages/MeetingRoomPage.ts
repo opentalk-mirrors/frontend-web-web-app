@@ -14,6 +14,8 @@ export class MeetingRoomPage {
     gridViewOption: Locator;
     speakerViewOption: Locator;
     fullScreenViewOption: Locator;
+    fullScreenView: Locator;
+    closeFullScreenButton: Locator;
     activatedCameraFirstSortingOption: Locator;
     moderatorsFirstSortingOption: Locator;
     gridViewContainer: Locator;
@@ -46,6 +48,7 @@ export class MeetingRoomPage {
   videoPreviewName: Locator;
 
   toolBar: {
+    toolBarPanel: Locator;
     handRaiseButton: Locator;
     turnOnScreenShareButton: Locator;
     microphoneButton: Locator;
@@ -78,6 +81,7 @@ export class MeetingRoomPage {
     speakerWindow: 'SpeakerWindow1',
     participantWindow: 'ParticipantWindow',
     participantName: 'nameTile',
+    fullScreen: 'fullscreen',
   };
 
   constructor({ page }: { page: Page }) {
@@ -91,6 +95,8 @@ export class MeetingRoomPage {
       gridViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(0),
       speakerViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(1),
       fullScreenViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(2),
+      fullScreenView: this.page.getByTestId(this.selectors.fullScreen),
+      closeFullScreenButton: this.page.getByTestId(this.selectors.fullScreen).getByLabel('close fullscreen'),
       activatedCameraFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4),
       moderatorsFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(5),
       gridViewContainer: this.page.getByTestId(this.selectors.gridViewContainer),
@@ -123,11 +129,11 @@ export class MeetingRoomPage {
     // video container that is nested inside 'aside' tag --> complementary is the role of the aside, see https://www.w3.org/TR/html-aria/#docconformance
 
     this.videoPreviewName = this.page
-      .getByRole('complementary', { name: 'Tools' }) // element doesn't seem to be nested in the aside on CI
+      .getByRole('complementary', { name: 'Tools' })
       .getByTestId(this.selectors.participantName);
-    //.first();
 
     this.toolBar = {
+      toolBarPanel: this.page.getByTestId('fullscreen').getByLabel('Personal control panel'),
       handRaiseButton: this.page.getByRole('button', { name: 'Raise Your Hand' }),
       turnOnScreenShareButton: this.page.getByRole('button', { name: 'Turn On Screen Share' }),
       microphoneButton: this.page.getByRole('button', { name: 'Turn On Audio' }),
@@ -208,6 +214,14 @@ export class MeetingRoomPage {
     await this.viewOptions.speakerViewOption.click();
   }
 
+  async selectFullScreenViewOption(): Promise<void> {
+    await this.viewOptions.fullScreenViewOption.waitFor();
+    await this.viewOptions.fullScreenViewOption.click();
+    await this.page.waitForLoadState();
+    await this.page.waitForTimeout(1000); // it seems like there is some lag, without timeout this seems to make CI fail
+    await this.viewOptions.fullScreenView.isVisible();
+  }
+
   async selectActivatedCameraFirstSortingOption(): Promise<void> {
     await this.viewOptions.activatedCameraFirstSortingOption.waitFor();
     await this.viewOptions.activatedCameraFirstSortingOption.click();
@@ -221,6 +235,18 @@ export class MeetingRoomPage {
   async hasTickIcon(element: Locator): Promise<boolean> {
     // if menu item has a tick, count should be 1, else 0
     return (await element.locator('div').first().locator('svg').count()) === 1;
+  }
+
+  async isFullScreen(): Promise<boolean> {
+    return await this.viewOptions.fullScreenView.isVisible();
+  }
+
+  async closeFullScreenMode(): Promise<void> {
+    await this.viewOptions.closeFullScreenButton.isVisible();
+    await this.viewOptions.closeFullScreenButton.click();
+    await this.viewOptions.closeFullScreenButton.isHidden();
+    await this.viewOptions.fullScreenView.isHidden();
+    await this.page.waitForTimeout(1000);
   }
 
   // toolbar functions
@@ -276,26 +302,23 @@ export class MeetingRoomPage {
   async pinNthParticipantInSpeakerView(nth: number): Promise<string> {
     const participantsThumbs = await this.page.getByTestId(this.selectors.speakerViewParticipantsThumbsHolder);
     const nthParticipantWindow = await participantsThumbs.getByTestId(this.selectors.participantWindow).nth(nth - 1); // minus 1 because nth(0) is the first element
-    const nthParticipantNameTile = await nthParticipantWindow.getByTestId(this.selectors.participantName);
     await nthParticipantWindow.click();
-    return await this.getNameTileText(nthParticipantNameTile);
+    return await this.getNameTileText(nthParticipantWindow);
   }
 
   async getPinnedParticipantNameInSpeakerView(): Promise<string> {
     const speakerWindow = await this.page
       .getByTestId(this.selectors.speakerWindow)
       .getByTestId(this.selectors.participantWindow);
-    const speakerNameTile = await speakerWindow.getByTestId(this.selectors.participantName);
-    return await this.getNameTileText(speakerNameTile);
+    return await this.getNameTileText(speakerWindow);
   }
 
   async getFirstParticipantNameInSpeakerView(): Promise<string> {
-    const participantNameTile = await this.page
+    const participantWindow = await this.page
       .getByTestId(this.selectors.speakerViewContainer)
       .getByTestId(this.selectors.participantWindow)
-      .first()
-      .getByTestId(this.selectors.participantName);
-    return await this.getNameTileText(participantNameTile);
+      .first();
+    return await this.getNameTileText(participantWindow);
   }
 
   async getThumbsNthParticipantNameInSpeakerView(nth: number): Promise<string> {
@@ -303,8 +326,7 @@ export class MeetingRoomPage {
       .getByTestId(this.selectors.speakerViewParticipantsThumbsHolder)
       .getByTestId(this.selectors.participantWindow)
       .nth(nth - 1); // minus 1 because nth(0) is the first element
-    const participantNameTile = await participantWindow.getByTestId(this.selectors.participantName);
-    return await this.getNameTileText(participantNameTile);
+    return await this.getNameTileText(participantWindow);
   }
 
   async getNthParticipantNameInGridView(nth: number): Promise<string> {
@@ -312,11 +334,19 @@ export class MeetingRoomPage {
       //.getByTestId(this.selectors.gridViewContainer) // current version on CI doesn't have 'grid-container' test ID
       .getByTestId(this.selectors.participantWindow)
       .nth(nth - 1); // minus 1 because nth(0) is the first element
-    const participantNameTile = await participantWindow.getByTestId(this.selectors.participantName);
-    return await this.getNameTileText(participantNameTile);
+    return await this.getNameTileText(participantWindow);
   }
 
-  async getNameTileText(nameTile: Locator): Promise<string> {
+  async getNumberOfParticipantWindowsInGridView(): Promise<number> {
+    const participantWindows = await this.page
+      //.getByTestId(this.selectors.gridViewContainer) // current version on CI doesn't have 'grid-container' test ID
+      .getByTestId(this.selectors.participantWindow)
+      .all();
+    return participantWindows.length;
+  }
+
+  async getNameTileText(participantWindow: Locator): Promise<string> {
+    const nameTile = await participantWindow.getByTestId(this.selectors.participantName);
     let nameTileText = '';
     if (await nameTile.isVisible()) {
       nameTileText = await nameTile.innerText();
