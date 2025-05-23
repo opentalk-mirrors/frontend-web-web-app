@@ -119,7 +119,6 @@ const CreateTimerForm = ({ timerStyle }: { timerStyle: TimerStyle }) => {
               size: 'small',
             }}
             min={min}
-            allowEmpty={timerStyle === TimerStyle.CoffeeBreak}
           />
         </DurationFieldWrapper>
 
