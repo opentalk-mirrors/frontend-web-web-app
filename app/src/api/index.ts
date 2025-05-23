@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { login } from '@opentalk/redux-oidc';
 import { StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import { Middleware, freeze, isAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
@@ -119,9 +118,7 @@ import {
   matchBuilder,
 } from '../types';
 import { composeMeetingDetailsUrl } from '../utils/apiUtils';
-import { initSentryReportWithUser } from '../utils/glitchtipUtils';
 import { isStringEnum } from '../utils/tsUtils';
-import { restApi } from './rest';
 import {
   Message as IncomingMessage,
   breakout,
@@ -1404,17 +1401,6 @@ export const apiMiddleware: Middleware = ({
   // matchBuilder acts similar to the builder for reducers and allows us to avoid a lot of if statements.
   const actionsMap = matchBuilder<RootState>((builder) => {
     builder
-      .addCase(login.fulfilled, () => {
-        dispatch(restApi.endpoints.getMe.initiate()).then((user) => {
-          user.data &&
-            i18n.language !== user.data?.language &&
-            user.data?.language.length > 0 &&
-            i18n.changeLanguage(user.data?.language);
-          if (user.data) {
-            initSentryReportWithUser({ name: user.data.displayName, email: user.data.email, lang: user.data.language });
-          }
-        });
-      })
       .addCase(
         startRoom.fulfilled,
         (
