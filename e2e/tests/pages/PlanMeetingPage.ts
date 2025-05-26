@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
+import { MeetingInvitationPage } from './MeetingInvitationPage';
+
 export class PlanMeetingPage {
   page: Page;
   titleInputField: Locator;
@@ -58,9 +60,10 @@ export class PlanMeetingPage {
     await this.passwordInputField.fill(password);
     await this.createMeetingButton.click();
 
-    // wait for meeting to full render in frontend
+    // wait for meeting invitation page to fully render in frontend
     await this.page.waitForLoadState('load');
-    await this.page.waitForSelector('[aria-label="Only for registered users"]', { state: 'visible', timeout: 30000 });
+    const meetingInvitationPage = new MeetingInvitationPage({ page: this.page });
+    await meetingInvitationPage.meetingLinkInputField.waitFor({ timeout: 10_000 });
   }
 
   async selectTitleInputField(): Promise<void> {

@@ -21,8 +21,8 @@ export class HelpPage {
   }
 
   async navigateToHelpPage(): Promise<void> {
-    const baseUrl = process.env.INSTANCE_URL;
-    await Promise.all([this.page.goto(baseUrl), this.page.waitForLoadState('load')]);
+    await this.page.goto(process.env.INSTANCE_URL);
+    await this.page.waitForLoadState('load');
     await this.page.getByRole('link', { name: 'Help' }).click();
   }
 

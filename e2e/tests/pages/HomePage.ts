@@ -22,7 +22,8 @@ export class HomePage {
   }
 
   async navigateToHomePage(): Promise<void> {
-    await Promise.all([this.page.goto(process.env.INSTANCE_URL), this.page.waitForLoadState('load')]);
+    await this.page.goto(process.env.INSTANCE_URL);
+    await this.page.waitForLoadState('load');
     // for dashboard page to be fully loaded, favorite meeting box should be rendered fully
     await this.favoriteMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
   }
@@ -40,22 +41,25 @@ export class HomePage {
   }
 
   async markMeetingAsFavourite(meetingTitle: string): Promise<void> {
-    await this.getThreeDotMenuOfMeeting(meetingTitle).click();
+    const meetingMenu = await this.getThreeDotMenuOfMeeting(meetingTitle);
+    await meetingMenu.waitFor({ timeout: 10_000 });
+    await meetingMenu.click();
     const ariaLabel = `Add ${meetingTitle} to favorites`;
     await this.page.getByRole('menuitem', { name: ariaLabel }).click();
-    await this.getFavouriteMeetingSelector(meetingTitle).waitFor({ state: 'visible' });
+    const favoriteMeetingSeletor = await this.getFavouriteMeetingSelector(meetingTitle);
+    await favoriteMeetingSeletor.waitFor({ state: 'visible', timeout: 10_000 });
   }
 
-  getFavouriteMeetingSelector(meetingTitle: string): Locator {
-    return this.page.getByRole('link', { name: meetingTitle, exact: true });
+  async getFavouriteMeetingSelector(meetingTitle: string): Promise<Locator> {
+    return await this.page.getByRole('link', { name: meetingTitle, exact: true });
   }
 
-  getStartMeetingButton(meetingTitle: string): Locator {
-    return this.page.getByRole('link', { name: 'Start ' + meetingTitle, exact: true }).first();
+  async getStartMeetingButton(meetingTitle: string): Promise<Locator> {
+    return await this.page.getByRole('link', { name: 'Start ' + meetingTitle, exact: true }).first();
   }
 
-  getThreeDotMenuOfMeeting(meetingTitle: string): Locator {
-    return this.page
+  async getThreeDotMenuOfMeeting(meetingTitle: string): Promise<Locator> {
+    return await this.page
       .getByRole('listitem')
       .filter({ hasText: meetingTitle })
       .getByRole('button', { name: 'More Options' })
@@ -63,7 +67,9 @@ export class HomePage {
   }
 
   async deleteMeeting(meetingTitle: string): Promise<void> {
-    await this.getThreeDotMenuOfMeeting(meetingTitle).click();
+    const meetingMenu = await this.getThreeDotMenuOfMeeting(meetingTitle);
+    await meetingMenu.waitFor({ timeout: 10_000 });
+    await meetingMenu.click();
     await this.page.getByRole('menuitem', { name: 'Delete' }).click();
     await Promise.all([
       this.page.waitForResponse(

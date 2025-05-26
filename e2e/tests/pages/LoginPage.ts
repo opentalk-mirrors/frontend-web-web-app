@@ -36,6 +36,7 @@ export class LoginPage {
       ),
       this.signInButton.click(),
     ]);
+
     await homePage.favoriteMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
   }
 }

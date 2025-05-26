@@ -14,7 +14,7 @@ const createdMeetingStore: string[] = [];
 
 test.describe('Accessibility_General', () => {
   test.afterEach(async ({ page }) => {
-    if (createdMeetingStore.length === 1) {
+    if (createdMeetingStore.length >= 1) {
       const homePage = new HomePage({ page });
       await homePage.navigateToHomePage();
       await homePage.deleteMeeting(meetingTitle);
@@ -69,11 +69,11 @@ test.describe('Accessibility_General', () => {
     await sidebarPage.page.keyboard.press('Tab');
     await expect(homePage.joinExistingMeetingButton).toBeFocused();
     await sidebarPage.page.keyboard.press('Tab');
-    await expect(homePage.getFavouriteMeetingSelector(meetingTitle)).toBeFocused();
+    await expect(await homePage.getFavouriteMeetingSelector(meetingTitle)).toBeFocused();
     await sidebarPage.page.keyboard.press('Tab');
-    await expect(homePage.getThreeDotMenuOfMeeting(meetingTitle)).toBeFocused();
+    await expect(await homePage.getThreeDotMenuOfMeeting(meetingTitle)).toBeFocused();
     await sidebarPage.page.keyboard.press('Tab');
-    await expect(homePage.getStartMeetingButton(meetingTitle)).toBeFocused();
+    await expect(await homePage.getStartMeetingButton(meetingTitle)).toBeFocused();
   });
 
   test('TC_002_Lobby', async ({ page, browserName }) => {
