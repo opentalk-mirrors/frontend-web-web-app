@@ -26,7 +26,7 @@ test.describe('Dashboard_Help', () => {
 
     const userManualDocsPage = await helpPage.navigateToUserManual();
     expect(userManualDocsPage.getByRole('heading', { name: 'User manual' })).toHaveText('User manual', {
-      timeout: 5_000,
+      timeout: 10_000,
     });
     expect(userManualDocsPage.url()).toBe('https://docs.opentalk.eu/user/Handbuch/');
     await expect(
@@ -34,6 +34,7 @@ test.describe('Dashboard_Help', () => {
         'Please contact your admin if this manual leaves any questions unanswered or if you have found a technical error. We hope you enjoy using OpenTalk!'
       )
     ).toBeVisible();
+    await userManualDocsPage.close();
 
     expect(helpPage.userManualHeading).toBeVisible();
   });

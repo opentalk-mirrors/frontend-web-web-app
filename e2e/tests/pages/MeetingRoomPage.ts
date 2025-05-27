@@ -259,21 +259,21 @@ export class MeetingRoomPage {
   }
 
   async turnAudioOn(): Promise<boolean> {
-    await this.toolBar.microphoneButton.isVisible();
+    await this.toolBar.microphoneButton.waitFor({ timeout: 10_000 });
     await this.toolBar.microphoneButton.click();
     await this.page.waitForTimeout(1000); // to make sure microphone is really activated
     return await this.toolBar.videoButtonOff.isVisible();
   }
 
   async turnAudioOff(): Promise<boolean> {
-    await this.toolBar.microphoneButtonOff.isVisible();
+    await this.toolBar.microphoneButtonOff.waitFor({ timeout: 10_000 });
     await this.toolBar.microphoneButtonOff.click();
     await this.page.waitForTimeout(1000); // to make sure microphone is really deactivated
     return await this.toolBar.microphoneButton.isVisible();
   }
 
   async turnCameraOn(): Promise<boolean> {
-    await this.toolBar.videoButton.isVisible();
+    await this.toolBar.videoButton.waitFor({ timeout: 10_000 });
     await this.toolBar.videoButton.click();
     await this.page.waitForTimeout(1000); // to make sure camera is really activated
     // it seems that in firefox, one has to give approval for use of camera (click 'Allow' in corresponding popup)
@@ -281,14 +281,14 @@ export class MeetingRoomPage {
   }
 
   async turnCameraOff(): Promise<boolean> {
-    await this.toolBar.videoButtonOff.isVisible();
+    await this.toolBar.videoButtonOff.waitFor({ timeout: 10_000 });
     await this.toolBar.videoButtonOff.click();
     await this.page.waitForTimeout(1000); // to make sure camera is really deactivated
     return await this.toolBar.videoButton.isVisible();
   }
 
   async selectPeopleTab(): Promise<void> {
-    await this.peopleButton.waitFor();
+    await this.peopleButton.waitFor({ timeout: 10_000 });
     await this.peopleButton.click();
   }
 
@@ -370,12 +370,12 @@ export class MeetingRoomPage {
     return gridViewParticipantWindowAlignment;
   }
 
-  async getGridViewNthParticipantWindowSize(nth: number): Promise<string> {
+  async getGridViewNthParticipantWindowSize(nth: number): Promise<number> {
     const gridViewParticipantWindowSize = await this.viewOptions.gridViewParticipantWindow
       .nth(nth - 1) // minus 1 because nth(0) is the first
       .evaluate((el) => {
         return window.getComputedStyle(el).getPropertyValue('width'); // only evaluating width, same could be done with height
       });
-    return gridViewParticipantWindowSize;
+    return Math.floor(+gridViewParticipantWindowSize);
   }
 }
