@@ -151,6 +151,10 @@ participant-search-label = Teilnehmer suchen
 
 no-group-participants-label = Ohne Gruppe
 button-back-messages = zurück
+participant-remove-dialog-title = Teilnehmer entfernen
+participant-remove-dialog-content = Sind Sie sicher, dass Sie {$name} aus dem Meeting entfernen möchten?
+participant-remove-dialog-cancel = Abbrechen
+participant-remove-dialog-canfirm = Bestätigen
 participant-menu-open-label = Teilnehmermenü öffnen
 participant-menu-send-message = Nachricht senden
 participant-menu-remove-participant = Teilnehmer entfernen
@@ -520,6 +524,7 @@ participant-hand-raise-text = Hand gehoben {$handUpdated}
 participant-last-active-text = Letzte Aktivität {$lastActive}
 participant-joined-event = ist dem Meeting um {$time} beigetreten
 participant-left-event = hat das Meeting um {$time} verlassen
+participant-removed-event = wurde aus dem Meeting entfernt
 
 poll-overview-button-create-poll = Umfrage erstellen
 poll-tab-title = Umfragen
@@ -1014,7 +1019,7 @@ dashboard-add-payment-button = Jetzt auswählen
 meeting-notification-kicked = Sie wurden vom Meeting entfernt
 meeting-notification-banned = Sie wurden permanent vom Meeting entfernt
 meeting-notification-moved-to-waiting-room = Sie wurden in den Warteraum verschoben. Bitte haben Sie einen Moment Geduld, Sie werden bald zurückgeholt.
-meeting-notification-user-was-kicked = Sie haben {$user} vom Meeting entfernt
+meeting-notification-user-was-kicked = Sie haben {$user} um {$time} vom Meeting entfernt
 meeting-notification-user-was-banned = Sie haben {$user} permanent vom Meeting entfernt
 meeting-notification-user-moved-to-waiting-room = Der Warteraum wurde aktiviert. Der Teilnehmer wurde erfolgreich in den Warteraum verschoben.
 meeting-notification-user-was-accepted = Sie haben {$user} erfolgreich in das Meeting aufgenommen

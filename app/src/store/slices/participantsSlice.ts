@@ -6,6 +6,7 @@ import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { Participant as RemoteParticipant } from 'livekit-client';
 
+import { LeftReason } from '../../api/types/incoming/control';
 import { notifications } from '../../commonComponents';
 import {
   BackendParticipant,
@@ -75,7 +76,10 @@ export const participantsSlice = createSlice({
         isRoomOwner,
       });
     },
-    leave: (state, { payload: { id, timestamp } }: PayloadAction<{ id: ParticipantId; timestamp: string }>) => {
+    leave: (
+      state,
+      { payload: { id, timestamp } }: PayloadAction<{ id: ParticipantId; timestamp: string; reason: LeftReason }>
+    ) => {
       participantAdapter.updateOne(state, {
         id,
         changes: {

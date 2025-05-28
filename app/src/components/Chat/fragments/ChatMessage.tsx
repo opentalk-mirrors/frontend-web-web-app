@@ -147,6 +147,18 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
           </EventTypography>
         );
       case 'left':
+        return (
+          <EventTypography variant="body2" data-testid="user-event-message">
+            <EventNameTypography variant="caption" translate="no">
+              {sender?.displayName}
+            </EventNameTypography>
+            <EventMessageTypography variant="caption">
+              {t(`participant-${message.reason === 'quit' ? message.event : 'removed'}-event`, {
+                time: getTimeStringFromTimestamp(message),
+              })}
+            </EventMessageTypography>
+          </EventTypography>
+        );
       case 'joined':
         return (
           <EventTypography variant="body2" data-testid="user-event-message">
@@ -154,7 +166,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
               {sender?.displayName}
             </EventNameTypography>
             <EventMessageTypography variant="caption">
-              {t(`participant-${message.event}-event`, { time: getTimeStringFromTimestamp(message) })}
+              {t(`participant-joined-event`, { time: getTimeStringFromTimestamp(message) })}
             </EventMessageTypography>
           </EventTypography>
         );

@@ -24,12 +24,7 @@ import {
   requestMute,
   revokeScreenSharePermission,
 } from '../../../api/types/outgoing/livekit';
-import {
-  banParticipant,
-  enableWaitingRoom,
-  kickParticipant,
-  sendParticipantToWaitingRoom,
-} from '../../../api/types/outgoing/moderation';
+import { sendParticipantToWaitingRoom } from '../../../api/types/outgoing/moderation';
 import { inviteToWhisperGroup, leaveWhisperGroup, requestWhisperGroup } from '../../../api/types/outgoing/subroomAudio';
 import {
   MeetingNotesIcon,
@@ -70,6 +65,7 @@ import {
 } from '../../../types';
 import { MenuTab } from '../../MenuTabs/fragments/constants';
 import MenuPopover, { IMenuOptionItem } from './MenuPopover';
+import RemoveParticipantDialog from './ParticipantRemovalDialog';
 import RenameParticipantDialog from './RenameParticipantDialog';
 import WhisperStateIcon from './WhisperStateIcon';
 
@@ -163,6 +159,8 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   const ownHandRaised = useAppSelector(selectHandUp);
   const whisperRoomParticipants = useAppSelector(selectSubroomAudioParticipants);
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
+  const [openRemovalDialog, setOpenRemovalDialog] = useState(false);
+
   const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).subroomAudio;
 
   const selectedParticipant = useRemoteParticipant(participant.id);
@@ -186,23 +184,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   };
 
   const handleRemoval = () => {
-    switch (participant.participationKind) {
-      case ParticipationKind.User:
-        dispatch(banParticipant.action({ target: participant.id }));
-        notifications.info(t('meeting-notification-user-was-banned', { user: participant.displayName }));
-        break;
-      case ParticipationKind.Guest:
-        dispatch(kickParticipant.action({ target: participant.id }));
-        dispatch(enableWaitingRoom.action());
-        notifications.info(t('meeting-notification-user-was-kicked', { user: participant.displayName }));
-        break;
-      case ParticipationKind.Sip:
-        dispatch(kickParticipant.action({ target: participant.id }));
-        notifications.info(t('meeting-notification-user-was-kicked', { user: participant.displayName }));
-        break;
-      default:
-        notifications.error(t('dashboard-meeting-notification-error'));
-    }
+    setOpenRemovalDialog(!openRemovalDialog);
     closePopover();
   };
 
@@ -568,6 +550,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
           onClose={handleRenameParticipantDialog}
           participant={participant}
         />
+        <RemoveParticipantDialog open={openRemovalDialog} onClose={handleRemoval} participant={participant} />
       </ThemeProvider>
     </ListItem>
   );

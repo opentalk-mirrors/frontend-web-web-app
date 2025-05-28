@@ -415,7 +415,7 @@ const handleControlMessage = async (
     case 'left': {
       const whisperId = selectWhisperGroupId(state);
       getLivekitRoom().remoteParticipants.delete(data.id);
-      dispatch(participantsLeft({ id: data.id, timestamp: timestamp }));
+      dispatch(participantsLeft({ id: data.id, timestamp: timestamp, reason: data.reason }));
       if (whisperId) {
         dispatch(removeParticipant({ whisperId, participantId: data.id }));
       }
