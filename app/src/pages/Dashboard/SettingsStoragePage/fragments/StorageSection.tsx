@@ -8,6 +8,7 @@ import { useGetMeQuery, useGetMeTariffQuery } from '../../../../api/rest';
 import { useAppSelector } from '../../../../hooks';
 import log from '../../../../logger';
 import { selectAccountManagementUrl } from '../../../../store/slices/configSlice';
+import { isFeatureEnabledPredicate } from '../../../../utils/moduleUtils';
 import { formatBytes } from '../../../../utils/numberUtils';
 
 const PlanUpgradeLink = styled(Link)(({ theme }) => ({
@@ -31,22 +32,28 @@ const StorageProgress = styled(LinearProgress)(({ theme, value }) => ({
 interface StorageFullMessageProps {
   usedStorage: string;
   maxStorage: string;
+  isStorageUpgradable: boolean;
 }
 
-const StorageFullMessage = ({ usedStorage, maxStorage }: StorageFullMessageProps) => {
+const StorageFullMessage = ({ usedStorage, maxStorage, isStorageUpgradable }: StorageFullMessageProps) => {
   const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
   return (
-    <Trans
-      i18nKey="dashboard-settings-storage-usage-limited-full"
-      values={{ usedStorage, maxStorage }}
-      components={{
-        planUpgradeLink: accountManagementUrl ? (
-          <PlanUpgradeLink href={accountManagementUrl} target="_blank" />
-        ) : (
-          <span />
-        ),
-      }}
-    />
+    <Stack component="span" data-testid="dashboard-settings-storage-full">
+      <Trans i18nKey="dashboard-settings-storage-usage-limited-full" values={{ usedStorage, maxStorage }} />
+      <br />
+      <Trans
+        i18nKey={
+          isStorageUpgradable ? 'dashboard-settings-storage-usage-upgrade' : 'dashboard-settings-storage-usage-delete'
+        }
+        components={{
+          planUpgradeLink: accountManagementUrl ? (
+            <PlanUpgradeLink href={accountManagementUrl} target="_blank" />
+          ) : (
+            <span />
+          ),
+        }}
+      />
+    </Stack>
   );
 };
 
@@ -62,6 +69,7 @@ const StorageUsage = () => {
     refetchOnMountOrArgChange: true,
   });
   const { data: tariffData, isLoading: isTariffDataLoading } = useGetMeTariffQuery();
+  const isStorageUpgradable = tariffData && isFeatureEnabledPredicate('storage_upgradable', tariffData.modules);
   const usedStorage = userData?.usedStorage;
   const maxStorage = tariffData?.quotas.maxStorage;
 
@@ -74,7 +82,13 @@ const StorageUsage = () => {
         maxStorage: formattedMaxStorage,
       });
     } else {
-      return <StorageFullMessage usedStorage={formattedUsedStorage} maxStorage={formattedMaxStorage} />;
+      return (
+        <StorageFullMessage
+          usedStorage={formattedUsedStorage}
+          maxStorage={formattedMaxStorage}
+          isStorageUpgradable={isStorageUpgradable}
+        />
+      );
     }
   };
 
