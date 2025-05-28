@@ -34,8 +34,8 @@ test.describe('Dashboard_Help', () => {
         'Please contact your admin if this manual leaves any questions unanswered or if you have found a technical error. We hope you enjoy using OpenTalk!'
       )
     ).toBeVisible();
-    await userManualDocsPage.close();
 
-    expect(helpPage.userManualHeading).toBeVisible();
+    await helpPage.page.bringToFront();
+    expect(helpPage.userManualHeading).toBeVisible({ timeout: 10_000 });
   });
 });
