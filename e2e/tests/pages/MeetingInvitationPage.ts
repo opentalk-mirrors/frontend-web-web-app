@@ -103,6 +103,7 @@ export class MeetingInvitationPage {
   }
 
   async navigateToMeetingLobby(): Promise<LobbyRoomPage> {
+    await this.meetingLinkInputField.isVisible();
     const meetingLink = await this.meetingLinkInputField.inputValue();
     await Promise.all([
       this.page.goto(meetingLink),
@@ -115,7 +116,9 @@ export class MeetingInvitationPage {
     // the optional parameter closes the meeting setup tab, by default it is false, meaning the tab won't be closed
     const meetingLink = await this.meetingLinkInputField.inputValue();
     await this.startAdhocMeetingHelper(closeMeetingTab);
-    await this.page.goto(meetingLink);
+    await Promise.all([this.page.goto(meetingLink), this.page.waitForLoadState('load')]);
+    const lobbyRoomPage = new LobbyRoomPage({ page: this.page });
+    await lobbyRoomPage.renderLobbyPage();
   }
 
   async goToMeetingLobby(): Promise<Page> {

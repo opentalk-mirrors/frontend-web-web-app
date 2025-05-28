@@ -19,12 +19,11 @@ export class LoginPage {
   }
 
   async gotoLoginPage() {
-    await this.page.goto(process.env.INSTANCE_URL);
+    await Promise.all([this.page.goto(process.env.INSTANCE_URL), this.page.waitForLoadState('load')]);
     await this.signInButton.isVisible();
   }
 
   async login(username: string, password: string) {
-    const homePage = new HomePage({ page: this.page });
     await this.usernameInputField.fill(username);
     await this.usernameInputField.press('Tab');
     await this.passwordInputField.fill(password);
@@ -37,6 +36,7 @@ export class LoginPage {
       this.signInButton.click(),
     ]);
 
-    await homePage.favoriteMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
+    const homePage = new HomePage({ page: this.page });
+    await homePage.currentMeetingsHeaderSelector.waitFor({ timeout: 30_000 });
   }
 }

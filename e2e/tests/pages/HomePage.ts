@@ -11,6 +11,7 @@ export class HomePage {
   planNewMeetingButton: Locator;
   startNewMeetingButton: Locator;
   joinExistingMeetingButton: Locator;
+  currentMeetingsHeaderSelector: Locator;
   favoriteMeetingsHeaderSelector: Locator;
 
   constructor({ page }: { page: Page }) {
@@ -18,14 +19,14 @@ export class HomePage {
     this.planNewMeetingButton = this.page.getByRole('link', { name: 'Plan new' });
     this.startNewMeetingButton = this.page.getByRole('link', { name: 'Start new' });
     this.joinExistingMeetingButton = this.page.getByRole('button', { name: 'Join existing' });
+    this.currentMeetingsHeaderSelector = this.page.getByText('Current meetings');
     this.favoriteMeetingsHeaderSelector = this.page.getByText('My favorite meetings');
   }
 
   async navigateToHomePage(): Promise<void> {
-    await this.page.goto(process.env.INSTANCE_URL);
-    await this.page.waitForLoadState('load');
+    await Promise.all([this.page.goto(process.env.INSTANCE_URL), this.page.waitForLoadState('load')]);
     // for dashboard page to be fully loaded, favorite meeting box should be rendered fully
-    await this.favoriteMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
+    await this.currentMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
   }
 
   async planNewMeeting(): Promise<PlanMeetingPage> {

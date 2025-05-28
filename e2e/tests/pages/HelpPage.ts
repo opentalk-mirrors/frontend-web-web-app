@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator, BrowserContext } from '@playwright/test';
 
+import { SidebarPage } from '../pages/SidebarPage';
+
 export class HelpPage {
   page: Page;
   context: BrowserContext;
@@ -21,9 +23,10 @@ export class HelpPage {
   }
 
   async navigateToHelpPage(): Promise<void> {
-    await this.page.goto(process.env.INSTANCE_URL);
-    await this.page.waitForLoadState('load');
-    await this.page.getByRole('link', { name: 'Help' }).click();
+    await Promise.all([this.page.goto(process.env.INSTANCE_URL), this.page.waitForLoadState('load')]);
+
+    const sidebarPage = new SidebarPage({ page: this.page });
+    await sidebarPage.helpButton.click();
   }
 
   async navigateToUserManual(): Promise<Page> {
