@@ -46,7 +46,7 @@
     "del-cli": "^6.0.0",
     "dotenv": "^16.5.0",
     "eslint": "^9.27.0",
-    "eslint-plugin-jest": "^28.11.0",
+    "eslint-plugin-jest": "^28.11.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-refresh": "^0.4.20",
@@ -62,7 +62,7 @@
     "madge": "^8.0.0",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.32.1"
+    "typescript-eslint": "^8.33.0"
   },
   "packageManager": "pnpm@10.11.0"
 }
