@@ -7,9 +7,10 @@ import { useTranslation } from 'react-i18next';
 
 import { vote as sendPollChoiceToAPI, UserChoice } from '../../../api/types/outgoing/poll';
 import { CloseIcon } from '../../../assets/icons';
-import { useAppDispatch } from '../../../hooks';
+import { useAppDispatch, useDateFormat } from '../../../hooks';
 import { Poll, voted } from '../../../store/slices/pollSlice';
 import { ChoiceId } from '../../../types';
+import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 import { ActiveStateChip } from './ActiveStateChip';
 import { Fieldset } from './Fieldset';
 import { LegendTitle } from './LegendTitle';
@@ -39,6 +40,7 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
 
   const initialSum = 0;
   const numberOfVotes = poll.results?.reduce((sum, result) => sum + result.count, initialSum) || initialSum;
+  const formattedTime = useDateFormat(new Date(poll.startTime), 'time');
 
   useEffect(() => {
     //For the case of live poll and user whose choice is not submit yet
@@ -96,13 +98,29 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
             gap: 1,
           }}
         >
-          <ActiveStateChip
-            size="medium"
-            label={t(`poll-overview-panel-status-${poll?.state}`)}
-            color={isPollActive ? 'success' : 'error'}
-            variant="filled"
-            clickable={false}
-          />
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
+            <ActiveStateChip
+              size="medium"
+              label={t(`poll-overview-panel-status-${poll?.state}`)}
+              color={isPollActive ? 'success' : 'error'}
+              variant="filled"
+              clickable={false}
+            />
+            <Box>{formattedTime}</Box>
+            {typeof poll.duration === 'number' && (
+              <VoteAndPollCountdown
+                duration={poll.duration}
+                startTime={poll.startTime}
+                active={poll.state === 'active'}
+              />
+            )}
+          </Box>
           <IconButton
             onClick={onClose}
             aria-label={t('global-close-dialog')}

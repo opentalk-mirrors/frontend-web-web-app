@@ -13,7 +13,7 @@ import { ProgressBar } from '../../../commonComponents';
 import { useDateFormat } from '../../../hooks';
 import { LegalVoteState, LegalVote } from '../../../types';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
-import LegalVoteCountdown from '../../LegalVoteCountdown';
+import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 
 const MainContainer = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -113,7 +113,7 @@ const LegalVoteOverviewPanel = ({
           >{`${formattedStartTime}`}</Typography>
         </Box>
         {duration && duration > 0 && (
-          <LegalVoteCountdown
+          <VoteAndPollCountdown
             duration={duration}
             startTime={startTime}
             active={state === LegalVoteState.Started}

@@ -17,6 +17,7 @@ const mockDispatch = jest.fn();
 jest.mock('../../../hooks', () => ({
   useAppDispatch: () => mockDispatch,
   useAppSelector: jest.fn(),
+  useDateFormat: () => '',
 }));
 
 jest.mock('./VoteResult', () => ({

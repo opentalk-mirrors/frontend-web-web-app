@@ -6,10 +6,11 @@ import { truncate } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { finish } from '../../../api/types/outgoing/poll';
-import { DurationIcon, LegalBallotIcon } from '../../../assets/icons';
+import { LegalBallotIcon } from '../../../assets/icons';
 import { ProgressBar } from '../../../commonComponents';
 import { useAppDispatch, useDateFormat } from '../../../hooks';
 import { Poll } from '../../../store/slices/pollSlice';
+import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 
 const MainContainer = styled(Container)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -58,14 +59,6 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
     );
   };
 
-  const formatDuration = (timestamp: number) => {
-    const seconds = timestamp % 60;
-    const minutes = timestamp / 60;
-    const minuteTimestamp = minutes < 10 ? `0${minutes}` : minutes;
-    const secondTimestamp = seconds < 10 ? `0${seconds}` : seconds;
-    return `${minuteTimestamp}:${secondTimestamp}`;
-  };
-
   const getVotedNumber = () => poll.results.reduce((acc, result) => acc + result.count, 0);
 
   return (
@@ -101,14 +94,15 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
               alignItems: 'flex-end',
             }}
           >
-            <Grid>
-              <DurationIcon />
-            </Grid>
-            <Grid>
-              <Typography>
-                {poll.duration && poll.duration > 60 ? formatDuration(poll.duration) : poll.duration}
-              </Typography>
-            </Grid>
+            {poll.duration && poll.duration > 0 && (
+              <VoteAndPollCountdown
+                duration={poll.duration}
+                startTime={poll.startTime}
+                active={poll.state === 'active'}
+                flex={1}
+                justifyContent="flex-end"
+              />
+            )}
           </Grid>
         </Grid>
         <Grid

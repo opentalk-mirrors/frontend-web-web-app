@@ -11,8 +11,8 @@ import { useAppDispatch, useAppSelector, useDateFormat } from '../../../hooks';
 import { selectPersistedToken } from '../../../store/slices/legalVoteSlice';
 import { LegalVoteKind, LegalVoteState, LegalVote, LegalVoteOption } from '../../../types';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
-import LegalVoteCountdown from '../../LegalVoteCountdown';
 import { LegalVoteTokenClipboard } from '../../LegalVoteTokenClipboard';
+import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 import { ActiveStateChip } from './ActiveStateChip';
 import { Fieldset } from './Fieldset';
 import { LegendTitle } from './LegendTitle';
@@ -122,7 +122,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
             />
             <Box>{formattedTime}</Box>
             {typeof legalVote.duration === 'number' && (
-              <LegalVoteCountdown
+              <VoteAndPollCountdown
                 duration={legalVote.duration}
                 startTime={legalVote.startTime}
                 active={isLegalVoteActive}
