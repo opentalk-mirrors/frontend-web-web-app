@@ -63,7 +63,7 @@ export class PlanMeetingPage {
     // wait for meeting invitation page to fully render in frontend
     await this.page.waitForLoadState('load');
     const meetingInvitationPage = new MeetingInvitationPage({ page: this.page });
-    await meetingInvitationPage.meetingLinkInputField.waitFor({ timeout: 10_000 });
+    await meetingInvitationPage.meetingLinkInputField.waitFor({ state: 'visible', timeout: 30_000 });
   }
 
   async selectTitleInputField(): Promise<void> {
