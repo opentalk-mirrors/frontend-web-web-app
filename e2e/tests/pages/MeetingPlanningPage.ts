@@ -5,7 +5,7 @@ import { Page, Locator } from '@playwright/test';
 
 import { MeetingInvitationPage } from './MeetingInvitationPage';
 
-export class PlanMeetingPage {
+export class MeetingPlanningPage {
   page: Page;
   titleInputField: Locator;
   meetingDetailsInputField: Locator;

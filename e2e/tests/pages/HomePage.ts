@@ -4,7 +4,7 @@
 import { Page, Locator } from '@playwright/test';
 
 import { MeetingInvitationPage } from './MeetingInvitationPage';
-import { PlanMeetingPage } from './PlanMeetingPage';
+import { MeetingPlanningPage } from './MeetingPlanningPage';
 
 export class HomePage {
   page: Page;
@@ -29,10 +29,10 @@ export class HomePage {
     await this.currentMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
   }
 
-  async planNewMeeting(): Promise<PlanMeetingPage> {
+  async planNewMeeting(): Promise<MeetingPlanningPage> {
     await this.planNewMeetingButton.click();
     await this.page.waitForLoadState('load');
-    return new PlanMeetingPage({ page: this.page });
+    return new MeetingPlanningPage({ page: this.page });
   }
 
   async startAdhocMeeting(): Promise<MeetingInvitationPage> {
