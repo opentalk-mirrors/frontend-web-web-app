@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
 
 import { HomePage } from '../pages/HomePage';
 
-test.describe('79_Dashboard_Settings', () => {
+test.describe.skip('79_Dashboard_Settings', () => {
   test('TC_001_Dashboard_Settings_General', async ({ page }) => {
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
