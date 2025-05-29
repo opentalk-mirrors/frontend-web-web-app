@@ -61,6 +61,12 @@ export default defineConfig({
       use: {
         ...devices['Desktop Firefox'],
         storageState: '.auth/user.json',
+        launchOptions: {
+          firefoxUserPrefs: {
+            'permissions.default.microphone': 1,
+            'permissions.default.camera': 1,
+          },
+        },
       },
       dependencies: ['setup'],
     },

@@ -45,6 +45,12 @@ export class MeetingRoomPage {
     debriefingButton: Locator;
   };
 
+  talkingStick: {
+    startNowButton: Locator;
+    talkingStickStartedNotification: Locator;
+    yourTurnPopup: Locator;
+  };
+
   videoPreview: Locator;
   videoPreviewName: Locator;
 
@@ -70,14 +76,21 @@ export class MeetingRoomPage {
   chatTextField: Locator;
   chatSubmitButton: Locator;
 
-  burgerMenuButton: Locator;
   securityMonitorButton: Locator;
 
+  burgerMenuButton: Locator;
+  burgerMenuDropdown: Locator;
   burgerMenuList: {
     accessibilityMenuItem: Locator;
     userManualMenuItem: Locator;
     keyboardShortcutsMenuItem: Locator;
     reportABugMenuItem: Locator;
+  };
+
+  keyboardShortcuts: {
+    keyboardShortcutsPopup: Locator;
+    checkbox: Locator;
+    closeButton: Locator;
   };
 
   selectors = {
@@ -95,6 +108,7 @@ export class MeetingRoomPage {
   constructor({ page }: { page: Page }) {
     this.page = page;
     this.context = this.page.context();
+
     this.meetingRoomName = this.page.locator('h1').first();
 
     this.viewOptions = {
@@ -134,6 +148,12 @@ export class MeetingRoomPage {
       debriefingButton: this.page.getByRole('tab', { name: 'Debriefing' }),
     };
 
+    this.talkingStick = {
+      startNowButton: this.page.getByRole('button', { name: 'Start now' }),
+      talkingStickStartedNotification: this.page.getByText('The Talking Stick is started.', { exact: true }),
+      yourTurnPopup: this.page.getByRole('alertdialog', { name: '' }),
+    };
+
     this.videoPreview = this.page.getByRole('complementary', { name: 'Tools' }).locator('video');
     // video container that is nested inside 'aside' tag --> complementary is the role of the aside, see https://www.w3.org/TR/html-aria/#docconformance
 
@@ -163,14 +183,21 @@ export class MeetingRoomPage {
     this.chatTextField = this.page.getByPlaceholder('Type a message');
     this.chatSubmitButton = this.page.getByRole('button', { name: 'submit chat message' });
 
-    this.burgerMenuButton = this.page.getByRole('button', { name: 'My meeting', exact: true });
     this.securityMonitorButton = this.page.getByRole('button', { name: 'Show security monitor' });
 
+    this.burgerMenuButton = this.page.getByRole('button', { name: 'My meeting', exact: true });
+    this.burgerMenuDropdown = this.page.getByRole('menu', { name: 'My meeting' });
     this.burgerMenuList = {
       accessibilityMenuItem: this.page.getByRole('menuitem', { name: 'Accessibility Open in new tab' }),
       userManualMenuItem: this.page.getByRole('menuitem', { name: 'User manual Open in new tab' }),
       keyboardShortcutsMenuItem: this.page.getByRole('menuitem', { name: 'Keyboard Shortcuts' }),
       reportABugMenuItem: this.page.getByRole('menuitem', { name: 'Report a bug' }),
+    };
+
+    this.keyboardShortcuts = {
+      keyboardShortcutsPopup: this.page.getByRole('dialog', { name: 'Keyboard Shortcuts' }),
+      checkbox: this.page.getByRole('checkbox', { name: 'Keyboard Shortcuts' }),
+      closeButton: this.page.getByRole('button', { name: 'Close dialog' }),
     };
   }
 
@@ -278,7 +305,7 @@ export class MeetingRoomPage {
     await this.toolBar.microphoneButton.waitFor({ timeout: 10_000 });
     await this.toolBar.microphoneButton.click();
     await this.page.waitForTimeout(1000); // to make sure microphone is really activated
-    return await this.toolBar.videoButtonOff.isVisible();
+    return await this.toolBar.microphoneButtonOff.isVisible();
   }
 
   async turnAudioOff(): Promise<boolean> {
@@ -410,5 +437,48 @@ export class MeetingRoomPage {
       }
     }
     return this.context.pages()[2];
+  }
+
+  async clickOnKeyboardShortcuts() {
+    await this.burgerMenuList.keyboardShortcutsMenuItem.click();
+  }
+
+  async closeKeyboardShortcutsPopup() {
+    await this.keyboardShortcuts.closeButton.click();
+  }
+
+  async useKeyboardShortcut(key: string): Promise<void> {
+    await this.page.keyboard.press(key);
+    if (key === 'v') {
+      await this.page.waitForTimeout(5000); // have to wait for longer for turning video on in firefox
+    } else {
+      await this.page.waitForTimeout(2000);
+    }
+  }
+
+  async deactivateKeyboardShortcuts() {
+    await this.keyboardShortcuts.checkbox.setChecked(false);
+  }
+
+  async clickOnTalkingStick() {
+    await this.moderationTools.talkingStickButton.click();
+  }
+
+  async clickOnTalkingStickStartNow() {
+    await this.talkingStick.startNowButton.click();
+  }
+
+  async holdToSpeak() {
+    await this.page.keyboard.down('Space');
+    await this.page.waitForTimeout(2000);
+  }
+
+  async releaseHoldToSpeak() {
+    await this.page.keyboard.up('Space');
+    await this.page.waitForTimeout(2000);
+  }
+
+  async pressEscape() {
+    await this.page.keyboard.press('Escape');
   }
 }

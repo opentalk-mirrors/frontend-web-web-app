@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import test, { expect } from '@playwright/test';
 
-import { startAdhocMeetingAsModerator } from '../helper/meetingHelpers';
+import { joinMeetingRoomAsGuest, startAdhocMeetingAsModerator } from '../helper/meetingHelpers';
 import { closeWebkitPopUp } from '../helper/webkit';
 import { HomePage } from '../pages/HomePage';
 
@@ -38,5 +38,88 @@ test.describe('Meeting Room_Burger menu', () => {
 
     await meetingRoomPage.page.bringToFront();
     await expect(meetingRoomPage.meetingRoomName).toBeVisible();
+  });
+
+  test('TC_002_Keyboard Shortcuts', async ({ page, context, browserName }) => {
+    test.skip(browserName === 'webkit');
+
+    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
+    const guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest');
+    await meetingRoomPage.page.bringToFront();
+
+    await meetingRoomPage.clickOnBurgerMenu();
+    await expect(meetingRoomPage.burgerMenuDropdown).toBeVisible();
+
+    await meetingRoomPage.clickOnKeyboardShortcuts();
+    await expect(meetingRoomPage.keyboardShortcuts.keyboardShortcutsPopup).toBeVisible();
+    await expect(meetingRoomPage.keyboardShortcuts.checkbox).toBeChecked();
+    await meetingRoomPage.closeKeyboardShortcutsPopup();
+    await expect(meetingRoomPage.keyboardShortcuts.keyboardShortcutsPopup).not.toBeVisible();
+    await meetingRoomPage.pressEscape(); // escaping burgermenu because it does not allow to locate elements
+
+    expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
+    await meetingRoomPage.useKeyboardShortcut('m');
+    expect(await meetingRoomPage.isAudioOn()).toBeTruthy();
+    await meetingRoomPage.useKeyboardShortcut('m');
+    expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
+
+    expect(await meetingRoomPage.isCameraOn()).toBeFalsy();
+    await meetingRoomPage.useKeyboardShortcut('v');
+    expect(await meetingRoomPage.isCameraOn()).toBeTruthy();
+    await meetingRoomPage.useKeyboardShortcut('v');
+    expect(await meetingRoomPage.isCameraOn()).toBeFalsy();
+
+    expect(await meetingRoomPage.isFullScreen()).toBeFalsy();
+    await meetingRoomPage.useKeyboardShortcut('f');
+    expect(await meetingRoomPage.isFullScreen()).toBeTruthy();
+    await meetingRoomPage.useKeyboardShortcut('f');
+    expect(await meetingRoomPage.isFullScreen()).toBeFalsy();
+
+    expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
+    await meetingRoomPage.holdToSpeak();
+    expect(await meetingRoomPage.isAudioOn()).toBeTruthy();
+    await meetingRoomPage.releaseHoldToSpeak();
+    expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
+
+    await meetingRoomPage.clickOnTalkingStick();
+    await meetingRoomPage.clickOnTalkingStickStartNow();
+    await expect(meetingRoomPage.talkingStick.talkingStickStartedNotification).toBeVisible();
+    await expect(meetingRoomPage.talkingStick.yourTurnPopup).toBeVisible();
+
+    await meetingRoomPage.useKeyboardShortcut('n');
+    await expect(meetingRoomPage.talkingStick.yourTurnPopup).not.toBeVisible();
+    await guestMeetingRoomPage.page.bringToFront();
+    await expect(guestMeetingRoomPage.talkingStick.yourTurnPopup).toBeVisible();
+    await guestMeetingRoomPage.useKeyboardShortcut('n');
+    await meetingRoomPage.page.bringToFront();
+
+    await meetingRoomPage.clickOnBurgerMenu();
+    await meetingRoomPage.clickOnKeyboardShortcuts();
+    await meetingRoomPage.deactivateKeyboardShortcuts();
+    await expect(meetingRoomPage.keyboardShortcuts.checkbox).not.toBeChecked();
+    await meetingRoomPage.pressEscape();
+    await expect(meetingRoomPage.keyboardShortcuts.keyboardShortcutsPopup).not.toBeVisible();
+    await meetingRoomPage.pressEscape();
+
+    expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
+    await meetingRoomPage.useKeyboardShortcut('m');
+    expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
+
+    expect(await meetingRoomPage.isCameraOn()).toBeFalsy();
+    await meetingRoomPage.useKeyboardShortcut('v');
+    expect(await meetingRoomPage.isCameraOn()).toBeFalsy();
+
+    expect(await meetingRoomPage.isFullScreen()).toBeFalsy();
+    await meetingRoomPage.useKeyboardShortcut('f');
+    expect(await meetingRoomPage.isFullScreen()).toBeFalsy();
+
+    await meetingRoomPage.clickOnTalkingStickStartNow();
+    await expect(meetingRoomPage.talkingStick.yourTurnPopup).toBeVisible();
+    await meetingRoomPage.useKeyboardShortcut('n');
+    await expect(meetingRoomPage.talkingStick.yourTurnPopup).toBeVisible();
+
+    expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
+    await meetingRoomPage.holdToSpeak();
+    expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
   });
 });
