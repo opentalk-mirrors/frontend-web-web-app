@@ -38,4 +38,21 @@ test.describe('Dashboard_Help', () => {
     await helpPage.page.bringToFront();
     expect(helpPage.userManualHeading).toBeVisible({ timeout: 10_000 });
   });
+
+  test.skip('TC_002_Dashboard_Help_Support', async ({ page, context }) => {
+    const helpPage = new HelpPage({ page, context });
+
+    const supportDocsPage = await helpPage.navigateToSupport();
+    expect(supportDocsPage.title()).toBe('Contact our support team | OpenTalk');
+    expect(supportDocsPage.url()).toBe('https://opentalk.eu/en/contact-our-support-team');
+
+    expect(supportDocsPage.getByRole('heading', { name: 'User manual' })).toHaveText(
+      'Do you have questions about our online service?'
+    );
+
+    expect(supportDocsPage.getByRole('button', { name: 'send' })).toBeVisible();
+
+    await helpPage.page.bringToFront();
+    await expect(helpPage.helpHeading).toBeVisible();
+  });
 });
