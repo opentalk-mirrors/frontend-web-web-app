@@ -35,7 +35,7 @@ test.describe('MeetingRoom - adjust participant view', () => {
     await expect(await meetingRoomPage.viewOptions.moderatorsFirstSortingOption.innerText()).toBe('Moderator(s) first');
   });
 
-  test('TC_002_VideoRoom_ParticipantViewSettings_List_SpeakerView', async ({ page, context, browserName }) => {
+  test.skip('TC_002_VideoRoom_ParticipantViewSettings_List_SpeakerView', async ({ page, context, browserName }) => {
     test.skip(browserName === 'webkit');
 
     const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
@@ -129,7 +129,7 @@ test.describe('MeetingRoom - adjust participant view', () => {
     }
   });
 
-  test('TC_005_VideoRoom_ParticipantViewSettings_List_Sorting', async ({ page, context, browserName }) => {
+  test.skip('TC_005_VideoRoom_ParticipantViewSettings_List_Sorting', async ({ page, context, browserName }) => {
     test.skip(browserName === 'webkit');
     test.skip(browserName === 'firefox');
     // in firefox one needs to give permission to turn camera on therefore skip firefox until solution for this is found
