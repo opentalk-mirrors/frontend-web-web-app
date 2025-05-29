@@ -101,31 +101,31 @@ test.describe('Dashboard_Home', () => {
   test('TC_002_Dashboard_Home_Plan new button', async ({ page }) => {
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
-    const planMeetingPage = await homePage.planNewMeeting();
+    const meetingPlanningPage = await homePage.planNewMeeting();
 
-    await expect(planMeetingPage.meetingTextAsTitle).toBeVisible();
-    await expect(planMeetingPage.participantTextAsTitle).toBeVisible();
-    await expect(planMeetingPage.meetingPageDescription).toBeVisible();
-    await expect(planMeetingPage.titleInputField).toBeVisible();
-    await expect(planMeetingPage.meetingDetailsInputField).toBeVisible();
-    await expect(planMeetingPage.passwordInputField).toBeVisible();
-    await expect(planMeetingPage.setDateTimeToggleButton).toBeChecked();
-    await expect(planMeetingPage.dateInputField.fromInputField).toBeVisible();
-    await expect(planMeetingPage.dateInputField.toInputField).toBeVisible();
-    await expect(planMeetingPage.meetingOccurrenceDropDown).toBeVisible();
-    await expect(planMeetingPage.meetingOccurrenceDropDown).toHaveText('No repetition');
-    await expect(planMeetingPage.waitingRoomToggleButton).not.toBeChecked();
-    await expect(planMeetingPage.createSharedFolderToggleButton).not.toBeChecked();
-    await expect(planMeetingPage.showMeetingDetailsToggleButton).toBeChecked();
-    await expect(planMeetingPage.livestreamToggleButton).not.toBeChecked();
+    await expect(meetingPlanningPage.meetingTextAsTitle).toBeVisible();
+    await expect(meetingPlanningPage.participantTextAsTitle).toBeVisible();
+    await expect(meetingPlanningPage.meetingPageDescription).toBeVisible();
+    await expect(meetingPlanningPage.titleInputField).toBeVisible();
+    await expect(meetingPlanningPage.meetingDetailsInputField).toBeVisible();
+    await expect(meetingPlanningPage.passwordInputField).toBeVisible();
+    await expect(meetingPlanningPage.setDateTimeToggleButton).toBeChecked();
+    await expect(meetingPlanningPage.dateInputField.fromInputField).toBeVisible();
+    await expect(meetingPlanningPage.dateInputField.toInputField).toBeVisible();
+    await expect(meetingPlanningPage.meetingOccurrenceDropDown).toBeVisible();
+    await expect(meetingPlanningPage.meetingOccurrenceDropDown).toHaveText('No repetition');
+    await expect(meetingPlanningPage.waitingRoomToggleButton).not.toBeChecked();
+    await expect(meetingPlanningPage.createSharedFolderToggleButton).not.toBeChecked();
+    await expect(meetingPlanningPage.showMeetingDetailsToggleButton).toBeChecked();
+    await expect(meetingPlanningPage.livestreamToggleButton).not.toBeChecked();
 
     // enable protection is only available in testing domain and not in CI
     const parsedBaseUrl = new URL(process.env.INSTANCE_URL);
     if (parsedBaseUrl.hostname.startsWith('testing')) {
-      await expect(planMeetingPage.enableProtectionToggleButton).not.toBeChecked();
+      await expect(meetingPlanningPage.enableProtectionToggleButton).not.toBeChecked();
     }
-    await expect(planMeetingPage.createMeetingButton).toBeVisible();
-    await expect(planMeetingPage.cancelMeetingCreationButton).toBeVisible();
+    await expect(meetingPlanningPage.createMeetingButton).toBeVisible();
+    await expect(meetingPlanningPage.cancelMeetingCreationButton).toBeVisible();
   });
 
   test('TC_003_Dashboard_Home_Plan new_Step-1 Meeting_Textboxes: Title *, Details, Password', async ({ page }) => {
@@ -135,27 +135,27 @@ test.describe('Dashboard_Home', () => {
 
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
-    const planMeetingPage = await homePage.planNewMeeting();
+    const meetingPlanningPage = await homePage.planNewMeeting();
 
-    await planMeetingPage.selectTitleInputField();
-    await expect(planMeetingPage.titleInputField).toHaveAttribute('placeHolder', 'My new Meeting');
-    await planMeetingPage.titleInputField.fill(meetingTitle);
-    await expect(planMeetingPage.titleInputField).toHaveValue(meetingTitle);
+    await meetingPlanningPage.selectTitleInputField();
+    await expect(meetingPlanningPage.titleInputField).toHaveAttribute('placeHolder', 'My new Meeting');
+    await meetingPlanningPage.titleInputField.fill(meetingTitle);
+    await expect(meetingPlanningPage.titleInputField).toHaveValue(meetingTitle);
 
-    await planMeetingPage.selectMeetingDetailsInputField();
-    await expect(planMeetingPage.meetingDetailsInputField).toHaveAttribute(
+    await meetingPlanningPage.selectMeetingDetailsInputField();
+    await expect(meetingPlanningPage.meetingDetailsInputField).toHaveAttribute(
       'placeHolder',
       'What is your meeting about?'
     );
-    await planMeetingPage.meetingDetailsInputField.fill(meetingDetail);
-    await expect(planMeetingPage.meetingDetailsInputField).toHaveValue(meetingDetail);
+    await meetingPlanningPage.meetingDetailsInputField.fill(meetingDetail);
+    await expect(meetingPlanningPage.meetingDetailsInputField).toHaveValue(meetingDetail);
 
-    await planMeetingPage.selectPasswordInputField();
-    await expect(planMeetingPage.passwordInputField).toHaveAttribute(
+    await meetingPlanningPage.selectPasswordInputField();
+    await expect(meetingPlanningPage.passwordInputField).toHaveAttribute(
       'placeHolder',
       'Strong password has at least 8 characters'
     );
-    await planMeetingPage.passwordInputField.fill(meetingPassword);
-    await expect(planMeetingPage.passwordInputField).toHaveValue(meetingPassword);
+    await meetingPlanningPage.passwordInputField.fill(meetingPassword);
+    await expect(meetingPlanningPage.passwordInputField).toHaveValue(meetingPassword);
   });
 });
