@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, BrowserContext } from '@playwright/test';
 
 export class MeetingRoomPage {
   page: Page;
+  context: BrowserContext;
 
   meetingRoomName: Locator;
 
@@ -72,6 +73,13 @@ export class MeetingRoomPage {
   burgerMenuButton: Locator;
   securityMonitorButton: Locator;
 
+  burgerMenuList: {
+    accessibilityMenuItem: Locator;
+    userManualMenuItem: Locator;
+    keyboardShortcutsMenuItem: Locator;
+    reportABugMenuItem: Locator;
+  };
+
   selectors = {
     viewPopoverMenu: '#view-popover-menu',
     viewPopoverMenuListItem: '#view-popover-menu > li',
@@ -86,6 +94,7 @@ export class MeetingRoomPage {
 
   constructor({ page }: { page: Page }) {
     this.page = page;
+    this.context = this.page.context();
     this.meetingRoomName = this.page.locator('h1').first();
 
     this.viewOptions = {
@@ -156,6 +165,13 @@ export class MeetingRoomPage {
 
     this.burgerMenuButton = this.page.getByRole('button', { name: 'My meeting', exact: true });
     this.securityMonitorButton = this.page.getByRole('button', { name: 'Show security monitor' });
+
+    this.burgerMenuList = {
+      accessibilityMenuItem: this.page.getByRole('menuitem', { name: 'Accessibility Open in new tab' }),
+      userManualMenuItem: this.page.getByRole('menuitem', { name: 'User manual Open in new tab' }),
+      keyboardShortcutsMenuItem: this.page.getByRole('menuitem', { name: 'Keyboard Shortcuts' }),
+      reportABugMenuItem: this.page.getByRole('menuitem', { name: 'Report a bug' }),
+    };
   }
 
   allocateViewOptionLocatorsBasedOnSetup() {
@@ -377,5 +393,22 @@ export class MeetingRoomPage {
         return window.getComputedStyle(el).getPropertyValue('width'); // only evaluating width, same could be done with height
       });
     return Math.floor(+gridViewParticipantWindowSize);
+  }
+
+  async clickOnBurgerMenu() {
+    await this.burgerMenuButton.click();
+  }
+
+  async gotoUserManual(): Promise<Page> {
+    await this.burgerMenuList.userManualMenuItem.click();
+    await new Promise((res) => setTimeout(res, 5_000));
+    const allOpenPages = this.context.pages();
+
+    for (const page of allOpenPages) {
+      if ((await page.title()) === 'User manual | OpenTalk') {
+        return page;
+      }
+    }
+    return this.context.pages()[2];
   }
 }
