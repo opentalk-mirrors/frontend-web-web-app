@@ -21,16 +21,12 @@ import {
   RecurringEvent,
   isRecurringEvent,
 } from '@opentalk/rest-api-rtk-query';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  useDeleteEventMutation,
-  useDeleteEventSharedFolderMutation,
-  useUpdateEventInstanceMutation,
-} from '../../../api/rest';
+import { useDeleteEventMutation, useUpdateEventInstanceMutation } from '../../../api/rest';
 import { CloseIcon } from '../../../assets/icons';
-import { notificationAction, notifications } from '../../../commonComponents';
+import { notifications } from '../../../commonComponents';
 import { EventDeletionType, generateInstanceId } from '../../../utils/eventUtils';
 
 interface ConfirmDeleteDialogProps {
@@ -59,48 +55,12 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
   const { open, event, onClose } = props;
   const { title } = event;
   const eventId = event.id as EventId;
-  const [deleteSharedFolder, { isLoading: isSubmittingDeleteEventShardedFolder }] =
-    useDeleteEventSharedFolderMutation();
   const [updateEventInstance, { isLoading: isSubmittingUpdateEventInstance }] = useUpdateEventInstanceMutation();
   const [deleteEvent, { isLoading: isSubmittingDeleteEvent }] = useDeleteEventMutation();
-  const isFirstTryToDeleteSharedFolder = useRef(true);
-  const submitting = isSubmittingUpdateEventInstance || isSubmittingDeleteEvent || isSubmittingDeleteEventShardedFolder;
+  const submitting = isSubmittingUpdateEventInstance || isSubmittingDeleteEvent;
 
   const stopPropagation = (mouseEvent: React.MouseEvent<HTMLDivElement | HTMLButtonElement | HTMLAnchorElement>) => {
     mouseEvent.stopPropagation();
-  };
-
-  const handleDeleteSharedFolder = async () => {
-    if ('sharedFolder' in event) {
-      try {
-        await deleteSharedFolder({ eventId, forceDeletion: false }).unwrap();
-      } catch (_error) {
-        if (isFirstTryToDeleteSharedFolder.current) {
-          onClose();
-          notificationAction({
-            msg: t('dashboard-meeting-shared-folder-delete-error-message'),
-            variant: 'error',
-            ariaLive: 'assertive',
-            actionBtnText: t('dashboard-meeting-shared-folder-error-retry-button'),
-            cancelBtnText: t('dashboard-meeting-shared-folder-error-cancel-button'),
-            persist: true,
-            onAction: () => {
-              isFirstTryToDeleteSharedFolder.current = false;
-              deleteMeeting();
-            },
-            onCancel: () => {
-              isFirstTryToDeleteSharedFolder.current = true;
-              onClose();
-            },
-          });
-          return;
-        } else {
-          isFirstTryToDeleteSharedFolder.current = true;
-          notifications.error(t('dashboard-meeting-shared-folder-delete-retry-error-message'));
-          return;
-        }
-      }
-    }
   };
 
   const hasFetchError = (response: Awaited<ReturnType<typeof deleteEvent>>) => {
@@ -108,7 +68,6 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
   };
 
   const deleteMeeting = async () => {
-    await handleDeleteSharedFolder();
     const response = await deleteEvent(eventId);
     if (hasFetchError(response)) {
       notifications.error(t('dashboard-meeting-card-delete-offline-failure'));

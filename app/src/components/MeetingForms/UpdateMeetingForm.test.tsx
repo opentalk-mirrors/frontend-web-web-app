@@ -8,7 +8,6 @@ import { useUpdateEventMutation } from '../../api/rest';
 import { notifications } from '../../commonComponents';
 import UpdateMeetingForm from './UpdateMeetingForm';
 import { MeetingFormValues } from './fragments/DashboardDateTimePicker';
-import { useSharedFolderUpdate } from './hooks/useSharedFolderUpdate';
 import { createPayload } from './utils/payloadUtils';
 
 interface FormElementWithEvent extends HTMLFormElement {
@@ -17,10 +16,6 @@ interface FormElementWithEvent extends HTMLFormElement {
 
 jest.mock('../../api/rest', () => ({
   useUpdateEventMutation: jest.fn(),
-}));
-
-jest.mock('./hooks/useSharedFolderUpdate', () => ({
-  useSharedFolderUpdate: jest.fn(),
 }));
 
 jest.mock('../../commonComponents', () => ({
@@ -71,11 +66,9 @@ const mockedEvent = {
 
 describe('UpdateMeetingForm', () => {
   const mockUpdateEvent = jest.fn();
-  const mockHandleUpdateSharedFolder = jest.fn().mockReturnValue(true);
 
   beforeEach(() => {
     (useUpdateEventMutation as jest.Mock).mockReturnValue([mockUpdateEvent, { isLoading: false }]);
-    (useSharedFolderUpdate as jest.Mock).mockReturnValue({ handleUpdateSharedFolder: mockHandleUpdateSharedFolder });
     jest.clearAllMocks();
   });
 
@@ -101,31 +94,7 @@ describe('UpdateMeetingForm', () => {
     });
   });
 
-  it('triggers shared folder update with proper arguments on form submission', async () => {
-    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
-
-    fireEvent.submit(screen.getByRole('form'));
-    await waitFor(() => {
-      expect(mockHandleUpdateSharedFolder).toHaveBeenCalledWith(
-        mockedEvent,
-        { title: 'Test Meeting' },
-        expect.any(Function)
-      );
-    });
-  });
-
-  it('does not call update event API if shared folder update fails', async () => {
-    mockHandleUpdateSharedFolder.mockReturnValue(false);
-
-    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
-
-    fireEvent.submit(screen.getByRole('form'));
-    await waitFor(() => {
-      expect(mockUpdateEvent).not.toHaveBeenCalled();
-    });
-  });
-
-  it('calls update event API with event id and payload if shared folder update success', async () => {
+  it('calls update event API with event id and payload', async () => {
     (createPayload as jest.Mock).mockReturnValue({ title: 'Test Meeting' });
 
     render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
