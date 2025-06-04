@@ -56,11 +56,8 @@ export class MeetingInvitationPage {
     // it takes some time for guestlink placeholder to have meeting url
     await this.guestLinkInputField.isVisible();
     let guestLink = await this.guestLinkInputField.inputValue();
-    let i = 0;
-    while (guestLink == '-' && i++ < 10) {
-      await this.page.waitForTimeout(500);
-      guestLink = await this.guestLinkInputField.inputValue();
-    }
+    await new Promise((res) => setTimeout(res, 5_000));
+    guestLink = await this.guestLinkInputField.inputValue();
     return guestLink != '-';
   }
 
