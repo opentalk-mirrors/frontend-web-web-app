@@ -89,6 +89,11 @@ export class MeetingRoomPage {
     reportABugMenuItem: Locator;
   };
 
+  reportABug: {
+    manualGlitchtipPopup: Locator;
+    closeButton: Locator;
+  };
+
   keyboardShortcuts: {
     keyboardShortcutsPopup: Locator;
     checkbox: Locator;
@@ -194,6 +199,11 @@ export class MeetingRoomPage {
       userManualMenuItem: this.page.getByRole('menuitem', { name: 'User manual Open in new tab' }),
       keyboardShortcutsMenuItem: this.page.getByRole('menuitem', { name: 'Keyboard Shortcuts' }),
       reportABugMenuItem: this.page.getByRole('menuitem', { name: 'Report a bug' }),
+    };
+
+    this.reportABug = {
+      manualGlitchtipPopup: this.page.getByRole('dialog', { name: "Oh, it looks like we're having issues." }),
+      closeButton: this.page.getByRole('button', { name: 'Close dialog' }),
     };
 
     this.keyboardShortcuts = {
@@ -424,6 +434,7 @@ export class MeetingRoomPage {
     return Math.floor(+gridViewParticipantWindowSize);
   }
 
+  // functions related to burger menu
   async clickOnBurgerMenu() {
     await this.burgerMenuButton.click();
   }
@@ -433,6 +444,7 @@ export class MeetingRoomPage {
     return await navigateToExternalPage(this.context, 'User manual | OpenTalk');
   }
 
+  // functions related to keyboard shortcuts
   async clickOnKeyboardShortcuts() {
     await this.burgerMenuList.keyboardShortcutsMenuItem.click();
   }
@@ -450,18 +462,6 @@ export class MeetingRoomPage {
     }
   }
 
-  async deactivateKeyboardShortcuts() {
-    await this.keyboardShortcuts.checkbox.setChecked(false);
-  }
-
-  async clickOnTalkingStick() {
-    await this.moderationTools.talkingStickButton.click();
-  }
-
-  async clickOnTalkingStickStartNow() {
-    await this.talkingStick.startNowButton.click();
-  }
-
   async holdToSpeak() {
     await this.page.keyboard.down('Space');
     await this.page.waitForTimeout(2000);
@@ -472,6 +472,44 @@ export class MeetingRoomPage {
     await this.page.waitForTimeout(2000);
   }
 
+  async deactivateKeyboardShortcuts() {
+    await this.keyboardShortcuts.checkbox.setChecked(false);
+  }
+
+  // functions related to talking stick
+  async clickOnTalkingStick() {
+    await this.moderationTools.talkingStickButton.click();
+  }
+
+  async clickOnTalkingStickStartNow() {
+    await this.talkingStick.startNowButton.click();
+  }
+
+  // functions related to report a bug
+  async clickOnReportABug() {
+    await this.burgerMenuList.reportABugMenuItem.click();
+  }
+
+  async closeManualGlitchtipPopup(method: string) {
+    switch (method) {
+      case 'BTN_x': {
+        await this.reportABug.closeButton.click();
+        break;
+      }
+
+      case 'BTN_esc': {
+        await this.pressEscape();
+        break;
+      }
+
+      case 'outside the window': {
+        await this.page.mouse.click(0, 0);
+        break;
+      }
+    }
+  }
+
+  // utility function
   async pressEscape() {
     await this.page.keyboard.press('Escape');
   }
