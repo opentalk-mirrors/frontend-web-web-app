@@ -4,6 +4,8 @@
 import * as Sentry from '@sentry/browser';
 import i18next from 'i18next';
 
+export const DELAY_BETWEEN_EVENT_AND_REPORT_MS = 2500;
+
 const glitchtipDialogProps = () => {
   return {
     title: i18next.t('glitchtip-crash-report-title'),
