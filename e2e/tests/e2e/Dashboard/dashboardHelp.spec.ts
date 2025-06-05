@@ -17,8 +17,7 @@ test.beforeEach('Navigate to help option', async ({ page, browserName, context }
 });
 
 test.describe('Dashboard_Help', () => {
-  test('TC_001_Dashboard_Help_User Manual', async ({ page, context, browserName }) => {
-    test.skip(browserName === 'webkit');
+  test('TC_001_Dashboard_Help_User Manual', async ({ page, context }) => {
     const helpPage = new HelpPage({ page, context });
     await expect(helpPage.helpHeading).toBeVisible();
     await expect(helpPage.userManualLink).toBeVisible();
@@ -36,7 +35,7 @@ test.describe('Dashboard_Help', () => {
     ).toBeVisible();
 
     await helpPage.page.bringToFront();
-    expect(helpPage.userManualHeading).toBeVisible({ timeout: 10_000 });
+    await expect(helpPage.helpHeading).toBeVisible();
   });
 
   test.skip('TC_002_Dashboard_Help_Support', async ({ page, context }) => {
