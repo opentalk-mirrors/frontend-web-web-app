@@ -56,7 +56,12 @@ const BetaBadge = () => {
           horizontal: 'left',
         }}
       >
-        <Container maxWidth="xs" sx={{ py: 2 }} onMouseLeave={handlePopoverClose}>
+        <Container
+          data-testid="beta-badge-content-container"
+          maxWidth="xs"
+          sx={{ py: 2 }}
+          onMouseLeave={handlePopoverClose}
+        >
           <Typography variant="body2">
             <Trans
               i18nKey="beta-flag-tooltip-text"

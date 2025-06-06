@@ -4,4 +4,4 @@
 import { DurationField } from './DurationField';
 
 export default DurationField;
-export type { DurationValueOptions } from './DurationField';
+export type { DurationValueOptions } from './fragments/constants';

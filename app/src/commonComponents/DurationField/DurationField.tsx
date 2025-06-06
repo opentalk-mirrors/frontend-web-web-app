@@ -11,8 +11,8 @@ import { IFormikCustomFieldPropsReturnDurationValue } from '../../utils/formikUt
 import CommonTextField from '../CommonTextField';
 import ErrorFormMessage from '../ErrorFormMessage';
 import { MenuTitle } from '../ToolbarMenuUtils/ToolbarMenuUtils';
+import { DURATION_OPTIONS, DurationValueOptions } from './fragments/constants';
 
-export type DurationValueOptions = number | 'custom' | null;
 interface DurationFieldProps extends IFormikCustomFieldPropsReturnDurationValue {
   name: string;
   /**
@@ -33,8 +33,6 @@ interface DurationFieldProps extends IFormikCustomFieldPropsReturnDurationValue 
 
 const MIN_DURATION_DEFAULT = 1;
 const MAX_DURATION_DEFAULT = 999;
-
-const DURATION_OPTIONS: Array<DurationValueOptions> = [null, 5, 10, 15, 30, 'custom'];
 
 const NumberInput = styled(CommonTextField)({
   maxWidth: '4rem',
