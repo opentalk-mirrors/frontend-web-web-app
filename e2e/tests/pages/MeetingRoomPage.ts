@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator, BrowserContext } from '@playwright/test';
 
+import { navigateToExternalPage } from '../helper/externalPageHelper';
+
 export class MeetingRoomPage {
   page: Page;
   context: BrowserContext;
@@ -428,15 +430,7 @@ export class MeetingRoomPage {
 
   async gotoUserManual(): Promise<Page> {
     await this.burgerMenuList.userManualMenuItem.click();
-    await new Promise((res) => setTimeout(res, 5_000));
-    const allOpenPages = this.context.pages();
-
-    for (const page of allOpenPages) {
-      if ((await page.title()) === 'User manual | OpenTalk') {
-        return page;
-      }
-    }
-    return this.context.pages()[2];
+    return await navigateToExternalPage(this.context, 'User manual | OpenTalk');
   }
 
   async clickOnKeyboardShortcuts() {
