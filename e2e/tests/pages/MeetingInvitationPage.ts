@@ -32,10 +32,10 @@ export class MeetingInvitationPage {
 
   constructor({ page }: { page: Page }) {
     this.page = page;
-    this.meetingLinkInputField = this.page.getByLabel('Meeting-Link');
+    this.meetingLinkInputField = this.page.getByRole('textbox', { name: 'Meeting-Link' });
     this.phoneDialInInputField = this.page.getByRole('textbox', { name: 'Phone Dial-in' });
-    this.guestLinkInputField = this.page.getByLabel('Guest-Link');
-    this.passwordInputField = this.page.getByLabel('Password', { exact: true });
+    this.guestLinkInputField = this.page.getByRole('textbox', { name: 'Guest-Link' });
+    this.passwordInputField = this.page.getByRole('textbox', { name: 'Password', exact: true });
     this.inviteParticipantsInputField = this.page.locator('[data-testid="SelectParticipants"] input');
     this.cancelMeetingButton = this.page.getByRole('button', { name: 'Cancel' });
     this.openMeetingRoomButton = this.page.getByRole('link', { name: 'Open Video Room' });
