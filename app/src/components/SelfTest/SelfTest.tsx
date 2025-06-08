@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Container, Stack, ThemeProvider, Typography, styled, useTheme } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
-import { LocalAudioTrack } from 'livekit-client';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -19,7 +18,7 @@ import { useInviteCode } from '../../hooks/useInviteCode';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { selectConfigFeatures } from '../../store/slices/configSlice';
-import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/mediaSlice';
+import { selectLobbyAudioTrack, selectLobbyVideoEnabled } from '../../store/slices/livekitSlice';
 import { BreakoutRoomId } from '../../types';
 import MyMeetingMenu from '../MeetingHeader/fragments/MyMeetingMenu';
 import SpeedTestDialog from '../SpeedTestDialog';
@@ -117,11 +116,11 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const navigateToHome = useNavigateToHome();
   const inviteCode = useInviteCode();
   const isMobile = useIsMobile();
-  const [localAudioTrack, setLocalAudioTrack] = useState<LocalAudioTrack | undefined>();
+  const localAudioTrack = useAppSelector(selectLobbyAudioTrack);
   const [mounted, setMounted] = useState(false);
   const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
-  const videoEnabled = useAppSelector(selectVideoEnabled);
-  const audioEnabled = useAppSelector(selectAudioEnabled);
+  const videoEnabled = useAppSelector(selectLobbyVideoEnabled);
+  const audioEnabled = useAppSelector(selectLobbyAudioTrack);
 
   useEffect(() => {
     !mounted && setMounted(true);
@@ -183,9 +182,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
               </Typography>
             </>
           )}
-          {mounted && audioEnabled && (
-            <EchoPlayBack localAudioTrack={localAudioTrack} setLocalAudioTrack={setLocalAudioTrack} />
-          )}
+          {mounted && audioEnabled && <EchoPlayBack localAudioTrack={localAudioTrack} />}
         </MonitorContainer>
 
         <ToolbarContainer localAudioTrack={localAudioTrack} actionButton={actionButton} waitingRoom={waitingRoom}>

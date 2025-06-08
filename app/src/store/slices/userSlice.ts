@@ -12,7 +12,7 @@ import { lowerHand, raiseHand } from '../../api/types/outgoing/control';
 import i18n from '../../i18n';
 import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
-import { joinSuccess, login, startRoom, startMedia } from '../commonActions';
+import { changeMedia, joinSuccess, login, setScreenShareEnabled, startRoom } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { connectionClosed, fetchRoomByInviteId } from './roomSlice';
@@ -108,7 +108,10 @@ export const userSlice = createSlice({
     builder.addCase(setMeetingNotesWriteUrl, (state) => {
       state.meetingNotesAccess = MeetingNotesAccess.Write;
     });
-    builder.addCase(startMedia.fulfilled, (state) => {
+    builder.addCase(changeMedia.fulfilled, (state) => {
+      state.lastActive = new Date().toISOString();
+    });
+    builder.addCase(setScreenShareEnabled.fulfilled, (state) => {
       state.lastActive = new Date().toISOString();
     });
   },

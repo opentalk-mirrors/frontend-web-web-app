@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { enterRoom } from '../../api/types/outgoing/control';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { startMedia } from '../../store/commonActions';
+import { changeMedia } from '../../store/commonActions';
 import { selectConfigFeatures } from '../../store/slices/configSlice';
 import { selectRoomConnectionState } from '../../store/slices/roomSlice';
 import ImprintContainer from '../ImprintContainer';
@@ -55,8 +55,8 @@ const WaitingView = () => {
 
   const moveToRoom = useCallback(() => {
     if (joinWithoutMedia) {
-      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-      dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
     }
     dispatch(enterRoom.action());
   }, [dispatch, joinWithoutMedia]);

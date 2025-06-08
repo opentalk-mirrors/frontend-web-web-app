@@ -1,48 +1,36 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useLocalParticipantPermissions, useTrackToggle } from '@livekit/components-react';
-import { ScreenShareCaptureOptions, Track } from 'livekit-client';
-import { useState } from 'react';
+import { useLocalParticipantPermissions } from '@livekit/components-react';
 import { useTranslation } from 'react-i18next';
 
 import { ShareScreenOffIcon, ShareScreenOnIcon } from '../../../assets/icons';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { ToolbarButtonIds } from '../../../constants';
-import { useAppSelector } from '../../../hooks';
-import log from '../../../logger';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import browser from '../../../modules/BrowserSupport';
-import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
-import { ScreenShareResolutionValues, selectScreenShareConfig } from '../../../store/slices/mediaSlice';
+import { setScreenShareEnabled } from '../../../store/commonActions';
+import {
+  selectLivekitUnavailable,
+  selectScreenshareChangeInProgress,
+  selectScreenShareEnabled,
+  selectScreensharePermissionDenied,
+} from '../../../store/slices/livekitSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import ToolbarButton from './ToolbarButton';
 
 const ShareScreenButton = () => {
+  const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
+  const isScreenshareEnabled = useAppSelector(selectScreenShareEnabled) && !isLivekitUnavailable;
   const localParticipantPermissions = useLocalParticipantPermissions();
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
-  const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
-  const screenShareConfig = useAppSelector(selectScreenShareConfig);
-  const [permissionDenied, setPermissionDenied] = useState(false);
+  const isScreenshareChangeInProgress = useAppSelector(selectScreenshareChangeInProgress);
+  const permissionDenied = useAppSelector(selectScreensharePermissionDenied);
   const isScreenShareSupported = browser.isScreenShareSupported();
-
-  const captureOptions: ScreenShareCaptureOptions = {
-    audio: true,
-    systemAudio: 'include',
-    resolution: screenShareConfig?.resolution && ScreenShareResolutionValues[screenShareConfig?.resolution],
-  };
-
-  const { toggle, enabled, pending } = useTrackToggle({
-    source: Track.Source.ScreenShare,
-    captureOptions,
-    publishOptions: {
-      degradationPreference: 'maintain-resolution',
-    },
-  });
-
-  const isScreenShareEnabled = enabled && !isLivekitUnavailable;
+  const dispatch = useAppDispatch();
 
   const canPublishScreenShare =
     localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
@@ -55,19 +43,14 @@ const ShareScreenButton = () => {
     if (permissionDenied) {
       return t('device-permission-denied');
     }
-    if (isScreenShareEnabled) {
+    if (isScreenshareEnabled) {
       return t('toolbar-button-screen-share-turn-off-tooltip-title');
     }
     return t('toolbar-button-screen-share-turn-on-tooltip-title');
   };
 
   const onClick = () => {
-    toggle().catch((error: Error) => {
-      setPermissionDenied(true);
-      if (error.name !== 'NotAllowedError') {
-        log.error('Error while screen sharing: ', error);
-      }
-    });
+    dispatch(setScreenShareEnabled({ enabled: !isScreenshareEnabled }));
   };
 
   if (!isScreenShareSupported) {
@@ -78,12 +61,12 @@ const ShareScreenButton = () => {
     <ToolbarButton
       tooltipTitle={getToolTipTitle()}
       onClick={onClick}
-      active={isScreenShareEnabled && isModeratorOrPresenter}
-      disabled={pending || !isModeratorOrPresenter || isLivekitUnavailable || isRoomDeleted}
+      active={isScreenshareEnabled && isModeratorOrPresenter}
+      disabled={isScreenshareChangeInProgress || !isModeratorOrPresenter || isLivekitUnavailable || isRoomDeleted}
       data-testid="toolbarShareScreenButton"
       id={ToolbarButtonIds.ShareScreen}
     >
-      {isScreenShareEnabled ? <ShareScreenOnIcon /> : <ShareScreenOffIcon />}
+      {isScreenshareEnabled ? <ShareScreenOnIcon /> : <ShareScreenOffIcon />}
     </ToolbarButton>
   );
 };

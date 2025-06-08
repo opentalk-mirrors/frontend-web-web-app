@@ -58,11 +58,6 @@ describe('LocalVideo', () => {
   it('renders nothing if video and screen share are disabled', () => {
     const { store } = configureStore({
       initialState: {
-        media: {
-          videoEnabled: false,
-          audioEnabled: false,
-          videoBackgroundEffects: undefined,
-        },
         user: {
           displayName: 'Test User',
         },
@@ -71,6 +66,11 @@ describe('LocalVideo', () => {
         },
         livekit: {
           unavailable: false,
+          mediaSettings: {
+            cameraEnabled: false,
+            microphoneEnabled: false,
+          },
+          videoBackgroundEffect: undefined,
         },
       },
     });
@@ -94,11 +94,6 @@ describe('LocalVideo', () => {
   it('renders video and name tile if video is enabled and track is present', () => {
     const { store } = configureStore({
       initialState: {
-        media: {
-          videoEnabled: true,
-          audioEnabled: false,
-          videoBackgroundEffects: undefined,
-        },
         user: {
           displayName: 'Test User',
         },
@@ -107,6 +102,11 @@ describe('LocalVideo', () => {
         },
         livekit: {
           unavailable: false,
+          mediaSettings: {
+            cameraEnabled: true,
+            microphoneEnabled: false,
+          },
+          videoBackgroundEffect: undefined,
         },
       },
     });
@@ -127,11 +127,6 @@ describe('LocalVideo', () => {
   it('shows loading spinner if video is enabled but track is missing', () => {
     const { store } = configureStore({
       initialState: {
-        media: {
-          videoEnabled: true,
-          audioEnabled: false,
-          videoBackgroundEffects: undefined,
-        },
         user: {
           displayName: 'Test User',
         },
@@ -140,6 +135,11 @@ describe('LocalVideo', () => {
         },
         livekit: {
           unavailable: false,
+          mediaSettings: {
+            cameraEnabled: true,
+            microphoneEnabled: false,
+          },
+          videoBackgroundEffect: undefined,
         },
       },
     });
@@ -159,11 +159,6 @@ describe('LocalVideo', () => {
   it('shows warning icon if livekit is unavailable', () => {
     const { store } = configureStore({
       initialState: {
-        media: {
-          videoEnabled: true,
-          audioEnabled: true,
-          videoBackgroundEffects: undefined,
-        },
         user: {
           displayName: 'Test User',
         },
@@ -172,6 +167,11 @@ describe('LocalVideo', () => {
         },
         livekit: {
           unavailable: true,
+          mediaSettings: {
+            cameraEnabled: true,
+            microphoneEnabled: false,
+          },
+          videoBackgroundEffect: undefined,
         },
       },
     });
@@ -186,11 +186,6 @@ describe('LocalVideo', () => {
   it('shows "no device" text if video is missing', () => {
     const { store } = configureStore({
       initialState: {
-        media: {
-          videoEnabled: true,
-          audioEnabled: false,
-          videoBackgroundEffects: undefined,
-        },
         user: {
           displayName: 'Test User',
         },
@@ -199,6 +194,11 @@ describe('LocalVideo', () => {
         },
         livekit: {
           unavailable: false,
+          mediaSettings: {
+            cameraEnabled: true,
+            microphoneEnabled: false,
+          },
+          videoBackgroundEffect: undefined,
         },
       },
     });
@@ -219,11 +219,6 @@ describe('LocalVideo', () => {
     const togglePinVideo = vi.fn();
     const { store } = configureStore({
       initialState: {
-        media: {
-          videoEnabled: true,
-          audioEnabled: false,
-          videoBackgroundEffects: undefined,
-        },
         user: {
           displayName: 'Test User',
         },
@@ -232,6 +227,11 @@ describe('LocalVideo', () => {
         },
         livekit: {
           unavailable: false,
+          mediaSettings: {
+            cameraEnabled: true,
+            microphoneEnabled: false,
+          },
+          videoBackgroundEffect: undefined,
         },
       },
     });

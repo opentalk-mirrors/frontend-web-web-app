@@ -4,6 +4,8 @@
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useEffect, useState } from 'react';
 
+import { useAppDispatch } from '../../../hooks';
+import { startBroadcastRoom } from '../../../store/slices/livekitSlice';
 import { MediaSessionType, ParticipantId } from '../../../types';
 
 type IUseBroadcastChannel = {
@@ -16,9 +18,12 @@ type IUseBroadcastChannel = {
 
 const useBroadcastChannel = (channelId: string | undefined): IUseBroadcastChannel => {
   const [livekitData, setLivekitData] = useState<IUseBroadcastChannel>();
-
+  const dispatch = useAppDispatch();
   useEffect(() => {
     if (channelId) {
+      dispatch(
+        startBroadcastRoom({ accessToken: livekitData?.accessToken, participantId: livekitData?.participantId })
+      );
       const channel = new BroadcastChannel(channelId);
       channel.postMessage({ namespace: 'extended_tab', payload: { action: 'request_livekit_data' } });
       channel.onmessage = (event) => {
@@ -29,7 +34,7 @@ const useBroadcastChannel = (channelId: string | undefined): IUseBroadcastChanne
         }
       };
     }
-  }, [channelId]);
+  }, [channelId, livekitData?.accessToken, livekitData?.participantId]);
 
   return {
     accessToken: livekitData?.accessToken,

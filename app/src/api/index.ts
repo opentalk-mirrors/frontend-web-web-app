@@ -24,9 +24,7 @@ import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
-import { hangUp, joinSuccess, startMedia, startRoom } from '../store/commonActions';
-import { setLivekitUnavailable } from '../store/livekitRoom';
-import { getLivekitRoom } from '../store/livekitRoom';
+import { changeMedia, hangUp, joinSuccess, setScreenShareEnabled, startRoom } from '../store/commonActions';
 import {
   remainingUpdated as automodRemainingUpdated,
   speakerUpdated as automodSpeakerUpdated,
@@ -55,7 +53,12 @@ import {
   updated as legalVoteUpdated,
   voted as legalVoteVoted,
 } from '../store/slices/legalVoteSlice';
-import { setLivekitPopoutStreamAccessToken, setNewAccessToken } from '../store/slices/livekitSlice';
+import {
+  selectAudioEnabled,
+  setLivekitPopoutStreamAccessToken,
+  setLivekitUnavailable,
+  setNewAccessToken,
+} from '../store/slices/livekitSlice';
 import * as mediaStore from '../store/slices/mediaSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from '../store/slices/meetingNotesSlice';
 import {
@@ -104,7 +107,6 @@ import {
   setSubroomAudioData,
   updateParticipantInviteState,
 } from '../store/slices/subroomAudioSlice';
-import { selectWhisperGroupId } from '../store/slices/subroomAudioSlice';
 import { timerStarted, timerStopped, updateParticipantsReady } from '../store/slices/timerSlice';
 import { updatedCinemaLayout } from '../store/slices/uiSlice';
 import { selectIsModerator, selectOurUuid, setDisplayName, updateRole } from '../store/slices/userSlice';
@@ -401,12 +403,7 @@ const handleControlMessage = async (
       dispatch(joinBlocked({ reason: data.reason }));
       break;
     case 'left': {
-      const whisperId = selectWhisperGroupId(state);
-      getLivekitRoom().remoteParticipants.delete(data.id);
       dispatch(participantsLeft({ id: data.id, timestamp: timestamp, reason: data.reason }));
-      if (whisperId) {
-        dispatch(removeParticipant({ whisperId, participantId: data.id }));
-      }
       break;
     }
     case 'update': {
@@ -589,7 +586,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           dispatch(automod.selectNext.action());
         }
       }
-      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
       break;
     }
     case 'stopped': {
@@ -605,7 +602,7 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
         ariaLive: 'polite',
       });
 
-      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
       break;
     }
     // case 'start_animation':
@@ -615,9 +612,8 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
       dispatch(automodRemainingUpdated(data));
       break;
     case 'speaker_updated': {
-      const room = getLivekitRoom();
       if (data.speaker !== state.user.uuid) {
-        dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+        dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
         dispatch(setAsInactiveSpeaker());
       }
       notifications.close(nextId);
@@ -643,14 +639,14 @@ const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventType, sta
           isLastSpeaker: Boolean(data.remaining && data.remaining.length === 0),
           key: unmutedId,
         } as const;
-
-        if (room.localParticipant.isMicrophoneEnabled) {
+        const isMicrophoneEnabled = selectAudioEnabled(state);
+        if (isMicrophoneEnabled) {
           notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
         } else {
           notifications.showTalkingStickMutedNotification({
             onUnmute: async () => {
               notifications.close(currentId);
-              dispatch(startMedia({ kind: 'audioinput', enabled: true }));
+              dispatch(changeMedia({ kind: 'audioinput', enabled: true }));
               notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
             },
             onNext: () => {
@@ -785,9 +781,9 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
       break;
     case 'sent_to_waiting_room': {
       dispatch(enteredWaitingRoom());
-      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-      dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-      dispatch(startMedia({ kind: 'screenshare', enabled: false }));
+      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
+      dispatch(setScreenShareEnabled({ enabled: false }));
       notifications.warning(i18next.t('meeting-notification-moved-to-waiting-room'));
       break;
     }
@@ -1101,9 +1097,9 @@ const handleStreamingMessage = async (dispatch: AppDispatch, data: streaming.Mes
         });
       }
 
-      const { isCameraEnabled, isMicrophoneEnabled } = getLivekitRoom().localParticipant;
+      const { cameraEnabled, microphoneEnabled } = state.livekit.mediaSettings;
       const isActiveStream = data.status === StreamingStatus.Active;
-      const isMediaActive = isCameraEnabled || isMicrophoneEnabled;
+      const isMediaActive = cameraEnabled || microphoneEnabled;
       const isConsentRequired =
         isActiveStream && (state.streaming.consent === undefined || (!state.streaming.consent && isMediaActive));
 
@@ -1160,7 +1156,7 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
       notifications.warning(
         i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
       );
-      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
       dispatch(mediaStore.notificationShown());
       return;
     }
@@ -1203,7 +1199,6 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
         dispatch(declineWhisperInvite.action({ whisperId: data.whisperId }));
         break;
       }
-      dispatch(setSubroomAudioData({ whisperId: data.whisperId, participants: data.participants }));
 
       const displayName = selectParticipantById(data.issuer)(state)?.displayName;
       notificationAction({

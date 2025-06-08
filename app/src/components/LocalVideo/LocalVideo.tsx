@@ -79,7 +79,6 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   const screenShareTrackRef = useTracks([Track.Source.ScreenShare], {
     updateOnlyOn: [RoomEvent.ActiveDeviceChanged, RoomEvent.TrackUnpublished],
   }).find((trackRef) => trackRef.participant.isLocal);
-
   const { t } = useTranslation();
   const { cameraTrack, localParticipant, isCameraEnabled, isMicrophoneEnabled, isScreenShareEnabled } =
     useLocalParticipant();
@@ -95,7 +94,9 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
     source: cameraTrack.source,
   };
 
-  const outgoingVideoStreamTrack = cameraTrack?.videoTrack?.mediaStreamTrack || null;
+  const videoTrack = videoTrackRef?.publication?.videoTrack;
+
+  const outgoingVideoStreamTrack = videoTrack?.mediaStreamTrack || null;
 
   /* TODO will not update - use cameraTrack event handler
      we use outgoingVideoStreamTrack in the meantime

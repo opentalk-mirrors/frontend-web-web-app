@@ -23,11 +23,11 @@ import {
 import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
-import { getLivekitRoom } from '../livekitRoom';
 import { selectCurrentBreakoutRoomId } from './breakoutSlice';
 import { received } from './chatSlice';
 import { GridViewOrder } from './common';
 import { connectionClosed } from './roomSlice';
+import { removeParticipant } from './subroomAudioSlice';
 
 export const participantAdapter = createEntityAdapter<Participant>({
   sortComparer: (a, b) => a.displayName.localeCompare(b.displayName),
@@ -259,8 +259,9 @@ export const selectSortedParticipants = createSelector(
     (_state: RootState, gridViewOrder: GridViewOrder) => gridViewOrder,
     selectAllOnlineParticipantsInConference,
     selectCurrentBreakoutRoomId,
+    (state: RootState) => state.livekit.room,
   ],
-  (gridViewOrder, participants, currentBreakoutRoomId) => {
+  (gridViewOrder, participants, currentBreakoutRoomId, room) => {
     let filteredParticipants = participants
       .filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
       .sort((a, b) => a.joinedAt.localeCompare(b.joinedAt)); // always sort by firstJoined;
@@ -269,8 +270,7 @@ export const selectSortedParticipants = createSelector(
       filteredParticipants = filteredParticipants.sort((participant) => (participant.role === Role.Moderator ? -1 : 1));
     }
     if (gridViewOrder === GridViewOrder.VideoFirst) {
-      const room = getLivekitRoom();
-      const videoSubscribers = Array.from(room.remoteParticipants.values() || []).filter(
+      const videoSubscribers = Array.from(room?.remoteParticipants.values() || []).filter(
         (participant) => participant.isCameraEnabled
       );
 
@@ -375,7 +375,7 @@ export const handleParticipantJoinDuringVoteEffect = (
   }
 };
 
-export const handleParticipantLeaveDuringVoteEffect = (
+export const handleParticipantLeaveEffect = (
   action: ReturnType<typeof leave>,
   listenerApi: ListenerEffectAPI<RootState, AppDispatch>
 ) => {
@@ -383,23 +383,25 @@ export const handleParticipantLeaveDuringVoteEffect = (
   const { payload } = action;
   const { activeVote, votes } = state.legalVote;
 
-  if (!activeVote) {
-    return;
+  const whisperId = state.subroomAudio.whisperId;
+  if (whisperId) {
+    listenerApi.dispatch(removeParticipant({ whisperId, participantId: payload.id }));
   }
+  if (activeVote) {
+    const activeVoteEntry = votes.entities[activeVote.id];
+    const participantId = payload.id;
 
-  const activeVoteEntry = votes.entities[activeVote.id];
-  const participantId = payload.id;
-
-  if (shouldShowNotification(state.user.role, participantId, activeVoteEntry)) {
-    const participantName = participantSelectors.selectById(state, participantId).displayName;
-    notifications.warning(i18next.t('legal-vote-participant-left-the-meeting', { participantName }));
+    if (shouldShowNotification(state.user.role, participantId, activeVoteEntry)) {
+      const participantName = participantSelectors.selectById(state, participantId).displayName;
+      notifications.warning(i18next.t('legal-vote-participant-left-the-meeting', { participantName }));
+    }
   }
 };
 
 const startParticipantLeaveDuringVoteListener = (startAppListening: StartAppListening) => {
   startAppListening({
     actionCreator: leave,
-    effect: handleParticipantLeaveDuringVoteEffect,
+    effect: handleParticipantLeaveEffect,
   });
 };
 

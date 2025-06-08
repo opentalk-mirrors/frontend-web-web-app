@@ -9,14 +9,11 @@ import { SuspenseLoading, showConsentNotification } from '../../../commonCompone
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
-import { startMedia } from '../../../store/commonActions';
-import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import {
-  selectMediaChangeInProgress,
+  selectLivekitUnavailable,
   selectVideoChangeInProgress,
-  selectVideoEnabled,
   selectVideoPermissionDenied,
-} from '../../../store/slices/mediaSlice';
+} from '../../../store/slices/livekitSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import MeetingSettingsDialog from '../../MeetingSettingsDialog';
@@ -24,19 +21,19 @@ import ToolbarButton from './ToolbarButton';
 
 interface VideoButtonProps {
   isLobby?: boolean;
+  videoEnabled: boolean;
+  onVideoButtonToggle: () => void;
 }
 
-const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
+const VideoButton = ({ isLobby = false, videoEnabled, onVideoButtonToggle }: VideoButtonProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const askConsent = useAppSelector(selectNeedRecordingConsent);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
-  const videoEnabled = useAppSelector(selectVideoEnabled);
   const cameraEnabled = (videoEnabled || false) && !isLivekitUnavailable;
 
   const videoChangeInProgress = useAppSelector(selectVideoChangeInProgress);
-  const mediaChangeInProgress = useAppSelector(selectMediaChangeInProgress);
   const videoPermissionDenied = useAppSelector(selectVideoPermissionDenied);
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -51,7 +48,7 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
         return;
       }
     }
-    dispatch(startMedia({ kind: 'videoinput', enabled: !cameraEnabled }));
+    onVideoButtonToggle();
   };
 
   const tooltipText = () => {
@@ -77,11 +74,11 @@ const VideoButton = ({ isLobby = false }: VideoButtonProps) => {
         tooltipTitle={tooltipText()}
         onClick={onClick}
         hasContext
-        contextDisabled={mediaChangeInProgress}
+        contextDisabled={videoChangeInProgress}
         contextTitle={t('toolbar-button-video-context-title')}
         contextMenuId="video-context-menu"
         contextMenuExpanded={showMenu}
-        disabled={mediaChangeInProgress || devices.length === 0 || isLivekitUnavailable || isRoomDeleted}
+        disabled={videoChangeInProgress || devices.length === 0 || isLivekitUnavailable || isRoomDeleted}
         active={cameraEnabled}
         openMenu={() => {
           setShowMenu(true);

@@ -26,7 +26,10 @@ describe('Audio Button', () => {
     (useLocalParticipantPermissions as Mock).mockReturnValue({
       canPublishSources: [],
     });
-    renderWithProviders(<AudioButton />, { store, provider: { snackbar: true } });
+    renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
+      store,
+      provider: { snackbar: true },
+    });
 
     const audioButton = screen.getByTestId('toolbarAudioButton');
 
@@ -38,7 +41,10 @@ describe('Audio Button', () => {
       canPublishSources: [LIVEKIT_AUDIO_PERMISSION_NUMBER],
     });
 
-    renderWithProviders(<AudioButton />, { store, provider: { snackbar: true } });
+    renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
+      store,
+      provider: { snackbar: true },
+    });
 
     const audioButton = screen.getByTestId('toolbarAudioButton');
 
@@ -54,7 +60,10 @@ describe('Audio Button', () => {
       },
     });
 
-    renderWithProviders(<AudioButton />, { store, provider: { snackbar: true } });
+    renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
+      store,
+      provider: { snackbar: true },
+    });
     expect(screen.getByTestId('toolbarAudioButton')).toBeDisabled();
   });
 
@@ -63,7 +72,7 @@ describe('Audio Button', () => {
       canPublishSources: [],
     });
     const { store } = configureStore();
-    renderWithProviders(<AudioButton />, { store });
+    renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, { store });
     const button = screen.getByRole('button', { name: 'toolbar-button-audio-disabled-tooltip', hidden: true });
     expect(button).toBeInTheDocument();
     expect(button).toBeDisabled();

@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 import { PictureIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { setBackgroundEffects, selectVideoBackgroundEffects } from '../../../store/slices/mediaSlice';
+import { setBackgroundEffects } from '../../../store/commonActions';
+import { selectVideoBackgroundEffects } from '../../../store/slices/livekitSlice';
 import ToolbarButton from './ToolbarButton';
 
 const BlurScreenButton = ({ isLobby }: { isLobby?: boolean }) => {

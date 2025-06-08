@@ -10,7 +10,6 @@ import type { Message as ControlMessage } from '../../api/types/incoming/control
 import type { Message as OutgoingMessage } from '../../api/types/outgoing';
 import log from '../../logger';
 import type { RoomCredentials } from '../../store/commonActions';
-import { getLivekitRoom } from '../../store/livekitRoom';
 import type { ConfigState } from '../../store/slices/configSlice';
 import { fetchWithAuth, getControllerBaseUrl, getSignalingUrl } from '../../utils/apiUtils';
 import { BaseEventEmitter } from '../EventListener';
@@ -224,7 +223,6 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
         {
           // TODO: clearResumptionToken(credentials)
           this.eventEmitter.emit('shutdown', {});
-          getLivekitRoom().disconnect();
         }
         return;
     }

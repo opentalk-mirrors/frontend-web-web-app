@@ -22,7 +22,7 @@ import {
   TimerStyle,
 } from '../../types';
 import { fetchWithAuth, getControllerBaseUrl } from '../../utils/apiUtils';
-import { hangUp, joinSuccess, startRoom } from '../commonActions';
+import { disconnectRoom, hangUp, joinSuccess, startRoom } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted, stopped as automodStopped } from './automodSlice';
@@ -404,6 +404,19 @@ const startReconnectOnConnectionClosedListener = (startAppListening: StartAppLis
     },
   });
 
+const startConnectionStateChangeListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    predicate(_action, currentState, originalState) {
+      return (
+        currentState.room.connectionState === ConnectionState.Left &&
+        originalState.room.connectionState !== ConnectionState.Left
+      );
+    },
+    effect: async (_action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      listenerApi.dispatch(disconnectRoom({ isWhisperRoom: false }));
+    },
+  });
+
 const startCloseAllNotificationsOnFailedConnectionListener = (startAppListening: StartAppListening) =>
   startAppListening({
     predicate(_action, currentState, originalState) {
@@ -421,4 +434,5 @@ export const startRoomListeners = (startAppListening: StartAppListening) => {
   startReconnectOnStartRoomErrorListener(startAppListening);
   startReconnectOnConnectionClosedListener(startAppListening);
   startCloseAllNotificationsOnFailedConnectionListener(startAppListening);
+  startConnectionStateChangeListener(startAppListening);
 };

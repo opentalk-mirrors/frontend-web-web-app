@@ -2,13 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Typography } from '@mui/material';
+import { ConnectionState } from 'livekit-client';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MicOnIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
-import { selectAudioDeviceId, setAudioDeviceId } from '../../../store/slices/mediaSlice';
+import { switchActiveDevice, switchLocalDevice } from '../../../store/commonActions';
+import { selectAudioDeviceId, selectLivekitRoom } from '../../../store/slices/livekitSlice';
 import { DeviceId } from '../../../types/device';
 import DeviceManager from './DeviceManager';
 import { DevicePermissionState } from './constants';
@@ -18,6 +20,7 @@ const AudioSettingsPanel = () => {
   const { localDevices: devices, permissionDenied, loadLocalDevices } = useMediaDevice({ kind: 'audioinput' });
   const audioDeviceId = useAppSelector(selectAudioDeviceId);
   const dispatch = useAppDispatch();
+  const room = useAppSelector(selectLivekitRoom);
 
   // Some browsers (e.g. Firefox) duplicate devices, so we need to filter them out
   const filteredDevices = useMemo(() => {
@@ -35,7 +38,11 @@ const AudioSettingsPanel = () => {
   }, [devices]);
 
   const handleSelectDevice = async (deviceId: DeviceId) => {
-    dispatch(setAudioDeviceId(deviceId));
+    if (room?.state === ConnectionState.Connected) {
+      dispatch(switchActiveDevice({ deviceId, kind: 'audioinput' }));
+    } else {
+      dispatch(switchLocalDevice({ deviceId, kind: 'audioinput' }));
+    }
   };
 
   useEffect(() => {

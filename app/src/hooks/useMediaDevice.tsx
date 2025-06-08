@@ -9,8 +9,6 @@ import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../commonComponents';
 import log from '../logger';
-import { setMediaChangeInProgress } from '../store/slices/mediaSlice';
-import { useAppDispatch } from './useCustomRedux';
 
 interface MediaPermissionsConstraints {
   kind: MediaDeviceKind;
@@ -21,14 +19,12 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
   const { t } = useTranslation();
   const [permissionDenied, setPermissionDenied] = useState<boolean | 'pending'>(false);
   const [localDevices, setLocalDevices] = useState<MediaDeviceInfo[]>([]);
-  const dispatch = useAppDispatch();
   const { devices, setActiveMediaDevice } = useMediaDeviceSelect({
     kind,
     requestPermissions: false,
   });
 
   const loadLocalDevices = async () => {
-    dispatch(setMediaChangeInProgress(kind));
     try {
       setLocalDevices(await Room.getLocalDevices(kind, true));
       setPermissionDenied(false);
@@ -40,8 +36,6 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
           preventDuplicate: true,
         });
       setPermissionDenied(true);
-    } finally {
-      dispatch(setMediaChangeInProgress(null));
     }
   };
 

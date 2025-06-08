@@ -2,13 +2,14 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { authReducer, setupAppDispatch } from '@opentalk/redux-oidc';
-import { Middleware, configureStore } from '@reduxjs/toolkit';
+import { AnyAction, Middleware, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { merge } from 'lodash';
 
 import { apiMiddleware } from '../api';
 import { restApi, rtkQueryErrorLoggerMiddleware } from '../api/rest';
 import log, { setupLogLevel } from '../logger';
+import { changeLocalMedia, connectRoom, switchLocalDevice } from './commonActions';
 import { listenerMiddleware } from './listenerMiddleware';
 import automodReducer from './slices/automodSlice';
 import breakoutReducer from './slices/breakoutSlice';
@@ -17,11 +18,8 @@ import { initialState as initialConfig } from './slices/configSlice';
 import configReducer from './slices/configSlice';
 import eventReducer from './slices/eventSlice';
 import legalVoteReducer from './slices/legalVoteSlice';
-import livekitReducer from './slices/livekitSlice';
-import mediaReducer, {
-  initialState as InitialMediaState,
-  reHydrateSlice as mediaRehydrateSlice,
-} from './slices/mediaSlice';
+import livekitReducer, { setLivekitRoom, initialState as livekitInitialState } from './slices/livekitSlice';
+import mediaReducer from './slices/mediaSlice';
 import meetingNotesReducer from './slices/meetingNotesSlice';
 import moderationReducer from './slices/moderationSlice';
 import participantsReducer from './slices/participantsSlice';
@@ -87,6 +85,46 @@ export const appReducers = {
   subroomAudio: subroomAudioReducer,
 };
 
+// disable action sanitizer for localTrack and room object to prevent Redux toolkit for doing excesive work
+const actionSanitizer = <A extends AnyAction>(action: A) => {
+  if (changeLocalMedia.fulfilled.match(action.type || switchLocalDevice.fulfilled.match(action))) {
+    return { ...action, payload: { ...action.payload, videoTrackPublication: '<<LONG_BLOB>>' } };
+  }
+  if (setLivekitRoom.match(action.type)) {
+    return { ...action, payload: { ...action.payload, room: '<<LONG_BLOB>>' } };
+  }
+  if (connectRoom.fulfilled.match(action.type)) {
+    return { ...action, payload: { ...action.payload, room: '<<LONG_BLOB>>' } };
+  }
+
+  return action;
+};
+
+// disable state sanitizer for localTrack and room object to prevent Redux toolkit for doing excesive work
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const stateSanitizer = (state: any) => {
+  if (state.livekit.lobby.videoTrackPublication || state.livekit.lobby.audioTrackPublication) {
+    return {
+      ...state,
+      livekit: {
+        ...state.livekit,
+        room: '<<Long_BLOB>>',
+        lobby: { audioTrackPublication: '<<LONG_BLOB>>', videoTrackPublication: '<<LONG_BLOB>>' },
+      },
+    };
+  }
+  return state;
+};
+
+export const mediaRehydrateSlice = () => {
+  const storageItem = localStorage.getItem('mediaChoices');
+  if (storageItem !== null) {
+    return JSON.parse(storageItem);
+  }
+
+  return undefined;
+};
+
 const store = configureStore({
   reducer: {
     ...appReducers,
@@ -94,12 +132,31 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActionPaths: ['meta.arg', 'meta.baseQueryMeta', 'meta.history', 'payload.conferenceContext'],
+        ignoredActions: [
+          'livekit/setLivekitRoom',
+          'livekit/setLivekitWhisperRoom',
+          'livekit/connectRoom',
+          'media/changeLocalMedia',
+          'media/changeMedia',
+        ],
+        ignoredActionPaths: [
+          'meta.arg',
+          'meta.baseQueryMeta',
+          'meta.history',
+          'payload.conferenceContext',
+          'payload.track',
+          'payload.room',
+        ],
+        ignoredPaths: ['livekit.room', 'livekit.whisperRoom', 'livekit.lobby'],
       },
     }).concat(middleware),
   preloadedState: {
     config: merge({}, initialConfig, window.config),
-    media: merge({}, InitialMediaState, mediaRehydrateSlice()),
+    livekit: merge({}, livekitInitialState, mediaRehydrateSlice()),
+  },
+  devTools: {
+    stateSanitizer: stateSanitizer,
+    actionSanitizer: actionSanitizer,
   },
 });
 

@@ -26,7 +26,7 @@ import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
 import log from '../../logger';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { startRoom, startMedia } from '../../store/commonActions';
+import { changeMedia, startRoom } from '../../store/commonActions';
 import { selectDisallowCustomDisplayName, selectConfigFeatures } from '../../store/slices/configSlice';
 import {
   InviteCodeErrorEnum,
@@ -175,8 +175,8 @@ const LobbyView = () => {
   const enterRoom = useCallback(
     async (displayName: string, password: string) => {
       if (joinWithoutMedia) {
-        dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-        dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+        dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
+        dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
       }
       try {
         return await dispatch(
@@ -226,7 +226,7 @@ const LobbyView = () => {
         }
       }
     },
-    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, startMedia]
+    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, changeMedia]
   );
 
   const formik = useFormik({
