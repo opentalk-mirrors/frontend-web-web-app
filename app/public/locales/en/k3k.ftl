@@ -720,6 +720,7 @@ global-meeting = { $count ->
     *[other] meetings
 }
 global-open-new-tab = Open in new tab
+global-required-field = This is a mandatory field
 
 dashboard-logo-title = OpenTalk Logo
 dashboard-home = Home
@@ -927,17 +928,13 @@ dashboard-meeting-livestream-platform-label = Platform
 dashboard-meeting-livestream-platform-custom = Custom
 dashboard-meeting-livestream-platform-name-label = Name
 dashboard-meeting-livestream-platform-name-placeholder = Owncast
-dashboard-meeting-livestream-platform-name-required = This is a mandatory field
 dashboard-meeting-livestream-streaming-endpoint-label = Streaming receiver URL
 dashboard-meeting-livestream-streaming-endpoint-placeholder = rtmp://example.com
 dashboard-meeting-livestream-streaming-endpoint-invalid-url = Must enter a valid URL
-dashboard-meeting-livestream-streaming-endpoint-required = This is a mandatory field
 dashboard-meeting-livestream-public-url-label = Public livestream URL
 dashboard-meeting-livestream-public-url-invalid-url = Must enter a valid URL
-dashboard-meeting-livestream-public-url-required = This is a mandatory field
 dashboard-meeting-livestream-streaming-key-label = Streaming key
 dashboard-meeting-livestream-streaming-key-placeholder = abc123
-dashboard-meeting-livestream-streaming-key-required = This is a mandatory field
 dashboard-meeting-waiting-room-switch = Waiting room
 dashboard-meeting-details-switch = Show meeting details
 dashboard-meeting-details-tooltip = Meeting details visible / shareable to / for all participants (also password if set).

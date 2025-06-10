@@ -1,13 +1,22 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { PlatformKind } from '@opentalk/rest-api-rtk-query';
 import { t } from 'i18next';
 
 import { isInvalidDate } from '../../../utils/typeGuardUtils';
 import yup from '../../../utils/yupUtils';
 import { MAX_CHARACTERS_TITLE, MAX_CHARACTERS_DESCRIPTION, MAX_CHARACTERS_PASSWORD } from '../constants';
+import { MeetingFormValues, Streaming } from './DashboardDateTimePicker';
 
-export const meetingFormValidationSchema = yup.object({
+// Yup has some limitations regarding TypeScript:
+//
+// - it has problems with discriminated unions, therefore we need to assert `streaming`
+// - it is possible to add a field to the schema that is not present in the type
+// - not all fields are typechecked recursively (e.g. streaming)
+//
+// If we want to have more strict typeschecking, we can consider using [zod](https://www.npmjs.com/package/zod)
+export const meetingFormValidationSchema: yup.ObjectSchema<MeetingFormValues> = yup.object({
   title: yup
     .string()
     .trim()
@@ -26,6 +35,7 @@ export const meetingFormValidationSchema = yup.object({
     ),
   startDate: yup
     .string()
+    .required(t('dashboard-meeting-date-field-error-invalid-value'))
     .test('is required', t('meeting-required-start-date'), (startDate) => !!startDate?.trim())
     .test('is valid', t('meeting-invalid-start-date'), (startDate) => !isInvalidDate(new Date(startDate as string)))
     .test('is in the future', t('dashboard-meeting-date-field-error-future'), function (startDate) {
@@ -55,47 +65,87 @@ export const meetingFormValidationSchema = yup.object({
       }
       return true;
     }),
-  isAdhoc: yup.boolean().optional(),
-  sharedFolder: yup.boolean().optional(),
-  showMeetingDetails: yup.boolean().optional(),
-  streaming: yup.object().shape({
-    enabled: yup.boolean().required(),
-    streamingTarget: yup.object().when('enabled', ([enabled], schema) => {
-      if (!enabled) {
-        return yup.object().optional();
-      }
-      return schema.shape({
-        kind: yup.string().required(),
-        name: yup.string().required(t('dashboard-meeting-livestream-platform-name-required')),
-        streamingEndpoint: yup
-          .string()
-          .validateURL(t('dashboard-meeting-livestream-streaming-endpoint-invalid-url'))
-          .required(t('dashboard-meeting-livestream-streaming-endpoint-required')),
-        streamingKey: yup.string().required(t('dashboard-meeting-livestream-streaming-key-required')),
-        publicUrl: yup
-          .string()
-          .validateURL(t('dashboard-meeting-livestream-streaming-endpoint-invalid-url'))
-          .required(t('dashboard-meeting-livestream-public-url-required')),
-      });
-    }),
-  }),
-  e2eEncryption: yup.boolean().optional(),
-  trainingParticipationReport: yup.object().shape({
-    enabled: yup.boolean().required(),
-    parameter: yup.object().when('enabled', ([enabled]) => {
-      if (!enabled) {
-        return yup.object().optional();
-      }
-      return yup.object({
-        initialCheckpointDelay: yup.object().shape({
-          after: yup.number().min(0).required(),
-          within: yup.number().min(0).required(),
+  isAdhoc: yup.boolean().required(),
+  sharedFolder: yup.boolean().required(),
+  showMeetingDetails: yup.boolean().required(),
+  streaming: yup
+    .object({
+      enabled: yup.boolean().required(),
+      streamingTarget: yup
+        .object({
+          kind: yup
+            .mixed<PlatformKind>()
+            .oneOf([PlatformKind.Provider, PlatformKind.BuiltIn, PlatformKind.Custom])
+            .required(t('global-required-field')),
+          name: yup.string().when('kind', {
+            is: PlatformKind.Custom,
+            then: (s) => s.required(t('global-required-field')),
+            otherwise: (s) => s.optional(),
+          }),
+          provider: yup.string().when('kind', {
+            is: PlatformKind.Provider,
+            then: (s) => s.required(),
+            otherwise: (s) => s.optional(),
+          }),
+          streamingKey: yup.string().when('kind', ([kind], schema) => {
+            if (kind === PlatformKind.Provider || kind === PlatformKind.Custom) {
+              return schema.required(t('global-required-field'));
+            }
+            return schema.optional();
+          }),
+          publicUrl: yup.string().when('kind', ([kind], schema) => {
+            if (kind === PlatformKind.Provider || kind === PlatformKind.Custom) {
+              return schema
+                .required(t('global-required-field'))
+                .validateURL(t('dashboard-meeting-livestream-streaming-endpoint-invalid-url'));
+            }
+            return schema.optional();
+          }),
+          streamingEndpoint: yup.string().when('kind', {
+            is: PlatformKind.Custom,
+            then: (schema) =>
+              schema
+                .required(t('global-required-field'))
+                .validateURL(t('dashboard-meeting-livestream-streaming-endpoint-invalid-url')),
+            otherwise: (schema) => schema.optional(),
+          }),
+        })
+        .when('enabled', {
+          is: true,
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.optional().default(undefined).nullable(),
         }),
-        checkpointInterval: yup.object().shape({
-          after: yup.number().min(60).required(),
-          within: yup.number().min(0).required(),
+    })
+    // Yup has problems with typechecking the discriminated unions
+    // therefore we need to assert type here
+    .required() as yup.ObjectSchema<Streaming>,
+  e2eEncryption: yup.boolean().required(),
+  trainingParticipationReport: yup
+    .object({
+      enabled: yup.boolean().required(),
+      parameter: yup
+        .object({
+          initialCheckpointDelay: yup
+            .object({
+              after: yup.number().min(0).required(),
+              within: yup.number().min(0).required(),
+            })
+            .required(),
+          checkpointInterval: yup
+            .object({
+              after: yup.number().min(60).required(),
+              within: yup.number().min(0).required(),
+            })
+            .required(),
+        })
+        .when('enabled', {
+          is: true,
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.optional().default(undefined).nullable(),
         }),
-      });
-    }),
-  }),
+    })
+    .required(),
+  waitingRoom: yup.boolean().required(),
+  isTimeDependent: yup.boolean().required(),
+  recurrencePattern: yup.mixed<MeetingFormValues['recurrencePattern']>().required(),
 });
