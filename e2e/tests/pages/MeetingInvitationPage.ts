@@ -118,11 +118,10 @@ export class MeetingInvitationPage {
   async navigateToMeetingLobby(): Promise<LobbyRoomPage> {
     await this.meetingLinkInputField.isVisible();
     const meetingLink = await this.meetingLinkInputField.inputValue();
-    await Promise.all([
-      this.page.goto(meetingLink),
-      this.page.waitForLoadState('domcontentloaded', { timeout: 10_000 }),
-    ]);
-    return new LobbyRoomPage({ page: this.page });
+    await Promise.all([this.page.goto(meetingLink), this.page.waitForLoadState('load', { timeout: 10_000 })]);
+    const lobbyRoomPage = new LobbyRoomPage({ page: this.page });
+    await lobbyRoomPage.renderLobbyPage();
+    return lobbyRoomPage;
   }
 
   async goToAdhocMeetingLobbyAsModerator(closeMeetingTab?: boolean): Promise<void> {
