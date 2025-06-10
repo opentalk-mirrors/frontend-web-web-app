@@ -99,6 +99,22 @@ export class MeetingInvitationPage {
     return guestLink;
   }
 
+  async getPhoneDialInDetails(): Promise<{
+    phoneDialIn: string;
+    telephoneDialInNumber: string;
+    conferenceId: string;
+    conferencePin: string;
+  }> {
+    const phoneDialIn = await this.phoneDialInInputField.inputValue();
+    const splitPhoneDialIn = phoneDialIn.match(/^([^,]+),,([^,]+),,([^,]+)$/);
+    return {
+      phoneDialIn,
+      telephoneDialInNumber: splitPhoneDialIn![1],
+      conferenceId: splitPhoneDialIn![2],
+      conferencePin: splitPhoneDialIn![3],
+    };
+  }
+
   async navigateToMeetingLobby(): Promise<LobbyRoomPage> {
     await this.meetingLinkInputField.isVisible();
     const meetingLink = await this.meetingLinkInputField.inputValue();

@@ -68,3 +68,32 @@ export const joinMeetingRoomWithNGuests = async (
 
   return guestMeetingRoomPages;
 };
+
+export const planNewMeetingAndStartAsModerator = async (
+  page: Page,
+  meetingTitle: string,
+  meetingPassword?: string
+): Promise<{
+  meetingRoomPage: MeetingRoomPage;
+  guestLink: string;
+  phoneDialIn: string;
+  telephoneDialInNumber: string;
+  conferenceId: string;
+  conferencePin: string;
+}> => {
+  const homePage = new HomePage({ page });
+  await homePage.navigateToHomePage();
+  const meetingPlanningPage = await homePage.planNewMeeting();
+  const meetingInvitationPage = await meetingPlanningPage.createNewMeeting(meetingTitle, meetingPassword);
+  const guestLink = await meetingInvitationPage.getGuestLink();
+  const { phoneDialIn, telephoneDialInNumber, conferenceId, conferencePin } =
+    await meetingInvitationPage.getPhoneDialInDetails();
+  const lobbyRoomPage = await meetingInvitationPage.navigateToMeetingLobby();
+  await expect(lobbyRoomPage.nameInputField).toBeVisible(); // needed because of flakyness (see issue #1692)
+
+  const meetingRoomPage = await lobbyRoomPage.enterMeetingRoom();
+  await meetingRoomPage.meetingRoomName.isVisible();
+  expect(await meetingRoomPage.getMeetingRoomName()).toContain(meetingTitle);
+
+  return { meetingRoomPage, guestLink, phoneDialIn, telephoneDialInNumber, conferenceId, conferencePin };
+};

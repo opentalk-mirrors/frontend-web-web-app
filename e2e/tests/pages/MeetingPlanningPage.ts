@@ -11,6 +11,10 @@ export class MeetingPlanningPage {
   meetingDetailsInputField: Locator;
   passwordInputField: Locator;
   createMeetingButton: Locator;
+  alreadyScheduledPopup: {
+    pleaseConfirmDialog: Locator;
+    createButton: Locator;
+  };
   setDateTimeToggleButton: Locator;
   waitingRoomToggleButton: Locator;
   createSharedFolderToggleButton: Locator;
@@ -78,6 +82,10 @@ export class MeetingPlanningPage {
     this.meetingDetailsInputField = this.page.getByPlaceholder('What is your meeting about?');
     this.passwordInputField = this.page.getByPlaceholder('Strong password has at least');
     this.createMeetingButton = this.page.getByRole('button', { name: 'Save' });
+    this.alreadyScheduledPopup = {
+      pleaseConfirmDialog: this.page.getByRole('dialog', { name: 'Please confirm' }),
+      createButton: this.page.getByRole('button', { name: 'Create' }),
+    };
     this.setDateTimeToggleButton = this.page.getByLabel('Set date & time');
     this.waitingRoomToggleButton = this.page.getByLabel('Waiting room');
     this.createSharedFolderToggleButton = this.page.getByLabel('Create shared folder');
@@ -137,17 +145,26 @@ export class MeetingPlanningPage {
     };
   }
 
-  async createNewMeeting(title: string, password: string): Promise<void> {
+  async createNewMeeting(title: string, password?: string): Promise<MeetingInvitationPage> {
     await this.titleInputField.click();
     await this.titleInputField.fill(title);
     await this.passwordInputField.click();
-    await this.passwordInputField.fill(password);
+    if (password) {
+      await this.passwordInputField.fill(password);
+    }
+    await this.showMeetingDetailsToggleButton.setChecked(true);
     await this.createMeetingButton.click();
+
+    await this.page.waitForTimeout(2000);
+    if (await this.alreadyScheduledPopup.pleaseConfirmDialog.isVisible()) {
+      await this.alreadyScheduledPopup.createButton.click();
+    }
 
     // wait for meeting invitation page to fully render in frontend
     await this.page.waitForLoadState('load');
     const meetingInvitationPage = new MeetingInvitationPage({ page: this.page });
     await meetingInvitationPage.meetingLinkInputField.waitFor({ state: 'visible', timeout: 30_000 });
+    return meetingInvitationPage;
   }
 
   async selectTitleInputField(): Promise<void> {
