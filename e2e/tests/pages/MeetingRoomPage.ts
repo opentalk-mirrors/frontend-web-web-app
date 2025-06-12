@@ -53,6 +53,14 @@ export class MeetingRoomPage {
     yourTurnPopup: Locator;
   };
 
+  timer: {
+    timerHeading: Locator;
+    durationButton: Locator;
+    titleTextbox: Locator;
+    participantsReadyCheckbox: Locator;
+    createTimerButton: Locator;
+  };
+
   videoPreview: Locator;
   videoPreviewName: Locator;
 
@@ -159,6 +167,14 @@ export class MeetingRoomPage {
       startNowButton: this.page.getByRole('button', { name: 'Start now' }),
       talkingStickStartedNotification: this.page.getByText('The Talking Stick is started.', { exact: true }),
       yourTurnPopup: this.page.getByRole('alertdialog', { name: '' }),
+    };
+
+    this.timer = {
+      timerHeading: this.page.getByRole('heading', { name: 'Timer' }),
+      durationButton: this.page.getByRole('button', { name: 'Duration' }),
+      titleTextbox: this.page.getByRole('textbox', { name: 'Title' }),
+      participantsReadyCheckbox: this.page.getByRole('checkbox', { name: 'Ask participants if they are ready' }),
+      createTimerButton: this.page.getByRole('button', { name: 'Create Timer' }),
     };
 
     this.videoPreview = this.page.getByRole('complementary', { name: 'Tools' }).locator('video');
@@ -512,5 +528,10 @@ export class MeetingRoomPage {
   // utility function
   async pressEscape() {
     await this.page.keyboard.press('Escape');
+  }
+
+  async startTimerModeratorTool() {
+    await this.moderationTools.timerButton.click();
+    await this.timer.timerHeading.waitFor();
   }
 }
