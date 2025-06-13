@@ -481,33 +481,18 @@ browser:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "firefox" && $CI_COMMIT_MESSAGE =~ /test\(e2e\)/
       variables:
         *e2e-variables-firefox
-  script:
-    - npx playwright install --with-deps
-    - npx playwright test --project=$BROWSER
-  after_script:
-    - npx ts-node ./ci/modifyJUnitReportForTestRail.ts
-  artifacts:
-    when: always
-    paths:
-      - junit
-      - html-report
-    expire_in: 7 days
-  allow_failure: true
-
-browser-nightly:
-  <<: *e2e-default-setup
-  variables:
-    INSTANCE_URL: https://testing.opentalk.eu/
-  rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule' && $BROWSER == "chromium"
       variables:
-        *e2e-variables-chrome
+        INSTANCE_URL: https://testing.opentalk.eu/
+        <<: *e2e-variables-chrome
     - if: $CI_PIPELINE_SOURCE == 'schedule' && $BROWSER == "webkit"
       variables:
-        *e2e-variables-webkit
+        INSTANCE_URL: https://testing.opentalk.eu/
+        <<: *e2e-variables-webkit
     - if: $CI_PIPELINE_SOURCE == 'schedule' && $BROWSER == "firefox"
       variables:
-        *e2e-variables-firefox
+        INSTANCE_URL: https://testing.opentalk.eu/
+        <<: *e2e-variables-firefox
   script:
     - npx playwright install --with-deps
     - npx playwright test --project=$BROWSER
@@ -525,7 +510,7 @@ merge-and-upload-test-results:
   stage: testrail
   image: python:latest
   needs:
-    - browser-nightly
+    - browser
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   before_script:
