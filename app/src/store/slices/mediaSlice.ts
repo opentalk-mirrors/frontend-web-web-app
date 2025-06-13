@@ -1,14 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { isAnyOf } from '@reduxjs/toolkit';
-import { Track } from 'livekit-client';
 
 import { RequestMute } from '../../api/types/incoming/media';
 import { ParticipantId, VideoSetting } from '../../types';
 import { TimerStyle } from '../../types';
-import { applyBackgroundEffectToTrack } from '../../utils/applyBackgroundEffect';
 import { MediaError } from '../../utils/mediaErrorUtils';
 import { hangUp, startMedia } from '../commonActions';
 import type { RootState } from '../index';
@@ -26,11 +24,6 @@ export interface BackgroundConfig {
 export enum NotificationKind {
   ForceMute = 'forceMute',
   RequestMute = 'requestMute',
-}
-
-export interface AudioAndVideoUpdate {
-  audio: boolean;
-  video: boolean;
 }
 
 interface MuteNotification {
@@ -61,21 +54,6 @@ export type MediaState = {
 };
 
 export type MediaDeviceKindExtended = MediaDeviceKind | 'screenshare';
-
-export const applyBackgroundEffect = createAsyncThunk<void, void, { state: RootState }>(
-  'media/applyBackgroundEffect',
-  async (_, { getState, dispatch }) => {
-    const state = getState();
-    const videoTrack = getLivekitRoom().localParticipant.getTrackPublication(Track.Source.Camera)?.videoTrack;
-    const videoBackgroundEffects = state.media.videoBackgroundEffects;
-
-    if (videoTrack) {
-      await applyBackgroundEffectToTrack(videoTrack, videoBackgroundEffects, (loading) => {
-        dispatch(setBackgroundEffectsLoading(loading));
-      }); // let errors bubble up as rejected state;
-    }
-  }
-);
 
 export const initialState: MediaState = {
   qualityCap: VideoSetting.High,
@@ -273,22 +251,8 @@ const startMediaChoiceListener = (startAppListening: StartAppListening) =>
     },
   });
 
-const startApplyBackgroundEffectListener = (startAppListening: StartAppListening) =>
-  startAppListening({
-    matcher: isAnyOf(setBackgroundEffects, setVideoDeviceId, startMedia.fulfilled),
-    effect: (_, listenerApi) => {
-      const { videoEnabled, videoBackgroundEffects } = listenerApi.getState().media;
-      const { accessToken } = listenerApi.getState().livekit;
-
-      if (videoEnabled && accessToken && !videoBackgroundEffects.loading) {
-        listenerApi.dispatch(applyBackgroundEffect());
-      }
-    },
-  });
-
 export const startMediaListeners = (startAppListening: StartAppListening) => {
   startDisableMediaOnCoffeeBreakListener(startAppListening);
   startDisableMediaOnWaitingRoomListener(startAppListening);
   startMediaChoiceListener(startAppListening);
-  startApplyBackgroundEffectListener(startAppListening);
 };

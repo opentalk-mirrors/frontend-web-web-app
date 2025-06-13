@@ -17,7 +17,10 @@ export const handleMediaPermissionError = ({ error, kind, deviceId }: MediaPermi
   if (error instanceof DOMException) {
     switch (error.name) {
       case MediaError.AbortError:
-        log.debug(`AbortError: Failed to start ${kind} with device: ${deviceId}`);
+        log.warn(`AbortError: Failed to start ${kind} with device: ${deviceId}`);
+        notifications.warning(t('device-unable-to-start', { mediaType: kind }), {
+          preventDuplicate: true,
+        });
         return error;
       case MediaError.NotAllowedError:
         notifications.warning(t('media-denied-warning', { mediaType: kind }), {
@@ -25,7 +28,7 @@ export const handleMediaPermissionError = ({ error, kind, deviceId }: MediaPermi
         });
         return error;
       default:
-        log.debug(`Failed to start ${kind} with device: ${deviceId}`);
+        log.warn(`Failed to start ${kind} with device: ${deviceId}`);
         notifications.warning(t('device-unable-to-start', { mediaType: kind }), {
           preventDuplicate: true,
         });

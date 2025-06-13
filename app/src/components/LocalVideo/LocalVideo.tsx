@@ -1,27 +1,21 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { VideoTrack, useLocalParticipant, useTracks } from '@livekit/components-react';
+import { TrackReference, VideoTrack, useTracks } from '@livekit/components-react';
 import { CircularProgress, Grid, Typography, styled } from '@mui/material';
-import { LocalVideoTrack, Track } from 'livekit-client';
-import { RefObject, useCallback, useEffect, useRef } from 'react';
+import { RoomEvent, Track } from 'livekit-client';
+import { useEffect } from 'react';
 import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PinIcon, WarningIcon } from '../../assets/icons';
 import { NameTile } from '../../commonComponents';
-import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useAppSelector } from '../../hooks';
+import { BackgroundBlur } from '../../modules/Media/BackgroundBlur';
 import { selectLivekitUnavailable } from '../../store/slices/livekitSlice';
-import {
-  selectAudioEnabled,
-  selectVideoBackgroundEffects,
-  selectVideoDeviceId,
-  selectVideoEnabled,
-  setBackgroundEffectsLoading,
-} from '../../store/slices/mediaSlice';
+import { selectAudioEnabled, selectVideoBackgroundEffects, selectVideoEnabled } from '../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
 import { selectDisplayName } from '../../store/slices/userSlice';
-import { applyBackgroundEffectToTrack } from '../../utils/applyBackgroundEffect';
 import { OverlayIconButton } from '../ParticipantWindow/fragments/OverlayIconButton';
 
 type PropsType = VideoHTMLAttributes<HTMLVideoElement>;
@@ -82,95 +76,37 @@ interface LocalVideoProps extends PropsType {
 }
 
 const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoPinned }: LocalVideoProps) => {
-  const videoTrackRef = useTracks([Track.Source.Camera]).find((trackRef) => trackRef.participant.isLocal);
-  const { cameraTrack } = useLocalParticipant();
+  const videoTrackRef = useTracks([Track.Source.Camera], { updateOnlyOn: [RoomEvent.ActiveDeviceChanged] }).find(
+    (trackRef) => trackRef.participant.isLocal
+  );
+
   const screenShareTrackRef = useTracks([Track.Source.ScreenShare]).find((trackRef) => trackRef.participant.isLocal);
   const isVideoEnabled = useAppSelector(selectVideoEnabled);
   const isAudioEnabled = useAppSelector(selectAudioEnabled);
   const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
-  const videoDeviceId = useAppSelector(selectVideoDeviceId);
   const { t } = useTranslation();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const videoThumbnailRef = useRef<HTMLVideoElement>(null);
-  const dispatch = useAppDispatch();
 
   const displayName = useAppSelector(selectDisplayName);
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
 
-  const outgoingScreenStream = screenShareTrackRef?.publication.track?.mediaStream || null;
   const screenShareEnabled = screenShareTrackRef?.participant.isScreenShareEnabled || false;
 
-  const outgoingVideoStreamTrack = cameraTrack?.track?.mediaStreamTrack || null;
+  const videoTrack = videoTrackRef?.publication?.videoTrack as TrackReference;
+  const videoProcessor = new BackgroundBlur(videoBackgroundEffects);
+
+  useEffect(() => {
+    if (videoProcessor) {
+      videoTrack?.setProcessor(videoProcessor);
+    }
+  }, [videoProcessor]);
+
+  const outgoingVideoStreamTrack = videoTrack?.mediaStreamTrack || null;
 
   const isVideoRunning = outgoingVideoStreamTrack?.readyState === 'live' && outgoingVideoStreamTrack?.enabled;
   const showLoadingSpinner =
     isVideoEnabled && (outgoingVideoStreamTrack === null || outgoingVideoStreamTrack?.muted) && !isVideoRunning;
-  const isVideoMissing = isVideoEnabled && cameraTrack?.track?.isMuted && !cameraTrack?.track.mediaStreamTrack;
-
-  useEffect(() => {
-    const localVideoTrack = cameraTrack?.track as LocalVideoTrack;
-    if (localVideoTrack instanceof LocalVideoTrack) {
-      applyBackgroundEffectToTrack(
-        localVideoTrack,
-        videoBackgroundEffects,
-        (loading) => {
-          dispatch(setBackgroundEffectsLoading(loading));
-        },
-        videoDeviceId
-      ).catch((error) => {
-        console.error('Error starting background processor', error);
-      });
-    }
-  }, [
-    isVideoEnabled,
-    cameraTrack?.track,
-    videoBackgroundEffects.style,
-    videoBackgroundEffects.imageUrl,
-    videoDeviceId,
-  ]);
-
-  const attachVideo = useCallback((refObject: RefObject<HTMLVideoElement | null>, stream: MediaStream | null) => {
-    if (refObject.current !== null) {
-      refObject.current.volume = 0;
-      refObject.current.srcObject = stream;
-      refObject.current.playsInline = true;
-    }
-  }, []);
-
-  const detachVideo = useCallback((refObject: RefObject<HTMLVideoElement | null>) => {
-    if (refObject.current !== null) {
-      refObject.current.srcObject = null;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (screenShareEnabled && isVideoEnabled) {
-      attachVideo(videoThumbnailRef, cameraTrack?.track?.mediaStream || null);
-      attachVideo(videoRef, outgoingScreenStream);
-    } else if (isVideoEnabled) {
-      attachVideo(videoRef, cameraTrack?.track?.mediaStream || null);
-      detachVideo(videoThumbnailRef);
-    } else if (screenShareEnabled) {
-      attachVideo(videoRef, outgoingScreenStream);
-      detachVideo(videoThumbnailRef);
-    }
-
-    return () => {
-      detachVideo(videoRef);
-      detachVideo(videoThumbnailRef);
-    };
-  }, [
-    outgoingVideoStreamTrack,
-    outgoingScreenStream,
-    screenShareEnabled,
-    attachVideo,
-    detachVideo,
-    videoBackgroundEffects,
-    isVideoEnabled,
-    videoTrackRef,
-    screenShareTrackRef,
-  ]);
+  const isVideoMissing = isVideoEnabled && videoTrack?.isMuted && !videoTrack?.mediaStreamTrack;
 
   return (
     <Container container justifyContent="center" alignItems="center">
