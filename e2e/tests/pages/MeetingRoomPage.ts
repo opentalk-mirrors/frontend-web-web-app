@@ -75,7 +75,21 @@ export class MeetingRoomPage {
 
   timer: {
     timerHeading: Locator;
-    durationButton: Locator;
+    duration: {
+      durationSelectionButton: Locator;
+      sessionDurationPopup: Locator;
+      sessionDurationTitle: Locator;
+      unlimitedTimeButton: Locator;
+      oneMinuteButton: Locator;
+      twoMinutesButton: Locator;
+      fiveMinutesButton: Locator;
+      customDuration: {
+        customButton: Locator;
+        spinButton: Locator;
+      };
+      closeButton: Locator;
+      saveButton: Locator;
+    };
     titleTextbox: Locator;
     participantsReadyCheckbox: Locator;
     createTimerButton: Locator;
@@ -211,7 +225,21 @@ export class MeetingRoomPage {
 
     this.timer = {
       timerHeading: this.page.getByRole('heading', { name: 'Timer' }),
-      durationButton: this.page.getByRole('button', { name: 'Duration' }),
+      duration: {
+        durationSelectionButton: this.page.getByRole('button', { name: 'Duration' }),
+        sessionDurationPopup: this.page.getByRole('dialog', { name: 'Session Duration' }),
+        sessionDurationTitle: this.page.getByText('Session Duration', { exact: true }),
+        unlimitedTimeButton: this.page.getByRole('button', { name: 'Unlimited duration' }),
+        oneMinuteButton: this.page.getByRole('button', { name: '1 minute' }),
+        twoMinutesButton: this.page.getByRole('button', { name: '2 minutes' }),
+        fiveMinutesButton: this.page.getByRole('button', { name: '5 minutes' }),
+        customDuration: {
+          customButton: this.page.getByRole('button', { name: 'Custom duration' }),
+          spinButton: this.page.getByRole('spinbutton'),
+        },
+        closeButton: this.page.getByRole('button', { name: 'Close' }),
+        saveButton: this.page.getByRole('button', { name: 'Save' }),
+      },
       titleTextbox: this.page.getByRole('textbox', { name: 'Title' }),
       participantsReadyCheckbox: this.page.getByRole('checkbox', { name: 'Ask participants if they are ready' }),
       createTimerButton: this.page.getByRole('button', { name: 'Create Timer' }),
@@ -595,8 +623,52 @@ export class MeetingRoomPage {
     await this.page.keyboard.press('Escape');
   }
 
+  // functions related to timer
   async startTimerModeratorTool() {
     await this.moderationTools.timerButton.click();
     await this.timer.timerHeading.waitFor();
+  }
+
+  async openDurationSelection() {
+    await this.timer.duration.durationSelectionButton.click();
+  }
+
+  async closeDurationSelection() {
+    await this.timer.duration.closeButton.click();
+  }
+
+  async selectUnlimitedTimeOption() {
+    await this.timer.duration.unlimitedTimeButton.click();
+  }
+
+  async selectOneMinuteOption() {
+    await this.timer.duration.oneMinuteButton.click();
+  }
+
+  async selectTwoMinutesOption() {
+    await this.timer.duration.twoMinutesButton.click();
+  }
+
+  async selectFiveMinutesOption() {
+    await this.timer.duration.fiveMinutesButton.click();
+  }
+
+  async selectCustomDuration() {
+    await this.timer.duration.customDuration.customButton.click();
+  }
+
+  async isDurationSelected(locator: Locator): Promise<boolean> {
+    return await locator.evaluate((element) => element.getAttribute('aria-selected') === 'true');
+  }
+
+  async saveSessionDuration() {
+    await this.timer.duration.saveButton.click();
+  }
+
+  async enterCustomDuration(value?: string) {
+    await this.timer.duration.customDuration.spinButton.click();
+    if (value) {
+      await this.timer.duration.customDuration.spinButton.fill(value);
+    }
   }
 }
