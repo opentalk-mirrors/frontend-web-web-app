@@ -7,6 +7,7 @@ import { MeetingRoomPage } from './MeetingRoom/MeetingRoomPage';
 
 export class LobbyRoomPage {
   page: Page;
+  openTalkLogo: Locator;
   speedTestButton: Locator;
   threeDotMenuButton: Locator;
   openUserManualButton: Locator;
@@ -21,8 +22,14 @@ export class LobbyRoomPage {
   imprintLink: Locator;
   dataProtectionLink: Locator;
 
+  conferenceCloseAlerts: {
+    conferenceCloseAlertNotification: Locator;
+    conferenceCloseForAllAlertNotification: Locator;
+  };
+
   constructor({ page }: { page: Page }) {
     this.page = page;
+    this.openTalkLogo = this.page.getByRole('button', { name: 'Go to dashboard' });
     this.speedTestButton = this.page.getByRole('button', { name: 'Start Speed-Test' });
     this.threeDotMenuButton = this.page.getByRole('button', { name: 'My meeting' });
     this.backButton = this.page.getByRole('button', { name: 'Back', exact: true });
@@ -36,6 +43,13 @@ export class LobbyRoomPage {
     this.joinMeetingButton = this.page.getByRole('button', { name: 'Enter now' });
     this.imprintLink = this.page.getByRole('link', { name: 'Imprint' });
     this.dataProtectionLink = this.page.getByRole('link', { name: 'Data protection' });
+
+    this.conferenceCloseAlerts = {
+      conferenceCloseAlertNotification: this.page.getByText('The conference was closed by the moderator.', {
+        exact: true,
+      }),
+      conferenceCloseForAllAlertNotification: this.page.getByText('The conference is ended for all.', { exact: true }),
+    };
   }
 
   async isMicrophoneEnabled(): Promise<void> {

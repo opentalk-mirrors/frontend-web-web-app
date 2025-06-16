@@ -134,6 +134,18 @@ export class MeetingRoomPage {
     endMeetingButton: Locator;
   };
 
+  debriefingOptions: {
+    endOfTheConferenceOption: Locator;
+    forModeratorOption: Locator;
+    forModeratorAndRegisteredUserOption: Locator;
+    debriefingInitAlert: Locator;
+  };
+
+  participantsAvatar: {
+    moderatorAvatar: Locator;
+    guestAvatar: Locator;
+  };
+
   chatButton: Locator;
   peopleButton: Locator;
   messageButton: Locator;
@@ -314,6 +326,21 @@ export class MeetingRoomPage {
       cameraMoreOptionButton: this.page.getByRole('button', { name: 'additional options camera' }),
       moreOptionButton: this.page.getByRole('button', { name: 'More Options' }),
       endMeetingButton: this.page.getByRole('button', { name: 'Leave Call' }),
+    };
+
+    this.debriefingOptions = {
+      endOfTheConferenceOption: this.page.getByRole('button', { name: 'End of the conference' }),
+      forModeratorOption: this.page.getByRole('button', { name: 'For moderator', exact: true }),
+      forModeratorAndRegisteredUserOption: this.page.getByRole('button', {
+        name: 'For moderator + registered user',
+        exact: true,
+      }),
+      debriefingInitAlert: this.page.getByText('Debriefing initiated - Waiting room is activated.', { exact: true }),
+    };
+
+    this.participantsAvatar = {
+      moderatorAvatar: this.page.locator('.MuiBadge-badge:has(svg title:has-text("Moderator"))'),
+      guestAvatar: this.page.locator('.MuiBadge-badge:not(:has(svg title:has-text("Moderator")))'),
     };
 
     this.chatButton = this.page.getByRole('tab', { name: 'Chat' });
@@ -790,5 +817,22 @@ export class MeetingRoomPage {
 
   async toggleAskParticipantsIfReady(value: boolean) {
     await this.timer.participantsReadyCheckbox.setChecked(value);
+  }
+
+  async selectModeratorToolHome() {
+    await this.moderationTools.homeButton.click();
+    await this.searchInChatButton.isVisible();
+  }
+
+  async startDebriefingModeratorTool() {
+    await this.moderationTools.debriefingButton.click();
+  }
+
+  async selectDebriefingOption(debriefingOptionButton: Locator) {
+    await debriefingOptionButton.click();
+  }
+
+  async hasModerator(): Promise<boolean> {
+    return await this.participantsAvatar.moderatorAvatar.isVisible();
   }
 }
