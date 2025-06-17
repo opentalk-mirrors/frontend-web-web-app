@@ -84,7 +84,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
     roomId: RoomId;
   };
 
-  useEffect(() => {
+  const openChannel = () => {
     if (channelId && popoutStreamAccess && popoutStreamAccess.token) {
       const url = new URL(`${window.location.origin}/room/extended/${channelId}`);
       const channel = new BroadcastChannel(channelId);
@@ -111,6 +111,12 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
       };
       window.open(url.toString(), '_blank');
     }
+  };
+
+  // Opening url is known bug in react -> https://github.com/facebook/react/issues/17355
+  // Using setTimeout as a workaround
+  useEffect(() => {
+    setTimeout(openChannel, 0);
   }, [popoutStreamAccess]);
 
   const togglePin = useCallback(() => {
