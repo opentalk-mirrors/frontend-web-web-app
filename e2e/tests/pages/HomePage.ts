@@ -13,6 +13,7 @@ export class HomePage {
   joinExistingMeetingButton: Locator;
   currentMeetingsHeaderSelector: Locator;
   favoriteMeetingsHeaderSelector: Locator;
+  startMeetingButtonNamePrefix: string;
 
   constructor({ page }: { page: Page }) {
     this.page = page;
@@ -21,6 +22,7 @@ export class HomePage {
     this.joinExistingMeetingButton = this.page.getByRole('button', { name: 'Join existing' });
     this.currentMeetingsHeaderSelector = this.page.getByText('Current meetings');
     this.favoriteMeetingsHeaderSelector = this.page.getByText('My favorite meetings');
+    this.startMeetingButtonNamePrefix = 'Start ';
   }
 
   async navigateToHomePage(): Promise<void> {
@@ -55,8 +57,8 @@ export class HomePage {
     return await this.page.getByRole('link', { name: meetingTitle, exact: true });
   }
 
-  async getStartMeetingButton(meetingTitle: string): Promise<Locator> {
-    return await this.page.getByRole('link', { name: 'Start ' + meetingTitle, exact: true }).first();
+  private async getStartMeetingButton(meetingTitle: string): Promise<Locator> {
+    return this.page.getByRole('link', { name: this.startMeetingButtonNamePrefix + meetingTitle, exact: true }).first();
   }
 
   async getThreeDotMenuOfMeeting(meetingTitle: string): Promise<Locator> {
@@ -67,7 +69,16 @@ export class HomePage {
       .first();
   }
 
-  async deleteMeeting(meetingTitle: string): Promise<void> {
+  async deleteMeeting(meetingTitle: string): Promise<boolean> {
+    const count = await this.getCountOfMeetingsWithTitle(meetingTitle);
+    if (count <= 0) {
+      // nothing to do
+      return false;
+    }
+    const startMeetingButton = await this.getStartMeetingButton(meetingTitle);
+    const meetingLink = await startMeetingButton.getAttribute('href');
+    const uniqueMeetingStartButton = this.page.locator('[href*="' + meetingLink + '"]');
+
     const meetingMenu = await this.getThreeDotMenuOfMeeting(meetingTitle);
     await meetingMenu.waitFor({ timeout: 10_000 });
     await meetingMenu.click();
@@ -80,10 +91,7 @@ export class HomePage {
           response.status() === 204
       ),
       this.page.getByRole('button', { name: 'Delete' }).click(),
-    ]);
-
-    // After deletion, wait for the frontend to update the list:
-    await Promise.all([
+      // After deletion, wait for the frontend to update the list:
       this.page.waitForResponse(
         (response) =>
           response.request().url().includes('/events?') &&
@@ -92,17 +100,26 @@ export class HomePage {
       ),
       this.page.waitForLoadState('domcontentloaded'),
     ]);
+
+    let isStartMeetingButtonVisible: boolean;
+    do {
+      isStartMeetingButtonVisible = await uniqueMeetingStartButton.isVisible();
+    } while (isStartMeetingButtonVisible);
+    return true;
   }
 
   async deleteAllCreatedMeetings(meetingTitle: string): Promise<void> {
-    let elements = await this.page.getByTitle(meetingTitle);
-    let count = await elements.count();
     // The UI only shows a maximum of four meetings in the dashboard at a time
     // We need to ensure all meetings are deleted if more than four exist
+    let count = await this.getCountOfMeetingsWithTitle(meetingTitle);
     while (count > 0) {
       await this.deleteMeeting(meetingTitle);
-      elements = await this.page.getByTitle(meetingTitle);
-      count = await elements.count();
+      count = await this.getCountOfMeetingsWithTitle(meetingTitle);
     }
+  }
+
+  private async getCountOfMeetingsWithTitle(meetingTitle: string): Promise<number> {
+    const elements = this.page.getByTitle(meetingTitle);
+    return await elements.count();
   }
 }
