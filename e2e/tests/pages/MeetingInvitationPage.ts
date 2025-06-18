@@ -52,15 +52,6 @@ export class MeetingInvitationPage {
     return await this.page.getByText(this.adhocMeetingDescription.disclaimer);
   }
 
-  async waitForGuestLinkToRender(): Promise<boolean> {
-    // it takes some time for guestlink placeholder to have meeting url
-    await this.guestLinkInputField.isVisible();
-    let guestLink = await this.guestLinkInputField.inputValue();
-    await new Promise((res) => setTimeout(res, 5_000));
-    guestLink = await this.guestLinkInputField.inputValue();
-    return guestLink != '-';
-  }
-
   async getInviteParticipantMeetingLinkPlaceHolderText(): Promise<string> {
     return await this.inviteParticipantsInputField.getAttribute('placeholder');
   }
@@ -91,11 +82,20 @@ export class MeetingInvitationPage {
     return this.page.getByText(this.notificationText);
   }
 
-  async getGuestLink(): Promise<string> {
-    let guestLink = '';
-    if (await this.waitForGuestLinkToRender()) {
+  private async waitForGuestLinkToRender(): Promise<void> {
+    // it takes some time for guestlink placeholder to have meeting url
+    await this.guestLinkInputField.isVisible();
+    let guestLink = await this.guestLinkInputField.inputValue();
+    while (guestLink == '-') {
+      await this.page.waitForTimeout(500);
       guestLink = await this.guestLinkInputField.inputValue();
     }
+  }
+
+  public async getGuestLink(): Promise<string> {
+    await this.guestLinkInputField.isVisible();
+    await this.waitForGuestLinkToRender();
+    const guestLink = await this.guestLinkInputField.inputValue();
     return guestLink;
   }
 
