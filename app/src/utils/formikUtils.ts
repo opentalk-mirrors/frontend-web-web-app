@@ -124,10 +124,7 @@ export function formikSwitchProps<Values>(
   fieldName: FormikPaths<Values>,
   formik: FormikProps<Values>
 ): IFormikSwitchPropsReturnValue {
-  const { values, handleBlur, handleChange, errors } = formik;
-
-  const errorMessage = get(errors, fieldName);
-  const hasError = Boolean(errorMessage);
+  const { values, handleBlur, handleChange } = formik;
 
   const isChecked = () => get(values, fieldName) === true;
 
@@ -142,8 +139,6 @@ export function formikSwitchProps<Values>(
     },
     onBlur: handleBlur,
     checked: isChecked(),
-    error: hasError,
-    helperText: (hasError && (errorMessage as string)) || undefined,
   };
 }
 
