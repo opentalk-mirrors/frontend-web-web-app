@@ -5,7 +5,7 @@ import { Page, expect } from '@playwright/test';
 
 import { HomePage } from '../pages/HomePage';
 import { LobbyRoomPage } from '../pages/LobbyRoomPage';
-import { MeetingRoomPage } from '../pages/MeetingRoomPage';
+import { MeetingRoomPage } from '../pages/MeetingRoom/MeetingRoomPage';
 
 export const startAdhocMeetingAsModerator = async (
   page: Page

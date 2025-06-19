@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator, BrowserContext } from '@playwright/test';
 
-import { navigateToExternalPage } from '../helper/externalPageHelper';
+import { navigateToExternalPage } from '../../helper/externalPageHelper';
+import { MoreOptionsPage } from './MoreOptionsPage';
 
 export class MeetingRoomPage {
   page: Page;
@@ -356,10 +357,6 @@ export class MeetingRoomPage {
     await this.meetingDetails.copyPasswordButton.click();
   }
 
-  async getClipboardContent(): Promise<string> {
-    return await this.page.evaluate(() => navigator.clipboard.readText());
-  }
-
   // functions related to view options menu
   async displayViewOptionsMenu(): Promise<void> {
     await this.viewOptions.viewOptionsButton.waitFor();
@@ -616,6 +613,11 @@ export class MeetingRoomPage {
         break;
       }
     }
+  }
+
+  async showMoreOptions() {
+    await this.toolBar.moreOptionButton.click();
+    return new MoreOptionsPage(this.page);
   }
 
   // utility function

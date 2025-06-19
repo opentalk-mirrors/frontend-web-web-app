@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { test, expect } from '@playwright/test';
 
+import { getClipboardContent } from '../../helper/clipboardHelpers';
 import { planNewMeetingAndStartAsModerator } from '../../helper/meetingHelpers';
 import { HomePage } from '../../pages/HomePage';
 
@@ -34,7 +35,7 @@ test.describe('Meeting Room_Meeting credentials for all in conference', () => {
     await meetingRoomPage.copyMeetingDetailsToClipboard();
     await expect(meetingRoomPage.meetingDetails.alertPopup.detailsCopiedToClipboardPopup).toBeVisible();
 
-    const clipboardContent = await meetingRoomPage.getClipboardContent();
+    const clipboardContent = await getClipboardContent(page);
     expect(clipboardContent).toContain(`${userName} invites you to an OpenTalk meeting.`);
     expect(clipboardContent).toContain(`Title: ${meetingTitle}`);
     expect(clipboardContent).toContain('You can join the meeting using one of the following means:');
@@ -49,14 +50,14 @@ test.describe('Meeting Room_Meeting credentials for all in conference', () => {
 
     await meetingRoomPage.copyInviteLinkToClipboard();
     await expect(meetingRoomPage.meetingDetails.alertPopup.linkCopiedToClipboardPopup).toBeVisible();
-    expect(await meetingRoomPage.getClipboardContent()).toContain(guestLink);
+    expect(await getClipboardContent(page)).toContain(guestLink);
 
     await meetingRoomPage.copyDialInNumberToClipboard();
     await expect(meetingRoomPage.meetingDetails.alertPopup.dialInCopiedToClipboardPopup).toBeVisible();
-    expect(await meetingRoomPage.getClipboardContent()).toContain(phoneDialIn);
+    expect(await getClipboardContent(page)).toContain(phoneDialIn);
 
     await meetingRoomPage.copyPasswordToClipboard();
     await expect(meetingRoomPage.meetingDetails.alertPopup.passwordCopiedToClipboardPopup).toBeVisible();
-    expect(await meetingRoomPage.getClipboardContent()).toContain(meetingPassword);
+    expect(await getClipboardContent(page)).toContain(meetingPassword);
   });
 });

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
-import { MeetingRoomPage } from './MeetingRoomPage';
+import { MeetingRoomPage } from './MeetingRoom/MeetingRoomPage';
 
 export class LobbyRoomPage {
   page: Page;
