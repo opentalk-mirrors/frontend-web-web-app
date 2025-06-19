@@ -11,6 +11,26 @@ export class MeetingRoomPage {
 
   meetingRoomName: Locator;
 
+  meetingDetails: {
+    infoButton: Locator;
+    inviteLinkInputField: Locator;
+    dialInNumberInputField: Locator;
+    passwordInputField: Locator;
+    copyInviteLinkButton: Locator;
+    copyDialInNumButton: Locator;
+    copyPasswordButton: Locator;
+    shareOptions: {
+      clipBoardButton: Locator;
+      eMailButton: Locator;
+    };
+    alertPopup: {
+      linkCopiedToClipboardPopup: Locator;
+      dialInCopiedToClipboardPopup: Locator;
+      passwordCopiedToClipboardPopup: Locator;
+      detailsCopiedToClipboardPopup: Locator;
+    };
+  };
+
   viewOptions: {
     viewOptionsButton: Locator;
     viewAndSortingPopupMenu: Locator;
@@ -125,6 +145,26 @@ export class MeetingRoomPage {
     this.context = this.page.context();
 
     this.meetingRoomName = this.page.locator('h1').first();
+
+    this.meetingDetails = {
+      infoButton: this.page.getByRole('button', { name: 'Share meeting details' }),
+      inviteLinkInputField: this.page.getByRole('textbox', { name: 'Invite Link' }),
+      dialInNumberInputField: this.page.getByRole('textbox', { name: 'Dial-in Number' }),
+      passwordInputField: this.page.getByRole('textbox', { name: 'Password' }),
+      shareOptions: {
+        clipBoardButton: this.page.getByRole('button', { name: 'Clipboard' }),
+        eMailButton: this.page.getByRole('button', { name: 'E-Mail' }),
+      },
+      copyInviteLinkButton: this.page.getByRole('button', { name: 'Copy Invite Link for ' }),
+      copyDialInNumButton: this.page.getByRole('button', { name: 'Copy Dial-in Number for ' }),
+      copyPasswordButton: this.page.getByRole('button', { name: 'Copy Password for ' }),
+      alertPopup: {
+        linkCopiedToClipboardPopup: this.page.getByText('The link was copied to your clipboard'),
+        dialInCopiedToClipboardPopup: this.page.getByText('The telephone dial-in was copied to the clipboard'),
+        passwordCopiedToClipboardPopup: this.page.getByText('The password was copied to your clipboard'),
+        detailsCopiedToClipboardPopup: this.page.getByText('Details were copied to your clipboard'),
+      },
+    };
 
     this.viewOptions = {
       viewOptionsButton: this.page.getByRole('button', { name: 'Select view' }),
@@ -265,6 +305,31 @@ export class MeetingRoomPage {
       await this.turnCameraOff();
     }
     return userName;
+  }
+
+  // functions related to meeting details
+  async showMeetingDetails() {
+    await this.meetingDetails.infoButton.click();
+  }
+
+  async copyInviteLinkToClipboard() {
+    await this.meetingDetails.copyInviteLinkButton.click();
+  }
+
+  async copyDialInNumberToClipboard() {
+    await this.meetingDetails.copyDialInNumButton.click();
+  }
+
+  async copyMeetingDetailsToClipboard() {
+    await this.meetingDetails.shareOptions.clipBoardButton.click();
+  }
+
+  async copyPasswordToClipboard() {
+    await this.meetingDetails.copyPasswordButton.click();
+  }
+
+  async getClipboardContent(): Promise<string> {
+    return await this.page.evaluate(() => navigator.clipboard.readText());
   }
 
   // functions related to view options menu
