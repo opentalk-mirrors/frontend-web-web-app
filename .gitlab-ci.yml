@@ -102,8 +102,8 @@ typecheck:
     - *setup-pnpm
   script:
     - pnpm install
+    - pnpm build:libs
     - pnpm typecheck
-  allow_failure: true
 
 circular-deps:
   stage: lint

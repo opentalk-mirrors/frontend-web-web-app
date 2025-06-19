@@ -68,7 +68,7 @@ export const ListItem = styled(MuiListItem, {
 interface NavigationProps {
   href?: string;
   target?: string;
-  Icon: JSX.Element;
+  Icon: React.JSX.Element;
   collapsedBar: boolean;
   label: string;
   disabled?: boolean;

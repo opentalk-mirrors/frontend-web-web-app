@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MediaSessionType, NamespacedIncoming, ParticipantId, SpeakingState, TrickleCandidate } from '../../../types';
+import { MediaSessionType, NamespacedIncoming, ParticipantId, TrickleCandidate } from '../../../types';
 
 export interface Source {
   source: ParticipantId;
@@ -63,7 +63,7 @@ export interface MediaError extends Source {
   error: string;
 }
 
-export interface SpeakerUpdated extends SpeakingState {
+export interface SpeakerUpdated {
   message: 'speaker_updated';
   participant: ParticipantId;
 }

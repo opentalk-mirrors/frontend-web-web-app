@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { ThemeProvider } from '@mui/material';
 import '@mui/material';
-import { ftl2js } from '@opentalk/fluent_conv';
 import {
   BaseAsset,
   DateTime,
@@ -20,8 +19,10 @@ import {
   UserId,
   PlatformKind,
   StreamingTarget,
+  AssetId,
+  InviteCode,
+  SipId,
 } from '@opentalk/rest-api-rtk-query';
-import { AssetId, InviteCode, SipId } from '@opentalk/rest-api-rtk-query/src/types';
 import { ConfigureStoreOptions, Store, combineReducers, configureStore as configureStoreTlk } from '@reduxjs/toolkit';
 import { RenderOptions, RenderResult, render as rtlRender } from '@testing-library/react';
 import i18n from 'i18next';
@@ -32,7 +33,6 @@ import {
   Track,
 } from 'livekit-client';
 import { range } from 'lodash';
-import fs from 'node:fs';
 import React from 'react';
 import { initReactI18next } from 'react-i18next';
 import { Provider } from 'react-redux';
@@ -80,23 +80,6 @@ const automodState: AutomodState = {
   showList: false,
   speakerState: SpeakerState.Inactive,
   considerHandRaise: false,
-};
-
-export const loadLanguage = async (lng: string) => {
-  const filename = `public/locales/${lng}/k3k.ftl`;
-  await new Promise((resolve, reject) => {
-    fs.readFile(filename, 'utf8', (err?, data?) => {
-      if (err) {
-        reject(err);
-      }
-
-      i18n.loadNamespaces('k3k', () => {
-        const bundle = ftl2js(data ? data : '');
-        i18n.addResourceBundle(lng, 'k3k', bundle);
-        resolve(data);
-      });
-    });
-  });
 };
 
 i18n.use(initReactI18next).init({

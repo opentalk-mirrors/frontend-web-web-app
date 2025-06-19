@@ -156,7 +156,7 @@ describe('ThumbsRow', () => {
 
     // one visible participant is leaving (last one in the row)
     // now the first two participants must be visible + no slider buttons
-    store.dispatch(leave({ id: ids[2] as ParticipantId, timestamp: Date.now().toString() }));
+    store.dispatch(leave({ id: ids[2] as ParticipantId, timestamp: Date.now().toString(), reason: 'quit' }));
 
     expect(screen.getByTestId(`thumbsVideo-${ids[0]}`)).toBeInTheDocument();
     expect(screen.getByTestId(`thumbsVideo-${ids[1]}`)).toBeInTheDocument();

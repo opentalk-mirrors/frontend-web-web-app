@@ -84,12 +84,14 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
       timeMax: endDate as DateTime,
     });
 
-    const overlappingEvent = findOverlappingEvent(
-      new Date(startDate),
-      new Date(endDate),
-      sameTimeEventQueryResponse.data.data,
-      existingEvent?.id
-    );
+    const overlappingEvent =
+      sameTimeEventQueryResponse.data &&
+      findOverlappingEvent(
+        new Date(startDate),
+        new Date(endDate),
+        sameTimeEventQueryResponse.data.data,
+        existingEvent?.id
+      );
     if (overlappingEvent) {
       setOverlappingEvent(overlappingEvent);
     } else {

@@ -5,6 +5,7 @@ import { Box, Stack, Typography } from '@mui/material';
 
 import { ParticipantAvatar, setLibravatarOptions } from '../../../commonComponents';
 import { LibravatarDefaultImage } from '../../../types';
+import { HTMLLIElementWithSxProps } from '../types';
 import { ParticipantOption } from './ParticipantOption';
 
 export const SuggestedUserStrategy = {
@@ -16,8 +17,7 @@ export const SuggestedUserStrategy = {
     return '';
   },
   renderOption:
-    (defaultImage: LibravatarDefaultImage) =>
-    (props: React.HTMLAttributes<HTMLLIElement>, option: ParticipantOption) => {
+    (defaultImage: LibravatarDefaultImage) => (props: HTMLLIElementWithSxProps, option: ParticipantOption) => {
       if ('firstname' in option) {
         return (
           <Box

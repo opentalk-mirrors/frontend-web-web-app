@@ -13,4 +13,4 @@ export {
   showConsentNotification,
 } from './fragments';
 
-export type { ISnackActionsProps, ISnackbarPersistentProps, ISnackbarActionButtonProps } from './fragments';
+export type { ISnackActionsProps, ISnackbarPersistentProps } from './fragments';

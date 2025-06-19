@@ -7,7 +7,7 @@ import { ReactElement } from 'react';
 interface ConditionalToolTipProps {
   showToolTip: boolean;
   title?: string;
-  children: ReactElement<JSX.Element, string>;
+  children: ReactElement<React.JSX.Element, string>;
 }
 export const ConditionalToolTip: React.FC<ConditionalToolTipProps> = ({
   showToolTip,

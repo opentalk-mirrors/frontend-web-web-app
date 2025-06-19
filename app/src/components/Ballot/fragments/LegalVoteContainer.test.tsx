@@ -91,7 +91,7 @@ describe('LegalVoteContainer', () => {
       ...legalVote,
       allowedParticipants: [mockedUuid as ParticipantId],
     };
-    (useAppSelector as jest.Mock).mockImplementation((selector) => {
+    (useAppSelector as unknown as jest.Mock).mockImplementation((selector) => {
       if (selector === selectOurUuid) {
         return mockedUuid;
       }
@@ -119,7 +119,7 @@ describe('LegalVoteContainer', () => {
       },
       allowedParticipants: [mockedUuid as ParticipantId],
     };
-    (useAppSelector as jest.Mock).mockImplementation((selector) => {
+    (useAppSelector as unknown as jest.Mock).mockImplementation((selector) => {
       if (selector === selectOurUuid) {
         return mockedUuid;
       }

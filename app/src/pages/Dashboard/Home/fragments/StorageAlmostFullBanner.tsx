@@ -38,7 +38,9 @@ export const StorageAlmostFullBanner = () => {
   const { t } = useTranslation();
   const { data: userData, isLoading: isUserDataLoading } = useGetMeQuery();
   const { data: tariffData, isLoading: isTariffDataLoading } = useGetMeTariffQuery();
-  const isStorageUpgradable = tariffData && isFeatureEnabledPredicate('storage_upgradable', tariffData.modules);
+  const isStorageUpgradable = Boolean(
+    tariffData && isFeatureEnabledPredicate('storage_upgradable', tariffData.modules)
+  );
   const usedStorage = userData?.usedStorage;
   const maxStorage = tariffData?.quotas.maxStorage;
 

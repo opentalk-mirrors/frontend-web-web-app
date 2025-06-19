@@ -2,7 +2,7 @@
 //
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { useAppSelector as mockUseAppSelector } from '../../hooks';
+import { useAppSelector } from '../../hooks';
 import { mockLegalVote, mockPoll } from '../../utils/testUtils';
 import Ballot from './Ballot';
 
@@ -29,18 +29,18 @@ jest.mock('./fragments/ReportSection', () => ({
 // SPDX-License-Identifier: EUPL-1.2
 describe('Ballot', () => {
   it('renders empty on missing ids', () => {
-    (mockUseAppSelector as jest.Mock).mockReturnValue(undefined);
+    (useAppSelector as unknown as jest.Mock).mockReturnValue(undefined);
     render(<Ballot />);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   describe('poll and legal vote', () => {
     afterEach(() => {
-      (mockUseAppSelector as jest.Mock).mockReset();
+      (useAppSelector as unknown as jest.Mock).mockReset();
     });
 
     it('can render poll dialog', () => {
-      (mockUseAppSelector as jest.Mock)
+      (useAppSelector as unknown as jest.Mock)
         .mockReturnValueOnce(undefined) // voteIdToShow
         .mockReturnValueOnce(undefined) // pollIdToShow
         .mockReturnValueOnce(undefined) // voteOrPollIdToShow
@@ -52,7 +52,7 @@ describe('Ballot', () => {
     });
 
     it('can render legal vote dialog with report section', () => {
-      (mockUseAppSelector as jest.Mock)
+      (useAppSelector as unknown as jest.Mock)
         .mockReturnValueOnce(undefined) // voteIdToShow
         .mockReturnValueOnce(undefined) // pollIdToShow
         .mockReturnValueOnce(undefined) // voteOrPollIdToShow
@@ -67,7 +67,7 @@ describe('Ballot', () => {
     });
 
     it('executes onClose callback on escape key', () => {
-      (mockUseAppSelector as jest.Mock)
+      (useAppSelector as unknown as jest.Mock)
         .mockReturnValueOnce(undefined) // voteIdToShow
         .mockReturnValueOnce(undefined) // pollIdToShow
         .mockReturnValueOnce(undefined) // voteOrPollIdToShow

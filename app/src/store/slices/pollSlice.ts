@@ -138,8 +138,8 @@ export const selectPollVotes = (state: RootState) => pollSelectors.selectEntitie
 
 export const selectPollIdToShow = (state: RootState) => state.poll.pollIdToShow;
 export const selectPollToShow = createSelector(
-  [(state: RootState) => state, selectPollIdToShow],
-  (state, pollIdToShow) => (pollIdToShow ? selectPollById(pollIdToShow) : undefined)
+  [selectPollIdToShow, (state: RootState) => state],
+  (pollIdToShow, state) => (pollIdToShow ? selectPollById(pollIdToShow)(state) : undefined)
 );
 
 export const selectAllSavedPolls = (state: RootState) => state.poll.savedPolls;

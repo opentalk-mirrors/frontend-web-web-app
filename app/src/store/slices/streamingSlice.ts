@@ -4,8 +4,8 @@
 import {
   StreamingKind,
   StreamingStatus,
-  StreamingTargetEntity,
   StreamingTargetId,
+  StreamingTargetEntity,
   StreamingTargetStatusInfo,
 } from '@opentalk/rest-api-rtk-query';
 import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -82,8 +82,10 @@ const selectTargetsByStatusAndKind = ({ status, kind }: StreamingTargetFilter) =
   );
 
 //Could change if we have multiple recording targets
-export const selectRecordingTarget = createSelector([selectAllStreamingTargets], (streamingTargets) =>
-  streamingTargets.find((streamingTarget) => streamingTarget.streamingKind === StreamingKind.Recording)
+export const selectRecordingTarget: (state: RootState) => StreamingTargetEntity | undefined = createSelector(
+  [selectAllStreamingTargets],
+  (streamingTargets) =>
+    streamingTargets.find((streamingTarget) => streamingTarget.streamingKind === StreamingKind.Recording)
 );
 
 export const selectIsRecordingActive = createSelector(

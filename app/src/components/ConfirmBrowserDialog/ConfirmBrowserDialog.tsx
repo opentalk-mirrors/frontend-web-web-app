@@ -9,7 +9,7 @@ interface IProps {
   handleClick: () => void;
 }
 
-const ConfirmBrowserDialog = ({ handleClick }: IProps): JSX.Element => {
+const ConfirmBrowserDialog = ({ handleClick }: IProps): React.JSX.Element => {
   const { t } = useTranslation();
   return (
     <Dialog open aria-labelledby={t('wrong-browser-dialog-message')} fullWidth maxWidth="xs">

@@ -72,7 +72,7 @@ const CreateLegalVoteForm = ({
       .string()
       .trim()
       .max(500, t('legal-vote-form-input-error-max', { maxCharacters: 500 })),
-    duration: yup.number().min(0).nullable(true).typeError(t('legal-vote-form-input-error-number')),
+    duration: yup.number().min(0).nullable().typeError(t('legal-vote-form-input-error-number')),
     createPdf: yup.bool(),
     kind: yup.string().oneOf(legalVoteOptions),
   });

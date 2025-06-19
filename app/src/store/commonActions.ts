@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RoomId } from '@opentalk/rest-api-rtk-query';
-import { InviteCode } from '@opentalk/rest-api-rtk-query/src/types';
+import { RoomId, InviteCode } from '@opentalk/rest-api-rtk-query';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';

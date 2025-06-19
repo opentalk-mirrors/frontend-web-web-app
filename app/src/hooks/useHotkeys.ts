@@ -54,9 +54,9 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   const askConsent = useAppSelector(selectNeedRecordingConsent);
   const dispatch = useAppDispatch();
 
-  const startingAudio = useRef<Promise<void> | undefined>();
-  const stoppingAudio = useRef<Promise<void> | undefined>();
-  const microphoneStateCache = useRef<boolean>();
+  const startingAudio = useRef<Promise<void> | undefined>(undefined);
+  const stoppingAudio = useRef<Promise<void> | undefined>(undefined);
+  const microphoneStateCache = useRef<boolean>(false);
   const [pushToTalkState, setPushToTalkState] = useState(PushToTalkState.Inactive);
 
   const hotkeysEnabled = useAppSelector(selectHotkeysEnabled);

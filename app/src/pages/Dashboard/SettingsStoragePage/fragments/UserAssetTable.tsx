@@ -46,10 +46,13 @@ export const UserAssetTable = () => {
   const handleDelete = async (assetId: AssetId) => {
     const roomId = getRoomId(assetId);
     if (roomId) {
-      return await deleteRoomAsset({ roomId, assetId }).catch((error) => {
-        log.error(`Error occured when deleting asset ${assetId}: `, error);
+      try {
+        return await deleteRoomAsset({ roomId, assetId });
+      } catch (error) {
+        log.error(`Error occurred when deleting asset ${assetId}:`, error);
         notifications.error(t('asset-delete-error'));
-      });
+        return undefined;
+      }
     }
   };
 

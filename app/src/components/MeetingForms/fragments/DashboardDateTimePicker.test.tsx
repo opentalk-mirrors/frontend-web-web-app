@@ -27,6 +27,9 @@ const initialValues = {
   },
   showMeetingDetails: false,
   e2eEncryption: false,
+  trainingParticipationReport: {
+    enabled: false,
+  },
 };
 
 describe('DashboardDateTimePicker', () => {

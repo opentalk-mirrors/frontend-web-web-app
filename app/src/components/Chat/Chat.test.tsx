@@ -92,6 +92,7 @@ describe('Chat component', () => {
         leave({
           id: '123' as ParticipantId,
           timestamp: '2023-09-22T12:15:00.000000000Z',
+          reason: 'quit',
         })
       );
     });

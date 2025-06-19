@@ -13,8 +13,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { CallIn, EventInfo } from '@opentalk/rest-api-rtk-query';
-import { StreamingLink } from '@opentalk/rest-api-rtk-query/src/types';
+import { CallIn, EventInfo, StreamingLink } from '@opentalk/rest-api-rtk-query';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 

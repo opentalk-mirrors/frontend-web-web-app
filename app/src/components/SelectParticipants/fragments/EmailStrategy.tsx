@@ -5,6 +5,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import * as Yup from 'yup';
 
 import { ParticipantAvatar } from '../../../commonComponents';
+import { HTMLLIElementWithSxProps } from '../types';
 import { ParticipantOption } from './ParticipantOption';
 
 const schema = Yup.string().email();
@@ -13,7 +14,7 @@ export const EmailStrategy = {
   getOptionLabel: (option: ParticipantOption) => {
     return option.email;
   },
-  renderOption: (noOptionsText: string) => (props: React.HTMLAttributes<HTMLLIElement>, option: ParticipantOption) => {
+  renderOption: (noOptionsText: string) => (props: HTMLLIElementWithSxProps, option: ParticipantOption) => {
     if (!schema.isValidSync(option.email)) {
       return (
         <Box
