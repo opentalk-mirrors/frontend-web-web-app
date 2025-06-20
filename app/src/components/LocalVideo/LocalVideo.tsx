@@ -81,7 +81,9 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
     (trackRef) => trackRef.participant.isLocal
   );
 
-  const screenShareTrackRef = useTracks([Track.Source.ScreenShare]).find((trackRef) => trackRef.participant.isLocal);
+  const screenShareTrackRef = useTracks([Track.Source.ScreenShare], {
+    updateOnlyOn: [RoomEvent.ActiveDeviceChanged],
+  }).find((trackRef) => trackRef.participant.isLocal);
   const isVideoEnabled = useAppSelector(selectVideoEnabled);
   const isAudioEnabled = useAppSelector(selectAudioEnabled);
   const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
