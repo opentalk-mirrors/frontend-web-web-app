@@ -1,10 +1,8 @@
-[TOC]
+# Building the docker container
 
-# building docker container
+## Using pnpm
 
-## pnpm
-
-### production (local)
+### Production (local)
 
 ```
 pnpm docker:prod
@@ -12,7 +10,7 @@ pnpm docker:prod
 
 This will create a container with the tag `web-app:local`.
 
-### profiling (local)
+### Profiling (local)
 
 ```
 pnpm docker:profiling
@@ -20,9 +18,9 @@ pnpm docker:profiling
 
 This will create a container with the tag `web-app:local-profiling`.
 
-## docker
+## Using docker-cli
 
-### production
+### Production
 
 ```
 pnpm build
@@ -32,7 +30,7 @@ pnpm build
 docker build -f ./ci/Dockerfile -t YOUR_CONTAINER_TAG .
 ```
 
-### profiling
+### Profiling
 
 ```
 pnpm build:profiling
@@ -42,7 +40,7 @@ pnpm build:profiling
 docker build -f ./ci/Dockerfile --build-arg DIST_FOLDER=dist-profiling -t YOUR_CONTAINER_TAG .
 ```
 
-# use the container images
+## Use the container images
 
 To run the container, use a command similar to:
 
@@ -57,3 +55,7 @@ docker run -p 127.0.0.1:3000:80/tcp -e CONTROLLER_HOST=YOUR_CONTROLLER_HOST -e O
 ```
 
 The frontend will then be available via <http://localhost:3000>
+
+### Environment Variables
+
+The -e flag in the above commands sets environment variables in the container. Click [here](./environment-variables.md) for a full list of variables.
