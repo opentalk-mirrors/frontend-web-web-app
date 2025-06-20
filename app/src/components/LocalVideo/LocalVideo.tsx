@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { TrackReference, VideoTrack, useTracks } from '@livekit/components-react';
+import { VideoTrack, useTracks } from '@livekit/components-react';
 import { CircularProgress, Grid, Typography, styled } from '@mui/material';
-import { RoomEvent, Track } from 'livekit-client';
+import { RoomEvent, Track, LocalVideoTrack } from 'livekit-client';
 import { useEffect } from 'react';
 import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { PinIcon, WarningIcon } from '../../assets/icons';
 import { NameTile } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
+import log from '../../logger';
 import { BackgroundBlur } from '../../modules/Media/BackgroundBlur';
 import { selectLivekitUnavailable } from '../../store/slices/livekitSlice';
 import { selectAudioEnabled, selectVideoBackgroundEffects, selectVideoEnabled } from '../../store/slices/mediaSlice';
@@ -92,12 +93,12 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
 
   const screenShareEnabled = screenShareTrackRef?.participant.isScreenShareEnabled || false;
 
-  const videoTrack = videoTrackRef?.publication?.videoTrack as TrackReference;
+  const videoTrack = videoTrackRef?.publication?.videoTrack;
   const videoProcessor = new BackgroundBlur(videoBackgroundEffects);
 
   useEffect(() => {
-    if (videoProcessor) {
-      videoTrack?.setProcessor(videoProcessor);
+    if (videoProcessor && videoTrack instanceof LocalVideoTrack) {
+      videoTrack.setProcessor(videoProcessor).catch((e) => log.error('set video processor', e));
     }
   }, [videoProcessor]);
 
