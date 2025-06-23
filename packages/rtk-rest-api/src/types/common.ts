@@ -56,7 +56,7 @@ export type Tags = (typeof tags)[number];
 
 export type DateTimeWithTimezone = {
   /**
-   * datetime in UTC, formatted as RFC3339/ISO8601 string
+   * datetime in UTC, formatted ISO8601 string
    */
   datetime: string;
   /**

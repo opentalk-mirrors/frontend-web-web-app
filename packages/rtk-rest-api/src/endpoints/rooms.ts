@@ -21,7 +21,7 @@ import {
   PublicRoom,
   UpdateRoomPayload,
 } from '../types/room';
-import { StreamingPlatform, StreamingTargetId, StreamingTargetInfo } from '../types/streaming';
+import { StreamingTarget, StreamingTargetId, StreamingTargetInfo } from '../types/streaming';
 import { Tariff } from '../types/tariff';
 import { PagedPaginationParams } from './common';
 
@@ -175,7 +175,7 @@ export const addRoomEndpoints = <
    * Add new streaming targets to a room. Currently accepts only one target per request.
    * IMPORTANT: Streaming targets can be modified via `updateEvent` or `createEvent` as well.
    */
-  addStreamingTargets: builder.mutation<StreamingTargetInfo, { roomId: RoomId; target: StreamingPlatform }>({
+  addStreamingTargets: builder.mutation<StreamingTargetInfo, { roomId: RoomId; target: StreamingTarget }>({
     query: ({ roomId, target }) => ({
       url: `rooms/${roomId}/streaming_targets`,
       method: 'POST',
@@ -200,7 +200,7 @@ export const addRoomEndpoints = <
    */
   updateStreamingTarget: builder.mutation<
     StreamingTargetInfo,
-    { roomId: RoomId; targetId: StreamingTargetId; targetData: StreamingPlatform }
+    { roomId: RoomId; targetId: StreamingTargetId; targetData: StreamingTarget }
   >({
     query: ({ roomId, targetId, ...payload }) => ({
       url: `rooms/${roomId}/streaming_targets/${targetId}`,

@@ -37,7 +37,7 @@ type BuiltInPlatform = BasePlatform & {
   kind: PlatformKind.BuiltIn;
 };
 
-export type StreamingPlatform = ProviderPlatform | CustomPlatform | BuiltInPlatform;
+export type StreamingTarget = ProviderPlatform | CustomPlatform | BuiltInPlatform;
 
 interface BaseStreamingTargetInfo {
   id: StreamingTargetId;

@@ -1,44 +1,43 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Event, CreateEventPayload, UpdateEventPayload } from '@opentalk/rest-api-rtk-query';
-import { formatRFC3339 } from 'date-fns';
-import { FormikValues } from 'formik';
+import { Event, CreateEventPayload, UpdateEventPayload, RecurrencePattern } from '@opentalk/rest-api-rtk-query';
+import { TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 
 import { CommonFrequencies } from '../../../utils/rruleUtils';
+import { MeetingFormValues, Streaming, TrainingParticipationReport } from '../fragments/DashboardDateTimePicker';
 
-export const createPayload = (values: FormikValues, existingEvent?: Event): CreateEventPayload | UpdateEventPayload => {
+export const createPayload = (
+  values: MeetingFormValues,
+  existingEvent?: Event
+): CreateEventPayload | UpdateEventPayload => {
   let payload: CreateEventPayload | UpdateEventPayload = {
-    title: values.title.trim() || '',
-    description: values.description.trim() || '',
+    title: values.title?.trim() || '',
+    description: values.description?.trim() || '',
     waitingRoom: values.waitingRoom,
     showMeetingDetails: values.showMeetingDetails,
-    password: values.password?.trim() !== '' ? values.password?.trim() : null,
+    password: values.password?.trim() !== '' ? values.password?.trim() : undefined,
     isTimeIndependent: !values.isTimeDependent,
-    recurrencePattern: [],
+    recurrencePattern: createRecurrencePatternPayload(values.recurrencePattern),
     isAdhoc: values.isAdhoc || false,
-    hasSharedFolder: values.sharedFolder || false,
-    streamingTargets: createStreamingPayload(values),
-    e2eEncryption: values.e2eEncryption || false,
-    trainingParticipationReport: createTrainingParticipationReportPayload(values, existingEvent),
+    hasSharedFolder: values.sharedFolder,
+    streamingTargets: createStreamingPayload(values.streaming),
+    e2eEncryption: values.e2eEncryption,
+    trainingParticipationReport: createTrainingParticipationReportPayload(
+      values.trainingParticipationReport,
+      existingEvent?.trainingParticipationReport
+    ),
   };
-
-  if (values.recurrencePattern) {
-    payload = {
-      ...payload,
-      recurrencePattern: values.recurrencePattern !== CommonFrequencies.NONE ? [values.recurrencePattern] : undefined,
-    };
-  }
 
   if (values.isTimeDependent) {
     payload = {
       ...payload,
       startsAt: {
-        datetime: formatRFC3339(new Date(values.startDate)),
+        datetime: values.startDate,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
       endsAt: {
-        datetime: formatRFC3339(new Date(values.endDate)),
+        datetime: values.endDate,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
       isAllDay: false,
@@ -48,22 +47,33 @@ export const createPayload = (values: FormikValues, existingEvent?: Event): Crea
   return payload;
 };
 
-export const createTrainingParticipationReportPayload = (values: FormikValues, existingEvent?: Event) => {
-  const localValue = values.trainingParticipationReport;
+const createRecurrencePatternPayload = (recurrencePattern: RecurrencePattern) => {
+  if (recurrencePattern === CommonFrequencies.NONE) {
+    return undefined;
+  } else {
+    return [recurrencePattern];
+  }
+};
+
+const createTrainingParticipationReportPayload = (
+  trainingParticipationReport: TrainingParticipationReport,
+  existingReport?: TrainingParticipationReportParameterSet
+) => {
+  const localValue = trainingParticipationReport;
   if (!localValue.enabled) {
-    return existingEvent?.trainingParticipationReport ? null : undefined;
+    return existingReport ? null : undefined;
   }
 
-  if (
-    existingEvent?.trainingParticipationReport &&
-    JSON.stringify(existingEvent.trainingParticipationReport) === JSON.stringify(localValue.parameter)
-  ) {
+  if (existingReport && JSON.stringify(existingReport) === JSON.stringify(localValue.parameter)) {
     return undefined;
   }
 
   return localValue.parameter;
 };
 
-export const createStreamingPayload = (values: FormikValues) => {
-  return values.streaming.enabled ? [values.streaming.streamingTarget] : [];
+const createStreamingPayload = (streaming: Streaming) => {
+  if (streaming.enabled && streaming.streamingTarget) {
+    return [streaming.streamingTarget];
+  }
+  return [];
 };
