@@ -14,7 +14,7 @@ import {
   ThemeProvider,
   Typography,
 } from '@mui/material';
-import { SdkInfo } from '@sentry/browser';
+import { SdkInfo, Event } from '@sentry/browser';
 import { useFormik } from 'formik';
 import { pick } from 'lodash';
 import React, { useState } from 'react';
@@ -27,6 +27,8 @@ import { IconButton } from '../../commonComponents';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { selectGlitchtipConfig, selectIsGlitchtipConfigured } from '../../store/slices/configSlice';
 import { selectErrorDialogEvent, selectShowErrorDialog, setShowErrorDialog } from '../../store/slices/uiSlice';
+import { DELAY_BETWEEN_EVENT_AND_REPORT_MS } from '../../utils/glitchtipUtils';
+import { sleep } from '../../utils/timeUtils';
 import UserFeedbackFormFields from './fragments/UserFeedbackFormFields';
 
 const DialogTitle = styled(MuiDialogTitle)({
@@ -49,6 +51,7 @@ export type UserFeedbackFormValues = {
 
 const GlitchtipErrorDialog = () => {
   const [dataHasBeenSent, setDataHasBeenSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const showErrorDialog = useAppSelector(selectShowErrorDialog);
   const glitchtipConfig = useAppSelector(selectGlitchtipConfig);
   const activeErrorReporting = useAppSelector(selectIsGlitchtipConfigured);
@@ -91,6 +94,8 @@ const GlitchtipErrorDialog = () => {
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: async ({ email, name, comments }) => {
+      setIsSubmitting(true);
+
       const url = new URL(glitchtipConfig?.dsn || '');
 
       const sdk: SdkInfo = {
@@ -99,6 +104,10 @@ const GlitchtipErrorDialog = () => {
       };
 
       if (event) {
+        // For some reason default value of the `sdk` is corrupt and confuses
+        // the GlitchTip server. We need to fix it before sending the event.
+        const fixedEvent: Partial<Event> = { ...event, sdk: { ...sdk } };
+
         await fetch(
           `${url.origin}/api${url.pathname}/envelope/?sentry_key=${url.username}&sentry_version=0&sentry_client=${sdk.name}/${sdk.version}`,
           {
@@ -108,10 +117,16 @@ const GlitchtipErrorDialog = () => {
               sdk,
               trace: event.sdkProcessingMetadata?.dynamicSamplingContext,
             })}
-                    ${JSON.stringify({ type: 'event' })}
-                    ${JSON.stringify(event)}`,
+                  ${JSON.stringify({ type: 'event' })}
+                  ${JSON.stringify(fixedEvent)}`,
           }
         );
+
+        // We must wait to ensure the event is processed on the Glitchtip server side
+        // before sending the report.
+        // Otherwise the report will be not associated with the event and will be not visible
+        // in the Glitchtip UI.
+        await sleep(DELAY_BETWEEN_EVENT_AND_REPORT_MS);
 
         if (Boolean(email) || Boolean(name) || Boolean(comments)) {
           const formData = new FormData();
@@ -124,6 +139,7 @@ const GlitchtipErrorDialog = () => {
           });
         }
         setDataHasBeenSent(true);
+        setIsSubmitting(false);
       }
     },
   });
@@ -174,10 +190,10 @@ const GlitchtipErrorDialog = () => {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" color="secondary" onClick={handleCloseDialog}>
+        <Button variant="outlined" color="secondary" onClick={handleCloseDialog} disabled={isSubmitting}>
           {t('glitchtip-crash-report-labelAbort')}
         </Button>
-        <Button color="primary" type="submit">
+        <Button color="primary" type="submit" disabled={isSubmitting}>
           {t('glitchtip-crash-report-labelSubmit')}
         </Button>
       </DialogActions>
