@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { isEmpty } from 'lodash';
 
 import type { RootState } from '..';
 
@@ -30,5 +31,9 @@ export const { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } = meetingNotesS
 
 const meetingNotesState = (state: RootState) => state.meetingNotes;
 export const selectMeetingNotesUrl = createSelector([meetingNotesState], (state) => state.meetingNotesUrl);
+export const selectIsMeetingNotesFeatureAvailable = createSelector(
+  [selectMeetingNotesUrl],
+  (meetingNotesUrl) => !isEmpty(meetingNotesUrl)
+);
 
 export default meetingNotesSlice.reducer;

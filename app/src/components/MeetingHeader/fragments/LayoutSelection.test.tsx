@@ -97,7 +97,7 @@ describe('Layout selection menu', () => {
   it('renders meeting notes option on mobile when meeting notes are available', () => {
     mockUseMediaQuery.mockReturnValue(true);
     const { store } = configureStore({
-      initialState: { config: { tariff: { modules: { meetingNotes: { features: [] } } } } },
+      initialState: { meetingNotes: { meetingNotesUrl: 'https://example.com/notes' } },
     });
 
     renderWithProviders(<LayoutSelection />, { store, provider: { snackbar: true } });
