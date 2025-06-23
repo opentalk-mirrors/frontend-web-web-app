@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent, cleanup } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 
 import { idFromDescriptor } from '../../../modules/WebRTC';
 import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
@@ -39,14 +39,13 @@ const ScreenPresenterVideoProps = {
 describe('ScreenPresenterVideo Component', () => {
   const handleClick = jest.fn();
   const { store } = mockStore(1, { video: true, screen: true });
-  afterEach(() => cleanup());
 
   it('render component without crashing', () => {
     renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('sharedPresenterVideo')).toBeInTheDocument();
 
-    expect(screen.queryByTestId('participantAvatar')).toBeInTheDocument();
+    expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
     expect(screen.queryByText(participant.displayName)).not.toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
   });

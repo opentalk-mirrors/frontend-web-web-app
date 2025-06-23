@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, cleanup } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
 import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
@@ -23,10 +23,6 @@ jest.mock('../../ParticipantWindow', () => ({
   __esModule: true,
   default: () => <div data-testid="participantWindow"></div>,
 }));
-
-afterEach(() => {
-  cleanup();
-});
 
 describe('SpeakerWindow', () => {
   it('SpeakerWindow is not rendered with zero participants', () => {

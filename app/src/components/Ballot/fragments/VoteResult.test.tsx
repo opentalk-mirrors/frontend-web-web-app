@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, cleanup, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 
 import { LegalVoteId, PollId } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
@@ -10,7 +10,6 @@ import { VoteType } from './constants';
 
 describe('testing vote results', () => {
   const { store } = configureStore();
-  afterAll(() => cleanup());
 
   const voteData: IVoteData = {
     numberOfVotes: 0,

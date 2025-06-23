@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { RoomId } from '@opentalk/rest-api-rtk-query';
-import { screen, cleanup } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { renderWithProviders } from '../../utils/testUtils';
@@ -18,7 +18,6 @@ const dummyMeetings = [
 ];
 
 describe('favorite meetings card', () => {
-  afterEach(() => cleanup());
   it('is empty when no meetings available', () => {
     renderWithProviders(
       <BrowserRouter>

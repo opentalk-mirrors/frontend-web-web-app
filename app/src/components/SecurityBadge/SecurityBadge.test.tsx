@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, act } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { ParticipationKind } from '../../types';
@@ -10,34 +10,28 @@ import SecurityBadge from './SecurityBadge';
 
 const NUMBER_OF_PARTICIPANTS = 2;
 describe('<SecurityBadge />', () => {
-  it('should open popover on button click', () => {
+  it('should open popover on button click', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
     renderWithProviders(<SecurityBadge />, { store });
 
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
     expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
 
-    act(() => {
-      button.click();
-    });
+    await userEvent.click(button);
 
     const popoverTitle = screen.getByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).toBeInTheDocument();
   });
-  it('should close popover if its opened and button is clicked again', () => {
+  it('should close popover if its opened and button is clicked again', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
     renderWithProviders(<SecurityBadge />, { store });
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
 
-    act(() => {
-      button.click();
-    });
+    await userEvent.click(button);
 
     expect(screen.getByRole('heading', { name: 'secure-connection-title' })).toBeInTheDocument();
 
-    act(() => {
-      button.click();
-    });
+    await userEvent.click(button);
 
     const popoverTitle = screen.queryByRole('heading', { name: 'secure-connection-title' });
     expect(popoverTitle).not.toBeInTheDocument();

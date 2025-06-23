@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { mockChangeLanguage } from '../../../../setupTests';
 import { renderWithProviders, configureStore } from '../../../../utils/testUtils';
@@ -35,7 +35,6 @@ jest.mock('../../../../api/rest', () => ({
 
 describe('LanguageSelector', () => {
   const { store } = configureStore();
-  afterEach(() => cleanup());
   it('renders without crashing', () => {
     renderWithProviders(<LanguageSelector />, { store });
 
@@ -65,7 +64,7 @@ describe('LanguageSelector', () => {
     fireEvent.click(saveButton);
     await waitFor(() => {
       expect(mockChangeLanguage).toHaveBeenCalled();
-      expect(mockSuccessNotification).toHaveBeenCalledWith('dashboard-settings-general-notification-save-success');
     });
+    expect(mockSuccessNotification).toHaveBeenCalledWith('dashboard-settings-general-notification-save-success');
   });
 });

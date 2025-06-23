@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { cleanup, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
@@ -23,8 +23,6 @@ jest.mock('../SelfTest', () => ({
 }));
 
 describe('Waiting view', () => {
-  afterEach(() => cleanup());
-
   it('Enter button is disabled if ConnectionState is Waiting', () => {
     const { store } = configureStore({
       initialState: {

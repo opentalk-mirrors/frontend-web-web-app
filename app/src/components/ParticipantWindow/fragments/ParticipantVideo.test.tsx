@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { cleanup, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 import { idFromDescriptor } from '../../../modules/WebRTC';
 import { VideoSetting } from '../../../types';
@@ -39,8 +39,6 @@ const ParticipantWindowProps = {
 };
 
 describe('ParticipantVideo', () => {
-  afterEach(() => cleanup());
-
   //TODO UNIT TESTS rewrite the tests
   it('render participantVideo component', () => {
     renderWithProviders(<ParticipantVideo {...ParticipantWindowProps} />, { store, provider: { mui: true } });

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import { MicOnIcon } from '../../../assets/icons';
 import ToolbarButton from './ToolbarButton';
@@ -9,8 +9,6 @@ import ToolbarButton from './ToolbarButton';
 const handleClick = jest.fn();
 
 describe('<ToolbarButton />', () => {
-  afterEach(() => cleanup());
-
   const toolbarButtonProps = {
     hasContext: true,
     contextDisabled: false,
@@ -57,7 +55,7 @@ describe('<ToolbarButton />', () => {
 
     expect(button).toBeInTheDocument();
 
-    button.click();
+    fireEvent.click(button);
 
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -73,7 +71,7 @@ describe('<ToolbarButton />', () => {
     expect(button).toBeInTheDocument();
     expect(button).toBeDisabled();
 
-    button.click();
+    fireEvent.click(button);
 
     expect(handleClick).not.toHaveBeenCalled();
   });
@@ -87,7 +85,7 @@ describe('<ToolbarButton />', () => {
     const toggleButton = screen.getByRole('button', { name: 'toolbarToggleButton' });
     expect(toggleButton).toBeInTheDocument();
 
-    toggleButton.click();
+    fireEvent.click(toggleButton);
 
     expect(handleClick).toHaveBeenCalledTimes(1);
   });

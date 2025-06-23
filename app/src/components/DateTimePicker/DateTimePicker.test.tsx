@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import DateFnsAdapter from '@date-io/date-fns';
-import { screen, act } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import DateTimePicker from './DateTimePicker';
@@ -51,7 +52,7 @@ describe('render <DateTimePicker />', () => {
     expect(input.value).toBe(deFormattedDate);
   });
 
-  it('renders DateTimePicker placeholder value on clear button click', () => {
+  it('renders DateTimePicker placeholder value on clear button click', async () => {
     renderWithProviders(<DateTimePicker {...clearableDateTimePickerProps} />, { store, provider: { mui: true } });
 
     const input: HTMLInputElement = screen.getByRole('textbox');
@@ -60,9 +61,7 @@ describe('render <DateTimePicker />', () => {
     const chooseDateButton = screen.getByRole('button', { name: /choose date/i });
     expect(chooseDateButton).toBeInTheDocument();
 
-    act(() => {
-      chooseDateButton.click();
-    });
+    await userEvent.click(chooseDateButton);
 
     const clearButton = screen.getByRole('button', { name: clearableDateTimePickerProps.clearButtonLabel });
     expect(clearButton).toBeInTheDocument();

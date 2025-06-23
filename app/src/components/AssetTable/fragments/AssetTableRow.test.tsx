@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { within } from '@testing-library/dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { format } from 'date-fns/format';
 
 import { formatBytes } from '../../../utils/numberUtils';
@@ -44,7 +44,7 @@ const checkAssetActionButtons = (row: HTMLElement, deletable: boolean) => {
 
 describe('AssetTableRow', () => {
   const asset = mockedRoomAssets[0];
-  it('renders asset with both action buttons', () => {
+  it('renders asset with both action buttons', async () => {
     const deletable = true;
     render(<AssetTableRow asset={asset} handleDownload={mockHandleDownload} handleDelete={mockHandleDelete} />);
     const tableRow = screen.getByRole('row');
@@ -61,7 +61,7 @@ describe('AssetTableRow', () => {
 
     // check download button
     const downloadButton = within(tableRow).getByRole('button', { name: /action-download/i });
-    downloadButton.click();
+    await userEvent.click(downloadButton);
     expect(mockHandleDownload).toHaveBeenCalledWith({
       assetId: asset.id,
       filename: asset.filename,
@@ -70,7 +70,7 @@ describe('AssetTableRow', () => {
 
     // check delete button
     const deleteButton = within(tableRow).getByRole('button', { name: /action-delete/i });
-    deleteButton.click();
+    await userEvent.click(deleteButton);
     expect(mockHandleDelete).toHaveBeenCalledWith(asset.id);
   });
 

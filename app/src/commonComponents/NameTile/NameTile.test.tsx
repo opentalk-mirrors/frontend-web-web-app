@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useParticipants } from '@livekit/components-react';
-import { screen, cleanup } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 import { ParticipantId } from '../../types';
 import { mockedParticipant, renderWithProviders } from '../../utils/testUtils';
@@ -18,8 +18,6 @@ describe('NameTile with activated media', () => {
   const displayName = participant.displayName;
   const participantId = participant.id as ParticipantId;
   beforeEach(() => {
-    cleanup();
-
     (useParticipants as jest.Mock).mockReturnValue([
       { ...participant, isMicrophoneEnabled: true, isCameraEnabled: true },
     ]);
@@ -61,8 +59,6 @@ describe('NameTile with deactivated media', () => {
   const displayName = participant.displayName;
   const participantId = participant.id as ParticipantId;
   beforeEach(() => {
-    cleanup();
-
     (useParticipants as jest.Mock).mockReturnValue([participant]);
   });
 
@@ -90,7 +86,6 @@ describe('NameTile with deactivated media', () => {
 describe('NameTile with local media state', () => {
   const participant = mockedParticipant(0);
   const displayName = participant.displayName;
-  beforeEach(() => cleanup());
 
   it('render NameTile component with local video on', () => {
     renderWithProviders(<NameTile localVideoOn localAudioOn={false} displayName={displayName} />, {
@@ -99,7 +94,7 @@ describe('NameTile with local media state', () => {
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(displayName)).toBeInTheDocument();
-    expect(screen.queryByTestId('micOff')).toBeInTheDocument();
+    expect(screen.getByTestId('micOff')).toBeInTheDocument();
     expect(screen.queryByTestId('camOff')).not.toBeInTheDocument();
   });
 
@@ -111,7 +106,7 @@ describe('NameTile with local media state', () => {
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(displayName)).toBeInTheDocument();
     expect(screen.queryByTestId('micOff')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('camOff')).toBeInTheDocument();
+    expect(screen.getByTestId('camOff')).toBeInTheDocument();
   });
 
   it('render NameTile component with local video and audio on', () => {

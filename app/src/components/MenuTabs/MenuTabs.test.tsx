@@ -73,7 +73,7 @@ describe('MenuTabs Component', () => {
 
     await waitFor(() => {
       expect(peopleTab).toHaveAttribute('aria-selected', 'true');
-      expect(chatTab).toHaveAttribute('aria-selected', 'false');
     });
+    expect(chatTab).toHaveAttribute('aria-selected', 'false');
   });
 });

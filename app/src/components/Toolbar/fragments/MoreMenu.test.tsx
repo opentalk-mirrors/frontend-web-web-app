@@ -1,16 +1,25 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+// Switch off the rule, as it doesn't recognize assertion in the utility helper function
+// Maybe it's a bug or maybe it's not a good practice to use this kind of helper function
+/* eslint-disable jest/expect-expect */
 import { screen, fireEvent } from '@testing-library/react';
 
+import { notifications } from '../../../commonComponents';
 import { ForceMuteType, Role } from '../../../types';
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import MenuButton from './MoreButton';
 import MoreMenu from './MoreMenu';
 
-// Switch off the rule, as it doesn't recognize assertion in the utility helper function
-// Maybe it's a bug or maybe it's not a good practice to use this kind of helper function
-/* eslint-disable jest/expect-expect */
+jest.mock('../../../commonComponents', () => ({
+  ...jest.requireActual('../../../commonComponents'),
+  notifications: {
+    ...jest.requireActual('../../../commonComponents').notifications,
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+}));
 
 describe('<MoreButton />', () => {
   const { store } = configureStore();
@@ -40,22 +49,23 @@ describe('<MoreButton />', () => {
     expect(screen.getByTestId('moreMenu')).toBeInTheDocument();
   });
   describe('if the user is a moderator and room owner', () => {
-    const moderatorState = { user: { role: Role.Moderator }, room: { isOwnedByCurrentUser: true } };
-
-    const { store } = configureStore({ initialState: { ...moderatorState } });
-    beforeEach(() => {
+    const setup = () =>
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
         store,
         provider: { snackbar: true },
       });
-    });
+
+    const moderatorState = { user: { role: Role.Moderator }, room: { isOwnedByCurrentUser: true } };
+    const { store } = configureStore({ initialState: { ...moderatorState } });
 
     it('shows the enable waiting room option and does not show the disable waiting room option, if the waiting room is inactive', () => {
+      setup();
       checkMenuItem('more-menu-enable-waiting-room');
       checkMenuItem('more-menu-disable-waiting-room', true);
     });
 
     it('does not show meeting notes export option, if the meeting notes module is disabled', () => {
+      setup();
       checkMenuItem('more-menu-export-attendance-report', true);
     });
     describe('training participation report options', () => {
@@ -115,10 +125,12 @@ describe('<MoreButton />', () => {
       checkMenuItem('more-menu-turn-handraises-off', true);
     });
     it('shows the disable handraises option and does not show the enable handraises option, if handraises are enabled', () => {
+      setup();
       checkMenuItem('more-menu-turn-handraises-on', true);
       checkMenuItem('more-menu-turn-handraises-off');
     });
     it('shows the disable microphones option and does not show the enable microphones option, if microphones are enabled', () => {
+      setup();
       checkMenuItem('more-menu-disable-microphones');
       checkMenuItem('more-menu-enable-microphones', true);
     });
@@ -177,11 +189,7 @@ describe('<MoreButton />', () => {
 
       fireEvent.click(screen.getByText('Show Test Info'));
 
-      const notificationMessage = screen.getByText('You just triggered this notification. Success!');
-
-      expect(notificationMessage).toBeInTheDocument();
-      expect(notificationMessage.parentElement).toHaveAttribute('role', 'alert');
-      expect(notificationMessage.parentElement).toHaveClass('notistack-MuiContent-success');
+      expect(notifications.success).toHaveBeenCalledWith('You just triggered this notification. Success!');
     });
 
     it('shows error notification when show test error option is clicked', () => {
@@ -192,11 +200,7 @@ describe('<MoreButton />', () => {
 
       fireEvent.click(screen.getByText('Show Test Error'));
 
-      const notificationMessage = screen.getByText('Test error context: Error: Test Error');
-
-      expect(notificationMessage).toBeInTheDocument();
-      expect(notificationMessage.parentElement).toHaveAttribute('role', 'alert');
-      expect(notificationMessage.parentElement).toHaveClass('notistack-MuiContent-error');
+      expect(notifications.error).toHaveBeenCalledWith('Test error context: Error: Test Error');
     });
     it('shows training participation button if module trainingParticipationReport is defined', () => {
       const { store: storeWithModules } = configureStore({
@@ -212,7 +216,7 @@ describe('<MoreButton />', () => {
         provider: { mui: true, snackbar: true },
       });
 
-      expect(screen.queryByText('Test training participation report on')).toBeInTheDocument();
+      expect(screen.getByText('Test training participation report on')).toBeInTheDocument();
     });
   });
 });

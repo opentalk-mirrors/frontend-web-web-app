@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, render, screen, within } from '@testing-library/react';
 
+import { USER_MANUAL_URL } from '../../utils/apiUtils';
 import { SupportList } from './SupportList';
 
 jest.mock('react-i18next', () => ({
@@ -39,7 +40,6 @@ describe('SupportList component', () => {
       const list = screen.getByRole('list');
 
       expect(list).toBeInTheDocument();
-      expect(list.children).toHaveLength(3);
       expect(within(list).getByText('my-meeting-menu-accessibility')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-user-manual')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-keyboard-shortcuts')).toBeInTheDocument();
@@ -52,7 +52,6 @@ describe('SupportList component', () => {
       const list = screen.getByRole('list');
 
       expect(list).toBeInTheDocument();
-      expect(list.children).toHaveLength(4);
       expect(within(list).getByText('my-meeting-menu-accessibility')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-user-manual')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-keyboard-shortcuts')).toBeInTheDocument();
@@ -65,7 +64,6 @@ describe('SupportList component', () => {
       const list = screen.getByRole('list');
 
       expect(list).toBeInTheDocument();
-      expect(list.children).toHaveLength(4);
       expect(within(list).getByText('my-meeting-menu-accessibility')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-user-manual')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-keyboard-shortcuts')).toBeInTheDocument();
@@ -91,20 +89,24 @@ describe('SupportList component', () => {
       expect(openNewTabImage).not.toBeInTheDocument();
     });
   });
+  it('should contain user manual proper link', () => {
+    render(<SupportList />);
+    const link = screen.getByRole('link', { name: 'my-meeting-menu-user-manual' });
+
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', USER_MANUAL_URL);
+  });
   it('should contain option that expands/collapses the shortcut dialog', () => {
     render(<SupportList />);
-    const text = screen.getByText('my-meeting-menu-keyboard-shortcuts');
-    const button = (text.parentElement as HTMLDivElement).parentElement as HTMLButtonElement;
+    const button = screen.getByRole('button', { name: 'my-meeting-menu-keyboard-shortcuts' });
 
     expect(button).toBeInTheDocument();
-    expect(button).toHaveRole('button');
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
   it('should expand shortcut dialog on click', () => {
     render(<SupportList />);
     const dialog = screen.getByText('ShortcutListDialog');
-    const text = screen.getByText('my-meeting-menu-keyboard-shortcuts');
-    const button = (text.parentElement as HTMLDivElement).parentElement as HTMLButtonElement;
+    const button = screen.getByRole('button', { name: 'my-meeting-menu-keyboard-shortcuts' });
 
     expect(button).toHaveAttribute('aria-expanded', 'false');
     expect(dialog).not.toBeVisible();
@@ -117,10 +119,7 @@ describe('SupportList component', () => {
   it('should contain option that triggers Glitchtip manually', () => {
     mockSelectIsGlitchtipConfigured.mockReturnValue(true);
     render(<SupportList />);
-    const text = screen.getByText('my-meeting-menu-glitchtip-trigger');
-    const button = (text.parentElement as HTMLDivElement).parentElement as HTMLButtonElement;
-
+    const button = screen.getByRole('button', { name: 'my-meeting-menu-glitchtip-trigger' });
     expect(button).toBeInTheDocument();
-    expect(button).toHaveRole('button');
   });
 });
