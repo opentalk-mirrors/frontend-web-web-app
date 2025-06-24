@@ -14,6 +14,7 @@ export class HomePage {
   currentMeetingsHeaderSelector: Locator;
   favoriteMeetingsHeaderSelector: Locator;
   startMeetingButtonNamePrefix: string;
+  moreOptionsButtonProperties: { role; options };
 
   constructor({ page }: { page: Page }) {
     this.page = page;
@@ -23,12 +24,51 @@ export class HomePage {
     this.currentMeetingsHeaderSelector = this.page.getByText('Current meetings');
     this.favoriteMeetingsHeaderSelector = this.page.getByText('My favorite meetings');
     this.startMeetingButtonNamePrefix = 'Start ';
+    this.moreOptionsButtonProperties = {
+      role: 'button',
+      options: { name: 'More Options' },
+    };
   }
 
   async navigateToHomePage(): Promise<void> {
-    await Promise.all([this.page.goto(process.env.INSTANCE_URL), this.page.waitForLoadState('load')]);
-    // for dashboard page to be fully loaded, favorite meeting box should be rendered fully
-    await this.currentMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
+    await Promise.all([
+      this.page.goto(process.env.INSTANCE_URL),
+      this.page.waitForLoadState('load'),
+      this.page.waitForResponse(async (response) => {
+        if (
+          response.request().url().includes('/events?time_min') &&
+          response.request().method() === 'GET' &&
+          response.status() === 200
+        ) {
+          // if the response has some meetings, then also wait till there is at least one
+          // meeting rendered on the page
+          const meetingCountFromResponse = Object.keys(await response.json()).length;
+          if (meetingCountFromResponse > 0) {
+            let meetingCountOnPage: number;
+            do {
+              meetingCountOnPage = await this.page
+                .getByRole(this.moreOptionsButtonProperties.role, this.moreOptionsButtonProperties.options)
+                .count();
+            } while (meetingCountOnPage <= 0);
+          }
+          return true;
+        }
+      }),
+      this.page.waitForResponse(
+        (response) =>
+          response.request().url().includes('/events?per_page') &&
+          response.request().method() === 'GET' &&
+          response.status() === 200
+      ),
+      this.page.waitForResponse(
+        (response) =>
+          response.request().url().includes('/tariff') &&
+          response.request().method() === 'GET' &&
+          response.status() === 200
+      ),
+      // for dashboard page to be fully loaded, favorite meeting box should be rendered fully
+      await this.currentMeetingsHeaderSelector.waitFor({ timeout: 10_000 }),
+    ]);
   }
 
   async planNewMeeting(): Promise<MeetingPlanningPage> {
@@ -62,10 +102,10 @@ export class HomePage {
   }
 
   async getThreeDotMenuOfMeeting(meetingTitle: string): Promise<Locator> {
-    return await this.page
+    return this.page
       .getByRole('listitem')
       .filter({ hasText: meetingTitle })
-      .getByRole('button', { name: 'More Options' })
+      .getByRole(this.moreOptionsButtonProperties.role, this.moreOptionsButtonProperties.options)
       .first();
   }
 
