@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { cleanup, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
@@ -54,7 +54,6 @@ jest.mock('../Toolbar', () => ({
 }));
 
 describe('FullscreenView', () => {
-  afterEach(() => cleanup());
   const { store } = configureStore();
 
   it('renders without crashing', () => {

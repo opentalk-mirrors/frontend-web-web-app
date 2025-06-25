@@ -18,7 +18,7 @@ const HELPER_TEXT = 'Helper text';
 
 describe('CommonTextField', () => {
   it('renders with visible label', () => {
-    const screen = render(<CommonTextField label={LABEL} placeholder={PLACEHOLDER} />);
+    render(<CommonTextField label={LABEL} placeholder={PLACEHOLDER} />);
     const textField = screen.getByRole('textbox', { name: LABEL });
     expect(textField).toBeInTheDocument();
     expect(textField).not.toHaveAttribute('aria-label');
@@ -44,7 +44,7 @@ describe('CommonTextField', () => {
     expect(combobox).not.toHaveAttribute('aria-label', LABEL);
   });
   it('shrinks the label when user types value', () => {
-    const screen = render(<CommonTextField label={LABEL} placeholder={PLACEHOLDER} />);
+    render(<CommonTextField label={LABEL} placeholder={PLACEHOLDER} />);
     const textField = screen.getByRole('textbox', { name: LABEL });
     const label = screen.getByText(LABEL, { selector: 'label' });
     expect(label).toHaveAttribute('data-shrink', 'false');
@@ -125,9 +125,9 @@ describe('CommonTextField', () => {
       textField.focus();
     });
     expect(onFocus).toHaveBeenCalled();
-    act(() => {
-      userEvent.click(document.body);
-    });
+
+    await userEvent.click(document.body);
+
     await waitFor(() => {
       expect(onBlur).toHaveBeenCalled();
     });

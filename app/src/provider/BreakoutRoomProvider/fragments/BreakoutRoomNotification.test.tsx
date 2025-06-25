@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { cleanup } from '@testing-library/react';
 import { fireEvent, screen } from '@testing-library/react';
 
 import { BreakroomsIcon } from '../../../assets/icons';
@@ -25,7 +24,6 @@ const ACTIONS: Array<Action> = [
 const MESSAGE = 'testMessage';
 
 describe('BreakoutRoomNotification', () => {
-  afterEach(() => cleanup());
   it('render all items', () => {
     const { store } = configureStore();
     renderWithProviders(

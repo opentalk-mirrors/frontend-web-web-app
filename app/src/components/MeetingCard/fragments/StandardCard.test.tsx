@@ -78,10 +78,10 @@ describe('Standard Card', () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText('dashboard-meeting-card-popover-update-label')).toBeInTheDocument();
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-remove-label')).toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-add-label')).not.toBeInTheDocument();
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-delete-label')).toBeInTheDocument();
     });
+    expect(screen.getByLabelText('dashboard-meeting-card-popover-remove-label')).toBeInTheDocument();
+    expect(screen.queryByLabelText('dashboard-meeting-card-popover-add-label')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('dashboard-meeting-card-popover-delete-label')).toBeInTheDocument();
   });
 
   it('when user is not creator, meeting is marked as fav, click on more menu should display popup with remove favorite option', async () => {
@@ -96,10 +96,10 @@ describe('Standard Card', () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText('dashboard-meeting-card-popover-remove-label')).toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-add-label')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-update-label')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete-label')).not.toBeInTheDocument();
     });
+    expect(screen.queryByLabelText('dashboard-meeting-card-popover-add-label')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('dashboard-meeting-card-popover-update-label')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete-label')).not.toBeInTheDocument();
   });
 
   it('when user is not creator, meeting is not marked as fav, click on more menu should display popup with add favorite option', async () => {
@@ -118,9 +118,9 @@ describe('Standard Card', () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText('dashboard-meeting-card-popover-add-label')).toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-remove-label')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-update-label')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete-label')).not.toBeInTheDocument();
     });
+    expect(screen.queryByLabelText('dashboard-meeting-card-popover-remove-label')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('dashboard-meeting-card-popover-update-label')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete-label')).not.toBeInTheDocument();
   });
 });

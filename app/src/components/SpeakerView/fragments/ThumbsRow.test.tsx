@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, cleanup, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
 import { leave } from '../../../store/slices/participantsSlice';
@@ -26,10 +26,6 @@ jest.mock('@livekit/components-react', () => ({
   useRemoteParticipants: () => [mockedParticipant(0)],
   useRoomContext: () => jest.fn(),
 }));
-
-afterEach(() => {
-  cleanup();
-});
 
 describe('ThumbsRow', () => {
   it('ThumbsRow - zero participants', () => {

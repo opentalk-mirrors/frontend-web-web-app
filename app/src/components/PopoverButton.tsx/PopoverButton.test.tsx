@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { waitFor, render, screen, act } from '@testing-library/react';
+import { waitFor, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import PopoverButton from './PopoverButton';
@@ -29,7 +29,7 @@ describe('<PopoverButton />', () => {
     expect(button).toHaveTextContent('Icon');
   });
 
-  it('should open the popover when button is clicked', () => {
+  it('should open the popover when button is clicked', async () => {
     render(
       <PopoverButton
         icon={icon}
@@ -42,9 +42,7 @@ describe('<PopoverButton />', () => {
 
     const button = screen.getByRole('button', { name: buttonLabel });
 
-    act(() => {
-      button.click();
-    });
+    await userEvent.click(button);
 
     expect(screen.getByText('Popover Content')).toBeInTheDocument();
   });
@@ -62,15 +60,11 @@ describe('<PopoverButton />', () => {
 
     const button = screen.getByRole('button', { name: buttonLabel });
 
-    act(() => {
-      button.click();
-    });
+    await userEvent.click(button);
 
     expect(screen.getByText('Popover Content')).toBeInTheDocument();
 
-    act(() => {
-      button.click();
-    });
+    await userEvent.click(button);
 
     await waitFor(() => {
       expect(screen.queryByText('Popover Content')).not.toBeInTheDocument();
@@ -170,10 +164,10 @@ describe('<PopoverButton />', () => {
 
     await userEvent.click(button);
 
+    const title = screen.getByRole('heading', { name: titleLabel });
     await waitFor(() => {
-      const title = screen.getByRole('heading', { name: titleLabel });
       expect(title).toBeInTheDocument();
-      expect(title).toHaveAttribute('id', popoverTitleId);
     });
+    expect(title).toHaveAttribute('id', popoverTitleId);
   });
 });

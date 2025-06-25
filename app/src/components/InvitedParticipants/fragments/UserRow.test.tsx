@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Email, EventId, InviteStatus, UserId, UserRole } from '@opentalk/rest-api-rtk-query';
-import { fireEvent, cleanup, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useGetEventQuery, useGetMeQuery } from '../../../api/rest';
@@ -55,7 +55,6 @@ describe('UserRow', () => {
   const { store } = configureStore();
 
   afterEach(() => {
-    cleanup();
     jest.clearAllMocks();
   });
 
@@ -75,8 +74,6 @@ describe('UserRow', () => {
       },
     });
   });
-
-  afterEach(() => cleanup());
 
   it('renders without errors', () => {
     renderWithProviders(

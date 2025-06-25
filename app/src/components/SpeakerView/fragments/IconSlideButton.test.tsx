@@ -1,13 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import IconSlideButton from './IconSlideButton';
-
-afterEach(() => {
-  cleanup();
-});
 
 describe('IconSlideButton', () => {
   it('renders right IconSlideButton correctly', () => {

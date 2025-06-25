@@ -6,6 +6,7 @@ import jest from 'eslint-plugin-jest';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import testingLibrary from 'eslint-plugin-testing-library';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -53,16 +54,17 @@ export default defineConfig([
     },
   },
   {
-    name: 'jest',
+    name: 'tests',
     settings: {
       jest: {
         version: 'detect',
       },
     },
     files: ['**/*.test.{ts,tsx}'],
-    ...jest.configs['flat/recommended'],
+    plugins: { jest, 'testing-library': testingLibrary },
     rules: {
       ...jest.configs['flat/recommended'].rules,
+      ...testingLibrary.configs['flat/react'].rules,
       'jest/no-commented-out-tests': 'off',
       'jest/no-disabled-tests': 'off',
       'jest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],

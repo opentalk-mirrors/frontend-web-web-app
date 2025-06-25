@@ -1,14 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, cleanup } from '@testing-library/react';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import HandraiseButton from './HandraiseButton';
 
 describe('<HandraiseButton />', () => {
-  afterEach(() => cleanup());
   const { store, dispatchSpy } = configureStore();
 
   it('should render HandraiseButton component', () => {

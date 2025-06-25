@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { InviteCode } from '@opentalk/rest-api-rtk-query';
-import { screen, cleanup, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Role } from '../../api/types/incoming/control';
@@ -44,7 +44,6 @@ describe('LobbyView', () => {
     },
   });
   afterEach(() => {
-    cleanup();
     jest.resetAllMocks();
   });
 
