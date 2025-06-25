@@ -93,7 +93,28 @@ export class MeetingRoomPage {
     };
     titleTextbox: Locator;
     participantsReadyCheckbox: Locator;
-    createTimerButton: Locator;
+    createTimer: {
+      createTimerButton: Locator;
+      tabPanel: {
+        tabPanelSection: Locator;
+        heading: Locator;
+        elapsedTimeLabel: Locator;
+        remainingTimeLabel: Locator;
+        time: Locator;
+        participantsHeading: Locator;
+        participantsNotDoneStatus: Locator;
+      };
+      timerStartedPopup: {
+        timerStartedHeading: Locator;
+        elapsedTimeLabel: Locator;
+        remainingTimeLabel: Locator;
+        time: Locator;
+        markMeAsDoneButton: Locator;
+      };
+      stopTimerButton: Locator;
+      timerStoppedAlert: Locator;
+      timerRanOutAlert: Locator;
+    };
   };
 
   videoPreview: Locator;
@@ -243,7 +264,35 @@ export class MeetingRoomPage {
       },
       titleTextbox: this.page.getByRole('textbox', { name: 'Title' }),
       participantsReadyCheckbox: this.page.getByRole('checkbox', { name: 'Ask participants if they are ready' }),
-      createTimerButton: this.page.getByRole('button', { name: 'Create Timer' }),
+      createTimer: {
+        createTimerButton: this.page.getByRole('button', { name: 'Create Timer' }),
+        tabPanel: {
+          tabPanelSection: this.page.getByRole('tabpanel', { name: 'Timer' }),
+          heading: this.page.getByRole('tabpanel', { name: 'Timer' }).getByRole('heading', { name: 'Timer' }),
+          elapsedTimeLabel: this.page
+            .getByRole('tabpanel', { name: 'Timer' })
+            .getByText('Elapsed time', { exact: true }),
+          remainingTimeLabel: this.page
+            .getByRole('tabpanel', { name: 'Timer' })
+            .getByText('Remaining time', { exact: true }),
+          time: this.page.getByRole('tabpanel', { name: 'Timer' }).getByText(/\b\d{1,2}\s*:\s*\d{2}\b/),
+          participantsHeading: this.page.getByRole('heading', { name: 'Participants' }),
+          participantsNotDoneStatus: this.page
+            .getByRole('tabpanel', { name: 'Timer' })
+            .getByRole('listitem')
+            .filter({ has: this.page.getByRole('img', { name: 'Not done', exact: true }) }),
+        },
+        timerStartedPopup: {
+          timerStartedHeading: this.page.getByRole('heading', { name: 'A timer was started' }),
+          elapsedTimeLabel: this.page.getByRole('dialog').getByText('Elapsed time', { exact: true }),
+          remainingTimeLabel: this.page.getByRole('dialog').getByText('Remaining time', { exact: true }),
+          time: this.page.getByRole('dialog').getByText(/\b\d{1,2}\s*:\s*\d{2}\b/),
+          markMeAsDoneButton: this.page.getByRole('button', { name: 'Mark me as done' }),
+        },
+        stopTimerButton: this.page.getByRole('button', { name: 'Stop timer' }),
+        timerStoppedAlert: this.page.getByRole('alert').getByText('The timer was stopped'),
+        timerRanOutAlert: this.page.getByRole('alert').getByText('The timer ran out'),
+      },
     };
 
     this.videoPreview = this.page.getByRole('complementary', { name: 'Tools' }).locator('video');
@@ -672,5 +721,74 @@ export class MeetingRoomPage {
     if (value) {
       await this.timer.duration.customDuration.spinButton.fill(value);
     }
+  }
+
+  async selectTimerTitleInput() {
+    await this.timer.titleTextbox.click();
+  }
+
+  async enterTimerTitle(title: string) {
+    await this.timer.titleTextbox.fill(title);
+  }
+
+  async getPlaceholderOfTimerTitleInput(): Promise<string> {
+    return (await this.timer.titleTextbox.getAttribute('placeholder'))!;
+  }
+
+  async getTimerTitleInputValue(): Promise<string> {
+    return await this.timer.titleTextbox.inputValue();
+  }
+
+  async createTimer() {
+    await this.timer.createTimer.createTimerButton.click();
+  }
+
+  getTimerStartedPopup(title: string = 'A timer was started'): Locator {
+    return this.page.getByRole('dialog', { name: title });
+  }
+
+  getTimerTitle(title: string): Locator {
+    return this.page.getByRole('heading', { name: title });
+  }
+
+  async getParticipantsNotDoneStatus(): Promise<Locator[]> {
+    const notDoneList: Locator[] = [];
+    for (const notDoneParticipant of await this.timer.createTimer.tabPanel.participantsNotDoneStatus.all()) {
+      if (await notDoneParticipant.isVisible()) {
+        notDoneList.push(notDoneParticipant);
+      }
+    }
+    return notDoneList;
+  }
+
+  async getTimerTimeInSeconds(locator: Locator): Promise<number> {
+    const time = await locator.innerText();
+    const min = parseInt(time.split(':')[0]);
+    const sec = parseInt(time.split(':')[1]);
+    return min * 60 + sec;
+  }
+
+  async waitForRemainingTimerTime() {
+    const remainingTime = (await this.getTimerTimeInSeconds(this.timer.createTimer.tabPanel.time)) * 1000;
+    await this.page.waitForTimeout(remainingTime);
+  }
+
+  async stopTimer() {
+    await this.timer.createTimer.stopTimerButton.click();
+  }
+
+  async isCountingUp(locator: Locator): Promise<boolean> {
+    const prevSec = await this.getTimerTimeInSeconds(locator);
+    await this.page.waitForTimeout(2000);
+    const currentSec = await this.getTimerTimeInSeconds(locator);
+
+    if (currentSec > prevSec) {
+      return true;
+    }
+    return false;
+  }
+
+  async toggleAskParticipantsIfReady(value: boolean) {
+    await this.timer.participantsReadyCheckbox.setChecked(value);
   }
 }
