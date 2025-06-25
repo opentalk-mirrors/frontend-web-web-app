@@ -116,7 +116,9 @@ const EditEventsPage = () => {
       <Typography component="h1">{pageHeading}</Typography>
       <StepperHeader />
       <RequiredFieldsInfo />
-      {activeStep === 0 && <UpdateMeetingForm existingEvent={event} onForwardButtonClick={() => setActiveStep(1)} />}
+      {activeStep === 0 && event && (
+        <UpdateMeetingForm existingEvent={event} onForwardButtonClick={() => setActiveStep(1)} />
+      )}
       {activeStep === 1 && event && (
         <InviteToMeeting
           isUpdatable={true}

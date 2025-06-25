@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Stack, styled, Switch } from '@mui/material';
 import { FormikValues, useFormik } from 'formik';
+import { TFunction } from 'i18next';
 import { useCallback, useMemo } from 'react';
-import { TFunction, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 
 import { startTimer } from '../../../api/types/outgoing/timer';
@@ -79,7 +80,7 @@ const CreateTimerForm = ({ timerStyle }: { timerStyle: TimerStyle }) => {
   );
 
   const validationSchema = yup.object({
-    duration: yup.number().nullable(true),
+    duration: yup.number().nullable(),
   });
 
   const formik = useFormik({

@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node';
 
 import { createOpenTalkApiWithReactHooks } from '../endpoints';
 import fetchQuery from '../fetchQuery';
-import { EventId } from '../types';
+import { EventId } from '../types/event';
 import { camelcaseKeysDeep } from '../types/utils';
 import { setupApiStore } from './helpers';
 import { eventHandlers, generateMockUser, userHandlers } from './mocks/server';

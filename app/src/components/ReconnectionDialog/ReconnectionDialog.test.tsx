@@ -4,7 +4,7 @@
 import { render, fireEvent } from '@testing-library/react';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { startMedia } from '../../store/slices/mediaSlice';
+import { startMedia } from '../../store/commonActions';
 import { abortedReconnection } from '../../store/slices/roomSlice';
 import ReconnectionDialog from './ReconnectionDialog';
 
@@ -17,7 +17,7 @@ jest.mock('../../store/slices/roomSlice', () => ({
   abortedReconnection: jest.fn(),
 }));
 
-jest.mock('../../store/slices/mediaSlice', () => ({
+jest.mock('../../store/commonActions', () => ({
   startMedia: jest.fn(),
 }));
 

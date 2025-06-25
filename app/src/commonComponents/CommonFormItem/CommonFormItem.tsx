@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Stack } from '@mui/material';
+import type { TextFieldProps, CheckboxProps, SwitchProps } from '@mui/material';
 import React from 'react';
 
 import { generateUniqueId } from '../../utils/stringUtils';
@@ -9,7 +10,7 @@ import ErrorFormMessage from '../ErrorFormMessage';
 
 interface CommonFormItemProps {
   label: string;
-  control: React.ReactElement;
+  control: React.ReactElement<TextFieldProps | CheckboxProps | SwitchProps>;
   name: string;
   onChange: {
     (e: React.ChangeEvent<unknown>): void;

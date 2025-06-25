@@ -20,7 +20,7 @@ const Countdown = ({ started, duration, onCountdownEnds, ...rest }: CountdownPro
   const endTime = started + (duration ? duration : DURATION) * 1000;
   const [remainingTime, setRemainingTime] = useState(calculateRemainingTime(endTime));
   const progress = Math.min(100, (remainingTime / (duration ? duration : DURATION)) * 100);
-  const intervalRef = useRef<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {

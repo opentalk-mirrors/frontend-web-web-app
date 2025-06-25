@@ -18,6 +18,7 @@ import {
   Role,
   WaitingState,
   LegalVote,
+  ParticipationKind,
 } from '../../types';
 import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
@@ -300,20 +301,21 @@ export const selectParticipantsTotal = createSelector(
   (participants) => participants.length + 1
 );
 
-export const selectParticipantAvatarUrl = createSelector(
+export const selectParticipantAvatarUrl: (state: RootState, id: ParticipantId) => string | undefined = createSelector(
   [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
   (participant) => participant?.avatarUrl
 );
 
-export const selectParticipantName = createSelector(
+export const selectParticipantName: (state: RootState, id: ParticipantId) => string | undefined = createSelector(
   [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
   (participant) => participant?.displayName
 );
 
-export const selectParticipationKind = createSelector(
-  [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
-  (participant) => participant?.participationKind
-);
+export const selectParticipationKind: (state: RootState, id: ParticipantId) => ParticipationKind | undefined =
+  createSelector(
+    [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
+    (participant) => participant?.participationKind
+  );
 
 export const selectMapRemotePaticipanstDisplayName = createSelector(
   [(_state: RootState, remoteParticipants: RemoteParticipant[]) => remoteParticipants, selectAllOnlineParticipants],

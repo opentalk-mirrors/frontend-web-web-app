@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { CreateEventPayload } from '@opentalk/rest-api-rtk-query';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +26,7 @@ const CreateMeetingForm = () => {
     }
     isCreating.current = true;
     try {
-      const payload = createPayload(values);
+      const payload = createPayload(values) as CreateEventPayload;
       const event = await createEvent(payload).unwrap();
       notifications.success(t('dashboard-meeting-notification-success-create', { event: event.title }));
       navigate(`/dashboard/meetings/update/${event.id}/1`, {

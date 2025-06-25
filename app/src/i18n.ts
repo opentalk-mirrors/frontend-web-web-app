@@ -36,7 +36,7 @@ i18n
     },
     backend: {
       loadPath: `${window.location.protocol}//${window.location.host}/locales/{{lng}}/{{ns}}.ftl`,
-      parse: (data) => {
+      parse: (data: string) => {
         return ftl2jsParse(data);
       },
       crossDomain: false,

@@ -21,7 +21,8 @@ import {
   stopTimeLimitNotification,
   showConsentNotification,
 } from './Notistack';
-import { ISnackActionsProps, ISnackbarPersistentProps, ISnackbarActionButtonProps } from './Notistack';
+import { ISnackActionsProps, ISnackbarPersistentProps } from './Notistack';
+import { SnackbarActionButtonProps } from './Notistack/fragments/SnackbarActionButtons/SnackbarActionButtons';
 import ParticipantAvatar, { setLibravatarOptions } from './ParticipantAvatar';
 import ProgressBar from './ProgressBar';
 import Rating from './Rating';
@@ -67,7 +68,7 @@ export {
 export type {
   ISnackActionsProps,
   ISnackbarPersistentProps,
-  ISnackbarActionButtonProps,
+  SnackbarActionButtonProps,
   ToggleOptions,
   DurationValueOptions,
 };

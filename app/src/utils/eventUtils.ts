@@ -125,7 +125,7 @@ export const orderEventsByDate = (events: Event[], sortDirection: SortDirection 
   );
 
 export const appendRecurringEventInstances = (
-  eventList: (EventException | Event)[],
+  eventList: Array<Event | EventException>,
   filterDeclined?: boolean,
   maxMonths?: number,
   filter?: TimePerspectiveFilter
@@ -159,7 +159,7 @@ export const appendRecurringEventInstances = (
 export const findOverlappingEvent = (
   currentEventStart: Date,
   currentEventEnd: Date,
-  events: Event[] | EventException[],
+  events: Array<Event | EventException>,
   currentEventId?: EventId
 ): SingleEvent | RecurringEvent | undefined => {
   if (events.length > 0) {

@@ -6,7 +6,7 @@
   "source": "src/index.ts",
   "main": "dist/main.cjs",
   "module": "dist/main.js",
-  "types": "dist/types.d.ts",
+  "types": "dist/index.d.ts",
   "license": "EUPL-1.2",
   "scripts": {
     "watch": "vite build --watch",

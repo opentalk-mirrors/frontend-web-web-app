@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, styled } from '@mui/material';
-import type { TFunctionResult } from 'i18next';
 
 import { CloseButton } from '../CloseButton';
 
@@ -12,7 +11,7 @@ export interface AdditionalButtonAttributes {
 }
 
 export interface SnackbarActionButtonProps {
-  msg: (string | React.ReactNode) & TFunctionResult;
+  msg: string | React.ReactNode;
   onCancel?: () => void;
   onAction?: () => void;
   actionBtnText?: string;

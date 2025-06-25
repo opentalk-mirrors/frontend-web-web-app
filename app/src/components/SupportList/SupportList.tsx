@@ -45,7 +45,7 @@ enum ListItemKeys {
 type AnchorItem = {
   key: ListItemKeys;
   name: string;
-  icon: JSX.Element;
+  icon: React.JSX.Element;
   componentProps: {
     href: string;
     target: '_blank';
@@ -55,7 +55,7 @@ type AnchorItem = {
 type ButtonItem = {
   key: ListItemKeys;
   name: string;
-  icon: JSX.Element;
+  icon: React.JSX.Element;
   componentProps: {
     onClick: () => void;
     'aria-expanded'?: boolean;

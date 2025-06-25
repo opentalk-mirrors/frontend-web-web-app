@@ -3,7 +3,9 @@
   "include": ["src"],
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "types",
+    "declarationDir": "dist/types",
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
     "moduleResolution": "node",
     "isolatedModules": true,
     "esModuleInterop": true,

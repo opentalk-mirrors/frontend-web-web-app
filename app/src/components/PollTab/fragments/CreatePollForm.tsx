@@ -55,7 +55,7 @@ const validationSchema = yup.object({
     .min(TOPIC_MIN_LENGTH, i18next.t('poll-form-input-error-min', { min: TOPIC_MIN_LENGTH }))
     .max(TOPIC_MAX_LENGTH, i18next.t('poll-form-input-error-max', { max: TOPIC_MAX_LENGTH }))
     .required(i18next.t('legal-vote-input-topic-required')),
-  duration: yup.number().positive().nullable(true).typeError(i18next.t('poll-form-input-error-number')),
+  duration: yup.number().positive().nullable().typeError(i18next.t('poll-form-input-error-number')),
   choices: yup
     .array()
     .of(yup.string().trim().required(i18next.t('poll-form-input-error-choice')))

@@ -14,7 +14,6 @@ if (window.config.glitchtip && window.config.glitchtip.dsn) {
     locale: i18n.language,
   });
   Sentry.init({
-    autoSessionTracking: false, // switched because its not implemented https://gitlab.com/glitchtip/glitchtip-backend/-/issues/206
     dsn: window.config.glitchtip.dsn,
     enabled: Boolean(window.config.glitchtip.dsn),
     release: window.config.version?.frontend,

@@ -54,7 +54,7 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
   name: string;
   processedTrack?: MediaStreamTrack;
 
-  private interval?: number;
+  private interval?: NodeJS.Timeout;
   private static tfLiteCache?: Promise<TFLite>;
   private outputMemoryOffset: number = 0;
   private inputMemoryOffset: number = 0;
@@ -67,7 +67,7 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
   private videoElement?: HTMLVideoElement;
   private config: BackgroundConfig;
   private imageBackdrop?: HTMLImageElement;
-  private static tfLite?: TFLite;
+  private static _tfLite: TFLite;
 
   /**
    * Creates a TFLiteSIMDModule or if this is not supported a TFLiteModule. Fetches the
@@ -119,17 +119,28 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
     this.name = `background_${this.config.imageUrl ? this.config.imageUrl : this.config.style}`;
   }
 
-  async setup() {
+  static async initTFLite() {
     if (!BackgroundBlur.tfLiteCache) {
       BackgroundBlur.tfLiteCache = BackgroundBlur.loadTFLiteModel();
       BackgroundBlur.tfLiteCache.catch(() => {
         BackgroundBlur.tfLiteCache = undefined;
       });
     }
+    BackgroundBlur.tfLite = await BackgroundBlur.tfLiteCache;
+  }
 
-    this.tfLite = await BackgroundBlur.tfLiteCache;
-    this.outputMemoryOffset = this.tfLite?._getOutputMemoryOffset() / 4;
-    this.inputMemoryOffset = this.tfLite?._getInputMemoryOffset() / 4;
+  static get tfLite(): TFLite {
+    return this._tfLite;
+  }
+
+  static set tfLite(tfLite: TFLite) {
+    this._tfLite = tfLite;
+  }
+
+  async setup() {
+    await BackgroundBlur.initTFLite();
+    this.outputMemoryOffset = BackgroundBlur.tfLite && BackgroundBlur.tfLite?._getOutputMemoryOffset() / 4;
+    this.inputMemoryOffset = BackgroundBlur.tfLite && BackgroundBlur.tfLite?._getInputMemoryOffset() / 4;
     this.segmentationMaskCanvas.width = this.segmentationMask.width;
     this.segmentationMaskCanvas.height = this.segmentationMask.height;
     this.segmentationMaskCtx = this.segmentationMaskCanvas.getContext('2d', { willReadFrequently: true });
@@ -231,7 +242,7 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
     this.canvas.width = this.sourcePlayback.width;
     this.canvas.height = this.sourcePlayback.height;
 
-    if (!this.tfLite) {
+    if (!BackgroundBlur.tfLite) {
       throw Error('tfLite model is broken');
     }
 
@@ -260,14 +271,14 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
 
     for (let i = 0; i < imageData.data.length / 4; i++) {
       const data = imageData.data[i * 4];
-      this.tfLite.HEAPF32[this.inputMemoryOffset + i * 3] = data / 255;
-      this.tfLite.HEAPF32[this.inputMemoryOffset + i * 3 + 1] = data / 255;
-      this.tfLite.HEAPF32[this.inputMemoryOffset + i * 3 + 2] = data / 255;
+      BackgroundBlur.tfLite.HEAPF32[this.inputMemoryOffset + i * 3] = data / 255;
+      BackgroundBlur.tfLite.HEAPF32[this.inputMemoryOffset + i * 3 + 1] = data / 255;
+      BackgroundBlur.tfLite.HEAPF32[this.inputMemoryOffset + i * 3 + 2] = data / 255;
     }
 
-    this.tfLite._runInference();
+    BackgroundBlur.tfLite._runInference();
     for (let i = 0; i < this.segmentationMask.data.length / 4; i++) {
-      const confidence = this.tfLite.HEAPF32[this.outputMemoryOffset + i] || 0;
+      const confidence = BackgroundBlur.tfLite.HEAPF32[this.outputMemoryOffset + i] || 0;
       // Aplha blending in the edge area to smooth the mask corners
       // Original formula "edgeAlpha = (confidence - minConfidence) / (maxConfidence - minConfidence)"
       const edgeAlpha = (confidence - MIN_CONFIDENCE) * BLEND_COEFF;

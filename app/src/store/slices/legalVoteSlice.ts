@@ -52,7 +52,7 @@ interface ActiveVote {
 
 export type State = {
   activeVote?: ActiveVote;
-  currentShownVote?: LegalVoteId;
+  currentShownVoteId?: LegalVoteId;
   votes: EntityState<LegalVote, LegalVoteId>;
   showResultWindow: boolean;
   savedLegalVotes: Array<SavedLegalVoteForm>;
@@ -110,7 +110,7 @@ export const legalVoteSlice = createSlice({
       state.showResultWindow = false;
     },
     started: (state, { payload }: PayloadAction<VoteStarted>) => {
-      state.currentShownVote = payload.legalVoteId;
+      state.currentShownVoteId = payload.legalVoteId;
       state.activeVote = {
         id: payload.legalVoteId,
         persistedToken: payload.token,
@@ -187,13 +187,13 @@ export const legalVoteSlice = createSlice({
         // We only allow closing already finished votes for now
         return;
       }
-      if (state.currentShownVote === payload) {
-        state.currentShownVote = undefined;
+      if (state.currentShownVoteId === payload) {
+        state.currentShownVoteId = undefined;
       }
     },
     closedResultWindow: (state) => {
       state.showResultWindow = false;
-      state.currentShownVote = undefined;
+      state.currentShownVoteId = undefined;
     },
     savedLegalVoteForm: (state, { payload }: PayloadAction<SavedLegalVoteForm>) => {
       const index = state.savedLegalVotes.findIndex((savedLegalVote) => savedLegalVote.id === payload.id);
@@ -222,7 +222,7 @@ export const legalVoteSlice = createSlice({
       if (!isAVoteActive) {
         state.activeVote = undefined;
       } else {
-        state.currentShownVote = isAVoteActive.legalVoteId;
+        state.currentShownVoteId = isAVoteActive.legalVoteId;
       }
 
       const newList: Array<LegalVote> = votes.map((vote) => ({
@@ -258,16 +258,22 @@ export const {
 
 const voteSelectors = legalVoteAdapter.getSelectors<RootState>((state) => state.legalVote.votes);
 
-export const selectVoteById = (id: LegalVoteId) => (state: RootState) => voteSelectors.selectById(state, id);
+export const selectVoteById: (id: LegalVoteId) => (state: RootState) => LegalVote | undefined =
+  (id: LegalVoteId) => (state: RootState) =>
+    voteSelectors.selectById(state, id);
 export const selectVoteIds = (state: RootState) => voteSelectors.selectIds(state);
 export const selectAllVotes = (state: RootState) => voteSelectors.selectAll(state);
 export const selectVotes = (state: RootState) => voteSelectors.selectEntities(state);
 
 export const selectShowLegalVoteWindow = (state: RootState) => state.legalVote.showResultWindow;
 
-export const selectCurrentShownVoteId = (state: RootState) => state.legalVote.currentShownVote;
-export const selectCurrentShownVote = (state: RootState) =>
-  state.legalVote.currentShownVote ? selectVoteById(state.legalVote.currentShownVote) : undefined;
+export const selectCurrentShownVoteId = (state: RootState) => state.legalVote.currentShownVoteId;
+export const selectCurrentShownVote = createSelector(
+  [selectCurrentShownVoteId, (state: RootState) => state],
+  (currentShownVoteId, state) => {
+    return currentShownVoteId ? selectVoteById(currentShownVoteId)(state) : undefined;
+  }
+);
 
 export const selectActiveVoteId = (state: RootState) => state.legalVote.activeVote?.id;
 export const selectPersistedToken = (state: RootState) => state.legalVote.activeVote?.persistedToken;

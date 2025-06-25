@@ -26,7 +26,11 @@ describe('MeetingEndedDialog', () => {
   const { store } = mockStore(0);
 
   it('dispatches hangUp and navigates when button is clicked', () => {
-    renderWithProviders(<MeetingEndedDialog />, { store, provider: { mui: true } });
+    const mockSetIsDialogOpen = jest.fn();
+    renderWithProviders(<MeetingEndedDialog setIsDialogOpen={mockSetIsDialogOpen} />, {
+      store,
+      provider: { mui: true },
+    });
 
     const leaveButton = screen.getByRole('button', { name: /meeting-ended-dialog-button-title/i });
     fireEvent.click(leaveButton);
@@ -37,8 +41,12 @@ describe('MeetingEndedDialog', () => {
 
   it('does not navigate if inviteCode is present', () => {
     (useInviteCode as jest.Mock).mockReturnValue('some-code');
+    const mockSetIsDialogOpen = jest.fn();
 
-    renderWithProviders(<MeetingEndedDialog />, { store, provider: { mui: true } });
+    renderWithProviders(<MeetingEndedDialog setIsDialogOpen={mockSetIsDialogOpen} />, {
+      store,
+      provider: { mui: true },
+    });
 
     const leaveButton = screen.getByRole('button', { name: /meeting-ended-dialog-button-title/i });
     fireEvent.click(leaveButton);
