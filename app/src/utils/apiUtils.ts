@@ -119,3 +119,5 @@ export const getAccessibilityUrl = (locale: ReturnType<typeof useLocale>) => {
     ? 'https://opentalk.eu/en/accessibility-statement'
     : 'https://opentalk.eu/de/erklaerung-zur-barrierefreiheit';
 };
+
+export const getLocationProtocol = () => window.location.protocol;

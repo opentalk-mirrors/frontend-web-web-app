@@ -15,6 +15,7 @@ import {
 import { useAppSelector } from '../../../hooks';
 import { selectIsRecordingActive, selectIsStreamActive } from '../../../store/slices/streamingSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
+import { getLocationProtocol } from '../../../utils/apiUtils';
 import PopoverButton from '../../PopoverButton.tsx/PopoverButton';
 import SecurityBadge from '../../SecurityBadge/SecurityBadge';
 import MeetingTimer from './MeetingTimer';
@@ -66,7 +67,7 @@ const MeetingUtilsSection = () => {
   const isModerator = useAppSelector(selectIsModerator);
   const isRecordingActive = useAppSelector(selectIsRecordingActive);
   const isStreamingActive = useAppSelector(selectIsStreamActive);
-  const showSecurityBadge = window.location.protocol === 'https:';
+  const showSecurityBadge = getLocationProtocol() === 'https:';
   const { t } = useTranslation();
   const { localParticipant } = useLocalParticipant();
 
