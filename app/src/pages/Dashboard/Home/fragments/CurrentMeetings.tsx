@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, Skeleton, List, ListItem, styled } from '@mui/material';
-import { DateTime, Event, EventException } from '@opentalk/rest-api-rtk-query';
+import { DateTime, Event, EventException, InviteStatus } from '@opentalk/rest-api-rtk-query';
 import { formatRFC3339 } from 'date-fns';
 import { isEmpty } from 'lodash';
 
@@ -26,12 +26,14 @@ const CurrentMeetings = () => {
     timeMin: formatRFC3339(currentDate) as DateTime,
     perPage: MAX_MEETINGS_PER_PAGE,
     adhoc: false,
+    inviteStatus: [InviteStatus.Accepted, InviteStatus.Pending, InviteStatus.Tentative],
   });
 
   const { data: timeIndependentEvents, isLoading: timeIndependentEventsIsLoading } = useGetEventsQuery({
     perPage: MAX_MEETINGS_PER_PAGE,
     adhoc: false,
     timeIndependent: true,
+    inviteStatus: [InviteStatus.Accepted, InviteStatus.Pending, InviteStatus.Tentative],
   });
 
   if (upcomingEventsIsLoading || timeIndependentEventsIsLoading) {

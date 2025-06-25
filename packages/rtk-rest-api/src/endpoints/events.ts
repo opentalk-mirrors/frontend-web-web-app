@@ -4,7 +4,7 @@
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, FetchBaseQueryMeta } from '@reduxjs/toolkit/query';
 import snakeCaseKeys from 'snakecase-keys';
 
-import { Tag, Tags, UserId, CursorPaginated, DateTime } from '../types/common';
+import { Tag, Tags, UserId, CursorPaginated, DateTime, InviteStatus } from '../types/common';
 import {
   UpdateEventPayload,
   RescheduleEventPayload,
@@ -51,6 +51,10 @@ export interface TimeRangeQueryParams {
   timeMax?: DateTime;
 }
 
+export interface EventInviteStatusQueryParam {
+  inviteStatus?: Array<InviteStatus>;
+}
+
 export const addEventsEndpoints = <
   RoomEndpointBuilder extends EndpointBuilder<
     BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, Record<string, unknown>, FetchBaseQueryMeta>,
@@ -65,7 +69,7 @@ export const addEventsEndpoints = <
    */
   getEvents: builder.query<
     CursorPaginated<Event | EventException>,
-    CursorPaginationParams & TimeRangeQueryParams & EventQueryParams
+    CursorPaginationParams & TimeRangeQueryParams & EventQueryParams & EventInviteStatusQueryParam
   >({
     query: (params) => ({
       url: 'events',
