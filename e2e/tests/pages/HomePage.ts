@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
+import { MeetingDetailsPage } from './MeetingDetailsPage';
 import { MeetingInvitationPage } from './MeetingInvitationPage';
 import { MeetingPlanningPage } from './MeetingPlanningPage';
 
@@ -15,6 +16,7 @@ export class HomePage {
   favoriteMeetingsHeaderSelector: Locator;
   startMeetingButtonNamePrefix: string;
   moreOptionsButtonProperties: { role; options };
+  detailsMenuItem: Locator;
 
   constructor({ page }: { page: Page }) {
     this.page = page;
@@ -24,6 +26,7 @@ export class HomePage {
     this.currentMeetingsHeaderSelector = this.page.getByText('Current meetings');
     this.favoriteMeetingsHeaderSelector = this.page.getByText('My favorite meetings');
     this.startMeetingButtonNamePrefix = 'Start ';
+    this.detailsMenuItem = this.page.getByRole('menuitem', { name: 'Details' });
     this.moreOptionsButtonProperties = {
       role: 'button',
       options: { name: 'More Options' },
@@ -109,6 +112,14 @@ export class HomePage {
       .first();
   }
 
+  async showMeetingDetails(meetingTitle: string): Promise<MeetingDetailsPage> {
+    const meetingMenu = await this.getThreeDotMenuOfMeeting(meetingTitle);
+    await meetingMenu.click();
+    await this.detailsMenuItem.click();
+    await this.page.waitForLoadState('load');
+    return new MeetingDetailsPage({ page: this.page });
+  }
+
   async deleteMeeting(meetingTitle: string): Promise<boolean> {
     const count = await this.getCountOfMeetingsWithTitle(meetingTitle);
     if (count <= 0) {
@@ -118,7 +129,6 @@ export class HomePage {
     const startMeetingButton = await this.getStartMeetingButton(meetingTitle);
     const meetingLink = await startMeetingButton.getAttribute('href');
     const uniqueMeetingStartButton = this.page.locator('[href*="' + meetingLink + '"]');
-
     const meetingMenu = await this.getThreeDotMenuOfMeeting(meetingTitle);
     await meetingMenu.waitFor({ timeout: 10_000 });
     await meetingMenu.click();
