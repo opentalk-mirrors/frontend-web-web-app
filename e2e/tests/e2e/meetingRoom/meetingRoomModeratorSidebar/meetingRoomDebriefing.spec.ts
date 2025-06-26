@@ -62,4 +62,20 @@ test.describe('Meeting Room_Debriefing', () => {
     await expect(lobbyRoomPage.conferenceCloseAlerts.conferenceCloseAlertNotification).toBeVisible();
     // TODO: Need to assert that the registered invited users are in the lobby, once invited user scenario is implemented
   });
+
+  test('TC_003_Meeting room_Debriefing_End of the conference', async () => {
+    expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(2);
+    await meetingRoomPage.startDebriefingModeratorTool();
+    await meetingRoomPage.selectDebriefingOption(meetingRoomPage.debriefingOptions.endOfTheConferenceOption);
+
+    const moderatorLobbyRoomPage = new LobbyRoomPage({ page: meetingRoomPage.page });
+    await expect(moderatorLobbyRoomPage.openTalkLogo).toBeVisible();
+    await expect(moderatorLobbyRoomPage.conferenceCloseAlerts.conferenceCloseForAllAlertNotification).toBeVisible();
+
+    await guestMeetingRoomPage.page.bringToFront();
+    const guestLobbyRoomPage = new LobbyRoomPage({ page: guestMeetingRoomPage.page });
+    await expect(guestLobbyRoomPage.openTalkLogo).toBeVisible();
+    await expect(guestLobbyRoomPage.conferenceCloseAlerts.conferenceCloseAlertNotification).toBeVisible();
+    // TODO: Need to assert that the registered invited users are in the lobby, once invited user scenario is implemented
+  });
 });
