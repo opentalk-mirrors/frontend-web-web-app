@@ -36,14 +36,14 @@ describe('Training participation report select', () => {
     expect(selectButton).not.toBeInTheDocument();
   });
 
-  it('Select is rendered and usable when enabled', () => {
+  it('Select is rendered and usable when enabled', async () => {
     render(
       <Formik initialValues={initialValues} onSubmit={() => {}}>
         {(formikProps) => <TrainingParticipationReportSelect formik={formikProps} />}
       </Formik>
     );
 
-    const selectButton = screen.getByRole('combobox');
+    const selectButton = await screen.findByRole('combobox');
     expect(selectButton).toBeInTheDocument();
 
     selectButton && fireEvent.mouseDown(selectButton);
@@ -57,7 +57,8 @@ describe('Training participation report select', () => {
 
     fireEvent.click(sixtyMinOption);
 
-    const select = screen.getByTestId('parameter-select').textContent?.replace(/\u200B/g, '');
-    expect(select).toBe('dashboard-meeting-training-participation-report-option-every-sixty-min');
+    const select = await screen.findByTestId('parameter-select');
+    const fixedSelect = select.textContent?.replace(/\u200B/g, '');
+    expect(fixedSelect).toBe('dashboard-meeting-training-participation-report-option-every-sixty-min');
   });
 });

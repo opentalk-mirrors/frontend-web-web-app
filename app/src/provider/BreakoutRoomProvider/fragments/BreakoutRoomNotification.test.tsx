@@ -24,7 +24,7 @@ const ACTIONS: Array<Action> = [
 const MESSAGE = 'testMessage';
 
 describe('BreakoutRoomNotification', () => {
-  it('render all items', () => {
+  it('render all items', async () => {
     const { store } = configureStore();
     renderWithProviders(
       <BreakoutRoomNotification
@@ -35,12 +35,12 @@ describe('BreakoutRoomNotification', () => {
       />,
       { store, provider: { snackbar: true, mui: true } }
     );
-    expect(screen.getByText(MESSAGE)).toBeInTheDocument();
+    expect(await screen.findByText(MESSAGE)).toBeInTheDocument();
     expect(screen.getByText(ACTIONS[0].text)).toBeInTheDocument();
     expect(screen.getByText(ACTIONS[1].text)).toBeInTheDocument();
   });
 
-  it('action called once', () => {
+  it('action called once', async () => {
     const { store } = configureStore();
     renderWithProviders(
       <BreakoutRoomNotification
@@ -51,17 +51,17 @@ describe('BreakoutRoomNotification', () => {
       />,
       { store, provider: { snackbar: true, mui: true } }
     );
-    expect(screen.getByText(MESSAGE)).toBeInTheDocument();
+    const actionButton = await screen.findByRole('button', { name: ACTIONS[0].text });
 
     expect(actionFn).toHaveBeenCalledTimes(0);
 
-    fireEvent.click(screen.getByText(ACTIONS[0].text));
-    fireEvent.click(screen.getByText(ACTIONS[0].text));
+    fireEvent.click(actionButton);
+    fireEvent.click(actionButton);
 
     expect(actionFn).toHaveBeenCalledTimes(1);
   });
 
-  it('close after click on an action', () => {
+  it('close after click on an action', async () => {
     const { store } = configureStore();
     renderWithProviders(
       <BreakoutRoomNotification
@@ -74,11 +74,11 @@ describe('BreakoutRoomNotification', () => {
     );
     const spyClose = jest.spyOn(notifications, 'close');
 
-    expect(screen.getByText(MESSAGE)).toBeInTheDocument();
+    const actionButton = await screen.findByRole('button', { name: ACTIONS[0].text });
 
     expect(spyClose).toHaveBeenCalledTimes(0);
 
-    fireEvent.click(screen.getByText(ACTIONS[0].text));
+    fireEvent.click(actionButton);
 
     expect(spyClose).toHaveBeenCalledTimes(1);
   });

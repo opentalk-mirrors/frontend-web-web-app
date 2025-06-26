@@ -8,11 +8,14 @@
 import { TariffId } from '@opentalk/rest-api-rtk-query';
 import '@testing-library/jest-dom';
 import 'cross-fetch/polyfill';
+import failOnConsole from 'jest-fail-on-console';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import React from 'react';
 
 import { DefaultAvatarImage } from './store/slices/configSlice';
+
+failOnConsole();
 
 global.React = React;
 

@@ -64,21 +64,21 @@ describe('MeetingDetailsDialog', () => {
     });
   });
 
-  it('should render without crashing', () => {
-    expect(() =>
-      renderWithProviders(
-        <MeetingDetailsDialog open={true} onClose={jest.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
-        { store }
-      )
-    ).not.toThrow();
+  it('should render without crashing', async () => {
+    renderWithProviders(
+      <MeetingDetailsDialog open={true} onClose={jest.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
+      { store }
+    );
+
+    expect(await screen.findByText('meeting-details-dialog-title')).toBeInTheDocument();
   });
 
-  it('renders room password when provided.', () => {
+  it('renders room password when provided.', async () => {
     const { unmount } = renderWithProviders(
       <MeetingDetailsDialog open={true} onClose={jest.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
       { store }
     );
-    expect(screen.getByLabelText('meeting-details-dialog-label-room-password')).toBeInTheDocument();
+    expect(await screen.findByLabelText('meeting-details-dialog-label-room-password')).toBeInTheDocument();
     unmount();
     renderWithProviders(
       <MeetingDetailsDialog
@@ -89,10 +89,11 @@ describe('MeetingDetailsDialog', () => {
       />,
       { store }
     );
+    expect(await screen.findByText('meeting-details-dialog-title')).toBeInTheDocument();
     expect(screen.queryByLabelText('meeting-details-dialog-label-room-password')).not.toBeInTheDocument();
   });
 
-  it("writes content to the clipboard when 'Copy' button is clicked", () => {
+  it("writes content to the clipboard when 'Copy' button is clicked", async () => {
     (navigator.clipboard.writeText as jest.Mock).mockResolvedValueOnce(undefined);
 
     renderWithProviders(
@@ -100,7 +101,7 @@ describe('MeetingDetailsDialog', () => {
       { store }
     );
 
-    const copyButton = screen.getByText('meeting-details-dialog-copy-button');
+    const copyButton = await screen.findByText('meeting-details-dialog-copy-button');
     fireEvent.click(copyButton);
 
     expect(navigator.clipboard.writeText).toHaveBeenCalled();

@@ -6,26 +6,26 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { TalkingStickUnmutedNotification } from './TalkingStickUnmutedNotification';
 
 describe('TalkingStickUnmutedNotification', () => {
-  it('renders correctly', () => {
+  it('renders correctly', async () => {
     render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={false} onNext={jest.fn()} />);
 
-    const element = screen.getByRole('alertdialog');
+    const element = await screen.findByRole('alertdialog');
     expect(element).toBeInTheDocument();
 
     const describedByElement = element.getAttribute('aria-describedby');
     expect(screen.getByText('talking-stick-unmuted-notification')).toHaveAttribute('id', describedByElement);
   });
 
-  it('shows different text on last speaker', () => {
+  it('shows different text on last speaker', async () => {
     render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={true} onNext={jest.fn()} />);
-    expect(screen.getByText('talking-stick-unmuted-notification-last-participant')).toBeInTheDocument();
+    expect(await screen.findByText('talking-stick-unmuted-notification-last-participant')).toBeInTheDocument();
   });
 
-  it('calls callback functions on button click', () => {
+  it('calls callback functions on button click', async () => {
     const nextButtonFn = jest.fn();
     render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={false} onNext={nextButtonFn} />);
 
-    fireEvent.click(screen.getByText('talking-stick-notification-next-speaker'));
+    fireEvent.click(await screen.findByText('talking-stick-notification-next-speaker'));
 
     expect(nextButtonFn).toHaveBeenCalled();
   });

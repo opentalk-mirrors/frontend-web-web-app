@@ -24,10 +24,10 @@ describe('ParticipationConfirmationDialog', () => {
     },
   });
 
-  it('show dialog if confirmationCheckpointOngoing is true', () => {
+  it('show dialog if confirmationCheckpointOngoing is true', async () => {
     renderWithProviders(<ParticipationConfirmationDialog />, { store: storeOngoing, provider: { mui: true } });
 
-    expect(screen.getByText('participation-confirmation-dialog-title')).toBeInTheDocument();
+    expect(await screen.findByText('participation-confirmation-dialog-title')).toBeInTheDocument();
     expect(screen.getByText('participation-confirmation-dialog-description')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'participation-confirmation-dialog-confirm-button' })
@@ -40,10 +40,10 @@ describe('ParticipationConfirmationDialog', () => {
     expect(screen.queryByText('participation-confirmation-dialog-title')).not.toBeInTheDocument();
   });
 
-  it('dispatch correct actions if button is clicked', () => {
+  it('dispatch correct actions if button is clicked', async () => {
     renderWithProviders(<ParticipationConfirmationDialog />, { store: storeOngoing });
-
-    fireEvent.click(screen.getByRole('button', { name: 'participation-confirmation-dialog-confirm-button' }));
+    const button = await screen.findByRole('button', { name: 'participation-confirmation-dialog-confirm-button' });
+    fireEvent.click(button);
 
     expect(dispatchSpy).toHaveBeenCalledTimes(2);
     expect(dispatchSpy).toHaveBeenCalledWith(confirmPresence.action());

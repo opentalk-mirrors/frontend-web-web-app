@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Poll } from '../../../store/slices/pollSlice';
 import { ChoiceId, PollId } from '../../../types';
@@ -55,42 +55,42 @@ describe('PollContainer', () => {
     startTime: new Date().toISOString(),
   };
 
-  it('renders expected elements', () => {
+  it('renders expected elements', async () => {
     render(<PollContainer poll={poll} onClose={jest.fn()} />);
 
-    expect(screen.getByText(poll.topic)).toBeInTheDocument();
+    expect(await screen.findByText(poll.topic)).toBeInTheDocument();
     expect(screen.getAllByTestId('vote-result')).toHaveLength(2);
     expect(screen.getByText('global-submit')).toBeInTheDocument();
   });
 
-  it('has disabled submit button when no option is selected', () => {
+  it('has disabled submit button when no option is selected', async () => {
     render(<PollContainer poll={poll} onClose={jest.fn()} />);
 
-    expect(screen.getByText('global-submit')).toBeDisabled();
+    expect(await screen.findByRole('button', { name: 'global-submit' })).toBeDisabled();
   });
 
-  it('has submit button enabled when option is selected', () => {
+  it('has submit button enabled when option is selected', async () => {
     render(<PollContainer poll={poll} onClose={jest.fn()} />);
 
     fireEvent.click(screen.getByText('Option A'));
 
-    expect(screen.getByText('global-submit')).not.toBeDisabled();
+    expect(await screen.findByRole('button', { name: 'global-submit' })).not.toBeDisabled();
   });
 
-  it('has submit button disabled when choise is submitted.', () => {
+  it('has submit button disabled when choise is submitted.', async () => {
     render(<PollContainer poll={{ ...poll, voted: true }} onClose={jest.fn()} />);
 
     fireEvent.click(screen.getByText('Option A'));
 
-    expect(screen.getByText('global-submit')).toBeDisabled();
+    expect(await screen.findByRole('button', { name: 'global-submit' })).toBeDisabled();
   });
 
-  it('executed onClose callback when close button is clicked', () => {
+  it('executed onClose callback when close button is clicked', async () => {
     const onClose = jest.fn();
     render(<PollContainer poll={poll} onClose={onClose} />);
 
-    fireEvent.click(screen.getByLabelText('global-close-dialog'));
+    fireEvent.click(screen.getByRole('button', { name: 'global-close-dialog' }));
 
-    expect(onClose).toHaveBeenCalled();
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 });

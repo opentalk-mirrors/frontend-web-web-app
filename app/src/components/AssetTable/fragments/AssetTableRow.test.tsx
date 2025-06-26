@@ -46,7 +46,13 @@ describe('AssetTableRow', () => {
   const asset = mockedRoomAssets[0];
   it('renders asset with both action buttons', async () => {
     const deletable = true;
-    render(<AssetTableRow asset={asset} handleDownload={mockHandleDownload} handleDelete={mockHandleDelete} />);
+    render(
+      <table>
+        <tbody>
+          <AssetTableRow asset={asset} handleDownload={mockHandleDownload} handleDelete={mockHandleDelete} />
+        </tbody>
+      </table>
+    );
     const tableRow = screen.getByRole('row');
 
     const isHeader = false;
@@ -76,14 +82,18 @@ describe('AssetTableRow', () => {
 
   it('disables buttons from the parent', () => {
     render(
-      <AssetTableRow
-        asset={asset}
-        handleDownload={mockHandleDownload}
-        handleDelete={mockHandleDelete}
-        progress={0}
-        disabledDelete
-        disabledDownload
-      />
+      <table>
+        <tbody>
+          <AssetTableRow
+            asset={asset}
+            handleDownload={mockHandleDownload}
+            handleDelete={mockHandleDelete}
+            progress={0}
+            disabledDelete
+            disabledDownload
+          />
+        </tbody>
+      </table>
     );
     const tableRow = screen.getByRole('row');
 

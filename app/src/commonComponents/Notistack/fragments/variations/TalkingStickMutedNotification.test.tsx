@@ -6,19 +6,19 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { TalkingStickMutedNotification } from './TalkingStickMutedNotification';
 
 describe('TalkingStickMutedNotification', () => {
-  it('renders correctly', () => {
+  it('renders correctly', async () => {
     render(<TalkingStickMutedNotification style={{}} onUnmute={jest.fn()} onNext={jest.fn()} />);
-    const element = screen.getByRole('alertdialog');
+    const element = await screen.findByRole('alertdialog');
     expect(element).toBeInTheDocument();
     const describedByElement = element.getAttribute('aria-describedby');
     expect(screen.getByText('talking-stick-speaker-announcement')).toHaveAttribute('id', describedByElement);
   });
 
-  it('calls callback functions on button click', () => {
+  it('calls callback functions on button click', async () => {
     const unmuteButtonFn = jest.fn();
     const nextButtonFn = jest.fn();
     render(<TalkingStickMutedNotification style={{}} onUnmute={unmuteButtonFn} onNext={nextButtonFn} />);
-    fireEvent.click(screen.getByText('talking-stick-notification-unmute'));
+    fireEvent.click(await screen.findByText('talking-stick-notification-unmute'));
     fireEvent.click(screen.getByText('talking-stick-notification-next-speaker'));
 
     expect(unmuteButtonFn).toHaveBeenCalled();

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 
 import { useAppSelector } from '../../../hooks';
 import { selectOurUuid } from '../../../store/slices/userSlice';
@@ -57,25 +57,26 @@ describe('LegalVoteContainer', () => {
     kind: LegalVoteKind.RollCall,
   };
 
-  it('can render', () => {
+  it('can render', async () => {
     renderWithProviders(<LegalVoteContainer legalVote={legalVote} onClose={jest.fn()} isAllowedToVote />, {
       provider: { mui: true },
     });
-    expect(screen.getByText(legalVote.name)).toBeInTheDocument();
+    expect(await screen.findByText(legalVote.name)).toBeInTheDocument();
     expect(screen.getByText(legalVote.subtitle ?? '')).toBeInTheDocument();
     expect(screen.getByText(legalVote.topic ?? '')).toBeInTheDocument();
   });
 
-  it('executes onClose callback when close button is clicked.', () => {
+  it('executes onClose callback when close button is clicked.', async () => {
     const onClose = jest.fn();
     renderWithProviders(<LegalVoteContainer legalVote={legalVote} onClose={onClose} isAllowedToVote />, {
       provider: { mui: true },
     });
-    fireEvent.click(screen.getByLabelText('global-close-dialog'));
-    expect(onClose).toHaveBeenCalled();
+    fireEvent.click(await screen.findByLabelText('global-close-dialog'));
+
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
-  it('shows message to user who is not allowed to vote', () => {
+  it('shows message to user who is not allowed to vote', async () => {
     const vote: LegalVote = {
       ...legalVote,
       allowedParticipants: ['our-id' as ParticipantId],
@@ -83,10 +84,10 @@ describe('LegalVoteContainer', () => {
     renderWithProviders(<LegalVoteContainer legalVote={vote} onClose={jest.fn()} isAllowedToVote={false} />, {
       provider: { mui: true },
     });
-    expect(screen.getByText('legal-vote-not-selected')).toBeInTheDocument();
+    expect(await screen.findByText('legal-vote-not-selected')).toBeInTheDocument();
   });
 
-  it('shows submit button to user who can place a vote', () => {
+  it('shows submit button to user who can place a vote', async () => {
     const mockedUuid = 'mocked-uuid';
     const vote: LegalVote = {
       ...legalVote,
@@ -101,10 +102,11 @@ describe('LegalVoteContainer', () => {
     renderWithProviders(<LegalVoteContainer legalVote={vote} onClose={jest.fn()} isAllowedToVote />, {
       provider: { mui: true },
     });
-    expect(screen.getByText('global-submit')).toBeInTheDocument();
+    const submitButton = await screen.findByRole('button', { name: 'global-submit' });
+    expect(submitButton).toBeInTheDocument();
   });
 
-  it('can show result table', () => {
+  it('can show result table', async () => {
     const mockedUuid = 'mocked-uuid';
     const vote: LegalVote = {
       ...legalVote,
@@ -130,6 +132,7 @@ describe('LegalVoteContainer', () => {
       provider: { mui: true },
     });
     fireEvent.click(screen.getByTestId('vote-result-date'));
-    expect(screen.getByTestId('result-table')).toBeInTheDocument();
+
+    expect(await screen.findByTestId('result-table')).toBeInTheDocument();
   });
 });
