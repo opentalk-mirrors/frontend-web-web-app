@@ -94,6 +94,6 @@ describe('InvitedParticipants', () => {
       provider: { mui: true },
     });
 
-    expect(screen.getByTestId('InvitedParticipants').children).toHaveLength(3);
+    expect(screen.getAllByTestId('ParticipantList')).toHaveLength(3);
   });
 });

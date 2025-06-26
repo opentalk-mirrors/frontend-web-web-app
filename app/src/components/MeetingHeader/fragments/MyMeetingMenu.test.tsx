@@ -72,10 +72,10 @@ describe('My Meeting Menu', () => {
     const menuButton = screen.getByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
 
-    const text = screen.getByText('my-meeting-menu-user-manual');
-    const anchor = (text.parentElement as HTMLDivElement).parentElement as HTMLAnchorElement;
-    expect(anchor).toBeInTheDocument();
-    expect(anchor).toHaveAttribute('href', 'https://docs.opentalk.eu/user/manual/');
-    expect(anchor).not.toBeDisabled();
+    const menuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
+
+    expect(menuItem).toBeInTheDocument();
+    expect(menuItem).toHaveAttribute('href', 'https://docs.opentalk.eu/user/manual/');
+    expect(menuItem).not.toBeDisabled();
   });
 });

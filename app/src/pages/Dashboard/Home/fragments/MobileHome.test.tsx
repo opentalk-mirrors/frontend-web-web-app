@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import MobileHome from './MobileHome';
@@ -72,9 +72,8 @@ describe('MobileHome', () => {
     await userEvent.click(viewSelector);
 
     const options = screen.getAllByRole('option');
-    act(() => {
-      options[1].click();
-    });
+    await userEvent.click(options[1]);
+
     expect(screen.getByTestId('favorite-meetings')).toBeInTheDocument();
   });
 });

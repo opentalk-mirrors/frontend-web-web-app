@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import type { Email, EventId, UserId } from '@opentalk/rest-api-rtk-query';
 import { UserRole, InviteStatus } from '@opentalk/rest-api-rtk-query';
-import { cleanup, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
@@ -35,8 +35,6 @@ const mockRemoveSelectedUser = jest.fn();
 describe('ParticipantList', () => {
   const { store } = configureStore();
 
-  afterEach(() => cleanup());
-
   it('will render without errors', () => {
     renderWithProviders(
       <ParticipantList
@@ -64,7 +62,7 @@ describe('ParticipantList', () => {
       { store }
     );
 
-    expect(screen.getByTestId('ParticipantListBox').children).toHaveLength(1);
+    expect(screen.getAllByText('UserRowMocked')).toHaveLength(1);
   });
 
   it('render accept status title', () => {

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, cleanup } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
 import { ParticipantId } from '../../../types';
@@ -24,10 +24,6 @@ jest.mock('../../ParticipantWindow', () => ({
 }));
 
 describe('Thumbnail', () => {
-  afterEach(() => {
-    cleanup();
-  });
-
   it('ThumbnailContainer rendered width one participant', () => {
     const { store } = mockStore(1);
 

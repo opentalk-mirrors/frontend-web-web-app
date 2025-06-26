@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
 import AnswersFormElement from './AnswersFormElement';
@@ -29,14 +29,12 @@ describe('AnswersFormElement', () => {
     });
   });
 
-  afterAll(() => cleanup());
-
   it('renders without errors', () => {
     render(<AnswersFormElement name="test-name" />);
     expect(screen.getByText('poll-input-choices')).toHaveProperty('tagName', 'BUTTON');
   });
 
-  it('is disabled in edit mode', () => {
+  it('is disabled in edit mode', async () => {
     mockUseFormikContext.mockReturnValue({
       errors: [],
       values: {
@@ -45,7 +43,7 @@ describe('AnswersFormElement', () => {
     });
 
     render(<AnswersFormElement name="test-name" />);
-    waitFor(() => {
+    await waitFor(() => {
       expect(screen.getByText('poll-input-choices')).toBeDisabled();
     });
   });

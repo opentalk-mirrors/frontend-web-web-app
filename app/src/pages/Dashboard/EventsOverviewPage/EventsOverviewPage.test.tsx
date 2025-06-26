@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { DateTime } from '@opentalk/rest-api-rtk-query';
-import { screen, cleanup } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 import { configureStore, renderWithProviders, eventMockedData } from '../../../utils/testUtils';
 import EventsPage from './EventsOverviewPage';
@@ -35,8 +35,6 @@ jest.mock('../../../templates/DashboardTemplate', () => ({
 }));
 
 describe('Dashboard EventsPage', () => {
-  afterEach(() => cleanup());
-
   it('will render 1 Accordion', () => {
     const { store } = configureStore();
     renderWithProviders(<EventsPage />, { store, provider: { mui: true, router: true } });

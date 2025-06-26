@@ -78,9 +78,9 @@ describe('Chat component', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('chat')).toBeInTheDocument();
-      expect(screen.getByTestId('combined-messages')).toBeInTheDocument();
-      expect(screen.getByTestId('user-event-message')).toBeInTheDocument();
     });
+    expect(screen.getByTestId('combined-messages')).toBeInTheDocument();
+    expect(screen.getByTestId('user-event-message')).toBeInTheDocument();
   });
 
   it('should display event message when user leave conversation', async () => {
@@ -99,9 +99,9 @@ describe('Chat component', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('chat')).toBeInTheDocument();
-      expect(screen.getByTestId('combined-messages')).toBeInTheDocument();
-      expect(screen.getByTestId('user-event-message')).toBeInTheDocument();
     });
+    expect(screen.getByTestId('combined-messages')).toBeInTheDocument();
+    expect(screen.getByTestId('user-event-message')).toBeInTheDocument();
   });
 
   it('should dispatch action when user send messsage', async () => {
@@ -112,10 +112,8 @@ describe('Chat component', () => {
 
     fireEvent.change(message, { target: { value: 'Test' } });
 
-    await waitFor(() => {
-      const button = screen.getByTestId('send-message-button');
-      button.click();
-    });
+    const button = screen.getByTestId('send-message-button');
+    fireEvent.click(button);
 
     await waitFor(() => {
       expect(dispatchSpy.mock.calls).toContainEqual([
@@ -134,10 +132,8 @@ describe('Chat component', () => {
 
     fireEvent.change(message, { target: { value: '' } });
 
-    await waitFor(() => {
-      const button = screen.getByTestId('send-message-button');
-      button.click();
-    });
+    const button = screen.getByTestId('send-message-button');
+    fireEvent.click(button);
 
     await waitFor(() => {
       expect(screen.getByText(/chat-input-error-required/i)).toBeInTheDocument();
@@ -147,6 +143,7 @@ describe('Chat component', () => {
   it('should autofocus message input when `autoFocusMessageInput` property is specified', () => {
     renderWithProviders(<Chat autoFocusMessageInput={true} />, { store });
 
-    expect(document.activeElement?.tagName).toBe('TEXTAREA');
+    const textArea = screen.getByPlaceholderText('chat-input-placeholder');
+    expect(textArea).toHaveFocus();
   });
 });

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import ConfirmBrowserDialog from './ConfirmBrowserDialog';
 
@@ -14,11 +15,11 @@ describe('ConfirmBrowserDialog', () => {
     render(<ConfirmBrowserDialog handleClick={mockHandleClick} />);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
-  it('handles click', () => {
+  it('handles click', async () => {
     render(<ConfirmBrowserDialog handleClick={mockHandleClick} />);
 
     const submitButton = screen.getByRole('button', { name: /wrong-browser-dialog-ok/i });
-    submitButton.click();
+    await userEvent.click(submitButton);
 
     expect(mockHandleClick).toHaveBeenCalledTimes(1);
   });

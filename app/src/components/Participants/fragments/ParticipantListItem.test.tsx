@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Store } from '@reduxjs/toolkit';
-import { screen, act, within } from '@testing-library/react';
+import { screen, within, fireEvent } from '@testing-library/react';
 
 import { selectAllParticipants } from '../../../store/slices/participantsSlice';
 import {
@@ -74,7 +74,7 @@ describe('participant context menu', () => {
     renderEachParticipant(store);
     const participantMenuButton = screen.getAllByRole('button', { name: 'participant-menu-open-label' })[0];
     expect(participantMenuButton).toBeInTheDocument();
-    act(() => participantMenuButton.click());
+    fireEvent.click(participantMenuButton);
   };
   describe('when the user is not a moderator', () => {
     const { store } = mockStore(1);
@@ -193,9 +193,7 @@ describe('participant context menu', () => {
   describe('when the user is in a whisper group', () => {
     const { store } = mockStore(2, { store: IN_WHISPER_GROUP_STORE });
 
-    beforeEach(() => {
-      renderEachParticipant(store);
-    });
+    const setup = () => renderEachParticipant(store);
 
     const getUserMenuButton = () => {
       const userParticipantListItem = screen
@@ -222,30 +220,29 @@ describe('participant context menu', () => {
     };
 
     it('should enable a menu button on the user themselves', () => {
+      setup();
       const userMenuButton = getUserMenuButton();
-      act(() => userMenuButton.click());
+      fireEvent.click(userMenuButton);
       const userMenu = screen.getByRole('presentation');
       expect(userMenu).toBeInTheDocument();
     });
 
     describe('the opened context menu on the user list item', () => {
-      beforeEach(() => {
-        renderEachParticipant(store);
-      });
-
       it('should not contain an invite option', () => {
+        setup();
         const userMenuButton = getUserMenuButton();
         expect(userMenuButton).toBeInTheDocument();
-        act(() => userMenuButton.click());
+        fireEvent.click(userMenuButton);
 
         const whisperInviteOption = screen.queryByRole('menuitem', { name: 'participant-menu-start-whisper' });
 
         expect(whisperInviteOption).not.toBeInTheDocument();
       });
       it('should contain a leave whisper group option', () => {
+        setup();
         const userMenuButton = getUserMenuButton();
         expect(userMenuButton).toBeInTheDocument();
-        act(() => userMenuButton.click());
+        fireEvent.click(userMenuButton);
 
         const leaveWhisperGroupOption = screen.getByRole('menuitem', { name: 'participant-menu-leave-whisper' });
 
@@ -257,7 +254,7 @@ describe('participant context menu', () => {
         renderEachParticipant(store);
         const whisperPartnerMenuButton = getParticipantMenuButton();
         expect(whisperPartnerMenuButton).toBeInTheDocument();
-        act(() => whisperPartnerMenuButton.click());
+        fireEvent.click(whisperPartnerMenuButton);
 
         const inviteWhisperPartnerOption = screen.queryByRole('menuitem', { name: 'participant-menu-start-whisper' });
         expect(inviteWhisperPartnerOption).not.toBeInTheDocument();
@@ -273,7 +270,7 @@ describe('participant context menu', () => {
         const whisperPartnerMenuButton = getParticipantMenuButton(2);
         expect(whisperPartnerMenuButton).toBeInTheDocument();
 
-        act(() => whisperPartnerMenuButton.click());
+        fireEvent.click(whisperPartnerMenuButton);
 
         const inviteWhisperPartnerOption = screen.getByRole('menuitem', {
           name: 'participant-menu-invite-whisper-partner',
@@ -291,7 +288,7 @@ describe('participant context menu', () => {
         const whisperPartnerMenuButton = getParticipantMenuButton(2);
         expect(whisperPartnerMenuButton).toBeInTheDocument();
 
-        act(() => whisperPartnerMenuButton.click());
+        fireEvent.click(whisperPartnerMenuButton);
 
         const inviteWhisperPartnerOption = screen.queryByRole('menuitem', {
           name: 'participant-menu-invite-whisper-partner',

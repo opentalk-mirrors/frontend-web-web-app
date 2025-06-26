@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent, cleanup, act } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
 import { ParticipantId, MeetingNotesParticipant } from '../../types';
@@ -18,8 +18,6 @@ describe.skip('MeetingNotesTab component tests', () => {
       isSelected: true,
     },
   ];
-
-  afterAll(() => cleanup());
 
   it('MeetingNotesTab component should be rendered without breaking', () => {
     renderWithProviders(<MeetingNotesTab />, { store });
@@ -50,9 +48,7 @@ describe.skip('MeetingNotesTab component tests', () => {
     sendInvitationButton.onclick = sendInvitations;
     expect(sendInvitationButton).toBeInTheDocument();
     expect(sendInvitationButton).toBeEnabled();
-    act(() => {
-      fireEvent.click(sendInvitationButton);
-    });
+    fireEvent.click(sendInvitationButton);
     expect(sendInvitations).toHaveBeenCalledTimes(1);
   });
 });

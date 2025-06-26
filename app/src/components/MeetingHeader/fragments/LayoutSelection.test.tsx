@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useMediaQuery } from '@mui/material';
-import { act, screen } from '@testing-library/react';
+import { act, screen, fireEvent } from '@testing-library/react';
 
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import LayoutSelection from './LayoutSelection';
@@ -29,7 +29,7 @@ jest.mock('@mui/material', () => {
 const mockUseMediaQuery = useMediaQuery as jest.Mock;
 const openMenu = () => {
   const openButton = screen.getByRole('button', { name: 'conference-view-trigger-button' });
-  openButton.click();
+  fireEvent.click(openButton);
 };
 
 describe('Layout selection menu', () => {
@@ -76,7 +76,7 @@ describe('Layout selection menu', () => {
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
     const fullscreenMenuItem = getButtonSelector('conference-view-fullscreen');
 
-    act(() => fullscreenMenuItem.click());
+    fireEvent.click(fullscreenMenuItem);
     expect(mockFullscreenContext.enter).toHaveBeenCalled();
   });
 

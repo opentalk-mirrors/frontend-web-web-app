@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { startMedia } from '../../store/commonActions';
@@ -23,9 +23,9 @@ jest.mock('../../store/commonActions', () => ({
 
 describe('ReconnectionDialog', () => {
   it('renders dialog with title and abort button', () => {
-    const { getByText } = render(<ReconnectionDialog />);
-    expect(getByText('reconnection-loop-dialogbox-title')).toBeInTheDocument();
-    expect(getByText('reconnection-loop-abort-button')).toBeInTheDocument();
+    render(<ReconnectionDialog />);
+    expect(screen.getByText('reconnection-loop-dialogbox-title')).toBeInTheDocument();
+    expect(screen.getByText('reconnection-loop-abort-button')).toBeInTheDocument();
   });
 
   it('dispatches actions to disable media and abort reconnection when abort button is clicked', () => {
@@ -35,8 +35,8 @@ describe('ReconnectionDialog', () => {
       .mockReturnValueOnce(true) // audioEnabled
       .mockReturnValueOnce(true); // videoEnabled
 
-    const { getByText } = render(<ReconnectionDialog />);
-    fireEvent.click(getByText('reconnection-loop-abort-button'));
+    render(<ReconnectionDialog />);
+    fireEvent.click(screen.getByText('reconnection-loop-abort-button'));
 
     expect(mockDispatch).toHaveBeenCalledWith(startMedia({ kind: 'audioinput', enabled: false }));
     expect(mockDispatch).toHaveBeenCalledWith(startMedia({ kind: 'videoinput', enabled: false }));
@@ -50,8 +50,8 @@ describe('ReconnectionDialog', () => {
       .mockReturnValueOnce(false) // audioEnabled
       .mockReturnValueOnce(false); // videoEnabled
 
-    const { getByText } = render(<ReconnectionDialog />);
-    fireEvent.click(getByText('reconnection-loop-abort-button'));
+    render(<ReconnectionDialog />);
+    fireEvent.click(screen.getByText('reconnection-loop-abort-button'));
 
     expect(mockDispatch).toHaveBeenCalledTimes(1);
     expect(mockDispatch).toHaveBeenCalledWith(abortedReconnection());

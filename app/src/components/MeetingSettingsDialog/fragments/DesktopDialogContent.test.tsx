@@ -55,7 +55,7 @@ describe('DesktopDialogContent', () => {
     renderWithProviders(<DesktopDialogContent onClose={onClose} setting="audio" />, { provider: { mui: true } });
     const closeButton = screen.getByRole('button', { name: 'global-close-dialog' });
     expect(closeButton).toBeInTheDocument();
-    userEvent.click(closeButton);
+    await userEvent.click(closeButton);
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalled();

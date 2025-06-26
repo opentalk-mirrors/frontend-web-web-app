@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { RoomId } from '@opentalk/rest-api-rtk-query';
-import { screen, cleanup, waitFor } from '@testing-library/react';
+import { screen, waitFor, fireEvent } from '@testing-library/react';
 
 import {
   configureStore,
@@ -117,8 +117,6 @@ jest.mock('../../../components/SelectParticipants/SelectParticipants', () => ({
 }));
 
 describe('CreateDirectMeeting', () => {
-  afterEach(() => cleanup());
-
   it('should render without crash', () => {
     const { store } = configureStore();
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true } });
@@ -147,12 +145,12 @@ describe('CreateDirectMeeting', () => {
     const copyButton = screen.getByLabelText('dashboard-invite-to-meeting-copy-room-link-aria-label');
     expect(copyButton).toBeInTheDocument();
 
-    copyButton.click();
+    fireEvent.click(copyButton);
 
     await waitFor(() => {
       expect(mockWriteText).toHaveBeenCalledTimes(1);
-      expect(mockWriteText).toHaveBeenCalledWith(INVITE_LINK);
     });
+    expect(mockWriteText).toHaveBeenCalledWith(INVITE_LINK);
   });
 
   it('copies the guest link, if link exists', async () => {
@@ -169,11 +167,11 @@ describe('CreateDirectMeeting', () => {
     const copyButton = screen.getByLabelText('dashboard-invite-to-meeting-copy-guest-link-aria-label');
     expect(copyButton).toBeInTheDocument();
 
-    copyButton.click();
+    fireEvent.click(copyButton);
 
     await waitFor(() => {
       expect(mockWriteText).toHaveBeenCalledTimes(1);
-      expect(mockWriteText).toHaveBeenCalledWith(INVITE_GUEST_LINK);
     });
+    expect(mockWriteText).toHaveBeenCalledWith(INVITE_GUEST_LINK);
   });
 });
