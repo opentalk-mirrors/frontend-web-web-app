@@ -7,23 +7,46 @@ import { joinMeetingRoomAsGuest, startAdhocMeetingAsModerator } from '../../../h
 import { closeWebkitPopUp } from '../../../helper/webkit';
 import { HomePage } from '../../../pages/HomePage';
 import { LobbyRoomPage } from '../../../pages/LobbyRoomPage';
+import { MeetingRoomPage } from '../../../pages/MeetingRoom/MeetingRoomPage';
 
 test.describe('Meeting Room_Debriefing', () => {
-  test.beforeEach(async ({ page, browserName }) => {
+  let meetingRoomPage: MeetingRoomPage, guestLink: string, guestMeetingRoomPage: MeetingRoomPage;
+
+  test.beforeEach(async ({ page, context, browserName }) => {
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
+
+    ({ meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page));
+    guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest');
+    // TODO: Need to add pre-condition to join meeting as few invited participants, once invited user scenario is implemented
+    await meetingRoomPage.page.bringToFront();
 
     if (browserName === 'webkit') {
       await closeWebkitPopUp({ page });
     }
   });
 
-  test('TC_002_Meeting room_Debriefing_For moderator', async ({ context, page }) => {
-    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
-    const guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest');
-    // TODO: Need to add pre-condition to join meeting as few invited participants, once invited user scenario is implemented
-    await meetingRoomPage.page.bringToFront();
+  test('TC_001_Meeting room_Debriefing_For moderator + registered user', async () => {
+    await meetingRoomPage.startDebriefingModeratorTool();
+    await expect(meetingRoomPage.debriefingOptions.endOfTheConferenceOption).toBeVisible();
+    await expect(meetingRoomPage.debriefingOptions.forModeratorOption).toBeVisible();
+    await expect(meetingRoomPage.debriefingOptions.forModeratorAndRegisteredUserOption).toBeVisible();
 
+    await meetingRoomPage.selectDebriefingOption(meetingRoomPage.debriefingOptions.forModeratorAndRegisteredUserOption);
+    await expect(meetingRoomPage.debriefingOptions.debriefingInitAlert).toBeVisible();
+    await meetingRoomPage.selectModeratorToolHome();
+    await meetingRoomPage.selectPeopleTab();
+    expect(await meetingRoomPage.hasModerator()).toBe(true);
+    await expect(meetingRoomPage.participantsAvatar.guestAvatar).not.toBeVisible();
+    // TODO: Need to assert that the registered invited users are in the meeting room, once invited user scenario is implemented
+
+    await guestMeetingRoomPage.page.bringToFront();
+    const lobbyRoomPage = new LobbyRoomPage({ page: guestMeetingRoomPage.page });
+    await expect(lobbyRoomPage.openTalkLogo).toBeVisible();
+    await expect(lobbyRoomPage.conferenceCloseAlerts.conferenceCloseAlertNotification).toBeVisible();
+  });
+
+  test('TC_002_Meeting room_Debriefing_For moderator', async () => {
     await meetingRoomPage.startDebriefingModeratorTool();
     await meetingRoomPage.selectDebriefingOption(meetingRoomPage.debriefingOptions.forModeratorOption);
     await expect(meetingRoomPage.debriefingOptions.debriefingInitAlert).toBeVisible();
