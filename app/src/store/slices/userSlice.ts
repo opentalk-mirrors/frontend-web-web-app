@@ -5,12 +5,15 @@ import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
 import type { RootState } from '../';
+import { restApi } from '../../api/rest';
 import { Role } from '../../api/types/incoming/control';
 import { sendChatMessage } from '../../api/types/outgoing/chat';
 import { lowerHand, raiseHand } from '../../api/types/outgoing/control';
+import i18n from '../../i18n';
 import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
 import { joinSuccess, login, startRoom, startMedia } from '../commonActions';
+import type { StartAppListening } from '../listenerMiddleware';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { connectionClosed, fetchRoomByInviteId } from './roomSlice';
 
@@ -155,3 +158,39 @@ export const selectUserAsPartialParticipant = createSelector(
 );
 
 export default userSlice.reducer;
+
+/************************************************/
+/*                                              */
+/*                  Listeners                   */
+/*                                              */
+/************************************************/
+
+const startAuthListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: login.fulfilled,
+    effect: async (_, { dispatch }) => {
+      const result = await dispatch(restApi.endpoints.getMe.initiate());
+
+      if (result.data) {
+        const { displayName, email, language } = result.data;
+        initSentryReportWithUser({ name: displayName, email, lang: language });
+      }
+    },
+  });
+
+const startLanguageListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    matcher: restApi.endpoints.getMe.matchFulfilled,
+    effect: (action) => {
+      const payload = action.payload as { language?: string };
+
+      if (payload?.language) {
+        i18n.changeLanguage(payload.language);
+      }
+    },
+  });
+
+export const startUserListeners = (startAppListening: StartAppListening) => {
+  startAuthListener(startAppListening);
+  startLanguageListener(startAppListening);
+};

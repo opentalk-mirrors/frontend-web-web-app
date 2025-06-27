@@ -10,10 +10,12 @@ import { startMediaListeners } from './slices/mediaSlice';
 import { startParticipantsListeners } from './slices/participantsSlice';
 import { startRoomListeners } from './slices/roomSlice';
 import { startTimerListeners } from './slices/timerSlice';
+import { startUserListeners } from './slices/userSlice';
 
 export const listenerMiddleware = createListenerMiddleware();
 
 export type StartAppListening = TypedStartListening<RootState, AppDispatch>;
+
 const startAppListening = listenerMiddleware.startListening.withTypes<RootState, AppDispatch>();
 
 const startListening = () => {
@@ -23,6 +25,7 @@ const startListening = () => {
   startTimerListeners(startAppListening);
   startParticipantsListeners(startAppListening);
   startRoomListeners(startAppListening);
+  startUserListeners(startAppListening);
 };
 
 startListening();

@@ -19,6 +19,7 @@ jest.mock('../../../hooks', () => ({
 
 jest.mock('../../../store/slices/userSlice', () => ({
   selectOurUuid: jest.fn(),
+  startUserListeners: jest.fn(),
 }));
 
 jest.mock('./VoteResultTable', () => ({
