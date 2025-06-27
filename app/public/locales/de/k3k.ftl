@@ -1137,7 +1137,7 @@ recording-inactive-message = Die Aufnahme wurde beendet.
 recording-inactive-message-with-link =  <messageContent>Die Aufnahme wurde beendet. Die entsprechende Datei befindet sich im Dashboard unter den <messageLink>Meeting-Details</messageLink>.</messageContent>
 livestream-active-message = <messageContent>Der Stream hat begonnen. Streaming-URL: <publicUrl>{$publicUrl}</publicUrl></messageContent>
 livestream-inactive-message = Der Stream wurde beendet.
-livestream-start-error = Streaming konnte nicht gestartet werden aufgrund von: {$error}
+livestream-recording-error = Der Aufzeichnungsdienst ist derzeit nicht verfügbar. Bitte versuchen Sie es in einigen Minuten erneut oder wenden Sie sich an Ihren Administrator.
 
 emoji-category-smileys_people = Smileys & Personen
 emoji-category-animals_nature = Tiere & Natur
