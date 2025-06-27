@@ -1075,7 +1075,8 @@ const handleStreamingMessage = (dispatch: AppDispatch, data: streaming.Message, 
     }
     case 'recorder_error': {
       if (data.error === 'timeout') {
-        notifications.error(i18next.t('livestream-start-error', { error: data.error }));
+        notifications.error(i18next.t('livestream-recording-error'));
+        log.error('recording error:', data.error);
       }
       break;
     }
