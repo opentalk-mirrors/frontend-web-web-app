@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator, BrowserContext } from '@playwright/test';
 
-import { navigateToExternalPage } from '../../helper/externalPageHelper';
+import { BurgerMenuPage } from './BurgerMenuPage';
 import { MeetingInfoPage } from './MeetingInfoPage';
 import { TimerPage } from './ModeratorTools/TimerPage';
 import { MoreOptionsPage } from './MoreOptionsPage';
+import { ViewOptionsPage } from './ViewOptionsPage';
 
 export class MeetingRoomPage {
   page: Page;
@@ -72,13 +73,6 @@ export class MeetingRoomPage {
   securityMonitorButton: Locator;
 
   burgerMenuButton: Locator;
-  burgerMenuDropdown: Locator;
-  burgerMenuList: {
-    accessibilityMenuItem: Locator;
-    userManualMenuItem: Locator;
-    keyboardShortcutsMenuItem: Locator;
-    reportABugMenuItem: Locator;
-  };
 
   reportABug: {
     manualGlitchtipPopup: Locator;
@@ -90,6 +84,8 @@ export class MeetingRoomPage {
     checkbox: Locator;
     closeButton: Locator;
   };
+
+  private isKeyboardShortcutOn: boolean = true;
 
   constructor({ page }: { page: Page }) {
     this.page = page;
@@ -132,10 +128,10 @@ export class MeetingRoomPage {
       handRaiseButton: this.page.getByRole('button', { name: 'Raise Your Hand' }),
       turnOnScreenShareButton: this.page.getByRole('button', { name: 'Turn On Screen Share' }),
       microphoneButton: this.page.getByRole('button', { name: 'Turn On Audio', exact: true }),
-      microphoneButtonOff: this.page.getByRole('button', { name: 'Turn Off Audio' }),
+      microphoneButtonOff: this.page.getByRole('button', { name: 'Turn Off Audio', exact: true }),
       microphoneMoreOptionsMenuButton: this.page.getByRole('button', { name: 'additional options microphone' }),
       videoButton: this.page.getByRole('button', { name: 'Turn On Video', exact: true }),
-      videoButtonOff: this.page.getByRole('button', { name: 'Turn Off Video' }),
+      videoButtonOff: this.page.getByRole('button', { name: 'Turn Off Video', exact: true }),
       cameraMoreOptionButton: this.page.getByRole('button', { name: 'additional options camera' }),
       moreOptionButton: this.page.getByRole('button', { name: 'More Options' }),
       endMeetingButton: this.page.getByRole('button', { name: 'Leave Call' }),
@@ -157,13 +153,6 @@ export class MeetingRoomPage {
     this.securityMonitorButton = this.page.getByRole('button', { name: 'Show security monitor' });
 
     this.burgerMenuButton = this.page.getByRole('button', { name: 'My meeting', exact: true });
-    this.burgerMenuDropdown = this.page.getByRole('menu', { name: 'My meeting' });
-    this.burgerMenuList = {
-      accessibilityMenuItem: this.page.getByRole('menuitem', { name: 'Accessibility Open in new tab' }),
-      userManualMenuItem: this.page.getByRole('menuitem', { name: 'User manual Open in new tab' }),
-      keyboardShortcutsMenuItem: this.page.getByRole('menuitem', { name: 'Keyboard Shortcuts' }),
-      reportABugMenuItem: this.page.getByRole('menuitem', { name: 'Report a bug' }),
-    };
 
     this.reportABug = {
       manualGlitchtipPopup: this.page.getByRole('dialog', { name: "Oh, it looks like we're having issues." }),
@@ -260,31 +249,56 @@ export class MeetingRoomPage {
     return +numberOfParticipants.slice(1, numberOfParticipants.length - 1);
   }
 
-  // functions related to burger menu
+  // function related to burger menu
   async clickOnBurgerMenu() {
     await this.burgerMenuButton.click();
-  }
-
-  async gotoUserManual(): Promise<Page> {
-    await this.burgerMenuList.userManualMenuItem.click();
-    return await navigateToExternalPage(this.context, 'User manual | OpenTalk');
+    const burgerMenuPage = new BurgerMenuPage(this.page);
+    await burgerMenuPage.burgerMenuDropdown.waitFor();
+    return burgerMenuPage;
   }
 
   // functions related to keyboard shortcuts
-  async clickOnKeyboardShortcuts() {
-    await this.burgerMenuList.keyboardShortcutsMenuItem.click();
-  }
-
   async closeKeyboardShortcutsPopup() {
     await this.keyboardShortcuts.closeButton.click();
   }
 
   async useKeyboardShortcut(key: string): Promise<void> {
+    const cameraOn: boolean = await this.isCameraOn();
+    const audioOn: boolean = await this.isAudioOn();
+    const viewOptionsPage: ViewOptionsPage = new ViewOptionsPage({ page: this.page });
+    const isFullScreen: boolean = await viewOptionsPage.isFullScreen();
+
     await this.page.keyboard.press(key);
-    if (key === 'v') {
-      await this.page.waitForTimeout(5000); // have to wait for longer for turning video on in firefox
-    } else {
-      await this.page.waitForTimeout(2000);
+
+    if (this.isKeyboardShortcutOn === true) {
+      switch (key) {
+        case 'v': {
+          if (!cameraOn) {
+            await this.toolBar.videoButtonOff.waitFor({ timeout: 10_000 });
+          } else {
+            await this.toolBar.videoButton.waitFor({ timeout: 10_000 });
+          }
+          break;
+        }
+
+        case 'm': {
+          if (!audioOn) {
+            await this.toolBar.microphoneButtonOff.waitFor();
+          } else {
+            await this.toolBar.microphoneButton.waitFor();
+          }
+          break;
+        }
+
+        case 'f': {
+          if (isFullScreen) {
+            await viewOptionsPage.fullScreenView.waitFor({ state: 'hidden' });
+          } else {
+            await viewOptionsPage.fullScreenView.waitFor({ state: 'visible' });
+          }
+          break;
+        }
+      }
     }
   }
 
@@ -300,11 +314,7 @@ export class MeetingRoomPage {
 
   async deactivateKeyboardShortcuts() {
     await this.keyboardShortcuts.checkbox.setChecked(false);
-  }
-
-  // functions related to report a bug
-  async clickOnReportABug() {
-    await this.burgerMenuList.reportABugMenuItem.click();
+    this.isKeyboardShortcutOn = await this.keyboardShortcuts.checkbox.isChecked();
   }
 
   async closeManualGlitchtipPopup(method: string) {

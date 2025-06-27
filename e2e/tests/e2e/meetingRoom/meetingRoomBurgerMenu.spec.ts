@@ -4,19 +4,21 @@
 import test, { expect } from '@playwright/test';
 
 import { joinMeetingRoomAsGuest, startAdhocMeetingAsModerator } from '../../helper/meetingHelpers';
+import { BurgerMenuPage } from '../../pages/MeetingRoom/BurgerMenuPage';
 import { TalkingStickPage } from '../../pages/MeetingRoom/ModeratorTools/TalkingStickPage';
 import { ViewOptionsPage } from '../../pages/MeetingRoom/ViewOptionsPage';
 
 test.describe('Meeting Room_Burger menu', () => {
-  test('TC_001_User manual', async ({ page, browserName }) => {
+  test('TC_002_User manual', async ({ page, browserName }) => {
     const { meetingRoomPage } = await startAdhocMeetingAsModerator(page, browserName);
-    await meetingRoomPage.clickOnBurgerMenu();
-    await expect(meetingRoomPage.burgerMenuList.accessibilityMenuItem).toBeVisible();
-    await expect(meetingRoomPage.burgerMenuList.userManualMenuItem).toBeVisible();
-    await expect(meetingRoomPage.burgerMenuList.keyboardShortcutsMenuItem).toBeVisible();
-    await expect(meetingRoomPage.burgerMenuList.reportABugMenuItem).toBeVisible();
+    const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.clickOnBurgerMenu();
 
-    const userManualPage = await meetingRoomPage.gotoUserManual();
+    await expect(burgerMenuPage.accessibilityMenuItem).toBeVisible();
+    await expect(burgerMenuPage.userManualMenuItem).toBeVisible();
+    await expect(burgerMenuPage.keyboardShortcutsMenuItem).toBeVisible();
+    await expect(burgerMenuPage.reportABugMenuItem).toBeVisible();
+
+    const userManualPage = await burgerMenuPage.gotoUserManual();
     const userManualHeading = userManualPage.getByRole('heading', { name: 'User manual', exact: true });
     const openTalkDocs = userManualPage.getByText(
       'Please contact your admin if this manual leaves any questions unanswered or if you have found a technical error. We hope you enjoy using OpenTalk!',
@@ -30,7 +32,7 @@ test.describe('Meeting Room_Burger menu', () => {
     await expect(meetingRoomPage.meetingRoomName).toBeVisible();
   });
 
-  test('TC_002_Keyboard Shortcuts', async ({ page, context, browserName }) => {
+  test('TC_003_Keyboard Shortcuts', async ({ page, context, browserName }) => {
     test.skip(browserName === 'webkit');
 
     const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page, browserName);
@@ -38,10 +40,10 @@ test.describe('Meeting Room_Burger menu', () => {
     const viewOptionsPage = new ViewOptionsPage({ page: meetingRoomPage.page });
     await meetingRoomPage.page.bringToFront();
 
-    await meetingRoomPage.clickOnBurgerMenu();
-    await expect(meetingRoomPage.burgerMenuDropdown).toBeVisible();
+    const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.clickOnBurgerMenu();
+    await expect(burgerMenuPage.burgerMenuDropdown).toBeVisible();
 
-    await meetingRoomPage.clickOnKeyboardShortcuts();
+    await burgerMenuPage.openKeyboardShortcuts();
     await expect(meetingRoomPage.keyboardShortcuts.keyboardShortcutsPopup).toBeVisible();
     await expect(meetingRoomPage.keyboardShortcuts.checkbox).toBeChecked();
     await meetingRoomPage.closeKeyboardShortcutsPopup();
@@ -87,7 +89,7 @@ test.describe('Meeting Room_Burger menu', () => {
     await meetingRoomPage.page.bringToFront();
 
     await meetingRoomPage.clickOnBurgerMenu();
-    await meetingRoomPage.clickOnKeyboardShortcuts();
+    await burgerMenuPage.openKeyboardShortcuts();
     await meetingRoomPage.deactivateKeyboardShortcuts();
     await expect(meetingRoomPage.keyboardShortcuts.checkbox).not.toBeChecked();
     await meetingRoomPage.pressEscape();
@@ -121,11 +123,11 @@ test.describe('Meeting Room_Burger menu', () => {
 
     const closingMethods = ['BTN_esc', 'BTN_x', 'outside the window'];
     for (const method of closingMethods) {
-      const { meetingRoomPage } = await startAdhocMeetingAsModerator(page, browserName);
-      await meetingRoomPage.clickOnBurgerMenu();
-      await expect(meetingRoomPage.burgerMenuDropdown).toBeVisible();
+      const { meetingRoomPage } = await startAdhocMeetingAsModerator(page);
+      const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.clickOnBurgerMenu();
+      await expect(burgerMenuPage.burgerMenuDropdown).toBeVisible();
 
-      await meetingRoomPage.clickOnReportABug();
+      await burgerMenuPage.openReportABug();
       await expect(meetingRoomPage.reportABug.manualGlitchtipPopup).toBeVisible();
 
       await meetingRoomPage.closeManualGlitchtipPopup(method);
