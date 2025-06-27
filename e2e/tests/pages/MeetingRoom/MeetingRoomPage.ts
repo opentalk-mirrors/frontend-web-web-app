@@ -49,12 +49,6 @@ export class MeetingRoomPage {
     debriefingButton: Locator;
   };
 
-  talkingStick: {
-    startNowButton: Locator;
-    talkingStickStartedNotification: Locator;
-    yourTurnPopup: Locator;
-  };
-
   timer: {
     timerHeading: Locator;
     duration: {
@@ -203,12 +197,6 @@ export class MeetingRoomPage {
       timerButton: this.page.getByRole('tab', { name: 'Timer' }),
       coffeeBreakButton: this.page.getByRole('tab', { name: 'Coffee break' }),
       debriefingButton: this.page.getByRole('tab', { name: 'Debriefing' }),
-    };
-
-    this.talkingStick = {
-      startNowButton: this.page.getByRole('button', { name: 'Start now' }),
-      talkingStickStartedNotification: this.page.getByText('The Talking Stick is started.', { exact: true }),
-      yourTurnPopup: this.page.getByRole('alertdialog', { name: '' }),
     };
 
     this.timer = {
@@ -586,15 +574,6 @@ export class MeetingRoomPage {
 
   async deactivateKeyboardShortcuts() {
     await this.keyboardShortcuts.checkbox.setChecked(false);
-  }
-
-  // functions related to talking stick
-  async clickOnTalkingStick() {
-    await this.moderationTools.talkingStickButton.click();
-  }
-
-  async clickOnTalkingStickStartNow() {
-    await this.talkingStick.startNowButton.click();
   }
 
   // functions related to report a bug
