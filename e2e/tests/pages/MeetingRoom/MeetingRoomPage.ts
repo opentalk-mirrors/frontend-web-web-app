@@ -715,20 +715,26 @@ export class MeetingRoomPage {
     await this.timer.duration.closeButton.click();
   }
 
-  async selectUnlimitedTimeOption() {
-    await this.timer.duration.unlimitedTimeButton.click();
-  }
+  async selectTimerDuration(
+    duration: 'oneMinute' | 'twoMinutes' | 'fiveMinutes' | 'unlimited'
+  ): Promise<{ locator: Locator; accessibleName: string }> {
+    switch (duration) {
+      case 'oneMinute':
+        await this.timer.duration.oneMinuteButton.click();
+        return { locator: this.timer.duration.oneMinuteButton, accessibleName: 'Duration 1 minute' };
 
-  async selectOneMinuteOption() {
-    await this.timer.duration.oneMinuteButton.click();
-  }
+      case 'twoMinutes':
+        await this.timer.duration.twoMinutesButton.click();
+        return { locator: this.timer.duration.twoMinutesButton, accessibleName: 'Duration 2 minutes' };
 
-  async selectTwoMinutesOption() {
-    await this.timer.duration.twoMinutesButton.click();
-  }
+      case 'fiveMinutes':
+        await this.timer.duration.fiveMinutesButton.click();
+        return { locator: this.timer.duration.fiveMinutesButton, accessibleName: 'Duration 5 minutes' };
 
-  async selectFiveMinutesOption() {
-    await this.timer.duration.fiveMinutesButton.click();
+      case 'unlimited':
+        await this.timer.duration.unlimitedTimeButton.click();
+        return { locator: this.timer.duration.unlimitedTimeButton, accessibleName: 'Duration Unlimited Time' };
+    }
   }
 
   async selectCustomDuration() {
