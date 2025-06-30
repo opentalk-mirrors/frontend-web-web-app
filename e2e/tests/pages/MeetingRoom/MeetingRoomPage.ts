@@ -5,6 +5,7 @@ import { Page, Locator, BrowserContext } from '@playwright/test';
 
 import { navigateToExternalPage } from '../../helper/externalPageHelper';
 import { MeetingInfoPage } from './MeetingInfoPage';
+import { TimerPage } from './ModeratorTools/TimerPage';
 import { MoreOptionsPage } from './MoreOptionsPage';
 
 export class MeetingRoomPage {
@@ -47,49 +48,6 @@ export class MeetingRoomPage {
     timerButton: Locator;
     coffeeBreakButton: Locator;
     debriefingButton: Locator;
-  };
-
-  timer: {
-    timerHeading: Locator;
-    duration: {
-      durationSelectionButton: Locator;
-      sessionDurationPopup: Locator;
-      sessionDurationTitle: Locator;
-      unlimitedTimeButton: Locator;
-      oneMinuteButton: Locator;
-      twoMinutesButton: Locator;
-      fiveMinutesButton: Locator;
-      customDuration: {
-        customButton: Locator;
-        spinButton: Locator;
-      };
-      closeButton: Locator;
-      saveButton: Locator;
-    };
-    titleTextbox: Locator;
-    participantsReadyCheckbox: Locator;
-    createTimer: {
-      createTimerButton: Locator;
-      tabPanel: {
-        tabPanelSection: Locator;
-        heading: Locator;
-        elapsedTimeLabel: Locator;
-        remainingTimeLabel: Locator;
-        time: Locator;
-        participantsHeading: Locator;
-        participantsNotDoneStatus: Locator;
-      };
-      timerStartedPopup: {
-        timerStartedHeading: Locator;
-        elapsedTimeLabel: Locator;
-        remainingTimeLabel: Locator;
-        time: Locator;
-        markMeAsDoneButton: Locator;
-      };
-      stopTimerButton: Locator;
-      timerStoppedAlert: Locator;
-      timerRanOutAlert: Locator;
-    };
   };
 
   videoPreview: Locator;
@@ -197,56 +155,6 @@ export class MeetingRoomPage {
       timerButton: this.page.getByRole('tab', { name: 'Timer' }),
       coffeeBreakButton: this.page.getByRole('tab', { name: 'Coffee break' }),
       debriefingButton: this.page.getByRole('tab', { name: 'Debriefing' }),
-    };
-
-    this.timer = {
-      timerHeading: this.page.getByRole('heading', { name: 'Timer' }),
-      duration: {
-        durationSelectionButton: this.page.getByRole('button', { name: 'Duration' }),
-        sessionDurationPopup: this.page.getByRole('dialog', { name: 'Session Duration' }),
-        sessionDurationTitle: this.page.getByText('Session Duration', { exact: true }),
-        unlimitedTimeButton: this.page.getByRole('button', { name: 'Unlimited duration' }),
-        oneMinuteButton: this.page.getByRole('button', { name: '1 minute' }),
-        twoMinutesButton: this.page.getByRole('button', { name: '2 minutes' }),
-        fiveMinutesButton: this.page.getByRole('button', { name: '5 minutes' }),
-        customDuration: {
-          customButton: this.page.getByRole('button', { name: 'Custom duration' }),
-          spinButton: this.page.getByRole('spinbutton'),
-        },
-        closeButton: this.page.getByRole('button', { name: 'Close' }),
-        saveButton: this.page.getByRole('button', { name: 'Save' }),
-      },
-      titleTextbox: this.page.getByRole('textbox', { name: 'Title' }),
-      participantsReadyCheckbox: this.page.getByRole('checkbox', { name: 'Ask participants if they are ready' }),
-      createTimer: {
-        createTimerButton: this.page.getByRole('button', { name: 'Create Timer' }),
-        tabPanel: {
-          tabPanelSection: this.page.getByRole('tabpanel', { name: 'Timer' }),
-          heading: this.page.getByRole('tabpanel', { name: 'Timer' }).getByRole('heading', { name: 'Timer' }),
-          elapsedTimeLabel: this.page
-            .getByRole('tabpanel', { name: 'Timer' })
-            .getByText('Elapsed time', { exact: true }),
-          remainingTimeLabel: this.page
-            .getByRole('tabpanel', { name: 'Timer' })
-            .getByText('Remaining time', { exact: true }),
-          time: this.page.getByRole('tabpanel', { name: 'Timer' }).getByText(/\b\d{1,2}\s*:\s*\d{2}\b/),
-          participantsHeading: this.page.getByRole('heading', { name: 'Participants' }),
-          participantsNotDoneStatus: this.page
-            .getByRole('tabpanel', { name: 'Timer' })
-            .getByRole('listitem')
-            .filter({ has: this.page.getByRole('img', { name: 'Not done', exact: true }) }),
-        },
-        timerStartedPopup: {
-          timerStartedHeading: this.page.getByRole('heading', { name: 'A timer was started' }),
-          elapsedTimeLabel: this.page.getByRole('dialog').getByText('Elapsed time', { exact: true }),
-          remainingTimeLabel: this.page.getByRole('dialog').getByText('Remaining time', { exact: true }),
-          time: this.page.getByRole('dialog').getByText(/\b\d{1,2}\s*:\s*\d{2}\b/),
-          markMeAsDoneButton: this.page.getByRole('button', { name: 'Mark me as done' }),
-        },
-        stopTimerButton: this.page.getByRole('button', { name: 'Stop timer' }),
-        timerStoppedAlert: this.page.getByRole('alert').getByText('The timer was stopped'),
-        timerRanOutAlert: this.page.getByRole('alert').getByText('The timer ran out'),
-      },
     };
 
     this.videoPreview = this.page.getByRole('complementary', { name: 'Tools' }).locator('video');
@@ -610,128 +518,12 @@ export class MeetingRoomPage {
     await this.page.keyboard.press('Escape');
   }
 
-  // functions related to timer
-  async startTimerModeratorTool() {
+  // function related to timer
+  async startTimerModeratorTool(): Promise<TimerPage> {
     await this.moderationTools.timerButton.click();
-    await this.timer.timerHeading.waitFor();
-  }
-
-  async openDurationSelection() {
-    await this.timer.duration.durationSelectionButton.click();
-  }
-
-  async closeDurationSelection() {
-    await this.timer.duration.closeButton.click();
-  }
-
-  async selectTimerDuration(
-    duration: 'oneMinute' | 'twoMinutes' | 'fiveMinutes' | 'unlimited'
-  ): Promise<{ locator: Locator; accessibleName: string }> {
-    switch (duration) {
-      case 'oneMinute':
-        await this.timer.duration.oneMinuteButton.click();
-        return { locator: this.timer.duration.oneMinuteButton, accessibleName: 'Duration 1 minute' };
-
-      case 'twoMinutes':
-        await this.timer.duration.twoMinutesButton.click();
-        return { locator: this.timer.duration.twoMinutesButton, accessibleName: 'Duration 2 minutes' };
-
-      case 'fiveMinutes':
-        await this.timer.duration.fiveMinutesButton.click();
-        return { locator: this.timer.duration.fiveMinutesButton, accessibleName: 'Duration 5 minutes' };
-
-      case 'unlimited':
-        await this.timer.duration.unlimitedTimeButton.click();
-        return { locator: this.timer.duration.unlimitedTimeButton, accessibleName: 'Duration Unlimited Time' };
-    }
-  }
-
-  async selectCustomDuration() {
-    await this.timer.duration.customDuration.customButton.click();
-  }
-
-  async isDurationSelected(locator: Locator): Promise<boolean> {
-    return await locator.evaluate((element) => element.getAttribute('aria-selected') === 'true');
-  }
-
-  async saveSessionDuration() {
-    await this.timer.duration.saveButton.click();
-  }
-
-  async enterCustomDuration(value?: string) {
-    await this.timer.duration.customDuration.spinButton.click();
-    if (value) {
-      await this.timer.duration.customDuration.spinButton.fill(value);
-    }
-  }
-
-  async selectTimerTitleInput() {
-    await this.timer.titleTextbox.click();
-  }
-
-  async enterTimerTitle(title: string) {
-    await this.timer.titleTextbox.fill(title);
-  }
-
-  async getPlaceholderOfTimerTitleInput(): Promise<string> {
-    return (await this.timer.titleTextbox.getAttribute('placeholder'))!;
-  }
-
-  async getTimerTitleInputValue(): Promise<string> {
-    return await this.timer.titleTextbox.inputValue();
-  }
-
-  async createTimer() {
-    await this.timer.createTimer.createTimerButton.click();
-  }
-
-  getTimerStartedPopup(title: string = 'A timer was started'): Locator {
-    return this.page.getByRole('dialog', { name: title });
-  }
-
-  getTimerTitle(title: string): Locator {
-    return this.page.getByRole('heading', { name: title });
-  }
-
-  async getParticipantsNotDoneStatus(): Promise<Locator[]> {
-    const notDoneList: Locator[] = [];
-    for (const notDoneParticipant of await this.timer.createTimer.tabPanel.participantsNotDoneStatus.all()) {
-      if (await notDoneParticipant.isVisible()) {
-        notDoneList.push(notDoneParticipant);
-      }
-    }
-    return notDoneList;
-  }
-
-  async getTimerTimeInSeconds(locator: Locator): Promise<number> {
-    const time = await locator.innerText();
-    const min = parseInt(time.split(':')[0]);
-    const sec = parseInt(time.split(':')[1]);
-    return min * 60 + sec;
-  }
-
-  async waitForRemainingTimerTime() {
-    const remainingTime = (await this.getTimerTimeInSeconds(this.timer.createTimer.tabPanel.time)) * 1000;
-    await this.page.waitForTimeout(remainingTime);
-  }
-
-  async stopTimer() {
-    await this.timer.createTimer.stopTimerButton.click();
-  }
-
-  async isCountingUp(locator: Locator): Promise<boolean> {
-    const prevSec = await this.getTimerTimeInSeconds(locator);
-    await this.page.waitForTimeout(2000);
-    const currentSec = await this.getTimerTimeInSeconds(locator);
-
-    if (currentSec > prevSec) {
-      return true;
-    }
-    return false;
-  }
-
-  async toggleAskParticipantsIfReady(value: boolean) {
-    await this.timer.participantsReadyCheckbox.setChecked(value);
+    const timerPage = new TimerPage({ page: this.page });
+    await timerPage.timerHeading.waitFor();
+    return timerPage;
   }
 
   async selectModeratorToolHome() {
