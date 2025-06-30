@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { isAnyOf } from '@reduxjs/toolkit';
+import { Track } from 'livekit-client';
 
 import { RequestMute } from '../../api/types/incoming/media';
+import { BackgroundBlur } from '../../modules/Media/BackgroundBlur';
 import { ParticipantId, VideoSetting } from '../../types';
 import { TimerStyle } from '../../types';
 import { MediaError } from '../../utils/mediaErrorUtils';
@@ -278,7 +280,32 @@ const startMediaChoiceListener = (startAppListening: StartAppListening) =>
     },
   });
 
+const startBackgroundEffectsListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    matcher: isAnyOf(setBackgroundEffects),
+    effect: (_, listenerApi) => {
+      const state = listenerApi.getState();
+      const { videoBackgroundEffects } = state.media;
+
+      if (state.livekit.accessToken === undefined) {
+        return;
+      }
+
+      const localParticipant = getLivekitRoom().localParticipant;
+      const videotrack = localParticipant.getTrackPublication(Track.Source.Camera)?.videoTrack;
+
+      if (videotrack) {
+        if (videoBackgroundEffects.style === 'off') {
+          videotrack.stopProcessor();
+        } else {
+          videotrack.setProcessor(new BackgroundBlur(videoBackgroundEffects));
+        }
+      }
+    },
+  });
+
 export const startMediaListeners = (startAppListening: StartAppListening) => {
   startDisableMediaOnCoffeeBreakListener(startAppListening);
   startMediaChoiceListener(startAppListening);
+  startBackgroundEffectsListener(startAppListening);
 };
