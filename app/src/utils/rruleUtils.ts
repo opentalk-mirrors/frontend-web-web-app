@@ -134,7 +134,7 @@ const dateFormat: DateFormatter = (year, month, day) => `${day}/${month}/${year}
 export const getRRuleLanguage = () => {
   const language = i18next.language;
 
-  if (language === 'en-US') {
+  if (language && language.toLowerCase().includes('en')) {
     return ENGLISH;
   }
 
@@ -148,7 +148,7 @@ export const getRRuleText = (rule: RRule) => {
   const language = i18next.language;
 
   let ruleToText;
-  if (language === 'en-US') {
+  if (language && language.toLowerCase().includes('en')) {
     ruleToText = rule.toText();
   } else {
     // Currently we only support German as the default fallback. Can extend in the future

@@ -42,6 +42,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { createOpenTalkTheme } from '../assets/themes/opentalk';
 import { SnackbarProvider } from '../commonComponents';
+import { MeetingFormValues } from '../components/MeetingForms/fragments/DashboardDateTimePicker';
 import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
 import FullscreenProvider from '../provider/FullscreenProvider';
 import { appReducers } from '../store';
@@ -64,6 +65,7 @@ import {
   VideoSetting,
   WaitingState,
 } from '../types';
+import { CommonFrequencies } from './rruleUtils';
 
 const automodState: AutomodState = {
   active: false,
@@ -605,4 +607,21 @@ export const mockedStreamingTarget: StreamingTarget = {
   streamingKey: '123',
   publicUrl: '123',
   streamingEndpoint: new URL('https://example.com'),
+};
+
+export const mockedMeetingFormValues: MeetingFormValues = {
+  title: 'Test Meeting',
+  description: 'Description',
+  waitingRoom: true,
+  showMeetingDetails: false,
+  password: 'secret',
+  isTimeDependent: true,
+  startDate: '2025-06-05T10:00:00Z',
+  endDate: '2025-06-05T11:00:00Z',
+  isAdhoc: false,
+  sharedFolder: true,
+  streaming: { enabled: false, streamingTarget: undefined },
+  e2eEncryption: true,
+  trainingParticipationReport: { enabled: false, parameter: undefined },
+  recurrencePattern: CommonFrequencies.NONE,
 };

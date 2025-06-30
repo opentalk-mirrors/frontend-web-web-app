@@ -18,9 +18,9 @@ import { MAX_CHARACTERS_TITLE, MAX_CHARACTERS_DESCRIPTION, MAX_CHARACTERS_PASSWO
 import { getInitialValues } from '../utils/initialValues';
 import ActionButtons from './ActionButtons';
 import { MeetingFormValues } from './DashboardDateTimePicker';
+import DateTimeSection from './DateTimeSection';
 import EventConflictDialog from './EventConflictDialog';
 import MeetingFormSwitch from './MeetingFormSwitch';
-import RecurrenceSection from './RecurrenceSection';
 import StreamingOptions from './StreamingOptions';
 import { TrainingParticipationReportSelect } from './TrainingParticipationReportSelect/TrainingParticipationReportSelect';
 import { meetingFormValidationSchema } from './meetingFormValidationSchema';
@@ -135,7 +135,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
             switchValueLabel={t('dashboard-meeting-date-and-time-switch')}
           />
 
-          <RecurrenceSection
+          <DateTimeSection
             formik={formik}
             existingEvent={existingEvent}
             onRecurrencePatternChange={setMemoizedRecurrencePattern}

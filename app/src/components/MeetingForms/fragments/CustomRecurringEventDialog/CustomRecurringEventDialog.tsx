@@ -32,7 +32,7 @@ import { CustomEndOptions } from './CustomEndDateOptions';
 import { CustomMonthlyOptions } from './CustomMonthlyOptions';
 import { CustomWeeklyOptions } from './CustomWeeklyOptions';
 
-export interface RecurringEventDialogProps extends DialogProps {
+export interface CustomRecurringEventDialogProps extends DialogProps {
   open: boolean;
   closeDialog: () => void;
   selectCustomFrequencyOption: (option: FrequencyOption) => void;
@@ -70,14 +70,14 @@ const EndOptionLabel = styled(CommonLabel)(({ theme }) => ({
 const RECURRING_DIALOG_LABEL_ID = 'recurrence-dialog-title';
 const DEFAULT_INTERVAL = 1;
 
-export const RecurringEventDialog = ({
+export const CustomRecurringEventDialog = ({
   open,
   closeDialog,
   selectCustomFrequencyOption,
   recurrenceStartTimestamp,
   initialRRule,
   ...props
-}: RecurringEventDialogProps) => {
+}: CustomRecurringEventDialogProps) => {
   const { t } = useTranslation();
   const recurrenceFrequency = [
     { translationKey: 'day', value: RRule.DAILY },
