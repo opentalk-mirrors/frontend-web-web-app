@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
@@ -16,7 +17,7 @@ const useNavigateToHome = () => {
   const navigate = useNavigate();
   const roomConnectionState = useAppSelector(selectRoomConnectionState);
 
-  const navigateToHome = () => {
+  const navigateToHome = useCallback(() => {
     //Conditionally hang up if user is in the waiting room, but not in the meeting itself.
     //Should be looked into again as part of https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/1830
     if (roomConnectionState === ConnectionState.Waiting || roomConnectionState === ConnectionState.ReadyToEnter) {
@@ -24,7 +25,7 @@ const useNavigateToHome = () => {
     }
     dispatch(roomReset());
     navigate('/dashboard');
-  };
+  }, [roomConnectionState]);
 
   return navigateToHome;
 };
