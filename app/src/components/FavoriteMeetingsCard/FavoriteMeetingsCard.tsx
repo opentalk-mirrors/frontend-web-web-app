@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, styled, Tooltip, Link as MuiLink, List, ListItem } from '@mui/material';
+import { Box, styled, Tooltip, Link as MuiLink, List, ListItem, Typography } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -14,23 +14,21 @@ const FavoritesWrapper = styled(Box)(({ theme }) => ({
   background: theme.palette.secondary.main,
   borderRadius: theme.borderRadius.medium,
   position: 'relative',
-  padding: theme.spacing(3.5, 0, 1, 3),
+  padding: theme.spacing(1.5, 2, 1),
   height: '100%',
   minHeight: '5rem',
   maxHeight: '13rem',
 
   [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(2.5, 0, 1, 2),
     overflow: 'auto',
     maxHeight: '25rem',
   },
 }));
 
-const FavoritesContainer = styled(List)(({ theme }) => ({
+const FavoritesContainer = styled(List)({
   height: '100%',
   overflow: 'auto',
-  paddingRight: theme.spacing(3),
-}));
+});
 
 const FavoriteIcon = styled(Favorite)(({ theme }) => ({
   position: 'absolute',
@@ -48,11 +46,6 @@ const FavoriteIcon = styled(Favorite)(({ theme }) => ({
 }));
 
 const FavoriteEntry = styled(ListItem)(({ theme }) => ({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  flex: `0 0 auto`,
-
   '&:not(:first-of-type):not(:last-child)': {
     padding: theme.spacing(2, 0, 2, 0.5),
   },
@@ -96,9 +89,9 @@ const FavoriteMeetingsCard = ({ meetings }: { meetings: Array<FavoriteMeetingPro
         <FavoritesContainer>
           {sortedMeetings.map(({ subject, roomId }) => (
             <FavoriteEntry key={roomId}>
-              <Link to={`/room/${roomId}`} target="_blank">
+              <Typography noWrap component={Link} to={`/room/${roomId}`} target="_blank">
                 {subject}
-              </Link>
+              </Typography>
             </FavoriteEntry>
           ))}
         </FavoritesContainer>
