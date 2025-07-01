@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import type { PropsWithChildren } from 'react';
 
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
@@ -19,7 +20,7 @@ jest.mock('@livekit/components-react', () => ({
 jest.mock('../SelfTest', () => ({
   ...jest.requireActual('../SelfTest'),
   __esModule: true,
-  default: () => <div data-testid="selfTest"></div>,
+  default: (props: PropsWithChildren) => <div data-testid="selfTest">{props.children}</div>,
 }));
 
 describe('Waiting view', () => {
@@ -32,5 +33,15 @@ describe('Waiting view', () => {
     renderWithProviders(<WaitingView />, { store });
 
     expect(screen.getByTestId('selfTest')).toBeVisible();
+  });
+
+  it('does not render enter button if auto join is disabled', () => {
+    const { store } = configureStore({
+      room: { connectionState: ConnectionState.Waiting },
+    });
+    renderWithProviders(<WaitingView />, { store });
+    const checkbox = screen.getByRole('checkbox', { name: 'waiting-room-auto-join-label' });
+    fireEvent.click(checkbox);
+    expect(screen.getByText('in-waiting-room')).toBeInTheDocument();
   });
 });
