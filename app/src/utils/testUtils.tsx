@@ -24,6 +24,7 @@ import {
   SipId,
 } from '@opentalk/rest-api-rtk-query';
 import { ConfigureStoreOptions, Store, combineReducers, configureStore as configureStoreTlk } from '@reduxjs/toolkit';
+import { Middleware } from '@reduxjs/toolkit';
 import { RenderOptions, RenderResult, render as rtlRender } from '@testing-library/react';
 import i18n from 'i18next';
 import {
@@ -45,6 +46,7 @@ import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
 import FullscreenProvider from '../provider/FullscreenProvider';
 import { appReducers } from '../store';
 import type { RootState } from '../store';
+import { listenerMiddleware } from '../store/listenerMiddleware';
 import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
 import { Poll } from '../store/slices/pollSlice';
 import {
@@ -107,10 +109,18 @@ type MockReduxStore = {
   dispatchSpy: jest.SpyInstance;
 };
 
+export const middleware: Array<Middleware> = [listenerMiddleware.middleware];
+
 export const configureStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined): MockReduxStore => {
   const store = configureStoreTlk({
     reducer: combineReducers({ ...appReducers }),
     preloadedState: options?.initialState && { ...options.initialState },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActionPaths: ['meta.arg', 'meta.baseQueryMeta', 'meta.history', 'payload.conferenceContext'],
+        },
+      }).concat(middleware),
   });
 
   const dispatchSpy = jest.spyOn(store, 'dispatch');
