@@ -52,6 +52,9 @@ module.exports = {
       modulePaths: [],
       transformIgnorePatterns: ['/node_modules/(?!@heinlein-video/rrule*)'],
       resetMocks: true,
+      testEnvironmentOptions: {
+        globalsCleanup: 'on',
+      },
     },
     {
       displayName: 'packages/fluent_conv',

@@ -5,6 +5,7 @@ import { useLocalParticipant } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
 import { ConnectionQuality } from 'livekit-client';
 
+import { getLocationProtocol } from '../../../utils/apiUtils';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MeetingUtilsSection from './MeetingUtilsSection';
 
@@ -27,8 +28,13 @@ jest.mock('./WaitingParticipantsPopover', () => ({
   default: () => <div>WaitingParticipantsPopover</div>,
 }));
 
+jest.mock('../../../utils/apiUtils', () => ({
+  getLocationProtocol: jest.fn(),
+}));
+
 describe('MeetingUtilsSection rendering logic', () => {
   beforeEach(() => {
+    (getLocationProtocol as jest.Mock).mockReturnValue('http:');
     (useLocalParticipant as jest.Mock).mockReturnValue({
       localParticipant: {
         connectionQuality: ConnectionQuality.Good,
@@ -68,14 +74,17 @@ describe('MeetingUtilsSection rendering logic', () => {
     expect(screen.getByText('WaitingParticipantsPopover')).toBeInTheDocument();
   });
 
-  it('should render security badge when protocol is https', () => {
+  it('should render security badge for secure connection', () => {
+    (getLocationProtocol as jest.Mock).mockReturnValue('https:');
     const { store } = configureStore();
-    Object.defineProperty(window, 'location', {
-      value: {
-        protocol: 'https:',
-      },
-    });
     renderWithProviders(<MeetingUtilsSection />, { store });
     expect(screen.getByText('SecurityBadge')).toBeInTheDocument();
+  });
+
+  it('should not render security badge for insecure connection', () => {
+    (getLocationProtocol as jest.Mock).mockReturnValue('http:');
+    const { store } = configureStore();
+    renderWithProviders(<MeetingUtilsSection />, { store });
+    expect(screen.queryByText('SecurityBadge')).not.toBeInTheDocument();
   });
 });

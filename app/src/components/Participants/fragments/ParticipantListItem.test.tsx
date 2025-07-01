@@ -16,7 +16,7 @@ import {
 import { mockedParticipant, mockStore, renderWithProviders } from '../../../utils/testUtils';
 import ParticipantListItem from './ParticipantListItem';
 
-jest.mock('@livekit/components-react/', () => ({
+jest.mock('@livekit/components-react', () => ({
   useRemoteParticipant: () => mockedParticipant(0),
   useLocalParticipant: () => mockedParticipant(0),
 }));
