@@ -45,7 +45,7 @@ const WaitingParticipantsPopover = () => {
     if (isWaitingRoomEmpty) {
       setAnchorElement(null);
     }
-  }, [participantsInWaitingRoomCount]);
+  }, [participantsInWaitingRoomCount, isWaitingRoomEmpty]);
 
   if (isWaitingRoomEmpty) {
     return null;
@@ -60,6 +60,8 @@ const WaitingParticipantsPopover = () => {
       }}
     >
       <WaitingListButton
+        data-testid="waiting-list-button"
+        // TODO: define content and add aria-label instead of the testid.
         aria-controls="waiting-list-popover"
         aria-haspopup="true"
         aria-expanded={isExpanded}

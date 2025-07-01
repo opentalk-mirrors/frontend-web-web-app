@@ -117,7 +117,7 @@ const Drawer = () => {
   };
 
   const toggle = () => {
-    isDrawerOpen ? close() : open();
+    return isDrawerOpen ? close() : open();
   };
 
   const renderTabs = (tabs: Tab[]) => {
@@ -148,6 +148,8 @@ const Drawer = () => {
           </DrawerTab>
         );
       }
+
+      return null;
     });
   };
 

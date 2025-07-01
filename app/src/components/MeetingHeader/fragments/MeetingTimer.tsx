@@ -24,11 +24,16 @@ const Container = styled(Stack)(({ theme }) => ({
 const MEETING_TIMER_UNDER_HOUR_FORMAT_LENGTH = 7; // we have two space characters, one : character and 4 digits, summing up to 7.
 
 const MeetingTimer = () => {
-  const [meetingTime, setMeetingTime] = useState<string>('00 : 00');
   const meetingStartPoint = useAppSelector(selectJoinedFirstTimestamp);
   const startTime = useMemo(() => (meetingStartPoint ? new Date(meetingStartPoint) : new Date()), [meetingStartPoint]);
+  const [meetingTime, setMeetingTime] = useState<string>(
+    getIntervalToDurationString({
+      start: startTime,
+      end: new Date(),
+    })
+  );
 
-  const getDuration = useCallback(() => {
+  const updateDuration = useCallback(() => {
     setMeetingTime(
       getIntervalToDurationString({
         start: startTime,
@@ -38,9 +43,9 @@ const MeetingTimer = () => {
   }, [startTime]);
 
   useEffect(() => {
-    const interval = setInterval(() => getDuration(), 1000);
+    const interval = setInterval(() => updateDuration(), 1000);
     return () => clearInterval(interval);
-  }, [getDuration, meetingTime]);
+  }, [updateDuration, meetingTime]);
 
   let renderedTime = meetingTime;
   if (isDevMode()) {

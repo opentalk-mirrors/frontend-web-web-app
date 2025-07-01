@@ -13,7 +13,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { CallIn, EventInfo, StreamingLink } from '@opentalk/rest-api-rtk-query';
+import type { CallIn, EventInfo, StreamingLink } from '@opentalk/rest-api-rtk-query';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -23,7 +23,7 @@ import { useAppSelector } from '../../../hooks';
 import { selectUserAsParticipant } from '../../../store/selectors';
 import { selectCurrentBreakoutRoomId } from '../../../store/slices/breakoutSlice';
 import { selectBaseUrl } from '../../../store/slices/configSlice';
-import { RoomInfo } from '../../../types';
+import type { RoomInfo } from '../../../types';
 import { composeInviteUrl } from '../../../utils/apiUtils';
 import { FieldKeys } from '../../InviteToMeeting/fragments/constants';
 

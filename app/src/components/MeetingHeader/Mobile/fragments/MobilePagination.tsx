@@ -49,6 +49,7 @@ const MobilePagination = () => {
   const pageCount = useMemo(() => {
     return Math.ceil(participants.length / MAX_GRID_TILES_MOBILE);
   }, [participants]);
+
   useEffect(() => {
     if (selectedPage > pageCount || selectedPage === 0) {
       dispatch(setPaginationPage(pageCount));
@@ -69,9 +70,11 @@ const MobilePagination = () => {
   }
 
   return selectedLayout !== LayoutOptions.Grid ? (
-    <Container isVisible={false}>{null}</Container>
+    <Container data-testid="mobile-pagination-container" isVisible={false}>
+      {null}
+    </Container>
   ) : (
-    <Container isVisible={pageCount > 1}>
+    <Container data-testid="mobile-pagination-container" isVisible={pageCount > 1}>
       <PageIndex
         aria-controls="page-selection-popover"
         aria-expanded={isPopoverOpen}
