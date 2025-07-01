@@ -23,7 +23,7 @@ test.describe('Meeting Room_Meeting credentials for all in conference', () => {
     test.skip(browserName === 'webkit');
 
     const { meetingRoomPage, guestLink, phoneDialIn, telephoneDialInNumber, conferenceId, conferencePin } =
-      await planNewMeetingAndStartAsModerator(page, meetingTitle, meetingPassword);
+      await planNewMeetingAndStartAsModerator(page, meetingTitle, meetingPassword, browserName);
     await expect(meetingRoomPage.meetingInfoButton).toBeVisible();
 
     const meetingInfoPage: MeetingInfoPage = await meetingRoomPage.showMeetingDetails();

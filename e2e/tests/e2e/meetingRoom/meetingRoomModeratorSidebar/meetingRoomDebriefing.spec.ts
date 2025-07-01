@@ -4,8 +4,6 @@
 import { test, expect } from '@playwright/test';
 
 import { joinMeetingRoomAsGuest, startAdhocMeetingAsModerator } from '../../../helper/meetingHelpers';
-import { closeWebkitPopUp } from '../../../helper/webkit';
-import { HomePage } from '../../../pages/HomePage';
 import { LobbyRoomPage } from '../../../pages/LobbyRoomPage';
 import { MeetingRoomPage } from '../../../pages/MeetingRoom/MeetingRoomPage';
 import { DebriefingPage } from '../../../pages/MeetingRoom/ModeratorTools/DebriefingPage';
@@ -17,17 +15,10 @@ test.describe('Meeting Room_Debriefing', () => {
     debriefingPage: DebriefingPage;
 
   test.beforeEach(async ({ page, context, browserName }) => {
-    const homePage = new HomePage({ page });
-    await homePage.navigateToHomePage();
-
-    ({ meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page));
+    ({ meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page, browserName));
     guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest');
     // TODO: Need to add pre-condition to join meeting as few invited participants, once invited user scenario is implemented
     await meetingRoomPage.page.bringToFront();
-
-    if (browserName === 'webkit') {
-      await closeWebkitPopUp({ page });
-    }
   });
 
   test('TC_001_Meeting room_Debriefing_For moderator + registered user', async ({ page }) => {
