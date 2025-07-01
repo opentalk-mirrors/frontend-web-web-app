@@ -317,7 +317,7 @@ importers:
         version: 10.0.0
       '@vitejs/plugin-react':
         specifier: ^4.5.2
-        version: 4.5.2(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
+        version: 4.5.2(vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
       cross-fetch:
         specifier: ^4.1.0
         version: 4.1.0(encoding@0.1.13)
@@ -328,11 +328,11 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
       vite:
-        specifier: ^6.3.5
-        version: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
+        specifier: ^7.0.0
+        version: 7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
       vite-plugin-svgr:
         specifier: ^4.3.0
-        version: 4.3.0(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
+        version: 4.3.0(rollup@4.40.1)(typescript@5.8.3)(vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
 
   packages/fluent_conv:
     dependencies:
@@ -344,11 +344,11 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
       vite:
-        specifier: ^6.3.5
-        version: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
+        specifier: ^7.0.0
+        version: 7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
+        version: 4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
 
   packages/i18next-fluent:
     dependencies:
@@ -366,11 +366,11 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
       vite:
-        specifier: ^6.3.5
-        version: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
+        specifier: ^7.0.0
+        version: 7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
+        version: 4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
 
   packages/redux-oidc:
     dependencies:
@@ -394,11 +394,11 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
       vite:
-        specifier: ^6.3.5
-        version: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
+        specifier: ^7.0.0
+        version: 7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
+        version: 4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
 
   packages/rtk-rest-api:
     dependencies:
@@ -437,11 +437,11 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       vite:
-        specifier: ^6.3.5
-        version: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
+        specifier: ^7.0.0
+        version: 7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
+        version: 4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))
       whatwg-fetch:
         specifier: ^3.6.20
         version: 3.6.20
@@ -3831,8 +3831,8 @@ packages:
   fd-package-json@2.0.0:
     resolution: {integrity: sha512-jKmm9YtsNXN789RS/0mSzOC1NUq9mkVd65vbSSVsKdjGvYXBuE4oWe2QOEoFeRmJg+lPuZxpmrfFclNhoRMneQ==}
 
-  fdir@6.4.4:
-    resolution: {integrity: sha512-1NZP+GK4GfuAv3PqKvxQRDMjdSRZjnkq7KfhlNrCNNlZ0ygQFpebfrnfnq/W7fpUnAv9aGWmY1zKx7FYL3gwhg==}
+  fdir@6.4.6:
+    resolution: {integrity: sha512-hiFoqpyZcfNm1yc4u8oWCf9A2c4D3QjCrks3zmoVKVxpQRzmPNar1hUJcBG2RQHvEVGDN+Jm81ZheVLAQMK6+w==}
     peerDependencies:
       picomatch: ^3 || ^4
     peerDependenciesMeta:
@@ -5339,6 +5339,10 @@ packages:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postcss@8.5.6:
+    resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
+    engines: {node: ^10 || ^12 || >=14}
+
   precinct@12.2.0:
     resolution: {integrity: sha512-NFBMuwIfaJ4SocE9YXPU/n4AcNSoFMVFjP72nvl3cx69j/ke61/hPOWFREVxLkFhhEGnA8ZuVfTqJBa+PK3b5w==}
     engines: {node: '>=18'}
@@ -6044,8 +6048,8 @@ packages:
   tinyexec@1.0.1:
     resolution: {integrity: sha512-5uC6DDlmeqiOwCPmK9jMSdOuZTh8bU39Ys6yidB+UTt5hfZUPGAypSgFRiEp+jbi9qH40BLDvy85jIU88wKSqw==}
 
-  tinyglobby@0.2.13:
-    resolution: {integrity: sha512-mEwzpUgrLySlveBwEVDMKk5B57bhLPYovRfPAXD5gA/98Opn0rCDj3GtLwFvCvH5RK9uPCExUROW5NjDwvqkxw==}
+  tinyglobby@0.2.14:
+    resolution: {integrity: sha512-tX5e7OM1HnYr2+a2C/4V0htOcSQcoSTH9KgJnVvNm5zm/cyEWKJ7j7YutsH9CxMdtOkkLFy2AHrMci9IM8IPZQ==}
     engines: {node: '>=12.0.0'}
 
   tldts-core@6.1.86:
@@ -6287,19 +6291,19 @@ packages:
     peerDependencies:
       vite: '>=2.6.0'
 
-  vite@6.3.5:
-    resolution: {integrity: sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==}
-    engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
+  vite@7.0.0:
+    resolution: {integrity: sha512-ixXJB1YRgDIw2OszKQS9WxGHKwLdCsbQNkpJN171udl6szi/rIySHL6/Os3s2+oE4P/FLD4dxg4mD7Wust+u5g==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
-      '@types/node': ^18.0.0 || ^20.0.0 || >=22.0.0
+      '@types/node': ^20.19.0 || >=22.12.0
       jiti: '>=1.21.0'
-      less: '*'
+      less: ^4.0.0
       lightningcss: ^1.21.0
-      sass: '*'
-      sass-embedded: '*'
-      stylus: '*'
-      sugarss: '*'
+      sass: ^1.70.0
+      sass-embedded: ^1.70.0
+      stylus: '>=0.54.8'
+      sugarss: ^5.0.0
       terser: ^5.16.0
       tsx: ^4.8.1
       yaml: ^2.4.2
@@ -9186,7 +9190,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.9.2':
     optional: true
 
-  '@vitejs/plugin-react@4.5.2(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))':
+  '@vitejs/plugin-react@4.5.2(vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0))':
     dependencies:
       '@babel/core': 7.27.4
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.27.4)
@@ -9194,7 +9198,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.11
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -10477,7 +10481,7 @@ snapshots:
     dependencies:
       walk-up-path: 4.0.0
 
-  fdir@6.4.4(picomatch@4.0.2):
+  fdir@6.4.6(picomatch@4.0.2):
     optionalDependencies:
       picomatch: 4.0.2
 
@@ -12267,6 +12271,12 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  postcss@8.5.6:
+    dependencies:
+      nanoid: 3.3.11
+      picocolors: 1.1.1
+      source-map-js: 1.2.1
+
   precinct@12.2.0:
     dependencies:
       '@dependents/detective-less': 5.0.1
@@ -13013,9 +13023,9 @@ snapshots:
 
   tinyexec@1.0.1: {}
 
-  tinyglobby@0.2.13:
+  tinyglobby@0.2.14:
     dependencies:
-      fdir: 6.4.4(picomatch@4.0.2)
+      fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
 
   tldts-core@6.1.86: {}
@@ -13262,7 +13272,7 @@ snapshots:
 
   validate-npm-package-name@5.0.1: {}
 
-  vite-plugin-dts@4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)):
+  vite-plugin-dts@4.5.4(@types/node@22.15.32)(rollup@4.40.1)(typescript@5.8.3)(vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)):
     dependencies:
       '@microsoft/api-extractor': 7.52.7(@types/node@22.15.32)
       '@rollup/pluginutils': 5.1.4(rollup@4.40.1)
@@ -13275,31 +13285,31 @@ snapshots:
       magic-string: 0.30.17
       typescript: 5.8.3
     optionalDependencies:
-      vite: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
       - supports-color
 
-  vite-plugin-svgr@4.3.0(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)):
+  vite-plugin-svgr@4.3.0(rollup@4.40.1)(typescript@5.8.3)(vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)):
     dependencies:
       '@rollup/pluginutils': 5.1.4(rollup@4.40.1)
       '@svgr/core': 8.1.0(typescript@5.8.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.8.3))
-      vite: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
 
-  vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0):
+  vite@7.0.0(@types/node@22.15.32)(jiti@2.4.2)(yaml@2.8.0):
     dependencies:
       esbuild: 0.25.3
-      fdir: 6.4.4(picomatch@4.0.2)
+      fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
-      postcss: 8.5.3
+      postcss: 8.5.6
       rollup: 4.40.1
-      tinyglobby: 0.2.13
+      tinyglobby: 0.2.14
     optionalDependencies:
       '@types/node': 22.15.32
       fsevents: 2.3.3
