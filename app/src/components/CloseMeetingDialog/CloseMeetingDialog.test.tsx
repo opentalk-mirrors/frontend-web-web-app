@@ -48,26 +48,26 @@ describe('CloseMeetingDialog', () => {
     expect(screen.queryByText('meeting-delete-metadata-button-leave-without-delete')).not.toBeInTheDocument();
   });
 
-  it('should render properly for single events', () => {
+  it('should render properly for single events', async () => {
     jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedSingleEvent, refetch: mockRefetch });
     renderWithProviders(<CloseMeetingDialog {...dialogProps} />, {
       store,
       provider: { router: true, snackbar: true },
     });
-    expect(screen.getByText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
+    expect(await screen.findByText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-metadata-dialog-message')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-metadata-dialog-checkbox')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-metadata-button-leave-and-delete')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-metadata-button-leave-without-delete')).toBeInTheDocument();
   });
 
-  it('should render properly for recurring events', () => {
+  it('should render properly for recurring events', async () => {
     jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedRecurringEvent, refetch: mockRefetch });
     renderWithProviders(<CloseMeetingDialog {...dialogProps} />, {
       store,
       provider: { router: true, snackbar: true },
     });
-    expect(screen.getByText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
+    expect(await screen.findByText('meeting-delete-metadata-dialog-title')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-recurring-metadata-dialog-message')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-recurring-dialog-radio-single')).toBeInTheDocument();
     expect(screen.getByText('meeting-delete-recurring-dialog-radio-all')).toBeInTheDocument();

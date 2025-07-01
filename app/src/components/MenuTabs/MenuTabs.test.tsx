@@ -1,15 +1,32 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import MenuTabs from './MenuTabs';
 
+jest.mock('../Participants', () => ({
+  __esModule: true,
+  default: () => <div data-testid="Participants" />,
+}));
+
+jest.mock('../Chat', () => ({
+  __esModule: true,
+  default: () => <div data-testid="Chat" />,
+}));
+
+jest.mock('../ChatOverview', () => ({
+  __esModule: true,
+  default: () => <div data-testid="ChatOverview" />,
+}));
+
 describe('MenuTabs Component', () => {
-  it('render MenuTabs component without crashing and initialy Chat Tab is selected', () => {
+  it('renders menu tabs and chat tab is selected by default', () => {
     const { store } = configureStore();
     renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
+
+    expect(screen.getByRole('heading', { name: 'menutabs-area-hidden-heading', level: 2 })).toBeInTheDocument();
 
     const tablist = screen.getByRole('tablist');
     const tabs = screen.getAllByRole('tab');
@@ -17,63 +34,45 @@ describe('MenuTabs Component', () => {
     expect(tablist).toBeInTheDocument();
     expect(tabs).toHaveLength(3);
 
-    const chatTab = screen.getByRole('tab', { name: /menutabs-chat/i });
-    const peopleTab = screen.getByRole('tab', { name: /menutabs-people/i });
-    const messageTab = screen.getByRole('tab', { name: /menutabs-message/i });
-
-    expect(chatTab).toBeInTheDocument();
-    expect(chatTab).toHaveAttribute('aria-selected', 'true');
-
-    expect(peopleTab).toBeInTheDocument();
-    expect(peopleTab).toHaveAttribute('aria-selected', 'false');
-
-    expect(messageTab).toBeInTheDocument();
-    expect(messageTab).toHaveAttribute('aria-selected', 'false');
-
-    expect(screen.getByRole('button', { name: /chat-open-emoji-picker/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /chat-submit-button/i })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('chat-input-placeholder')).toBeInTheDocument();
+    screen.getByRole('tab', { name: 'menutabs-chat' });
+    screen.getByRole('tab', { name: 'menutabs-people' });
+    screen.getByRole('tab', { name: 'menutabs-messages' });
   });
 
-  it('click on MessageTab should mark tab as selected', () => {
+  it('renders chat tab panel by default', () => {
     const { store } = configureStore();
     renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
-    const chatTab = screen.getByRole('tab', { name: /menutabs-chat/i });
-    const messageTab = screen.getByRole('tab', { name: /menutabs-message/i });
+    const chatTabPanel = screen.getByRole('tabpanel', { name: 'menutabs-chat' });
+    expect(chatTabPanel).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'chatroom-hidden-heading', level: 3 })).toBeInTheDocument();
+    expect(screen.getByTestId('Chat')).toBeInTheDocument();
+  });
 
-    expect(chatTab).toBeInTheDocument();
-    expect(chatTab).toHaveAttribute('aria-selected', 'true');
+  it('renders chat overview when click on messages tab', () => {
+    const { store } = configureStore();
+    renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
-    expect(messageTab).toBeInTheDocument();
-    expect(messageTab).toHaveAttribute('aria-selected', 'false');
+    const messageTab = screen.getByRole('tab', { name: 'menutabs-messages' });
 
     fireEvent.click(messageTab);
 
-    expect(messageTab).toHaveAttribute('aria-selected', 'true');
-    expect(chatTab).toHaveAttribute('aria-selected', 'false');
+    const messageTabPanel = screen.getByRole('tabpanel', { name: 'menutabs-messages' });
+    expect(messageTabPanel).toBeInTheDocument();
+    expect(screen.getByTestId('ChatOverview')).toBeInTheDocument();
   });
 
-  // TODO UNIT TEST  Warning: `NaN` is an invalid value for the `height` css style property. (root element is not available in unit tests)
-
-  it('click on PeopleTab should mark tab as selected', async () => {
+  it('renders participants when click on people tab', () => {
     const { store } = configureStore();
     renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
-    const chatTab = screen.getByRole('tab', { name: /menutabs-chat/i });
-    const peopleTab = screen.getByRole('tab', { name: /menutabs-people/i });
-
-    expect(chatTab).toBeInTheDocument();
-    expect(chatTab).toHaveAttribute('aria-selected', 'true');
-
-    expect(peopleTab).toBeInTheDocument();
-    expect(peopleTab).toHaveAttribute('aria-selected', 'false');
+    const peopleTab = screen.getByRole('tab', { name: 'menutabs-people' });
 
     fireEvent.click(peopleTab);
 
-    await waitFor(() => {
-      expect(peopleTab).toHaveAttribute('aria-selected', 'true');
-    });
-    expect(chatTab).toHaveAttribute('aria-selected', 'false');
+    const peopleTabPanel = screen.getByRole('tabpanel', { name: 'menutabs-people' });
+    expect(peopleTabPanel).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'participant-list-hidden-heading', level: 3 })).toBeInTheDocument();
+    expect(screen.getByTestId('Participants')).toBeInTheDocument();
   });
 });

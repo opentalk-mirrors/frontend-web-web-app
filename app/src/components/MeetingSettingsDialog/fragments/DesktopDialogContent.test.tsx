@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { renderWithProviders } from '../../../utils/testUtils';
@@ -36,12 +36,12 @@ describe('DesktopDialogContent', () => {
   beforeAll(() => {
     mockPanels = SETTING_PANELS;
   });
-  it('renders the header, footer with dev-version and separator', () => {
+  it('renders the header, footer with dev-version and separator', async () => {
     const version = window.config.version;
     window.config.version = undefined;
 
     renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
-    const title = screen.getByRole('heading', { name: 'meeting-settings-title' });
+    const title = await screen.findByRole('heading', { name: 'meeting-settings-title' });
     expect(title).toBeInTheDocument();
     const footer = screen.getByText('OpenTalk dev-version');
     expect(footer).toBeInTheDocument();
@@ -53,45 +53,43 @@ describe('DesktopDialogContent', () => {
   it('calls onClose if user clicks close button', async () => {
     const onClose = jest.fn();
     renderWithProviders(<DesktopDialogContent onClose={onClose} setting="audio" />, { provider: { mui: true } });
-    const closeButton = screen.getByRole('button', { name: 'global-close-dialog' });
+    const closeButton = await screen.findByRole('button', { name: 'global-close-dialog' });
     expect(closeButton).toBeInTheDocument();
     await userEvent.click(closeButton);
 
-    await waitFor(() => {
-      expect(onClose).toHaveBeenCalled();
-    });
+    expect(onClose).toHaveBeenCalled();
   });
-  it('renders specified product version in the footer', () => {
+  it('renders specified product version in the footer', async () => {
     const version = window.config.version;
     const product = 'v24.0.1';
     window.config.version = { product, frontend: 'v0.0.0' };
 
     renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
-    const footer = screen.getByText(`OpenTalk ${product}`);
+    const footer = await screen.findByText(`OpenTalk ${product}`);
     expect(footer).toBeInTheDocument();
 
     window.config.version = version;
   });
-  it('renders all panels as tablist and tabs', () => {
+  it('renders all panels as tablist and tabs', async () => {
     renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
-    const tabList = screen.getByRole('tablist', { name: 'meeting-settings-title' });
+    const tabList = await screen.findByRole('tablist', { name: 'meeting-settings-title' });
     expect(tabList).toBeInTheDocument();
     const tabs = screen.getAllByRole('tab');
     expect(tabs.length).toEqual(2);
   });
-  it('opens audio tab by default', () => {
+  it('opens audio tab by default', async () => {
     const audioTabTitle = 'audio-panel-title';
     renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
-    const audioTab = screen.getByRole('tab', { name: audioTabTitle });
+    const audioTab = await screen.findByRole('tab', { name: audioTabTitle });
     expect(audioTab).toHaveAttribute('aria-selected', 'true');
     const audioTabPanel = screen.getByRole('tabpanel', { name: audioTabTitle });
     expect(audioTabPanel).toBeInTheDocument();
   });
-  it('opens custom tab on opening, if specified', () => {
+  it('opens custom tab on opening, if specified', async () => {
     const tabValue = SETTING_PANELS[1].value;
     const tabTitle = `${tabValue}-panel-title`;
     renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting={tabValue} />, { provider: { mui: true } });
-    const customTab = screen.getByRole('tab', { name: tabTitle });
+    const customTab = await screen.findByRole('tab', { name: tabTitle });
     expect(customTab).toHaveAttribute('aria-selected', 'true');
     const customTabPanel = screen.getByRole('tabpanel', { name: tabTitle });
     expect(customTabPanel).toBeInTheDocument();

@@ -36,7 +36,8 @@ describe('usePreventSpaceKey', () => {
       render(<WithButton handleChange={handleChange} />);
 
       const button = screen.getByRole('button');
-      button.focus();
+      await userEvent.tab();
+      expect(button).toHaveFocus();
 
       await userEvent.keyboard('[Space]');
       expect(handleChange).not.toHaveBeenCalled();
@@ -46,7 +47,8 @@ describe('usePreventSpaceKey', () => {
       render(<WithSwitch handleChange={handleChange} />);
 
       const switchElement = screen.getByRole('checkbox');
-      switchElement.focus();
+      await userEvent.tab();
+      expect(switchElement).toHaveFocus();
 
       await userEvent.keyboard('[Space]');
       expect(handleChange).not.toHaveBeenCalled();
@@ -62,7 +64,8 @@ describe('usePreventSpaceKey', () => {
       render(<WithButton handleChange={handleChange} />);
 
       const button = screen.getByRole('button');
-      button.focus();
+      await userEvent.tab();
+      expect(button).toHaveFocus();
 
       await userEvent.keyboard('[Space]');
       expect(handleChange).toHaveBeenCalled();
@@ -72,7 +75,8 @@ describe('usePreventSpaceKey', () => {
       render(<WithSwitch handleChange={handleChange} />);
 
       const switchElement = screen.getByRole('checkbox');
-      switchElement.focus();
+      await userEvent.tab();
+      expect(switchElement).toHaveFocus();
 
       await userEvent.keyboard('[Space]');
       expect(handleChange).toHaveBeenCalled();

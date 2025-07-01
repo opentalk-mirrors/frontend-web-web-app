@@ -9,7 +9,7 @@ import OverviewCard from './OverviewCard';
 
 jest.mock('../../EventTimePreview/EventTimePreview', () => ({
   __esModule: true,
-  default: () => <div />,
+  default: () => <time />,
 }));
 
 jest.mock('../../../commonComponents', () => ({
@@ -97,7 +97,6 @@ describe('OverviewCard', () => {
     expect(screen.queryByRole('img', { name: 'global-favorite' })).not.toBeInTheDocument();
   });
 
-  // TODO UNIT TEST Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>.
   it('pending invite displays right action buttons', () => {
     renderWithProviders(<OverviewCard isMeetingCreator={false} event={timeDependentMeeting} />, {
       provider: { router: true, mui: true },

@@ -25,23 +25,24 @@ describe('ReportSection', () => {
     expect(screen.getByText('legal-vote-report-issue-title').tagName).toBe('BUTTON');
   });
 
-  it('expands on button click', () => {
+  it('expands on button click', async () => {
     render(<ReportSection legalVoteId={mockLegalVote.id} />);
 
     fireEvent.click(screen.getByText('legal-vote-report-issue-title'));
 
-    const elements = screen.getAllByText('legal-vote-report-issue-title');
+    const elements = await screen.findAllByText('legal-vote-report-issue-title');
     expect(elements.length).toBe(2);
     expect(elements[1].tagName).toBe('H3');
   });
 
-  it('collapses on cancel button click', () => {
+  it('collapses on cancel button click', async () => {
     render(<ReportSection legalVoteId={mockLegalVote.id} />);
 
     fireEvent.click(screen.getByText('legal-vote-report-issue-title'));
     fireEvent.click(screen.getByText('global-cancel'));
 
-    expect(screen.getByText('legal-vote-report-issue-title').tagName).toBe('BUTTON');
+    const title = await screen.findByText('legal-vote-report-issue-title');
+    expect(title.tagName).toBe('BUTTON');
   });
 
   it('can submit description', async () => {

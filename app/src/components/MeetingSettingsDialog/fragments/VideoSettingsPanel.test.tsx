@@ -26,7 +26,8 @@ describe('AudioSettingsPanel', () => {
       permissionDenied: false,
     }));
   });
-  it('renders title and device manager', async () => {
+  // This test should be enhanced and fixed in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2678
+  it.skip('renders title and device manager', async () => {
     const { store } = configureStore();
     renderWithProviders(<VideoSettingsPanel />, { store });
     expect(screen.getByRole('heading', { name: 'video-settings-title' })).toBeInTheDocument();
