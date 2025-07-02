@@ -6,6 +6,7 @@ import { test, expect } from '@playwright/test';
 import { getClipboardContent } from '../../helper/clipboardHelpers';
 import { planNewMeetingAndStartAsModerator } from '../../helper/meetingHelpers';
 import { HomePage } from '../../pages/HomePage';
+import { MeetingInfoPage } from '../../pages/MeetingRoom/MeetingInfoPage';
 
 const meetingTitle = 'Smoke test all';
 const meetingPassword = 'test@123';
@@ -23,17 +24,17 @@ test.describe('Meeting Room_Meeting credentials for all in conference', () => {
 
     const { meetingRoomPage, guestLink, phoneDialIn, telephoneDialInNumber, conferenceId, conferencePin } =
       await planNewMeetingAndStartAsModerator(page, meetingTitle, meetingPassword);
-    await expect(meetingRoomPage.meetingDetails.infoButton).toBeVisible();
+    await expect(meetingRoomPage.meetingInfoButton).toBeVisible();
 
-    await meetingRoomPage.showMeetingDetails();
-    await expect(meetingRoomPage.meetingDetails.inviteLinkInputField).toBeVisible();
-    await expect(meetingRoomPage.meetingDetails.dialInNumberInputField).toBeVisible();
-    await expect(meetingRoomPage.meetingDetails.shareOptions.clipBoardButton).toBeVisible();
-    await expect(meetingRoomPage.meetingDetails.shareOptions.eMailButton).toBeVisible();
-    await expect(meetingRoomPage.meetingDetails.passwordInputField).toBeVisible();
+    const meetingInfoPage: MeetingInfoPage = await meetingRoomPage.showMeetingDetails();
+    await expect(meetingInfoPage.inviteLinkInputField).toBeVisible();
+    await expect(meetingInfoPage.dialInNumberInputField).toBeVisible();
+    await expect(meetingInfoPage.clipBoardButton).toBeVisible();
+    await expect(meetingInfoPage.eMailButton).toBeVisible();
+    await expect(meetingInfoPage.passwordInputField).toBeVisible();
 
-    await meetingRoomPage.copyMeetingDetailsToClipboard();
-    await expect(meetingRoomPage.meetingDetails.alertPopup.detailsCopiedToClipboardPopup).toBeVisible();
+    await meetingInfoPage.copyMeetingDetailsToClipboard();
+    await expect(meetingInfoPage.detailsCopiedToClipboardPopup).toBeVisible();
 
     const clipboardContent = await getClipboardContent(page);
     expect(clipboardContent).toContain(`${userName} invites you to an OpenTalk meeting.`);
@@ -48,16 +49,16 @@ test.describe('Meeting Room_Meeting credentials for all in conference', () => {
     // skipped click on E-mail test step as depending on testing environment, it opens in a different email app,
     // so this needs to be tested manually until a solution has been found
 
-    await meetingRoomPage.copyInviteLinkToClipboard();
-    await expect(meetingRoomPage.meetingDetails.alertPopup.linkCopiedToClipboardPopup).toBeVisible();
+    await meetingInfoPage.copyInviteLinkToClipboard();
+    await expect(meetingInfoPage.linkCopiedToClipboardPopup).toBeVisible();
     expect(await getClipboardContent(page)).toContain(guestLink);
 
-    await meetingRoomPage.copyDialInNumberToClipboard();
-    await expect(meetingRoomPage.meetingDetails.alertPopup.dialInCopiedToClipboardPopup).toBeVisible();
+    await meetingInfoPage.copyDialInNumberToClipboard();
+    await expect(meetingInfoPage.dialInCopiedToClipboardPopup).toBeVisible();
     expect(await getClipboardContent(page)).toContain(phoneDialIn);
 
-    await meetingRoomPage.copyPasswordToClipboard();
-    await expect(meetingRoomPage.meetingDetails.alertPopup.passwordCopiedToClipboardPopup).toBeVisible();
+    await meetingInfoPage.copyPasswordToClipboard();
+    await expect(meetingInfoPage.passwordCopiedToClipboardPopup).toBeVisible();
     expect(await getClipboardContent(page)).toContain(meetingPassword);
   });
 });
