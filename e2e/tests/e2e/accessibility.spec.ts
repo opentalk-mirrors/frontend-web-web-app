@@ -141,7 +141,7 @@ test.describe('Accessibility_General', () => {
     await expect(meetingRoomPage.jumpLinks.skipToPersonalControlPanelLink).toBeFocused();
 
     await meetingRoomPage.page.keyboard.press('Tab');
-    await expect(meetingRoomPage.viewOptions.viewOptionsButton).toBeFocused();
+    await expect(meetingRoomPage.viewOptionsButton).toBeFocused();
     await meetingRoomPage.page.keyboard.press('Tab');
     // secure tick icon doesn't appear if server is running on http
     if (!process.env.INSTANCE_URL.startsWith('http://')) {

@@ -13,21 +13,10 @@ export class MeetingRoomPage {
   context: BrowserContext;
 
   meetingRoomName: Locator;
+
   meetingInfoButton: Locator;
-  viewOptions: {
-    viewOptionsButton: Locator;
-    viewAndSortingPopupMenu: Locator;
-    gridViewOption: Locator;
-    speakerViewOption: Locator;
-    fullScreenViewOption: Locator;
-    fullScreenView: Locator;
-    closeFullScreenButton: Locator;
-    activatedCameraFirstSortingOption: Locator;
-    moderatorsFirstSortingOption: Locator;
-    gridViewContainer: Locator;
-    gridViewParticipantWindow: Locator;
-    speakerViewContainer: Locator;
-  };
+
+  public readonly viewOptionsButton: Locator;
 
   jumpLinks: {
     skipToModerationPanelLink: Locator;
@@ -102,39 +91,15 @@ export class MeetingRoomPage {
     closeButton: Locator;
   };
 
-  selectors = {
-    viewPopoverMenu: '#view-popover-menu',
-    viewPopoverMenuListItem: '#view-popover-menu > li',
-    gridViewContainer: 'grid-container',
-    speakerViewContainer: 'SpeakerView-Container',
-    speakerViewParticipantsThumbsHolder: 'ThumbsHolder',
-    speakerWindow: 'SpeakerWindow1',
-    participantWindow: 'ParticipantWindow',
-    participantName: 'nameTile',
-    fullScreen: 'fullscreen',
-  };
-
   constructor({ page }: { page: Page }) {
     this.page = page;
     this.context = this.page.context();
 
     this.meetingRoomName = this.page.locator('h1').first();
+
     this.meetingInfoButton = this.page.getByRole('button', { name: 'Share meeting details' });
-    this.viewOptions = {
-      viewOptionsButton: this.page.getByRole('button', { name: 'Select view' }),
-      viewAndSortingPopupMenu: this.page.locator(this.selectors.viewPopoverMenu),
-      // get by role doesn't work for the menu items because the label is nested in a div and not part of the li element
-      gridViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(0),
-      speakerViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(1),
-      fullScreenViewOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(2),
-      fullScreenView: this.page.getByTestId(this.selectors.fullScreen),
-      closeFullScreenButton: this.page.getByTestId(this.selectors.fullScreen).getByLabel('close fullscreen'),
-      activatedCameraFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4),
-      moderatorsFirstSortingOption: this.page.locator(this.selectors.viewPopoverMenuListItem).nth(5),
-      gridViewContainer: this.page.getByTestId(this.selectors.gridViewContainer),
-      gridViewParticipantWindow: this.page.getByTestId(this.selectors.participantWindow),
-      speakerViewContainer: this.page.getByTestId(this.selectors.speakerViewContainer),
-    };
+
+    this.viewOptionsButton = this.page.getByRole('button', { name: 'Select view' });
 
     this.jumpLinks = {
       skipToModerationPanelLink: this.page.getByRole('link', { name: 'Skip to Moderation panel' }),
@@ -160,9 +125,7 @@ export class MeetingRoomPage {
     this.videoPreview = this.page.getByRole('complementary', { name: 'Tools' }).locator('video');
     // video container that is nested inside 'aside' tag --> complementary is the role of the aside, see https://www.w3.org/TR/html-aria/#docconformance
 
-    this.videoPreviewName = this.page
-      .getByRole('complementary', { name: 'Tools' })
-      .getByTestId(this.selectors.participantName);
+    this.videoPreviewName = this.page.getByRole('complementary', { name: 'Tools' }).getByTestId('nameTile');
 
     this.toolBar = {
       toolBarPanel: this.page.getByTestId('fullscreen').getByLabel('Personal control panel'),
@@ -214,17 +177,6 @@ export class MeetingRoomPage {
     };
   }
 
-  allocateViewOptionLocatorsBasedOnSetup() {
-    // correct differences between test server and local setup
-    // constructor allocates locators to the UI version on test server, this function overwrites settings for local setup
-    if (process.env.INSTANCE_URL.startsWith('http://')) {
-      this.viewOptions.activatedCameraFirstSortingOption = this.page
-        .locator(this.selectors.viewPopoverMenuListItem)
-        .nth(3);
-      this.viewOptions.moderatorsFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4);
-    }
-  }
-
   async renderMeetingRoom(): Promise<void> {
     await this.page.waitForLoadState();
     await this.meetingRoomName.waitFor({ state: 'visible' });
@@ -257,59 +209,6 @@ export class MeetingRoomPage {
     const meetingInfoPage = new MeetingInfoPage(this.page);
     await meetingInfoPage.clipBoardButton.waitFor();
     return meetingInfoPage;
-  }
-
-  // functions related to view options menu
-  async displayViewOptionsMenu(): Promise<void> {
-    await this.viewOptions.viewOptionsButton.waitFor();
-    await this.viewOptions.viewOptionsButton.click();
-    await this.viewOptions.viewAndSortingPopupMenu.waitFor();
-    await this.viewOptions.viewAndSortingPopupMenu.isVisible();
-  }
-
-  async selectGridViewOption(): Promise<void> {
-    await this.viewOptions.gridViewOption.waitFor();
-    await this.viewOptions.gridViewOption.click();
-  }
-
-  async selectSpeakerViewOption(): Promise<void> {
-    await this.viewOptions.speakerViewOption.waitFor();
-    await this.viewOptions.speakerViewOption.click();
-  }
-
-  async selectFullScreenViewOption(): Promise<void> {
-    await this.viewOptions.fullScreenViewOption.waitFor();
-    await this.viewOptions.fullScreenViewOption.click();
-    await this.page.waitForLoadState();
-    await this.page.waitForTimeout(1000); // it seems like there is some lag, without timeout this seems to make CI fail
-    await this.viewOptions.fullScreenView.isVisible();
-  }
-
-  async selectActivatedCameraFirstSortingOption(): Promise<void> {
-    await this.viewOptions.activatedCameraFirstSortingOption.waitFor();
-    await this.viewOptions.activatedCameraFirstSortingOption.click();
-  }
-
-  async selectModertorsFirstSortingOption(): Promise<void> {
-    await this.viewOptions.moderatorsFirstSortingOption.waitFor();
-    await this.viewOptions.moderatorsFirstSortingOption.click();
-  }
-
-  async hasTickIcon(element: Locator): Promise<boolean> {
-    // if menu item has a tick, count should be 1, else 0
-    return (await element.locator('div').first().locator('svg').count()) === 1;
-  }
-
-  async isFullScreen(): Promise<boolean> {
-    return await this.viewOptions.fullScreenView.isVisible();
-  }
-
-  async closeFullScreenMode(): Promise<void> {
-    await this.viewOptions.closeFullScreenButton.isVisible();
-    await this.viewOptions.closeFullScreenButton.click();
-    await this.viewOptions.closeFullScreenButton.isHidden();
-    await this.viewOptions.fullScreenView.isHidden();
-    await this.page.waitForTimeout(1000);
   }
 
   // toolbar functions
@@ -359,87 +258,6 @@ export class MeetingRoomPage {
     const numberOfParticipants = (await this.peopleButton.locator('span').first().innerText()).trim();
     // remove brackets and return as type number
     return +numberOfParticipants.slice(1, numberOfParticipants.length - 1);
-  }
-
-  // meeting room functions (related to how particpants are displayed)
-  async pinNthParticipantInSpeakerView(nth: number): Promise<string> {
-    const participantsThumbs = await this.page.getByTestId(this.selectors.speakerViewParticipantsThumbsHolder);
-    const nthParticipantWindow = await participantsThumbs.getByTestId(this.selectors.participantWindow).nth(nth - 1); // minus 1 because nth(0) is the first element
-    await nthParticipantWindow.click();
-    return await this.getNameTileText(nthParticipantWindow);
-  }
-
-  async getPinnedParticipantNameInSpeakerView(): Promise<string> {
-    const speakerWindow = await this.page
-      .getByTestId(this.selectors.speakerWindow)
-      .getByTestId(this.selectors.participantWindow);
-    return await this.getNameTileText(speakerWindow);
-  }
-
-  async getFirstParticipantNameInSpeakerView(): Promise<string> {
-    const participantWindow = await this.page
-      .getByTestId(this.selectors.speakerViewContainer)
-      .getByTestId(this.selectors.participantWindow)
-      .first();
-    return await this.getNameTileText(participantWindow);
-  }
-
-  async getThumbsNthParticipantNameInSpeakerView(nth: number): Promise<string> {
-    const participantWindow = await this.page
-      .getByTestId(this.selectors.speakerViewParticipantsThumbsHolder)
-      .getByTestId(this.selectors.participantWindow)
-      .nth(nth - 1); // minus 1 because nth(0) is the first element
-    return await this.getNameTileText(participantWindow);
-  }
-
-  async getNthParticipantNameInGridView(nth: number): Promise<string> {
-    const participantWindow = await this.page
-      //.getByTestId(this.selectors.gridViewContainer) // current version on CI doesn't have 'grid-container' test ID
-      .getByTestId(this.selectors.participantWindow)
-      .nth(nth - 1); // minus 1 because nth(0) is the first element
-    return await this.getNameTileText(participantWindow);
-  }
-
-  async getNumberOfParticipantWindowsInGridView(): Promise<number> {
-    const participantWindows = await this.page
-      //.getByTestId(this.selectors.gridViewContainer) // current version on CI doesn't have 'grid-container' test ID
-      .getByTestId(this.selectors.participantWindow)
-      .all();
-    return participantWindows.length;
-  }
-
-  async getNameTileText(participantWindow: Locator): Promise<string> {
-    const nameTile = await participantWindow.getByTestId(this.selectors.participantName);
-    let nameTileText = '';
-    if (await nameTile.isVisible()) {
-      nameTileText = await nameTile.innerText();
-    }
-    return nameTileText;
-  }
-
-  async isGridViewNthParticipantCameraOn(nth: number): Promise<boolean> {
-    const isGridViewParticipantCameraOn = await this.viewOptions.gridViewParticipantWindow
-      .nth(nth - 1) // minus 1 because nth(0) is the first
-      .locator('video');
-    return await isGridViewParticipantCameraOn.isVisible();
-  }
-
-  async getGridViewNthParticipantWindowAlignment(nth: number): Promise<string> {
-    const gridViewParticipantWindowAlignment = await this.viewOptions.gridViewParticipantWindow
-      .nth(nth - 1) // minus 1 because nth(0) is the first
-      .evaluate((el) => {
-        return window.getComputedStyle(el).getPropertyValue('align-items');
-      });
-    return gridViewParticipantWindowAlignment;
-  }
-
-  async getGridViewNthParticipantWindowSize(nth: number): Promise<number> {
-    const gridViewParticipantWindowSize = await this.viewOptions.gridViewParticipantWindow
-      .nth(nth - 1) // minus 1 because nth(0) is the first
-      .evaluate((el) => {
-        return window.getComputedStyle(el).getPropertyValue('width'); // only evaluating width, same could be done with height
-      });
-    return Math.floor(+gridViewParticipantWindowSize);
   }
 
   // functions related to burger menu
