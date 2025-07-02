@@ -115,13 +115,6 @@ export class MeetingRoomPage {
     endMeetingButton: Locator;
   };
 
-  debriefingOptions: {
-    endOfTheConferenceOption: Locator;
-    forModeratorOption: Locator;
-    forModeratorAndRegisteredUserOption: Locator;
-    debriefingInitAlert: Locator;
-  };
-
   participantsAvatar: {
     moderatorAvatar: Locator;
     guestAvatar: Locator;
@@ -287,16 +280,6 @@ export class MeetingRoomPage {
       cameraMoreOptionButton: this.page.getByRole('button', { name: 'additional options camera' }),
       moreOptionButton: this.page.getByRole('button', { name: 'More Options' }),
       endMeetingButton: this.page.getByRole('button', { name: 'Leave Call' }),
-    };
-
-    this.debriefingOptions = {
-      endOfTheConferenceOption: this.page.getByRole('button', { name: 'End of the conference' }),
-      forModeratorOption: this.page.getByRole('button', { name: 'For moderator', exact: true }),
-      forModeratorAndRegisteredUserOption: this.page.getByRole('button', {
-        name: 'For moderator + registered user',
-        exact: true,
-      }),
-      debriefingInitAlert: this.page.getByText('Debriefing initiated - Waiting room is activated.', { exact: true }),
     };
 
     this.participantsAvatar = {
@@ -775,14 +758,6 @@ export class MeetingRoomPage {
   async selectModeratorToolHome() {
     await this.moderationTools.homeButton.click();
     await this.searchInChatButton.isVisible();
-  }
-
-  async startDebriefingModeratorTool() {
-    await this.moderationTools.debriefingButton.click();
-  }
-
-  async selectDebriefingOption(debriefingOptionButton: Locator) {
-    await debriefingOptionButton.click();
   }
 
   async hasModerator(): Promise<boolean> {

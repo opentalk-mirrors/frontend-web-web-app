@@ -8,9 +8,13 @@ import { closeWebkitPopUp } from '../../../helper/webkit';
 import { HomePage } from '../../../pages/HomePage';
 import { LobbyRoomPage } from '../../../pages/LobbyRoomPage';
 import { MeetingRoomPage } from '../../../pages/MeetingRoom/MeetingRoomPage';
+import { DebriefingPage } from '../../../pages/MeetingRoom/ModeratorTools/DebriefingPage';
 
 test.describe('Meeting Room_Debriefing', () => {
-  let meetingRoomPage: MeetingRoomPage, guestLink: string, guestMeetingRoomPage: MeetingRoomPage;
+  let meetingRoomPage: MeetingRoomPage,
+    guestLink: string,
+    guestMeetingRoomPage: MeetingRoomPage,
+    debriefingPage: DebriefingPage;
 
   test.beforeEach(async ({ page, context, browserName }) => {
     const homePage = new HomePage({ page });
@@ -26,14 +30,15 @@ test.describe('Meeting Room_Debriefing', () => {
     }
   });
 
-  test('TC_001_Meeting room_Debriefing_For moderator + registered user', async () => {
-    await meetingRoomPage.startDebriefingModeratorTool();
-    await expect(meetingRoomPage.debriefingOptions.endOfTheConferenceOption).toBeVisible();
-    await expect(meetingRoomPage.debriefingOptions.forModeratorOption).toBeVisible();
-    await expect(meetingRoomPage.debriefingOptions.forModeratorAndRegisteredUserOption).toBeVisible();
+  test('TC_001_Meeting room_Debriefing_For moderator + registered user', async ({ page }) => {
+    debriefingPage = new DebriefingPage(page);
+    await debriefingPage.startDebriefingModeratorTool();
+    await expect(debriefingPage.debriefingOptions.endOfTheConferenceOption).toBeVisible();
+    await expect(debriefingPage.debriefingOptions.forModeratorOption).toBeVisible();
+    await expect(debriefingPage.debriefingOptions.forModeratorAndRegisteredUserOption).toBeVisible();
 
-    await meetingRoomPage.selectDebriefingOption(meetingRoomPage.debriefingOptions.forModeratorAndRegisteredUserOption);
-    await expect(meetingRoomPage.debriefingOptions.debriefingInitAlert).toBeVisible();
+    await debriefingPage.selectDebriefingOption(debriefingPage.debriefingOptions.forModeratorAndRegisteredUserOption);
+    await expect(debriefingPage.debriefingInitAlert).toBeVisible();
     await meetingRoomPage.selectModeratorToolHome();
     await meetingRoomPage.selectPeopleTab();
     expect(await meetingRoomPage.hasModerator()).toBe(true);
@@ -46,10 +51,11 @@ test.describe('Meeting Room_Debriefing', () => {
     await expect(lobbyRoomPage.conferenceCloseAlerts.conferenceCloseAlertNotification).toBeVisible();
   });
 
-  test('TC_002_Meeting room_Debriefing_For moderator', async () => {
-    await meetingRoomPage.startDebriefingModeratorTool();
-    await meetingRoomPage.selectDebriefingOption(meetingRoomPage.debriefingOptions.forModeratorOption);
-    await expect(meetingRoomPage.debriefingOptions.debriefingInitAlert).toBeVisible();
+  test('TC_002_Meeting room_Debriefing_For moderator', async ({ page }) => {
+    debriefingPage = new DebriefingPage(page);
+    await debriefingPage.startDebriefingModeratorTool();
+    await debriefingPage.selectDebriefingOption(debriefingPage.debriefingOptions.forModeratorOption);
+    await expect(debriefingPage.debriefingInitAlert).toBeVisible();
     await meetingRoomPage.selectModeratorToolHome();
     await meetingRoomPage.selectPeopleTab();
     expect(await meetingRoomPage.hasModerator()).toBe(true);
@@ -63,10 +69,11 @@ test.describe('Meeting Room_Debriefing', () => {
     // TODO: Need to assert that the registered invited users are in the lobby, once invited user scenario is implemented
   });
 
-  test('TC_003_Meeting room_Debriefing_End of the conference', async () => {
+  test('TC_003_Meeting room_Debriefing_End of the conference', async ({ page }) => {
+    debriefingPage = new DebriefingPage(page);
     expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(2);
-    await meetingRoomPage.startDebriefingModeratorTool();
-    await meetingRoomPage.selectDebriefingOption(meetingRoomPage.debriefingOptions.endOfTheConferenceOption);
+    await debriefingPage.startDebriefingModeratorTool();
+    await debriefingPage.selectDebriefingOption(debriefingPage.debriefingOptions.endOfTheConferenceOption);
 
     const moderatorLobbyRoomPage = new LobbyRoomPage({ page: meetingRoomPage.page });
     await expect(moderatorLobbyRoomPage.openTalkLogo).toBeVisible();
