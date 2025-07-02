@@ -6,6 +6,7 @@ import test, { expect } from '@playwright/test';
 import { joinMeetingRoomAsGuest, startAdhocMeetingAsModerator } from '../../helper/meetingHelpers';
 import { closeWebkitPopUp } from '../../helper/webkit';
 import { HomePage } from '../../pages/HomePage';
+import { TalkingStickPage } from '../../pages/MeetingRoom/ModeratorTools/TalkingStickPage';
 
 test.beforeEach(async ({ page, browserName }) => {
   const homePage = new HomePage({ page });
@@ -81,15 +82,17 @@ test.describe('Meeting Room_Burger menu', () => {
     await meetingRoomPage.releaseHoldToSpeak();
     expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
 
-    await meetingRoomPage.clickOnTalkingStick();
-    await meetingRoomPage.clickOnTalkingStickStartNow();
-    await expect(meetingRoomPage.talkingStick.talkingStickStartedNotification).toBeVisible();
-    await expect(meetingRoomPage.talkingStick.yourTurnPopup).toBeVisible();
+    const talkingStickPage = new TalkingStickPage({ page });
+    await talkingStickPage.clickOnTalkingStick();
+    await talkingStickPage.clickOnTalkingStickStartNow();
+    await expect(talkingStickPage.talkingStickStartedNotification).toBeVisible();
+    await expect(talkingStickPage.yourTurnPopup).toBeVisible();
 
     await meetingRoomPage.useKeyboardShortcut('n');
-    await expect(meetingRoomPage.talkingStick.yourTurnPopup).not.toBeVisible();
+    await expect(talkingStickPage.yourTurnPopup).not.toBeVisible();
     await guestMeetingRoomPage.page.bringToFront();
-    await expect(guestMeetingRoomPage.talkingStick.yourTurnPopup).toBeVisible();
+    const guestTalkingStickPage = new TalkingStickPage({ page: guestMeetingRoomPage.page });
+    await expect(guestTalkingStickPage.yourTurnPopup).toBeVisible();
     await guestMeetingRoomPage.useKeyboardShortcut('n');
     await meetingRoomPage.page.bringToFront();
 
@@ -113,10 +116,10 @@ test.describe('Meeting Room_Burger menu', () => {
     await meetingRoomPage.useKeyboardShortcut('f');
     expect(await meetingRoomPage.isFullScreen()).toBeFalsy();
 
-    await meetingRoomPage.clickOnTalkingStickStartNow();
-    await expect(meetingRoomPage.talkingStick.yourTurnPopup).toBeVisible();
+    await talkingStickPage.clickOnTalkingStickStartNow();
+    await expect(talkingStickPage.yourTurnPopup).toBeVisible();
     await meetingRoomPage.useKeyboardShortcut('n');
-    await expect(meetingRoomPage.talkingStick.yourTurnPopup).toBeVisible();
+    await expect(talkingStickPage.yourTurnPopup).toBeVisible();
 
     expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
     await meetingRoomPage.holdToSpeak();
