@@ -285,4 +285,49 @@ test.describe('Meeting Room_Timer', () => {
     await expect(timerPage.createTimer.createTimerButton).toBeVisible();
     await expect(meetingRoomPage.moderationTools.coffeeBreakButton).toBeEnabled();
   });
+
+  test('TC_005_Meeting Room_As Moderator_Timer_Create Timer_With “Ask participants if they are ready” toggle button as ON/OFF', async ({
+    browserName,
+  }) => {
+    test.skip(browserName === 'webkit');
+
+    await timerPage.openDurationSelection();
+    await timerPage.selectTimerDuration('oneMinute');
+    await timerPage.saveSessionDuration();
+    await timerPage.enterTimerTitle(timerTitle);
+
+    await timerPage.toggleAskParticipantsIfReady(false);
+    await expect(timerPage.participantsReadyCheckbox).not.toBeChecked();
+
+    await timerPage.createNewTimer();
+    await expect(timerPage.getTimerStartedPopup(timerTitle)).toBeVisible();
+    for (const page of meetingParticipantPages) {
+      await page.page.bringToFront();
+      await expect(page.createTimer.timerStartedPopup.timerStartedHeading).toHaveText('A timer was started');
+      await expect(page.getTimerTitle(timerTitle)).toHaveText(timerTitle);
+      await expect(page.createTimer.timerStartedPopup.remainingTimeLabel).toBeVisible();
+      await expect(page.createTimer.timerStartedPopup.time).toBeVisible();
+      expect(await page.isCountingUp(page.createTimer.timerStartedPopup.time)).toBeFalsy();
+    }
+
+    await timerPage.page.bringToFront();
+    await expect(timerPage.createTimer.tabPanel.heading).toHaveText('Timer');
+    await expect(timerPage.createTimer.tabPanel.remainingTimeLabel).toBeVisible();
+    await expect(timerPage.createTimer.tabPanel.time).toBeVisible();
+    expect(await timerPage.isCountingUp(timerPage.createTimer.tabPanel.time)).toBeFalsy();
+    await expect(timerPage.createTimer.tabPanel.participantsHeading).toBeVisible();
+    await expect(timerPage.createTimer.stopTimerButton).toBeVisible();
+    await expect(meetingRoomPage.moderationTools.coffeeBreakButton).toBeDisabled();
+
+    await timerPage.waitForRemainingTimerTime();
+    for (const page of meetingParticipantPages) {
+      await page.page.bringToFront();
+      await expect(page.getTimerStartedPopup(timerTitle)).not.toBeVisible();
+      await expect(page.createTimer.timerRanOutAlert).toBeVisible();
+    }
+
+    await timerPage.page.bringToFront();
+    await expect(timerPage.createTimer.createTimerButton).toBeVisible();
+    await expect(meetingRoomPage.moderationTools.coffeeBreakButton).toBeEnabled();
+  });
 });
