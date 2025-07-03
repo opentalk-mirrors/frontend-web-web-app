@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 
 import { mockedRoomAssets } from '../../utils/testUtils';
 import { sleep } from '../../utils/timeUtils';
@@ -61,6 +61,42 @@ describe('Asset Table', () => {
 
   it('renders table correctly for multiple assets and shows no delete button', () => {
     render(<AssetTable assets={mockedRoomAssets} onDownload={handleDownload} />);
-    expect(screen.queryByRole('button', { name: /action-delete/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'action-delete' })).not.toBeInTheDocument();
+  });
+
+  it('executes onDownload callback when asset is downloaded', async () => {
+    const onDownload = jest.fn().mockResolvedValue(true);
+    render(<AssetTable assets={mockedRoomAssets} onDownload={onDownload} />);
+    const rows = screen.getAllByRole('row');
+    const assetRow = rows.find((row) => within(row).queryByRole('cell', { name: mockedRoomAssets[0].filename }));
+    if (!assetRow) {
+      throw new Error('Asset row not found');
+    }
+    const downloadButton = within(assetRow).getByRole('button', { name: 'action-download' });
+    expect(downloadButton).toBeInTheDocument();
+    fireEvent.click(downloadButton);
+    await waitFor(() => {
+      expect(onDownload).toHaveBeenCalledWith({
+        assetId: mockedRoomAssets[0].id,
+        filename: mockedRoomAssets[0].filename,
+        fileSize: mockedRoomAssets[0].size,
+        updateDownloadProgress: expect.any(Function),
+      });
+    });
+  });
+
+  it('executes onDelete callback when asset is deleted', async () => {
+    render(<AssetTable assets={mockedRoomAssets} onDownload={handleDownload} onDelete={handleDelete} />);
+    const rows = screen.getAllByRole('row');
+    const assetRow = rows.find((row) => within(row).queryByRole('cell', { name: mockedRoomAssets[0].filename }));
+    if (!assetRow) {
+      throw new Error('Asset row not found');
+    }
+    const deleteButton = within(assetRow).getByRole('button', { name: 'action-delete' });
+    expect(deleteButton).toBeInTheDocument();
+    fireEvent.click(deleteButton);
+    await waitFor(() => {
+      expect(handleDelete).toHaveBeenCalledWith(mockedRoomAssets[0].id);
+    });
   });
 });
