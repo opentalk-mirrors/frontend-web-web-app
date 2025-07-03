@@ -65,7 +65,7 @@ import {
 } from '../../../types';
 import { MenuTab } from '../../MenuTabs/fragments/constants';
 import MenuPopover, { IMenuOptionItem } from './MenuPopover';
-import RemoveParticipantDialog from './ParticipantRemovalDialog';
+import ParticipantRemovalDialog from './ParticipantRemovalDialog';
 import RenameParticipantDialog from './RenameParticipantDialog';
 import WhisperStateIcon from './WhisperStateIcon';
 
@@ -178,7 +178,6 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   const closePopover = () => {
     setAnchorEl(undefined);
   };
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -550,7 +549,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
           onClose={handleRenameParticipantDialog}
           participant={participant}
         />
-        <RemoveParticipantDialog open={openRemovalDialog} onClose={handleRemoval} participant={participant} />
+        <ParticipantRemovalDialog open={openRemovalDialog} onClose={handleRemoval} participant={participant} />
       </ThemeProvider>
     </ListItem>
   );

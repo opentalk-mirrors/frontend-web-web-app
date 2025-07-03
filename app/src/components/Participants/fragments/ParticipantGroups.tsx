@@ -29,26 +29,25 @@ const ParticipantGroups = (props: StackProps) => {
     const isExpanded = groupId === expandedGroupId;
 
     accordions.push(
-      <>
-        <AccordionItem
-          onChange={() => toggle(groupId)}
-          expanded={isExpanded}
-          defaultExpanded={true}
-          summaryText={groupId}
-          headingComponent="h4"
+      <AccordionItem
+        onChange={() => toggle(groupId)}
+        expanded={isExpanded}
+        defaultExpanded={true}
+        summaryText={groupId}
+        headingComponent="h4"
+        key={groupId}
+      >
+        <Box
+          id={groupId}
+          sx={{
+            overflow: 'hidden',
+            flex: isExpanded ? 1 : 0,
+            height: '30vh',
+          }}
         >
-          <Box
-            id={groupId}
-            sx={{
-              overflow: 'hidden',
-              flex: isExpanded ? 1 : 0,
-              height: '30vh',
-            }}
-          >
-            <ParticipantSimpleList participants={participants} />
-          </Box>
-        </AccordionItem>
-      </>
+          <ParticipantSimpleList participants={participants} />
+        </Box>
+      </AccordionItem>
     );
 
     return accordions;

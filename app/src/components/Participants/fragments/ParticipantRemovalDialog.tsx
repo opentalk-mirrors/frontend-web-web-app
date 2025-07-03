@@ -27,13 +27,13 @@ const CloseIconButton = styled(IconButton)({
   top: 8,
 });
 
-interface RemoveParticipantDialogProps {
+interface ParticipantRemovalDialogProps {
   open: boolean;
   participant: Participant;
   onClose: () => void;
 }
 
-const RemoveParticipantDialog = ({ open, onClose, participant }: RemoveParticipantDialogProps) => {
+const ParticipantRemovalDialog = ({ open, onClose, participant }: ParticipantRemovalDialogProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -85,4 +85,4 @@ const RemoveParticipantDialog = ({ open, onClose, participant }: RemoveParticipa
   );
 };
 
-export default RemoveParticipantDialog;
+export default ParticipantRemovalDialog;
