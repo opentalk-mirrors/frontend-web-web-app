@@ -35,9 +35,9 @@ export class LobbyRoomPage {
     this.backButton = this.page.getByRole('button', { name: 'Back', exact: true });
     this.openUserManualButton = this.page.getByRole('button', { name: 'Open user manual' });
     this.nameInputField = this.page.getByRole('textbox', { name: 'Name' });
-    this.microphoneButton = this.page.getByRole('button', { name: 'Turn On Audio' });
+    this.microphoneButton = this.page.getByRole('button', { name: 'Turn On Audio', exact: true });
     this.microphoneMoreOptionsMenuButton = this.page.getByRole('button', { name: 'additional options microphone' });
-    this.videoButton = this.page.getByRole('button', { name: 'Turn On Video' });
+    this.videoButton = this.page.getByRole('button', { name: 'Turn On Video', exact: true });
     this.cameraMoreOptionsMenuButton = this.page.getByRole('button', { name: 'additional options camera' });
     this.blurBackgroundButton = this.page.getByRole('button', { name: 'Turn On Background Blur' });
     this.joinMeetingButton = this.page.getByRole('button', { name: 'Enter now' });
@@ -52,11 +52,14 @@ export class LobbyRoomPage {
     };
   }
 
-  async isMicrophoneEnabled(): Promise<void> {
-    let tabindex;
-    while (tabindex !== '0') {
-      tabindex = await this.microphoneButton.getAttribute('tabindex');
+  public async waitForMicrophoneButtonToBeEnabled(): Promise<boolean> {
+    await this.microphoneButton.isVisible();
+    let count = 0;
+    while (count < 20 && (await !this.microphoneButton.isEnabled())) {
+      this.page.waitForTimeout(500);
+      count++;
     }
+    return await this.microphoneButton.isEnabled();
   }
 
   async enterMeetingRoom(): Promise<MeetingRoomPage> {

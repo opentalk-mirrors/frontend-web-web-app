@@ -100,7 +100,7 @@ export class HomePage {
     return await this.page.getByRole('link', { name: meetingTitle, exact: true });
   }
 
-  private async getStartMeetingButton(meetingTitle: string): Promise<Locator> {
+  public async getStartMeetingButton(meetingTitle: string): Promise<Locator> {
     return this.page.getByRole('link', { name: this.startMeetingButtonNamePrefix + meetingTitle, exact: true }).first();
   }
 

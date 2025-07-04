@@ -63,7 +63,7 @@ export class MeetingRoomPage {
 
   chatButton: Locator;
   peopleButton: Locator;
-  messageButton: Locator;
+  messagesButton: Locator;
   searchInChatButton: Locator;
   emojiPicker: Locator;
   chatTextField: Locator;
@@ -131,10 +131,10 @@ export class MeetingRoomPage {
       toolBarPanel: this.page.getByTestId('fullscreen').getByLabel('Personal control panel'),
       handRaiseButton: this.page.getByRole('button', { name: 'Raise Your Hand' }),
       turnOnScreenShareButton: this.page.getByRole('button', { name: 'Turn On Screen Share' }),
-      microphoneButton: this.page.getByRole('button', { name: 'Turn On Audio' }),
+      microphoneButton: this.page.getByRole('button', { name: 'Turn On Audio', exact: true }),
       microphoneButtonOff: this.page.getByRole('button', { name: 'Turn Off Audio' }),
       microphoneMoreOptionsMenuButton: this.page.getByRole('button', { name: 'additional options microphone' }),
-      videoButton: this.page.getByRole('button', { name: 'Turn On Video' }),
+      videoButton: this.page.getByRole('button', { name: 'Turn On Video', exact: true }),
       videoButtonOff: this.page.getByRole('button', { name: 'Turn Off Video' }),
       cameraMoreOptionButton: this.page.getByRole('button', { name: 'additional options camera' }),
       moreOptionButton: this.page.getByRole('button', { name: 'More Options' }),
@@ -148,7 +148,7 @@ export class MeetingRoomPage {
 
     this.chatButton = this.page.getByRole('tab', { name: 'Chat' });
     this.peopleButton = this.page.getByRole('tab', { name: 'People' });
-    this.messageButton = this.page.getByRole('tab', { name: 'Messages' });
+    this.messagesButton = this.page.getByRole('tab', { name: 'Messages' });
     this.searchInChatButton = this.page.getByLabel('Search in chat');
     this.emojiPicker = this.page.getByRole('button', { name: 'open emoji picker' });
     this.chatTextField = this.page.getByPlaceholder('Type a message');

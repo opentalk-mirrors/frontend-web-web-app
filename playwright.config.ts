@@ -70,6 +70,8 @@ export default defineConfig({
           firefoxUserPrefs: {
             'permissions.default.microphone': 1,
             'permissions.default.camera': 1,
+            'media.navigator.streams.fake': true,
+            'media.navigator.permission.disabled': true,
             'dom.events.testing.asyncClipboard': true,
             'dom.events.asyncClipboard.readText': true,
             'dom.events.asyncClipboard.clipboardItem': true,

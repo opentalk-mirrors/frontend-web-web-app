@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { test, expect } from '@playwright/test';
 
-import { startAdhocMeetingAsModerator } from '../helper/meetingHelpers';
-import { closeWebkitPopUp } from '../helper/webkit';
-import { HomePage } from '../pages/HomePage';
-import { SidebarPage } from '../pages/SidebarPage';
+import { startAdhocMeetingAsModerator } from '../../helper/meetingHelpers';
+import { closeWebkitPopUp } from '../../helper/webkit';
+import { HomePage } from '../../pages/HomePage';
+import { SidebarPage } from '../../pages/SidebarPage';
 
 const meetingTitle = 'test_meeting';
 const meetingRoomPassword = 'test1234';
@@ -77,20 +77,22 @@ test.describe('Accessibility_General', () => {
   });
 
   test('TC_002_Lobby', async ({ page, browserName }) => {
-    // Camera and Microphone permissions are not being granted in Firefox and Safari
-    // Thus they cannot be accessed by keyboard "Tab"
-    // https://github.com/microsoft/playwright/issues/20563
-    test.skip(browserName === 'webkit' || browserName === 'firefox');
+    // Camera and Microphone permissions are not being granted in Safari in CI
+    // Thus they cannot be accessed by keyboard "Tab", see https://github.com/microsoft/playwright/issues/20563
+    test.skip(browserName === 'webkit');
 
     const homePage = new HomePage({ page });
     await homePage.navigateToHomePage();
     const meetingInvitationPage = await homePage.startAdhocMeeting();
     const lobbyRoomPage = await meetingInvitationPage.navigateToMeetingLobby();
-    await lobbyRoomPage.microphoneButton.isVisible();
-    await lobbyRoomPage.isMicrophoneEnabled();
-    await lobbyRoomPage.renderLobbyPage();
+    await lobbyRoomPage.openTalkLogo.isVisible();
+
+    // make sure audio and video button are enabled
+    await lobbyRoomPage.waitForMicrophoneButtonToBeEnabled();
+    await expect(lobbyRoomPage.microphoneButton).toBeEnabled();
 
     await lobbyRoomPage.page.keyboard.press('Tab');
+    await expect(lobbyRoomPage.openTalkLogo).toBeFocused();
     await lobbyRoomPage.page.keyboard.press('Tab');
     await expect(lobbyRoomPage.speedTestButton).toBeFocused();
     await lobbyRoomPage.page.keyboard.press('Tab');
@@ -121,17 +123,16 @@ test.describe('Accessibility_General', () => {
   });
 
   test('TC_003_Meeting_Room', async ({ page, browserName }) => {
-    // Camera and Microphone permissions are not being granted in Firefox and Safari in CI
-    // Thus they cannot be accessed by keyboard "Tab"
-    // https://github.com/microsoft/playwright/issues/20563
-    test.skip(browserName === 'webkit' || browserName === 'firefox');
+    // Camera and Microphone permissions are not being granted in Safari in CI
+    // Thus they cannot be accessed by keyboard "Tab", see https://github.com/microsoft/playwright/issues/20563
+    test.skip(browserName === 'webkit');
 
     const { meetingRoomPage } = await startAdhocMeetingAsModerator(page);
 
     // assert meeting room is shown
+    await meetingRoomPage.renderMeetingRoom();
     await expect(meetingRoomPage.meetingRoomName).toBeVisible();
     await expect(await meetingRoomPage.getMeetingRoomName()).toContain('Ad-hoc Meeting');
-    await meetingRoomPage.renderMeetingRoom();
 
     await meetingRoomPage.jumpLinks.skipToModerationPanelLink.focus();
     await expect(meetingRoomPage.jumpLinks.skipToModerationPanelLink).toBeFocused();
@@ -151,6 +152,10 @@ test.describe('Accessibility_General', () => {
     await expect(meetingRoomPage.burgerMenuButton).toBeFocused();
     await meetingRoomPage.page.keyboard.press('Tab');
 
+    // make sure audio and video button are enabled because tests frequently fail because of this
+    await expect(meetingRoomPage.toolBar.microphoneButton).toBeEnabled();
+    await expect(meetingRoomPage.toolBar.videoButton).toBeEnabled();
+
     const moderationButtons = [
       meetingRoomPage.moderationTools.homeButton,
       meetingRoomPage.moderationTools.muteParticipantsButton,
@@ -165,6 +170,10 @@ test.describe('Accessibility_General', () => {
       meetingRoomPage.moderationTools.coffeeBreakButton,
       meetingRoomPage.moderationTools.debriefingButton,
     ];
+    // meeting notes & whiteboard are not available on local setup and thus need to be disabled for running this test locally
+    if (process.env.INSTANCE_URL.startsWith('http://')) {
+      moderationButtons.splice(6, 2);
+    }
 
     for (const button of moderationButtons) {
       await expect(button).toBeFocused();
@@ -176,7 +185,7 @@ test.describe('Accessibility_General', () => {
     await meetingRoomPage.page.keyboard.press('ArrowRight');
     await expect(meetingRoomPage.peopleButton).toBeFocused();
     await meetingRoomPage.page.keyboard.press('ArrowRight');
-    await expect(meetingRoomPage.messageButton).toBeFocused();
+    await expect(meetingRoomPage.messagesButton).toBeFocused();
 
     await meetingRoomPage.page.keyboard.press('Tab');
     await expect(meetingRoomPage.searchInChatButton).toBeFocused();
