@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-// import { render, screen } from '@testing-library/react';
 import { de as mockDe } from 'date-fns/locale/de';
 import { enUS as mockEn } from 'date-fns/locale/en-US';
 
