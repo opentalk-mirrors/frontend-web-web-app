@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-// useHeader.test.tsx
 import { renderHook } from '@testing-library/react';
 import { useOutletContext } from 'react-router-dom';
 

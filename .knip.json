@@ -3,7 +3,8 @@
         "@mediapipe/holistic",
         "@types/dom-mediacapture-transform",
         "licensee",
-        "fast-xml-parser"
+        "fast-xml-parser",
+        "@happy-dom/jest-environment"
     ],
     "ignore": [
         ".pa11y-local.js",
