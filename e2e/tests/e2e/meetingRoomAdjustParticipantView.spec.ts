@@ -12,8 +12,8 @@ const SMALL_NUMBER_OF_GUESTS = 2;
 let viewOptionsPage: ViewOptionsPage;
 
 test.describe('MeetingRoom - adjust participant view', () => {
-  test('TC_001_VideoRoom_ParticipantViewSettings_List', async ({ page }) => {
-    const { meetingRoomPage } = await startAdhocMeetingAsModerator(page);
+  test('TC_001_VideoRoom_ParticipantViewSettings_List', async ({ page, browserName }) => {
+    const { meetingRoomPage } = await startAdhocMeetingAsModerator(page, browserName);
     viewOptionsPage = new ViewOptionsPage({ page: meetingRoomPage.page });
 
     // work around for differences between test server and local setup
@@ -73,9 +73,7 @@ test.describe('MeetingRoom - adjust participant view', () => {
   });
 
   test('TC_003_VideoRoom_ParticipantViewSettings_List_FullScreen', async ({ page, context, browserName }) => {
-    test.skip(browserName === 'webkit');
-
-    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
+    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page, browserName);
     viewOptionsPage = new ViewOptionsPage({ page: meetingRoomPage.page });
 
     // join with 2 guests (in separate browser instances)
@@ -108,9 +106,7 @@ test.describe('MeetingRoom - adjust participant view', () => {
   });
 
   test('TC_004_VideoRoom_ParticipantViewSettings_List_GridView', async ({ page, context, browserName }) => {
-    test.skip(browserName === 'webkit');
-
-    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
+    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page, browserName);
     viewOptionsPage = new ViewOptionsPage({ page: meetingRoomPage.page });
 
     // join with 5 guests (in separate browser instances)
@@ -139,7 +135,7 @@ test.describe('MeetingRoom - adjust participant view', () => {
     test.skip(browserName === 'firefox');
     // in firefox one needs to give permission to turn camera on therefore skip firefox until solution for this is found
 
-    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
+    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page, browserName);
     const firstJoinedParticipantName = await meetingRoomPage.getUserName();
     viewOptionsPage = new ViewOptionsPage({ page: meetingRoomPage.page });
 

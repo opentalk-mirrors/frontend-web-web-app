@@ -17,8 +17,8 @@ test.describe('Meeting Room_Timer', () => {
     meetingParticipantPages: TimerPage[],
     timerPage: TimerPage;
 
-  test.beforeEach(async ({ page, context }) => {
-    ({ meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page));
+  test.beforeEach(async ({ page, context, browserName }) => {
+    ({ meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page, browserName));
     guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest');
     const meetingRoomTimerPage: TimerPage = new TimerPage({ page: meetingRoomPage.page });
     const guestMeetingRoomTimerPage: TimerPage = new TimerPage({ page: guestMeetingRoomPage.page });
@@ -27,9 +27,7 @@ test.describe('Meeting Room_Timer', () => {
     timerPage = await meetingRoomPage.startTimerModeratorTool();
   });
 
-  test('TC_001_Meeting Room_As Moderator_Timer', async ({ browserName }) => {
-    test.skip(browserName === 'webkit');
-
+  test('TC_001_Meeting Room_As Moderator_Timer', async () => {
     await meetingRoomPage.page.bringToFront();
     const timerPage: TimerPage = await meetingRoomPage.startTimerModeratorTool();
     await expect(timerPage.timerHeading).toHaveText('Timer');
@@ -84,9 +82,7 @@ test.describe('Meeting Room_Timer', () => {
   });
 
   test.describe('TC_003_Meeting Room_As Moderator_Timer_Create Timer_with different duration, with Title', () => {
-    test('Create Timer (With Unlimited Time)', async ({ browserName }) => {
-      test.skip(browserName === 'webkit');
-
+    test('Create Timer (With Unlimited Time)', async () => {
       await timerPage.openDurationSelection();
       const { accessibleName } = await timerPage.selectTimerDuration('unlimited');
       await timerPage.saveSessionDuration();
@@ -136,9 +132,7 @@ test.describe('Meeting Room_Timer', () => {
       await expect(meetingRoomPage.moderationTools.coffeeBreakButton).toBeEnabled();
     });
 
-    test('Create Timer (With Duration 1min/2min/5min)', async ({ browserName }) => {
-      test.skip(browserName === 'webkit');
-
+    test('Create Timer (With Duration 1min/2min/5min)', async () => {
       await timerPage.openDurationSelection();
       const { accessibleName } = await timerPage.selectTimerDuration('oneMinute');
       await timerPage.saveSessionDuration();
@@ -188,9 +182,7 @@ test.describe('Meeting Room_Timer', () => {
       await expect(meetingRoomPage.moderationTools.coffeeBreakButton).toBeEnabled();
     });
 
-    test('Create Timer (With Duration Custom)', async ({ browserName }) => {
-      test.skip(browserName === 'webkit');
-
+    test('Create Timer (With Duration Custom)', async () => {
       await timerPage.openDurationSelection();
       await timerPage.selectCustomDuration();
       await timerPage.enterCustomDuration('1');
@@ -239,9 +231,7 @@ test.describe('Meeting Room_Timer', () => {
     });
   });
 
-  test('TC_004_Meeting Room_As Moderator_Timer_Create Timer_without Title', async ({ browserName }) => {
-    test.skip(browserName === 'webkit');
-
+  test('TC_004_Meeting Room_As Moderator_Timer_Create Timer_without Title', async () => {
     await timerPage.openDurationSelection();
     await timerPage.selectTimerDuration('oneMinute');
     await timerPage.saveSessionDuration();

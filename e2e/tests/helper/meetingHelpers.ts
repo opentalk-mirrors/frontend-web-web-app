@@ -6,13 +6,21 @@ import { Page, expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 import { LobbyRoomPage } from '../pages/LobbyRoomPage';
 import { MeetingRoomPage } from '../pages/MeetingRoom/MeetingRoomPage';
+import { closeWebkitPopUp } from './webkit';
 
 export const startAdhocMeetingAsModerator = async (
-  page: Page
+  page: Page,
+  browserName?: 'webkit' | 'chromium' | 'firefox'
 ): Promise<{ meetingRoomPage: MeetingRoomPage; guestLink: string }> => {
   // launch OpenTalk & start new (adhoc) meeting
   const homePage = new HomePage({ page });
   await homePage.navigateToHomePage();
+
+  // Warning button in safari blocks the selector for creating new meeting
+  if (browserName === 'webkit') {
+    await closeWebkitPopUp({ page });
+  }
+
   const meetingInvitationPage = await homePage.startAdhocMeeting();
   const guestLink = await meetingInvitationPage.getGuestLink();
   const lobbyRoomPage = await meetingInvitationPage.navigateToMeetingLobby();
@@ -72,7 +80,8 @@ export const joinMeetingRoomWithNGuests = async (
 export const planNewMeetingAndStartAsModerator = async (
   page: Page,
   meetingTitle: string,
-  meetingPassword?: string
+  meetingPassword?: string,
+  browserName?: 'webkit' | 'chromium' | 'firefox'
 ): Promise<{
   meetingRoomPage: MeetingRoomPage;
   guestLink: string;
@@ -83,6 +92,12 @@ export const planNewMeetingAndStartAsModerator = async (
 }> => {
   const homePage = new HomePage({ page });
   await homePage.navigateToHomePage();
+
+  // Warning button in safari blocks the selector for creating new meeting
+  if (browserName === 'webkit') {
+    await closeWebkitPopUp({ page });
+  }
+
   const meetingPlanningPage = await homePage.planNewMeeting();
   const meetingInvitationPage = await meetingPlanningPage.createNewMeeting(meetingTitle, meetingPassword);
   const guestLink = await meetingInvitationPage.getGuestLink();

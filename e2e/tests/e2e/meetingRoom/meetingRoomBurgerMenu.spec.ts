@@ -4,23 +4,11 @@
 import test, { expect } from '@playwright/test';
 
 import { joinMeetingRoomAsGuest, startAdhocMeetingAsModerator } from '../../helper/meetingHelpers';
-import { closeWebkitPopUp } from '../../helper/webkit';
-import { HomePage } from '../../pages/HomePage';
 import { TalkingStickPage } from '../../pages/MeetingRoom/ModeratorTools/TalkingStickPage';
-
-test.beforeEach(async ({ page, browserName }) => {
-  const homePage = new HomePage({ page });
-  await homePage.navigateToHomePage();
-  if (browserName === 'webkit') {
-    await closeWebkitPopUp({ page });
-  }
-});
 
 test.describe('Meeting Room_Burger menu', () => {
   test('TC_001_User manual', async ({ page, browserName }) => {
-    test.skip(browserName === 'webkit');
-
-    const { meetingRoomPage } = await startAdhocMeetingAsModerator(page);
+    const { meetingRoomPage } = await startAdhocMeetingAsModerator(page, browserName);
     await meetingRoomPage.clickOnBurgerMenu();
     await expect(meetingRoomPage.burgerMenuList.accessibilityMenuItem).toBeVisible();
     await expect(meetingRoomPage.burgerMenuList.userManualMenuItem).toBeVisible();
@@ -44,7 +32,7 @@ test.describe('Meeting Room_Burger menu', () => {
   test('TC_002_Keyboard Shortcuts', async ({ page, context, browserName }) => {
     test.skip(browserName === 'webkit');
 
-    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page);
+    const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page, browserName);
     const guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest');
     await meetingRoomPage.page.bringToFront();
 
@@ -131,7 +119,7 @@ test.describe('Meeting Room_Burger menu', () => {
 
     const closingMethods = ['BTN_esc', 'BTN_x', 'outside the window'];
     for (const method of closingMethods) {
-      const { meetingRoomPage } = await startAdhocMeetingAsModerator(page);
+      const { meetingRoomPage } = await startAdhocMeetingAsModerator(page, browserName);
       await meetingRoomPage.clickOnBurgerMenu();
       await expect(meetingRoomPage.burgerMenuDropdown).toBeVisible();
 
