@@ -854,7 +854,6 @@ dashboard-direct-meeting-title = Who do you want to invite to your meeting?
 dashboard-direct-meeting-attention = Attention: This is an ad-hoc meeting, it will be automatically deleted after 24h and not shown in the dashboard.
 dashboard-direct-meeting-label-select-participants = Invite participants - Max. {maxParticipants} participants per meeting, incl. you
 dashboard-direct-meeting-label-select-participants-fallback = Invite participants
-dashboard-direct-meeting-button-cancel = Cancel
 dashboard-direct-meeting-button-open-room = Open Video Room
 dashboard-direct-meeting-button-send-invitations = Send Invitations
 dashboard-direct-meeting-invitations-successful = All the people you added have been successfully invited to your meeting.
@@ -905,6 +904,8 @@ dashboard-events-note-limited-view = Note: You have recurring meetings in your l
 dashbooard-event-accept-invitation-notification = Invite accepted for meeting {meetingTitle}
 dashbooard-event-decline-invitation-notification = Invite declined for meeting {meetingTitle}
 
+dashboard-meeting-create-form-title = Create meeting
+dashboard-meeting-update-form-title = Update meeting
 dashboard-meeting-textfield-title = Title
 dashboard-meeting-textfield-title-placeholder = My new Meeting
 dashboard-meeting-textfield-details = Details

@@ -56,7 +56,7 @@ const ActionButtons = ({
               fullWidth
               disabled={disableCancelButton}
             >
-              {t('dashboard-direct-meeting-button-cancel')}
+              {t('global-cancel')}
             </Button>
           </Grid>
         )}
