@@ -101,7 +101,10 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
 
   return (
     <>
-      <Form onSubmit={handleSubmit}>
+      <Form
+        onSubmit={handleSubmit}
+        aria-label={existingEvent ? t('dashboard-meeting-update-form-title') : t('dashboard-meeting-create-form-title')}
+      >
         <Stack spacing={2}>
           <CommonTextField
             {...formikProps('title', formik)}
