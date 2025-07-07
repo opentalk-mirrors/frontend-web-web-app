@@ -114,6 +114,8 @@ type MockReduxStore = {
 export const middleware: Array<Middleware> = [listenerMiddleware.middleware];
 
 export const configureStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined): MockReduxStore => {
+  const regexIgnoredPaths = /\b(getTrackPublication|setMicrophoneEnabled|videoTrackPublications)\b/;
+
   const store = configureStoreTlk({
     reducer: combineReducers({ ...appReducers }),
     preloadedState: options?.initialState && { ...options.initialState },
@@ -121,6 +123,7 @@ export const configureStore = (options?: ConfigureStoreOptions['preloadedState']
       getDefaultMiddleware({
         serializableCheck: {
           ignoredActionPaths: ['meta.arg', 'meta.baseQueryMeta', 'meta.history', 'payload.conferenceContext'],
+          ignoredPaths: [regexIgnoredPaths],
         },
       }).concat(middleware),
   });

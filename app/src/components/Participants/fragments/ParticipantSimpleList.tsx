@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { List, ListProps, styled } from '@mui/material';
+import { isEmpty } from 'lodash';
 import { FC } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
@@ -31,9 +32,14 @@ const ParticipantSimpleList: FC<ParticipantSimpleListProps> = ({ participants, .
     <CustomList {...props}>
       <AutoSizer>
         {({ height, width }: { height: number; width: number }) => {
-          const rootFontSize = root
-            ? Number.parseFloat(window.getComputedStyle(root, null).getPropertyValue('font-size'))
-            : DEFAULT_FONT_SIZE;
+          let rootFontSize = DEFAULT_FONT_SIZE;
+          if (!isEmpty(root)) {
+            const fontSize = window.getComputedStyle(root, null).getPropertyValue('font-size');
+            const parsedFontSize = Number.parseFloat(fontSize);
+            if (!Number.isNaN(parsedFontSize)) {
+              rootFontSize = parsedFontSize;
+            }
+          }
           const ITEM_SIZE_SCALE = 3.75; // On 16px base, 60px height is proper height for list item, therefore we got the scale of 3.75
 
           return (
