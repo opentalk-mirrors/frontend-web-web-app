@@ -20,51 +20,80 @@ export const meetingFormValidationSchema: yup.ObjectSchema<MeetingFormValues> = 
   title: yup
     .string()
     .trim()
-    .max(MAX_CHARACTERS_TITLE, t('form-validation-max-characters', { maxCharacters: MAX_CHARACTERS_TITLE }))
-    .required(t('field-error-required', { fieldName: t('dashboard-meeting-textfield-title') })),
+    .max(MAX_CHARACTERS_TITLE, () => t('form-validation-max-characters', { maxCharacters: MAX_CHARACTERS_TITLE }))
+    .required(() => t('field-error-required', { fieldName: t('dashboard-meeting-textfield-title') })),
   password: yup
     .string()
     .trim()
-    .max(MAX_CHARACTERS_PASSWORD, t('form-validation-max-characters', { maxCharacters: MAX_CHARACTERS_PASSWORD })),
+    .max(MAX_CHARACTERS_PASSWORD, () =>
+      t('form-validation-max-characters', { maxCharacters: MAX_CHARACTERS_PASSWORD })
+    ),
   description: yup
     .string()
     .trim()
-    .max(
-      MAX_CHARACTERS_DESCRIPTION,
+    .max(MAX_CHARACTERS_DESCRIPTION, () =>
       t('form-validation-max-characters', { maxCharacters: MAX_CHARACTERS_DESCRIPTION })
     ),
   startDate: yup
     .string()
-    .required(t('dashboard-meeting-date-field-error-invalid-value'))
-    .test('is required', t('meeting-required-start-date'), (startDate) => !!startDate?.trim())
-    .test('is valid', t('meeting-invalid-start-date'), (startDate) => !isInvalidDate(new Date(startDate as string)))
-    .test('is in the future', t('dashboard-meeting-date-field-error-future'), function (startDate) {
-      const isOriginalEventInThePast =
-        this.options.context?.existingEvent &&
-        !this.options.context?.isTimelessEvent &&
-        new Date(this.options.context?.existingEvent.startsAt.datetime) < new Date();
-      if (this.parent.isTimeDependent && startDate && new Date(startDate) < new Date() && !isOriginalEventInThePast) {
-        return false;
+    .required(() => t('dashboard-meeting-date-field-error-invalid-value'))
+    .test(
+      'is required',
+      () => t('meeting-required-start-date'),
+      (startDate) => !!startDate?.trim()
+    )
+    .test(
+      'is valid',
+      () => t('meeting-invalid-start-date'),
+      (startDate) => !isInvalidDate(new Date(startDate as string))
+    )
+    .test(
+      'is in the future',
+      () => t('dashboard-meeting-date-field-error-future'),
+      function (startDate) {
+        const isOriginalEventInThePast =
+          this.options.context?.existingEvent &&
+          !this.options.context?.isTimelessEvent &&
+          new Date(this.options.context?.existingEvent.startsAt.datetime) < new Date();
+        if (this.parent.isTimeDependent && startDate && new Date(startDate) < new Date() && !isOriginalEventInThePast) {
+          return false;
+        }
+        return true;
       }
-      return true;
-    })
-    .test('is before end date', t('dashboard-meeting-date-field-error-duration'), function (startDate) {
-      if (this.parent.isTimeDependent && startDate) {
-        return startDate < this.parent.endDate;
+    )
+    .test(
+      'is before end date',
+      () => t('dashboard-meeting-date-field-error-duration'),
+      function (startDate) {
+        if (this.parent.isTimeDependent && startDate) {
+          return startDate < this.parent.endDate;
+        }
+        return true;
       }
-      return true;
-    }),
+    ),
   endDate: yup
     .string()
-    .required(t('dashboard-meeting-date-field-error-invalid-value'))
-    .test('is required', t('meeting-required-end-date'), (endDate) => !!endDate?.trim())
-    .test('is valid', t('meeting-invalid-end-date'), (endDate) => !isInvalidDate(new Date(endDate as string)))
-    .test('if after start date', t('dashboard-meeting-date-field-error-duration'), function (endDate) {
-      if (this.parent.isTimeDependent && endDate) {
-        return endDate > this.parent.startDate;
+    .required(() => t('dashboard-meeting-date-field-error-invalid-value'))
+    .test(
+      'is required',
+      () => t('meeting-required-end-date'),
+      (endDate) => !!endDate?.trim()
+    )
+    .test(
+      'is valid',
+      () => t('meeting-invalid-end-date'),
+      (endDate) => !isInvalidDate(new Date(endDate as string))
+    )
+    .test(
+      'if after start date',
+      () => t('dashboard-meeting-date-field-error-duration'),
+      function (endDate) {
+        if (this.parent.isTimeDependent && endDate) {
+          return endDate > this.parent.startDate;
+        }
+        return true;
       }
-      return true;
-    }),
+    ),
   isAdhoc: yup.boolean().required(),
   sharedFolder: yup.boolean().required(),
   showMeetingDetails: yup.boolean().required(),
@@ -76,10 +105,10 @@ export const meetingFormValidationSchema: yup.ObjectSchema<MeetingFormValues> = 
           kind: yup
             .mixed<PlatformKind>()
             .oneOf([PlatformKind.Provider, PlatformKind.BuiltIn, PlatformKind.Custom])
-            .required(t('global-required-field')),
+            .required(() => t('global-required-field')),
           name: yup.string().when('kind', {
             is: PlatformKind.Custom,
-            then: (s) => s.required(t('global-required-field')),
+            then: (s) => s.required(() => t('global-required-field')),
             otherwise: (s) => s.optional(),
           }),
           provider: yup.string().when('kind', {
@@ -89,14 +118,14 @@ export const meetingFormValidationSchema: yup.ObjectSchema<MeetingFormValues> = 
           }),
           streamingKey: yup.string().when('kind', ([kind], schema) => {
             if (kind === PlatformKind.Provider || kind === PlatformKind.Custom) {
-              return schema.required(t('global-required-field'));
+              return schema.required(() => t('global-required-field'));
             }
             return schema.optional();
           }),
           publicUrl: yup.string().when('kind', ([kind], schema) => {
             if (kind === PlatformKind.Provider || kind === PlatformKind.Custom) {
               return schema
-                .required(t('global-required-field'))
+                .required(() => t('global-required-field'))
                 .validateURL(t('dashboard-meeting-livestream-streaming-endpoint-invalid-url'));
             }
             return schema.optional();
@@ -105,7 +134,7 @@ export const meetingFormValidationSchema: yup.ObjectSchema<MeetingFormValues> = 
             is: PlatformKind.Custom,
             then: (schema) =>
               schema
-                .required(t('global-required-field'))
+                .required(() => t('global-required-field'))
                 .validateURL(t('dashboard-meeting-livestream-streaming-endpoint-invalid-url')),
             otherwise: (schema) => schema.optional(),
           }),
