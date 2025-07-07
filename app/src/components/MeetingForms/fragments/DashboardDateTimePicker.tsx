@@ -37,9 +37,9 @@ export interface MeetingFormValues {
   e2eEncryption: boolean;
 }
 
-type DashboardDateTimePickerProps = {
+export type DashboardDateTimePickerProps = {
   id?: string;
-  onChange(date: Date): void;
+  onChange(date: Date | null): void;
   formik: FormikProps<MeetingFormValues>;
   type: 'start' | 'end';
   //Extend min date so we can pass it down.

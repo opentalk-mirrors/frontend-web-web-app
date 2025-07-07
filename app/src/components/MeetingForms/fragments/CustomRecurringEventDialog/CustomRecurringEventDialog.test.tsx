@@ -4,9 +4,9 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { renderWithProviders } from '../../../../utils/testUtils';
-import { RecurringEventDialog, RecurringEventDialogProps } from './CustomRecurringEventDialog';
+import { CustomRecurringEventDialog, CustomRecurringEventDialogProps } from './CustomRecurringEventDialog';
 
-const mockDialogProps: RecurringEventDialogProps = {
+const mockDialogProps: CustomRecurringEventDialogProps = {
   open: true,
   closeDialog: jest.fn(),
   selectCustomFrequencyOption: jest.fn(),
@@ -15,19 +15,19 @@ const mockDialogProps: RecurringEventDialogProps = {
 
 describe('Custom Recurrence Dialog', () => {
   it('renders correctly', () => {
-    render(<RecurringEventDialog {...mockDialogProps} />);
+    render(<CustomRecurringEventDialog {...mockDialogProps} />);
 
     expect(screen.getByTestId('recurrence-dialog')).toBeInTheDocument();
   });
 
   it('does not render if not open', () => {
-    render(<RecurringEventDialog {...mockDialogProps} open={false} />);
+    render(<CustomRecurringEventDialog {...mockDialogProps} open={false} />);
 
     expect(screen.queryByTestId('recurrence-dialog')).not.toBeInTheDocument();
   });
 
   it('renders correctly month content', () => {
-    render(<RecurringEventDialog {...mockDialogProps} />);
+    render(<CustomRecurringEventDialog {...mockDialogProps} />);
 
     //For some reason after updating MUI version and <Select> swapping to role="combobox" getting it by role and name is not possible
     //The workaround we have is to get all comboboxes and then find the one we need
@@ -58,7 +58,7 @@ describe('Custom Recurrence Dialog', () => {
   });
 
   it('renders correctly week content', () => {
-    renderWithProviders(<RecurringEventDialog {...mockDialogProps} />, { provider: { mui: true } });
+    renderWithProviders(<CustomRecurringEventDialog {...mockDialogProps} />, { provider: { mui: true } });
 
     const selectButtons = screen.getAllByRole('combobox');
     const freqSelectButton = selectButtons.find((button) =>
@@ -82,7 +82,7 @@ describe('Custom Recurrence Dialog', () => {
   });
 
   it('enables date selection after selecting option "On"', () => {
-    render(<RecurringEventDialog {...mockDialogProps} />);
+    render(<CustomRecurringEventDialog {...mockDialogProps} />);
 
     const datePickerInput = screen.getByRole('textbox');
     expect(datePickerInput).toBeDisabled();
