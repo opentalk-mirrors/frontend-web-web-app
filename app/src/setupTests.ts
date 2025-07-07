@@ -228,3 +228,5 @@ jest.mock('i18next', () => {
     t: (key: string) => key,
   };
 });
+
+global.ImageData = jest.fn();
