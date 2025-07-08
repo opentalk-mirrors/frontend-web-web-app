@@ -6,6 +6,7 @@ import { test, expect } from '@playwright/test';
 import { closeWebkitPopUp } from '../../helper/webkit';
 import { HomePage } from '../../pages/HomePage';
 import { MyMeetingsPage } from '../../pages/MyMeetingsPage';
+import { AccountPage } from '../../pages/Settings/AccountPage';
 import { GeneralPage } from '../../pages/Settings/GeneralPage';
 import { SettingsPage } from '../../pages/Settings/SettingsPage';
 import { SidebarPage } from '../../pages/SidebarPage';
@@ -132,21 +133,30 @@ test.describe('Dashboard_Settings', () => {
     await expect(page.getByRole('navigation').getByText(process.env.USERNAME)).toBeVisible();
   });
 
-  test('TC_003_Dashboard_Settings_Account option', async ({ page }) => {
-    //verify the options/details available in Account option of Settings option in Dashboard
-    const homePage = new HomePage({ page });
-    await homePage.navigateToHomePage();
-    await page.getByRole('link', { name: 'Settings', exact: true }).click();
-    await page.getByRole('link', { name: 'Account', exact: true }).click();
+  test('TC_003_Dashboard_Settings_Account option', async () => {
+    const USER_EMAIL: string = process.env.USER_EMAIL!;
+    const USERNAME: string = process.env.USERNAME!;
 
-    const emailField = page.getByLabel('E-Mail Address');
-    const firstNameField = page.getByLabel('First Name');
-    const familyNameField = page.getByLabel('Family Name');
+    const accountPage: AccountPage = await settingsPage.navigateToAccount();
+    await expect(accountPage.generalInformationHeading).toBeVisible();
+    await expect(accountPage.emailTextbox).toBeVisible();
+    await expect(accountPage.firstNameTextbox).toBeVisible();
+    await expect(accountPage.familyNameTextbox).toBeVisible();
 
-    await expect(emailField).toHaveValue(process.env.USER_EMAIL);
-    await expect(emailField).toHaveAttribute('readonly', '');
-    await expect(firstNameField).toHaveAttribute('readonly', '');
-    await expect(familyNameField).toHaveAttribute('readonly', '');
+    await expect(accountPage.emailTextbox).toHaveValue(USER_EMAIL);
+
+    await accountPage.focusEmailAddressField();
+    await expect(accountPage.emailTextbox).not.toBeEditable();
+
+    await expect(accountPage.firstNameTextbox).toHaveValue(USERNAME);
+
+    await accountPage.focusFirstNameField();
+    await expect(accountPage.firstNameTextbox).not.toBeEditable();
+
+    await expect(accountPage.familyNameTextbox).toHaveValue(USERNAME);
+
+    await accountPage.focusFamilyNameField();
+    await expect(accountPage.familyNameTextbox).not.toBeEditable();
   });
 
   test('TC_004_Dashboard_Settings_Storage option', async ({ page }) => {

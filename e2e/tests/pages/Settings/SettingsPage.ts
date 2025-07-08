@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Page, Locator } from '@playwright/test';
 
+import { AccountPage } from './AccountPage';
+
 export class SettingsPage {
   public readonly page: Page;
   public readonly settingsLink: Locator;
@@ -25,5 +27,12 @@ export class SettingsPage {
   public async isOptionSelected(locator: Locator): Promise<boolean> {
     await locator.waitFor();
     return await locator.evaluate((el) => el.classList.contains('active'));
+  }
+
+  public async navigateToAccount(): Promise<AccountPage> {
+    await this.accountLink.click();
+    const accountPage = new AccountPage(this.page);
+    await accountPage.generalInformationHeading.waitFor();
+    return accountPage;
   }
 }
