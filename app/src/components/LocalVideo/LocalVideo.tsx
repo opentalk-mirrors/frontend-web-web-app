@@ -45,7 +45,7 @@ const NoVideoText = styled(Typography)(({ theme }) => ({
 }));
 
 const Video = styled(VideoTrack, {
-  shouldForwardProp: (prop) => !['noRoundedCorners', 'mirroringEnabled', 'trackRef'].includes(prop as string),
+  shouldForwardProp: (prop) => !['noRoundedCorners', 'mirroringEnabled'].includes(prop as string),
 })<{ noRoundedCorners?: boolean; mirroringEnabled?: boolean }>(({ theme, noRoundedCorners, mirroringEnabled }) => ({
   position: 'absolute',
   width: 'inherit',
