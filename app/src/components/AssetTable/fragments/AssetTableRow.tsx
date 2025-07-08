@@ -42,7 +42,7 @@ export const AssetTableRow = ({
 
   return (
     <TableRow key={assetId}>
-      <TableCell>{filename}</TableCell>
+      <TableCell scope="row">{filename}</TableCell>
       <TableCell>{format(new Date(createdAt), 'HH:mm dd.MM.yyyy')}</TableCell>
       <TableCell>{formatBytes(size)}</TableCell>
       <TableCell>
