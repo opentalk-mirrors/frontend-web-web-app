@@ -6,6 +6,7 @@ import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ListenerEffectAPI } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
+import { t } from 'i18next';
 import convertToSnakeCase from 'snakecase-keys';
 
 import { StartRoomError } from '../../api/rest';
@@ -326,6 +327,7 @@ const reconnectExceptionErrorList: Array<string> = [
   StartRoomError.Forbidden,
   StartRoomError.NotFound,
   StartRoomError.BadRequest,
+  StartRoomError.NoBreakoutRooms,
 ];
 
 function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
@@ -340,6 +342,26 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
     listenerApi.dispatch(
       authError({ status: 401, name: AuthTypeError.SessionExpired, message: AuthTypeError.SessionExpired })
     );
+  }
+
+  if (error === StartRoomError.NoBreakoutRooms) {
+    const roomId = state.room.roomId;
+    const roomPassword = state.room.password;
+    const isLoggedIn = state.auth.state === 'authorized';
+
+    // if no breakout rooms move participant to the main room
+    roomId &&
+      listenerApi
+        .dispatch(
+          startRoom({
+            roomId,
+            password: roomPassword,
+            breakoutRoomId: null,
+            displayName,
+            inviteCode: isLoggedIn ? undefined : inviteCode,
+          })
+        )
+        .then(() => notifications.info(t('breakout-notification-session-ended-header')));
   }
 
   if (error && reconnectExceptionErrorList.includes(error)) {
