@@ -5,6 +5,7 @@ import test, { expect } from '@playwright/test';
 
 import { joinMeetingRoomAsGuest, startAdhocMeetingAsModerator } from '../../helper/meetingHelpers';
 import { TalkingStickPage } from '../../pages/MeetingRoom/ModeratorTools/TalkingStickPage';
+import { ViewOptionsPage } from '../../pages/MeetingRoom/ViewOptionsPage';
 
 test.describe('Meeting Room_Burger menu', () => {
   test('TC_001_User manual', async ({ page, browserName }) => {
@@ -34,6 +35,7 @@ test.describe('Meeting Room_Burger menu', () => {
 
     const { meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page, browserName);
     const guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest');
+    const viewOptionsPage = new ViewOptionsPage({ page: meetingRoomPage.page });
     await meetingRoomPage.page.bringToFront();
 
     await meetingRoomPage.clickOnBurgerMenu();
@@ -58,11 +60,11 @@ test.describe('Meeting Room_Burger menu', () => {
     await meetingRoomPage.useKeyboardShortcut('v');
     expect(await meetingRoomPage.isCameraOn()).toBeFalsy();
 
-    expect(await meetingRoomPage.isFullScreen()).toBeFalsy();
+    expect(await viewOptionsPage.isFullScreen()).toBeFalsy();
     await meetingRoomPage.useKeyboardShortcut('f');
-    expect(await meetingRoomPage.isFullScreen()).toBeTruthy();
+    expect(await viewOptionsPage.isFullScreen()).toBeTruthy();
     await meetingRoomPage.useKeyboardShortcut('f');
-    expect(await meetingRoomPage.isFullScreen()).toBeFalsy();
+    expect(await viewOptionsPage.isFullScreen()).toBeFalsy();
 
     expect(await meetingRoomPage.isAudioOn()).toBeFalsy();
     await meetingRoomPage.holdToSpeak();
@@ -100,9 +102,9 @@ test.describe('Meeting Room_Burger menu', () => {
     await meetingRoomPage.useKeyboardShortcut('v');
     expect(await meetingRoomPage.isCameraOn()).toBeFalsy();
 
-    expect(await meetingRoomPage.isFullScreen()).toBeFalsy();
+    expect(await viewOptionsPage.isFullScreen()).toBeFalsy();
     await meetingRoomPage.useKeyboardShortcut('f');
-    expect(await meetingRoomPage.isFullScreen()).toBeFalsy();
+    expect(await viewOptionsPage.isFullScreen()).toBeFalsy();
 
     await talkingStickPage.clickOnTalkingStickStartNow();
     await expect(talkingStickPage.yourTurnPopup).toBeVisible();
