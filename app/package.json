@@ -34,7 +34,7 @@
     "context-filter-polyfill": "^0.3.23",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
-    "emoji-picker-react": "^4.12.2",
+    "emoji-picker-react": "^4.12.3",
     "formik": "^2.4.6",
     "formik-wizard-form": "^2.1.0",
     "fscreen": "^1.2.0",
