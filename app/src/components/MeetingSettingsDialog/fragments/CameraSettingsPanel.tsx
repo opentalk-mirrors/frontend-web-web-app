@@ -2,15 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  Stack,
-  styled,
-  FormControlLabel as MuiFormControlLabel,
   Avatar,
-  MenuItem as MuiMenuItem,
-  MenuList,
-  Typography,
   Divider,
   FormGroup,
+  MenuList,
+  FormControlLabel as MuiFormControlLabel,
+  MenuItem as MuiMenuItem,
+  Stack,
+  Typography,
+  styled,
 } from '@mui/material';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,7 @@ const VideoBackgroundImage = styled(Avatar, {
   shouldForwardProp: (prop) => prop !== 'active',
 })<{ active: boolean }>(({ active, theme }) => ({
   aspectRatio: '16/9',
-  height: '3.5rem',
+  height: '4.5rem',
   width: 'auto',
   cursor: 'pointer',
   borderRadius: active ? theme.borderRadius.small : 0,
@@ -63,7 +63,7 @@ const VideoBackgroundImage = styled(Avatar, {
 }));
 
 const BackgroundImageList = styled(MenuList)(({ theme }) => ({
-  margin: theme.spacing(1, 2, 0),
+  margin: theme.spacing(2, 2, 0),
   display: 'grid',
   justifyContent: 'space-evenly',
   gridTemplateColumns: 'repeat(3, auto)',
@@ -91,7 +91,7 @@ const ClearBackground = styled(VideoBackgroundImage)(({ theme }) => ({
 }));
 
 // It is a dummy component, for future extension of the meeting settings dialog
-export const VideoSettingsPanel = () => {
+const CameraSettingsPanel = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -143,7 +143,8 @@ export const VideoSettingsPanel = () => {
   const getDevicesState = (): DevicePermissionState => {
     if (permissionDenied === true) {
       return DevicePermissionState.Denied;
-    } else if (filteredDevices.length === 0 && permissionDenied === 'pending') {
+    }
+    if (filteredDevices.length === 0 && permissionDenied === 'pending') {
       return DevicePermissionState.Pending;
     }
     return DevicePermissionState.Confirmed;
@@ -152,7 +153,7 @@ export const VideoSettingsPanel = () => {
   return (
     <>
       <Typography variant="h2" alignSelf="start" pb={2}>
-        {t('video-settings-title')}
+        {t('camera-settings-title')}
       </Typography>
       <DeviceManager
         devices={filteredDevices}
@@ -272,3 +273,5 @@ export const VideoSettingsPanel = () => {
     </>
   );
 };
+
+export default CameraSettingsPanel;

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useLocalParticipantPermissions, useTrackToggle } from '@livekit/components-react';
-import { Track } from 'livekit-client';
+import { ScreenShareCaptureOptions, Track } from 'livekit-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,22 +13,35 @@ import { useAppSelector } from '../../../hooks';
 import log from '../../../logger';
 import browser from '../../../modules/BrowserSupport';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
+import { ScreenShareResolutionValues, selectScreenShareConfig } from '../../../store/slices/mediaSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import ToolbarButton from './ToolbarButton';
 
 const ShareScreenButton = () => {
-  const { toggle, enabled, pending } = useTrackToggle({
-    source: Track.Source.ScreenShare,
-    captureOptions: { audio: true, systemAudio: 'include' },
-  });
   const localParticipantPermissions = useLocalParticipantPermissions();
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
+  const screenShareConfig = useAppSelector(selectScreenShareConfig);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const isScreenShareSupported = browser.isScreenShareSupported();
+
+  const captureOptions: ScreenShareCaptureOptions = {
+    audio: true,
+    systemAudio: 'include',
+    resolution: screenShareConfig?.resolution && ScreenShareResolutionValues[screenShareConfig?.resolution],
+  };
+
+  const { toggle, enabled, pending } = useTrackToggle({
+    source: Track.Source.ScreenShare,
+    captureOptions,
+    publishOptions: {
+      degradationPreference: 'maintain-resolution',
+    },
+  });
+
   const isScreenShareEnabled = enabled && !isLivekitUnavailable;
 
   const canPublishScreenShare =

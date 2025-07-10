@@ -6,7 +6,7 @@ import { screen } from '@testing-library/react';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import { mockedAudioInputs } from '../../../utils/testUtils';
-import { AudioSettingsPanel } from './AudioSettingsPanel';
+import AudioSettingsPanel from './AudioSettingsPanel';
 
 jest.mock('./DeviceManager', () => ({
   ...jest.requireActual('./DeviceManager'),

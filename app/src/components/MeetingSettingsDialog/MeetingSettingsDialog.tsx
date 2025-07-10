@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Dialog, styled, Paper, ThemeProvider } from '@mui/material';
+import { Dialog, Paper, ThemeProvider, styled } from '@mui/material';
 
 import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { useIsMobile } from '../../hooks/useMediaQuery';
@@ -28,7 +28,7 @@ const MeetingSettingsDialog = (props: MeetingSettingsProps) => {
 
   return (
     <ThemeProvider theme={createOpenTalkTheme('light')}>
-      <Dialog PaperComponent={StyledPaper} onClose={onClose} open={open} maxWidth="sm" fullWidth>
+      <Dialog PaperComponent={StyledPaper} onClose={onClose} open={open} maxWidth="md" fullWidth>
         {isMobile ? (
           <MobileDialogContent onClose={onClose} setting={setting} />
         ) : (

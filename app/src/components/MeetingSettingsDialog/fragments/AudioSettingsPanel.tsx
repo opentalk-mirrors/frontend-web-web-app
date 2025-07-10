@@ -13,7 +13,7 @@ import { DeviceId } from '../../../types/device';
 import DeviceManager from './DeviceManager';
 import { DevicePermissionState } from './constants';
 
-export const AudioSettingsPanel = () => {
+const AudioSettingsPanel = () => {
   const { t } = useTranslation();
   const { localDevices: devices, permissionDenied, loadLocalDevices } = useMediaDevice({ kind: 'audioinput' });
   const audioDeviceId = useAppSelector(selectAudioDeviceId);
@@ -45,7 +45,8 @@ export const AudioSettingsPanel = () => {
   const getDevicesState = (): DevicePermissionState => {
     if (permissionDenied === true) {
       return DevicePermissionState.Denied;
-    } else if (filteredDevices.length === 0 && permissionDenied === 'pending') {
+    }
+    if (filteredDevices.length === 0 && permissionDenied === 'pending') {
       return DevicePermissionState.Pending;
     }
     return DevicePermissionState.Confirmed;
@@ -69,3 +70,5 @@ export const AudioSettingsPanel = () => {
     </>
   );
 };
+
+export default AudioSettingsPanel;
