@@ -11,7 +11,7 @@ export class ViewOptionsPage {
   public readonly gridViewOption: Locator;
   public readonly speakerViewOption: Locator;
   public readonly fullScreenViewOption: Locator;
-  private readonly fullScreenView: Locator;
+  public readonly fullScreenView: Locator;
   private readonly closeFullScreenButton: Locator;
   public activatedCameraFirstSortingOption: Locator;
   public moderatorsFirstSortingOption: Locator;
