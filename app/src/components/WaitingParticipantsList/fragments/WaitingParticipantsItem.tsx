@@ -6,8 +6,8 @@ import {
   ListItem as MuiListItem,
   ListItemAvatar as MuiListItemAvatar,
   ListItemText as MuiListItemText,
-  styled,
   Typography,
+  styled,
 } from '@mui/material';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -63,8 +63,8 @@ const WaitingParticipantItem = ({ participant }: ParticipantRowProps) => {
 
   const handleAccept = useCallback(() => {
     if (participant.waitingState === WaitingState.Waiting) {
-      dispatch(acceptParticipantFromWaitingRoomToRoom.action({ target: participant.id }));
-      dispatch(approveToEnter(participant.id));
+      dispatch(acceptParticipantFromWaitingRoomToRoom.action({ target: participant.participantId }));
+      dispatch(approveToEnter(participant.participantId));
       notifications.info(t('meeting-notification-user-was-accepted', { user: participant.displayName }));
     }
   }, [dispatch, participant, t]);

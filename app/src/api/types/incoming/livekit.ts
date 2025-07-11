@@ -17,11 +17,6 @@ export interface MicrophoneRestrictionsDisabled {
   message: 'microphone_restrictions_disabled';
 }
 
-export interface ForceMuted {
-  message: 'force_muted';
-  moderator: ParticipantId;
-}
-
 export interface PopoutStreamAccessToken {
   message: 'popout_stream_access_token';
   token: string;
@@ -37,7 +32,6 @@ export interface Credentials {
 export type Message =
   | MicrophoneRestrictionsEnabled
   | MicrophoneRestrictionsDisabled
-  | ForceMuted
   | PopoutStreamAccessToken
   | Credentials
   | LivekitError;

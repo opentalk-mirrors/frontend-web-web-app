@@ -91,10 +91,8 @@ export const talkingStickStart = {
   action: (payload: { playlist: Array<ParticipantId> }) => {
     return start.action({
       selectionStrategy: AutomodSelectionStrategy.Playlist,
-      showList: true,
-      considerHandRaise: false,
+      showRemaining: true,
       allowDoubleSelection: false,
-      animationOnRandom: false,
       autoAppendOnJoin: true,
       playlist: payload.playlist,
     });

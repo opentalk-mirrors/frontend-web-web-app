@@ -6,11 +6,6 @@ import { Namespaced, ParticipantId, createModule } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
-export interface ForceMute {
-  action: 'force_mute';
-  participants?: Array<ParticipantId>;
-}
-
 export interface GrantScreenSharePermission {
   action: 'grant_screen_share_permission';
   participants: Array<ParticipantId>;
@@ -39,7 +34,6 @@ export interface CreateNewAccessToken {
 }
 
 export type Action =
-  | ForceMute
   | GrantScreenSharePermission
   | RevokeScreenSharePermission
   | EnableMicrophoneRestrictions
@@ -49,7 +43,6 @@ export type Action =
 
 export type Livekit = Namespaced<Action, 'livekit'>;
 
-export const requestMute = createSignalingApiCall<ForceMute>('livekit', 'force_mute');
 export const grantScreenSharePermission = createSignalingApiCall<GrantScreenSharePermission>(
   'livekit',
   'grant_screen_share_permission'
@@ -75,9 +68,6 @@ export const requestPopoutStreamAccessToken = createSignalingApiCall<RequestPopo
 export const createNewAccessToken = createSignalingApiCall<CreateNewAccessToken>('livekit', 'create_new_access_token');
 
 export const handler = createModule<RootState>((builder) => {
-  builder.addCase(requestMute.action, (_state, action) => {
-    sendMessage(requestMute(action.payload));
-  });
   builder.addCase(grantScreenSharePermission.action, (_state, action) => {
     sendMessage(grantScreenSharePermission(action.payload));
   });

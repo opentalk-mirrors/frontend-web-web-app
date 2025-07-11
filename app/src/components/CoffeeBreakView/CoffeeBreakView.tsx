@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { readyToContinue } from '../../api/types/outgoing/timer';
 import { CoffeeBreakIcon as CoffeeBreakIconDefault, LogoIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { selectCoffeeBreakTimerId, selectTimerActive } from '../../store/slices/timerSlice';
+import { selectTimerActive } from '../../store/slices/timerSlice';
 import { setCoffeeBreakCurtainOpenFlag } from '../../store/slices/uiSlice';
 import CoffeeBreakTimer from './fragments/CoffeeBreakTimer';
 
@@ -76,13 +76,10 @@ export const CoffeeBreakView = memo(({ roundBorders }: CoffeeBreakViewProps) => 
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const isTimerActive = useAppSelector(selectTimerActive);
-  const coffeeBreakTimerId = useAppSelector(selectCoffeeBreakTimerId);
 
   const handleClose = () => {
     dispatch(setCoffeeBreakCurtainOpenFlag(false));
-    if (coffeeBreakTimerId) {
-      dispatch(readyToContinue.action({ timerId: coffeeBreakTimerId, status: true }));
-    }
+    dispatch(readyToContinue.action({ status: true }));
   };
 
   return (

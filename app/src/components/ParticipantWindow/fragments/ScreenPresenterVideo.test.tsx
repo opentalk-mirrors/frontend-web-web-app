@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 
 import { idFromDescriptor } from '../../../modules/WebRTC';
 import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
 import {
-  renderWithProviders,
+  mockStore,
   mockedParticipant,
   mockedVideoMediaDescriptor,
-  mockStore,
+  renderWithProviders,
 } from '../../../utils/testUtils';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
 
@@ -21,11 +21,11 @@ vi.mock('@livekit/components-react', () => ({
 
 vi.mock('./RemoteVideo', () => ({
   __esModule: true,
-  default: () => <div data-testid="remoteVideo"></div>,
+  default: () => <div data-testid="remoteVideo" />,
 }));
 
 const participant = mockedParticipant(0);
-const participantId = participant.id;
+const participantId = participant.participantId;
 
 const ScreenPresenterVideoProps = {
   participantId: participantId,

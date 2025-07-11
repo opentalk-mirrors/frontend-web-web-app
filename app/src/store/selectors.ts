@@ -117,7 +117,7 @@ export const selectAllMeetingNotesParticipants = createSelector(
         const isSelected = participant.meetingNotesAccess === MeetingNotesAccess.Write;
 
         return {
-          id: participant.id,
+          id: participant.participantId,
           displayName: participant.displayName,
           avatarUrl: participant.avatarUrl,
           isSelected,
@@ -257,7 +257,7 @@ export const selectParticipantsReadyList = createSelector(
   [selectAllOnlineParticipantsInConference, selectParticipantsReady],
   (selectCombinedParticipantsAndUser, participantsReady) =>
     selectCombinedParticipantsAndUser.map((participant) => ({
-      isReady: participantsReady.includes(participant.id),
+      isReady: participantsReady.includes(participant.participantId),
       ...participant,
     }))
 );

@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { generatePkceChallenge } from '@opentalk/redux-oidc';
 import { isEmpty } from 'lodash';
 import convertToSnakeCase from 'snakecase-keys';
 
 import { ApiErrorWithBody, StartRoomError } from '../../api/rest';
 import type { Message as IncomingMessage } from '../../api/types/incoming';
-import type { Message as ControlMessage } from '../../api/types/incoming/control';
+import type { Message as RoomserverCoreMessage } from '../../api/types/incoming/core';
 import type { Message as OutgoingMessage } from '../../api/types/outgoing';
 import log from '../../logger';
 import type { RoomCredentials } from '../../store/commonActions';
@@ -50,7 +51,7 @@ export enum ConnectionState {
 const REJOIN_ON_BLOCKED_CONNECTION_TIME = 10000;
 
 type ConferenceEvent = {
-  connected: void;
+  connected: undefined;
   // A 'shutdown' event is sent after the whole WebRTC context has been terminated and all connections are closed.
   shutdown: { error?: number };
   message: IncomingMessage;
@@ -71,8 +72,20 @@ export const getCurrentConferenceRoom = () => {
   return currentConferenceRoom;
 };
 
-export const startRoom = async (credentials: RoomCredentials, config: ConfigState, resumptionToken?: string) => {
-  const roomPath = `v1/rooms/${credentials.roomId}`;
+const createOrGenerateDeviceSecret = async () => {
+  const storedDeviceSecret = localStorage.getItem('device_secret');
+  if (storedDeviceSecret && storedDeviceSecret.length >= 16 && storedDeviceSecret.length < 255) {
+    return storedDeviceSecret;
+  }
+
+  const newSecret = await generatePkceChallenge();
+  localStorage.setItem('device_secret', newSecret);
+
+  return newSecret;
+};
+
+export const startRoom = async (credentials: RoomCredentials, config: ConfigState, displayName: string) => {
+  const roomPath = `v1/rooms/${credentials.roomId}/roomserver`;
 
   let authUrl: URL;
   if (credentials.inviteCode !== undefined) {
@@ -81,15 +94,16 @@ export const startRoom = async (credentials: RoomCredentials, config: ConfigStat
     authUrl = new URL(`${roomPath}/start`, getControllerBaseUrl(config));
   }
 
-  const { breakoutRoomId, inviteCode, password } = credentials;
-  const body = JSON.stringify(
-    convertToSnakeCase({
-      breakoutRoom: breakoutRoomId,
-      inviteCode,
-      password: !isEmpty(password) ? password : undefined,
-      resumption: resumptionToken,
-    })
-  );
+  // TODO - fix password empty string
+  const { inviteCode, password } = credentials;
+  const body = JSON.stringify({
+    device_secret: await createOrGenerateDeviceSecret(),
+    display_name: displayName,
+    invite_code: inviteCode,
+    password: password || undefined,
+  });
+
+  console.warn('Starting room with body:', body);
 
   const response = await fetchWithAuth(authUrl, {
     method: 'POST',
@@ -110,9 +124,9 @@ export const startRoom = async (credentials: RoomCredentials, config: ConfigStat
     const error = { status: response.status, code, message };
     throw error;
   }
-  const { ticket, resumption }: { ticket: string; resumption: string } = await response.json();
+  const { token, roomserver_address }: { token: string; roomserver_address: string } = await response.json();
 
-  return { ticket, resumption };
+  return { token, roomserver_address };
 };
 
 /**
@@ -130,14 +144,14 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
   public static async create(
     roomCredentials: RoomCredentials,
     config: ConfigState,
-    resumptionToken?: string
-  ): Promise<{ conferenceContext: ConferenceRoom; resumption: string }> {
-    log.debug('connect to room', roomCredentials, resumptionToken);
-    const { ticket, resumption } = await startRoom(roomCredentials, config, resumptionToken);
-    const signaling = new SignalingSocket(getSignalingUrl(config), ticket);
+    displayName: string
+  ): Promise<{ conferenceContext: ConferenceRoom; token: string }> {
+    log.debug('connect to room', roomCredentials);
+    const { token, roomserver_address } = await startRoom(roomCredentials, config, displayName);
+    const signaling = new SignalingSocket(getSignalingUrl(roomserver_address, token));
     const conferenceContext = new ConferenceRoom(roomCredentials, signaling);
     setCurrentConferenceRoom(conferenceContext);
-    return { conferenceContext, resumption };
+    return { conferenceContext, token };
   }
 
   private constructor(roomCredentials: RoomCredentials, signaling: SignalingSocket) {
@@ -156,14 +170,11 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
     if (isEmpty(displayName)) {
       throw new Error('displayName must be not empty');
     }
-    this.signaling.sendMessage({
-      namespace: 'control',
-      payload: { action: 'join', displayName },
-    });
+
     this.participantName = displayName;
   }
 
-  private handleControlMessage(message: ControlMessage) {
+  private handleCoreMessage(message: RoomserverCoreMessage) {
     switch (message.message) {
       case 'join_blocked':
         // try to automatically rejoin a blocked room
@@ -195,8 +206,8 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
         // do not propagate WebRTC messages
         return;
       }
-      case 'control':
-        this.handleControlMessage(payload);
+      case 'core':
+        this.handleCoreMessage(payload);
         break;
       default:
         //let the react app take care
@@ -221,7 +232,6 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
         return;
       case 'closed':
         {
-          // TODO: clearResumptionToken(credentials)
           this.eventEmitter.emit('shutdown', {});
         }
         return;

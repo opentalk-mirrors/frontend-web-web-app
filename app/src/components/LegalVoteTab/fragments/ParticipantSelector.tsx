@@ -2,18 +2,18 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  styled,
-  Checkbox,
-  Typography,
   Button,
+  Checkbox,
   Container,
+  FormHelperText,
   Grid,
   InputAdornment,
-  ListItem as MuiListItem,
   List,
   ListItemText,
+  ListItem as MuiListItem,
   ListItemAvatar as MuiListItemAvatar,
-  FormHelperText,
+  Typography,
+  styled,
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { find, debounce } from 'lodash';
@@ -21,7 +21,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SearchIcon } from '../../../assets/icons';
-import { ParticipantAvatar, CommonTextField } from '../../../commonComponents';
+import { CommonTextField, ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectVotingUsers } from '../../../store/selectors';
 import { ParticipantId } from '../../../types';

@@ -33,15 +33,6 @@ export const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Messag
         notifications.info(i18next.t('microphones-enabled-notification'));
       }
       break;
-    case 'force_muted': {
-      const participants = state.participants.entities;
-      notifications.warning(
-        i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
-      );
-      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
-      dispatch(mediaStore.notificationShown());
-      return;
-    }
     case 'popout_stream_access_token': {
       dispatch(setLivekitPopoutStreamAccessToken(data.token));
       return;

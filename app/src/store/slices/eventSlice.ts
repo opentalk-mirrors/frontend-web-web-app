@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { RootState } from '..';
-import { LeftReason } from '../../api/types/incoming/control';
-import { ParticipantId } from '../../types';
+import { DisconnectReason } from '../../api/types/incoming/core';
 import { setChatSettings } from './chatSlice';
 import { join as participantJoin, leave as participantLeave } from './participantsSlice';
 import { connectionClosed } from './roomSlice';
@@ -14,9 +13,9 @@ import { connectionClosed } from './roomSlice';
 export interface RoomEvent {
   id: string;
   timestamp: string;
-  target: ParticipantId;
+  target: string;
   event: 'joined' | 'left' | 'chat_enabled' | 'chat_disabled';
-  reason?: LeftReason;
+  reason?: DisconnectReason;
 }
 
 const eventAdapter = createEntityAdapter<RoomEvent, string>({
@@ -29,7 +28,13 @@ export const eventSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(participantLeave, (state, { payload: { id, timestamp, reason } }) => {
-      eventAdapter.addOne(state, { event: 'left', timestamp, target: id, id: uuidv4(), reason });
+      eventAdapter.addOne(state, {
+        event: 'left',
+        timestamp,
+        target: id,
+        id: uuidv4(),
+        reason,
+      });
     });
     builder.addCase(
       participantJoin,
@@ -37,14 +42,14 @@ export const eventSlice = createSlice({
         state,
         {
           payload: {
-            participant: { joinedAt, id },
+            participant: { joinedAt, participantId },
           },
         }
       ) => {
         eventAdapter.addOne(state, {
           event: 'joined',
           timestamp: joinedAt,
-          target: id,
+          target: participantId,
           id: uuidv4(),
         });
       }

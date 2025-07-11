@@ -55,16 +55,16 @@ export interface ChangeLocalMediaResponse {
 }
 
 export const startRoom = createAsyncThunk<
-  { conferenceContext: ConferenceRoom; resumption: string },
+  { conferenceContext: ConferenceRoom },
   RoomCredentials & { displayName: string },
   { state: RootState }
 >('room/start', async (credentials, { getState }) => {
   const config = getState().config;
-  const { resumptionToken, roomId } = getState().room;
+  const user = getState().user;
   if (credentials.displayName.length === 0) {
     throw new Error('displayName must ne non empty');
   }
-  return ConferenceRoom.create(credentials, config, credentials.roomId === roomId ? resumptionToken : undefined);
+  return ConferenceRoom.create(credentials, config, user.displayName);
 });
 
 export const hangUp = createAsyncThunk<void, void, { state: RootState }>('room/hangup', async () => {

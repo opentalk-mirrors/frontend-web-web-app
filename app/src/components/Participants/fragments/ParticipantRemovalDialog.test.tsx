@@ -66,7 +66,7 @@ describe('ParticipantRemovalDialog', () => {
     });
     await userEvent.click(screen.getByRole('button', { name: 'participant-remove-dialog-confirm' }));
     // Check that dispatch was called for kick and enableWaitingRoom
-    expect(dispatchSpy.mock.calls).toContainEqual([kickParticipant.action({ target: participant.id })]);
+    expect(dispatchSpy.mock.calls).toContainEqual([kickParticipant.action({ target: participant.participantId })]);
     expect(dispatchSpy.mock.calls).toContainEqual([enableWaitingRoom.action()]);
     expect(spyNotificationInfo).toHaveBeenCalled();
     expect(onClose).toHaveBeenCalled();

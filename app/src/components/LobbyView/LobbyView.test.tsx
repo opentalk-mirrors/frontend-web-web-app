@@ -5,8 +5,8 @@ import { InviteCode } from '@opentalk/rest-api-rtk-query';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Role } from '../../api/types/incoming/control';
 import * as UseInviteCodeModule from '../../hooks/useInviteCode';
+import { Role } from '../../types';
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import LobbyView from './LobbyView';
 

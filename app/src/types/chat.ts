@@ -7,6 +7,7 @@ export enum ChatScope {
   Global = 'global',
   Private = 'private',
   Group = 'group',
+  Breakout = 'breakout',
 }
 
 type GlobalChatMessage = {
@@ -51,27 +52,27 @@ export type ChatMessageWithTimestamp = ChatBase & BaseMessageWithTimestamp;
 
 export interface InitialChat {
   enabled: boolean;
-  lastSeenTimestampGlobal?: string;
-  lastSeenTimestampsGroup?: Record<string, string>;
-  lastSeenTimestampsPrivate?: Record<string, string>;
-  groups: Array<GroupId>;
+  globalHistory: ChatChunk;
+  breakoutRoomHistory?: ChatChunk;
   groupsHistory: Array<GroupsHistory>;
   privateHistory: Array<PrivateHistory>;
-  roomHistory: ChatHistory;
+  lastSeenTimestampGlobal?: Timestamp;
+  lastSeenTimestampBreakout?: Timestamp;
+  lastSeenTimestampsGroup: Record<string, string>;
+  lastSeenTimestampsPrivate: Record<string, string>;
 }
 
 export type GroupsHistory = {
-  history: ChatHistory;
-  id: string;
   name: GroupId;
+  history: ChatChunk;
 };
 
 export interface PrivateHistory {
   correspondent: ParticipantId;
-  history: ChatHistory;
+  history: ChatChunk;
 }
 
-export interface ChatHistory {
+export interface ChatChunk {
   messages: Array<ChatMessage>;
   nextIndex: number | null;
 }

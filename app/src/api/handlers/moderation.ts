@@ -3,22 +3,20 @@
 // SPDX-License-Identifier: EUPL-1.2
 import i18next from 'i18next';
 
-import { notifications, setLibravatarOptions } from '../../commonComponents';
+import { notifications } from '../../commonComponents';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import { hangUp } from '../../store/commonActions';
-import { selectLibravatarDefaultImage } from '../../store/slices/configSlice';
-import { disableRaisedHands, enableRaisedHands, forceLowerHand } from '../../store/slices/moderationSlice';
-import { rename as participantsRename, waitingRoomJoined, waitingRoomLeft } from '../../store/slices/participantsSlice';
+import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
 import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
-import { setDisplayName } from '../../store/slices/userSlice';
-import { Role } from '../../types';
+import { setDisplayName, updateRole } from '../../store/slices/userSlice';
+import { Role, Timestamp } from '../../types';
 import { moderation } from '../types/incoming';
 
 /**
  * Handles messages in the moderation namespace.
  */
-export const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message, state: RootState) => {
+export const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message, timestamp: Timestamp, state: RootState) => {
   switch (data.message) {
     case 'kicked':
       dispatch(hangUp());
@@ -39,41 +37,8 @@ export const handleModerationMessage = (dispatch: AppDispatch, data: moderation.
     case 'waiting_room_disabled':
       dispatch(disableWaitingRoom());
       break;
-    case 'joined_waiting_room':
-      {
-        const modifiedData = {
-          ...data,
-          control: {
-            ...data.control,
-            avatarUrl: setLibravatarOptions(data.control.avatarUrl, {
-              defaultImage: selectLibravatarDefaultImage(state),
-            }),
-          },
-        };
-        dispatch(waitingRoomJoined(modifiedData));
-      }
-      break;
-    case 'left_waiting_room':
-      dispatch(waitingRoomLeft(data.id));
-      break;
-    case 'in_waiting_room':
-      dispatch(enteredWaitingRoom());
-      break;
     case 'accepted':
       dispatch(readyToEnter());
-      break;
-    case 'raised_hand_reset_by_moderator':
-      notifications.info(i18next.t('reset-handraises-notification'));
-      dispatch(forceLowerHand());
-      break;
-    case 'raise_hands_disabled':
-      notifications.info(i18next.t('turn-handraises-off-notification'));
-      dispatch(forceLowerHand());
-      dispatch(disableRaisedHands());
-      break;
-    case 'raise_hands_enabled':
-      notifications.info(i18next.t('turn-handraises-on-notification'));
-      dispatch(enableRaisedHands());
       break;
     case 'debriefing_started':
       notifications.info(i18next.t('debriefing-started-notification'));
@@ -100,6 +65,33 @@ export const handleModerationMessage = (dispatch: AppDispatch, data: moderation.
           newName: data.newName,
         })
       );
+      break;
+    case 'muted': {
+      const participants = state.participants.entities;
+      notifications.warning(
+        i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
+      );
+      return;
+    }
+    case 'role_updated':
+      if (data.participantId === state.user.uuid) {
+        dispatch(updateRole(data.newRole));
+        if (data.newRole === Role.Moderator) {
+          notifications.info(i18next.t('moderation-rights-granted'));
+        } else {
+          notifications.warning(i18next.t('moderation-rights-revoked'));
+        }
+      } else {
+        dispatch(
+          patch({
+            participantId: data.participantId,
+            lastActive: timestamp,
+            role: data.newRole,
+          })
+        );
+      }
+      break;
+    case 'participant_accepted':
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);

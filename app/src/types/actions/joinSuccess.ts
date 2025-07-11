@@ -2,19 +2,23 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { EventInfo, SharedFolderData, StreamingState, Tariff } from '@opentalk/rest-api-rtk-query';
+import { MeetingDetails } from '@opentalk/rest-api-rtk-query/src/types/event';
 
 import type { ParticipationLogging } from '../../api/types/outgoing/trainingParticipationReport';
 import { InitialAutomod } from '../automod';
 import { InitialBreakout } from '../breakout';
 import { InitialChat } from '../chat';
-import {
+import type {
   BackendParticipant,
   ForceMute,
+  ForceMuteType,
   GroupId,
   ParticipantId,
   ParticipantMediaState,
   Role,
   Timestamp,
+  ParticipationKind,
+  ConnectionId,
 } from '../common';
 import { RoomInfo } from '../event';
 import { LegalVoteJoinSuccess, VoteSummary } from '../legalVote';
@@ -22,9 +26,11 @@ import { Participant } from '../participant';
 import { InitialPoll } from '../poll';
 import { TimerState } from '../timer';
 import { WhiteboardState } from '../whiteboard';
+import { DeviceId } from '../device';
 
 export interface JoinSuccessInternalState {
   participantId: ParticipantId;
+  connectionId?: string;
   role: Role;
   avatarUrl?: string;
   chat: InitialChat;
@@ -32,20 +38,21 @@ export interface JoinSuccessInternalState {
   automod?: InitialAutomod;
   breakout?: InitialBreakout;
   polls?: InitialPoll;
-  votes?: Array<VoteSummary>;
+  votes?: VoteSummary[];
   participants: Participant[];
   moderation?: {
     raiseHandsEnabled: boolean;
     waitingRoomEnabled: boolean;
-    waitingRoomParticipants: Array<BackendParticipant>;
+    waitingRoomParticipants: WaitingRoomParticipant[];
   };
   forceMute?: ForceMute;
   recording?: StreamingState;
   serverTimeOffset: number;
   tariff: Tariff;
   timer?: TimerState;
-  sharedFolder: SharedFolderData;
+  sharedFolder?: SharedFolderData;
   eventInfo?: EventInfo;
+  meetingDetails?: MeetingDetails;
   roomInfo?: RoomInfo;
   participantsReady: ParticipantId[];
   isRoomOwner: boolean;
@@ -74,7 +81,7 @@ export interface JoinSuccessIncoming {
   whiteboard?: WhiteboardState;
   moderation?: {
     raiseHandsEnabled: boolean;
-    waitingRoomParticipants: Array<BackendParticipant>;
+    waitingRoomParticipants: WaitingRoomParticipant[];
     waitingRoomEnabled: boolean;
   };
   media?: ParticipantMediaState;
@@ -94,3 +101,119 @@ export interface JoinSuccessIncoming {
   };
   trainingParticipationReport?: ParticipationLogging;
 }
+
+export interface JoinSuccessRoomserver {
+  id: ParticipantId;
+  connectionId: ConnectionId;
+  deviceId: DeviceId;
+  avatarUrl?: string;
+  connections: ConnectionInfo[];
+  displayName: string;
+  role: Role;
+  tariff: Tariff;
+  participants: RoomserverParticipant[];
+  eventInfo: EventInfo;
+  meetingDetails: MeetingDetails;
+  roomInfo: RoomInfo;
+  isRoomOwner: boolean;
+  moduleData: ModuleData;
+}
+
+export interface ModuleData {
+  chat: InitialChat;
+  livekit: Livekit;
+  breakout?: InitialBreakout;
+  moderation?: {
+    raiseHandsEnabled: boolean;
+    waitingRoomParticipants: WaitingRoomParticipant[];
+    waitingRoomEnabled: boolean;
+  };
+  recording?: StreamingState;
+  timer?: TimerState;
+  legalVote?: LegalVoteJoinSuccess;
+  whiteboard?: WhiteboardState;
+  polls?: InitialPoll;
+  automod?: InitialAutomod;
+  sharedFolder?: SharedFolderData;
+}
+
+export interface WaitingRoomParticipant {
+  participantId: ParticipantId;
+  accepted: boolean;
+  joinedAt: Timestamp;
+  displayName: string;
+  avatarUrl?: string;
+}
+
+export interface JoinedWaitingRoomParticipant {
+  participantId: ParticipantId;
+  connectionIds: ConnectionId[];
+  joinedAt: Timestamp;
+  displayName: string;
+  avatarUrl?: string;
+}
+
+export interface PeerModuleData {
+  breakout?: BreakoutPeerState;
+  chat?: ChatPeerState;
+  core: CorePeerState;
+  meetingNotes?: MeetingNotesPeerState;
+  timer?: TimerPeerState;
+}
+
+export interface CorePeerState {
+  /// Display name of the participant
+  displayName: string;
+  /// Role of the participant
+  role: Role;
+  /// The URL to the avatar of the participant
+  avatarUrl?: string;
+  /// The type of participant and how they connected to the meeting.
+  participationKind: ParticipationKind;
+  /// The timestamp when the participant joined the meeting
+  joinedAt: Timestamp;
+  /// The timestamp when the participant left the meeting
+  leftAt?: Timestamp;
+  /// Wether the participant is the room owner
+  isRoomOwner: boolean;
+}
+
+export interface BreakoutPeerState {
+  room: {
+    kind: 'main' | 'breakout';
+  };
+}
+
+export interface ChatPeerState {
+  groups: string[];
+}
+
+export interface MeetingNotesPeerState {
+  readonly: boolean;
+}
+
+export interface TimerPeerState {
+  readyStatus: boolean;
+}
+
+export type JsonValue = number | string | boolean | JsonValue[] | { [key in string]?: JsonValue } | null;
+
+export interface Livekit {
+  microphoneRestrictionState: MicrophoneRestrictionState;
+  publicUrl: string;
+  room: string;
+  token: string;
+}
+
+export interface MicrophoneRestrictionState {
+  type: ForceMuteType;
+  unrestrictedParticipants: ParticipantId[];
+}
+
+export type RoomserverParticipant = {
+  id: ParticipantId;
+  connections: ConnectionInfo[];
+  moduleData: PeerModuleData;
+};
+
+export type ConnectionInfo = { connectionId: string; deviceId: string };

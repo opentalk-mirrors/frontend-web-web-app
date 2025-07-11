@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-import { RequestMute } from '../../api/types/incoming/media';
-import { ParticipantId, VideoSetting } from '../../types';
+import { VideoSetting } from '../../types';
 import type { RootState } from '../index';
 
 export interface ScreenShareConfig {
@@ -36,15 +35,8 @@ export enum NotificationKind {
   RequestMute = 'requestMute',
 }
 
-interface MuteNotification {
-  kind: NotificationKind;
-  origin: ParticipantId;
-}
-
 export type MediaState = {
   qualityCap: VideoSetting;
-  upstreamLimit: VideoSetting;
-  requestMuteNotification?: MuteNotification;
   isUserSpeaking: boolean;
   screenShareConfig?: ScreenShareConfig;
 };
@@ -53,7 +45,6 @@ export type MediaDeviceKindExtended = MediaDeviceKind | 'screenshare';
 
 export const initialState: MediaState = {
   qualityCap: VideoSetting.High,
-  upstreamLimit: VideoSetting.High,
   isUserSpeaking: false,
   screenShareConfig: {
     resolution: ScreenShareResolution.R1080p,
@@ -68,27 +59,12 @@ export const mediaSlice = createSlice({
     setScreenShareConfig: (state, { payload }: PayloadAction<ScreenShareConfig>) => {
       state.screenShareConfig = payload;
     },
-    setUpstreamLimit: (state, { payload }: PayloadAction<VideoSetting>) => {
-      state.upstreamLimit = payload;
-    },
-    requestMute: (state, { payload }: PayloadAction<RequestMute>) => {
-      if (payload.force) {
-        state.requestMuteNotification = { kind: NotificationKind.ForceMute, origin: payload.issuer };
-      } else {
-        state.requestMuteNotification = { kind: NotificationKind.RequestMute, origin: payload.issuer };
-      }
-    },
-    notificationShown: (state) => {
-      state.requestMuteNotification = undefined;
-    },
   },
 });
 
-export const { setScreenShareConfig, notificationShown } = mediaSlice.actions;
+export const { setScreenShareConfig } = mediaSlice.actions;
 
 export const selectIsUserSpeaking = (state: RootState) => state.media.isUserSpeaking;
-export const selectUpstreamLimit = (state: RootState) => state.media.upstreamLimit;
-export const selectNotification = (state: RootState) => state.media.requestMuteNotification;
 export const selectScreenShareConfig = (state: RootState) => state.media.screenShareConfig;
 
 export const actions = mediaSlice.actions;

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { RootState } from '../../../store';
-import { createModule, KickScope, Namespaced, ParticipantId } from '../../../types';
+import { createModule, KickScope, Namespaced, ParticipantId, Role } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
@@ -30,18 +30,6 @@ export interface AcceptParticipantFromWaitingRoomToRoom {
   action: 'accept';
   target: ParticipantId;
 }
-export interface EnableRaiseHands {
-  action: 'enable_raise_hands';
-}
-
-export interface DisableRaiseHands {
-  action: 'disable_raise_hands';
-}
-
-export interface ResetRaisedHands {
-  action: 'reset_raised_hands';
-  target?: Array<ParticipantId>;
-}
 
 export interface Debrief {
   action: 'debrief';
@@ -54,6 +42,17 @@ export interface ChangeDisplayName {
   newName: string;
 }
 
+export interface Mute {
+  action: 'mute';
+  participants?: Array<ParticipantId>;
+}
+
+export interface UpdateRole {
+  action: 'update_role';
+  participantId: ParticipantId;
+  newRole: Role;
+}
+
 export type Action =
   | KickParticipant
   | BanParticipant
@@ -61,11 +60,10 @@ export type Action =
   | EnableWaitingRoom
   | DisableWaitingRoom
   | AcceptParticipantFromWaitingRoomToRoom
-  | ResetRaisedHands
-  | EnableRaiseHands
-  | DisableRaiseHands
   | Debrief
-  | ChangeDisplayName;
+  | ChangeDisplayName
+  | UpdateRole
+  | Mute;
 
 export type Moderation = Namespaced<Action, 'moderation'>;
 
@@ -81,11 +79,10 @@ export const acceptParticipantFromWaitingRoomToRoom = createSignalingApiCall<Acc
   'moderation',
   'accept'
 );
-export const resetRaisedHands = createSignalingApiCall<ResetRaisedHands>('moderation', 'reset_raised_hands');
-export const enableRaiseHands = createSignalingApiCall<EnableRaiseHands>('moderation', 'enable_raise_hands');
-export const disableRaiseHands = createSignalingApiCall<DisableRaiseHands>('moderation', 'disable_raise_hands');
 export const debrief = createSignalingApiCall<Debrief>('moderation', 'debrief');
 export const changeDisplayName = createSignalingApiCall<ChangeDisplayName>('moderation', 'change_display_name');
+export const mute = createSignalingApiCall<Mute>('moderation', 'mute');
+export const updateRole = createSignalingApiCall<UpdateRole>('moderation', 'update_role');
 
 export const handler = createModule<RootState>((builder) => {
   builder
@@ -107,20 +104,17 @@ export const handler = createModule<RootState>((builder) => {
     .addCase(acceptParticipantFromWaitingRoomToRoom.action, (_state, action) => {
       sendMessage(acceptParticipantFromWaitingRoomToRoom(action.payload));
     })
-    .addCase(resetRaisedHands.action, (_state, action) => {
-      sendMessage(resetRaisedHands(action.payload));
-    })
-    .addCase(enableRaiseHands.action, () => {
-      sendMessage(enableRaiseHands());
-    })
-    .addCase(disableRaiseHands.action, () => {
-      sendMessage(disableRaiseHands());
-    })
     .addCase(debrief.action, (_state, action) => {
       sendMessage(debrief(action.payload));
     })
     .addCase(changeDisplayName.action, (_state, action) => {
       sendMessage(changeDisplayName(action.payload));
+    })
+    .addCase(mute.action, (_state, action) => {
+      sendMessage(mute(action.payload));
+    })
+    .addCase(updateRole.action, (_state, action) => {
+      sendMessage(updateRole(action.payload));
     });
 });
 

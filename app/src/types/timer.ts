@@ -26,7 +26,6 @@ export interface TimerState {
   startedAt: Timestamp;
   readyStatus: boolean;
   style: TimerStyle;
-  timerId: string;
   title?: string;
 }
 

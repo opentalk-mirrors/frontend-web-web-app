@@ -6,11 +6,13 @@ import { GroupId, ParticipantId, ParticipationKind, Role, WaitingState } from '.
 import { MeetingNotesAccess } from './meetingNotes';
 
 export interface Participant {
-  id: ParticipantId;
+  id: string;
+  participantId: ParticipantId;
+  connectionId?: string;
   breakoutRoomId: BreakoutRoomId | null;
   displayName: string;
   avatarUrl?: string;
-  handIsUp: boolean;
+  handIsUp?: boolean;
   joinedAt: string;
   leftAt: string | null;
   handUpdatedAt?: string;

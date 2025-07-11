@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, styled, Stack } from '@mui/material';
+import { Button, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { stopTimer } from '../../../api/types/outgoing/timer';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectTimerId } from '../../../store/slices/timerSlice';
+import { useAppDispatch } from '../../../hooks';
 import { TimerStyle } from '../../../types';
 import TimerDuration from './TimerDuration';
 import UserList from './UserList';
@@ -19,12 +18,10 @@ const TimerContainer = styled(Stack)({
 const ActiveTimerOverview = ({ timerStyle }: { timerStyle: TimerStyle }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const timerId = useAppSelector(selectTimerId);
 
+  // TODO - handle reason
   const handleStop = () => {
-    if (timerId) {
-      dispatch(stopTimer.action({ timerId }));
-    }
+    dispatch(stopTimer.action());
   };
 
   return (

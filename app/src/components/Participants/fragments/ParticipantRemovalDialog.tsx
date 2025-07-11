@@ -9,8 +9,8 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  styled,
   Typography,
+  styled,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -38,7 +38,7 @@ const ParticipantRemovalDialog = ({ open, onClose, participant }: ParticipantRem
   const dispatch = useAppDispatch();
 
   const handleConfirm = () => {
-    dispatch(kickParticipant.action({ target: participant.id }));
+    dispatch(kickParticipant.action({ target: participant.participantId }));
     dispatch(enableWaitingRoom.action());
     const formatKickedTime = format(Date.parse(new Date().toISOString()), 'HH:mm');
     notifications.info(

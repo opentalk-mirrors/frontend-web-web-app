@@ -6,7 +6,6 @@ import { TimerKind, TimerStopKind, TimerStyle } from '../timer';
 
 export interface TimerStarted {
   message: 'started';
-  timerId: string;
   readyCheckEnabled: boolean;
   endsAt?: Timestamp;
   title?: string;

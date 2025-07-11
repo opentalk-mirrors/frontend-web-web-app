@@ -265,32 +265,24 @@ export const chatSlice = createSlice({
     builder.addCase(joinSuccess, (state: ChatState, { payload: { chat } }) => {
       globalMessagesAdapter.setAll(
         state.scope.global.messages,
-        chat.roomHistory.messages.filter(
+        chat.globalHistory.messages.filter(
           (msg): msg is ChatMessage & { scope: ChatScope.Global } => msg.scope === ChatScope.Global
         )
       );
-      state.scope.global.nextIndex = chat.roomHistory.nextIndex;
+      state.scope.global.nextIndex = chat.globalHistory.nextIndex;
 
-      const privateMessagesByParticipant: Record<ParticipantId, ChatMessage[]> = {};
-      for (const message of chat.roomHistory.messages) {
-        if (message.scope === ChatScope.Private && message.target) {
-          const participantId = message.target;
-          if (!privateMessagesByParticipant[participantId]) {
-            privateMessagesByParticipant[participantId] = [];
-          }
-          privateMessagesByParticipant[participantId].push(message);
-        }
-      }
-      for (const [participantId, messages] of Object.entries(privateMessagesByParticipant)) {
-        state.scope.private[participantId as ParticipantId] = {
+      chat.privateHistory.forEach((ph) => {
+        state.scope.private[ph.correspondent] = {
           messages: privateMessagesAdapter.setAll(
             privateMessagesAdapter.getInitialState(),
-            messages.filter((msg): msg is ChatMessage & { scope: ChatScope.Private } => msg.scope === ChatScope.Private)
+            ph.history.messages.filter(
+              (msg): msg is ChatMessage & { scope: ChatScope.Private } => msg.scope === ChatScope.Private
+            )
           ),
-          nextIndex: null,
+          nextIndex: ph.history.nextIndex,
           lastSeenTimestamp: new Date().toISOString() as Timestamp,
         };
-      }
+      });
 
       chat.groupsHistory
         .filter((group) => group.history.messages.length > 0)

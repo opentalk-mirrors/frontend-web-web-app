@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { authError, AuthTypeError } from '@opentalk/redux-oidc';
+import { AuthTypeError, authError } from '@opentalk/redux-oidc';
 import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
+import { MeetingDetails } from '@opentalk/rest-api-rtk-query/dist/src/types/event';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ListenerEffectAPI } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
@@ -39,7 +40,6 @@ export type RoomState = {
   password?: string;
   invite: InviteState;
   connectionState: ConnectionState;
-  resumptionToken?: string;
   waitingRoomEnabled: boolean;
   error?: string;
   serverTimeOffset: number;
@@ -47,6 +47,7 @@ export type RoomState = {
   participantLimit: number;
   currentMode?: RoomMode;
   eventInfo?: EventInfo;
+  meetingDetails?: MeetingDetails;
   roomInfo?: RoomInfo;
   reconnectTimerId: ReturnType<typeof setTimeout> | null;
   isOwnedByCurrentUser: boolean;
@@ -175,7 +176,6 @@ export const roomSlice = createSlice({
       state.invite.loading = false;
       state.invite.inviteCode = meta.arg;
       state.connectionState = ConnectionState.Setup;
-      state.resumptionToken = undefined;
       state.passwordRequired = payload.passwordRequired;
     });
     builder.addCase(fetchRoomByInviteId.rejected, (state, { payload }) => {
@@ -202,9 +202,6 @@ export const roomSlice = createSlice({
         state.invite = { inviteCode, loading: false };
       }
     );
-    builder.addCase(startRoom.fulfilled, (state, { payload: { resumption } }) => {
-      state.resumptionToken = resumption;
-    });
     builder.addCase(startRoom.rejected, (state, payload) => {
       if ('code' in payload.error) {
         state.error = payload.error.code;
@@ -238,6 +235,7 @@ export const roomSlice = createSlice({
         }
       }
       state.eventInfo = payload.eventInfo;
+      state.meetingDetails = payload.meetingDetails;
       state.roomInfo = payload.roomInfo;
     });
     builder.addCase(hangUp.pending, (state) => {
@@ -298,6 +296,7 @@ export const selectPasswordRequired = (state: RootState) => state.room.passwordR
 export const selectParticipantLimit = (state: RootState) => state.room.participantLimit;
 export const selectCurrentRoomMode = (state: RootState) => state.room.currentMode;
 export const selectEventInfo = (state: RootState) => state.room.eventInfo;
+export const selectMeetingDetails = (state: RootState) => state.room.meetingDetails;
 export const selectRoomInfo = (state: RootState) => state.room.roomInfo;
 export const selectIsRoomOwner = (state: RootState) => state.room.isOwnedByCurrentUser;
 export const selectIsParticipationConfirmationActive = (state: RootState) => state.room.isPresenceConfirmationActive;

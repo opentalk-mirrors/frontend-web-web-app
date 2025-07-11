@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Button, Typography, List as MuiList, Box } from '@mui/material';
+import { Box, Button, List as MuiList, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { acceptParticipantFromWaitingRoomToRoom } from '../../api/types/outgoing/moderation';
@@ -53,7 +53,7 @@ const WaitingParticipantsList = ({ id }: WaitingParticipantsListProps) => {
   const handleApproveAll = () => {
     if (participantsNotApproved.length > 0) {
       participantsNotApproved.forEach((participant) => {
-        dispatch(acceptParticipantFromWaitingRoomToRoom.action({ target: participant.id }));
+        dispatch(acceptParticipantFromWaitingRoomToRoom.action({ target: participant.participantId }));
       });
       dispatch(approvedAll());
     }

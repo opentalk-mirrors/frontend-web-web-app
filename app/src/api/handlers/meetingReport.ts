@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { showWithLinkNotification } from '../../components/WithLinkNotification';
 import log from '../../logger';
-import type { AppDispatch, RootState } from '../../store';
+import type { RootState } from '../../store';
 import { composeMeetingDetailsUrl } from '../../utils/apiUtils';
 import { meetingReport } from '../types/incoming';
 import { handleStorageExceededError } from './helpers';
@@ -11,7 +11,7 @@ import { handleStorageExceededError } from './helpers';
 /**
  * Handles meetingReport messages.
  */
-export const handleMeetingReportMessage = (_dispatch: AppDispatch, data: meetingReport.Message, state: RootState) => {
+export const handleMeetingReportMessage = (data: meetingReport.Message, state: RootState) => {
   let assetLocation;
   switch (data.message) {
     case 'pdf_asset':

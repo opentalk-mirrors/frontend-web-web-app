@@ -54,6 +54,9 @@ export const subroomAudioSlice = createSlice({
           : storedParticipant
       );
     },
+    setWhisperParticipants: (state, { payload: { participants } }) => {
+      state.participants = participants;
+    },
     inviteParticipants: (state, { payload: { participants } }) => {
       const newParticipants: WhisperParticipant[] = participants.map((p: ParticipantId) => ({
         participantId: p,
@@ -79,6 +82,7 @@ export const {
   resetSubroomAudioData,
   updateParticipantInviteState,
   removeParticipant,
+  setWhisperParticipants,
   inviteParticipants,
   setIsWhisperActive,
 } = subroomAudioSlice.actions;

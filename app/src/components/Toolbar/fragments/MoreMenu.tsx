@@ -7,18 +7,10 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
-import {
-  disableMicrophoneRestrictions,
-  enableMicrophoneRestrictions,
-  requestMute,
-} from '../../../api/types/outgoing/livekit';
+import { disableMicrophoneRestrictions, enableMicrophoneRestrictions } from '../../../api/types/outgoing/livekit';
 import { generateAttendanceReport } from '../../../api/types/outgoing/meetingReport';
-import {
-  disableRaiseHands,
-  disableWaitingRoom,
-  enableRaiseHands,
-  enableWaitingRoom,
-} from '../../../api/types/outgoing/moderation';
+import { disableWaitingRoom, enableWaitingRoom, mute } from '../../../api/types/outgoing/moderation';
+import { disableRaiseHands, enableRaiseHands } from '../../../api/types/outgoing/raiseHands';
 import { sendStartStreamSignal, sendStopStreamSignal } from '../../../api/types/outgoing/streaming';
 import { disablePresenceLogging, enablePresenceLogging } from '../../../api/types/outgoing/trainingParticipationReport';
 import {
@@ -60,6 +52,7 @@ import {
   selectRecordingTarget,
 } from '../../../store/slices/streamingSlice';
 import { selectAvatarUrl, selectDisplayName, selectIsModerator, selectOurUuid } from '../../../store/slices/userSlice';
+import { ParticipantId } from '../../../types';
 import { isDevMode } from '../../../utils/devMode';
 import InviteGuestDialog from './InviteGuestDialog';
 import { ToolbarMenu, ToolbarMenuItem, ToolbarMenuProps } from './ToolbarMenuUtils';
@@ -96,7 +89,9 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const isModerator = useAppSelector(selectIsModerator);
   const participantId = useAppSelector(selectOurUuid);
   const moderatorParticipants = useAppSelector(selectAllModeratorParticipants);
-  const unrestrictedParticipants = moderatorParticipants.map((p) => p.id).concat(participantId ? [participantId] : []);
+  const unrestrictedParticipants = moderatorParticipants
+    .map((p) => p.id as ParticipantId)
+    .concat(participantId ? [participantId] : []);
   const displayName = useAppSelector(selectDisplayName);
   const avatarUrl = useAppSelector(selectAvatarUrl);
   const isRoomOwner = useAppSelector(selectIsRoomOwner);
@@ -174,7 +169,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           if (participantId) {
             onClose();
             dispatch(enableMicrophoneRestrictions.action({ unrestrictedParticipants }));
-            dispatch(requestMute.action({ participants: moderatorParticipants.map((p) => p.id) }));
+            dispatch(mute.action({ participants: moderatorParticipants.map((p) => p.id as ParticipantId) }));
           }
         },
         icon: <MicOffIcon />,

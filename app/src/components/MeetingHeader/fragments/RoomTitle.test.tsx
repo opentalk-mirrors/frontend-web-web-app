@@ -5,7 +5,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { truncate } from 'lodash';
 
-import { renderWithProviders, configureStore } from '../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import RoomTitle from './RoomTitle';
 import { ROOM_TITLE_MAX_LENGTH } from './constants';
 
@@ -68,19 +68,19 @@ describe('Room title', () => {
         room: {
           eventInfo: {
             title: 'some title',
-            meetingDetails: {
-              inviteCode: 'invite this',
-              streamingLinks: [
-                {
-                  name: 'twitch',
-                  url: 'http://twitch.tv/some-streamer',
-                },
-              ],
-              callIn: {
-                id: '1138',
-                tel: '4815162342',
-                password: 'password',
+          },
+          meetingDetails: {
+            inviteCode: 'invite this',
+            streamingLinks: [
+              {
+                name: 'twitch',
+                url: 'http://twitch.tv/some-streamer',
               },
+            ],
+            callIn: {
+              id: '1138',
+              tel: '4815162342',
+              password: 'password',
             },
           },
           roomInfo: {

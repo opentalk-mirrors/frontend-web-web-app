@@ -5,7 +5,6 @@ import { useParticipants } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
-import type { ParticipantId } from '../../types';
 import { mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import NameTile from './NameTile';
 
@@ -17,13 +16,13 @@ vi.mock('@livekit/components-react', () => ({
 describe('NameTile with activated media', () => {
   const participant = mockedParticipant(0);
   const displayName = participant.displayName;
-  const participantId = participant.id as ParticipantId;
+  const participantId = participant.participantId;
   beforeEach(() => {
     (useParticipants as Mock).mockReturnValue([{ ...participant, isMicrophoneEnabled: true, isCameraEnabled: true }]);
   });
 
   it('render NameTile component with audio on', () => {
-    renderWithProviders(<NameTile displayName={participant.displayName} participantId={participant.id} />, {
+    renderWithProviders(<NameTile displayName={participant.displayName} participantId={participantId} />, {
       provider: { mui: true },
     });
 
@@ -56,7 +55,7 @@ describe('NameTile with activated media', () => {
 describe('NameTile with deactivated media', () => {
   const participant = mockedParticipant(0);
   const displayName = participant.displayName;
-  const participantId = participant.id as ParticipantId;
+  const participantId = participant.participantId;
   beforeEach(() => {
     (useParticipants as Mock).mockReturnValue([participant]);
   });

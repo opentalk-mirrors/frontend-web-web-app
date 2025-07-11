@@ -5,7 +5,7 @@ import { useRemoteParticipants } from '@livekit/components-react';
 import { RoomEvent } from 'livekit-client';
 import { useMemo, useState } from 'react';
 
-import { resetRaisedHands } from '../../api/types/outgoing/moderation';
+import { resetRaisedHands } from '../../api/types/outgoing/raiseHands';
 import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAndSelectParticipantsTab';
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -51,8 +51,13 @@ const ResetHandraisesTab = () => {
   };
 
   const resetSelectedHandraises = () => {
-    if (selectedParticipants.length > 0) {
-      dispatch(resetRaisedHands.action({ target: selectedParticipants }));
+    const selectedParticipantIds = selectedParticipants
+      // TODO - rethink combined id
+      .map((p) => p.split(':').at(0))
+      .filter((v): v is ParticipantId => v !== undefined);
+
+    if (selectedParticipantIds.length > 0) {
+      dispatch(resetRaisedHands.action({ target: selectedParticipantIds }));
       setSelectedParticipants([]);
     }
   };

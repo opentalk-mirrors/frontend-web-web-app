@@ -68,6 +68,7 @@ export type UIState = {
     [ChatScope.Global]: string;
     [ChatScope.Group]: Record<TargetId, string>;
     [ChatScope.Private]: Record<TargetId, string>;
+    [ChatScope.Breakout]: Record<TargetId, string>;
   };
   hotkeysEnabled: boolean;
   errorDialog: ErrorDialog;
@@ -105,6 +106,7 @@ const initialState: UIState = {
     [ChatScope.Global]: '',
     [ChatScope.Group]: {},
     [ChatScope.Private]: {},
+    [ChatScope.Breakout]: {},
   },
   hotkeysEnabled: true,
   errorDialog: {
@@ -221,7 +223,7 @@ export const uiSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(leave, (state, { payload: { id } }: PayloadAction<{ id: ParticipantId }>) => {
+    builder.addCase(leave, (state, { payload: { id } }: PayloadAction<{ id: string }>) => {
       if (state.pinnedParticipantId === id) {
         state.pinnedParticipantId = undefined;
       }

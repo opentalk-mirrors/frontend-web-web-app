@@ -93,6 +93,9 @@ export const handleChatMessage = (
     case 'search_results':
       dispatch(setChatSearchResults(data.matches.messages));
       break;
+    case 'set_last_seen_timestamp':
+      console.warn('TODO: handle set_last_seen_timestamp');
+      break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
       log.error(`Unknown chat message type: ${dataString}`);

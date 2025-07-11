@@ -7,11 +7,18 @@ import i18next from 'i18next';
 
 import type { RootState } from '../';
 import { restApi } from '../../api/rest';
-import { Role } from '../../api/types/incoming/control';
 import { sendChatMessage } from '../../api/types/outgoing/chat';
-import { lowerHand, raiseHand } from '../../api/types/outgoing/control';
+import { lowerHand, raiseHand } from '../../api/types/outgoing/raiseHands';
 import i18n from '../../i18n';
-import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
+import {
+  GroupId,
+  MeetingNotesAccess,
+  Participant,
+  ParticipantId,
+  ParticipationKind,
+  Role,
+  WaitingState,
+} from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
 import { isFeatureEnabledPredicate } from '../../utils/moduleUtils';
 import { changeMedia, joinSuccess, setScreenShareEnabled, startRoom } from '../commonActions';
@@ -145,6 +152,7 @@ export const selectUserAsPartialParticipant = createSelector(
 
     return {
       id: state.uuid,
+      participantId: state.uuid,
       displayName,
       avatarUrl,
       groups,

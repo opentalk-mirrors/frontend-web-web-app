@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { selectNext, talkingStickStart, stop as talkingStickStop } from '../../api/types/outgoing/automod';
 import { CommonSwitch } from '../../commonComponents';
-import { useAppSelector, useAppDispatch } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectCombinedUserAndParticipants } from '../../store/selectors';
 import { selectAutomodActiveState, selectAutomoderationParticipantIds } from '../../store/slices/automodSlice';
 import { SortOption } from '../../types';
@@ -44,9 +44,9 @@ const TalkingStickTabPanel = () => {
   }, [i18n.language, participantsWithoutUser, selectedSortType]);
 
   const handleStart = () => {
-    const participantIdList = sortedParticipants.map((participant) => participant.id);
+    const participantIdList = sortedParticipants.map((participant) => participant.participantId);
     const sortedPlaylist = includeTalkingStickCreator
-      ? [userInitiatingTalkingStick.id, ...participantIdList]
+      ? [userInitiatingTalkingStick.participantId, ...participantIdList]
       : [...participantIdList];
     dispatch(
       talkingStickStart.action({

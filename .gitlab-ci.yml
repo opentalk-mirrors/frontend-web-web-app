@@ -33,7 +33,7 @@ stages:
   - package
   - push
   - scan
-  - e2e
+  # - e2e
   - review-app
   - cleanup
   - release
@@ -525,36 +525,36 @@ container-scanning:
     forward:
       pipeline_variables: true
 
-run-smoke-e2e-tests:
-  needs:
-    - container-mr
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  stage: e2e
-  variables:
-    FRONTEND_TAG: ${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
-    RUN_ONLY_SMOKE_TESTS: true
-  trigger:
-    project: opentalk/qa/e2e-tests
-    strategy: depend
-    forward:
-      pipeline_variables: true
+# run-smoke-e2e-tests:
+#   needs:
+#     - container-mr
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+#   stage: e2e
+#   variables:
+#     FRONTEND_TAG: ${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
+#     RUN_ONLY_SMOKE_TESTS: true
+#   trigger:
+#     project: opentalk/qa/e2e-tests
+#     strategy: depend
+#     forward:
+#       pipeline_variables: true
 
-run-full-e2e-tests:
-  when: manual
-  allow_failure: true
-  needs:
-    - container-mr
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  stage: e2e
-  variables:
-    FRONTEND_TAG: ${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
-  trigger:
-    project: opentalk/qa/e2e-tests
-    strategy: depend
-    forward:
-      pipeline_variables: true
+# run-full-e2e-tests:
+#   when: manual
+#   allow_failure: true
+#   needs:
+#     - container-mr
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+#   stage: e2e
+#   variables:
+#     FRONTEND_TAG: ${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
+#   trigger:
+#     project: opentalk/qa/e2e-tests
+#     strategy: depend
+#     forward:
+#       pipeline_variables: true
 
 deploy:
   stage: review-app

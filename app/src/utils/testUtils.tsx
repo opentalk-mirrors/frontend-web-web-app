@@ -4,25 +4,25 @@
 import { ThemeProvider } from '@mui/material';
 import '@mui/material';
 import {
+  AssetId,
   BaseAsset,
   DateTime,
   Email,
   EventId,
   EventType,
+  InviteCode,
   InviteStatus,
+  PlatformKind,
   RecurrencePattern,
   RecurringEvent,
   RoomId,
   RoomInvite,
   SingleEvent,
+  SipId,
+  StreamingTarget,
+  ThemeBasePalette,
   TimelessEvent,
   UserId,
-  PlatformKind,
-  StreamingTarget,
-  AssetId,
-  InviteCode,
-  SipId,
-  ThemeBasePalette,
 } from '@opentalk/rest-api-rtk-query';
 import { ConfigureStoreOptions, Store } from '@reduxjs/toolkit';
 import { RenderOptions, RenderResult, render as rtlRender, renderHook as rtlRenderHook } from '@testing-library/react';
@@ -77,12 +77,10 @@ const automodState: AutomodState = {
     ids: [],
     entities: {},
   },
-  animationOnRandom: false,
   allowDoubleSelection: false,
   timeLimit: null,
-  showList: false,
+  showRemaining: false,
   speakerState: SpeakerState.Inactive,
-  considerHandRaise: false,
 };
 
 i18n.use(initReactI18next).init({
@@ -216,9 +214,9 @@ export const mockStore = (
 
   const initialState = {
     participants: {
-      ids: participants.map((p) => p.id),
+      ids: participants.map((p) => p.participantId),
       entities: participants.reduce((entities: Record<ParticipantId, Participant>, participant) => {
-        entities[participant.id] = participant;
+        entities[participant.participantId] = participant;
         return entities;
       }, {}),
     },
@@ -251,7 +249,9 @@ export const mockedParticipant = (
   setMicrophoneEnabled: (enabled: boolean) => LocalTrackPublication | undefined;
   videoTrackPublications: Map<string, RemoteTrackPublication>;
 } => ({
-  id: `00000000-e6b4-4759-00${index}` as ParticipantId,
+  id: `00000000-e6b4-4759-00${index}`,
+  participantId: `00000000-e6b4-4759-00${index}` as ParticipantId,
+  connectionId: `10000000-e6b4-4759-00${index}`,
   identity: `00000000-e6b4-4759-00${index}`, //some components while using livekit participants require identity as id -> TODO: map old participants type to Livekit Participant
   displayName: `Test User Randy Mock${index}`,
   handIsUp: false,

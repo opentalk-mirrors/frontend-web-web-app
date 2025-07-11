@@ -1,12 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { setLibravatarOptions } from '../../commonComponents';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import * as breakoutStore from '../../store/slices/breakoutSlice';
-import { selectLibravatarDefaultImage } from '../../store/slices/configSlice';
-import { breakoutJoined, breakoutLeft } from '../../store/slices/participantsSlice';
+import { breakoutLeft } from '../../store/slices/participantsSlice';
 import { Timestamp } from '../../types';
 import { breakout } from '../types/incoming';
 import { showErrorNotification } from './helpers';
@@ -32,11 +30,12 @@ export const handleBreakoutMessage = (
       break;
     case 'joined':
       {
-        const modifiedData = {
-          ...data,
-          avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
-        };
-        dispatch(breakoutJoined({ data: modifiedData, timestamp }));
+        log.error('breakout message handling not implemented yet');
+        // const modifiedData = {
+        //   ...data,
+        //   avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
+        // };
+        // dispatch(breakoutJoined({ data: modifiedData, timestamp }));
       }
       break;
     case 'left':

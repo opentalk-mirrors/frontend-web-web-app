@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { Participant as RemoteParticipant } from 'livekit-client';
 
-import { LeftReason } from '../../api/types/incoming/control';
+import { DisconnectReason } from '../../api/types/incoming/core';
 import { notifications } from '../../commonComponents';
 import {
-  BackendParticipant,
   ChatMessage,
+  JoinedWaitingRoomParticipant,
   LegalVote,
   MeetingNotesAccess,
   Participant,
@@ -33,6 +33,11 @@ export const participantAdapter = createEntityAdapter<Participant>({
   sortComparer: (a, b) => a.displayName.localeCompare(b.displayName),
 });
 
+type PatchParticipant = Pick<
+  Participant,
+  'displayName' | 'handIsUp' | 'lastActive' | 'joinedAt' | 'leftAt' | 'handUpdatedAt' | 'role' | 'meetingNotesAccess'
+>;
+
 export const participantsSlice = createSlice({
   name: 'participants',
   initialState: participantAdapter.getInitialState(),
@@ -43,6 +48,8 @@ export const participantsSlice = createSlice({
         payload: {
           participant: {
             id,
+            participantId,
+            connectionId,
             displayName,
             avatarUrl,
             handIsUp,
@@ -61,6 +68,8 @@ export const participantsSlice = createSlice({
     ) => {
       participantAdapter.upsertOne(state, {
         id,
+        participantId,
+        connectionId,
         groups,
         displayName,
         avatarUrl,
@@ -79,7 +88,9 @@ export const participantsSlice = createSlice({
     },
     leave: (
       state,
-      { payload: { id, timestamp } }: PayloadAction<{ id: ParticipantId; timestamp: string; reason: LeftReason }>
+      {
+        payload: { id, timestamp },
+      }: PayloadAction<{ id: string; timestamp: string; reason: DisconnectReason | undefined }>
     ) => {
       participantAdapter.updateOne(state, {
         id,
@@ -98,7 +109,8 @@ export const participantsSlice = createSlice({
       }>
     ) => {
       const participant: Participant = {
-        id: data.id,
+        id: `${data.id}:${data.connectionId}`,
+        participantId: data.id as ParticipantId,
         displayName: data.displayName,
         avatarUrl: data.avatarUrl,
         groups: [],
@@ -121,19 +133,24 @@ export const participantsSlice = createSlice({
         changes: { breakoutRoomId: null, leftAt: timestamp },
       });
     },
-    waitingRoomJoined: (state, { payload }: PayloadAction<BackendParticipant>) => {
+    waitingRoomJoined: (state, { payload }: PayloadAction<JoinedWaitingRoomParticipant>) => {
       const participant: Participant = {
-        id: payload.id,
-        displayName: payload.control.displayName,
-        avatarUrl: payload.control.avatarUrl,
+        id: payload.participantId,
+        participantId: payload.participantId,
+        connectionId: payload.connectionIds[0],
+        displayName: payload.displayName,
+        avatarUrl: payload.avatarUrl,
         groups: [],
         handIsUp: false,
-        joinedAt: payload.control.joinedAt,
+        joinedAt: payload.joinedAt,
         leftAt: null,
-        handUpdatedAt: payload.control.handUpdatedAt,
+        // TODO - remove
+        handUpdatedAt: undefined,
         breakoutRoomId: null,
-        participationKind: payload.control.participationKind,
-        lastActive: payload.control.joinedAt,
+        // TODO - missing from backend?
+        participationKind: ParticipationKind.User,
+        // participationKind: payload.control.participationKind,
+        lastActive: payload.joinedAt,
         meetingNotesAccess: MeetingNotesAccess.None,
         waitingState: WaitingState.Waiting,
         isRoomOwner: false,
@@ -181,6 +198,36 @@ export const participantsSlice = createSlice({
         },
       });
     },
+    patch: (
+      state,
+      { payload }: PayloadAction<{ participantId: Participant['participantId'] } & Partial<PatchParticipant>>
+    ) => {
+      const { participantId, ...optionalChanges } = payload;
+
+      const changes = Object.fromEntries(
+        Object.entries(optionalChanges).filter(([_, v]) => v !== undefined)
+      ) as Partial<PatchParticipant>;
+
+      if (Object.keys(changes).length === 0) {
+        return;
+      }
+
+      const matchingId = state.ids.find((rawId) => {
+        const entity = state.entities[rawId as string];
+        return (
+          entity?.participantId === participantId &&
+          entity.leftAt === null &&
+          entity.waitingState === WaitingState.Joined
+        );
+      });
+
+      if (matchingId) {
+        participantAdapter.updateOne(state, {
+          id: matchingId,
+          changes,
+        });
+      }
+    },
     rename: (state, { payload }: PayloadAction<Pick<Participant, 'id' | 'displayName'>>) => {
       const { id, displayName } = payload;
       participantAdapter.updateOne(state, {
@@ -215,6 +262,7 @@ export const {
   join,
   leave,
   update,
+  patch,
   breakoutJoined,
   breakoutLeft,
   waitingRoomJoined,
@@ -228,8 +276,11 @@ export const actions = participantsSlice.actions;
 export const participantSelectors = participantAdapter.getSelectors<RootState>((state) => state.participants);
 
 export const selectAllParticipants = (state: RootState) => participantSelectors.selectAll(state);
-export const selectParticipantById = (id: ParticipantId) => (state: RootState) =>
-  participantSelectors.selectById(state, id);
+export const selectParticipantById = (participantId: string) => (state: RootState) =>
+  participantSelectors.selectAll(state).find((p) => p.id === participantId);
+// TODO - rethink combined id
+export const selectParticipantByParticipantId = (participantId: string) => (state: RootState) =>
+  participantSelectors.selectAll(state).find((p) => p.participantId === participantId.split(':', 1)[0]);
 
 export const selectAllParticipantsInWaitingRoom = createSelector([selectAllParticipants], (participants) =>
   participants.filter((participant) => participant.waitingState !== WaitingState.Joined)
@@ -312,7 +363,7 @@ export const selectParticipantAvatarUrl: (state: RootState, id: ParticipantId) =
 );
 
 export const selectParticipantName: (state: RootState, id: ParticipantId) => string | undefined = createSelector(
-  [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
+  [(state: RootState, id: ParticipantId) => selectParticipantByParticipantId(id)(state)],
   (participant) => participant?.displayName
 );
 
@@ -349,7 +400,7 @@ export default participantsSlice.reducer;
 /*                                              */
 /************************************************/
 
-export const shouldShowNotification = (role: Role, participantId: ParticipantId, activeVoteEntry: LegalVote) => {
+export const shouldShowNotification = (role: Role, participantId: string, activeVoteEntry: LegalVote) => {
   if (role !== Role.Moderator) {
     return false;
   }
@@ -372,7 +423,7 @@ export const handleParticipantJoinDuringVoteEffect = (
   }
 
   const activeVoteEntry = votes.entities[activeVote.id];
-  const participantId = payload.participant.id;
+  const participantId = payload.participant.participantId;
 
   if (shouldShowNotification(state.user.role, participantId, activeVoteEntry)) {
     const participantName = payload.participant.displayName;

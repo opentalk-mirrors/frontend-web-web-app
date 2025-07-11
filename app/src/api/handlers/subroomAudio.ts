@@ -11,6 +11,7 @@ import {
   inviteParticipants,
   removeParticipant,
   resetSubroomAudioData,
+  selectSubroomAudioParticipants,
   selectSubroomAudioState,
   setSubroomAudioData,
   updateParticipantInviteState,
@@ -56,9 +57,9 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
       break;
     }
     case 'whisper_token': {
-      const subroomAudioState = selectSubroomAudioState(state);
+      const participants = selectSubroomAudioParticipants(state);
       const myOwnParticipantId = selectOurUuid(state);
-      const updatedParticipants = subroomAudioState.participants.map((p) =>
+      const updatedParticipants = participants.map((p) =>
         p.participantId === myOwnParticipantId ? { ...p, state: WhisperParticipantState.Accepted } : p
       );
       dispatch(

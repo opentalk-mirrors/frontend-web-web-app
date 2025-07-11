@@ -14,6 +14,7 @@ export * from './sort';
 export * from './tsHelper';
 export * from './whiteboard';
 export * from './actions';
+export * from './actions/joinSuccess';
 export * from './event';
 export * from './meetingNotes';
 export * from './legalVote';

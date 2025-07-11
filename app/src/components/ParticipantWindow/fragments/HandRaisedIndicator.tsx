@@ -52,7 +52,7 @@ const HandRaisedIndicator = ({ participantId }: { participantId: ParticipantId }
 
   return (
     <HandRaisedBox role="alert" aria-live="assertive">
-      {participant && participant.handIsUp && participant.handUpdatedAt && (
+      {participant?.handIsUp && participant.handUpdatedAt && (
         <HandIconContainer
           display
           translate="no"

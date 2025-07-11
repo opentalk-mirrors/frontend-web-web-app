@@ -3,7 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { configureStore, mockedLivekitParticipant, renderWithProviders } from '../../utils/testUtils';
+import {
+  configureStore,
+  mockedLivekitParticipant,
+  mockedParticipant,
+  renderWithProviders,
+} from '../../utils/testUtils';
 import SearchAndSelectParticipantsTab from './SearchAndSelectParticipantsTab';
 import { SelectableParticipant } from './fragments/SelectParticipantsItem';
 
@@ -51,6 +56,13 @@ describe('Select Participants Tab', () => {
     fireEvent.change(searchInput, { target: { value: 'a' } });
     expect(mockHandleSearchChange).toHaveBeenCalledExactlyOnceWith('a');
   });
+
+  const participants = [1, 2, 3].map((value) => ({
+    ...mockedLivekitParticipant(value),
+    participantId: mockedParticipant(value).participantId,
+    selected: false,
+  })) as SelectableParticipant[];
+
   it('should render participants', () => {
     const { store } = configureStore();
 
@@ -75,15 +87,11 @@ describe('Select Participants Tab', () => {
   });
 
   it('should call handleSelectParticipant when a checkbox is clicked', () => {
-    const participants = [1, 2, 3].map((value) => ({
-      ...mockedLivekitParticipant(value),
-      selected: false,
-    })) as SelectableParticipant[];
-
     const { store } = configureStore({
       initialState: {
         participants: {
           ids: participants.map((p) => p.identity),
+          participantIds: participants.map((p) => p.identity),
           entities: Object.fromEntries(
             participants.map((participant) => [participant.identity, { ...participant, displayName: participant.name }])
           ),

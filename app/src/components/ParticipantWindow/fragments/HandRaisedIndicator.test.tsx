@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 
-import { renderWithProviders, mockedParticipant, configureStore } from '../../../utils/testUtils';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import HandRaisedIndicator from './HandRaisedIndicator';
 
 const participant1 = mockedParticipant(1);
@@ -23,13 +23,13 @@ const { store } = configureStore({
 
 describe('HandRaisedIndicator', () => {
   it('render without crashing with flag handIsUp = false,, should have scale(0)', () => {
-    renderWithProviders(<HandRaisedIndicator participantId={participant1.id} />, { store });
+    renderWithProviders(<HandRaisedIndicator participantId={participant1.participantId} />, { store });
 
     expect(screen.queryByLabelText('indicator-has-raised-hand')).not.toBeInTheDocument();
   });
 
   it('render for handIsUp = true, should have scalse(1)', () => {
-    renderWithProviders(<HandRaisedIndicator participantId={participantHandUp.id} />, { store });
+    renderWithProviders(<HandRaisedIndicator participantId={participantHandUp.participantId} />, { store });
 
     expect(screen.getByLabelText('indicator-has-raised-hand')).toBeInTheDocument();
     expect(screen.getByLabelText('indicator-has-raised-hand')).toHaveStyle('transform: scale(1);');

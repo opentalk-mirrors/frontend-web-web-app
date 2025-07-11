@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 /* eslint-disable jsx-a11y/no-autofocus */
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Paper, IconButton, styled } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, styled } from '@mui/material';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 
@@ -43,7 +43,7 @@ const RenameParticipantDialog = ({ open, onClose, participant }: RenameParticipa
     validateOnBlur: false,
     validationSchema,
     onSubmit: (values) => {
-      dispatch(changeDisplayName.action({ target: participant.id, newName: values.name }));
+      dispatch(changeDisplayName.action({ target: participant.participantId, newName: values.name }));
       handleClose();
     },
   });

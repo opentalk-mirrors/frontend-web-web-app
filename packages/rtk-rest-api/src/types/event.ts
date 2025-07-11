@@ -350,11 +350,10 @@ export interface MeetingDetails {
 }
 
 export interface EventInfo {
-  title: string;
   id: EventId;
-  isAdhoc: boolean;
-  meetingDetails?: MeetingDetails;
   roomId: RoomId;
+  title: string;
+  isAdhoc: boolean;
   e2eEncryption: boolean;
 }
 

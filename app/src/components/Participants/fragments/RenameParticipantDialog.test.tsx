@@ -45,7 +45,7 @@ describe('RenameParticipantDialog', () => {
 
     expect(await screen.findByText(/field-error-required/)).toBeInTheDocument();
     expect(dispatchSpy.mock.calls).not.toContainEqual([
-      changeDisplayName.action({ target: participant.id, newName: '' }),
+      changeDisplayName.action({ target: participant.participantId, newName: '' }),
     ]);
   });
 
@@ -62,7 +62,7 @@ describe('RenameParticipantDialog', () => {
     await userEvent.click(screen.getByRole('button', { name: 'global-save' }));
 
     expect(mockDispatch).toHaveBeenCalledExactlyOnceWith(
-      changeDisplayName.action({ target: participant.id, newName: NEW_NAME })
+      changeDisplayName.action({ target: participant.participantId, newName: NEW_NAME })
     );
     expect(onClose).toHaveBeenCalled();
   });

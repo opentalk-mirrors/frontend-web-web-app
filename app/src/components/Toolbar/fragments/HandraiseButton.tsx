@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useTranslation } from 'react-i18next';
 
-import { lowerHand, raiseHand } from '../../../api/types/outgoing/control';
+import { lowerHand, raiseHand } from '../../../api/types/outgoing/raiseHands';
 import { RaiseHandOffIcon, RaiseHandOnIcon } from '../../../assets/icons';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Dialog, DialogContent, DialogTitle, Stack, Typography, styled } from '@mui/material';
-import type { EventInfo, StreamingLink } from '@opentalk/rest-api-rtk-query';
+import type { EventInfo, MeetingDetails, StreamingLink } from '@opentalk/rest-api-rtk-query';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -18,6 +18,7 @@ import MeetingDetailsDialogActions from './MeetingDetailsDialogActions';
 
 export type MeetingDetailsDialogProps = {
   eventInfo: EventInfo;
+  meetingDetails: MeetingDetails;
   roomInfo: RoomInfo;
   open: boolean;
   onClose: () => void;
@@ -37,9 +38,8 @@ const CustomCopyTextField = styled(CopyTextField)(({ theme }) => ({
   },
 }));
 
-const MeetingDetailsDialog = ({ open, onClose, eventInfo, roomInfo }: MeetingDetailsDialogProps) => {
+const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomInfo }: MeetingDetailsDialogProps) => {
   const { t } = useTranslation();
-  const meetingDetails = eventInfo.meetingDetails;
   const { title, roomId } = eventInfo;
   const { createdBy: roomOwner, password: roomPassword } = roomInfo;
   const baseUrl = useAppSelector(selectBaseUrl);

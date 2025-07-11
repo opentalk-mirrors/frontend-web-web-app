@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MenuItem as MuiMenuItem, Menu as MuiMenu, styled, ListItemText } from '@mui/material';
+import { ListItemText, Menu as MuiMenu, MenuItem as MuiMenuItem, styled } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
 import { chatConversationStateSet } from '../../../store/slices/uiSlice';
 import { selectGroups } from '../../../store/slices/userSlice';
-import { TargetId, ChatScope } from '../../../types';
+import { ChatScope, TargetId } from '../../../types';
 
 interface INewMessagePopoverProps<T> {
   open: boolean;
@@ -79,7 +79,10 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopove
             <ListItemText>{t('chat-private-scope')}</ListItemText>
           </MenuItem>,
           participants.map((participant) => (
-            <MenuItem key={participant.id} onClick={() => handleChatSelected(participant.id, ChatScope.Private)}>
+            <MenuItem
+              key={participant.id}
+              onClick={() => handleChatSelected(participant.participantId, ChatScope.Private)}
+            >
               <ListItemText translate="no">{participant.displayName}</ListItemText>
             </MenuItem>
           )),

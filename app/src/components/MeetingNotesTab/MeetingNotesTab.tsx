@@ -2,20 +2,20 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  styled,
-  Checkbox,
-  Typography,
   Button,
-  Popover,
+  Checkbox,
+  Container,
+  Grid,
   InputAdornment,
-  ListItem,
   List,
-  FormControlLabel as MuiFormControlLabel,
+  ListItem,
   ListItemAvatar,
   ListItemText,
-  Container,
+  FormControlLabel as MuiFormControlLabel,
+  Popover,
   Stack,
-  Grid,
+  Typography,
+  styled,
 } from '@mui/material';
 import { cloneDeep, isEmpty, some, differenceBy, uniqueId } from 'lodash';
 import { unionBy, intersectionBy } from 'lodash';
@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 
 import { deselectWriter, selectWriter, uploadPdf } from '../../api/types/outgoing/meetingNotes';
 import { DoneIcon, SearchIcon } from '../../assets/icons';
-import { ParticipantAvatar, CommonTextField } from '../../commonComponents';
+import { CommonTextField, ParticipantAvatar } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectAllMeetingNotesParticipants } from '../../store/selectors';
 import { selectMeetingNotesUrl } from '../../store/slices/meetingNotesSlice';
@@ -134,7 +134,7 @@ const MeetingNotesTab = () => {
 
   const sendInvitations = useCallback(() => {
     const participantComparator = (participant: MeetingNotesParticipant) => {
-      return `${participant.id}${participant.isSelected}`;
+      return participant.id;
     };
     const differentParticipants = meetingNotesUrl
       ? differenceBy(mergedParticipants, allMeetingNotesParticipants, participantComparator)

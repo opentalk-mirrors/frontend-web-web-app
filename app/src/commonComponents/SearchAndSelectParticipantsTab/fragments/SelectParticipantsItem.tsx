@@ -20,6 +20,7 @@ import type { ParticipantId } from '../../../types';
 
 export interface SelectableParticipant extends RemoteParticipant {
   selected: boolean;
+  participantId: ParticipantId;
 }
 
 type SelectParticipantsItemProps = {

@@ -73,6 +73,7 @@ export type {
   RecurrencePattern,
   SharedFolderData,
   EventInfo,
+  MeetingDetails,
   StreamingLink,
 } from './types/event';
 export {

@@ -55,7 +55,7 @@ describe('MuteParticipantsTab', () => {
     expect(dispatchSpy.mock.calls).toContainEqual([
       {
         payload: { participants: [...allParticipantIds] },
-        type: 'signaling/livekit/force_mute',
+        type: 'signaling/moderation/mute',
       },
     ]);
   });
@@ -83,7 +83,7 @@ describe('MuteParticipantsTab', () => {
     expect(dispatchSpy.mock.calls).toContainEqual([
       {
         payload: { participants: [participant1.identity, participant2.identity] },
-        type: 'signaling/livekit/force_mute',
+        type: 'signaling/moderation/mute',
       },
     ]);
   });

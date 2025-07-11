@@ -99,9 +99,9 @@ export const breakoutSlice = createSlice({
     builder.addCase(joinSuccess, (state, { payload }) => {
       state.loading = false;
       state.active = payload.breakout !== undefined;
-      if (payload.breakout !== undefined && payload.breakout.current !== null) {
+      if (payload.breakout !== undefined && payload.breakout.room.id !== null) {
         breakoutRooms.upsertMany(state.breakoutRooms, payload.breakout.rooms);
-        state.currentBreakoutRoomId = payload.breakout.current ?? undefined;
+        state.currentBreakoutRoomId = payload.breakout.room.id ?? null;
         state.stopped = false;
         state.expired = false;
       }

@@ -14,7 +14,7 @@ import { isEmpty } from 'lodash';
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector, useDateFormat } from '../../../hooks';
 import { ChatProps, selectUnreadPersonalMessageCountByTarget } from '../../../store/slices/chatSlice';
-import { selectParticipantById } from '../../../store/slices/participantsSlice';
+import { selectParticipantByParticipantId } from '../../../store/slices/participantsSlice';
 import { ChatScope } from '../../../types';
 import type { ParticipantId } from '../../../types';
 
@@ -40,7 +40,7 @@ interface IScopedChatItemProps {
 }
 
 const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
-  const participant = useAppSelector(selectParticipantById(chat.id as ParticipantId));
+  const participant = useAppSelector(selectParticipantByParticipantId(chat.id as ParticipantId));
   const lastMessageTimestamp = chat.lastMessage?.timestamp ?? chat.messages.at(-1)?.timestamp;
   const date = lastMessageTimestamp ? new Date(lastMessageTimestamp) : new Date(0);
   const formattedTime = useDateFormat(date, 'time');

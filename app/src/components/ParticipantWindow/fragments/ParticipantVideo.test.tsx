@@ -8,12 +8,11 @@ import React from 'react';
 import { idFromDescriptor, MediaDescriptor } from '../../../modules/WebRTC';
 import { initialState as livekitInitialState } from '../../../store/slices/livekitSlice';
 import {
-  presenterOverlayPinnedParticipantIdSet,
-  presenterVideoPositions,
-  setPresenterVideoPosition,
-} from '../../../store/slices/uiSlice';
-import { VideoSetting } from '../../../types';
-import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
+  mockStore,
+  mockedParticipant,
+  mockedVideoMediaDescriptor,
+  renderWithProviders,
+} from '../../../utils/testUtils';
 import ParticipantVideo from './ParticipantVideo';
 
 type ScreenPresenterVideoMockProps = {
@@ -66,7 +65,7 @@ vi.mock('./ScreenPresenterVideo', () => ({
 }));
 
 const participant = mockedParticipant(0);
-const participantId = participant.id;
+const participantId = participant.participantId;
 
 const baseProps = {
   participantId,

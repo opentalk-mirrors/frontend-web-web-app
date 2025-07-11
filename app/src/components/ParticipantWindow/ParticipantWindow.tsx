@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useParticipantContext } from '@livekit/components-react';
-import { styled, Box as MuiBox } from '@mui/material';
+import { Box as MuiBox, styled } from '@mui/material';
 import { useState } from 'react';
 
 import { NameTile } from '../../commonComponents';

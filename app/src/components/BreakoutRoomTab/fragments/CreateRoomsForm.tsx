@@ -89,7 +89,7 @@ const CreateRoomsForm = () => {
     }));
   };
 
-  const mapToIds = (participants: Participant[]) => participants.map((p) => p.id);
+  const mapToIds = (participants: Participant[]) => participants.map((p) => p.participantId);
 
   const toRoomPayload = (assignments: BreakoutRoomWithFullParticipants[]) =>
     assignments.map((room) => ({

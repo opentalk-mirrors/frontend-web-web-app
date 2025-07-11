@@ -5,7 +5,7 @@ import { useRemoteParticipants } from '@livekit/components-react';
 import { RoomEvent } from 'livekit-client';
 import { useMemo, useState } from 'react';
 
-import { requestMute } from '../../api/types/outgoing/livekit';
+import { mute } from '../../api/types/outgoing/moderation';
 import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAndSelectParticipantsTab';
 import { SelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/SelectParticipantsItem';
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
@@ -52,13 +52,24 @@ const MuteParticipantsTab = () => {
     }
   };
 
+  // TODO - rethink combined id
   const muteAll = () => {
-    const unmutedParticipantIds = unmutedParticipants.map((participant) => participant.identity as ParticipantId);
-    dispatch(requestMute.action({ participants: unmutedParticipantIds }));
+    const unmutedParticipantIds = unmutedParticipants.reduce<ParticipantId[]>((acc, p) => {
+      const id = p.identity.split(':').at(0);
+      if (id) {
+        acc.push(id as ParticipantId);
+      }
+      return acc;
+    }, []);
+
+    dispatch(mute.action({ participants: unmutedParticipantIds }));
   };
 
   const muteSelected = () => {
-    dispatch(requestMute.action({ participants: selectedParticipants }));
+    const participants = selectedParticipants
+      .map((p) => p.split(':').at(0))
+      .filter((v): v is ParticipantId => v !== undefined);
+    dispatch(mute.action({ participants }));
     setSelectedParticipants([]);
   };
 

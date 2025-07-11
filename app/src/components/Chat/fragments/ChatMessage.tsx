@@ -8,14 +8,14 @@ import { uniqueId } from 'lodash';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Role } from '../../../api/types/incoming/control';
+import { DisconnectReason } from '../../../api/types/incoming/core';
 import { ModeratorIcon } from '../../../assets/icons';
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector, useDateFormat } from '../../../hooks';
 import { RoomEvent } from '../../../store/slices/eventSlice';
-import { selectParticipantById } from '../../../store/slices/participantsSlice';
+import { selectParticipantByParticipantId } from '../../../store/slices/participantsSlice';
 import { selectAvatarUrl, selectDisplayName, selectOurUuid } from '../../../store/slices/userSlice';
-import { ChatMessage as ChatMessageType } from '../../../types';
+import { ChatMessage as ChatMessageType, Role } from '../../../types';
 import { isEventMessage } from '../../../utils/typeGuardUtils';
 import TextWithDivider from '../../TextWithDivider';
 
@@ -62,7 +62,9 @@ const Avatar = styled(ParticipantAvatar)({
 });
 
 const getSender = (message: ChatMessageType | RoomEvent) => {
-  return isEventMessage(message) ? selectParticipantById(message?.target) : selectParticipantById(message?.source);
+  return isEventMessage(message)
+    ? selectParticipantByParticipantId(message?.target)
+    : selectParticipantByParticipantId(message?.source);
 };
 
 interface ChatMessageProps {
@@ -83,8 +85,8 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
     if (isEventMessage(message)) {
       return;
     }
-    const trimedMessage = message.content.trim();
-    const isSingleMessage = trimedMessage.split(' ').length === 1;
+    const trimedMessage = message.content?.trim();
+    const isSingleMessage = trimedMessage?.split(' ').length === 1;
     if (!isSingleMessage) {
       return;
     }
@@ -155,7 +157,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
               {sender?.displayName}
             </EventNameTypography>
             <EventMessageTypography variant="caption">
-              {t(`participant-${message.reason === 'quit' ? message.event : 'removed'}-event`, {
+              {t(`participant-${message.reason === DisconnectReason.Leave ? message.event : 'removed'}-event`, {
                 time: getTimeStringFromTimestamp(message),
               })}
             </EventMessageTypography>

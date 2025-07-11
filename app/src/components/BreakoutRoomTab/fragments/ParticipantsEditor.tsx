@@ -44,7 +44,7 @@ const ButtonGroup = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   padding: theme.spacing(1.25, 2),
-  borderTop: `1px solid #385865`,
+  borderTop: '1px solid #385865',
 }));
 
 const Title = styled(Typography)(({ theme }) => ({

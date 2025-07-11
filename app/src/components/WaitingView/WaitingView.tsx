@@ -13,7 +13,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { enterRoom } from '../../api/types/outgoing/control';
+import { enterRoom } from '../../api/types/outgoing/core';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { changeMedia } from '../../store/commonActions';
