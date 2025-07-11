@@ -10,7 +10,9 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/livekitSlice';
 import {
+  pinnedParticipantIdSet,
   presenterVideoPositions,
+  selectPinnedParticipantId,
   selectPresenterVideoPosition,
   setPresenterVideoPosition,
 } from '../../../store/slices/uiSlice';
@@ -50,8 +52,9 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
   const showCamera = participant.isCameraEnabled && areParticipantVideosEnabled;
 
   const containerRef = useRef(null);
-  const [isVideoPinned, setIsVideoPinned] = useState<boolean>(false);
   const [showPresenterVideo, setShowPresenterVideo] = useState<boolean>(!!presenterVideoIsActive);
+  const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
+  const isVideoPinned = pinnedParticipantId === participantId;
   const presenterVideoPosition = useAppSelector(selectPresenterVideoPosition);
 
   const slideDirection = presenterVideoPosition === 'upperRight' ? 'down' : 'up';
@@ -76,7 +79,10 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
     !presenterVideoIsActive && setShowPresenterVideo(true);
   }, [presenterVideoIsActive]);
 
-  const handleToggle = () => setIsVideoPinned((videoPinned) => !videoPinned);
+  const togglePin = useCallback(() => {
+    const updatePinnedId = pinnedParticipantId === participantId ? undefined : participantId;
+    dispatch(pinnedParticipantIdSet(updatePinnedId));
+  }, [dispatch, participantId, pinnedParticipantId]);
 
   const movePresenterVideo = () => {
     const currentIndex = presenterVideoPositions.indexOf(presenterVideoPosition);
@@ -92,7 +98,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
           <ScreenPresenterVideo
             participantId={participantId}
             isVideoPinned={isVideoPinned}
-            togglePin={handleToggle}
+            togglePin={togglePin}
             videoPosition={presenterVideoPosition}
             changeVideoPosition={movePresenterVideo}
             isThumbnail={isThumbnail}
