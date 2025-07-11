@@ -16,7 +16,7 @@ const isRoomIdValid = (url: string): boolean => {
   return splitPath.includes('room') && validate(roomId);
 };
 
-const getUserToInviteInMeeting = (browserName: string): string => {
+const getUserToInviteInMeeting = (browserName: 'chromium' | 'firefox' | 'webkit'): string => {
   const parsedBaseUrl = new URL(process.env.INSTANCE_URL);
   let inviteUser;
   if (parsedBaseUrl.hostname === 'localhost') {
@@ -26,9 +26,9 @@ const getUserToInviteInMeeting = (browserName: string): string => {
     inviteUser = 'Time Limit';
   } else {
     // for ci setup
-    inviteUser = 'Test Chrome';
-    if (browserName !== 'firefox') {
-      inviteUser = 'Test Firefox';
+    inviteUser = 'test-firefox test-firefox';
+    if (browserName === 'firefox') {
+      inviteUser = 'test-webkit test-webkit';
     }
   }
   return inviteUser;

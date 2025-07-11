@@ -82,7 +82,7 @@ export class MeetingInvitationPage {
     return this.page.getByText(this.notificationText);
   }
 
-  private async waitForGuestLinkToRender(): Promise<void> {
+  public async waitForGuestLinkToRender(): Promise<void> {
     // it takes some time for guestlink placeholder to have meeting url
     await this.guestLinkInputField.isVisible();
     let guestLink = await this.guestLinkInputField.inputValue();
@@ -124,7 +124,7 @@ export class MeetingInvitationPage {
     return lobbyRoomPage;
   }
 
-  async goToAdhocMeetingLobbyAsModerator(closeMeetingTab?: boolean): Promise<void> {
+  async goToAdhocMeetingLobbyAsModerator(closeMeetingTab: boolean): Promise<void> {
     // the optional parameter closes the meeting setup tab, by default it is false, meaning the tab won't be closed
     const meetingLink = await this.meetingLinkInputField.inputValue();
     await this.startAdhocMeetingHelper(closeMeetingTab);
