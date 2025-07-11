@@ -9,7 +9,7 @@ import { useDeleteRoomAssetMutation, useGetRoomAssetsQuery } from '../../../../a
 import { notifications } from '../../../../commonComponents';
 import SuspenseLoading from '../../../../commonComponents/SuspenseLoading/SuspenseLoading';
 import AssetTable from '../../../../components/AssetTable';
-import { AssetDownloadBaseInfo, useDownloadRoomAsset } from '../../../../hooks/useDownloadRoomAsset';
+import { type AssetDownloadBaseInfo, useDownloadRoomAsset } from '../../../../hooks/useDownloadRoomAsset';
 import log from '../../../../logger';
 import { RecurrenceInstance, checkAssetPredicate } from '../../../../utils/eventUtils';
 
@@ -25,13 +25,19 @@ const RoomAssetTable = ({ roomId, isMeetingCreator, recurrenceInstance }: RoomAs
   const [deleteRoomAsset] = useDeleteRoomAssetMutation();
   const downloadRoomAsset = useDownloadRoomAsset();
 
-  const filteredAssets = useMemo(() => {
-    if (!recurrenceInstance) {
+  const derivedAssets = useMemo(() => {
+    if (!assets || assets.length === 0) {
       return assets;
     }
 
-    return assets?.filter((asset) => checkAssetPredicate(asset.createdAt, recurrenceInstance));
-  }, [assets]);
+    let sorted = assets.slice();
+
+    if (recurrenceInstance) {
+      sorted = sorted.filter((asset) => checkAssetPredicate(asset.createdAt, recurrenceInstance));
+    }
+
+    return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [assets, recurrenceInstance]);
 
   const handleDownload = async ({ assetId, filename, fileSize, updateDownloadProgress }: AssetDownloadBaseInfo) => {
     return downloadRoomAsset({ roomId, assetId, filename, fileSize, updateDownloadProgress });
@@ -48,13 +54,13 @@ const RoomAssetTable = ({ roomId, isMeetingCreator, recurrenceInstance }: RoomAs
     return <SuspenseLoading />;
   }
 
-  if (isError || !filteredAssets || filteredAssets.length === 0) {
+  if (isError || !derivedAssets || derivedAssets.length === 0) {
     return null;
   }
 
   return (
     <AssetTable
-      assets={filteredAssets}
+      assets={derivedAssets}
       onDownload={handleDownload}
       onDelete={isMeetingCreator ? handleDelete : undefined}
       maxHeight="17rem"
