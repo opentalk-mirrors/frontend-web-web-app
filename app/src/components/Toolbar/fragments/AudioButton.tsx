@@ -87,6 +87,9 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
     if (permissionDenied === true) {
       return t('device-permission-denied');
     }
+    if (!canPublishAudio) {
+      return t('toolbar-button-audio-disabled-tooltip');
+    }
     if (microphoneEnabled) {
       return t('toolbar-button-audio-turn-off-tooltip-title');
     }
