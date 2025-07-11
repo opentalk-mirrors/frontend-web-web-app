@@ -35,6 +35,7 @@ export class TimerPage {
       readonly time: Locator;
       readonly participantsHeading: Locator;
       readonly participantsNotDoneStatus: Locator;
+      readonly participantsDoneStatus: Locator;
     };
     readonly timerStartedPopup: {
       readonly timerStartedHeading: Locator;
@@ -42,6 +43,7 @@ export class TimerPage {
       readonly remainingTimeLabel: Locator;
       readonly time: Locator;
       readonly markMeAsDoneButton: Locator;
+      readonly unmarkMeAsDoneButton: Locator;
     };
     readonly stopTimerButton: Locator;
     readonly timerStoppedAlert: Locator;
@@ -82,14 +84,21 @@ export class TimerPage {
         participantsNotDoneStatus: this.page
           .getByRole('tabpanel', { name: 'Timer' })
           .getByRole('listitem')
-          .filter({ has: this.page.getByRole('img', { name: 'Not done', exact: true }) }),
+          .filter({ has: this.page.getByRole('img', { name: 'Not done', exact: true }) })
+          .locator('p'),
+        participantsDoneStatus: this.page
+          .getByRole('tabpanel', { name: 'Timer' })
+          .getByRole('listitem')
+          .filter({ has: this.page.getByRole('img', { name: 'Done', exact: true }) })
+          .locator('p'),
       },
       timerStartedPopup: {
         timerStartedHeading: this.page.getByRole('heading', { name: 'A timer was started' }),
         elapsedTimeLabel: this.page.getByRole('dialog').getByText('Elapsed time', { exact: true }),
         remainingTimeLabel: this.page.getByRole('dialog').getByText('Remaining time', { exact: true }),
         time: this.page.getByRole('dialog').getByText(/\b\d{1,2}\s*:\s*\d{2}\b/),
-        markMeAsDoneButton: this.page.getByRole('button', { name: 'Mark me as done' }),
+        markMeAsDoneButton: this.page.getByRole('button', { name: 'Mark me as done', exact: true }),
+        unmarkMeAsDoneButton: this.page.getByRole('button', { name: 'Unmark me as done', exact: true }),
       },
       stopTimerButton: this.page.getByRole('button', { name: 'Stop timer' }),
       timerStoppedAlert: this.page.getByRole('alert').getByText('The timer was stopped'),
@@ -174,14 +183,24 @@ export class TimerPage {
     return this.page.getByRole('heading', { name: title });
   }
 
-  public async getParticipantsNotDoneStatus(): Promise<Locator[]> {
-    const notDoneList: Locator[] = [];
+  public async getParticipantsNotDoneStatus(): Promise<string[]> {
+    const notDoneList: string[] = [];
     for (const notDoneParticipant of await this.createTimer.tabPanel.participantsNotDoneStatus.all()) {
       if (await notDoneParticipant.isVisible()) {
-        notDoneList.push(notDoneParticipant);
+        notDoneList.push(await notDoneParticipant.innerText());
       }
     }
     return notDoneList;
+  }
+
+  public async getParticipantsDoneStatus(): Promise<string[]> {
+    const doneList: string[] = [];
+    for (const doneParticipant of await this.createTimer.tabPanel.participantsDoneStatus.all()) {
+      if (await doneParticipant.isVisible()) {
+        doneList.push(await doneParticipant.innerText());
+      }
+    }
+    return doneList;
   }
 
   public async getTimerTimeInSeconds(locator: Locator): Promise<number> {
@@ -213,5 +232,15 @@ export class TimerPage {
 
   public async toggleAskParticipantsIfReady(value: boolean) {
     await this.participantsReadyCheckbox.setChecked(value);
+  }
+
+  public async markMeAsDone() {
+    await this.createTimer.timerStartedPopup.markMeAsDoneButton.click();
+    await this.createTimer.timerStartedPopup.unmarkMeAsDoneButton.waitFor({ state: 'visible', timeout: 5000 });
+  }
+
+  public async unmarkMeAsDone() {
+    await this.createTimer.timerStartedPopup.unmarkMeAsDoneButton.click();
+    await this.createTimer.timerStartedPopup.markMeAsDoneButton.waitFor({ state: 'visible', timeout: 5000 });
   }
 }

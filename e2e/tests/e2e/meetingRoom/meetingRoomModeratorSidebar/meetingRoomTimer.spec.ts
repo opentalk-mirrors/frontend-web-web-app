@@ -19,7 +19,7 @@ test.describe('Meeting Room_Timer', () => {
 
   test.beforeEach(async ({ page, context, browserName }) => {
     ({ meetingRoomPage, guestLink } = await startAdhocMeetingAsModerator(page, browserName));
-    guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest');
+    guestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest1');
     const meetingRoomTimerPage: TimerPage = new TimerPage({ page: meetingRoomPage.page });
     const guestMeetingRoomTimerPage: TimerPage = new TimerPage({ page: guestMeetingRoomPage.page });
     meetingParticipantPages = [meetingRoomTimerPage, guestMeetingRoomTimerPage]; // need to add invitedGuest in future
@@ -314,6 +314,87 @@ test.describe('Meeting Room_Timer', () => {
       await page.page.bringToFront();
       await expect(page.getTimerStartedPopup(timerTitle)).not.toBeVisible();
       await expect(page.createTimer.timerRanOutAlert).toBeVisible();
+    }
+
+    await timerPage.page.bringToFront();
+    await expect(timerPage.createTimer.createTimerButton).toBeVisible();
+    await expect(meetingRoomPage.moderationTools.coffeeBreakButton).toBeEnabled();
+  });
+
+  test('TC_006_Meeting Room_As Moderator_Timer_Mark me as done button+Stop Timer button', async ({
+    browserName,
+    context,
+  }) => {
+    test.skip(browserName === 'webkit');
+
+    await timerPage.openDurationSelection();
+    await timerPage.selectTimerDuration('oneMinute');
+    await timerPage.saveSessionDuration();
+    await timerPage.enterTimerTitle(timerTitle);
+
+    await timerPage.toggleAskParticipantsIfReady(true);
+    await expect(timerPage.participantsReadyCheckbox).toBeChecked();
+
+    await timerPage.createNewTimer();
+    for (const meetingParticipantPage of meetingParticipantPages) {
+      await meetingParticipantPage.page.bringToFront();
+      await expect(meetingParticipantPage.getTimerStartedPopup(timerTitle)).toBeVisible();
+      await expect(meetingParticipantPage.createTimer.timerStartedPopup.timerStartedHeading).toHaveText(
+        'A timer was started'
+      );
+      await expect(meetingParticipantPage.getTimerTitle(timerTitle)).toHaveText(timerTitle);
+      await expect(meetingParticipantPage.createTimer.timerStartedPopup.remainingTimeLabel).toBeVisible();
+      await expect(meetingParticipantPage.createTimer.timerStartedPopup.time).toBeVisible();
+      expect(await meetingParticipantPage.isCountingUp(timerPage.createTimer.timerStartedPopup.time)).toBeFalsy();
+      await expect(meetingParticipantPage.createTimer.timerStartedPopup.markMeAsDoneButton).toBeVisible();
+    }
+
+    await timerPage.page.bringToFront();
+    const timerPageTabPanel = timerPage.createTimer.tabPanel;
+    await expect(timerPageTabPanel.heading).toHaveText('Timer');
+    await expect(timerPageTabPanel.remainingTimeLabel).toBeVisible();
+    await expect(timerPageTabPanel.time).toBeVisible();
+    expect(await timerPage.isCountingUp(timerPageTabPanel.time)).toBeFalsy();
+    await expect(timerPageTabPanel.participantsHeading).toBeVisible();
+    expect(await timerPage.getParticipantsNotDoneStatus()).toEqual(['guest1']);
+    await expect(timerPage.createTimer.stopTimerButton).toBeVisible();
+    await expect(meetingRoomPage.moderationTools.coffeeBreakButton).toBeDisabled();
+
+    for (const meetingParticipantPage of meetingParticipantPages) {
+      await meetingParticipantPage.page.bringToFront();
+      let i = 1;
+      do {
+        await meetingParticipantPage.markMeAsDone();
+        await expect(meetingParticipantPage.createTimer.timerStartedPopup.markMeAsDoneButton).not.toBeVisible();
+        await expect(meetingParticipantPage.createTimer.timerStartedPopup.unmarkMeAsDoneButton).toBeVisible();
+
+        await meetingParticipantPage.unmarkMeAsDone();
+        await expect(meetingParticipantPage.createTimer.timerStartedPopup.markMeAsDoneButton).toBeVisible();
+        await expect(meetingParticipantPage.createTimer.timerStartedPopup.unmarkMeAsDoneButton).not.toBeVisible();
+        i++;
+      } while (i <= 3);
+    }
+
+    const secondGuestMeetingRoomPage = await joinMeetingRoomAsGuest(context, guestLink, 'guest2');
+    const secondGuestMeetingRoomTimerPage = new TimerPage({ page: secondGuestMeetingRoomPage.page });
+    await secondGuestMeetingRoomTimerPage.markMeAsDone();
+
+    await timerPage.page.bringToFront();
+    await expect(timerPageTabPanel.heading).toHaveText('Timer');
+    await expect(timerPageTabPanel.remainingTimeLabel).toBeVisible();
+    await expect(timerPageTabPanel.time).toBeVisible();
+    expect(await timerPage.isCountingUp(timerPageTabPanel.time)).toBeFalsy();
+    await expect(timerPageTabPanel.participantsHeading).toBeVisible();
+    expect(await timerPage.getParticipantsNotDoneStatus()).toEqual(['guest1']);
+    expect(await timerPage.getParticipantsDoneStatus()).toEqual(['guest2']);
+    await expect(timerPage.createTimer.stopTimerButton).toBeVisible();
+    await expect(meetingRoomPage.moderationTools.coffeeBreakButton).toBeDisabled();
+
+    await timerPage.stopTimer();
+    for (const meetingParticipantPage of meetingParticipantPages) {
+      await meetingParticipantPage.page.bringToFront();
+      await expect(meetingParticipantPage.getTimerStartedPopup(timerTitle)).not.toBeVisible();
+      await expect(meetingParticipantPage.createTimer.timerStoppedAlert).toBeVisible();
     }
 
     await timerPage.page.bringToFront();
