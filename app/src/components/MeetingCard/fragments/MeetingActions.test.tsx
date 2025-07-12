@@ -59,6 +59,15 @@ vi.mock('../../../api/rest', async (importOriginal) => ({
       isLoading: false,
     },
   ],
+  useGetRoomTariffQuery: () => ({
+    data: {
+      modules: {
+        core: {
+          features: ['guests_allowed'],
+        },
+      },
+    },
+  }),
 }));
 
 vi.mock('./ConfirmDeleteDialog', () => ({

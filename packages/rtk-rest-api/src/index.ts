@@ -18,7 +18,7 @@ export type {
   BaseAsset,
 } from './types/common';
 export { InviteStatus, Tag } from './types/common';
-export type { Modules, RecordingFeatures, BackendFeatures, TariffId, Tariff } from './types/tariff';
+export type { Modules, CoreFeatures, RecordingFeatures, BackendFeatures, TariffId, Tariff } from './types/tariff';
 export { BackendModules } from './types/tariff';
 export type {
   StreamingTargetId,

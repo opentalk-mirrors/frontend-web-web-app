@@ -2,13 +2,14 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Event, PlatformKind } from '@opentalk/rest-api-rtk-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCreateRoomInviteMutation, useGetMeQuery, useGetRoomInvitesQuery } from '../../../api/rest';
+import { useGetRoomTariffQuery } from '../../../api/rest';
 import { useAppSelector } from '../../../hooks';
 import { selectBaseUrl } from '../../../store/slices/configSlice';
-import { composeInviteUrl } from '../../../utils/apiUtils';
+import { isFeatureEnabledPredicate } from '../../../utils/moduleUtils';
+import GuestLinkField from './GuestLinkField';
 import MeetingLinkField from './MeetingLinkField';
 import { FieldKeys } from './constants';
 
@@ -21,28 +22,19 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
   const baseURL = useAppSelector(selectBaseUrl);
   const [highlightedField, setHighlightedField] = useState<FieldKeys>();
 
-  const roomURL = useMemo(() => new URL(`/room/${event.room.id}`, baseURL), [baseURL, event]);
-  const eventTitle = event?.title || t('fallback-room-title') || '';
+  const roomId = event.room.id;
+  const { data: roomTariff } = useGetRoomTariffQuery(roomId);
+  const isGuestsAllowedFeatureEnabled = Boolean(
+    roomTariff && isFeatureEnabledPredicate('guests_allowed', roomTariff.modules)
+  );
+
+  const roomURL = useMemo(() => new URL(`/room/${roomId}`, baseURL), [baseURL, event]);
+  const eventTitle = event?.title || t('fallback-room-title');
 
   const roomSharedFolderURL = event.sharedFolder?.readWrite?.url;
   const roomSharedFolderPassword = event.sharedFolder?.readWrite?.password;
   const callInDetails = event.room.callIn;
   const sipLink = callInDetails ? `${callInDetails.tel},,${callInDetails.id},,${callInDetails.password}` : undefined;
-
-  const { data: invites, isLoading, isFetching } = useGetRoomInvitesQuery({ roomId: event.room.id });
-  const foundInvite = useMemo(
-    () => invites && invites.find((invite) => invite.active && invite.expiration === null),
-    [invites]
-  );
-  const permanentGuestLink = useMemo(() => {
-    if (foundInvite) {
-      return composeInviteUrl(baseURL, event.room.id, foundInvite.inviteCode);
-    }
-  }, [foundInvite]);
-
-  const { data: me } = useGetMeQuery();
-  const isCreator = me?.id === event.createdBy.id;
-  const [createRoomInvite] = useCreateRoomInviteMutation();
 
   const roomPassword = event.room.password?.trim() || undefined;
 
@@ -63,17 +55,6 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
     }
   }, [streamingTargets]);
 
-  useEffect(() => {
-    if (isLoading || isFetching || foundInvite) {
-      return;
-    }
-
-    if (isCreator) {
-      createRoomInvite({ id: event.room.id });
-      return;
-    }
-  }, [foundInvite, isLoading, isFetching]);
-
   return (
     <>
       <MeetingLinkField
@@ -93,15 +74,18 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
           eventTitle={eventTitle}
         />
       )}
-      <MeetingLinkField
-        fieldKey={FieldKeys.GuestLink}
-        checked={highlightedField === FieldKeys.GuestLink}
-        value={permanentGuestLink}
-        setHighlightedField={setHighlightedField}
-        tooltip={t('dashboard-invite-to-meeting-guest-link-tooltip')}
-        isLoading={isLoading || isFetching}
-        eventTitle={eventTitle}
-      />
+      {isGuestsAllowedFeatureEnabled && (
+        <GuestLinkField
+          fieldKey={FieldKeys.GuestLink}
+          checked={highlightedField === FieldKeys.GuestLink}
+          setHighlightedField={setHighlightedField}
+          tooltip={t('dashboard-invite-to-meeting-guest-link-tooltip')}
+          eventTitle={eventTitle}
+          eventCreatorId={event.createdBy.id}
+          roomId={roomId}
+          baseURL={baseURL}
+        />
+      )}
       <MeetingLinkField
         fieldKey={FieldKeys.RoomPassword}
         checked={highlightedField === FieldKeys.RoomPassword}

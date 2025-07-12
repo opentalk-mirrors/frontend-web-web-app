@@ -28,3 +28,9 @@ export const isEnumErrorStruct =
   (msg: ErrorStruct<E> | Record<string, unknown>): msg is ErrorStruct<E> => {
     return msg.error !== undefined && isStringEnum(e)(msg.error);
   };
+
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;

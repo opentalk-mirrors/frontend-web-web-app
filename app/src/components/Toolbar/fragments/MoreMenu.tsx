@@ -92,6 +92,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const activeStreamIds = useAppSelector(selectActiveStreamIds);
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
   const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled('record'));
+  const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled('guests_allowed'));
   const fullscreenHandle = useFullscreenContext();
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
@@ -101,6 +102,14 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     selectIsModuleEnabled(BackendModules.TrainingParticipationReport)
   );
   const isTrainingParticipationReportEnabled = useAppSelector(selectTrainingParticipationReportEnabled);
+
+  const inviteGuestItem = {
+    label: 'more-menu-create-invite',
+    action: () => {
+      setShowInviteModal(true);
+    },
+    icon: <AddUserIcon />,
+  };
 
   const toggleWaitingRoomItem = isWaitingRoomActive
     ? {
@@ -215,20 +224,18 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     },
   };
 
-  const moderatorMenuItems: Array<MenuEntry> = [
-    {
-      label: 'more-menu-create-invite',
-      action: () => {
-        setShowInviteModal(true);
-      },
-      icon: <AddUserIcon />,
-    },
-    toggleWaitingRoomItem,
-    toggleHandraises,
-    toggleMicrophones,
-    toggleChatItem,
-    deleteGlobalChatItem,
-  ];
+  const moderatorMenuItems: Array<MenuEntry> = [];
+
+  // Only room owner is allowed to create invites
+  if (isRoomOwner && isGuestsAllowedFeatureEnabled) {
+    moderatorMenuItems.push(inviteGuestItem);
+  }
+
+  moderatorMenuItems.push(toggleWaitingRoomItem);
+  moderatorMenuItems.push(toggleHandraises);
+  moderatorMenuItems.push(toggleMicrophones);
+  moderatorMenuItems.push(toggleChatItem);
+  moderatorMenuItems.push(deleteGlobalChatItem);
 
   if (isMeetingReportAvailable) {
     moderatorMenuItems.push(exportAttendanceReportItem);
@@ -459,8 +466,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         onClose={onClose}
         data-testid="moreMenu"
         container={fullscreenHandle.rootElement}
-        PaperProps={{
-          'aria-label': t('toolbar-button-more-tooltip-title'),
+        slotProps={{
+          paper: {
+            'aria-label': t('toolbar-button-more-tooltip-title'),
+          },
         }}
         aria-label={t('toolbar-button-more-tooltip-title')}
       >

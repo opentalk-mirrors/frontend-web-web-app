@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import type { EventId, EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
-import { Mock } from 'vitest';
 
 import type { RoomInfo } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
@@ -34,47 +32,49 @@ const mockRoomInfo: RoomInfo = {
   },
 };
 
-const { store } = configureStore({
-  initialState: {},
-});
+vi.mock('./MeetingDetailsDialogActions', () => ({
+  __esModule: true,
+  default: () => {
+    return <div data-testid="meeting-details-dialog-actions"></div>;
+  },
+}));
 
 describe('MeetingDetailsDialog', () => {
-  let clipboardWriteTextOriginal: Clipboard['writeText'];
-
-  beforeEach(() => {
-    clipboardWriteTextOriginal = navigator.clipboard?.writeText?.bind(navigator.clipboard);
-    Object.defineProperty(navigator, 'clipboard', {
-      value: {
-        writeText: vi.fn(),
+  const { store } = configureStore({
+    initialState: {
+      config: {
+        baseUrl: 'http://localhost:3000',
+        tariff: {
+          modules: {
+            core: {
+              features: ['guests_allowed'],
+            },
+          },
+        },
       },
-      writable: true,
-    });
+    },
   });
 
-  afterEach(() => {
-    Object.defineProperty(navigator, 'clipboard', {
-      value: {
-        writeText: clipboardWriteTextOriginal,
-      },
-    });
-  });
-
-  it('should render without crashing', async () => {
+  it('renders dialog and it"s main components', () => {
     renderWithProviders(
       <MeetingDetailsDialog open={true} onClose={vi.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
       { store }
     );
 
-    expect(await screen.findByText('meeting-details-dialog-title')).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'meeting-details-dialog-title' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'global-close-dialog' })).toBeInTheDocument();
+    expect(screen.getByTestId('meeting-details-dialog-actions')).toBeInTheDocument();
   });
 
-  it('renders room password when provided.', async () => {
-    const { unmount } = renderWithProviders(
+  it('renders room password text field when password provided', () => {
+    renderWithProviders(
       <MeetingDetailsDialog open={true} onClose={vi.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
       { store }
     );
-    expect(await screen.findByLabelText('meeting-details-dialog-label-room-password')).toBeInTheDocument();
-    unmount();
+    expect(screen.getByRole('textbox', { name: 'meeting-details-dialog-label-room-password' })).toBeInTheDocument();
+  });
+
+  it('does not render room password text field when password not provided', () => {
     renderWithProviders(
       <MeetingDetailsDialog
         open={true}
@@ -84,21 +84,41 @@ describe('MeetingDetailsDialog', () => {
       />,
       { store }
     );
-    expect(await screen.findByText('meeting-details-dialog-title')).toBeInTheDocument();
     expect(screen.queryByLabelText('meeting-details-dialog-label-room-password')).not.toBeInTheDocument();
   });
 
-  it("writes content to the clipboard when 'Copy' button is clicked", async () => {
-    (navigator.clipboard.writeText as Mock).mockResolvedValueOnce(undefined);
-
+  it('renders invite link when guests allowed feature is enabled', () => {
     renderWithProviders(
       <MeetingDetailsDialog open={true} onClose={vi.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
       { store, provider: { snackbar: true, mui: true } }
     );
+    expect(screen.getByRole('textbox', { name: 'meeting-details-dialog-label-invite-link' })).toBeInTheDocument();
+  });
 
-    const copyButton = await screen.findByText('meeting-details-dialog-copy-button');
-    await userEvent.click(copyButton);
-
-    expect(navigator.clipboard.writeText).toHaveBeenCalled();
+  it('does not render invite link when guests allowed feature is disabled', () => {
+    const { store: storeWithGuestsNotAllowed } = configureStore({
+      initialState: {
+        config: {
+          baseUrl: 'http://localhost:3000',
+          tariff: {
+            modules: {
+              core: {
+                features: [],
+              },
+            },
+          },
+        },
+      },
+    });
+    renderWithProviders(
+      <MeetingDetailsDialog
+        open={true}
+        onClose={vi.fn()}
+        eventInfo={mockEventInfo}
+        roomInfo={{ ...mockRoomInfo, password: '' }}
+      />,
+      { store: storeWithGuestsNotAllowed }
+    );
+    expect(screen.queryByRole('textbox', { name: 'meeting-details-dialog-label-invite-link' })).not.toBeInTheDocument();
   });
 });
