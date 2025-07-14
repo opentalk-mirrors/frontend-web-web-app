@@ -130,7 +130,9 @@ export class HomePage {
     }
     const startMeetingButton = await this.getStartMeetingButton(meetingTitle);
     const meetingLink = await startMeetingButton.getAttribute('href');
-    const uniqueMeetingStartButton = this.page.locator('[href*="' + meetingLink + '"]');
+    const uniqueMeetingStartButton = this.page.locator(
+      '[data-sentry-component="MeetingPopover"] [href*="' + meetingLink + '"]'
+    );
     const meetingMenu = await this.getThreeDotMenuOfMeeting(meetingTitle);
     await meetingMenu.waitFor({ timeout: 10_000 });
     await meetingMenu.click();
