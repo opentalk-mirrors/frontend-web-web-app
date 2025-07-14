@@ -57,4 +57,15 @@ describe('Audio Button', () => {
     renderWithProviders(<AudioButton />, { store, provider: { snackbar: true } });
     expect(screen.getByTestId('toolbarAudioButton')).toBeDisabled();
   });
+
+  it('button is disabled and shows expected tooltip when audio is disabled by moderator', () => {
+    (useLocalParticipantPermissions as jest.Mock).mockReturnValue({
+      canPublishSources: [],
+    });
+    const { store } = configureStore();
+    renderWithProviders(<AudioButton />, { store });
+    const button = screen.getByRole('button', { name: 'toolbar-button-audio-disabled-tooltip', hidden: true });
+    expect(button).toBeInTheDocument();
+    expect(button).toBeDisabled();
+  });
 });
