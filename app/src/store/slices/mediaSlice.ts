@@ -12,7 +12,6 @@ import { hangUp, startMedia } from '../commonActions';
 import type { RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { getLivekitRoom } from '../livekitRoom';
-import { enteredWaitingRoom } from './roomSlice';
 import { timerStarted } from './timerSlice';
 
 export interface ScreenShareConfig {
@@ -259,16 +258,6 @@ const startDisableMediaOnCoffeeBreakListener = (startAppListening: StartAppListe
     },
   });
 
-const startDisableMediaOnWaitingRoomListener = (startAppListening: StartAppListening) =>
-  startAppListening({
-    actionCreator: enteredWaitingRoom,
-    effect: (_, listenerApi) => {
-      listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-      listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-      listenerApi.dispatch(startMedia({ kind: 'screenshare', enabled: false }));
-    },
-  });
-
 const startMediaChoiceListener = (startAppListening: StartAppListening) =>
   startAppListening({
     matcher: isAnyOf(setBackgroundEffects, setAudioDeviceId, setVideoDeviceId),
@@ -287,6 +276,5 @@ const startMediaChoiceListener = (startAppListening: StartAppListening) =>
 
 export const startMediaListeners = (startAppListening: StartAppListening) => {
   startDisableMediaOnCoffeeBreakListener(startAppListening);
-  startDisableMediaOnWaitingRoomListener(startAppListening);
   startMediaChoiceListener(startAppListening);
 };

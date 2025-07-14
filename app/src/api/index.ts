@@ -794,6 +794,9 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
       break;
     case 'sent_to_waiting_room': {
       dispatch(enteredWaitingRoom());
+      dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+      dispatch(startMedia({ kind: 'screenshare', enabled: false }));
       notifications.warning(i18next.t('meeting-notification-moved-to-waiting-room'));
       break;
     }
