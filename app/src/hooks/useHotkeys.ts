@@ -84,7 +84,9 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
       const shouldEnable =
         forcedState !== undefined ? forcedState : !(audioEnabled || room?.localParticipant.isMicrophoneEnabled);
 
-      dispatch(startMedia({ kind: 'audioinput', enabled: shouldEnable }));
+      const permission = await navigator.permissions.query({ name: 'microphone' });
+      const forceDisableAudioBeforePromptIsShown = permission.state === 'prompt';
+      dispatch(startMedia({ kind: 'audioinput', enabled: shouldEnable, forceDisableAudioBeforePromptIsShown }));
     },
     [askConsent, audioEnabled, dispatch, room, startMedia]
   );

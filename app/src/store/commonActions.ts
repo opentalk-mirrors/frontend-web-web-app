@@ -89,6 +89,7 @@ interface StartMediaInterface {
   kind: MediaDeviceKindExtended;
   enabled: boolean;
   deviceId?: string;
+  forceDisableAudioBeforePromptIsShown?: boolean;
 }
 
 interface FetchPermissionError extends FetchRequestError {
@@ -130,13 +131,18 @@ export async function handleLocalMediaTrack({
   if (inMeetingView) {
     const localParticipant = getLivekitRoom().localParticipant;
     try {
-      const track =
-        kind === 'audioinput'
-          ? await localParticipant.setMicrophoneEnabled(enabled, { deviceId })
-          : await localParticipant.setCameraEnabled(enabled, {
+      const track = await (async () => {
+        switch (kind) {
+          case 'audioinput':
+            return await localParticipant.setMicrophoneEnabled(enabled, { deviceId });
+          case 'videoinput':
+          default:
+            return await localParticipant.setCameraEnabled(enabled, {
               deviceId,
               processor: new BackgroundBlur(thunkApi.getState().media.videoBackgroundEffects),
             });
+        }
+      })();
 
       const mediaStreamTrack =
         kind === 'audioinput' ? track?.audioTrack?.mediaStreamTrack : track?.videoTrack?.mediaStreamTrack;
@@ -167,7 +173,6 @@ export async function handleLocalMediaTrack({
       result.deviceId = getDeviceId(mediaTrack);
       mediaTrack.stop();
     }
-
     return result;
   } catch (error) {
     const mediaError = handleMediaPermissionError({ error, deviceId, kind });
@@ -183,7 +188,7 @@ export const startMedia = createAsyncThunk<
   StartMediaInterface,
   StartMediaInterface,
   { state: RootState; rejectValue: FetchPermissionError }
->('media/startMedia', async ({ kind, enabled, deviceId }, thunkApi) => {
+>('media/startMedia', async ({ kind, enabled, deviceId, forceDisableAudioBeforePromptIsShown }, thunkApi) => {
   const state = thunkApi.getState();
   const inMeetingView =
     state.room.connectionState === ConnectionState.Online || state.room.connectionState === ConnectionState.Leaving;
@@ -206,6 +211,7 @@ export const startMedia = createAsyncThunk<
         return {
           kind,
           enabled,
+          forceDisableAudioBeforePromptIsShown,
         };
     }
   } catch (error) {

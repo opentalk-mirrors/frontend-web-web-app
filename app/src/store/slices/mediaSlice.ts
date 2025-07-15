@@ -70,10 +70,10 @@ export type MediaState = {
   videoBackgroundEffects: BackgroundEffect;
   screenShareConfig?: ScreenShareConfig;
   mediaChangeInProgress: MediaDeviceKindExtended | null;
-  permissionDenied: {
-    audio: boolean;
-    video: boolean;
-    screenshare: boolean;
+  permission: {
+    audioDenied: boolean;
+    videoDenied: boolean;
+    screenshareDenied: boolean;
   };
 };
 
@@ -91,10 +91,10 @@ export const initialState: MediaState = {
     contentHint: ContentHint.Text,
   },
   mediaChangeInProgress: null,
-  permissionDenied: {
-    audio: false,
-    video: false,
-    screenshare: false,
+  permission: {
+    audioDenied: false,
+    videoDenied: false,
+    screenshareDenied: false,
   },
 };
 
@@ -137,10 +137,10 @@ export const mediaSlice = createSlice({
       state.audioDeviceId = payload;
     },
     setAudioPermissionDenied: (state, { payload }: PayloadAction<boolean>) => {
-      state.permissionDenied.audio = payload;
+      state.permission.audioDenied = payload;
     },
     setVideoPermissionDenied: (state, { payload }: PayloadAction<boolean>) => {
-      state.permissionDenied.video = payload;
+      state.permission.videoDenied = payload;
     },
     setMediaChangeInProgress: (state, { payload }: PayloadAction<MediaDeviceKindExtended | null>) => {
       state.mediaChangeInProgress = payload;
@@ -148,15 +148,19 @@ export const mediaSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(startMedia.pending, (state, { meta: { arg } }) => {
+      const { kind, forceDisableAudioBeforePromptIsShown } = arg;
+      if (forceDisableAudioBeforePromptIsShown && kind === 'audioinput') {
+        state.audioEnabled = false;
+      }
       state.mediaChangeInProgress = arg.kind;
     });
     builder.addCase(startMedia.rejected, (state, { payload }) => {
       if (payload?.statusText === MediaError.NotAllowedError) {
         if (payload.kind === 'audioinput') {
-          state.permissionDenied.audio = true;
+          state.permission.audioDenied = true;
         }
         if (payload.kind === 'videoinput') {
-          state.permissionDenied.video = true;
+          state.permission.videoDenied = true;
         }
       }
       state.mediaChangeInProgress = null;
@@ -164,12 +168,12 @@ export const mediaSlice = createSlice({
     builder.addCase(startMedia.fulfilled, (state, { payload }) => {
       if (payload.kind === 'audioinput') {
         state.audioEnabled = payload.enabled;
-        state.permissionDenied.audio = false;
+        state.permission.audioDenied = false;
         state.audioDeviceId = payload.deviceId;
       }
       if (payload.kind === 'videoinput') {
         state.videoEnabled = payload.enabled;
-        state.permissionDenied.video = false;
+        state.permission.videoDenied = false;
         // livekit setCameraEnabled when disabling returns empty string as device id
         // which overrides the last choosen device
         if (payload.deviceId && payload.deviceId?.length > 0) {
@@ -208,9 +212,9 @@ export const selectAudioEnabled = (state: RootState) => state.media.audioEnabled
 export const selectVideoEnabled = (state: RootState) => state.media.videoEnabled;
 export const selectVideoBackgroundEffects = (state: RootState) => state.media.videoBackgroundEffects;
 export const selectScreenShareConfig = (state: RootState) => state.media.screenShareConfig;
-export const selectAudioPermissionDenied = (state: RootState) => state.media.permissionDenied.audio;
-export const selectVideoPermissionDenied = (state: RootState) => state.media.permissionDenied.video;
-export const selectScreensharePermissionDenied = (state: RootState) => state.media.permissionDenied.screenshare;
+export const selectAudioPermissionDenied = (state: RootState) => state.media.permission.audioDenied;
+export const selectVideoPermissionDenied = (state: RootState) => state.media.permission.videoDenied;
+export const selectScreensharePermissionDenied = (state: RootState) => state.media.permission.screenshareDenied;
 export const selectAudioChangeInProgress = (state: RootState) => state.media.mediaChangeInProgress === 'audioinput';
 export const selectVideoChangeInProgress = (state: RootState) => state.media.mediaChangeInProgress === 'videoinput';
 export const selectScreenshareChangeInProgress = (state: RootState) =>
