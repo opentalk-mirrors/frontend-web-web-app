@@ -387,3 +387,7 @@ export const isSingleEvent = (obj: BaseEvent): obj is SingleEvent => {
 export const isTimelessEvent = (obj: BaseEvent): obj is TimelessEvent => {
   return obj.isTimeIndependent === true && obj.type === EventType.Single;
 };
+
+export const isPendingEvent = (obj: BaseEvent) => {
+  return isEvent(obj) && obj.inviteStatus === InviteStatus.Pending;
+};

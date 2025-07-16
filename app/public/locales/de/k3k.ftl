@@ -907,8 +907,8 @@ dashboard-events-search = Suchen
 dashboard-events-note-limited-view = Hinweis: Sie haben wiederkehrende Meetings in Ihrer Liste, wir haben die Ansicht zeitlich eingeschränkt.
 
 
-dashbooard-event-accept-invitation-notification = Einladung für das Meeting {meetingTitle} akzeptiert
-dashbooard-event-decline-invitation-notification = Einladung für das Meeting {meetingTitle} abgelehnt
+dashboard-event-accept-invitation-notification = Einladung für das Meeting {meetingTitle} akzeptiert
+dashboard-event-decline-invitation-notification = Einladung für das Meeting {meetingTitle} abgelehnt
 
 dashboard-meeting-create-form-title = Meeting erstellen
 dashboard-meeting-update-form-title = Meeting bearbeiten

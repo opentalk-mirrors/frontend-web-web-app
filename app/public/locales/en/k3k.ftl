@@ -907,8 +907,8 @@ dashboard-events-search = Search
 dashboard-events-note-limited-view = Note: You have recurring meetings in your list, therefore we have limited the temporal view.
 
 
-dashbooard-event-accept-invitation-notification = Invite accepted for meeting {meetingTitle}
-dashbooard-event-decline-invitation-notification = Invite declined for meeting {meetingTitle}
+dashboard-event-accept-invitation-notification = Invite accepted for meeting {meetingTitle}
+dashboard-event-decline-invitation-notification = Invite declined for meeting {meetingTitle}
 
 dashboard-meeting-create-form-title = Create meeting
 dashboard-meeting-update-form-title = Update meeting

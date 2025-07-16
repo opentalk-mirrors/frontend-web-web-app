@@ -2,13 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Collapse as MuiCollapse, Grid, Stack, styled, Tooltip, Typography } from '@mui/material';
-import { isTimelessEvent } from '@opentalk/rest-api-rtk-query';
+import { isPendingEvent, isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { uniqueId } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { FavoriteIcon as OriginalFavoriteIcon } from '../../../assets/icons';
 import EventTimePreview from '../../EventTimePreview';
-import MeetingPopover, { MeetingCardFragmentProps } from './MeetingPopover';
+import { MeetingCardFragmentProps } from './MeetingActions';
+import { MeetingCardActions } from './MeetingCardActions';
+import { PendingInviteIcon } from './PendingInviteIcon';
 
 const CardWrapper = styled('div')(({ theme }) => ({
   width: '100%',
@@ -94,27 +96,31 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
         }}
       >
         <Grid>
-          <Stack spacing={2}>
-            {renderTimeString()}
+          <Stack direction="row" spacing={4} alignItems="center">
+            <Stack spacing={2}>
+              {renderTimeString()}
 
-            <Tooltip translate="no" title={title || ''} describeChild placement="bottom-start">
-              <Typography
-                variant="h1"
-                component="h3"
-                noWrap
-                sx={{
-                  fontWeight: 600,
-                  whiteSpace: 'normal',
-                }}
-              >
-                {title}
-              </Typography>
-            </Tooltip>
-            {renderCreator()}
+              <Tooltip translate="no" title={title || ''} describeChild placement="bottom-start">
+                <Typography
+                  variant="h1"
+                  component="h3"
+                  noWrap
+                  sx={{
+                    fontWeight: 600,
+                    whiteSpace: 'normal',
+                  }}
+                >
+                  {title}
+                </Typography>
+              </Tooltip>
+              {renderCreator()}
+            </Stack>
+
+            {isPendingEvent(event) && <PendingInviteIcon />}
           </Stack>
         </Grid>
         <Grid>
-          <MeetingPopover event={event} isMeetingCreator={isMeetingCreator} highlighted={highlighted} />
+          <MeetingCardActions event={event} isMeetingCreator={isMeetingCreator} highlighted={highlighted} />
         </Grid>
       </Grid>
     </CardWrapper>

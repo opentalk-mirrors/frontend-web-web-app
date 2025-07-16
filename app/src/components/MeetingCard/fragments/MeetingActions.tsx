@@ -2,13 +2,12 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, MenuList, MenuItem as MuiMenuItem, Popover as MuiPopover, Stack, styled } from '@mui/material';
-import { Event, EventException, EventId, InviteStatus, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
-import React, { useMemo, useRef, useState } from 'react';
+import { Event, EventException, EventId, InviteStatus, isEvent, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate, createSearchParams } from 'react-router-dom';
 
 import {
-  useAcceptEventInviteMutation,
   useDeclineEventInviteMutation,
   useLazyGetRoomInvitesQuery,
   useMarkFavoriteEventMutation,
@@ -62,7 +61,7 @@ const MoreButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFragmentProps) => {
+export const MeetingActions = ({ event, isMeetingCreator, highlighted }: MeetingCardFragmentProps) => {
   const { t } = useTranslation();
   const { isFavorite, title } = event;
   const eventId = event.id as EventId;
@@ -70,7 +69,6 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
 
   const [markEvent] = useMarkFavoriteEventMutation();
   const [unmarkEvent] = useUnmarkFavoriteEventMutation();
-  const [acceptEventInvitation] = useAcceptEventInviteMutation();
   const [declineEventInvitation] = useDeclineEventInviteMutation();
   const [isConfirmDialogVisible, showConfirmDialog] = useState(false);
   const moreButtonRef = useRef<HTMLButtonElement>(null);
@@ -141,28 +139,15 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
     setPopoverOpen(false);
   };
 
-  const acceptInvite = async () => {
-    try {
-      await acceptEventInvitation({ eventId }).unwrap();
-      notifications.success(
-        t('dashboard-event-accept-invitation-notification', {
-          meetingTitle: title,
-        })
-      );
-    } catch (_error) {
-      notifications.error(
-        t('error-general', {
-          meetingTitle: title,
-        })
-      );
-    }
+  const showDialog = () => {
+    showConfirmDialog(true);
   };
 
   const declineInvite = async () => {
     try {
       await declineEventInvitation({ eventId }).unwrap();
       notifications.success(
-        t('dashbooard-event-decline-invitation-notification', {
+        t('dashboard-event-decline-invitation-notification', {
           meetingTitle: title,
         })
       );
@@ -175,37 +160,19 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
     }
   };
 
-  const inviteActionButtons = useMemo(() => {
+  //We do not show the options popover unless the meeting is accepted
+  const getDeclineInviteActionButton = () => {
     const options: IMeetingCardOptionItem[] = [];
-    if (isMeetingCreator) {
-      return options;
-    }
+    const isAccepted = isEvent(event) && event.inviteStatus === InviteStatus.Accepted;
 
-    const inviteStatus = (event as Event).inviteStatus;
-
-    if (inviteStatus === InviteStatus.Pending) {
-      options.push(
-        {
-          i18nKey: 'global-accept',
-          action: acceptInvite,
-        },
-        {
-          i18nKey: 'global-decline',
-          action: declineInvite,
-        }
-      );
-    }
-    if (inviteStatus === InviteStatus.Accepted) {
+    if (isAccepted && !isMeetingCreator) {
       options.push({
         i18nKey: 'global-decline',
         action: declineInvite,
       });
     }
-    return options;
-  }, [event]);
 
-  const showDialog = () => {
-    showConfirmDialog(true);
+    return options;
   };
 
   const meetingOptionItems: IMeetingCardOptionItem[] = [
@@ -224,7 +191,7 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
             setPopoverOpen(false);
           },
         },
-    ...inviteActionButtons,
+    ...getDeclineInviteActionButton(),
     {
       i18nKey: 'dashboard-meeting-card-popover-details',
       action: viewMeetingDetails,
@@ -266,11 +233,7 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
   };
 
   return (
-    <Stack
-      sx={{
-        flexDirection: 'row',
-      }}
-    >
+    <Stack direction="row">
       <MoreButton
         color="inherit"
         aria-label={t('toolbar-button-more-tooltip-title')}
@@ -314,5 +277,3 @@ const MeetingPopover = ({ event, isMeetingCreator, highlighted }: MeetingCardFra
     </Stack>
   );
 };
-
-export default MeetingPopover;
