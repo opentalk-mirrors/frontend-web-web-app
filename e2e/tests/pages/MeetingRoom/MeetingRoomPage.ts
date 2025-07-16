@@ -250,7 +250,7 @@ export class MeetingRoomPage {
   }
 
   // function related to burger menu
-  async clickOnBurgerMenu() {
+  async openBurgerMenu() {
     await this.burgerMenuButton.click();
     const burgerMenuPage = new BurgerMenuPage(this.page);
     await burgerMenuPage.burgerMenuDropdown.waitFor();

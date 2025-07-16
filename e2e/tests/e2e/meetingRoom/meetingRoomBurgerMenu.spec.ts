@@ -9,9 +9,35 @@ import { TalkingStickPage } from '../../pages/MeetingRoom/ModeratorTools/Talking
 import { ViewOptionsPage } from '../../pages/MeetingRoom/ViewOptionsPage';
 
 test.describe('Meeting Room_Burger menu', () => {
+  test('TC_001_Accessibility', async ({ page, browserName }) => {
+    const { meetingRoomPage } = await startAdhocMeetingAsModerator(page, browserName);
+    const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.openBurgerMenu();
+
+    await expect(burgerMenuPage.accessibilityMenuItem).toBeVisible();
+    await expect(burgerMenuPage.userManualMenuItem).toBeVisible();
+    await expect(burgerMenuPage.keyboardShortcutsMenuItem).toBeVisible();
+    await expect(burgerMenuPage.reportABugMenuItem).toBeVisible();
+
+    const accessibiltyPage = await burgerMenuPage.gotoAccessibilty();
+    const accessibilityHeading = accessibiltyPage.getByRole('heading', {
+      name: 'Erklärung zur Barrierefreiheit',
+      exact: true,
+    });
+    const openTalkInformationHeading = accessibiltyPage.getByRole('heading', {
+      name: 'Erklärung zur Barrierefreiheit für die Videokonferenzlösung OpenTalk',
+      exact: true,
+    });
+    expect(accessibiltyPage.url()).toBe('https://opentalk.eu/de/erklaerung-zur-barrierefreiheit');
+    await expect(accessibilityHeading).toBeVisible();
+    await expect(openTalkInformationHeading).toBeVisible();
+
+    await meetingRoomPage.page.bringToFront();
+    await expect(meetingRoomPage.meetingRoomName).toBeVisible();
+  });
+
   test('TC_002_User manual', async ({ page, browserName }) => {
     const { meetingRoomPage } = await startAdhocMeetingAsModerator(page, browserName);
-    const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.clickOnBurgerMenu();
+    const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.openBurgerMenu();
 
     await expect(burgerMenuPage.accessibilityMenuItem).toBeVisible();
     await expect(burgerMenuPage.userManualMenuItem).toBeVisible();
@@ -40,7 +66,7 @@ test.describe('Meeting Room_Burger menu', () => {
     const viewOptionsPage = new ViewOptionsPage({ page: meetingRoomPage.page });
     await meetingRoomPage.page.bringToFront();
 
-    const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.clickOnBurgerMenu();
+    const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.openBurgerMenu();
     await expect(burgerMenuPage.burgerMenuDropdown).toBeVisible();
 
     await burgerMenuPage.openKeyboardShortcuts();
@@ -88,7 +114,7 @@ test.describe('Meeting Room_Burger menu', () => {
     await guestMeetingRoomPage.useKeyboardShortcut('n');
     await meetingRoomPage.page.bringToFront();
 
-    await meetingRoomPage.clickOnBurgerMenu();
+    await meetingRoomPage.openBurgerMenu();
     await burgerMenuPage.openKeyboardShortcuts();
     await meetingRoomPage.deactivateKeyboardShortcuts();
     await expect(meetingRoomPage.keyboardShortcuts.checkbox).not.toBeChecked();
@@ -124,7 +150,7 @@ test.describe('Meeting Room_Burger menu', () => {
     const closingMethods = ['BTN_esc', 'BTN_x', 'outside the window'];
     for (const method of closingMethods) {
       const { meetingRoomPage } = await startAdhocMeetingAsModerator(page);
-      const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.clickOnBurgerMenu();
+      const burgerMenuPage: BurgerMenuPage = await meetingRoomPage.openBurgerMenu();
       await expect(burgerMenuPage.burgerMenuDropdown).toBeVisible();
 
       await burgerMenuPage.openReportABug();

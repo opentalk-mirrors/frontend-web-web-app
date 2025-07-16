@@ -27,6 +27,11 @@ export class BurgerMenuPage {
     this.reportABugMenuItem = this.page.getByRole('menuitem', { name: 'Report a bug' });
   }
 
+  public async gotoAccessibilty(): Promise<Page> {
+    await this.accessibilityMenuItem.click();
+    return await navigateToExternalPage(this.context, 'Erklärung zur Barrierefreiheit | OpenTalk');
+  }
+
   public async gotoUserManual(): Promise<Page> {
     await this.userManualMenuItem.click();
     return await navigateToExternalPage(this.context, 'User manual | OpenTalk');
