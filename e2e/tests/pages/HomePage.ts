@@ -105,9 +105,11 @@ export class HomePage {
   }
 
   async getThreeDotMenuOfMeeting(meetingTitle: string): Promise<Locator> {
-    return this.page
-      .getByRole('listitem')
-      .filter({ hasText: meetingTitle })
+    const listWithMeeting = this.page.getByRole('list').filter({
+      has: this.page.getByRole('heading', { name: meetingTitle, exact: true }).first(),
+    });
+
+    return listWithMeeting
       .getByRole(this.moreOptionsButtonProperties.role, this.moreOptionsButtonProperties.options)
       .first();
   }
