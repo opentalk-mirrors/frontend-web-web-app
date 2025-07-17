@@ -21,10 +21,10 @@ export class HomePage {
   constructor({ page }: { page: Page }) {
     this.page = page;
     this.planNewMeetingButton = this.page.getByRole('link', { name: 'Plan new' });
-    this.startNewMeetingButton = this.page.getByRole('link', { name: 'Start new' });
+    this.startNewMeetingButton = this.page.getByRole('link', { name: /^(Start new|Meeting starten)$/ });
     this.joinExistingMeetingButton = this.page.getByRole('button', { name: 'Join existing' });
     this.currentMeetingsHeaderSelector = this.page.getByText('Current meetings');
-    this.favoriteMeetingsHeaderSelector = this.page.getByText('My favorite meetings');
+    this.favoriteMeetingsHeaderSelector = this.page.getByText(/^(My favorite meetings|Meine Favoriten)$/);
     this.startMeetingButtonNamePrefix = 'Start ';
     this.detailsMenuItem = this.page.getByRole('menuitem', { name: 'Details' });
     this.moreOptionsButtonProperties = {
