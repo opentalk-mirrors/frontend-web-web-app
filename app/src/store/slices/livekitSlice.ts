@@ -22,6 +22,7 @@ import { Credentials } from '../../api/types/incoming/livekit';
 import { createNewAccessToken } from '../../api/types/outgoing/livekit';
 import { notifications } from '../../commonComponents';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../constants';
+import LayoutOptions from '../../enums/LayoutOptions';
 import log from '../../logger';
 import { MediaDescriptor } from '../../modules/WebRTC';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
@@ -32,7 +33,7 @@ import type { RootState, AppDispatch } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { setLivekitUnavailable, setLivekitAvailable, getLivekitRoom } from '../livekitRoom';
 import { setVideoDeviceId, setAudioDeviceId } from './mediaSlice';
-import { pinnedRemoteScreenshare, pinnedParticipantIdSet } from './uiSlice';
+import { pinnedRemoteScreenshare, pinnedParticipantIdSet, updatedCinemaLayout } from './uiSlice';
 
 type PopoutStreamAccess = {
   mediaDescriptor: MediaDescriptor;
@@ -205,6 +206,7 @@ const handleTrackPublished = (
 ) => {
   if (pub.source === Track.Source.ScreenShare) {
     listenerApi.dispatch(pinnedRemoteScreenshare(participant.identity as ParticipantId));
+    listenerApi.dispatch(updatedCinemaLayout(LayoutOptions.Speaker));
   }
 };
 
@@ -215,7 +217,9 @@ const handleTrackUnpublished = (
 ) => {
   const pinnedParticipantId = listenerApi.getState().ui.pinnedParticipantId;
   if (pub.source === Track.Source.ScreenShare && participant.identity === pinnedParticipantId) {
+    const lastCinemaLayout = listenerApi.getState().ui.lastCinemaLayout;
     listenerApi.dispatch(pinnedParticipantIdSet(undefined));
+    listenerApi.dispatch(updatedCinemaLayout(lastCinemaLayout));
   }
 };
 

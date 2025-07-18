@@ -42,6 +42,7 @@ export type UIState = {
   participantsSearchValue: string;
   chatConversationState: IChatConversationState;
   cinemaLayout: LayoutOptions;
+  lastCinemaLayout: LayoutOptions;
   paginationPage: number;
   pinnedParticipantId?: ParticipantId;
   localVideoMirroringEnabled: boolean;
@@ -77,6 +78,7 @@ const initialState: UIState = {
     targetId: undefined,
   },
   cinemaLayout: LayoutOptions.Grid,
+  lastCinemaLayout: LayoutOptions.Grid,
   paginationPage: 1,
   pinnedParticipantId: undefined,
   localVideoMirroringEnabled: true,
@@ -126,6 +128,7 @@ export const uiSlice = createSlice({
       state.gridViewOrder = action.payload;
     },
     updatedCinemaLayout: (state, action: PayloadAction<LayoutOptions>) => {
+      state.lastCinemaLayout = state.cinemaLayout;
       state.cinemaLayout = action.payload;
       if (action.payload === LayoutOptions.Whiteboard && state.isCurrentWhiteboardHighlighted) {
         state.isCurrentWhiteboardHighlighted = false;
@@ -172,7 +175,7 @@ export const uiSlice = createSlice({
     },
     pinnedRemoteScreenshare(state, { payload: id }: PayloadAction<ParticipantId>) {
       state.pinnedParticipantId = id;
-      state.cinemaLayout = LayoutOptions.Speaker;
+      state.lastCinemaLayout = state.cinemaLayout;
     },
     saveDefaultChatMessage(
       state,
