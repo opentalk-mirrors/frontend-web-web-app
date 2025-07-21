@@ -79,6 +79,7 @@ export {
   isEventException,
   isEventInstance,
   isEvent,
+  isPendingEvent,
   EventType,
   EventStatus,
 } from './types/event';

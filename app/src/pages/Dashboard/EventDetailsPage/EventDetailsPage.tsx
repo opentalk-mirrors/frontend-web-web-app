@@ -97,7 +97,7 @@ const EventDetailsPage = () => {
       .unwrap()
       .then(() =>
         notifications.success(
-          t(`dashbooard-event-accept-invitation-notification`, {
+          t(`dashboard-event-accept-invitation-notification`, {
             meetingTitle: event.title,
           })
         )
@@ -116,7 +116,7 @@ const EventDetailsPage = () => {
       .unwrap()
       .then(() =>
         notifications.success(
-          t(`dashbooard-event-decline-invitation-notification`, {
+          t(`dashboard-event-decline-invitation-notification`, {
             meetingTitle: event.title,
           })
         )

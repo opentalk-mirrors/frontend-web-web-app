@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useGetMeQuery } from '../../api/rest';
-import { MeetingCardProps } from './fragments/MeetingPopover';
+import { MeetingCardProps } from './fragments/MeetingActions';
 import OverviewCard from './fragments/OverviewCard';
 import StandardCard from './fragments/StandardCard';
 

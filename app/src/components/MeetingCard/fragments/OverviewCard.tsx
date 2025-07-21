@@ -1,20 +1,26 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Grid, styled, Typography, Collapse, Tooltip } from '@mui/material';
-import { Event, EventId, isTimelessEvent, isEventException, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
+import { Grid, styled, Typography, Collapse, Tooltip } from '@mui/material';
+import {
+  EventId,
+  isTimelessEvent,
+  isEventException,
+  isRecurringEvent,
+  isPendingEvent,
+} from '@opentalk/rest-api-rtk-query';
 import { Property } from 'csstype';
 import { uniqueId } from 'lodash';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { useAcceptEventInviteMutation, useDeclineEventInviteMutation } from '../../../api/rest';
-import { FavoriteIcon, InviteIcon } from '../../../assets/icons';
-import { notifications } from '../../../commonComponents';
+import { FavoriteIcon } from '../../../assets/icons';
 import getReferrerRouterState from '../../../utils/getReferrerRouterState';
 import EventTimePreview from '../../EventTimePreview/EventTimePreview';
-import MeetingPopover, { MeetingCardFragmentProps } from './MeetingPopover';
+import { MeetingCardFragmentProps } from './MeetingActions';
+import { MeetingCardActions } from './MeetingCardActions';
+import { PendingInviteIcon } from './PendingInviteIcon';
 
 interface MouseValues {
   x: number;
@@ -45,23 +51,6 @@ const CardWrapper = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const InviteContainer = styled('div')(({ theme }) => ({
-  borderRadius: theme.borderRadius.large,
-  background: theme.palette.warning.main,
-  width: theme.typography.pxToRem(52),
-  height: theme.typography.pxToRem(44),
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  '& svg': {
-    fill: theme.palette.common.white,
-  },
-}));
-
-const DeclineButton = styled(Button)(({ theme }) => ({
-  marginRight: theme.spacing(1),
-}));
-
 const MaxWidthTypography = styled(Typography, {
   shouldForwardProp: (prop) => prop !== 'maxWidth',
 })<{ maxWidth: Property.MaxWidth }>(({ maxWidth }) => ({
@@ -80,45 +69,9 @@ const TitleTypography = styled(Typography, {
 const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragmentProps) => {
   const { createdBy, isFavorite, title } = event;
   const eventId = event.id as EventId;
-  const [acceptEventInvitation] = useAcceptEventInviteMutation();
-  const [declineEventInvitation] = useDeclineEventInviteMutation();
 
   const { t } = useTranslation();
   const navigate = useNavigate();
-
-  const acceptInvite = async () => {
-    try {
-      await acceptEventInvitation({ eventId }).unwrap();
-      notifications.success(
-        t(`dashbooard-event-accept-invitation-notification`, {
-          meetingTitle: title,
-        })
-      );
-    } catch (_error) {
-      notifications.error(
-        t(`error-general`, {
-          meetingTitle: title,
-        })
-      );
-    }
-  };
-
-  const declineInvite = async () => {
-    try {
-      await declineEventInvitation({ eventId }).unwrap();
-      notifications.success(
-        t(`dashbooard-event-decline-invitation-notification`, {
-          meetingTitle: title,
-        })
-      );
-    } catch (_error) {
-      notifications.error(
-        t(`error-general`, {
-          meetingTitle: title,
-        })
-      );
-    }
-  };
 
   const getTimePreview = () => {
     if (!isTimelessEvent(event) && !isEventException(event)) {
@@ -149,35 +102,9 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
     );
   };
 
-  const getActionButtons = () => {
-    if ((event as Event).inviteStatus === 'pending') {
-      return (
-        <>
-          <DeclineButton
-            color="secondary"
-            variant="outlined"
-            onClick={declineInvite}
-            onMouseDown={(mouseEvent) => mouseEvent.stopPropagation()}
-          >
-            {t('global-decline')}
-          </DeclineButton>
-          <Button color="secondary" onClick={acceptInvite} onMouseDown={(mouseEvent) => mouseEvent.stopPropagation()}>
-            {t('global-accept')}
-          </Button>
-        </>
-      );
-    }
-
-    return <MeetingPopover event={event} isMeetingCreator={isMeetingCreator} highlighted={highlighted} />;
-  };
-
   const getIcons = () => {
-    if ((event as Event).inviteStatus === 'pending') {
-      return (
-        <InviteContainer>
-          <InviteIcon type="functional" title={t('global-invite')} titleId={uniqueId('invite-icon-')} />
-        </InviteContainer>
-      );
+    if (isPendingEvent(event)) {
+      return <PendingInviteIcon />;
     }
     return (
       <Collapse in={isFavorite} data-testid={`favorite-icon${isFavorite ? '-visible' : ''}`}>
@@ -275,7 +202,7 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
         </MaxWidthTypography>
       </Grid>
       <Grid size={{ xs: 16, sm: 4 }} container justifyContent="flex-end">
-        {getActionButtons()}
+        <MeetingCardActions event={event} isMeetingCreator={isMeetingCreator} highlighted={highlighted} />
       </Grid>
     </CardWrapper>
   );
