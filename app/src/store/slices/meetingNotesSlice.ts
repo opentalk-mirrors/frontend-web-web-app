@@ -5,6 +5,7 @@ import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { isEmpty } from 'lodash';
 
 import type { RootState } from '..';
+import { hangUp } from '../commonActions';
 
 export type MeetingNotesState = {
   meetingNotesUrl: string | null;
@@ -24,6 +25,9 @@ export const meetingNotesSlice = createSlice({
     setMeetingNotesWriteUrl: (state, action: PayloadAction<string | null>) => {
       state.meetingNotesUrl = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(hangUp.fulfilled, () => initialState);
   },
 });
 
