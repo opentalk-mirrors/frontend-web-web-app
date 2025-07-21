@@ -60,7 +60,7 @@
     "jest-fail-on-console": "^3.3.1",
     "jest-fixed-jsdom": "^0.0.9",
     "jest-junit": "^16.0.0",
-    "knip": "^5.61.2",
+    "knip": "^5.62.0",
     "licensee": "^11.1.1",
     "lint-staged": "^16.1.2",
     "madge": "^8.0.0",
