@@ -161,6 +161,7 @@ participant-remove-dialog-title = Teilnehmer entfernen
 participant-remove-dialog-content = Sind Sie sicher, dass Sie {$name} aus dem Meeting entfernen möchten?
 participant-remove-dialog-cancel = Abbrechen
 participant-remove-dialog-canfirm = Bestätigen
+participant-menu-label = Teilnehmermenü
 participant-menu-open-label = Teilnehmermenü öffnen
 participant-menu-send-message = Nachricht senden
 participant-menu-remove-participant = Teilnehmer entfernen

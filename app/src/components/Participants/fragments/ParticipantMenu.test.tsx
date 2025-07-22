@@ -4,13 +4,13 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import MenuPopover, { IMenuOptionItem } from './MenuPopover';
+import ParticipantMenu, { ParticipantMenuOption } from './ParticipantMenu';
 
-describe('MenuPopover', () => {
+describe('ParticipantMenu', () => {
   const setAnchorEl = jest.fn();
   const onClose = jest.fn();
 
-  const options: IMenuOptionItem[] = [
+  const options: ParticipantMenuOption[] = [
     { i18nKey: 'option1', action: jest.fn() },
     { i18nKey: 'option2', action: jest.fn(), disabled: true },
   ];
@@ -21,10 +21,18 @@ describe('MenuPopover', () => {
     jest.clearAllMocks();
   });
 
-  it('renders all menu options with translation', () => {
+  it('renders menu and all menu options with translation', () => {
     render(
-      <MenuPopover open={true} setAnchorEl={setAnchorEl} anchorEl={anchorEl} onClose={onClose} options={options} />
+      <ParticipantMenu
+        id=""
+        open={true}
+        setAnchorEl={setAnchorEl}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        options={options}
+      />
     );
+    expect(screen.getByRole('menu', { name: 'participant-menu-label' })).toBeInTheDocument();
     const menuItems = screen.getAllByRole('menuitem');
     expect(menuItems[0]).toBeInTheDocument();
     expect(menuItems[1]).toBeInTheDocument();
@@ -32,7 +40,14 @@ describe('MenuPopover', () => {
 
   it('calls action when an enabled menu item is clicked', () => {
     render(
-      <MenuPopover open={true} setAnchorEl={setAnchorEl} anchorEl={anchorEl} onClose={onClose} options={options} />
+      <ParticipantMenu
+        id=""
+        open={true}
+        setAnchorEl={setAnchorEl}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        options={options}
+      />
     );
     fireEvent.click(screen.getByRole('menuitem', { name: 'option1' }));
     expect(options[0].action).toHaveBeenCalled();
@@ -40,7 +55,14 @@ describe('MenuPopover', () => {
 
   it('does have aria-disabled attribute when a menu item is disabled', () => {
     render(
-      <MenuPopover open={true} setAnchorEl={setAnchorEl} anchorEl={anchorEl} onClose={onClose} options={options} />
+      <ParticipantMenu
+        id=""
+        open={true}
+        setAnchorEl={setAnchorEl}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        options={options}
+      />
     );
     const menuItem2 = screen.getByRole('menuitem', { name: 'option2' });
     expect(menuItem2).toHaveAttribute('aria-disabled');
@@ -48,7 +70,14 @@ describe('MenuPopover', () => {
 
   it('does call close handler when popover is closed', async () => {
     render(
-      <MenuPopover open={true} setAnchorEl={setAnchorEl} anchorEl={anchorEl} onClose={onClose} options={options} />
+      <ParticipantMenu
+        id=""
+        open={true}
+        setAnchorEl={setAnchorEl}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        options={options}
+      />
     );
 
     await userEvent.keyboard('{Escape}');

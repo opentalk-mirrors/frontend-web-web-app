@@ -161,6 +161,7 @@ participant-remove-dialog-title = Remove participant
 participant-remove-dialog-content = Are you sure you want to remove {$name} from the meeting?
 participant-remove-dialog-cancel = Cancel
 participant-remove-dialog-confirm = Confirm
+participant-menu-label = Participant menu
 participant-menu-open-label = Open participant menu
 participant-menu-send-message = Send direct message
 participant-menu-remove-participant = Remove participant
