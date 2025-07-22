@@ -42,7 +42,7 @@ export type UIState = {
   participantsSearchValue: string;
   chatConversationState: IChatConversationState;
   cinemaLayout: LayoutOptions;
-  lastCinemaLayout: LayoutOptions;
+  lastCinemaLayout?: LayoutOptions;
   paginationPage: number;
   pinnedParticipantId?: ParticipantId;
   localVideoMirroringEnabled: boolean;
@@ -78,7 +78,7 @@ const initialState: UIState = {
     targetId: undefined,
   },
   cinemaLayout: LayoutOptions.Grid,
-  lastCinemaLayout: LayoutOptions.Grid,
+  lastCinemaLayout: undefined,
   paginationPage: 1,
   pinnedParticipantId: undefined,
   localVideoMirroringEnabled: true,
@@ -127,13 +127,17 @@ export const uiSlice = createSlice({
     updatedGridViewOrder: (state, action: PayloadAction<GridViewOrder>) => {
       state.gridViewOrder = action.payload;
     },
-    updatedCinemaLayout: (state, action: PayloadAction<LayoutOptions>) => {
-      state.lastCinemaLayout = state.cinemaLayout;
-      state.cinemaLayout = action.payload;
-      if (action.payload === LayoutOptions.Whiteboard && state.isCurrentWhiteboardHighlighted) {
+    updatedCinemaLayout: (state, action: PayloadAction<{ layout: LayoutOptions; cacheLastLayout?: boolean }>) => {
+      if (action.payload.cacheLastLayout) {
+        state.lastCinemaLayout = state.cinemaLayout;
+      } else {
+        state.lastCinemaLayout = undefined;
+      }
+      state.cinemaLayout = action.payload.layout;
+      if (action.payload.layout === LayoutOptions.Whiteboard && state.isCurrentWhiteboardHighlighted) {
         state.isCurrentWhiteboardHighlighted = false;
       }
-      if (action.payload === LayoutOptions.MeetingNotes && state.isCurrentMeetingNotesHighlighted) {
+      if (action.payload.layout === LayoutOptions.MeetingNotes && state.isCurrentMeetingNotesHighlighted) {
         state.isCurrentMeetingNotesHighlighted = false;
       }
     },

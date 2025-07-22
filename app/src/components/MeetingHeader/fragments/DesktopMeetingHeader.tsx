@@ -166,7 +166,7 @@ const DesktopMeetingHeader = () => {
 
   const handleSelectedView = useCallback(
     (layout: LayoutOptions) => {
-      dispatch(updatedCinemaLayout(layout));
+      dispatch(updatedCinemaLayout({ layout }));
     },
     [dispatch]
   );

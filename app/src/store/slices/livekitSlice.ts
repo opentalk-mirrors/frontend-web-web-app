@@ -206,7 +206,7 @@ const handleTrackPublished = (
 ) => {
   if (pub.source === Track.Source.ScreenShare) {
     listenerApi.dispatch(pinnedRemoteScreenshare(participant.identity as ParticipantId));
-    listenerApi.dispatch(updatedCinemaLayout(LayoutOptions.Speaker));
+    listenerApi.dispatch(updatedCinemaLayout({ layout: LayoutOptions.Speaker, cacheLastLayout: true }));
   }
 };
 
@@ -219,7 +219,9 @@ const handleTrackUnpublished = (
   if (pub.source === Track.Source.ScreenShare && participant.identity === pinnedParticipantId) {
     const lastCinemaLayout = listenerApi.getState().ui.lastCinemaLayout;
     listenerApi.dispatch(pinnedParticipantIdSet(undefined));
-    listenerApi.dispatch(updatedCinemaLayout(lastCinemaLayout));
+    if (lastCinemaLayout !== undefined) {
+      listenerApi.dispatch(updatedCinemaLayout({ layout: lastCinemaLayout }));
+    }
   }
 };
 
