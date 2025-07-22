@@ -67,6 +67,12 @@ export type UnregisteredUser = {
  */
 export type User = RegisteredUser | UnregisteredUser;
 
+export type EmailUser = {
+  email: Email;
+};
+
+export type ParticipantOption = EmailUser | User;
+
 /**
  * Private User Information
  *
