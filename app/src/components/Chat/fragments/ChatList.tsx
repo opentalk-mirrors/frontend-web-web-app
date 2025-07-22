@@ -1,17 +1,29 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, List, ListItem, Stack, Typography, styled } from '@mui/material';
-import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import { Box, CircularProgress, List, ListItem, Stack, Typography, styled } from '@mui/material';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ViewportList, ViewportListRef } from 'react-viewport-list';
 
+import { getHistoryChunk, searchHistory } from '../../../api/types/outgoing/chat';
 import { EncryptedMessagesIcon } from '../../../assets/icons';
-import { useAppSelector } from '../../../hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useChatScroll } from '../../../hooks/useChatScroll';
 import { selectCombinedMessageAndEvents } from '../../../store/selectors';
+import {
+  selectChatSearchResults,
+  selectIsLoadingMoreChunks,
+  selectNextIndex,
+  setGlobalChatLastSeenTimestamp,
+  setIsLoadingMoreChunks,
+  setLastSeenTimestampForGroupChat,
+  setLastSeenTimestampForPrivateChat,
+} from '../../../store/slices/chatSlice';
 import type { RoomEvent } from '../../../store/slices/eventSlice';
+import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectChatSearchValue } from '../../../store/slices/uiSlice';
-import { ChatMessage as ChatMessageType, ChatScope, ParticipantId, TargetId } from '../../../types';
+import { ChatMessage as ChatMessageType, ChatScope, GroupId, ParticipantId, TargetId, Timestamp } from '../../../types';
 import ChatMessage from './ChatMessage';
 import NoSearchResult from './NoSearchResult';
 
@@ -42,62 +54,101 @@ type ChatListProps = {
   onReset?: () => void;
 };
 
-const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps) => {
-  // Everytime selectCombinedMessageAndEvents is called new array is returned regardless of changes.
-  const combinedMessageAndEvents = useAppSelector((state) => selectCombinedMessageAndEvents(state, scope, targetId));
-  const { t } = useTranslation();
-  const chatSearchValue = useAppSelector(selectChatSearchValue);
-  const viewportReference = useRef<HTMLUListElement | null>(null);
-  const isAtTheBottom = useRef<boolean>(true);
-  const virtualList = useRef<ViewportListRef | null>(null);
+function filterMessages(
+  messages: Array<ChatMessageType | RoomEvent>,
+  searchValue: string,
+  chatSearchResults: ChatMessageType[]
+): ChatMessageType[] {
+  if (!searchValue) {
+    return messages as ChatMessageType[];
+  }
 
-  const searchedMessages = useMemo(() => {
-    if (!chatSearchValue) {
-      return combinedMessageAndEvents;
+  const lowerSearch = searchValue.toLowerCase();
+  const resultsMap = new Map(chatSearchResults.map((msg) => [msg.id, msg]));
+
+  messages.forEach((record) => {
+    // TODO: naive approach that fails for languages such as turkish, spanish, french
+    // as we cannot search for words such as "mañana" with "manana" or "Günaydın" with "gunaydin".
+    // this should be extended if we start introducing new languages. One potential solution
+    // would be to use `locale-index-of` npm package.
+    if (!('event' in record) && record.content.toLowerCase().includes(lowerSearch)) {
+      resultsMap.set(record.id, record);
+    }
+  });
+
+  return Array.from(resultsMap.values());
+}
+
+const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps) => {
+  const { t } = useTranslation();
+  const combinedMessageAndEvents = useAppSelector((state) => selectCombinedMessageAndEvents(state, scope, targetId));
+  const nextIndex = useAppSelector((state) => selectNextIndex(state, scope, targetId));
+  const isLoadingMoreChunks = useAppSelector(selectIsLoadingMoreChunks);
+  const chatSearchResults = useAppSelector(selectChatSearchResults);
+  const chatSearchValue = useAppSelector(selectChatSearchValue);
+  const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
+  const dispatch = useAppDispatch();
+  const virtualList = useRef<ViewportListRef | null>(null);
+  const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
+
+  const searchedMessages = useMemo(
+    () => filterMessages(combinedMessageAndEvents, chatSearchValue, chatSearchResults),
+    [combinedMessageAndEvents, chatSearchValue, chatSearchResults]
+  );
+
+  useEffect(() => {
+    if (!isRoomDeleted) {
+      const timestamp = new Date().toISOString() as Timestamp;
+
+      if (scope === ChatScope.Global) {
+        dispatch(setGlobalChatLastSeenTimestamp({ value: timestamp }));
+      } else if (scope === ChatScope.Private && targetId) {
+        dispatch(
+          setLastSeenTimestampForPrivateChat({
+            participantId: targetId as ParticipantId,
+            timestamp,
+          })
+        );
+      } else if (scope === ChatScope.Group && targetId) {
+        dispatch(
+          setLastSeenTimestampForGroupChat({
+            groupId: targetId as GroupId,
+            timestamp,
+          })
+        );
+      }
+    }
+  }, [dispatch, targetId, scope, searchedMessages]);
+
+  useEffect(() => {
+    const triggerElement = loadMoreTriggerRef.current;
+    if (!nextIndex || isLoadingMoreChunks || chatSearchValue || !triggerElement) {
+      return;
     }
 
-    // TODO: we need a common interface for messages and events in order not to use 'any'.
-    return combinedMessageAndEvents.reduce((output, record: ChatMessageType | RoomEvent) => {
-      if (Object.prototype.hasOwnProperty.call(record, 'event')) {
-        return output;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          dispatch(setIsLoadingMoreChunks(true));
+          dispatch(getHistoryChunk.action({ scope, messageIndex: nextIndex }));
+        }
+      },
+      {
+        root: viewportRef.current,
+        rootMargin: '50px 0px 0px 0px',
+        threshold: 0.1,
       }
-      // TODO: naive approach that fails for languages such as turkish, spanish, french
-      // as we cannot search for words such as "mañana" with "manana" or "Günaydın" with "gunaydin".
-      // this should be extended if we start introducing new languages. One potential solution
-      // would be to use `locale-index-of` npm package.
-      if ((record as ChatMessageType).content.toLowerCase().indexOf(chatSearchValue.toLowerCase()) > -1) {
-        output.push(record as ChatMessageType);
-      }
+    );
 
-      return output;
-    }, [] as ChatMessageType[]);
-  }, [combinedMessageAndEvents.length /** We don't modify messages so we can rely on the length. */, chatSearchValue]);
+    observer.observe(triggerElement);
 
-  const handleChatScrolling = useCallback((event: Event) => {
-    /**
-     * Since scroll events can fire at a high rate,
-     * the event handler shouldn't execute computationally expensive
-     * operations such as DOM modifications.
-     * Instead, it is recommended to throttle the event using
-     * requestAnimationFrame(), setTimeout(), or a CustomEvent, as follows.
-     */
-    requestAnimationFrame(() => {
-      /**
-       * 2 pixels tolerance works for all tested use cases, when OS is configured to
-       * scale up resolution, scrollTop provides float number instead of the integers.
-       */
-      const BOTTOM_TOLERANCE_IN_PIXELS = 3;
-      const chatList = event.target as HTMLUListElement;
-      const computedChatListStyle = window.getComputedStyle(chatList, '');
-      const borderTopWidth = parseFloat(computedChatListStyle.getPropertyValue('border-top-width'));
-      const borderBottomWidth = parseFloat(computedChatListStyle.getPropertyValue('border-bottom-width'));
-      isAtTheBottom.current =
-        Math.abs(
-          chatList.scrollHeight - chatList.clientHeight - chatList.scrollTop - borderTopWidth - borderBottomWidth
-        ) <= BOTTOM_TOLERANCE_IN_PIXELS;
-    });
-  }, []);
+    return () => {
+      observer.disconnect();
+    };
+  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, scope]);
 
+  // Scroll to bottom when search changes or new messages arrive and user is at bottom
   const scrollToBottom = useCallback(() => {
     if (virtualList.current) {
       virtualList.current.scrollToIndex({
@@ -108,25 +159,38 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
     }
   }, [searchedMessages.length]);
 
+  const { viewportRef, handleChatScroll } = useChatScroll({
+    isLoading: isLoadingMoreChunks,
+    messages: searchedMessages,
+    searchValue: chatSearchValue,
+    scrollToBottom,
+  });
+
   useLayoutEffect(() => {
     scrollToBottom();
   }, [chatSearchValue]);
 
   useLayoutEffect(() => {
-    if (isAtTheBottom.current) {
-      scrollToBottom();
+    const viewPortNode = viewportRef.current;
+    if (!viewPortNode) {
+      return;
     }
-  }, [combinedMessageAndEvents.length, scrollToBottom]);
+    viewPortNode.addEventListener('scroll', handleChatScroll);
+    return () => {
+      viewPortNode.removeEventListener('scroll', handleChatScroll);
+    };
+  }, [handleChatScroll]);
 
-  useLayoutEffect(() => {
-    if (viewportReference.current) {
-      viewportReference.current.addEventListener('scroll', handleChatScrolling);
-
-      return () => {
-        viewportReference.current?.removeEventListener('scroll', handleChatScrolling);
-      };
+  useEffect(() => {
+    if (chatSearchValue.length >= 2 && nextIndex !== null) {
+      dispatch(
+        searchHistory.action({
+          scope,
+          term: chatSearchValue,
+        })
+      );
     }
-  }, [combinedMessageAndEvents.length, chatSearchValue]);
+  }, [chatSearchValue, nextIndex, scope, dispatch]);
 
   if (chatSearchValue && searchedMessages.length === 0) {
     return <NoSearchResult onReset={onReset} />;
@@ -134,10 +198,23 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
 
   if (combinedMessageAndEvents.length > 0) {
     return (
-      <ChatOrderedList ref={viewportReference} data-testid="combined-messages" empty={searchedMessages.length === 0}>
+      <ChatOrderedList ref={viewportRef} data-testid="combined-messages" empty={searchedMessages.length === 0}>
+        {nextIndex !== null && (
+          <Box
+            ref={loadMoreTriggerRef}
+            sx={{
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {isLoadingMoreChunks && <CircularProgress size={24} />}
+          </Box>
+        )}
         <ViewportList
           ref={virtualList}
-          viewportRef={viewportReference}
+          viewportRef={viewportRef}
           items={searchedMessages}
           overscan={8}
           itemMargin={0}
@@ -156,21 +233,8 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
   }
 
   return (
-    <Stack
-      sx={{
-        flex: 1,
-        overflow: 'hidden',
-        justifyContent: 'center',
-      }}
-    >
-      <Stack
-        data-testid="no-messages"
-        spacing={2}
-        sx={{
-          alignItems: 'center',
-          overflow: 'auto',
-        }}
-      >
+    <Stack sx={{ flex: 1, overflow: 'hidden', justifyContent: 'center' }}>
+      <Stack data-testid="no-messages" spacing={2} sx={{ alignItems: 'center', overflow: 'auto' }}>
         <Box>
           <StyledEncryptedMessagesIcon type="decorative" />
         </Box>

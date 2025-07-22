@@ -24,12 +24,7 @@ import {
 import { sortParticipantsWithConfig } from '../utils/sortParticipants';
 import { selectAutomoderationParticipantIds } from './slices/automodSlice';
 import { selectCurrentBreakoutRoom, selectCurrentBreakoutRoomId } from './slices/breakoutSlice';
-import {
-  reduceMessagesToPersonalChats,
-  selectAllGroupChats,
-  selectAllPrivateChatMessages,
-  selectChatMessagesByScope,
-} from './slices/chatSlice';
+import { selectAllGroupChats, selectAllPrivateChats, selectChatMessagesByScope } from './slices/chatSlice';
 import { RoomEvent, selectAllEvents } from './slices/eventSlice';
 import { selectAllVotes } from './slices/legalVoteSlice';
 import { selectForceMute, selectHandUp, selectHandUpdatedAt } from './slices/moderationSlice';
@@ -263,15 +258,12 @@ export const selectIsUserMicDisabled = createSelector([selectForceMute, selectOu
   );
 });
 
-const selectAllPrivateChats = createSelector([selectAllPrivateChatMessages, selectOurUuid], (chatMessages, userId) =>
-  reduceMessagesToPersonalChats(chatMessages).filter((value) => value.id !== userId)
-);
 export const selectAllPersonalChats = createSelector(
   [selectAllGroupChats, selectAllPrivateChats],
   (groupChats, privateChats) =>
     groupChats
       .concat(privateChats)
-      .sort((a, b) => Date.parse(b.lastMessage.timestamp) - Date.parse(a.lastMessage.timestamp))
+      .sort((a, b) => Date.parse(b.lastMessage?.timestamp) - Date.parse(a.lastMessage?.timestamp))
 );
 
 export const selectRoomTitle = createSelector(

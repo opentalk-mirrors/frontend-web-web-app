@@ -6,7 +6,7 @@ import { EventInfo, SharedFolderData, StreamingState, Tariff } from '@opentalk/r
 import type { ParticipationLogging } from '../../api/types/outgoing/trainingParticipationReport';
 import { InitialAutomod } from '../automod';
 import { InitialBreakout } from '../breakout';
-import { ChatMessage, InitialChat } from '../chat';
+import { InitialChat } from '../chat';
 import {
   BackendParticipant,
   ForceMute,
@@ -27,13 +27,7 @@ export interface JoinSuccessInternalState {
   participantId: ParticipantId;
   role: Role;
   avatarUrl?: string;
-  chat: {
-    enabled: boolean;
-    roomHistory: ChatMessage[];
-    lastSeenTimestampGlobal?: string;
-    lastSeenTimestampsGroup?: Record<string, string>;
-    lastSeenTimestampsPrivate?: Record<string, string>;
-  };
+  chat: InitialChat;
   groups: GroupId[];
   automod?: InitialAutomod;
   breakout?: InitialBreakout;

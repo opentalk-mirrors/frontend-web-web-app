@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { RootState } from '../../../store';
-import { createModule, Namespaced, ChatScope, TargetId } from '../../../types';
+import { ChatScope, GroupId, Namespaced, ParticipantId, TargetId, Timestamp, createModule } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
-import { sendMessage, ClearGlobalMessages } from './common';
+import { ClearGlobalMessages, sendMessage } from './common';
 
 interface ChatActionBase {
   content: string;
@@ -22,17 +22,46 @@ interface DisableChat {
   action: 'disable_chat';
 }
 
-export interface LastSeenTimestampAddedPayload {
+type LastSeenGlobalTimestampAddedPayload = {
+  scope: ChatScope.Global;
+  target?: never;
+};
+
+type LastSeenPrivateTimestampAddedPayload = {
+  scope: ChatScope.Private;
+  target: ParticipantId;
+};
+
+type LastSeenGroupTimestampAddedPayload = {
+  scope: ChatScope.Group;
+  target: GroupId;
+};
+
+export type LastSeenTimestampAddedPayload = {
+  timestamp: Timestamp;
+} & (LastSeenGlobalTimestampAddedPayload | LastSeenPrivateTimestampAddedPayload | LastSeenGroupTimestampAddedPayload);
+
+interface SetLastSeenTimestamp {
+  action: 'set_last_seen_timestamp';
+  timestamp: Timestamp;
   scope: ChatScope;
-  timestamp: string;
   target?: TargetId;
 }
 
-interface SetLastSeenTimestamp extends LastSeenTimestampAddedPayload {
-  action: 'set_last_seen_timestamp';
+interface GetHistoryChunk {
+  action: 'get_history_chunk';
+  scope: ChatScope;
+  messageIndex: number;
 }
 
-export type Action = SetLastSeenTimestamp | SendMessage | EnableChat | DisableChat;
+interface SearchHistory {
+  action: 'search_history';
+  scope: ChatScope;
+  term: string;
+  messageIndex?: number;
+}
+
+export type Action = SetLastSeenTimestamp | SendMessage | EnableChat | DisableChat | GetHistoryChunk | SearchHistory;
 
 export type Chat = Namespaced<Action, 'chat'>;
 
@@ -41,6 +70,8 @@ export const enableChat = createSignalingApiCall<EnableChat>('chat', 'enable_cha
 export const disableChat = createSignalingApiCall<DisableChat>('chat', 'disable_chat');
 
 export const setLastSeenTimestamp = createSignalingApiCall<SetLastSeenTimestamp>('chat', 'set_last_seen_timestamp');
+export const getHistoryChunk = createSignalingApiCall<GetHistoryChunk>('chat', 'get_history_chunk');
+export const searchHistory = createSignalingApiCall<SearchHistory>('chat', 'search_history');
 
 export const clearGlobalChatMessages = createSignalingApiCall<ClearGlobalMessages>('chat', 'clear_history');
 
@@ -60,6 +91,12 @@ export const handler = createModule<RootState>((builder) => {
     })
     .addCase(setLastSeenTimestamp.action, (_state, action) => {
       sendMessage(setLastSeenTimestamp(action.payload));
+    })
+    .addCase(getHistoryChunk.action, (_state, action) => {
+      sendMessage(getHistoryChunk(action.payload));
+    })
+    .addCase(searchHistory.action, (_state, action) => {
+      sendMessage(searchHistory(action.payload));
     });
 });
 

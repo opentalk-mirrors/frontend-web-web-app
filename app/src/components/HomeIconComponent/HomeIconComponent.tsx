@@ -6,7 +6,7 @@ import { Badge, styled } from '@mui/material';
 import { HomeIcon } from '../../assets/icons';
 import { ModerationTabKey } from '../../config/constants';
 import { useAppSelector } from '../../hooks';
-import { selectUnreadGlobalMessageCount, selectUnreadPersonalMessageCount } from '../../store/slices/chatSlice';
+import { selectHasAnyUnreadPrivateChatMessage, selectHasUnreadGlobalChatMessages } from '../../store/slices/chatSlice';
 import { selectActiveTab } from '../../store/slices/uiSlice';
 
 const ChatBadge = styled(Badge)(({ theme }) => ({
@@ -16,17 +16,17 @@ const ChatBadge = styled(Badge)(({ theme }) => ({
     background: theme.palette.primary.main,
   },
 }));
+
 const HomeIconComponent = () => {
   const activeTab = useAppSelector(selectActiveTab);
-  const unreadGlobalMessageCount = useAppSelector(selectUnreadGlobalMessageCount);
-  const unreadPersonalMessageCount = useAppSelector(selectUnreadPersonalMessageCount);
-  const showUnreadBadge =
-    activeTab !== ModerationTabKey.Home && unreadGlobalMessageCount + unreadPersonalMessageCount > 0;
+  const hasUnreadGlobalMessages = useAppSelector(selectHasUnreadGlobalChatMessages);
+  const hasUnreadPrivateMessages = useAppSelector(selectHasAnyUnreadPrivateChatMessage);
+  const showUnreadBadge = activeTab !== ModerationTabKey.Home && (hasUnreadGlobalMessages || hasUnreadPrivateMessages);
 
   return (
     <>
       <HomeIcon />
-      {showUnreadBadge && <ChatBadge variant="dot" />}
+      {showUnreadBadge && <ChatBadge variant="dot" role="presentation" />}
     </>
   );
 };

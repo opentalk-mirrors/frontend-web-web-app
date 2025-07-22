@@ -7,15 +7,19 @@ import { useTranslation } from 'react-i18next';
 
 import { ModerationTabKey } from '../../../../config/constants';
 import {
-  SupportMenuMobileTab,
   PollsAndVotesMobileTab,
+  SupportMenuMobileTab,
   Tab,
   WaitingRoomMobileTab,
 } from '../../../../config/moderationTabs';
 import { useAppDispatch, useAppSelector } from '../../../../hooks';
 import useTabs from '../../../../hooks/useTabs';
 import { selectActivePollsAndVotingsCount, selectPollsAndVotingsCount } from '../../../../store/selectors';
-import { selectUnreadGlobalMessageCount, selectUnreadPersonalMessageCount } from '../../../../store/slices/chatSlice';
+import {
+  selectHasAnyUnreadGroupChatMessage,
+  selectHasAnyUnreadPrivateChatMessage,
+  selectUnreadGlobalMessageCount,
+} from '../../../../store/slices/chatSlice';
 import { selectParticipantsWaitingCount } from '../../../../store/slices/participantsSlice';
 import { selectWaitingRoomState } from '../../../../store/slices/roomSlice';
 import {
@@ -53,11 +57,13 @@ const Drawer = () => {
   const dispatch = useAppDispatch();
   const tabs = useTabs();
   const unreadGlobalMessageCount = useAppSelector(selectUnreadGlobalMessageCount);
-  const unreadPersonalMessageCount = useAppSelector(selectUnreadPersonalMessageCount);
+  const hasAnyUnreadPrivateChatMessage = useAppSelector(selectHasAnyUnreadPrivateChatMessage);
+  const hasAnyUnreadGroupChatMessage = useAppSelector(selectHasAnyUnreadGroupChatMessage);
   const isModerator = useAppSelector(selectIsModerator);
   const participantsWaitingCount = useAppSelector(selectParticipantsWaitingCount);
   const isWaitingRoomEnabled = useAppSelector(selectWaitingRoomState);
-  const hasUnreadMessages = unreadGlobalMessageCount > 0 || unreadPersonalMessageCount > 0;
+  const hasUnreadMessages =
+    unreadGlobalMessageCount > 0 || hasAnyUnreadPrivateChatMessage || hasAnyUnreadGroupChatMessage;
   const voteAndPollCount = useAppSelector(selectPollsAndVotingsCount);
   const activeVoteAndPollCount = useAppSelector(selectActivePollsAndVotingsCount);
   const haveSeenMobilePollsAndVotes = useAppSelector(selectHaveSeenMobilePollsAndVotes);

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { RoomEvent } from '../store/slices/eventSlice';
-import { GroupId, ParticipantId, ChatScope, ChatMessage as ChatMessageType } from '../types';
+import { ParticipantId, ChatScope, ChatMessage as ChatMessageType } from '../types';
 import { isEventMessage } from './typeGuardUtils';
 
 describe('should check if message is event type', () => {
@@ -12,8 +12,6 @@ describe('should check if message is event type', () => {
     source: '' as ParticipantId,
     content: '',
     scope: ChatScope.Global,
-    group: '' as GroupId,
-    target: '' as ParticipantId,
   };
 
   it('should return false', () => {
