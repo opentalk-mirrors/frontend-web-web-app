@@ -52,6 +52,7 @@ window.config = {
   },
   settings: {
     waitingRoomDefaultValue: true,
+    suppressBrowserCompatibilityInfo: false,
   },
   provider: {
     active: false, // indicates if we are are in the provider context

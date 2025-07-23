@@ -131,6 +131,7 @@ const config = {
   libravatarDefaultImage: 'robohash' as DefaultAvatarImage,
   settings: {
     waitingRoomDefaultValue: false,
+    suppressBrowserCompatibilityInfo: false,
   },
 };
 
