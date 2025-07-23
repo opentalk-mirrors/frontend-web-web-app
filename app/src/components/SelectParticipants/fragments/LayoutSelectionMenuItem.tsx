@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { MenuItem as MuiMenuItem, ListItemIcon, styled } from '@mui/material';
 import type { MenuItemProps } from '@mui/material';
+import { forwardRef } from 'react';
 
 import { CheckIcon } from '../../../assets/icons';
 
@@ -33,20 +34,23 @@ const MenuItem = styled(MuiMenuItem, { shouldForwardProp: (prop) => prop !== 'ha
   },
 }));
 
-const LayoutSelectionMenuItem = ({
-  showCheckIcon = false,
-  hasIndicator = false,
-  onClick,
-  icon,
-  content,
-}: LayoutSelectionMenuItemProps) => {
-  return (
-    <MenuItem onClick={onClick} hasIndicator={hasIndicator} role="menuitemradio" aria-checked={showCheckIcon}>
+const LayoutSelectionMenuItem = forwardRef<HTMLLIElement, LayoutSelectionMenuItemProps>(
+  ({ showCheckIcon = false, hasIndicator = false, onClick, icon, content, ...props }, ref) => (
+    <MenuItem
+      ref={ref}
+      onClick={onClick}
+      hasIndicator={hasIndicator}
+      role="menuitemradio"
+      aria-checked={showCheckIcon}
+      {...props}
+    >
       <ListItemIcon>{showCheckIcon && <CheckIcon data-testid="CheckIcon" />}</ListItemIcon>
       <ListItemIcon aria-hidden={true}>{icon}</ListItemIcon>
       {content}
     </MenuItem>
-  );
-};
+  )
+);
+
+LayoutSelectionMenuItem.displayName = 'LayoutSelectionMenuItem';
 
 export default LayoutSelectionMenuItem;
