@@ -202,7 +202,7 @@ describe('<MoreButton />', () => {
 
       expect(notifications.error).toHaveBeenCalledWith('Test error context: Error: Test Error');
     });
-    it('shows training participation button if module trainingParticipationReport is defined', () => {
+    it('shows training participation button if module trainingParticipationReport is defined', async () => {
       const { store: storeWithModules } = configureStore({
         initialState: {
           user: { role: Role.Moderator },
@@ -213,10 +213,10 @@ describe('<MoreButton />', () => {
 
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
         store: storeWithModules,
-        provider: { mui: true, snackbar: true },
+        provider: { snackbar: true },
       });
 
-      expect(screen.getByText('Test training participation report on')).toBeInTheDocument();
+      expect(await screen.findByText('Test training participation report on')).toBeInTheDocument();
     });
   });
 });
