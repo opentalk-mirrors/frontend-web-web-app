@@ -64,7 +64,7 @@ import {
   WhisperParticipantState,
 } from '../../../types';
 import { MenuTab } from '../../MenuTabs/fragments/constants';
-import MenuPopover, { IMenuOptionItem } from './MenuPopover';
+import ParticipantMenu, { ParticipantMenuOption } from './ParticipantMenu';
 import ParticipantRemovalDialog from './ParticipantRemovalDialog';
 import RenameParticipantDialog from './RenameParticipantDialog';
 import WhisperStateIcon from './WhisperStateIcon';
@@ -86,14 +86,17 @@ const ListItem = styled(MuiListItem, {
   '& .more-icon': {
     color: isMoreMenuOpen ? theme.palette.primary.contrastText : 'transparent',
   },
-  ':hover': {
+  border: '1px solid',
+  borderColor: isWhispering ? theme.palette.primary.main : 'transparent',
+  borderRadius: theme.spacing(1),
+}));
+
+const ParticipantMenuButton = styled(IconButton)(({ theme }) => ({
+  ':hover, :focus': {
     '& .more-icon': {
       color: theme.palette.primary.contrastText,
     },
   },
-  border: '1px solid',
-  borderColor: isWhispering ? theme.palette.primary.main : 'transparent',
-  borderRadius: theme.spacing(1),
 }));
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -143,6 +146,8 @@ type ParticipantRowProps = {
   index: number;
   style: CSSProperties;
 };
+
+const PARTICIPANT_MENU_ID = 'participant_menu_id';
 
 const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
   const participant = data[index];
@@ -227,8 +232,8 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     disabled: !audioActive, // In case we want to show option always, but want to disable it.
   };
 
-  const moderatorRights = (): IMenuOptionItem[] => {
-    let options: (IMenuOptionItem | false)[] = [];
+  const moderatorRights = (): ParticipantMenuOption[] => {
+    let options: (ParticipantMenuOption | false)[] = [];
     switch (participant.role) {
       case Role.Moderator:
         options = [
@@ -270,7 +275,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
         options = [];
     }
 
-    return options.filter(Boolean) as IMenuOptionItem[]; // Remove conditionally excluded menu options.
+    return options.filter(Boolean) as ParticipantMenuOption[]; // Remove conditionally excluded menu options.
   };
 
   const subroomAudioParticipantIds = whisperRoomParticipants.map(
@@ -288,7 +293,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
 
   const initiatedWhisperGroup = whisperGroupId && getParticipantInviteState(ownId) === WhisperParticipantState.Creator;
 
-  const subroomAudioOptions = (): IMenuOptionItem[] => {
+  const subroomAudioOptions = (): ParticipantMenuOption[] => {
     if (!subroomAudioEnabled) {
       return [];
     }
@@ -318,7 +323,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     return [];
   };
 
-  const participantMenuOptionItems: IMenuOptionItem[] = [
+  const participantMenuOptionItems: ParticipantMenuOption[] = [
     {
       i18nKey: 'participant-menu-send-message',
       action: () => {
@@ -335,7 +340,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
     ...subroomAudioOptions(),
   ];
 
-  const ownMenuOptionItems: IMenuOptionItem[] = userIsInWhisperGroup
+  const ownMenuOptionItems: ParticipantMenuOption[] = userIsInWhisperGroup
     ? [
         {
           i18nKey: 'participant-menu-leave-whisper',
@@ -347,7 +352,7 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
       ]
     : [];
 
-  const moderatorMenuOptionItems: IMenuOptionItem[] = [
+  const moderatorMenuOptionItems: ParticipantMenuOption[] = [
     ...participantMenuOptionItems,
     {
       i18nKey: 'participant-menu-remove-participant',
@@ -528,12 +533,22 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
 
         {getMenuOptions().length > 0 && (
           <>
-            <IconButton aria-label={t('participant-menu-open-label')} onClick={handleClick}>
+            <ParticipantMenuButton
+              aria-label={t('participant-menu-open-label')}
+              onClick={handleClick}
+              aria-controls={open ? PARTICIPANT_MENU_ID : undefined}
+              aria-haspopup={true}
+              aria-expanded={open ? true : undefined}
+            >
               <MoreIcon className="more-icon" />
-            </IconButton>
-            {open && (
-              <MenuPopover open={true} setAnchorEl={setAnchorEl} anchorEl={anchorEl} options={getMenuOptions()} />
-            )}
+            </ParticipantMenuButton>
+            <ParticipantMenu
+              id={PARTICIPANT_MENU_ID}
+              open={open}
+              setAnchorEl={setAnchorEl}
+              anchorEl={anchorEl}
+              options={getMenuOptions()}
+            />
           </>
         )}
 
