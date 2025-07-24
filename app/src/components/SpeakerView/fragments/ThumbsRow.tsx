@@ -6,8 +6,10 @@ import { Stack, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
 import { useEffect, useMemo, useState } from 'react';
 
-import { useAppSelector } from '../../../hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
+import { setVisibleParticipantIds } from '../../../store/slices/uiSlice';
+import { ParticipantId } from '../../../types';
 import IconSlideButton from './IconSlideButton';
 import { Thumbnail } from './Thumbnail';
 
@@ -26,6 +28,7 @@ export interface ThumbsProps {
 }
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
+  const dispatch = useAppDispatch();
   const signalingParticipants = useAppSelector(selectAllOnlineParticipants);
   const remoteParticipants = useRemoteParticipants();
 
@@ -61,16 +64,21 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
     );
   };
 
+  const visibleParticipants = useMemo(
+    () => participants.slice(firstVisibleParticipantIndex, lastVisibleParticipantIndex),
+    [participants, firstVisibleParticipantIndex, lastVisibleParticipantIndex]
+  );
+
+  useEffect(() => {
+    const ids = visibleParticipants.map((p) => p.identity as ParticipantId);
+    dispatch(setVisibleParticipantIds(ids));
+  }, [visibleParticipants, dispatch]);
+
   useEffect(() => {
     if (currentlyVisibleParticipantsNumber < participants.length) {
       setFirstVisibleParticipantIndex((prevIndex) => Math.max(prevIndex - 1, 0));
     }
   }, [participants.length, currentlyVisibleParticipantsNumber]);
-
-  const visibleParticipants = useMemo(
-    () => participants.slice(firstVisibleParticipantIndex, lastVisibleParticipantIndex),
-    [participants, firstVisibleParticipantIndex, lastVisibleParticipantIndex]
-  );
 
   return (
     <ThumbsHolder direction="row" gap={1} tracks={thumbsPerWindow} data-testid="ThumbsHolder">
