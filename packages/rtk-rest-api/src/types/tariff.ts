@@ -28,6 +28,7 @@ export enum BackendModules {
   RecordingService = 'recordingService',
   Timer = 'timer',
   Whiteboard = 'whiteboard',
+  SharedFolder = 'sharedFolder',
   SubroomAudio = 'subroomAudio',
   TrainingParticipationReport = 'trainingParticipationReport',
 }

@@ -48,7 +48,6 @@ window.config = {
     resetHandraises: true,
     addUser: false,
     joinWithoutMedia: false,
-    sharedFolder: false,
     e2eEncryption: false,
   },
   settings: {

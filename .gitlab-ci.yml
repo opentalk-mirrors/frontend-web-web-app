@@ -446,7 +446,6 @@ deploy:
       --set global.backend.domain=controller.review-latest.kube.opentalk.run
       --set webapp.ndtDomain=ndt.mailbox.org
       --set webapp.errorReportDomain=opentalk.eu
-      --set webapp.feature.sharedFolder="true"
       --set webapp.imprintUrl=https://opentalk.eu/en/terms-of-use
       --set webapp.dataProtectionUrl=https://opentalk.eu/en/data-protection
       --set webapp.helpdeskUrl=https://opentalk.eu/docs/user/

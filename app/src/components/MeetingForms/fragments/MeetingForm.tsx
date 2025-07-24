@@ -46,6 +46,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
 
   const { data: tariff } = useGetMeTariffQuery();
   const isStreamingEnabled = tariff && isFeatureEnabledPredicate('stream', tariff.modules);
+  const isSharedFolderEnabled = tariff?.modules.sharedFolder;
   const isTrainingParticipationReportEnabled = tariff?.modules.trainingParticipationReport;
 
   const [overlappingEvent, setOverlappingEvent] = useState<SingleEvent | RecurringEvent>();
@@ -149,7 +150,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
             switchProps={formikSwitchProps('waitingRoom', formik)}
             switchValueLabel={t('dashboard-meeting-waiting-room-switch')}
           />
-          {features.sharedFolder && (
+          {isSharedFolderEnabled && (
             <MeetingFormSwitch
               checked={formik.values.sharedFolder}
               switchProps={formikSwitchProps('sharedFolder', formik)}

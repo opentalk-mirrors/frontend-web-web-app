@@ -32,7 +32,6 @@ export enum FeaturesKeys {
   AddUser = 'addUser',
   JoinWithoutMedia = 'joinWithoutMedia',
   Debriefing = 'debriefing',
-  SharedFolder = 'sharedFolder',
   E2eEncryption = 'e2eEncryption',
   InnovafoneAPI = 'innovafoneAPI',
 }
