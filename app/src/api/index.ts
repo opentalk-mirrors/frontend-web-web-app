@@ -23,7 +23,7 @@ import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
-import { hangUp, joinSuccess, startRoom, startMedia } from '../store/commonActions';
+import { hangUp, joinSuccess, startMedia, startRoom } from '../store/commonActions';
 import { setLivekitUnavailable } from '../store/livekitRoom';
 import { getLivekitRoom } from '../store/livekitRoom';
 import {
@@ -1052,6 +1052,7 @@ const handleChatMessage = (dispatch: AppDispatch, data: chat.ChatMessage, timest
 const handleStreamingMessage = (dispatch: AppDispatch, data: streaming.Message, state: RootState) => {
   switch (data.message) {
     case 'stream_updated': {
+      const localParticipant = getLivekitRoom().localParticipant;
       dispatch(streamUpdated(data));
 
       const streamTarget = state.streaming.streams.entities[data.targetId];
@@ -1071,6 +1072,14 @@ const handleStreamingMessage = (dispatch: AppDispatch, data: streaming.Message, 
       if (data.status === StreamingStatus.Active && state.streaming.consent === undefined) {
         showConsentNotification(dispatch);
       }
+      if (
+        data.status === StreamingStatus.Active &&
+        !state.streaming.consent &&
+        (localParticipant.isCameraEnabled || localParticipant.isMicrophoneEnabled)
+      ) {
+        showConsentNotification(dispatch);
+      }
+
       break;
     }
     case 'recorder_error': {
