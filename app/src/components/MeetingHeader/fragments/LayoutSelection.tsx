@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Divider, MenuList, Popover, Stack, Typography, styled, useMediaQuery, useTheme, Button } from '@mui/material';
+import { Divider, Menu, Stack, Typography, styled, useMediaQuery, useTheme, Button } from '@mui/material';
 import { SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,7 +42,7 @@ const ViewPopperContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-const PopoverContainer = styled(MenuList)(({ theme }) => ({ background: theme.palette.background.video }));
+const LayoutMenu = styled(Menu)(({ theme }) => ({ '& .MuiList-root': { background: theme.palette.background.video } }));
 
 const ButtonIndicator = styled(Indicator)({ position: 'absolute', top: '0.1rem', right: '0.1rem' });
 
@@ -138,80 +138,83 @@ const LayoutSelection = () => {
           {showButtonIndicator && isMobile && <ButtonIndicator />}
         </IconButton>
       )}
-      <Popover
+      <LayoutMenu
         open={isViewPopoverOpen}
         anchorEl={anchorElement}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         onClose={() => setAnchorElement(null)}
-        disablePortal
+        id="view-popover-menu"
+        slotProps={{
+          list: {
+            'aria-label': t('conference-view-trigger-button'),
+          },
+        }}
       >
-        <PopoverContainer id="view-popover-menu" autoFocusItem={isViewPopoverOpen}>
+        <LayoutSelectionMenuItem
+          role="menuitemradio"
+          showCheckIcon={selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.FirstJoined}
+          onClick={() => handleSelectedView(LayoutOptions.Grid)}
+          icon={<GridViewIcon />}
+          content={t('conference-view-grid')}
+        />
+        <LayoutSelectionMenuItem
+          role="menuitemradio"
+          showCheckIcon={selectedLayout === LayoutOptions.Speaker}
+          onClick={() => handleSelectedView(LayoutOptions.Speaker)}
+          icon={<SpeakerViewIcon />}
+          content={t('conference-view-speaker')}
+        />
+        {fullscreenHandle.isFullScreenAvailable() && (
           <LayoutSelectionMenuItem
             role="menuitemradio"
-            showCheckIcon={selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.FirstJoined}
-            onClick={() => handleSelectedView(LayoutOptions.Grid)}
-            icon={<GridViewIcon />}
-            content={t('conference-view-grid')}
+            showCheckIcon={fullscreenHandle.active}
+            onClick={openFullscreenView}
+            icon={<FullscreenViewIcon />}
+            content={t('conference-view-fullscreen')}
           />
+        )}
+        {((isMobile && isMeetingNotesFeatureAvailable) || (!isMobile && isMeetingNotes)) && (
           <LayoutSelectionMenuItem
+            onClick={() => handleSelectedView(LayoutOptions.MeetingNotes)}
+            hasIndicator={isCurrentMeetingNotesHighlighted}
             role="menuitemradio"
-            showCheckIcon={selectedLayout === LayoutOptions.Speaker}
-            onClick={() => handleSelectedView(LayoutOptions.Speaker)}
-            icon={<SpeakerViewIcon />}
-            content={t('conference-view-speaker')}
+            showCheckIcon={selectedLayout === LayoutOptions.MeetingNotes}
+            icon={<MeetingNotesIcon />}
+            content={t('moderationbar-button-meeting-notes-tooltip')}
           />
-          {fullscreenHandle.isFullScreenAvailable() && (
-            <LayoutSelectionMenuItem
-              role="menuitemradio"
-              showCheckIcon={fullscreenHandle.active}
-              onClick={openFullscreenView}
-              icon={<FullscreenViewIcon />}
-              content={t('conference-view-fullscreen')}
-            />
-          )}
-          {((isMobile && isMeetingNotesFeatureAvailable) || (!isMobile && isMeetingNotes)) && (
-            <LayoutSelectionMenuItem
-              onClick={() => handleSelectedView(LayoutOptions.MeetingNotes)}
-              hasIndicator={isCurrentMeetingNotesHighlighted}
-              role="menuitemradio"
-              showCheckIcon={selectedLayout === LayoutOptions.MeetingNotes}
-              icon={<MeetingNotesIcon />}
-              content={t('moderationbar-button-meeting-notes-tooltip')}
-            />
-          )}
-          {((isMobile && isWhiteboardAvailable) || (!isMobile && isWhiteBoard)) && (
-            <LayoutSelectionMenuItem
-              onClick={() => handleSelectedView(LayoutOptions.Whiteboard)}
-              role="menuitemradio"
-              showCheckIcon={selectedLayout === LayoutOptions.Whiteboard}
-              icon={<WhiteboardIcon />}
-              content={t('moderationbar-button-whiteboard-tooltip')}
-            />
-          )}
-          <StyledDivider component="li">
-            <Typography variant="caption" component="span">
-              {t('conference-view-sorting')}
-            </Typography>
-          </StyledDivider>
+        )}
+        {((isMobile && isWhiteboardAvailable) || (!isMobile && isWhiteBoard)) && (
           <LayoutSelectionMenuItem
+            onClick={() => handleSelectedView(LayoutOptions.Whiteboard)}
             role="menuitemradio"
-            onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.VideoFirst)}
-            showCheckIcon={selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.VideoFirst}
-            icon={<GridViewIcon />}
-            content={t('conference-view-grid-camera-first')}
+            showCheckIcon={selectedLayout === LayoutOptions.Whiteboard}
+            icon={<WhiteboardIcon />}
+            content={t('moderationbar-button-whiteboard-tooltip')}
           />
-          <LayoutSelectionMenuItem
-            role="menuitemradio"
-            onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.ModeratorsFirst)}
-            showCheckIcon={
-              selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.ModeratorsFirst
-            }
-            icon={<GridViewIcon />}
-            content={t('conference-view-grid-moderators-first')}
-          />
-        </PopoverContainer>
-      </Popover>
+        )}
+        <StyledDivider component="li">
+          <Typography variant="caption" component="span">
+            {t('conference-view-sorting')}
+          </Typography>
+        </StyledDivider>
+        <LayoutSelectionMenuItem
+          role="menuitemradio"
+          onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.VideoFirst)}
+          showCheckIcon={selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.VideoFirst}
+          icon={<GridViewIcon />}
+          content={t('conference-view-grid-camera-first')}
+        />
+        <LayoutSelectionMenuItem
+          role="menuitemradio"
+          onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.ModeratorsFirst)}
+          showCheckIcon={
+            selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.ModeratorsFirst
+          }
+          icon={<GridViewIcon />}
+          content={t('conference-view-grid-moderators-first')}
+        />
+      </LayoutMenu>
     </ViewPopperContainer>
   );
 };
