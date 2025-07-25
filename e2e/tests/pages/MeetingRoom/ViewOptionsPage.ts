@@ -27,6 +27,7 @@ export class ViewOptionsPage {
     participantWindow: 'ParticipantWindow',
     participantName: 'nameTile',
     fullScreen: 'fullscreen',
+    viewOptionsMenuCheckIcon: 'CheckIcon',
   };
 
   public readonly videoPreviewName: Locator;
@@ -93,7 +94,7 @@ export class ViewOptionsPage {
 
   public async hasTickIcon(element: Locator): Promise<boolean> {
     // if menu item has a tick, count should be 1, else 0
-    return (await element.locator('div').first().locator('svg').count()) === 1;
+    return (await element.getByTestId(this.selectors.viewOptionsMenuCheckIcon).count()) === 1;
   }
 
   public async isFullScreen(): Promise<boolean> {
