@@ -114,7 +114,6 @@ test.describe('MeetingRoom - adjust participant view', () => {
 
     // open grid view options besides the meeting room name
     await viewOptionsPage.displayViewOptionsMenu();
-    await viewOptionsPage.selectGridViewOption(); // optional since grid view is activated by default
     // tik is activated
     await expect(await viewOptionsPage.hasTickIcon(viewOptionsPage.gridViewOption)).toBeTruthy();
 
