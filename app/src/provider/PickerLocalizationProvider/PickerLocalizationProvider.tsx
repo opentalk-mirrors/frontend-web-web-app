@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { LocalizationProvider, LocalizationProviderProps } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { deDE, enUS } from '@mui/x-date-pickers/locales';
 import { Locale } from 'date-fns';
 import { de as deLocale } from 'date-fns/locale/de';
@@ -19,7 +19,7 @@ const langLocaleMap = new Map([
   ['de', deDE.components.MuiLocalizationProvider.defaultProps.localeText],
 ]);
 
-export interface DateTimeProviderProps extends LocalizationProviderProps<Date, Locale> {
+export interface DateTimeProviderProps extends LocalizationProviderProps<Locale> {
   children: React.ReactNode;
 }
 

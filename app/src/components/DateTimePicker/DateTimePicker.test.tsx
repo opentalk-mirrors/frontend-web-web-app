@@ -33,7 +33,7 @@ describe('render <DateTimePicker />', () => {
     jest.restoreAllMocks();
   });
 
-  it('renders DateTimePicker component with german localization', async () => {
+  it('renders DateTimePicker component with german localization', () => {
     // eslint disabled is needed because of recursion type definitions inside the library
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     jest.spyOn(require('react-i18next'), 'useTranslation').mockReturnValue({
@@ -46,16 +46,29 @@ describe('render <DateTimePicker />', () => {
     });
 
     renderWithProviders(<DateTimePicker {...dateTimePickerProps} />, { store, provider: { mui: true } });
-    const input: HTMLInputElement = screen.getByRole('textbox');
     const deFormattedDate = dateFns.formatByString(date, 'dd.MM.yyyy HH:mm');
 
-    expect(input.value).toBe(deFormattedDate);
+    const dayInput = screen.getByRole('spinbutton', { name: 'Tag' });
+    const dayValue = dayInput.textContent;
+    const monthInput = screen.getByRole('spinbutton', { name: 'Monat' });
+    const monthValue = monthInput.textContent;
+    const yearInput = screen.getByRole('spinbutton', { name: 'Jahr' });
+    const yearValue = yearInput.textContent;
+    const hourInput = screen.getByRole('spinbutton', { name: 'Stunden' });
+    const hourValue = hourInput.textContent;
+    const minuteInput = screen.getByRole('spinbutton', { name: 'Minuten' });
+    const minuteValue = minuteInput.textContent;
+
+    const pickerValue = `${dayValue}.${monthValue}.${yearValue} ${hourValue}:${minuteValue}`;
+
+    expect(pickerValue).toBe(deFormattedDate);
   });
 
   it('renders DateTimePicker placeholder value on clear button click', async () => {
     renderWithProviders(<DateTimePicker {...clearableDateTimePickerProps} />, { store, provider: { mui: true } });
 
-    const input: HTMLInputElement = screen.getByRole('textbox');
+    const input = screen.getByRole('group');
+
     expect(input).toBeInTheDocument();
 
     const chooseDateButton = screen.getByRole('button', { name: /choose date/i });

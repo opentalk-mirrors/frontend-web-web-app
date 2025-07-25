@@ -21,7 +21,7 @@
     "@m-lab/ndt7": "^0.0.6",
     "@mui/lab": "7.0.0-beta.14",
     "@mui/material": "^7.2.0",
-    "@mui/x-date-pickers": "^7.29.4",
+    "@mui/x-date-pickers": "^8.9.0",
     "@opentalk/fluent_conv": "workspace:*",
     "@opentalk/i18next-fluent": "workspace:*",
     "@opentalk/redux-oidc": "workspace:*",
