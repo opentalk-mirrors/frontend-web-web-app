@@ -75,6 +75,7 @@ test.describe('MeetingRoom - adjust participant view', () => {
 
     // join with 2 guests (in separate browser instances)
     await joinMeetingRoomWithNGuests(meetingRoomPage, context, guestLink, 'guest', SMALL_NUMBER_OF_GUESTS);
+    await meetingRoomPage.page.bringToFront();
     await meetingRoomPage.peopleButton.click();
     await expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(SMALL_NUMBER_OF_GUESTS + 1);
 
@@ -108,6 +109,7 @@ test.describe('MeetingRoom - adjust participant view', () => {
 
     // join with 5 guests (in separate browser instances)
     await joinMeetingRoomWithNGuests(meetingRoomPage, context, guestLink, 'guest', NUMBER_OF_GUESTS);
+    await meetingRoomPage.page.bringToFront();
     await expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(NUMBER_OF_GUESTS + 1);
 
     // open grid view options besides the meeting room name
@@ -139,6 +141,7 @@ test.describe('MeetingRoom - adjust participant view', () => {
     // join with 5 guests (in separate browser instances)
     const guestPages = await joinMeetingRoomWithNGuests(meetingRoomPage, context, guestLink, 'guest', NUMBER_OF_GUESTS);
     await expect(await meetingRoomPage.getNumberOfParticipantsInMeeting()).toBe(NUMBER_OF_GUESTS + 1);
+    await meetingRoomPage.page.bringToFront();
     const firstGuestMeetingRoomPage = guestPages[0];
     const secondGuestMeetingRoomPage = guestPages[1];
 
