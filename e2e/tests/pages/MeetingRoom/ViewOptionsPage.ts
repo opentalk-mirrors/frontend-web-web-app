@@ -20,7 +20,6 @@ export class ViewOptionsPage {
   private readonly speakerViewContainer: Locator;
 
   public readonly selectors = {
-    viewPopoverMenuListItem: '#view-popover-menu > li',
     gridViewContainer: 'grid-container',
     speakerViewContainer: 'SpeakerView-Container',
     speakerViewParticipantsThumbsHolder: 'ThumbsHolder',
@@ -55,15 +54,6 @@ export class ViewOptionsPage {
     this.videoPreviewName = this.page
       .getByRole('complementary', { name: 'Tools' })
       .getByTestId(this.selectors.participantName);
-  }
-
-  public allocateViewOptionLocatorsBasedOnSetup() {
-    // correct differences between test server and local setup
-    // constructor allocates locators to the UI version on test server, this function overwrites settings for local setup
-    if (process.env.INSTANCE_URL.startsWith('http://')) {
-      this.activatedCameraFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(3);
-      this.moderatorsFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4);
-    }
   }
 
   public async displayViewOptionsMenu(): Promise<void> {

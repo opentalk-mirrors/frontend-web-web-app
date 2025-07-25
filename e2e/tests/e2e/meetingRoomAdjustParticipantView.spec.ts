@@ -16,9 +16,6 @@ test.describe('MeetingRoom - adjust participant view', () => {
     const { meetingRoomPage } = await startAdhocMeetingAsModerator(page, browserName);
     viewOptionsPage = new ViewOptionsPage({ page: meetingRoomPage.page });
 
-    // work around for differences between test server and local setup
-    viewOptionsPage.allocateViewOptionLocatorsBasedOnSetup();
-
     // when opening grid view options besides the meeting room name
     await viewOptionsPage.displayViewOptionsMenu();
     await expect(viewOptionsPage.viewAndSortingPopupMenu).toBeVisible();
@@ -147,10 +144,6 @@ test.describe('MeetingRoom - adjust participant view', () => {
 
     const firstGuestViewOptionsPage = new ViewOptionsPage({ page: firstGuestMeetingRoomPage.page });
     const secondGuestViewOptionsPage = new ViewOptionsPage({ page: secondGuestMeetingRoomPage.page });
-
-    // work around for differences in grid view options between test server and local setup
-    viewOptionsPage.allocateViewOptionLocatorsBasedOnSetup();
-    secondGuestViewOptionsPage.allocateViewOptionLocatorsBasedOnSetup();
 
     // turn on the camera of one guest & assert video from the guest is shown
     await expect(await meetingRoomPage.isCameraOn()).toBeFalsy();
