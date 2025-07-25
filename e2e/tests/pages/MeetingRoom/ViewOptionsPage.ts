@@ -18,6 +18,7 @@ export class ViewOptionsPage {
   private readonly gridViewContainer: Locator;
   public readonly gridViewParticipantWindow: Locator;
   private readonly speakerViewContainer: Locator;
+  private viewAndSortingPopupMenuItems: Locator;
 
   public readonly selectors = {
     gridViewContainer: 'grid-container',
@@ -37,6 +38,7 @@ export class ViewOptionsPage {
 
     this.viewOptionsButton = this.page.getByRole('button', { name: 'Select view' });
     this.viewAndSortingPopupMenu = this.page.getByRole('menu', { name: 'Select view' });
+    this.viewAndSortingPopupMenuItems = this.viewAndSortingPopupMenu.getByRole('menuitemradio');
     this.gridViewOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', { name: 'Grid-View' });
     this.speakerViewOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', { name: 'Speaker-View' });
     this.fullScreenViewOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', { name: 'Fullscreen' });
@@ -62,6 +64,18 @@ export class ViewOptionsPage {
     await this.viewOptionsButton.click();
     await this.viewAndSortingPopupMenu.waitFor();
     await this.viewAndSortingPopupMenu.isVisible();
+  }
+
+  public async getOptionsListText(): Promise<string[]> {
+    const optionsText: string[] = [];
+    for (const item of await this.getOptionsList()) {
+      optionsText.push(await item.innerText());
+    }
+    return optionsText;
+  }
+
+  public async getOptionsList(): Promise<Array<Locator>> {
+    return await this.viewAndSortingPopupMenuItems.all();
   }
 
   public async selectGridViewOption(): Promise<void> {

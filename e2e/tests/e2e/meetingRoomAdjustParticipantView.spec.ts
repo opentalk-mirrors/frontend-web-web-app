@@ -20,18 +20,16 @@ test.describe('MeetingRoom - adjust participant view', () => {
     await viewOptionsPage.displayViewOptionsMenu();
     await expect(viewOptionsPage.viewAndSortingPopupMenu).toBeVisible();
 
-    // assert grid view shows up with 3 options: Grid-View, Speaker-View, Fullscreen
-    await expect(viewOptionsPage.gridViewOption).toBeVisible();
-    expect(await viewOptionsPage.gridViewOption.innerText()).toBe('Grid-View');
-    await expect(viewOptionsPage.speakerViewOption).toBeVisible();
-    expect(await viewOptionsPage.speakerViewOption.innerText()).toBe('Speaker-View');
-    await expect(viewOptionsPage.fullScreenViewOption).toBeVisible();
-    expect(await viewOptionsPage.fullScreenViewOption.innerText()).toBe('Fullscreen');
-    // assert sorting shows up with 2 options: Activated camera first, Moderator(s) first
-    await expect(viewOptionsPage.activatedCameraFirstSortingOption).toBeVisible();
-    expect(await viewOptionsPage.activatedCameraFirstSortingOption.innerText()).toBe('Activated camera first');
-    await expect(viewOptionsPage.moderatorsFirstSortingOption).toBeVisible();
-    expect(await viewOptionsPage.moderatorsFirstSortingOption.innerText()).toBe('Moderator(s) first');
+    expect(await viewOptionsPage.getOptionsListText()).toEqual([
+      'Grid-View',
+      'Speaker-View',
+      'Fullscreen',
+      'Activated camera first',
+      'Moderator(s) first',
+    ]);
+    for (const option of await viewOptionsPage.getOptionsList()) {
+      await expect(option).toBeVisible();
+    }
   });
 
   test.skip('TC_002_VideoRoom_ParticipantViewSettings_List_SpeakerView', async ({ page, context, browserName }) => {
