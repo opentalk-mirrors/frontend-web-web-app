@@ -95,6 +95,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const fullscreenHandle = useFullscreenContext();
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
+  const userMenuItems: Array<MenuEntry> = [];
 
   const isTrainingParticipationReportModuleOn = useAppSelector(
     selectIsModuleEnabled(BackendModules.TrainingParticipationReport)
@@ -286,6 +287,16 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     });
   }
 
+  if (configFeatures?.innovafoneAPI) {
+    userMenuItems.push({
+      label: 'more-menu-start-remote-control',
+      action: () => {
+        window.open('com.innovaphone.myapps:remotecontrol', '_blank');
+      },
+      icon: <ShareScreenOnIcon />,
+    });
+  }
+
   const devMenuItems = [
     {
       label: 'Show Binary Action',
@@ -395,18 +406,15 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     devMenuItems.push(devMenuTrainingParticipationToggle);
   }
 
-  const renderMenuItems = (menuEntries: Array<MenuEntry>) => (
-    <MenuList>
-      {menuEntries.map(({ label, action, icon }) => (
-        <ToolbarMenuItem key={label} onClick={action}>
-          <ListItemIcon>{icon}</ListItemIcon>
-          <Typography variant="inherit" noWrap>
-            {t(label)}
-          </Typography>
-        </ToolbarMenuItem>
-      ))}
-    </MenuList>
-  );
+  const renderMenuItems = (menuEntries: Array<MenuEntry>) =>
+    menuEntries.map(({ label, action, icon }) => (
+      <ToolbarMenuItem key={label} onClick={action}>
+        <ListItemIcon>{icon}</ListItemIcon>
+        <Typography variant="inherit" noWrap>
+          {t(label)}
+        </Typography>
+      </ToolbarMenuItem>
+    ));
 
   const MenuTitleContainer = styled(Stack)(({ theme }) => ({
     alignItems: 'center',
@@ -454,6 +462,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         PaperProps={{
           'aria-label': t('toolbar-button-more-tooltip-title'),
         }}
+        aria-label={t('toolbar-button-more-tooltip-title')}
       >
         <MenuTitleContainer direction="row" spacing={2}>
           <Box
@@ -468,25 +477,11 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           <small>{window.config.version?.product || t('dev-version')}</small>
         </MenuTitleContainer>
         <Divider />
-        {isModerator && renderMenuItems(moderatorMenuItems)}
-        {isDevMode() && renderMenuItems(devMenuItems)}
-        {configFeatures?.innovafoneAPI && (
-          <MenuList>
-            <ToolbarMenuItem
-              key="more-menu-start-remote-control"
-              onClick={() => {
-                window.open('com.innovaphone.myapps:remotecontrol', '_blank');
-              }}
-            >
-              <ListItemIcon>
-                <ShareScreenOnIcon />
-              </ListItemIcon>
-              <Typography variant="inherit" noWrap>
-                {t('more-menu-start-remote-control')}
-              </Typography>
-            </ToolbarMenuItem>
-          </MenuList>
-        )}
+        <MenuList autoFocusItem={Boolean(anchorEl)} aria-label={t('toolbar-button-more-tooltip-title')}>
+          {isModerator && renderMenuItems(moderatorMenuItems)}
+          {renderMenuItems(userMenuItems)}
+          {isDevMode() && renderMenuItems(devMenuItems)}
+        </MenuList>
       </ToolbarMenu>
       <InviteGuestDialog open={showInviteModal} onClose={() => setShowInviteModal(false)} />
     </ThemeProvider>
