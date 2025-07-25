@@ -20,7 +20,6 @@ export class ViewOptionsPage {
   private readonly speakerViewContainer: Locator;
 
   public readonly selectors = {
-    viewPopoverMenu: '#view-popover-menu',
     viewPopoverMenuListItem: '#view-popover-menu > li',
     gridViewContainer: 'grid-container',
     speakerViewContainer: 'SpeakerView-Container',
@@ -37,15 +36,18 @@ export class ViewOptionsPage {
     this.page = page;
 
     this.viewOptionsButton = this.page.getByRole('button', { name: 'Select view' });
-    this.viewAndSortingPopupMenu = this.page.locator(this.selectors.viewPopoverMenu);
-    // get by role doesn't work for the menu items because the label is nested in a div and not part of the li element
-    this.gridViewOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(0);
-    this.speakerViewOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(1);
-    this.fullScreenViewOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(2);
+    this.viewAndSortingPopupMenu = this.page.getByRole('menu', { name: 'Select view' });
+    this.gridViewOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', { name: 'Grid-View' });
+    this.speakerViewOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', { name: 'Speaker-View' });
+    this.fullScreenViewOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', { name: 'Fullscreen' });
     this.fullScreenView = this.page.getByTestId(this.selectors.fullScreen);
     this.closeFullScreenButton = this.page.getByTestId(this.selectors.fullScreen).getByLabel('close fullscreen');
-    this.activatedCameraFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4);
-    this.moderatorsFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(5);
+    this.activatedCameraFirstSortingOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', {
+      name: 'Activated camera first',
+    });
+    this.moderatorsFirstSortingOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', {
+      name: 'Moderator(s) first',
+    });
     this.gridViewContainer = this.page.getByTestId(this.selectors.gridViewContainer);
     this.gridViewParticipantWindow = this.page.getByTestId(this.selectors.participantWindow);
     this.speakerViewContainer = this.page.getByTestId(this.selectors.speakerViewContainer);
