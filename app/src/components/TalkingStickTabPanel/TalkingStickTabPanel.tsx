@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { selectNext, talkingStickStart, stop as talkingStickStop } from '../../api/types/outgoing/automod';
 import { CommonSwitch } from '../../commonComponents';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import { selectCombinedUserFirstAndParticipantsInConference } from '../../store/selectors';
+import { selectCombinedUserAndParticipants } from '../../store/selectors';
 import { selectAutomodActiveState, selectAutomoderationParticipantIds } from '../../store/slices/automodSlice';
 import { SortOption } from '../../types';
 import { sortParticipantsWithConfig } from '../../utils/sortParticipants';
@@ -20,7 +20,7 @@ const INCLUDE_MODERATOR_ID = 'include-moderator-label';
 const TalkingStickTabPanel = () => {
   const dispatch = useAppDispatch();
   const { t, i18n } = useTranslation();
-  const configurationParticipants = useAppSelector(selectCombinedUserFirstAndParticipantsInConference);
+  const configurationParticipants = useAppSelector(selectCombinedUserAndParticipants);
   const isAutomodActive = useAppSelector(selectAutomodActiveState);
   const runningParticipantIds = useAppSelector(selectAutomoderationParticipantIds);
   const participantsWithoutUser = configurationParticipants.slice(1);

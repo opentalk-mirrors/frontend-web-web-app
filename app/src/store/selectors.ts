@@ -65,8 +65,8 @@ export const selectCombinedParticipantsAndUserInCoference = createSelector(
   (participants, user) => (user ? [...participants, user] : participants)
 );
 
-export const selectCombinedUserFirstAndParticipantsInConference = createSelector(
-  [selectAllOnlineParticipantsInConference, selectUserAsParticipant],
+export const selectCombinedUserAndParticipants = createSelector(
+  [selectAllOnlineParticipants, selectUserAsParticipant],
   (participants, user) => (user ? [user, ...participants] : participants)
 );
 
