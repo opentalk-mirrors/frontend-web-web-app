@@ -162,7 +162,8 @@ window.config = {
       "e2eEncryption": false,
     },
     settings: {
-      waitingRoomDefaultValue: true
+      waitingRoomDefaultValue: true,
+      suppressBrowserCompatibilityInfo: false,
     }
 }
 

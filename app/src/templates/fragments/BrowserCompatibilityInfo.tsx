@@ -8,12 +8,15 @@ import { useTranslation } from 'react-i18next';
 import { notificationAction } from '../../commonComponents';
 import ConfirmBrowserDialog from '../../components/ConfirmBrowserDialog';
 import { localStorageItems } from '../../config/storage';
+import { useAppSelector } from '../../hooks';
 import browser from '../../modules/BrowserSupport';
+import { selectSuppressBrowserCompatibilityInfo } from '../../store/slices/configSlice';
 
 const BrowserCompatibilityInfo = ({ children }: PropsWithChildren) => {
+  const { t } = useTranslation();
+  const suppressBrowserCompatibilityInfo = useAppSelector(selectSuppressBrowserCompatibilityInfo);
   const signature = browser.getBrowserSignature();
   const [isConfirmed, setBrowserConfirmed] = useState(browser.isBrowserConfirmed());
-  const { t } = useTranslation();
 
   const handleClick = useCallback(() => {
     localStorage.setItem(localStorageItems.browserConfirmed, signature);
@@ -29,7 +32,7 @@ const BrowserCompatibilityInfo = ({ children }: PropsWithChildren) => {
         ? new Date(safariNotificationLastSeenTimestamp)
         : undefined;
       const showNotification = !lastSeenDate || differenceInMonths(now, lastSeenDate) > 0;
-      if (showNotification) {
+      if (showNotification && !suppressBrowserCompatibilityInfo) {
         const message = t('safari-warning-notification');
         notificationAction({
           msg: message,
@@ -42,7 +45,7 @@ const BrowserCompatibilityInfo = ({ children }: PropsWithChildren) => {
         });
       }
     }
-  }, [t]);
+  }, [t, suppressBrowserCompatibilityInfo]);
 
   if (!isConfirmed) {
     return <ConfirmBrowserDialog handleClick={handleClick} />;

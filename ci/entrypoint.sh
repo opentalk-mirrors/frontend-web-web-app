@@ -118,7 +118,8 @@ window.config = {
     dsn: "${SENTRY_DSN}",
   },
   settings: {
-	waitingRoomDefaultValue: ${WAITING_ROOM_DEFAULT_VALUE:-false}
+    waitingRoomDefaultValue: ${WAITING_ROOM_DEFAULT_VALUE:-false},
+    suppressBrowserCompatibilityInfo: ${SUPPRESS_BROWSER_COMPATIBILITY_INFO:-false}
   }
 }
 EOF

@@ -75,6 +75,7 @@ export interface Config {
   features: Features;
   settings: {
     waitingRoomDefaultValue: boolean;
+    suppressBrowserCompatibilityInfo: boolean;
   };
   videoBackgrounds: VideoBackground[];
   maxVideoBandwidth: number;
@@ -132,6 +133,7 @@ export type ConfigState = {
   };
   settings: {
     waitingRoomDefaultValue: boolean;
+    suppressBrowserCompatibilityInfo: boolean;
   };
   readonly videoBackgrounds: readonly VideoBackground[];
   maxVideoBandwidth: number;
@@ -201,6 +203,7 @@ export const initialState: ConfigState = {
   },
   settings: {
     waitingRoomDefaultValue: true,
+    suppressBrowserCompatibilityInfo: false,
   },
   provider: {
     active: false,
@@ -271,5 +274,7 @@ export const selectDataProtectionUrl = (state: RootState) => state.config.dataPr
 export const selectGlitchtipConfig = (state: RootState) => state.config.glitchtip;
 export const selectIsGlitchtipConfigured = (state: RootState) => Boolean(state.config.glitchtip?.dsn);
 export const selectWaitingRoomDefault = (state: RootState) => state.config.settings.waitingRoomDefaultValue;
+export const selectSuppressBrowserCompatibilityInfo = (state: RootState) =>
+  state.config.settings.suppressBrowserCompatibilityInfo;
 
 export default configSlice.reducer;
