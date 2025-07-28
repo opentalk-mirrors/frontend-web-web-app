@@ -27,14 +27,22 @@ const MainContainer = styled('aside')(({ theme }) => ({
     display: 'grid',
     gridAutoFlow: 'column',
     gap: theme.spacing(1.25),
+    '.MuiButtonBase-root': {
+      border: `1px solid ${theme.palette.common.white}`,
+    },
+    '.MuiButtonBase-root:first-of-type': {
+      // padding: theme.spacing(1.5),
+      width: '2.75rem',
+      height: '2.35rem',
+    },
   },
   [theme.breakpoints.down('md')]: {
     gap: theme.spacing(1),
-    background: theme.palette.background.paper,
+    background: theme.palette.background.customPaper.primary,
   },
   [`${theme.breakpoints.down('md')} and (orientation: landscape)`]: {
     gap: theme.spacing(1),
-    background: theme.palette.background.paper,
+    background: theme.palette.background.customPaper.primary,
   },
 }));
 

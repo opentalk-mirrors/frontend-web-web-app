@@ -21,7 +21,7 @@ const Select = styled(CommonTextField)(({ theme }) => ({
   },
   '& .MuiFormLabel-root': {
     minWidth: 'max-content',
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.customPaper.primary,
     padding: theme.spacing(0, 1),
   },
   [theme.breakpoints.down('sm')]: {

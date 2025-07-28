@@ -58,7 +58,7 @@ const DialogContent = styled(MuiDialogContent)(({ theme }) => ({
 }));
 
 const CommonLabel = styled(InputLabel)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.text.primary,
 }));
 
 const EndOptionLabel = styled(CommonLabel)(({ theme }) => ({
@@ -263,10 +263,10 @@ export const CustomRecurringEventDialog = ({
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="secondary" onClick={closeDialog}>
+        <Button variant="contained" color="primary" onClick={closeDialog}>
           {t('dashboard-recurrence-dialog-close-button')}
         </Button>
-        <Button variant="contained" onClick={handleSelectRRule} disabled={isInvalidUntil()}>
+        <Button variant="contained" onClick={handleSelectRRule} disabled={isInvalidUntil()} color="secondary">
           {t('dashboard-recurrence-dialog-save-button')}
         </Button>
       </DialogActions>

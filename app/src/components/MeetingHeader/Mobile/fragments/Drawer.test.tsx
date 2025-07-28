@@ -59,7 +59,7 @@ describe('Drawer rendering logic', () => {
   });
 
   it('should not render drawer content when its closed', () => {
-    renderWithProviders(<Drawer />, { store });
+    renderWithProviders(<Drawer />, { store, provider: { mui: true } });
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 });
@@ -80,7 +80,7 @@ describe('Drawer behavior logic', () => {
         },
       },
     });
-    renderWithProviders(<Drawer />, { store });
+    renderWithProviders(<Drawer />, { store, provider: { mui: true } });
     fireEvent.click(screen.getByText('DrawerButton'));
     expect(screen.getByText('DrawerButton')).toHaveProperty('dataset.expanded', 'true');
   });
@@ -96,7 +96,7 @@ describe('Drawer behavior logic', () => {
         },
       },
     });
-    renderWithProviders(<Drawer />, { store });
+    renderWithProviders(<Drawer />, { store, provider: { mui: true } });
     fireEvent.click(screen.getByText('DrawerButton'));
     expect(screen.getByText('DrawerButton')).toHaveProperty('dataset.expanded', 'false');
   });
@@ -124,7 +124,7 @@ describe('Drawer participant tabs', () => {
         },
       },
     });
-    renderWithProviders(<Drawer />, { store });
+    renderWithProviders(<Drawer />, { store, provider: { mui: true } });
     const container = screen.getByRole('list');
     expect(container).toBeInTheDocument();
     expect(container).toHaveProperty('children.length', 2);
@@ -147,7 +147,7 @@ describe('Drawer participant tabs', () => {
         },
       },
     });
-    renderWithProviders(<Drawer />, { store });
+    renderWithProviders(<Drawer />, { store, provider: { mui: true } });
     const firstItem = screen.getAllByRole('listitem')[0];
     expect(firstItem).toHaveTextContent('votes-poll-overview-title');
   });
@@ -182,7 +182,7 @@ describe('Drawer moderator tabs', () => {
         },
       },
     });
-    renderWithProviders(<Drawer />, { store });
+    renderWithProviders(<Drawer />, { store, provider: { mui: true } });
     const container = screen.getByRole('list');
     expect(container).toBeInTheDocument();
     expect(container).toHaveProperty('children.length', 5); // 2 dividers are omitted and one mobile only tab is included.
@@ -210,7 +210,7 @@ describe('Drawer moderator tabs', () => {
         },
       },
     });
-    renderWithProviders(<Drawer />, { store });
+    renderWithProviders(<Drawer />, { store, provider: { mui: true } });
     const button = screen.getByText('DrawerButton');
     fireEvent.click(button);
     expect(screen.getByText('DrawerButton')).toHaveProperty('dataset.expanded', 'true');

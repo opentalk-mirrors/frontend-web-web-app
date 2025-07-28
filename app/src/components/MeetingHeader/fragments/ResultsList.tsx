@@ -13,10 +13,10 @@ const MenuList = styled(MuiMenuList)(({ theme }) => ({
   maxWidth: theme.typography.pxToRem(420),
 }));
 
-const ListSubheader = styled(MuiListSubheader)(({ theme }) => ({
+const ListSubheader = styled(MuiListSubheader)(() => ({
   background: 'transparent',
   '& .MuiTypography-root': {
-    color: theme.palette.primary.contrastText,
+    color: 'currentColor',
   },
 }));
 

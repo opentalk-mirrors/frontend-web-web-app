@@ -16,7 +16,7 @@ import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
 import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 
 const MainContainer = styled(Stack)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.background.customPaper.primary,
   width: '100%',
   padding: theme.spacing(1.5),
   borderRadius: '0.4rem',
@@ -157,10 +157,16 @@ const LegalVoteOverviewPanel = ({
           <>
             <Divider />
             <ButtonContainer>
-              <Button size="small" variant="text" onClick={handleCancel} disabled={dispatchTriggered}>
+              <Button size="small" variant="text" onClick={handleCancel} disabled={dispatchTriggered} color="secondary">
                 {t('legal-vote-overview-panel-button-cancel')}
               </Button>
-              <Button size="small" variant="contained" onClick={handleEnd} disabled={dispatchTriggered}>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={handleEnd}
+                disabled={dispatchTriggered}
+                color="secondary"
+              >
                 {t('legal-vote-overview-panel-button-end')}
               </Button>
             </ButtonContainer>

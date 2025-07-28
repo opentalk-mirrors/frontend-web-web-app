@@ -52,7 +52,7 @@ describe('FullscreenView', () => {
   const { store } = configureStore();
 
   it('renders without crashing', () => {
-    renderWithProviders(<FullscreenView />, { store });
+    renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('fullscreen')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /indicator-fullscreen-close/i })).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe('FullscreenView', () => {
   });
 
   it('shows LocalVideo & toolbar on mouse over', () => {
-    renderWithProviders(<FullscreenView />, { store });
+    renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
     const fullscreen = screen.getByTestId('fullscreen');
     expect(fullscreen).toBeInTheDocument();
 
@@ -73,7 +73,7 @@ describe('FullscreenView', () => {
   });
 
   it('triggers react-full-screen exit function when clicking on close button', () => {
-    renderWithProviders(<FullscreenView />, { store });
+    renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
 
     const closeBtn = screen.getByRole('button', { name: /indicator-fullscreen-close/i });
     expect(screen.getByTestId('fullscreen')).toBeInTheDocument();

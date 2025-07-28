@@ -18,7 +18,7 @@ vi.mock('@livekit/components-react', () => ({
 describe('<ShareScreenButton />', () => {
   const { store } = configureStore();
   it('render ShareScreenButton component', () => {
-    renderWithProviders(<ShareScreenButton />, { store });
+    renderWithProviders(<ShareScreenButton />, { store, provider: { mui: true } });
     expect(screen.getByTestId('toolbarShareScreenButton')).toBeInTheDocument();
   });
 
@@ -31,7 +31,7 @@ describe('<ShareScreenButton />', () => {
       });
     }
 
-    const { container } = renderWithProviders(<ShareScreenButton />, { store });
+    const { container } = renderWithProviders(<ShareScreenButton />, { store, provider: { mui: true } });
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -50,7 +50,7 @@ describe('<ShareScreenButton />', () => {
       },
     });
 
-    renderWithProviders(<ShareScreenButton />, { store });
+    renderWithProviders(<ShareScreenButton />, { store, provider: { mui: true } });
     expect(screen.getByTestId('toolbarShareScreenButton')).toBeDisabled();
   });
 });

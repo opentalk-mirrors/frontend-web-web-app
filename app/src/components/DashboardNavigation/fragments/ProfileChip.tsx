@@ -24,18 +24,22 @@ const ProfileButton = styled(Button)(({ theme }) => ({
   },
 })) as typeof Button;
 
+const DisplayName = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
+
 const ProfileChip = ({ collapsed, withLabel }: ChipProps) => {
   const { data } = useGetMeQuery();
   const displayName = data?.displayName;
 
   return (
-    <ProfileButton component={Link} to="settings/profile" variant="outlined" color="secondary" fullWidth>
+    <ProfileButton component={Link} to="settings/profile" variant="outlined" color="primary" fullWidth>
       <ProfilePicture />
       {withLabel && (
         <Collapse orientation="horizontal" in={!collapsed}>
-          <Typography noWrap translate="no">
+          <DisplayName noWrap translate="no">
             {displayName}
-          </Typography>
+          </DisplayName>
         </Collapse>
       )}
     </ProfileButton>

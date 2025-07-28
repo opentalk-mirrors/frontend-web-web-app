@@ -152,7 +152,6 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
   return (
     <>
       <Button
-        color="secondary"
         fullWidth
         {...openButtonProps}
         //Props that can't be overriden
@@ -207,7 +206,7 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
         </DialogContent>
 
         <DialogActions>
-          <Button color="primary" fullWidth={isDesktop} type="submit">
+          <Button color="secondary" fullWidth={isDesktop} type="submit">
             {t('dashboard-join-meeting-dialog-join-button')}
           </Button>
         </DialogActions>

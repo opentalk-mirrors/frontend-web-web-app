@@ -61,7 +61,7 @@ vi.mock('./fragments/HandraiseButton', () => ({
 describe('Toolbar', () => {
   it('renders buttons', () => {
     const { store } = configureStore();
-    renderWithProviders(<Toolbar />, { store });
+    renderWithProviders(<Toolbar />, { store, provider: { mui: true } });
 
     const container = screen.getByLabelText('landmark-complementary-toolbar');
     expect(container).toBeInTheDocument();

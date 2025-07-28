@@ -36,6 +36,10 @@ const ParticipantLimitTypography = styled(Typography)(({ theme }) => ({
   paddingTop: theme.spacing(3),
 }));
 
+const ContainerStack = styled(Stack)(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
+
 const EventDetailsPage = () => {
   const [acceptEventInvitation] = useAcceptEventInviteMutation();
   const [declineEventInvitation] = useDeclineEventInviteMutation();
@@ -131,7 +135,7 @@ const EventDetailsPage = () => {
   };
 
   return (
-    <Stack
+    <ContainerStack
       style={{ paddingRight: theme.spacing(5), marginRight: theme.spacing(-5) }}
       sx={{
         justifyContent: 'space-between',
@@ -145,7 +149,9 @@ const EventDetailsPage = () => {
             mb: 4,
           }}
         >
-          <Typography variant="h1">{pageHeading}</Typography>
+          <Typography variant="h1" fontWeight="bold">
+            {pageHeading}
+          </Typography>
           <Typography
             variant="body1"
             component="span"
@@ -205,13 +211,13 @@ const EventDetailsPage = () => {
             <Button color="secondary" onClick={declineInvite} disabled={event.inviteStatus === InviteStatus.Declined}>
               {t('global-decline')}
             </Button>
-            <Button color="primary" onClick={acceptInvite} disabled={event.inviteStatus === InviteStatus.Accepted}>
+            <Button onClick={acceptInvite} disabled={event.inviteStatus === InviteStatus.Accepted}>
               {t('global-accept')}
             </Button>
           </>
         )}
       </ButtonContainer>
-    </Stack>
+    </ContainerStack>
   );
 };
 

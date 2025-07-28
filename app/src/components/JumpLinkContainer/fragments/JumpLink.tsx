@@ -9,17 +9,17 @@ export type JumpLinkProps = {
 };
 const JumpLinkDisplay = styled(Link)(({ theme }) => ({
   position: 'fixed',
-  top: '-40px',
+  top: '-50px',
   left: '45%',
   zIndex: theme.zIndex.jumpLink,
   textDecoration: 'none',
-  color: theme.palette.secondary.contrastText,
+  color: theme.palette.primary.contrastText,
   transition: 'top 195ms cubic-bezier(0.4, 0, 1, 1) 0ms',
-  backgroundColor: theme.palette.secondary.light,
+  backgroundColor: theme.palette.primary.light,
   borderRadius: '12px',
   padding: `${theme.typography.pxToRem(8)}`,
-  outline: `3px solid ${theme.palette.primary.main}`,
-  boxShadow: `5px 5px ${theme.palette.background}`,
+  outline: `3px solid ${theme.palette.secondary.main}`,
+  boxShadow: `5px 5px ${theme.palette.background.customPaper.primary}`,
   ':focus': {
     top: '20px',
   },

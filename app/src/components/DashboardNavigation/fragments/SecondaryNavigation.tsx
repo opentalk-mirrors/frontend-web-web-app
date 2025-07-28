@@ -25,7 +25,8 @@ const Container = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(13),
-  background: theme.palette.secondary.lightest,
+  background: theme.palette.background.highlight.primary,
+  color: theme.palette.background.highlight.contrastText,
   padding: theme.spacing(4, 0),
   marginRight: theme.spacing(0.5),
   height: '100%',
@@ -35,10 +36,12 @@ const Container = styled('div')(({ theme }) => ({
   },
 }));
 
-const List = styled(MuiList)({
+const List = styled(MuiList)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-});
+  paddingRight: 0,
+  gap: theme.spacing(1),
+}));
 
 const ListItem = styled(MuiListItem)(({ theme }) => ({
   padding: 0,
@@ -49,9 +52,9 @@ const ListItem = styled(MuiListItem)(({ theme }) => ({
 }));
 
 const NavItem = styled(NavLink)(({ theme, target }) => ({
-  color: theme.palette.text.primary,
+  background: theme.palette.background.highlight.primary,
+  color: theme.palette.background.highlight.contrastText,
   display: 'flex',
-  background: 'transparent',
   textDecoration: 'none',
   textTransform: 'capitalize',
   width: '100%',
@@ -62,7 +65,7 @@ const NavItem = styled(NavLink)(({ theme, target }) => ({
     opacity: 0,
     width: '5px',
     height: `100%`,
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: theme.palette.primary.main,
     position: 'absolute',
     right: 0,
     top: 0,
@@ -76,6 +79,10 @@ const NavItem = styled(NavLink)(({ theme, target }) => ({
     '&::after': {
       opacity: 1,
     },
+  },
+
+  '&:hover': {
+    background: theme.palette.background.highlightContrast.primary,
   },
 
   '&:focus-visible': {
@@ -169,11 +176,12 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
       {isDesktop && (
         <Typography
           variant="h1"
-          color="secondary"
+          color="inherit"
           sx={{
             ml: 4,
             mr: 4,
           }}
+          fontWeight={700}
         >
           {t(label)}
         </Typography>

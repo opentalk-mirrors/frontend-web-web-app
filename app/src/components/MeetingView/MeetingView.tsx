@@ -26,7 +26,8 @@ import MeetingEndedDialog from './fragments/MeetingEndedDialog';
 import { ParticipationConfirmationDialog } from './fragments/ParticipationConfirmationDialog';
 
 const Container = styled('div')(({ theme }) => ({
-  background: theme.palette.background.overlay,
+  background: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
   overflow: 'auto',
   display: 'grid',
   height: '100%',

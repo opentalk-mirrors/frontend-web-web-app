@@ -54,6 +54,7 @@ const StartAdornmentTypography = styled(Typography)<{ component?: string; htmlFo
 }));
 
 const StyledDateTimePicker = styled(MuiDateTimePicker)(({ theme }) => ({
+  color: theme.palette.primary.contrastText,
   '& .MuiFormHelperText-root': {
     marginTop: theme.spacing(1),
   },

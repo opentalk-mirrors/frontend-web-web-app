@@ -23,6 +23,7 @@ declare module '@mui/x-date-pickers/PickersTextField' {
 declare module '@mui/material/Button' {
   interface ButtonPropsColorOverrides {
     custom: true;
+    danger: true;
   }
 
   interface ButtonPropsVariantOverrides {
@@ -115,6 +116,25 @@ declare module '@mui/material/styles' {
     secondaryOverlay?: string;
     voteResult?: string;
     light?: string;
+
+    default: number;
+    paper: string;
+    main: {
+      primary: string;
+      contrastText: string;
+    };
+    highlight: {
+      primary: string;
+      contrastText: string;
+    };
+    highlightContrast: {
+      primary: string;
+      contrastText: string;
+    };
+    customPaper: {
+      primary: string;
+      contrastText: string;
+    };
   }
 
   interface Palette {
@@ -122,13 +142,15 @@ declare module '@mui/material/styles' {
     avatar: AvatarPalette;
     notistack: NotistackPalette;
     focus: FocusOutlinePalette;
+    danger: Palette['primary'];
   }
 
   interface PaletteOptions {
     outline?: string;
     avatar?: AvatarPalette;
     notistack?: NotistackPalette;
-    focus: FocusOutlinePalette;
+    focus?: FocusOutlinePalette;
+    danger?: PaletteOptions['primary'];
   }
 
   interface PaletteColor {
@@ -147,5 +169,6 @@ declare module '@mui/material/styles' {
 
   interface TypeText {
     placeholder: string;
+    error: string;
   }
 }

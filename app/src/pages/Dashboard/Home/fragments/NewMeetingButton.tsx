@@ -25,7 +25,6 @@ const NewMeetingButton = () => {
       component={Link}
       to="/dashboard/meetings/create"
       startIcon={<AddIcon />}
-      color="secondary"
       size="large"
       state={{
         ...getReferrerRouterState(window.location),

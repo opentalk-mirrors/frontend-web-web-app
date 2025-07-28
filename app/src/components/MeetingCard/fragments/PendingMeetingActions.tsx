@@ -56,15 +56,10 @@ export const PendingMeetingActions = ({ event }: PendingMeetingActionsProps) => 
 
   return (
     <Stack direction="row" spacing={1}>
-      <Button
-        color="secondary"
-        variant="outlined"
-        onClick={declineInvite}
-        onMouseDown={(mouseEvent) => mouseEvent.stopPropagation()}
-      >
+      <Button variant="outlined" onClick={declineInvite} onMouseDown={(mouseEvent) => mouseEvent.stopPropagation()}>
         {t('global-decline')}
       </Button>
-      <Button color="secondary" onClick={acceptInvite} onMouseDown={(mouseEvent) => mouseEvent.stopPropagation()}>
+      <Button onClick={acceptInvite} onMouseDown={(mouseEvent) => mouseEvent.stopPropagation()}>
         {t('global-accept')}
       </Button>
     </Stack>

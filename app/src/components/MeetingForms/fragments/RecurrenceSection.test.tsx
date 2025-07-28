@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Event, EventType, RecurrencePattern } from '@opentalk/rest-api-rtk-query';
-import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
+import { screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { Formik, FormikProps } from 'formik';
 
 import { CommonFrequencies, FrequencyOption } from '../../../utils/rruleUtils';
-import { mockedMeetingFormValues, mockedSingleEvent } from '../../../utils/testUtils';
+import { mockedMeetingFormValues, mockedSingleEvent, renderWithProviders } from '../../../utils/testUtils';
 import { CustomRecurringEventDialogProps } from './CustomRecurringEventDialog/CustomRecurringEventDialog';
 import { MeetingFormValues } from './DashboardDateTimePicker';
 import RecurrenceSection from './RecurrenceSection';
@@ -28,7 +28,7 @@ describe('RecurrenceSection', () => {
   const onRecurrencePatternChange = vi.fn();
 
   const renderComponent = (existingEvent: Event) =>
-    render(
+    renderWithProviders(
       <Formik initialValues={mockedMeetingFormValues} onSubmit={vi.fn()}>
         {(formik) => {
           formikInstance = formik;
@@ -40,7 +40,8 @@ describe('RecurrenceSection', () => {
             />
           );
         }}
-      </Formik>
+      </Formik>,
+      { provider: { mui: true } }
     );
 
   it('renders recurrence selection with no repetition option by default', () => {

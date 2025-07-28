@@ -51,7 +51,7 @@ describe('MeetingUtilsSection rendering logic', () => {
         },
       },
     });
-    const { unmount } = renderWithProviders(<MeetingUtilsSection />, { store });
+    const { unmount } = renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
     expect(screen.queryByLabelText('bad-media-connection-button-label')).not.toBeInTheDocument();
     (useLocalParticipant as Mock).mockReturnValue({
       localParticipant: {
@@ -59,7 +59,7 @@ describe('MeetingUtilsSection rendering logic', () => {
       },
     });
     unmount();
-    renderWithProviders(<MeetingUtilsSection />, { store });
+    renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
     expect(screen.getByLabelText('bad-media-connection-button-label')).toBeInTheDocument();
   });
 
@@ -71,21 +71,21 @@ describe('MeetingUtilsSection rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<MeetingUtilsSection />, { store });
+    renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
     expect(screen.getByText('WaitingParticipantsPopover')).toBeInTheDocument();
   });
 
   it('should render security badge for secure connection', () => {
     (getLocationProtocol as Mock).mockReturnValue('https:');
     const { store } = configureStore();
-    renderWithProviders(<MeetingUtilsSection />, { store });
+    renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
     expect(screen.getByText('SecurityBadge')).toBeInTheDocument();
   });
 
   it('should not render security badge for insecure connection', () => {
     (getLocationProtocol as Mock).mockReturnValue('http:');
     const { store } = configureStore();
-    renderWithProviders(<MeetingUtilsSection />, { store });
+    renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
     expect(screen.queryByText('SecurityBadge')).not.toBeInTheDocument();
   });
 });

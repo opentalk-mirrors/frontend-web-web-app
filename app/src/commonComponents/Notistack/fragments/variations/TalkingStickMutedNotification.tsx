@@ -35,10 +35,10 @@ export const TalkingStickMutedNotification = forwardRef(
             }}
           >
             {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-            <Button onClick={onUnmute} variant="contained" color="primary" fullWidth autoFocus>
+            <Button onClick={onUnmute} variant="contained" color="secondary" fullWidth autoFocus>
               {t('talking-stick-notification-unmute')}
             </Button>
-            <Button onClick={onNext} variant="contained" color="secondary" fullWidth>
+            <Button onClick={onNext} variant="contained" color="primary" fullWidth>
               {t('talking-stick-notification-next-speaker')}
             </Button>
           </Box>

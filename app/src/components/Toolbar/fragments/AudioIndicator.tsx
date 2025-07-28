@@ -185,11 +185,11 @@ const AudioIndicator = ({ shape, localAudioTrack }: AudioIndicatorProps) => {
     if (clip) {
       barColor = theme.palette.error.main;
     } else if (level > 0) {
-      barColor = theme.palette.primary.dark;
+      barColor = theme.palette.secondary.main;
     } else {
       barColor = theme.palette.text.disabled;
     }
-    const peakColor = theme.palette.secondary.main;
+    const peakColor = theme.palette.background.customPaper.primary;
 
     if (shape === 'circle') {
       drawCircle({ peak, level, clip }, barColor, peakColor, ctx);

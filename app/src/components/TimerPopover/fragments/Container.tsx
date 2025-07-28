@@ -12,7 +12,6 @@ export const Container = styled(Paper, {
   right: theme.spacing(2),
   padding: theme.spacing(2, 4),
   zIndex: 8,
-  background: theme.palette.background.paper,
   backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))',
   boxShadow:
     'rgba(0, 0, 0, 0.2) 0px 5px 5px -3px, rgba(0, 0, 0, 0.14) 0px 8px 10px 1px, rgba(0, 0, 0, 0.12) 0px 3px 14px 2px',

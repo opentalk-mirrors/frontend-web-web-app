@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Container, IconButton, InputAdornment, Stack, ThemeProvider, styled } from '@mui/material';
+import { Button, Container, IconButton, InputAdornment, Stack, styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
@@ -16,7 +16,6 @@ import * as yup from 'yup';
 
 import { isApiError, StartRoomError, useGetMeQuery, useGetRoomEventInfoQuery } from '../../api/rest';
 import { HiddenIcon, VisibleIcon } from '../../assets/icons';
-import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { CommonTextField as DefaultCommonTextField, notifications } from '../../commonComponents';
 import SuspenseLoading from '../../commonComponents/SuspenseLoading/SuspenseLoading';
 import { DISPLAY_NAME_MAX_CHARACTERS } from '../../constants';
@@ -46,13 +45,13 @@ import SelfTest from '../SelfTest';
 const CommonTextField = styled(DefaultCommonTextField)(({ theme }) => ({
   '& .MuiInputBase-root': {
     '&:not(&.Mui-focused)': {
-      backgroundColor: theme.palette.text.primary,
+      // backgroundColor: theme.palette.text.primary,
     },
   },
   '& .MuiInputLabel-root': {
-    color: theme.palette.secondary.contrastText,
+    color: theme.palette.primary.contrastText,
     '&.Mui-error': {
-      color: theme.palette.text.secondary,
+      color: theme.palette.primary.contrastText,
     },
   },
   '& .MuiInputLabel-root.Mui-focused': {
@@ -66,8 +65,8 @@ const CustomTextField = styled(CommonTextField)(({ theme }) => ({
     minWidth: theme.typography.pxToRem(220),
   },
   '& .MuiInputBase-input.Mui-disabled': {
-    WebkitTextFillColor: theme.palette.secondary.main,
-    backgroundColor: theme.palette.secondary.contrastText,
+    WebkitTextFillColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.contrastText,
   },
 }));
 
@@ -272,58 +271,56 @@ const LobbyView = () => {
       <Container>
         <SelfTest
           actionButton={
-            <ActionButton form={JOIN_FORM_ID} type="submit" disabled={disableSubmitButton}>
+            <ActionButton form={JOIN_FORM_ID} type="submit" disabled={disableSubmitButton} color="secondary">
               {t('joinform-enter-now')}
             </ActionButton>
           }
         >
-          <ThemeProvider theme={createOpenTalkTheme('dark')}>
-            <Stack
-              id={JOIN_FORM_ID}
-              direction="row"
-              spacing={1}
-              component="form"
-              onSubmit={formik.handleSubmit}
-              aria-label={t('joinform-title') as string}
+          <Stack
+            id={JOIN_FORM_ID}
+            direction="row"
+            spacing={1}
+            component="form"
+            onSubmit={formik.handleSubmit}
+            aria-label={t('joinform-title') as string}
+          >
+            <ConditionalToolTip
+              showToolTip={Boolean(disableDisplayNameField)}
+              title={t('joinform-display-name-field-disabled-tooltip')}
             >
-              <ConditionalToolTip
-                showToolTip={Boolean(disableDisplayNameField)}
-                title={t('joinform-display-name-field-disabled-tooltip')}
-              >
-                <CustomTextField
-                  {...formikProps('name', formik)}
-                  label={t('global-name')}
-                  placeholder={t('lobby-name-placeholder')}
-                  autoComplete="username"
-                  disabled={disableDisplayNameField}
-                />
-              </ConditionalToolTip>
-              {showPasswordField && (
-                <CommonTextField
-                  {...formikProps('password', formik)}
-                  label={t('global-password')}
-                  placeholder={t('lobby-password-placeholder')}
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label={t('toggle-password-visibility')}
-                            onClick={handleClickShowPassword}
-                            edge="end"
-                          >
-                            {!showPassword ? <VisibleIcon /> : <HiddenIcon />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-              )}
-            </Stack>
-          </ThemeProvider>
+              <CustomTextField
+                {...formikProps('name', formik)}
+                label={t('global-name')}
+                placeholder={t('lobby-name-placeholder')}
+                autoComplete="username"
+                disabled={disableDisplayNameField}
+              />
+            </ConditionalToolTip>
+            {showPasswordField && (
+              <CommonTextField
+                {...formikProps('password', formik)}
+                label={t('global-password')}
+                placeholder={t('lobby-password-placeholder')}
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label={t('toggle-password-visibility')}
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {!showPassword ? <VisibleIcon /> : <HiddenIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            )}
+          </Stack>
         </SelfTest>
       </Container>
       <ImprintContainer />

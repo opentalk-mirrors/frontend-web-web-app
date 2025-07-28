@@ -39,7 +39,7 @@ const ListItem = styled(MuiListItem)(({ theme }) => ({
   ':hover': {
     opacity: 0.8,
     '& .more-icon': {
-      color: theme.palette.primary.contrastText,
+      color: theme.palette.text.primary,
     },
   },
 }));
@@ -167,7 +167,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
         display: 'flex',
       }}
     >
-      <Button onClick={checkAllHandler} fullWidth>
+      <Button onClick={checkAllHandler} fullWidth color="secondary">
         {t('poll-participant-list-button-select-all')}
       </Button>
     </Grid>
@@ -193,7 +193,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
             checked={isSelectedParticipant(allowedParticipants, participant.id)}
             id={participant.id}
             onChange={(e) => checkParticipantHandler(e, participant.id)}
-            color="primary"
+            color="secondary"
           />
         </Grid>
       </Grid>

@@ -38,8 +38,10 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
   <MuiAccordionSummary expandIcon={<ArrowDownIcon sx={{ fontSize: '0.9rem' }} />} {...props} />
 ))(({ theme }) => ({
   backgroundColor: 'transparent',
-  borderBottom: `3px solid ${theme.palette.secondary.dark}`,
   justifyContent: 'flex-start',
+  background: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
+  borderBottom: '1px solid rgba(0, 0, 0, .125)',
   '& .MuiAccordionSummary-content': {
     marginLeft: theme.spacing(-2),
     flexGrow: 'unset',
@@ -52,7 +54,6 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
-  borderTop: '1px solid rgba(0, 0, 0, .125)',
   marginLeft: theme.spacing(-2),
 }));
 
@@ -137,7 +138,7 @@ const EventsOverview = ({
             target: t('global-meeting', { count: 2 }),
           })}
         >
-          <ArrowDownIcon color="secondary" />
+          <ArrowDownIcon color="inherit" />
         </ArrowDownButton>
         {entries.map((entry) => {
           const isExpanded = expandAccordion === 'all' || expanded.includes(entry.title);

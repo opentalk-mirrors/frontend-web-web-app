@@ -117,7 +117,7 @@ const FeedbackDialog = (props: FeedbackDialogProps) => {
       <form onSubmit={formik.handleSubmit}>
         <DialogContent>
           <Stack spacing={2}>
-            <Typography>{t('feedback-dialog-headline')}</Typography>
+            <Typography color="inherit">{t('feedback-dialog-headline')}</Typography>
             <Rating
               {...formikRatingProps('functionRangeRating', formik)}
               label={t('feedback-dialog-rating-function-range')}
@@ -161,10 +161,10 @@ const FeedbackDialog = (props: FeedbackDialogProps) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onClose} variant="text" color="secondary">
+          <Button onClick={props.onClose} variant="text" color="inherit">
             {t('feedback-button-close')}
           </Button>
-          <Button disabled={!sendButtonEnabled} type="submit">
+          <Button disabled={!sendButtonEnabled} type="submit" color="secondary">
             {t('feedback-button-submit')}
           </Button>
         </DialogActions>

@@ -41,10 +41,10 @@ const ConsentNotification = forwardRef(
             }}
           >
             {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-            <Button variant="contained" color="primary" onClick={onAcceptButton} autoFocus>
+            <Button variant="contained" color="secondary" onClick={onAcceptButton} autoFocus>
               {t('consent-accept')}
             </Button>
-            <Button variant="contained" color="secondary" onClick={onDeclineButton}>
+            <Button variant="contained" color="primary" onClick={onDeclineButton}>
               {t('consent-decline')}
             </Button>
           </Box>

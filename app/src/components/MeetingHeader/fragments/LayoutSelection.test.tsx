@@ -44,13 +44,13 @@ describe('Layout selection menu', () => {
   const getButtonSelector = (name: string) => screen.getByRole('menuitemradio', { name, hidden: true });
 
   it('opens a menu when the open button is clicked', () => {
-    renderWithProviders(<LayoutSelection />, { store });
+    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
     act(openMenu);
     const menu = screen.getByRole('menu', { hidden: true });
     expect(menu).toBeInTheDocument();
   });
   it('renders the correct buttons', () => {
-    renderWithProviders(<LayoutSelection />, { store });
+    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
     act(openMenu);
     const gridViewButton = getButtonSelector('conference-view-grid');
     const speakerViewButton = getButtonSelector('conference-view-speaker');
@@ -64,7 +64,7 @@ describe('Layout selection menu', () => {
 
   it('renders fullscreen button if the fullscreen feature is available', () => {
     mockFullscreenContext.isFullScreenAvailable = vi.fn(() => true);
-    renderWithProviders(<LayoutSelection />, { store });
+    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
     act(openMenu);
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
@@ -75,7 +75,7 @@ describe('Layout selection menu', () => {
   it('opens fullscreen when clicking the fullscreen button', () => {
     mockFullscreenContext.isFullScreenAvailable = vi.fn(() => true);
 
-    renderWithProviders(<LayoutSelection />, { store });
+    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
     act(openMenu);
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
     const fullscreenMenuItem = getButtonSelector('conference-view-fullscreen');
@@ -87,7 +87,7 @@ describe('Layout selection menu', () => {
   it('does not render fullscreen button if fullscreen feature is unavailable', () => {
     mockFullscreenContext.isFullScreenAvailable = vi.fn(() => false);
 
-    renderWithProviders(<LayoutSelection />, { store });
+    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
 
     act(openMenu);
 
@@ -104,7 +104,7 @@ describe('Layout selection menu', () => {
       initialState: { meetingNotes: { meetingNotesUrl: 'https://example.com/notes' } },
     });
 
-    renderWithProviders(<LayoutSelection />, { store, provider: { snackbar: true } });
+    renderWithProviders(<LayoutSelection />, { store, provider: { snackbar: true, mui: true } });
     act(openMenu);
 
     expect(mockUseMediaQuery).toHaveBeenCalled();

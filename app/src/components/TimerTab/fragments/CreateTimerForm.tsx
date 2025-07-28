@@ -15,11 +15,12 @@ import { TimerKind, TimerStyle } from '../../../types';
 import { formikDurationFieldProps, formikProps, formikSwitchProps } from '../../../utils/formikUtils';
 import { DurationFieldWrapper } from '../../DurationFieldWrapper';
 
-const Container = styled(Stack)({
+const Container = styled(Stack)(({ theme }) => ({
   display: 'flex',
   flex: 1,
   justifyContent: 'space-between',
-});
+  color: theme.palette.text.primary,
+}));
 
 const SubmitButton = styled(Button)({
   '&.MuiButton-root': {
@@ -141,7 +142,9 @@ const CreateTimerForm = ({ timerStyle }: { timerStyle: TimerStyle }) => {
           </>
         )}
       </Stack>
-      <SubmitButton onClick={handleSubmit}>{texts.button}</SubmitButton>
+      <SubmitButton onClick={handleSubmit} color="secondary">
+        {texts.button}
+      </SubmitButton>
     </Container>
   );
 };

@@ -23,11 +23,11 @@ export interface DeviceListProps {
 export const StyledMenuList = styled(MenuList)(({ theme }) => ({
   paddingRight: theme.spacing(1.5),
   '& .MuiSvgIcon-root': {
-    color: theme.palette.text.primary,
+    color: 'currentColor',
     fontSize: '1.15em',
   },
   '& .MuiListSubheader-root': {
-    color: theme.palette.text.primary,
+    color: 'currentColor',
     backgroundColor: 'inherit',
     fontWeight: 'bold',
     display: 'flex',

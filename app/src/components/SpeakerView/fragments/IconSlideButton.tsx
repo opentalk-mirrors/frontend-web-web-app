@@ -24,7 +24,6 @@ const IconSlideButton = ({ direction, onClick, ...props }: IconSlideButtonProps)
   const { t } = useTranslation();
   return (
     <SlideButton
-      color="secondary"
       variant="contained"
       direction={direction}
       aria-label={t(`navigate-to-${direction}`)}

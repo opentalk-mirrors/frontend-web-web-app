@@ -22,10 +22,11 @@ const ToolbarMenuItem = styled(MenuItem)(({ theme }) => ({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   fontSize: '0.875rem',
+  color: theme.palette.text.primary,
 
   '& .MuiSvgIcon-root': {
     fontSize: '1.15em',
-    color: theme.palette.text.primary,
+    color: 'currentColor',
   },
 }));
 

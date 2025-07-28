@@ -22,7 +22,7 @@ describe('Room title', () => {
       },
     });
 
-    renderWithProviders(<RoomTitle />, { store });
+    renderWithProviders(<RoomTitle />, { store, provider: { mui: true } });
 
     expect(screen.getByText(allowedLengthName)).toBeInTheDocument();
 
@@ -48,7 +48,7 @@ describe('Room title', () => {
       },
     });
 
-    renderWithProviders(<RoomTitle />, { store });
+    renderWithProviders(<RoomTitle />, { store, provider: { mui: true } });
 
     expect(screen.queryByText(exceedingMaxLengthName)).not.toBeInTheDocument();
     expect(screen.getByText(/.../i)).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('Room title', () => {
         },
       },
     });
-    renderWithProviders(<RoomTitle />, { store });
+    renderWithProviders(<RoomTitle />, { store, provider: { mui: true } });
     const InfoButton = screen.getByRole('button', { name: 'room-title-info-button-aria-label' });
     expect(InfoButton).toBeVisible();
   });
@@ -111,7 +111,7 @@ describe('Room title', () => {
         },
       },
     });
-    renderWithProviders(<RoomTitle />, { store });
+    renderWithProviders(<RoomTitle />, { store, provider: { mui: true } });
 
     expect(screen.getByText(truncatedFallbackTitle)).toBeInTheDocument();
 
@@ -133,7 +133,7 @@ describe('Room title', () => {
         },
       },
     });
-    renderWithProviders(<RoomTitle />, { store });
+    renderWithProviders(<RoomTitle />, { store, provider: { mui: true } });
 
     const roomTitleElement = screen.getByText(truncatedFallbackTitle);
     expect(roomTitleElement.tagName).toBe('H1');

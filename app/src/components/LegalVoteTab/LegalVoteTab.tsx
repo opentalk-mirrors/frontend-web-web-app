@@ -40,7 +40,9 @@ const LegalVoteTab = () => {
         }}
       >
         <LegalVoteOverview onClickItem={handleOnClickSavedLegalVoteItem} />
-        <Button onClick={() => setShowLegalVoteForm(true)}>{t('legal-vote-overview-button-create-vote')}</Button>
+        <Button onClick={() => setShowLegalVoteForm(true)} color="secondary">
+          {t('legal-vote-overview-button-create-vote')}
+        </Button>
       </Stack>
     );
   };

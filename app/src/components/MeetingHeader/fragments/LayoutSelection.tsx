@@ -31,21 +31,18 @@ import { Indicator } from './Indicator';
 
 const ViewPopperContainer = styled(Stack)(({ theme }) => ({
   position: 'relative',
-  background: theme.palette.background.video,
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
   borderRadius: '0.25rem',
   justifyContent: 'center',
   alignItems: 'center',
-  '& .MuiPopover-paper': { marginTop: '0.3rem', background: theme.palette.background.defaultGradient },
+  '& .MuiPopover-paper': { marginTop: '0.3rem' },
   '& .MuiIconButton-root .MuiSvgIcon-root': {
     [theme.breakpoints.down('md')]: { fontSize: theme.typography.pxToRem(20) },
   },
 }));
 
-const LayoutMenu = styled(Menu)(({ theme }) => ({ '& .MuiList-root': { background: theme.palette.background.video } }));
-
 const ButtonIndicator = styled(Indicator)({ position: 'absolute', top: '0.1rem', right: '0.1rem' });
-
-const StyledDivider = styled(Divider)<{ component: string }>({ '&:before, &:after': { backgroundColor: '#385865' } });
 
 const LayoutSelection = () => {
   const dispatch = useAppDispatch();
@@ -135,7 +132,7 @@ const LayoutSelection = () => {
           {showButtonIndicator && isMobile && <ButtonIndicator />}
         </IconButton>
       )}
-      <LayoutMenu
+      <Menu
         open={isViewPopoverOpen}
         anchorEl={anchorElement}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
@@ -190,11 +187,11 @@ const LayoutSelection = () => {
             content={t('moderationbar-button-whiteboard-tooltip')}
           />
         )}
-        <StyledDivider component="li">
+        <Divider component="li">
           <Typography variant="caption" component="span">
             {t('conference-view-sorting')}
           </Typography>
-        </StyledDivider>
+        </Divider>
         <LayoutSelectionMenuItem
           role="menuitemradio"
           onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.VideoFirst)}
@@ -211,7 +208,7 @@ const LayoutSelection = () => {
           icon={<GridViewIcon />}
           content={t('conference-view-grid-moderators-first')}
         />
-      </LayoutMenu>
+      </Menu>
     </ViewPopperContainer>
   );
 };

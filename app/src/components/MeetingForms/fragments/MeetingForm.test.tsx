@@ -87,7 +87,7 @@ describe('MeetingForm', () => {
 
   it('renders all main fields and sections', () => {
     const { store } = configureStore({});
-    renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+    renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store, provider: { mui: true } });
     expect(screen.getByRole('form', { name: 'dashboard-meeting-create-form-title' })).toBeInTheDocument();
 
     expect(screen.getAllByRole('textbox')).toHaveLength(3); // Title, Details, Password
@@ -123,20 +123,29 @@ describe('MeetingForm', () => {
         },
       });
       mockTariff = { ...defaultTariff, modules: { sharedFolder: { features: [] } } };
-      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
       expect(screen.getAllByRole('switch')).toHaveLength(4); // default + shared folder
       expect(screen.getByRole('switch', { name: 'dashboard-meeting-shared-folder-switch' })).toBeInTheDocument();
     });
     it('renders streaming options section if streaming feature is enabled', () => {
       const { store } = configureStore({});
       mockTariff = { ...defaultTariff, modules: { recording: { features: ['stream'] } } };
-      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
       expect(screen.getByTestId('streaming-options')).toBeInTheDocument();
     });
     it('renders training participation selection if streaming feature is enabled', () => {
       const { store } = configureStore({});
       mockTariff = { ...defaultTariff, modules: { trainingParticipationReport: { features: [] } } };
-      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
       expect(screen.getByTestId('training-participation-report-select')).toBeInTheDocument();
     });
     it('renders e2e encryption switch when e2e encryption feature is enabled', () => {
@@ -152,7 +161,10 @@ describe('MeetingForm', () => {
           },
         },
       });
-      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
       expect(screen.getAllByRole('switch')).toHaveLength(4); // default + e2e encryption
       expect(screen.getByRole('switch', { name: 'dashboard-meeting-e2ee-tooltip' })).toBeInTheDocument();
     });
@@ -161,7 +173,10 @@ describe('MeetingForm', () => {
   describe('form submit', () => {
     it('submits if the meeting is time independent', async () => {
       const { store } = configureStore({});
-      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
 
       const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       fireEvent.click(timeSwitch);
@@ -183,7 +198,10 @@ describe('MeetingForm', () => {
       mockInitialValues = { ...defaultValues, startDate: mockStartDate, endDate: mockEndDate };
 
       const { store } = configureStore({});
-      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
 
       const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       expect(timeSwitch).toBeChecked();
@@ -203,7 +221,10 @@ describe('MeetingForm', () => {
       mockOverlappingEvent = undefined;
 
       const { store } = configureStore({});
-      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
 
       const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       expect(timeSwitch).toBeChecked();
@@ -224,7 +245,10 @@ describe('MeetingForm', () => {
       mockGetEvents = vi.fn().mockReturnValue({ data: mockedSingleEvent });
 
       const { store } = configureStore({});
-      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
 
       const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       expect(timeSwitch).toBeChecked();
@@ -247,7 +271,10 @@ describe('MeetingForm', () => {
       mockGetEvents = vi.fn().mockReturnValue({ data: mockedSingleEvent });
 
       const { store } = configureStore({});
-      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
 
       const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       expect(timeSwitch).toBeChecked();

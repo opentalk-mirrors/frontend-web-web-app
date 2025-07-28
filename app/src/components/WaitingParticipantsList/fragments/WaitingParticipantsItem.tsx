@@ -42,7 +42,7 @@ const ListItemText = styled(MuiListItemText)(({ theme }) => ({
 }));
 
 const JoinedText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.text.primary,
   textWrap: 'nowrap',
 }));
 
@@ -73,13 +73,13 @@ const WaitingParticipantItem = ({ participant }: ParticipantRowProps) => {
     switch (participant.waitingState) {
       case WaitingState.Waiting:
         return (
-          <Button variant="text" onClick={handleAccept} focusRipple>
+          <Button variant="text" onClick={handleAccept} focusRipple color="secondary">
             {t(`participant-menu-accept-participant${isMobile ? '-mobile' : ''}`)}
           </Button>
         );
       case WaitingState.Approved:
         return (
-          <Button variant="text" disabled>
+          <Button variant="text" disabled color="secondary">
             {t(`participant-menu-accepted-participant${isMobile ? '-mobile' : ''}`)}
           </Button>
         );

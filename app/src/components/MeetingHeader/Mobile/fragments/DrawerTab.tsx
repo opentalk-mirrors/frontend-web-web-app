@@ -20,9 +20,12 @@ const Header = styled(TabHeader, {
   shouldForwardProp: (prop) => prop !== 'active',
 })<{ active?: boolean }>(({ theme, active }) => ({
   position: 'relative',
-  background: active ? theme.palette.text.primary : theme.palette.background.defaultGradient,
+  background: active ? theme.palette.primary.main : theme.palette.background.highlight.primary,
+  '&:hover': {
+    background: active ? theme.palette.primary.main : theme.palette.background.highlightContrast.primary,
+  },
   '& .MuiTypography-root': {
-    color: active ? theme.palette.text.secondary : theme.palette.text.primary,
+    color: active ? theme.palette.primary.contrastText : theme.palette.background.highlight.contrastText,
   },
   '& .MuiBadge-root': {
     top: '50%',

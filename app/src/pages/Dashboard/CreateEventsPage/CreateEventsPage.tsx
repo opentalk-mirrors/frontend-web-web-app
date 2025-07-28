@@ -15,18 +15,33 @@ const Container = styled(Box)(({ theme }) => ({
   height: '100%',
   overflow: 'hidden auto',
   gap: theme.spacing(2),
+  background: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
 }));
 
 const ActiveStep = styled(Step)(({ theme }) => ({
   //Safari icon, Other browsers icon
   '& .MuiSvgIcon-root.MuiStepIcon-root.Mui-active, & .MuiSvgIcon-root circle': {
-    color: theme.palette.secondary.dark,
+    color: theme.palette.primary.main,
   },
 }));
 
-const CapitalizedStepLabel = styled(StepLabel)({
+const CapitalizedStepLabel = styled(StepLabel)(({ theme }) => ({
   textTransform: 'capitalize',
-});
+  '& .MuiStepLabel-label': {
+    color: theme.palette.background.main.contrastText,
+  },
+}));
+
+const StyledStepLabel = styled(StepLabel)(({ theme }) => ({
+  opacity: 0.85,
+  '& .MuiStepLabel-labelContainer': {
+    color: theme.palette.text.primary,
+  },
+  '& .MuiStepIcon-root': {
+    color: theme.palette.text.primary,
+  },
+}));
 
 const CreateEventsPage = () => {
   const { t } = useTranslation();
@@ -40,7 +55,7 @@ const CreateEventsPage = () => {
         <CapitalizedStepLabel>{t('global-meeting', { count: 1 })}</CapitalizedStepLabel>
       </ActiveStep>
       <Step>
-        <StepLabel>{t('global-participants')}</StepLabel>
+        <StyledStepLabel>{t('global-participants')}</StyledStepLabel>
       </Step>
     </Stepper>
   );

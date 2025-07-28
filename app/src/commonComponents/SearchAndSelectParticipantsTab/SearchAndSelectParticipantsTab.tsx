@@ -43,10 +43,10 @@ function SearchAndSelectParticipantsTab({
           gap: 2,
         }}
       >
-        <Button onClick={handleAllClick} fullWidth>
+        <Button onClick={handleAllClick} fullWidth color="secondary">
           {t('global-all')}
         </Button>
-        <Button onClick={handleSelectedClick} fullWidth>
+        <Button onClick={handleSelectedClick} fullWidth color="secondary">
           {t('global-selected')}
         </Button>
       </Box>

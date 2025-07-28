@@ -27,9 +27,10 @@ const Container = styled('div')(({ theme }) => ({
   gridTemplateRows: 'auto 1fr auto',
   alignItems: 'flex-start',
   height: '100%',
-  background: theme.palette.background.paper,
   padding: theme.spacing(3, 0),
   transition: 'all 300ms ease-out',
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
 }));
 
 const ChipContainer = styled('div', {
@@ -62,6 +63,7 @@ const List = styled(MuiList)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1.5),
+  paddingRight: 0,
   [theme.breakpoints.down('md')]: {
     paddingLeft: 0,
   },

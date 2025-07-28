@@ -33,7 +33,7 @@ const CollapseButton = (props: CollapseButtonProps) => {
   return (
     <CustomButton
       variant="outlined"
-      color="secondary"
+      color="inherit"
       collapsed={props.collapsed}
       onClick={props.onClick.bind(null, !props.collapsed)}
       aria-label={t(`dashboard-${props.collapsed ? 'open' : 'close'}-navbar`)}

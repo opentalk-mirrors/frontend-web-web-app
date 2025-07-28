@@ -50,7 +50,7 @@ const Countdown = ({ started, duration, onCountdownEnds, ...rest }: CountdownPro
         ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
       ]}
     >
-      <CircularProgress variant="determinate" value={progress} />
+      <CircularProgress variant="determinate" value={progress} color="secondary" />
       <Box
         sx={{
           top: 0,

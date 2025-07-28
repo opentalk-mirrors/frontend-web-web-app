@@ -23,7 +23,7 @@ const SharedPresenterVideo = styled('div')(({ theme }) => ({
   overflow: 'hidden',
   position: 'absolute',
   borderRadius: theme.borderRadius.medium,
-  background: theme.palette.background.video,
+  background: theme.palette.common.black,
 
   '&.bottomLeft': {
     bottom: theme.spacing(2),

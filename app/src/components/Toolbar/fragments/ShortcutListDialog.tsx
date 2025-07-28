@@ -1,7 +1,18 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Dialog, DialogTitle, IconButton, Paper, Stack, Box, styled, FormLabel, Typography } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  IconButton,
+  Paper,
+  Stack,
+  Box,
+  styled,
+  FormLabel,
+  Typography,
+  DialogContent,
+} from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -24,13 +35,13 @@ const CloseButton = styled(IconButton)(() => ({
 }));
 
 const SwitchLabel = styled(FormLabel)(({ theme }) => ({
-  color: theme.palette.secondary.dark,
+  color: theme.palette.text.primary,
   fontWeight: 300,
 }));
 
 const DeactivatedContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
-  color: theme.palette.secondary.light,
+  color: theme.palette.text.primary,
   fontWeight: 500,
   display: 'flex',
   justifyContent: 'center',
@@ -54,50 +65,53 @@ const ShortcutListDialog = (props: ShortcutListDialogProps) => {
       PaperComponent={Paper}
       aria-describedby="shortcut-dialog-description"
     >
-      <Typography id="shortcut-dialog-description" sx={visuallyHidden}>
-        {t('shortcut-table-summary')}
-      </Typography>
-      <Stack component="header">
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            p: 2,
-            position: 'relative',
-          }}
-        >
-          <DialogTitle sx={{ p: 0 }}>{t('my-meeting-menu-keyboard-shortcuts')}</DialogTitle>
-          <CloseButton aria-label={t('global-close-dialog')} onClick={onClose}>
-            <CloseIcon />
-          </CloseButton>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            p: 2,
-            position: 'relative',
-          }}
-        >
-          <SwitchLabel htmlFor={switchId}>{t('my-meeting-menu-keyboard-shortcuts')}</SwitchLabel>
-          <CommonSwitch
-            id={switchId}
-            checked={hotkeysEnabled}
-            onChange={() => dispatch(setHotkeysEnabled(!hotkeysEnabled))}
-            /* eslint-disable jsx-a11y/no-autofocus */
-            // We want screen reader to jump to the first interactive element
-            // upon reveal and start pronouncing content of the dialog.
-            autoFocus
-          />
-        </Box>
-      </Stack>
-      {hotkeysEnabled ? (
-        <ShortcutTable />
-      ) : (
-        <DeactivatedContainer>{t('shortcut-deactive-message')}</DeactivatedContainer>
-      )}
+      <DialogContent>
+        <Typography id="shortcut-dialog-description" sx={visuallyHidden}>
+          {t('shortcut-table-summary')}
+        </Typography>
+        <Stack component="header">
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              py: 2,
+              position: 'relative',
+            }}
+          >
+            <DialogTitle sx={{ p: 0 }}>{t('my-meeting-menu-keyboard-shortcuts')}</DialogTitle>
+            <CloseButton aria-label={t('global-close-dialog')} onClick={onClose} edge="end">
+              <CloseIcon />
+            </CloseButton>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              py: 2,
+              position: 'relative',
+            }}
+          >
+            <SwitchLabel htmlFor={switchId}>{t('my-meeting-menu-keyboard-shortcuts')}</SwitchLabel>
+            <CommonSwitch
+              id={switchId}
+              checked={hotkeysEnabled}
+              onChange={() => dispatch(setHotkeysEnabled(!hotkeysEnabled))}
+              /* eslint-disable jsx-a11y/no-autofocus */
+              // We want screen reader to jump to the first interactive element
+              // upon reveal and start pronouncing content of the dialog.
+              autoFocus
+              color="primary"
+            />
+          </Box>
+        </Stack>
+        {hotkeysEnabled ? (
+          <ShortcutTable />
+        ) : (
+          <DeactivatedContainer>{t('shortcut-deactive-message')}</DeactivatedContainer>
+        )}
+      </DialogContent>
     </Dialog>
   );
 };

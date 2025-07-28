@@ -21,7 +21,7 @@ describe('MobilePagination rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<MobilePagination />, { store });
+    renderWithProviders(<MobilePagination />, { store, provider: { mui: true } });
     const element = screen.getByTestId('mobile-pagination-container');
     expect(element).toBeEmptyDOMElement();
   });
@@ -49,7 +49,7 @@ describe('MobilePagination rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<MobilePagination />, { store });
+    renderWithProviders(<MobilePagination />, { store, provider: { mui: true } });
     expect(screen.getByText('4')).toBeInTheDocument();
   });
 
@@ -76,7 +76,7 @@ describe('MobilePagination rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<MobilePagination />, { store });
+    renderWithProviders(<MobilePagination />, { store, provider: { mui: true } });
     const pageIndex = screen.getByText('1');
     fireEvent.click(pageIndex);
     expect(screen.getByText('2')).toBeInTheDocument();

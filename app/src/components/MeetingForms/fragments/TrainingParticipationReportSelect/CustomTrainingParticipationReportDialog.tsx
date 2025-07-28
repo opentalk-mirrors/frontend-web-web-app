@@ -11,6 +11,7 @@ import {
   Stack,
   styled,
   Typography,
+  Paper,
 } from '@mui/material';
 import { TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { minutesToSeconds, secondsToMinutes } from 'date-fns';
@@ -38,9 +39,15 @@ const NumberInput = styled(CommonTextField)({
 });
 
 const DialogContent = styled(MuiDialogContent)(({ theme }) => ({
+  background: theme.palette.background.customPaper.primary,
   [theme.breakpoints.up('md')]: {
     minWidth: theme.typography.pxToRem(500),
   },
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  background: theme.palette.background.customPaper.primary,
+  backgroundImage: 'none',
 }));
 
 export const CustomTrainingParticipationReportDialog = ({
@@ -109,13 +116,14 @@ export const CustomTrainingParticipationReportDialog = ({
       onClose={closeWithReset}
       aria-labelledby={CUSTOM_TRAINING_PARTICIPATION_REPORT_DIALOG_LABEL_ID}
       data-testid="custom-training-participation-report-dialog"
+      PaperComponent={StyledPaper}
     >
       <DialogTitle id={CUSTOM_TRAINING_PARTICIPATION_REPORT_DIALOG_LABEL_ID}>
         {t('dashboard-custom-training-participation-report-dialog-title')}
       </DialogTitle>
       <DialogContent>
         <Stack marginBottom={2}>
-          <Typography>{t('dashboard-custom-training-participation-report-dialog-initial-timeout')}</Typography>
+          <Typography mb={1}>{t('dashboard-custom-training-participation-report-dialog-initial-timeout')}</Typography>
           <Stack direction="row" spacing={1} alignItems="center">
             <NumberInput
               {...formikNumberFieldProps('initialCheckpointDelay.from', formik)}
@@ -135,7 +143,7 @@ export const CustomTrainingParticipationReportDialog = ({
           )}
         </Stack>
         <Stack>
-          <Typography>{t('dashboard-custom-training-participation-report-dialog-interval-duration')}</Typography>
+          <Typography mb={1}>{t('dashboard-custom-training-participation-report-dialog-interval-duration')}</Typography>
           <Stack direction="row" spacing={1} alignItems="center">
             <NumberInput
               {...formikNumberFieldProps('checkpointInterval.from', formik)}
@@ -156,10 +164,10 @@ export const CustomTrainingParticipationReportDialog = ({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="secondary" onClick={closeWithReset}>
+        <Button variant="contained" color="primary" onClick={closeWithReset}>
           {t('global-close')}
         </Button>
-        <Button variant="contained" onClick={() => formik.handleSubmit()}>
+        <Button variant="contained" color="secondary" onClick={() => formik.handleSubmit()}>
           {t('global-save')}
         </Button>
       </DialogActions>

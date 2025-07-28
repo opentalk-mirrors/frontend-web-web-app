@@ -29,7 +29,7 @@ const ButtonBack = () => {
   }
 
   return (
-    <Button onClick={onClick} color="secondary" variant="outlined" type="button">
+    <Button onClick={onClick} variant="outlined" type="button">
       {t('button-back-messages')}
     </Button>
   );

@@ -17,7 +17,7 @@ describe('CoffeeBreakView', () => {
         },
       },
     });
-    renderWithProviders(<CoffeeBreakView />, { store });
+    renderWithProviders(<CoffeeBreakView />, { store, provider: { mui: true } });
     const titleElement = await screen.findByText('coffee-break-layer-title');
     expect(titleElement).toBeInTheDocument();
   });
@@ -36,7 +36,7 @@ describe('CoffeeBreakView', () => {
       },
     });
 
-    renderWithProviders(<CoffeeBreakView />, { store });
+    renderWithProviders(<CoffeeBreakView />, { store, provider: { mui: true } });
     const button = await screen.findByRole('button', { name: 'coffee-break-layer-button' });
     fireEvent.click(button);
     expect(store.getState().ui.showCoffeeBreakCurtain).toBe(false);

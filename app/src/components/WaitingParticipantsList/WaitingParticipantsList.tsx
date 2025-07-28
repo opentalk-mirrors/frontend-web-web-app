@@ -28,9 +28,6 @@ const Subheader = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
   background: 'transparent',
-  '& .MuiTypography-root': {
-    color: theme.palette.text.primary,
-  },
   marginBottom: theme.spacing(2),
 }));
 
@@ -66,7 +63,13 @@ const WaitingParticipantsList = ({ id }: WaitingParticipantsListProps) => {
     <>
       <Subheader>
         <Typography variant="body2">{t('waiting-room-participant-list-label')}</Typography>
-        <Button variant="text" disabled={participantsNotApproved.length === 0} onClick={handleApproveAll} focusRipple>
+        <Button
+          variant="text"
+          disabled={participantsNotApproved.length === 0}
+          onClick={handleApproveAll}
+          focusRipple
+          color="secondary"
+        >
           {t('approve-all-participants-from-waiting')}
         </Button>
       </Subheader>

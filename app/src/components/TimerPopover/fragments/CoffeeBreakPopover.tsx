@@ -11,10 +11,10 @@ import { TimerStyle } from '../../../types';
 import TimerDuration from '../../TimerTab/fragments/TimerDuration';
 import { Container } from './Container';
 
-const CoffeeBreakIcon = styled(CoffeeBreakIconDefault)(({ theme }) => ({
+const CoffeeBreakIcon = styled(CoffeeBreakIconDefault)(() => ({
   height: '4rem',
   width: 'auto',
-  fill: theme.palette.secondary.light,
+  fill: 'currentColor',
 }));
 
 const CoffeeBreakPopover = () => {

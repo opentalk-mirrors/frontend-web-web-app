@@ -61,14 +61,12 @@ const GridDiv = styled('div')({
 
 const CloseIconButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
-  borderRadius: '100%',
-  right: theme.spacing(2),
-  top: theme.spacing(2),
+  right: theme.spacing(1),
+  top: theme.spacing(1),
+  background: 'transparent',
 
-  '& svg': {
+  '&:hover': {
     fill: theme.palette.common.black,
-    width: '0.75em',
-    height: '0.75em',
   },
 }));
 
@@ -85,18 +83,19 @@ const IconContainer = styled(Grid, {
       ? 'rgba(0,0,0,0.1)'
       : [theme.palette.error.main, theme.palette.warning.main, theme.palette.success.main][testResult],
     padding: theme.spacing(3),
+    fill: 'currentColor',
   },
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.secondary.dark,
+  color: theme.palette.text.primary,
 }));
 
-const Dialog = styled(MuiDialog)({
+const Dialog = styled(MuiDialog)(() => ({
   '& .MuiDialog-paper': {
     width: '20rem',
   },
-});
+}));
 
 const enum SessionState {
   Initializing = 0,
@@ -281,8 +280,13 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
         >
           <DialogTitle id="speed-meter-title">{t('speed-meter-title')}</DialogTitle>
 
-          <CloseIconButton aria-label={t('global-close-dialog')} onClick={handleCloseDialog} size="small">
-            <CloseIcon />
+          <CloseIconButton
+            aria-label={t('global-close-dialog')}
+            onClick={handleCloseDialog}
+            size="small"
+            color="primary"
+          >
+            <CloseIcon color="primary" fontSize="small" />
           </CloseIconButton>
         </Box>
 
@@ -345,7 +349,7 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
               </StyledTypography>
             </DialogContent>
             <DialogActions>
-              <Button disabled={!testCompleted} onClick={startTest} variant="contained">
+              <Button disabled={!testCompleted} onClick={startTest} variant="contained" color="secondary">
                 {t('speed-meter-restart-button')}
               </Button>
             </DialogActions>

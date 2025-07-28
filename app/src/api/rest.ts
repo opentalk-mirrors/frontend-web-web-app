@@ -205,4 +205,5 @@ export const {
   useAddStreamingTargetsMutation,
   useGetEventInstanceQuery,
   useGetUserOwnedAssetsQuery,
+  useGetColorSchemesQuery,
 } = restApi;

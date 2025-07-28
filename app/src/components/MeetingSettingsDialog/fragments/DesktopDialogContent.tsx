@@ -4,9 +4,19 @@
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Button, DialogContent, DialogTitle, Divider, IconButton, Stack, Tab, Typography, styled } from '@mui/material';
+import {
+  Button,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Tab,
+  TabProps,
+  Typography,
+  styled,
+} from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { useState } from 'react';
+import { ElementType, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../../assets/icons';
@@ -14,12 +24,10 @@ import { MeetingSettings, getSettingPanels } from './settingPanels';
 
 const DesktopSettingsDialogContent = styled(DialogContent)(({ theme }) => ({
   padding: theme.spacing(0),
+  backgroundColor: theme.palette.background.customPaper.primary,
 }));
 
-const DesktopSettingsContainer = styled(Stack)(({ theme }) => ({
-  border: 'solid 1px',
-  borderRadius: theme.borderRadius.medium,
-  backgroundColor: theme.palette.background.default,
+const DesktopSettingsContainer = styled(Stack)(() => ({
   '&&': { margin: 0 },
   height: '50rem',
 }));
@@ -28,8 +36,9 @@ const DesktopSettingsTitle = styled(Typography)(({ theme }) => ({
   padding: theme.spacing(3, 2, 2),
 }));
 
-const DesktopSettingsListContainer = styled(DesktopSettingsContainer)(() => ({
+const DesktopSettingsListContainer = styled(DesktopSettingsContainer)(({ theme }) => ({
   width: '12rem',
+  backgroundColor: theme.palette.background.main.primary,
 }));
 
 const DesktopSettingsPanelContainer = styled(DesktopSettingsContainer)(({ theme }) => ({
@@ -38,20 +47,32 @@ const DesktopSettingsPanelContainer = styled(DesktopSettingsContainer)(({ theme 
   paddingBottom: theme.spacing(2),
 }));
 
-const DesktopSettingsDivider = styled(Divider)(() => ({
-  '&&': { margin: 0 },
-  borderRightWidth: 5,
-}));
-
 const DesktopSettingsListFooter = styled('small')(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
 const DesktopCloseButton = styled(IconButton)(() => ({
   position: 'absolute',
-  right: 0,
-  top: '8%',
+  right: '2%',
+  top: '5%',
   transform: 'translateY(-50%)',
+}));
+
+const DesktopSettingsTab = styled(Tab)<TabProps & { component: ElementType }>(({ theme }) => ({
+  backgroundColor: theme.palette.background.main.primary,
+  color: theme.palette.text.primary,
+  marginBottom: theme.spacing(0.5),
+  '&.Mui-selected': {
+    backgroundColor: theme.palette.background.customPaper.primary,
+    color: theme.palette.text.primary,
+    '&:hover': {
+      backgroundColor: theme.palette.background.highlightContrast.primary,
+    },
+  },
+
+  '&:hover': {
+    backgroundColor: theme.palette.background.highlightContrast.primary,
+  },
 }));
 
 const TITLE_ID = 'desktop-settings-title-id';
@@ -88,7 +109,7 @@ const DesktopDialogContent = (props: DesktopSettingsDialogContentProps) => {
               </DesktopSettingsTitle>
               <TabList onChange={handleChange} orientation="vertical" aria-labelledby={TITLE_ID} sx={{ flexGrow: '1' }}>
                 {settingPanels.map(({ value }) => (
-                  <Tab
+                  <DesktopSettingsTab
                     key={value}
                     value={value}
                     label={t(`${value}-panel-title`)}
@@ -101,7 +122,6 @@ const DesktopDialogContent = (props: DesktopSettingsDialogContentProps) => {
               </TabList>
               <DesktopSettingsListFooter>{`OpenTalk ${window.config.version?.product || t('dev-version')}`}</DesktopSettingsListFooter>
             </DesktopSettingsListContainer>
-            <DesktopSettingsDivider orientation="vertical" />
             <DesktopSettingsPanelContainer>
               <DesktopCloseButton aria-label={t('global-close-dialog')} onClick={onClose}>
                 <CloseIcon />

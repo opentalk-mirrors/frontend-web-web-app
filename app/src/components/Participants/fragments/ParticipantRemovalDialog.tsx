@@ -68,7 +68,7 @@ const ParticipantRemovalDialog = ({ open, onClose, participant }: ParticipantRem
             gap: 2,
           }}
         >
-          <Button onClick={onClose} color="error" variant="contained">
+          <Button onClick={onClose} color="danger" variant="contained">
             {t('participant-remove-dialog-cancel')}
           </Button>
           {/* eslint-disable jsx-a11y/no-autofocus */}

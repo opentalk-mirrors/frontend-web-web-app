@@ -26,7 +26,8 @@ const Paper = styled(MuiPaper)(({ theme }) => ({
     padding: 2,
   },
   borderRadius: theme.borderRadius.large,
-  background: theme.palette.secondary.lighter,
+  background: theme.palette.background.highlight.primary,
+  color: theme.palette.background.highlight.contrastText,
 }));
 
 const ToggleButtonGroup = styled(MuiToggleButtonGroup)(({ theme }) => ({
@@ -36,16 +37,16 @@ const ToggleButtonGroup = styled(MuiToggleButtonGroup)(({ theme }) => ({
   gap: theme.spacing(0.5),
   '& .MuiToggleButton-root': {
     '&.Mui-selected': {
-      color: theme.palette.secondary.contrastText,
-      backgroundColor: theme.palette.secondary.main,
+      color: theme.palette.primary.contrastText,
+      backgroundColor: theme.palette.primary.main,
       '&:hover': {
-        backgroundColor: theme.palette.secondary.main,
-        color: theme.palette.secondary.contrastText,
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
       },
     },
     '&:hover': {
-      backgroundColor: theme.palette.secondary.light,
-      color: theme.palette.secondary.contrastText,
+      backgroundColor: theme.palette.primary.light,
+      color: theme.palette.primary.contrastText,
     },
   },
   '& .MuiToggleButtonGroup-grouped': {
@@ -61,7 +62,7 @@ const ToggleButtonGroup = styled(MuiToggleButtonGroup)(({ theme }) => ({
 
 const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
   padding: '0.625rem 1.5rem',
-  color: theme.palette.text.primary,
+  color: theme.palette.primary.main,
 }));
 
 const Toggle = <Value extends string | number>({ options, onChange }: ToggleProps<Value>) => {
@@ -76,7 +77,7 @@ const Toggle = <Value extends string | number>({ options, onChange }: ToggleProp
 
   return (
     <Paper elevation={0}>
-      <ToggleButtonGroup value={value} exclusive onChange={handleOnChange} color="secondary">
+      <ToggleButtonGroup value={value} exclusive onChange={handleOnChange} color="primary">
         {options.map((option) => (
           <ToggleButton key={option.label} value={option.value} aria-label={option.label}>
             {option.label}

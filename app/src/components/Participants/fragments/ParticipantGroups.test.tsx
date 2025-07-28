@@ -6,6 +6,11 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders, mockedParticipant, configureStore } from '../../../utils/testUtils';
 import ParticipantGroups from './ParticipantGroups';
 
+vi.mock('@livekit/components-react', () => ({
+  useRemoteParticipant: () => mockedParticipant(0),
+  useLocalParticipant: () => mockedParticipant(0),
+}));
+
 describe('ParticipantGroups', () => {
   it('renders group labels and participants', async () => {
     const participants = [
@@ -24,7 +29,7 @@ describe('ParticipantGroups', () => {
         },
       },
     });
-    renderWithProviders(<ParticipantGroups />, { store });
+    renderWithProviders(<ParticipantGroups />, { store, provider: { mui: true } });
 
     const groupAElement = screen.getByRole('heading', { name: 'Group A' });
     const groupBElement = screen.getByRole('heading', { name: 'Group B' });
@@ -43,7 +48,7 @@ describe('ParticipantGroups', () => {
       },
     });
 
-    renderWithProviders(<ParticipantGroups />, { store });
+    renderWithProviders(<ParticipantGroups />, { store, provider: { mui: true } });
 
     expect(screen.queryByRole('heading', { name: 'Group A' })).not.toBeInTheDocument();
   });

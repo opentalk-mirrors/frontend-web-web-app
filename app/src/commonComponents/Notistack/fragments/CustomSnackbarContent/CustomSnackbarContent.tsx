@@ -9,7 +9,7 @@ export const CustomSnackbarContent = styled(SnackbarContent, {
     return prop !== 'type';
   },
 })<{ type?: 'success' | 'warning' }>(({ theme, type = 'success' }) => ({
-  backgroundColor: theme.palette[type].dark,
+  backgroundColor: theme.palette[type].main,
   color: theme.palette[type].contrastText,
   padding: theme.spacing(1.75, 3, 1.75, 2.25),
   borderRadius: theme.spacing(1),

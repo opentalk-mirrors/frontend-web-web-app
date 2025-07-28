@@ -11,7 +11,7 @@ import { FavoriteIcon as Favorite } from '../../assets/icons';
 import getReferrerRouterState from '../../utils/getReferrerRouterState';
 
 const FavoritesWrapper = styled(Box)(({ theme }) => ({
-  background: theme.palette.secondary.main,
+  background: theme.palette.primary.main,
   borderRadius: theme.borderRadius.medium,
   position: 'relative',
   padding: theme.spacing(1.5, 2, 1),
@@ -33,7 +33,7 @@ const FavoritesContainer = styled(List)({
 const FavoriteIcon = styled(Favorite)(({ theme }) => ({
   position: 'absolute',
   top: -2,
-  fill: theme.palette.secondary.contrastText,
+  fill: theme.palette.primary.contrastText,
   width: theme.typography.pxToRem(20),
   height: theme.typography.pxToRem(20),
   right: theme.spacing(3),
@@ -59,18 +59,18 @@ const FavoriteEntry = styled(ListItem)(({ theme }) => ({
   },
 
   '&:not(:last-child)': {
-    borderBottom: `1px solid ${theme.palette.secondary.contrastText}`,
+    borderBottom: `1px solid ${theme.palette.primary.contrastText}`,
   },
 
   '& > a': {
-    color: theme.palette.secondary.contrastText,
+    color: theme.palette.primary.contrastText,
     textDecoration: 'none',
   },
 }));
 
 const EmptyEntry = styled('div')(({ theme }) => ({
   marginBottom: theme.spacing(2),
-  color: theme.palette.secondary.contrastText,
+  color: theme.palette.primary.contrastText,
 }));
 
 // todo Define what the link should do. Currently it is undefined whether the link should lead to the room or to the meeting overview of the meeting. The naming defines if we call this roomId or meetingId

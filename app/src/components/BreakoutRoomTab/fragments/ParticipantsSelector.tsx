@@ -142,29 +142,28 @@ const ParticipantsSelector = ({
     };
 
     return assignedParticipants.map(({ name, assignments }) => (
-      <AccordionItem
-        key={name}
-        onChange={(event, newExpanded) => handleExpandedChange(event, newExpanded, name)}
-        expanded={expandedPanels.includes(name)}
-        summaryText={`${name} (${assignments.length})`}
-        summaryEndAdornment={
-          <ParticipantsEditor
-            title={name}
-            onChange={(participants) => handleParticipantsEditorChange(name, participants)}
-            unAssignedParticipants={unassignedParticipants}
-            assignedParticipants={assignments}
-          />
-        }
-        headingComponent="h4"
-      >
-        <UserNameContainer>
-          {assignments.map((assignment) => (
-            <Typography key={assignment.id} variant="body1" translate="no">
-              {assignment.displayName}
-            </Typography>
-          ))}
-        </UserNameContainer>
-      </AccordionItem>
+      <Box position="relative" key={name}>
+        <AccordionItem
+          onChange={(event, newExpanded) => handleExpandedChange(event, newExpanded, name)}
+          expanded={expandedPanels.includes(name)}
+          summaryText={`${name} (${assignments.length})`}
+          headingComponent="h4"
+        >
+          <UserNameContainer>
+            {assignments.map((assignment) => (
+              <Typography key={assignment.id} variant="body1" translate="no">
+                {assignment.displayName}
+              </Typography>
+            ))}
+          </UserNameContainer>
+        </AccordionItem>
+        <ParticipantsEditor
+          title={name}
+          onChange={(participants) => handleParticipantsEditorChange(name, participants)}
+          unAssignedParticipants={unassignedParticipants}
+          assignedParticipants={assignments}
+        />
+      </Box>
     ));
   }, [assignedParticipants, expandedPanels, handleChange, unassignedParticipants]);
 

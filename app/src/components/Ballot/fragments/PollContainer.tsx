@@ -126,6 +126,7 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
             aria-label={t('global-close-dialog')}
             /* eslint-disable jsx-a11y/no-autofocus */
             autoFocus
+            edge="end"
           >
             <CloseIcon />
           </IconButton>
@@ -184,6 +185,7 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
             disabled={isSubmitButtonDisabled}
             variant={isSubmitButtonDisabled ? 'conference-inactive' : 'contained'}
             fullWidth
+            color="secondary"
           >
             {t('global-submit')}
           </Button>

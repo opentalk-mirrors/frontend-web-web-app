@@ -12,7 +12,6 @@ import {
   MenuItemProps,
   MenuList,
   MenuListProps,
-  ThemeProvider,
   styled,
 } from '@mui/material';
 import { ListItemButtonProps } from '@mui/material';
@@ -27,7 +26,6 @@ import {
   ContactIcon,
   AccessablityIcon,
 } from '../../assets/icons';
-import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { useAppSelector, useLocale } from '../../hooks';
 import { selectContactSupportUrl, selectIsGlitchtipConfigured } from '../../store/slices/configSlice';
 import { getAccessibilityUrl, USER_MANUAL_URL } from '../../utils/apiUtils';
@@ -185,9 +183,7 @@ export const SupportList = ({
             </MenuItem>
           ))}
         </MenuList>
-        <ThemeProvider theme={createOpenTalkTheme()}>
-          <ShortcutListDialog open={isShortcutListDialogOpen} onClose={() => setIsShortcutListDialogOpen(false)} />
-        </ThemeProvider>
+        <ShortcutListDialog open={isShortcutListDialogOpen} onClose={() => setIsShortcutListDialogOpen(false)} />
       </>
     );
   }
@@ -205,9 +201,7 @@ export const SupportList = ({
           </ListItem>
         ))}
       </List>
-      <ThemeProvider theme={createOpenTalkTheme()}>
-        <ShortcutListDialog open={isShortcutListDialogOpen} onClose={() => setIsShortcutListDialogOpen(false)} />
-      </ThemeProvider>
+      <ShortcutListDialog open={isShortcutListDialogOpen} onClose={() => setIsShortcutListDialogOpen(false)} />
     </>
   );
 };

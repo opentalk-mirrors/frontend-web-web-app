@@ -164,12 +164,12 @@ export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
               gap: 1,
             }}
           >
-            <Button type="button" color="secondary" onClick={handleCancel}>
+            <Button type="button" onClick={handleCancel}>
               {t('global-cancel')}
             </Button>
             <Button
+              color="secondary"
               type="submit"
-              color="primary"
               fullWidth
               disabled={!formik.values.description && formik.values.kind === ReportIssueKind.Other}
             >

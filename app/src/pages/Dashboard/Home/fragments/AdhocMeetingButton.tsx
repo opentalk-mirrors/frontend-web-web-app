@@ -26,6 +26,7 @@ const AdhocMeetingButton = (props: AdhocMeetingButtonProps) => {
       onMouseLeave={() => onHover && onHover(false)}
       startIcon={<CameraOnIcon />}
       size="large"
+      color="secondary"
       fullWidth={isDesktop}
       state={{
         ...getReferrerRouterState(window.location),

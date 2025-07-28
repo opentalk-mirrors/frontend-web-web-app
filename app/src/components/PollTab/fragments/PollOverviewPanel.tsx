@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Container, Typography, Button, Grid } from '@mui/material';
+import { styled, Container, Typography, Button, Grid, Divider } from '@mui/material';
 import { truncate } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +13,8 @@ import { Poll } from '../../../store/slices/pollSlice';
 import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 
 const MainContainer = styled(Container)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.background.customPaper.primary,
+  color: theme.palette.text.primary,
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
@@ -27,12 +28,9 @@ const VoteCountContainer = styled('div')(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-const Divider = styled('div')({
-  borderTop: '3px solid #193a47',
-});
-
 const VoteState = styled('div')<{ state?: 'active' | 'finished' }>(({ theme, state }) => ({
   backgroundColor: state === 'active' ? theme.palette.success.main : theme.palette.error.main,
+  color: state === 'active' ? theme.palette.success.contrastText : theme.palette.error.contrastText,
   padding: theme.spacing(0.5),
   fontWeight: 'bold',
 }));
@@ -136,7 +134,7 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
         </Grid>
         {poll.state === 'active' && (
           <Grid sx={{ marginLeft: 'auto' }}>
-            <Button size="small" variant="contained" onClick={handleEnd}>
+            <Button size="small" variant="contained" onClick={handleEnd} color="secondary">
               {t('poll-overview-panel-button-end')}
             </Button>
           </Grid>

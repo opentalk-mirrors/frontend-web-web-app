@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 
-import { mockedRoomAssets } from '../../utils/testUtils';
+import { mockedRoomAssets, renderWithProviders } from '../../utils/testUtils';
 import { sleep } from '../../utils/timeUtils';
 import AssetTable from './AssetTable';
 
@@ -38,7 +38,9 @@ const handleDelete = vi.fn(() => {
 describe('Asset Table', () => {
   it('renders table correctly for one asset with both action buttons', () => {
     const asset = mockedRoomAssets[0];
-    render(<AssetTable assets={[asset]} onDownload={handleDownload} onDelete={handleDelete} />);
+    renderWithProviders(<AssetTable assets={[asset]} onDownload={handleDownload} onDelete={handleDelete} />, {
+      provider: { mui: true },
+    });
     const table = screen.getByRole('table');
     expect(table).toBeInTheDocument();
 
@@ -60,13 +62,15 @@ describe('Asset Table', () => {
   });
 
   it('renders table correctly for multiple assets and shows no delete button', () => {
-    render(<AssetTable assets={mockedRoomAssets} onDownload={handleDownload} />);
+    renderWithProviders(<AssetTable assets={mockedRoomAssets} onDownload={handleDownload} />, {
+      provider: { mui: true },
+    });
     expect(screen.queryByRole('button', { name: 'action-delete' })).not.toBeInTheDocument();
   });
 
   it('executes onDownload callback when asset is downloaded', async () => {
     const onDownload = vi.fn().mockResolvedValue(true);
-    render(<AssetTable assets={mockedRoomAssets} onDownload={onDownload} />);
+    renderWithProviders(<AssetTable assets={mockedRoomAssets} onDownload={onDownload} />, { provider: { mui: true } });
     const rows = screen.getAllByRole('row');
     const assetRow = rows.find((row) => within(row).queryByRole('cell', { name: mockedRoomAssets[0].filename }));
     if (!assetRow) {
@@ -86,7 +90,9 @@ describe('Asset Table', () => {
   });
 
   it('executes onDelete callback when asset is deleted', async () => {
-    render(<AssetTable assets={mockedRoomAssets} onDownload={handleDownload} onDelete={handleDelete} />);
+    renderWithProviders(<AssetTable assets={mockedRoomAssets} onDownload={handleDownload} onDelete={handleDelete} />, {
+      provider: { mui: true },
+    });
     const rows = screen.getAllByRole('row');
     const assetRow = rows.find((row) => within(row).queryByRole('cell', { name: mockedRoomAssets[0].filename }));
     if (!assetRow) {

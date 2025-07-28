@@ -41,6 +41,9 @@ const AdjustedButton = styled(Button)(({ theme }) => ({
   '&&.MuiButton-root': {
     marginLeft: theme.typography.pxToRem(4),
   },
+  '&.Mui-disabled': {
+    color: theme.palette.text.disabled,
+  },
 }));
 
 const ChatOverview = () => {
@@ -103,7 +106,7 @@ const ChatOverview = () => {
           size="small"
           startIcon={<BackIcon />}
           variant="text"
-          color="secondary"
+          color="primary"
           onClick={resetSelectedChat}
         >
           {t('button-back-messages')}
@@ -131,6 +134,7 @@ const ChatOverview = () => {
           variant="text"
           focusRipple={true}
           startIcon={<NewMessageIcon />}
+          color="secondary"
         >
           {t('button-new-message')}
         </AdjustedButton>

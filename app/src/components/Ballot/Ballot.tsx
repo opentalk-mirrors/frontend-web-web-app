@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Dialog, styled, Paper } from '@mui/material';
+import { Dialog, DialogContent } from '@mui/material';
 
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import {
@@ -21,12 +21,6 @@ import { LegalVoteContainer } from './fragments/LegalVoteContainer';
 import { PollContainer } from './fragments/PollContainer';
 import { ReportSection } from './fragments/ReportSection';
 import { LEGEND_TITLE_ID } from './fragments/constants';
-
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  borderRadius: '1rem',
-  background: theme.palette.background.voteResult,
-  padding: theme.spacing(2),
-}));
 
 export default function Ballot() {
   const dispatch = useAppDispatch();
@@ -51,7 +45,6 @@ export default function Ballot() {
   if (pollToShow) {
     return (
       <Dialog
-        PaperComponent={StyledPaper}
         onClose={handleClose}
         open
         maxWidth="sm"
@@ -61,7 +54,9 @@ export default function Ballot() {
         onKeyUp={(e) => e.stopPropagation()}
         slotProps={{ paper: { 'aria-modal': true, 'aria-labelledby': LEGEND_TITLE_ID } }}
       >
-        <PollContainer onClose={handleClose} poll={pollToShow} />
+        <DialogContent>
+          <PollContainer onClose={handleClose} poll={pollToShow} />
+        </DialogContent>
       </Dialog>
     );
   }
@@ -69,7 +64,6 @@ export default function Ballot() {
   if (legalVoteToShow) {
     return (
       <Dialog
-        PaperComponent={StyledPaper}
         onClose={handleClose}
         open
         maxWidth={false}
@@ -79,8 +73,10 @@ export default function Ballot() {
         onKeyUp={(e) => e.stopPropagation()}
         slotProps={{ paper: { sx: { maxWidth: 700 }, 'aria-modal': true, 'aria-labelledby': LEGEND_TITLE_ID } }}
       >
-        <LegalVoteContainer onClose={handleClose} legalVote={legalVoteToShow} isAllowedToVote={isAllowedToVote} />
-        {isAllowedToVote && <ReportSection legalVoteId={legalVoteToShow.id} />}
+        <DialogContent>
+          <LegalVoteContainer onClose={handleClose} legalVote={legalVoteToShow} isAllowedToVote={isAllowedToVote} />
+          {isAllowedToVote && <ReportSection legalVoteId={legalVoteToShow.id} />}
+        </DialogContent>
       </Dialog>
     );
   }

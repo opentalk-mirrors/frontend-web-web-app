@@ -29,6 +29,7 @@ const Accordion = styled(MuiAccordion)(({ theme }) => ({
   backgroundColor: 'transparent',
   boxShadow: 'none',
   margin: theme.spacing(0),
+  borderRadius: 0,
   '&:not(:last-child)': {
     borderBottom: 0,
   },
@@ -41,7 +42,8 @@ const Accordion = styled(MuiAccordion)(({ theme }) => ({
 }));
 
 const AccordionSummary = styled(MuiAccordionSummary)(({ theme }) => ({
-  backgroundColor: theme.palette.secondary.lighter,
+  backgroundColor: theme.palette.background.highlight.primary,
+  color: theme.palette.background.highlight.contrastText,
   minHeight: 0,
   '&.Mui-expanded': {
     minHeight: 0,

@@ -23,7 +23,7 @@ import RoomOverviewListItem from './RoomOverviewListItem';
 const StyledClockIcon = styled(ClockIcon)(({ theme }) => ({
   verticalAlign: 'middle',
   marginRight: theme.spacing(1),
-  fill: theme.palette.primary.main,
+  fill: theme.palette.secondary.main,
 }));
 
 const Button = styled(MuiButton)(({ theme }) => ({
@@ -171,7 +171,7 @@ const RoomOverview = () => {
         <ListContainer>{renderAccordions()}</ListContainer>
       </Box>
       <Box>
-        <Button color="primary" variant="contained" onClick={stopBreakoutRoom}>
+        <Button variant="contained" onClick={stopBreakoutRoom}>
           {t('breakout-room-room-overview-button-close')}
         </Button>
       </Box>

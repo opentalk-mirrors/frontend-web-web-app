@@ -22,10 +22,14 @@ const DebriefingTab = () => {
 
   return (
     <Stack spacing={2}>
-      <Button onClick={() => resetAllHandraises(KickScope.All)}>{t('debriefing-button-all')}</Button>
+      <Button onClick={() => resetAllHandraises(KickScope.All)} color="secondary">
+        {t('debriefing-button-all')}
+      </Button>
       <Typography>{t('debriefing-moderator-section-title')}</Typography>
-      <Button onClick={() => resetAllHandraises(KickScope.UsersAndGuests)}>{t('debriefing-button-moderators')}</Button>
-      <Button onClick={() => resetAllHandraises(KickScope.Guests)}>
+      <Button onClick={() => resetAllHandraises(KickScope.UsersAndGuests)} color="secondary">
+        {t('debriefing-button-moderators')}
+      </Button>
+      <Button onClick={() => resetAllHandraises(KickScope.Guests)} color="secondary">
         {t('debriefing-button-moderators-and-users')}
       </Button>
     </Stack>

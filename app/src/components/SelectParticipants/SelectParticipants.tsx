@@ -26,11 +26,15 @@ type SelectParticipantsProps = {
 
 const AutocompleteTextField = styled(TextField)(({ theme }) => ({
   '.MuiInputBase-root': {
-    backgroundColor: theme.palette.background.default,
-    color: theme.palette.secondary.dark,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+  },
+  '.MuiInputBase-root.Mui-focused': {
+    backgroundColor: theme.palette.background.highlight.primary,
+    color: theme.palette.background.highlight.contrastText,
   },
   '& .MuiSvgIcon-root': {
-    color: `${theme.palette.secondary.dark} !important`,
+    color: 'inherit',
   },
   '& .MuiInputBase-input::placeholder': {
     opacity: 1,

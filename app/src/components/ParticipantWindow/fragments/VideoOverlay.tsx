@@ -147,7 +147,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
             {userLayout === LayoutOptions.Speaker && (
               <Tooltip title={t('video-overlay-tooltip-pin-video')}>
                 <OverlayIconButton
-                  color={pinnedParticipantId === descriptor.participantId ? 'primary' : 'secondary'}
+                  color={pinnedParticipantId === descriptor.participantId ? 'secondary' : 'primary'}
                   onClick={togglePin}
                   translate="no"
                   aria-label={t('indicator-pinned', {
@@ -163,7 +163,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
                 <OverlayIconButton
                   aria-label={t('indicator-fullscreen-open')}
                   onClick={openFullScreenView}
-                  color="secondary"
+                  color="primary"
                 >
                   <FullscreenViewIcon />
                 </OverlayIconButton>
@@ -171,7 +171,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
             )}
             {isScreenShareOrVideoActive && (
               <Tooltip title={t('video-overlay-tooltip-separate-window')}>
-                <OverlayIconButton aria-label={t('global-open-new-tab')} color="secondary" onClick={openInNewTab}>
+                <OverlayIconButton aria-label={t('global-open-new-tab')} color="primary" onClick={openInNewTab}>
                   <ExtendToTabIcon />
                 </OverlayIconButton>
               </Tooltip>

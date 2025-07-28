@@ -28,7 +28,7 @@ const LoadingSpinner = styled(CircularProgress)(({ theme }) => ({
   right: 5,
 }));
 
-const StyledCommonTextField = styled(CommonTextField)({
+const StyledCommonTextField = styled(CommonTextField)(() => ({
   '.MuiInputAdornment-root': {
     position: 'relative',
     left: 0,
@@ -38,7 +38,7 @@ const StyledCommonTextField = styled(CommonTextField)({
     paddingRight: 0,
     textOverflow: 'ellipsis',
   },
-});
+}));
 
 const CopyTextField = forwardRef<HTMLInputElement, LinkFieldProps>(
   ({ label, checked, value, onClick, ariaLabel, isLoading, notificationText, ...remainingProps }, ref) => {
@@ -71,7 +71,7 @@ const CopyTextField = forwardRef<HTMLInputElement, LinkFieldProps>(
             onClick={handleClick}
             variant="contained"
             disabled={!value}
-            color={checked ? 'primary' : 'secondary'}
+            color={checked ? 'secondary' : 'primary'}
             size="small"
           >
             {t(checked ? 'global-copied' : 'global-copy')}

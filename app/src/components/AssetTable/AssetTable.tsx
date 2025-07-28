@@ -20,6 +20,22 @@ const AssetTableContainer = styled(TableContainer, {
   marginTop: theme.spacing(1),
   marginBottom: theme.spacing(1),
   maxHeight,
+
+  '&.MuiPaper-root': {
+    background: theme.palette.background.main.primary,
+    color: theme.palette.background.main.contrastText,
+  },
+
+  '& .MuiTableHead-root .MuiTableCell-root': {
+    background: theme.palette.background.highlight.primary,
+    color: theme.palette.background.highlight.contrastText,
+    fontWeight: theme.typography.fontWeightBold,
+  },
+
+  '& .MuiTableBody-root .MuiTableCell-root': {
+    borderBottomColor: theme.palette.divider,
+    color: theme.palette.text.primary,
+  },
 }));
 
 interface AssetTableProps {

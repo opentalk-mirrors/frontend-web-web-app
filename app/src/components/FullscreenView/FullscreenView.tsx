@@ -52,8 +52,12 @@ const LocalVideoContainer = styled(Box)(({ theme }) => ({
 
 const IconButton = styled(MuiIconButton)(({ theme }) => ({
   zIndex: theme.zIndex.mobileStepper,
-  opacity: 0.6,
   padding: theme.spacing(0.75),
+  background: theme.palette.background.highlight.primary,
+  color: theme.palette.background.highlight.contrastText,
+  border: 'solid',
+  borderWidth: theme.typography.pxToRem(1),
+  borderColor: theme.palette.background.highlight.contrastText,
 }));
 
 const FullscreenView = () => {
@@ -117,7 +121,7 @@ const FullscreenView = () => {
           >
             <PinIcon />
           </IconButton>
-          <IconButton aria-label={t('indicator-fullscreen-close')} onClick={handleCloseFullscreen} color="secondary">
+          <IconButton aria-label={t('indicator-fullscreen-close')} onClick={handleCloseFullscreen} color="primary">
             <CloseIcon />
           </IconButton>
         </ButtonsContainer>

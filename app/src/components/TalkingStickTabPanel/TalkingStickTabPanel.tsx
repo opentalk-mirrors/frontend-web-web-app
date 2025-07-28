@@ -120,7 +120,7 @@ const TalkingStickTabPanel = () => {
       </Stack>
       <Stack>
         {!isAutomodActive ? (
-          <Button type="button" onClick={handleStart}>
+          <Button type="button" onClick={handleStart} color="secondary">
             {t('global-start-now')}
           </Button>
         ) : (
@@ -130,10 +130,10 @@ const TalkingStickTabPanel = () => {
               flexDirection: 'column',
             }}
           >
-            <Button type="button" onClick={handleSkipSpeaker}>
+            <Button type="button" onClick={handleSkipSpeaker} color="secondary">
               {t('talking-stick-skip-speaker')}
             </Button>
-            <Button type="button" color="secondary" onClick={handleStop}>
+            <Button type="button" onClick={handleStop}>
               {t('global-stop')}
             </Button>
           </Stack>

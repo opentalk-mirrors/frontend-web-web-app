@@ -69,7 +69,10 @@ describe('participant context menu', () => {
   const renderEachParticipant = (store: Store) => {
     participants = selectAllParticipants(store.getState());
     participants.forEach((_, index) =>
-      renderWithProviders(<ParticipantListItem data={participants} index={index} style={{}} />, { store })
+      renderWithProviders(<ParticipantListItem data={participants} index={index} style={{}} />, {
+        store,
+        provider: { mui: true },
+      })
     );
   };
   const openMenu = (store: Store) => {

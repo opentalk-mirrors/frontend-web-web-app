@@ -21,7 +21,7 @@ describe('WaitingParticipantsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<WaitingParticipantsPopover />, { store });
+    renderWithProviders(<WaitingParticipantsPopover />, { store, provider: { mui: true } });
     expect(screen.queryByTestId('waiting-list-button')).not.toBeInTheDocument();
   });
 
@@ -38,7 +38,7 @@ describe('WaitingParticipantsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<WaitingParticipantsPopover />, { store });
+    renderWithProviders(<WaitingParticipantsPopover />, { store, provider: { mui: true } });
     expect(screen.getByTestId('waiting-list-button')).toBeInTheDocument();
   });
 
@@ -55,7 +55,7 @@ describe('WaitingParticipantsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<WaitingParticipantsPopover />, { store });
+    renderWithProviders(<WaitingParticipantsPopover />, { store, provider: { mui: true } });
     const button = screen.getByTestId('waiting-list-button');
     fireEvent.click(button);
     expect(screen.getByText('WaitingParticipantsList')).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe('WaitingParticipantsPopover rendering logic', () => {
         },
       },
     });
-    const { unmount } = renderWithProviders(<WaitingParticipantsPopover />, { store });
+    const { unmount } = renderWithProviders(<WaitingParticipantsPopover />, { store, provider: { mui: true } });
     const button = screen.getByTestId('waiting-list-button');
     fireEvent.click(button);
     unmount();
@@ -86,7 +86,7 @@ describe('WaitingParticipantsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<WaitingParticipantsPopover />, { store: secondStore });
+    renderWithProviders(<WaitingParticipantsPopover />, { store: secondStore, provider: { mui: true } });
     expect(screen.queryByTestId('waiting-list-button')).not.toBeInTheDocument();
   });
 });

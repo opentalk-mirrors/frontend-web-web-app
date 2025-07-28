@@ -24,7 +24,7 @@ const Container = styled(MuiBox)(({ theme }) => ({
   flexWrap: 'nowrap',
   alignItems: 'center',
   justifyContent: 'center',
-  background: theme.palette.background.video,
+  background: theme.palette.background.customPaper.primary,
 }));
 
 interface ParticipantWindowProps {

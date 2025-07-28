@@ -34,11 +34,11 @@ const ProgressContainer = styled('div')(({ theme }) => ({
   height: '3em',
   display: 'flex',
   alignItems: 'center',
-  backgroundColor: theme.palette.secondary.main,
+  backgroundColor: theme.palette.primary.main,
   borderRadius: theme.borderRadius.medium,
   marginTop: theme.spacing(1),
   '& .MuiInputLabel-root': {
-    color: theme.palette.secondary.contrastText,
+    color: theme.palette.primary.contrastText,
     flex: 1,
     height: '100%',
     lineHeight: '3em',
@@ -49,15 +49,15 @@ const ProgressContainer = styled('div')(({ theme }) => ({
     margin: theme.spacing(0, 1),
 
     aspectRatio: '1/1',
-    color: theme.palette.secondary.contrastText,
+    color: theme.palette.primary.contrastText,
     '&.Mui-checked': {
-      color: theme.palette.secondary.contrastText,
+      color: theme.palette.primary.contrastText,
     },
     '&.Mui-disabled': {
       opacity: 0.6,
     },
     '&.Mui-disabled + .MuiInputLabel-root': {
-      color: theme.palette.secondary.contrastText,
+      color: theme.palette.primary.contrastText,
       opacity: 0.6,
     },
   },
@@ -68,16 +68,17 @@ const ProgressContainer = styled('div')(({ theme }) => ({
 
 const Checkbox = styled(MuiCheckbox)(({ theme }) => ({
   '&.MuiButtonBase-root.MuiCheckbox-root.Mui-disabled': {
-    color: theme.palette.text.disabled,
+    color: theme.palette.primary.contrastText,
+    opacity: 0.6,
   },
   '&.MuiButtonBase-root.MuiCheckbox-root': {
-    color: theme.palette.text.secondary,
+    color: theme.palette.primary.contrastText,
   },
 }));
 
 const ProgressLabel = styled('span')(({ theme }) => ({
   position: 'absolute',
-  color: theme.palette.secondary.contrastText,
+  color: theme.palette.primary.contrastText,
   right: '1em',
   bottom: '0.7em',
   zIndex: 1,

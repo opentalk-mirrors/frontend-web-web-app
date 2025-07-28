@@ -30,9 +30,9 @@ const List = styled(MuiList)({
 
 const ListItemButton = styled(MuiListItemButton)(({ theme }) => ({
   borderRadius: theme.borderRadius.medium,
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.background.customPaper.primary,
   '&:hover': {
-    backgroundColor: theme.palette.secondary.lighter,
+    backgroundColor: theme.palette.secondary.light,
   },
   '&:not(:last-child) ': {
     marginBottom: theme.spacing(1),

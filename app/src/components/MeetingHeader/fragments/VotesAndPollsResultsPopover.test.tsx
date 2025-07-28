@@ -28,7 +28,7 @@ describe('VotesAndPollsResultsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<VotesAndPollsResultsPopover />, { store, provider: { snackbar: true } });
+    renderWithProviders(<VotesAndPollsResultsPopover />, { store, provider: { snackbar: true, mui: true } });
     expect(screen.queryByRole('button', { name: 'votes-poll-button-show' })).not.toBeInTheDocument();
   });
 
@@ -45,7 +45,7 @@ describe('VotesAndPollsResultsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<VotesAndPollsResultsPopover />, { store, provider: { snackbar: true } });
+    renderWithProviders(<VotesAndPollsResultsPopover />, { store, provider: { snackbar: true, mui: true } });
     expect(screen.getByRole('button', { name: 'votes-poll-button-show' })).toBeInTheDocument();
   });
 
@@ -62,7 +62,7 @@ describe('VotesAndPollsResultsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<VotesAndPollsResultsPopover />, { store, provider: { snackbar: true } });
+    renderWithProviders(<VotesAndPollsResultsPopover />, { store, provider: { snackbar: true, mui: true } });
     const button = screen.getByRole('button', { name: 'votes-poll-button-show' });
     fireEvent.click(button);
     const resultsList = screen.getByRole('list', { hidden: true, name: 'ResultsList' });

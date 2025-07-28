@@ -6,6 +6,11 @@ import { screen, fireEvent } from '@testing-library/react';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import ParticipantsContainer from './ParticipantsContainer';
 
+vi.mock('@livekit/components-react', () => ({
+  useRemoteParticipant: () => mockedParticipant(0),
+  useLocalParticipant: () => mockedParticipant(0),
+}));
+
 describe('ParticipantsContainer', () => {
   const participants = [{ ...mockedParticipant(0), groups: ['Group A'] }];
 
@@ -29,7 +34,7 @@ describe('ParticipantsContainer', () => {
         },
       },
     });
-    renderWithProviders(<ParticipantsContainer />, { store });
+    renderWithProviders(<ParticipantsContainer />, { store, provider: { mui: true } });
 
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     expect(screen.getByRole('switch')).toBeInTheDocument();
@@ -53,7 +58,7 @@ describe('ParticipantsContainer', () => {
         },
       },
     });
-    renderWithProviders(<ParticipantsContainer />, { store });
+    renderWithProviders(<ParticipantsContainer />, { store, provider: { mui: true } });
     // Ungrouped view: should render ParticipantNoGroups
     expect(screen.queryByRole('heading', { level: 4 })).not.toBeInTheDocument();
   });
@@ -74,7 +79,7 @@ describe('ParticipantsContainer', () => {
         },
       },
     });
-    renderWithProviders(<ParticipantsContainer />, { store });
+    renderWithProviders(<ParticipantsContainer />, { store, provider: { mui: true } });
 
     const searchInput = screen.getByRole('textbox');
     fireEvent.change(searchInput, { target: { value: 'test' } });

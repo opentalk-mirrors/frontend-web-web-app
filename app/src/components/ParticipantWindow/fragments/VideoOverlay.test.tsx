@@ -40,7 +40,7 @@ describe('VideoOverlay general', () => {
   it('does not render any button if overlay is not active', () => {
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={false} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
@@ -49,7 +49,7 @@ describe('VideoOverlay general', () => {
     mockFullscreenContext.isFullScreenAvailable = vi.fn(() => true);
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
@@ -61,7 +61,7 @@ describe('VideoOverlay general', () => {
 
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
@@ -81,7 +81,7 @@ describe('VideoOverlay extend tab', () => {
 
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
 
     const extendNewTabButton = screen.queryByRole('button', { name: 'global-open-new-tab' });
@@ -96,7 +96,7 @@ describe('VideoOverlay extend tab', () => {
 
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
 
     const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
@@ -111,7 +111,7 @@ describe('VideoOverlay extend tab', () => {
 
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
 
     const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
@@ -126,7 +126,7 @@ describe('VideoOverlay extend tab', () => {
 
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
 
     const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });

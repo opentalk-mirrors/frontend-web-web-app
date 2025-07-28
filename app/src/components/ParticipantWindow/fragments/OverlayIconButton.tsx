@@ -5,13 +5,14 @@ import { IconButton, styled } from '@mui/material';
 
 export const OverlayIconButton = styled(IconButton)(({ theme }) => ({
   '&.MuiIconButton-colorPrimary, &.MuiIconButton-colorSecondary': {
-    height: theme.spacing(2.5),
+    height: theme.spacing(3),
     width: theme.spacing(3),
     padding: theme.spacing(1),
     opacity: 0.8,
-    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.background.highlight.primary,
     '& .MuiSvgIcon-root': {
       fontSize: theme.typography.pxToRem(13),
+      fill: theme.palette.background.highlight.contrastText,
     },
     ':hover': {
       opacity: 1,
@@ -19,26 +20,32 @@ export const OverlayIconButton = styled(IconButton)(({ theme }) => ({
   },
 
   '&.MuiIconButton-colorPrimary': {
-    svg: {
-      fill: theme.palette.secondary.contrastText,
-    },
     ':hover': {
       backgroundColor: theme.palette.primary.main,
+      '& .MuiSvgIcon-root': {
+        fill: theme.palette.primary.contrastText,
+      },
     },
     ':focus': {
-      outline: theme.palette.focus?.outline,
-      outlineOffset: theme.palette.focus?.outlineOffset,
+      outline: theme.palette.focus.outline,
+      outlineOffset: theme.palette.focus.outlineOffset,
     },
   },
 
   '&.MuiIconButton-colorSecondary': {
+    backgroundColor: theme.palette.secondary.main,
+    '& .MuiSvgIcon-root': {
+      fill: theme.palette.secondary.contrastText,
+    },
     ':hover': {
-      color: theme.palette.secondary.contrastText,
-      backgroundColor: theme.palette.secondary.light,
+      backgroundColor: theme.palette.secondary.main,
+      '& .MuiSvgIcon-root': {
+        fill: theme.palette.secondary.contrastText,
+      },
     },
     ':focus': {
-      outline: theme.palette.focus?.outline,
-      outlineOffset: theme.palette.focus?.outlineOffset,
+      outline: theme.palette.focus.outline,
+      outlineOffset: theme.palette.focus.outlineOffset,
     },
   },
 }));

@@ -5,44 +5,51 @@
 import { Button, styled } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Color from 'colorjs.io';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { readyToContinue } from '../../api/types/outgoing/timer';
-import { CoffeeBreakIcon as CoffeeBreakIconDefault } from '../../assets/icons';
-import LogoIconDefault from '../../assets/images/logo.svg?react';
+import { CoffeeBreakIcon as CoffeeBreakIconDefault, LogoIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectCoffeeBreakTimerId, selectTimerActive } from '../../store/slices/timerSlice';
 import { setCoffeeBreakCurtainOpenFlag } from '../../store/slices/uiSlice';
 import CoffeeBreakTimer from './fragments/CoffeeBreakTimer';
 
-const BackgroundCover = styled(Box)({
+const BackgroundCover = styled(Box)<{ roundBorders?: boolean }>(({ theme, roundBorders }) => ({
   background: `url('/assets/background.svg') no-repeat`,
   backgroundSize: 'cover',
-});
-
-const InnerContainer = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'roundBorders',
-})<{ roundBorders?: boolean }>(({ theme, roundBorders }) => ({
-  display: 'grid',
-  gridTemplateColumns: '1fr',
-  gridTemplateRows: '0fr 2fr',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-  width: '100%',
-  backdropFilter: 'blur(100px)',
-  WebkitBackdropFilter: 'blur(100px)',
-  backgroundColor: `rgba(0, 22, 35, 0.5)`,
-  overflow: 'auto',
-  padding: 50,
   borderRadius: roundBorders ? theme.borderRadius.medium : undefined,
 }));
 
-const LogoIcon = styled(LogoIconDefault)(({ theme }) => ({
+const InnerContainer = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'roundBorders',
+})<{ roundBorders?: boolean }>(({ theme, roundBorders }) => {
+  const background = new Color(theme.palette.background.customPaper.primary);
+  background.alpha = 0.5;
+
+  return {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gridTemplateRows: '0fr 2fr',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    width: '100%',
+    backdropFilter: 'blur(100px)',
+    WebkitBackdropFilter: 'blur(100px)',
+    backgroundColor: background.toString({ format: 'rgba' }),
+    color: theme.palette.text.primary,
+    overflow: 'auto',
+    padding: 50,
+    borderRadius: roundBorders ? theme.borderRadius.medium : undefined,
+  };
+});
+
+const Logo = styled(LogoIcon)(({ theme }) => ({
   height: '2rem',
-  width: '9rem',
-  fill: theme.palette.primary.main,
+  width: 'auto',
+  fill: theme.palette.secondary.main,
 }));
 
 const CoffeeBreakIcon = styled(CoffeeBreakIconDefault)(({ theme }) => ({
@@ -78,9 +85,9 @@ export const CoffeeBreakView = memo(({ roundBorders }: CoffeeBreakViewProps) => 
   };
 
   return (
-    <BackgroundCover role="alertdialog" aria-label={t('coffee-break-layer-aria-title')}>
+    <BackgroundCover role="alertdialog" aria-label={t('coffee-break-layer-aria-title')} roundBorders={roundBorders}>
       <InnerContainer roundBorders={roundBorders}>
-        <LogoIcon />
+        <Logo />
 
         <Content>
           <CoffeeBreakIcon />
@@ -91,7 +98,7 @@ export const CoffeeBreakView = memo(({ roundBorders }: CoffeeBreakViewProps) => 
 
           <CoffeeBreakTimer />
 
-          <Button autoFocus={true} onClick={handleClose}>
+          <Button autoFocus={true} onClick={handleClose} color="secondary">
             {t('coffee-break-layer-button')}
           </Button>
         </Content>

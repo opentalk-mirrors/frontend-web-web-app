@@ -8,7 +8,6 @@ import {
   ListItem as MuiListItem,
   ListItemAvatar as MuiListItemAvatar,
   ListItemText as MuiListItemText,
-  ThemeProvider,
   Typography,
   styled,
 } from '@mui/material';
@@ -37,7 +36,6 @@ import {
   ShareScreenOnIcon,
   TelephoneStrokeIcon,
 } from '../../../assets/icons';
-import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { IconButton, ParticipantAvatar, notifications } from '../../../commonComponents';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -84,17 +82,17 @@ const ListItem = styled(MuiListItem, {
 })<{ isMoreMenuOpen?: boolean; isWhispering?: boolean }>(({ theme, isMoreMenuOpen, isWhispering }) => ({
   padding: theme.spacing(1),
   '& .more-icon': {
-    color: isMoreMenuOpen ? theme.palette.primary.contrastText : 'transparent',
+    color: isMoreMenuOpen ? theme.palette.text.primary : 'transparent',
   },
   border: '1px solid',
-  borderColor: isWhispering ? theme.palette.primary.main : 'transparent',
+  borderColor: isWhispering ? theme.palette.secondary.main : 'transparent',
   borderRadius: theme.spacing(1),
 }));
 
 const ParticipantMenuButton = styled(IconButton)(({ theme }) => ({
   ':hover, :focus': {
     '& .more-icon': {
-      color: theme.palette.primary.contrastText,
+      color: theme.palette.text.primary,
     },
   },
 }));
@@ -104,11 +102,12 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
     left: '50%',
     top: '50%',
     transform: 'translate(-50%, 30%)',
-    background: theme.palette.text.disabled,
+    background: theme.palette.background.highlightContrast.primary,
     width: '100%',
   },
   '& .MuiSvgIcon-root': {
     width: '20px',
+    color: theme.palette.secondary.main,
   },
 }));
 
@@ -136,10 +135,6 @@ const IconsContainer = styled(Box)({
     height: '0.8em',
   },
 });
-
-const JoinedText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
-}));
 
 type ParticipantRowProps = {
   data: Participant[];
@@ -525,9 +520,9 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
             </Typography>
           }
           secondary={
-            <JoinedText variant="caption" translate="no">
+            <Typography variant="caption" translate="no">
               {getContextText()}
-            </JoinedText>
+            </Typography>
           }
         />
 
@@ -558,14 +553,12 @@ const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
           {renderIcon()}
         </IconsContainer>
       </Box>
-      <ThemeProvider theme={createOpenTalkTheme('light')}>
-        <RenameParticipantDialog
-          open={openRenameDialog}
-          onClose={handleRenameParticipantDialog}
-          participant={participant}
-        />
-        <ParticipantRemovalDialog open={openRemovalDialog} onClose={handleRemoval} participant={participant} />
-      </ThemeProvider>
+      <RenameParticipantDialog
+        open={openRenameDialog}
+        onClose={handleRenameParticipantDialog}
+        participant={participant}
+      />
+      <ParticipantRemovalDialog open={openRemovalDialog} onClose={handleRemoval} participant={participant} />
     </ListItem>
   );
 };

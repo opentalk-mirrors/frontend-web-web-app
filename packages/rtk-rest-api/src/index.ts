@@ -30,6 +30,7 @@ export type {
   StreamingState,
 } from './types/streaming';
 export { StreamingKind, PlatformKind, StreamingStatus } from './types/streaming';
+export type { ThemeBasePalette, BasePalette } from './types/config';
 export type {
   User,
   UserMe,

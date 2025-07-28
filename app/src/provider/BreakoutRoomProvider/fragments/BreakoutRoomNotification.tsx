@@ -29,7 +29,8 @@ interface IJoinNotificationProps {
 }
 
 const StyledSnackbarContent = styled(SnackbarContent)(({ theme }) => ({
-  background: theme.palette.info.dark,
+  background: theme.palette.info.main,
+  color: theme.palette.info.contrastText,
   padding: theme.spacing(1, 2),
   borderRadius: theme.borderRadius.medium,
   '& .MuiTypography-root': {
@@ -67,6 +68,7 @@ const BreakoutRoomNotification = React.forwardRef<HTMLDivElement, IJoinNotificat
           // as we want to lead the user to the alertdialog without trapping him there.
           /* eslint-disable jsx-a11y/no-autofocus */
           autoFocus={index === 0}
+          color="secondary"
         >
           {text}
         </Button>

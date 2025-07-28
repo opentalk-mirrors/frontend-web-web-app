@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Grid, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Grid, GridProps, styled, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { EventType, isTimelessEvent } from '@opentalk/rest-api-rtk-query';
-import { useMemo } from 'react';
+import { ElementType, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { TimePerspectiveFilter } from '../../../../utils/eventUtils';
@@ -23,6 +23,12 @@ interface EventsPageHeaderProps {
   entries: MeetingsProp[];
   title: string;
 }
+
+// Workaround for internal MUI issue: https://github.com/mui/material-ui/issues/29875#issuecomment-1087569925
+const ContainerGrid = styled(Grid)<GridProps & { component: ElementType }>(({ theme }) => ({
+  background: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
+}));
 
 const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPageHeaderProps) => {
   const { t } = useTranslation();
@@ -46,7 +52,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
 
   if (isDesktop) {
     return (
-      <Grid
+      <ContainerGrid
         container
         component="header"
         rowSpacing={0}
@@ -66,7 +72,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
             gap: 2,
           }}
         >
-          <Typography variant="h1" component="h1">
+          <Typography variant="h1" component="h1" fontWeight={700} color="inherit">
             {title}
           </Typography>
           <EventPageFilters
@@ -98,13 +104,13 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
             </Typography>
           </Grid>
         )}
-      </Grid>
+      </ContainerGrid>
     );
   }
 
   if (isTablet) {
     return (
-      <Grid
+      <ContainerGrid
         container
         component="header"
         spacing={2}
@@ -158,12 +164,12 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
             </Typography>
           )}
         </Grid>
-      </Grid>
+      </ContainerGrid>
     );
   }
 
   return (
-    <Grid
+    <ContainerGrid
       container
       component="header"
       spacing={0}
@@ -224,7 +230,7 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
           </Typography>
         )}
       </Grid>
-    </Grid>
+    </ContainerGrid>
   );
 };
 

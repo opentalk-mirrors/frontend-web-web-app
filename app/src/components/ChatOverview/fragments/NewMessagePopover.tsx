@@ -34,7 +34,7 @@ const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
   },
 
   '&.Mui-focusVisible': {
-    backgroundColor: theme.palette.secondary.lighter,
+    backgroundColor: theme.palette.secondary.light,
   },
 }));
 

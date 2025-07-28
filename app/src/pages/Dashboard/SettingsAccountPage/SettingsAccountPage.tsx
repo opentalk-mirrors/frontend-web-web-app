@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Divider, Grid, Typography } from '@mui/material';
+import { Button, Divider, Grid, styled, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { useGetMeQuery } from '../../../api/rest';
@@ -9,6 +9,13 @@ import { CommonTextField, VisuallyHiddenTitle } from '../../../commonComponents'
 import { useAppSelector } from '../../../hooks';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import { selectChangePassword } from '../../../store/slices/configSlice';
+
+const ReadonlyCommonTextField = styled(CommonTextField)(({ theme }) => ({
+  '& .MuiInputBase-root': {
+    background: theme.palette.background.main.primary,
+    color: theme.palette.text.primary,
+  },
+}));
 
 const SettingsAccountPage = () => {
   const { t } = useTranslation();
@@ -29,26 +36,32 @@ const SettingsAccountPage = () => {
             </Typography>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <CommonTextField
+            <ReadonlyCommonTextField
               label={t('dashboard-settings-account-email-label')}
               value={data?.email}
               InputProps={{ readOnly: true }}
+              InputLabelProps={{ shrink: true }}
+              placeholder="---"
               fullWidth
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
-            <CommonTextField
+            <ReadonlyCommonTextField
               label={t('dashboard-settings-account-firstname-label')}
               value={data?.firstname}
               InputProps={{ readOnly: true }}
+              InputLabelProps={{ shrink: true }}
+              placeholder="---"
               fullWidth
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
-            <CommonTextField
+            <ReadonlyCommonTextField
               label={t('dashboard-settings-account-familyname-label')}
               value={data?.lastname}
               InputProps={{ readOnly: true }}
+              InputLabelProps={{ shrink: true }}
+              placeholder="---"
               fullWidth
             />
           </Grid>

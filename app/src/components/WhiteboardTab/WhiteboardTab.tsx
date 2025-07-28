@@ -64,9 +64,13 @@ const WhiteboardTab = () => {
         </Stack>
       </Box>
       {showWhiteboard ? (
-        <Button onClick={createPdf}>{t('whiteboard-create-pdf-button')}</Button>
+        <Button onClick={createPdf} color="secondary">
+          {t('whiteboard-create-pdf-button')}
+        </Button>
       ) : (
-        <Button onClick={handleStartWhiteboard}>{t('whiteboard-start-whiteboard-button')}</Button>
+        <Button onClick={handleStartWhiteboard} color="secondary">
+          {t('whiteboard-start-whiteboard-button')}
+        </Button>
       )}
     </Stack>
   );

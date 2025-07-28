@@ -28,7 +28,7 @@ describe('Audio Button', () => {
     });
     renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
 
     const audioButton = screen.getByTestId('toolbarAudioButton');
@@ -43,7 +43,7 @@ describe('Audio Button', () => {
 
     renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
 
     const audioButton = screen.getByTestId('toolbarAudioButton');
@@ -62,7 +62,7 @@ describe('Audio Button', () => {
 
     renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
     expect(screen.getByTestId('toolbarAudioButton')).toBeDisabled();
   });
@@ -74,7 +74,7 @@ describe('Audio Button', () => {
     const { store } = configureStore();
     renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
       store,
-      provider: { snackbar: true },
+      provider: { snackbar: true, mui: true },
     });
     const button = screen.getByRole('button', { name: 'toolbar-button-audio-disabled-tooltip', hidden: true });
     expect(button).toBeInTheDocument();

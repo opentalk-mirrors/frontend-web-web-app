@@ -18,6 +18,8 @@ const DesktopHomeContainer = styled(Box)(({ theme }) => ({
   overflow: 'auto',
   columnGap: theme.spacing(5),
   gridTemplateColumns: '256px 1fr',
+  background: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
 }));
 
 const HeaderContainer = styled(Stack)(({ theme }) => ({

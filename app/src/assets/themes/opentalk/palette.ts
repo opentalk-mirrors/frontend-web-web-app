@@ -1,8 +1,40 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { PaletteMode, PaletteOptions } from '@mui/material';
+import { type PaletteOptions } from '@mui/material';
+import { ThemeBasePalette, BasePalette } from '@opentalk/rest-api-rtk-query';
 
+import { getContrastText, otDarken, otLighten } from './colorUtils';
+
+export const defaultLightModeColors: BasePalette = {
+  primary: '#20434F',
+  secondary: '#D1E545',
+  background: '#F2F4F4',
+  error: '#ff7f74',
+  danger: '#ff6e65',
+  success: '#66d669',
+  warning: '#fe9b34',
+  info: '#66b5ff',
+  textPrimary: '#20434F',
+  textSecondary: '#D1E545',
+  textError: '#a42424',
+};
+
+export const defaultDarkModeColors: BasePalette = {
+  primary: '#DBE0E2',
+  secondary: '#D1E545',
+  background: '#20434F',
+  error: '#db3836',
+  danger: '#a42424',
+  success: '#36943b',
+  warning: '#b56701',
+  info: '#0080dc',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#D1E545',
+  textError: '#ff7f74',
+};
+
+// FIXME: These colors should be replaced by BasePalette items
 export const avatarBg = '#00212E';
 
 export const avatarColorTable: Array<string> = [
@@ -24,200 +56,147 @@ export const avatarColorTable: Array<string> = [
   '#765FFF',
 ];
 
-const lightPalette: PaletteOptions = {
-  primary: {
-    light: '#DEED7B',
-    main: '#D1E545',
-    dark: '#C6D941',
-    contrastText: '#20434F',
-  },
-  secondary: {
-    lightest: '#EAECEB',
-    lighter: '#DBE0E2',
-    light: '#4C6872',
-    main: '#20434F',
-    dark: '#19353F',
-    contrastText: '#FFF',
-  },
-  outline: '#DBE0E2',
-  error: {
-    light: '#EA8F8F',
-    main: '#D32F2F',
-    contrastText: '#FFF',
-    dark: '#BB1F1F',
-  },
-  warning: {
-    main: '#FF9300',
-    contrastText: '#FFF',
-    dark: '#FF9800',
-  },
-  info: {
-    main: '#239EB1',
-    contrastText: '#FFF',
-    dark: '#2196F3',
-  },
-  success: {
-    main: '#3ABD9F',
-    contrastText: '#FFF',
-    dark: '#43A047',
-  },
-  focus: {
-    color: '#005392',
-    outline: '2px solid #005392',
-    outlineOffset: '2px',
-    contrastColor: '#deed7b',
-    contrastOutline: '2px solid #deed7b',
-  },
-  text: {
-    primary: '#20434F',
-    secondary: '#FFF',
-    disabled: '#72757B',
-    placeholder: '#53616c',
-  },
-  background: {
-    default: '#F4F4F4',
-    defaultGradient: 'linear-gradient(81deg, rgba(32,67,79,0.05) 0%, rgba(209,229,69,0.05) 100%)',
-    paper: '#FFF',
-    overlay: 'linear-gradient(81deg, rgba(32,67,79,0.05) 0%, rgba(209,229,69,0.05) 100%)',
-    video: '#01010166',
-    secondaryOverlay: '#20434f66',
-    voteResult: '#385865',
-    light: '#475b5f',
-  },
-  action: {
-    hover: '#20434F14',
-  },
-  avatar: {
-    background: avatarBg,
-    colorTable: avatarColorTable,
-  },
-  notistack: {
-    error: {
-      backgroundColor: '#D32F2F',
-      color: '#FFF',
-    },
-    success: {
-      backgroundColor: '#43A047',
-      color: '#FFF',
-    },
-    warning: {
-      backgroundColor: '#FF9800',
-      color: '#FFF',
-    },
-    info: {
-      backgroundColor: '#2196F3',
-      color: '#FFF',
-    },
+export function getColorSchemes(
+  basePalette: ThemeBasePalette = { light: defaultLightModeColors, dark: defaultDarkModeColors }
+) {
+  const lightComputedPalette: PaletteOptions = {
     primary: {
-      backgroundColor: '#D1E545',
-      color: '#17313A',
-      hovered: '#B0C327',
+      main: basePalette.light.primary,
+      dark: otDarken(basePalette.light.primary, 0.12),
+      light: otLighten(basePalette.light.primary, 0.12),
     },
     secondary: {
-      backgroundColor: '#17313A',
-      color: '#FFF',
-      hovered: '#0E1F25',
+      main: basePalette.light.secondary,
+      dark: otDarken(basePalette.light.secondary, 0.12),
+      light: otLighten(basePalette.light.secondary, 0.12),
     },
-  },
-};
-
-const darkPalette: PaletteOptions = {
-  primary: {
-    light: '#E3EAB0',
-    main: '#D1E545',
-    dark: '#C6D941',
-    contrastText: '#DBE0E2',
-  },
-  secondary: {
-    light: '#E0E5E6',
-    main: '#C6CCCE',
-    dark: '#A8AFB1',
-    lightest: '#1F3E49',
-    lighter: '#1F3E49',
-    contrastText: '#17313A',
-  },
-  outline: '#DBE0E2',
-  error: {
-    main: '#FE5F60',
-    contrastText: '#FFF',
-    dark: '#D32F2F',
-    light: '#FE6363',
-  },
-  warning: {
-    main: '#FF9300',
-    contrastText: '#FFF',
-    dark: '#FF9800',
-  },
-  info: {
-    main: '#239EB1',
-    contrastText: '#FFF',
-    dark: '#2196F3',
-  },
-  success: {
-    main: '#3ABD9F',
-    contrastText: '#FFF',
-    dark: '#43A047',
-  },
-  focus: {
-    color: '#deed7b',
-    outline: '2px solid #deed7b',
-    outlineOffset: '2px',
-    contrastColor: '#005392',
-    contrastOutline: '2px solid #005392',
-  },
-  text: {
-    primary: '#FFF',
-    secondary: '#20434F',
-    disabled: '#72757B',
-    placeholder: '#cccccc',
-  },
-  background: {
-    default: '#000',
-    defaultGradient: 'linear-gradient(109deg, rgba(32,67,79,1) 0%, rgba(30,59,69,1) 100%)',
-    paper: '#17313A',
-    overlay: 'linear-gradient(109deg, rgba(32,67,79,1) 0%, rgba(30,59,69,1) 100%)',
-    video: '#01010166',
-    secondaryOverlay: '#20434f66',
-    voteResult: '#385865',
-    light: '#475b5f',
-  },
-  action: {
-    hover: '#20434F14',
-  },
-  avatar: {
-    background: avatarBg,
-    colorTable: avatarColorTable,
-  },
-  notistack: {
-    error: {
-      backgroundColor: '#D32F2F',
-      color: '#FFF',
+    text: {
+      primary: basePalette.light.textPrimary,
+      secondary: basePalette.light.textSecondary,
+      disabled: otLighten(basePalette.light.textPrimary, 0.4),
+      error: basePalette.light.textError,
     },
     success: {
-      backgroundColor: '#43A047',
-      color: '#FFF',
-    },
-    warning: {
-      backgroundColor: '#FF9800',
-      color: '#FFF',
+      main: basePalette.light.success,
     },
     info: {
-      backgroundColor: '#2196F3',
-      color: '#FFF',
+      main: basePalette.light.info,
     },
+    warning: {
+      main: basePalette.light.warning,
+    },
+    error: {
+      main: basePalette.light.error,
+    },
+    danger: {
+      main: basePalette.light.danger,
+      light: otDarken(basePalette.light.danger, 0.02),
+      dark: otLighten(basePalette.light.danger, 0.04),
+      contrastText: getContrastText(basePalette.light.textPrimary, basePalette.light.danger),
+    },
+    avatar: {
+      background: avatarBg,
+      colorTable: avatarColorTable,
+    },
+    background: {
+      main: {
+        primary: basePalette.light.background,
+        contrastText: getContrastText(basePalette.light.textPrimary, basePalette.light.background),
+      },
+      highlight: {
+        primary: otDarken(basePalette.light.background, 0.06),
+        contrastText: getContrastText(basePalette.light.textPrimary, otDarken(basePalette.light.background, 0.06)),
+      },
+      highlightContrast: {
+        primary: otDarken(basePalette.light.background, 0.16),
+        contrastText: getContrastText(basePalette.light.textPrimary, otLighten(basePalette.light.background, 0.16)),
+      },
+      customPaper: {
+        primary: otLighten(basePalette.light.background, 0.1),
+        contrastText: getContrastText(basePalette.light.textPrimary, otLighten(basePalette.light.background, 0.1)),
+      },
+    },
+    focus: {
+      color: basePalette.light.primary,
+      outline: `2px solid ${basePalette.light.primary}`,
+      outlineOffset: '2px',
+      contrastColor: basePalette.light.primary,
+      contrastOutline: `2px solid ${basePalette.light.primary}`,
+    },
+  };
+
+  const darkComputedPalette: PaletteOptions = {
     primary: {
-      backgroundColor: '#D1E545',
-      color: '#17313A',
-      hovered: '#B0C327',
+      main: basePalette.dark.primary,
+      dark: otDarken(basePalette.dark.primary, 0.12),
+      light: otLighten(basePalette.dark.primary, 0.12),
     },
     secondary: {
-      backgroundColor: '#17313A',
-      color: '#FFF',
-      hovered: '#0E1F25',
+      main: basePalette.dark.secondary,
+      dark: otDarken(basePalette.dark.secondary, 0.12),
+      light: otLighten(basePalette.dark.secondary, 0.12),
     },
-  },
-};
+    text: {
+      primary: basePalette.dark.textPrimary,
+      secondary: basePalette.dark.textSecondary,
+      disabled: otDarken(basePalette.dark.textPrimary, 0.2),
+      error: basePalette.dark.textError,
+    },
+    success: {
+      main: basePalette.dark.success,
+    },
+    info: {
+      main: basePalette.dark.info,
+    },
+    warning: {
+      main: basePalette.dark.warning,
+    },
+    error: {
+      main: basePalette.dark.error,
+    },
+    danger: {
+      main: basePalette.dark.danger,
+      light: otLighten(basePalette.dark.danger, 0.08),
+      dark: otDarken(basePalette.dark.danger, 0.02),
+      contrastText: getContrastText(basePalette.dark.textPrimary, basePalette.dark.danger),
+    },
+    avatar: {
+      background: avatarBg,
+      colorTable: avatarColorTable,
+    },
+    background: {
+      main: {
+        primary: basePalette.dark.background,
+        contrastText: getContrastText(basePalette.dark.textPrimary, basePalette.dark.background),
+      },
+      highlight: {
+        primary: otLighten(basePalette.dark.background, 0.06),
+        contrastText: getContrastText(basePalette.dark.textPrimary, otLighten(basePalette.dark.background, 0.06)),
+      },
+      highlightContrast: {
+        primary: otLighten(basePalette.dark.background, 0.16),
+        contrastText: getContrastText(basePalette.dark.textPrimary, otLighten(basePalette.dark.background, 0.16)),
+      },
+      customPaper: {
+        primary: otDarken(basePalette.dark.background, 0.1),
+        contrastText: getContrastText(basePalette.dark.textPrimary, otDarken(basePalette.dark.background, 0.1)),
+      },
+    },
+    focus: {
+      color: basePalette.dark.secondary,
+      outline: `2px solid ${basePalette.dark.secondary}`,
+      outlineOffset: '2px',
+      contrastColor: basePalette.dark.secondary,
+      contrastOutline: `2px solid ${basePalette.dark.secondary}`,
+    },
+  };
 
-export function getPalette(mode: PaletteMode = 'light') {
-  return mode === 'light' ? lightPalette : darkPalette;
+  return {
+    dark: {
+      palette: darkComputedPalette,
+    },
+    light: {
+      palette: lightComputedPalette,
+    },
+  };
 }

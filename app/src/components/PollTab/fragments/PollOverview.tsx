@@ -44,10 +44,10 @@ const EmptyPollContainer = styled(Stack)({
 
 const ListItemButton = styled(MuiListItemButton)(({ theme }) => ({
   borderRadius: '0.5rem',
-  backgroundColor: theme.palette.secondary.light,
-  color: theme.palette.secondary.contrastText,
+  backgroundColor: theme.palette.primary.light,
+  color: theme.palette.primary.contrastText,
   '&:hover': {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
   },
   '&:not(:last-child) ': {
     marginBottom: theme.spacing(1),

@@ -58,7 +58,7 @@ const RoomOverviewListItem = ({ joinRoom, groupedParticipants, breakoutRoomId }:
       headingComponent="h5"
       summaryEndAdornment={
         currentBreakoutRoomId !== breakoutRoomId && (
-          <MuiButton variant="text" size="small" onClick={handleJoinRoom}>
+          <MuiButton variant="text" size="small" onClick={handleJoinRoom} color="secondary">
             {t('moderator-join-breakout-room')}
           </MuiButton>
         )

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -36,7 +36,7 @@ export const ShortcutTable = () => {
   }, [t]);
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer>
       <Table padding="normal" tabIndex={0}>
         <TableHead>
           <TableRow>

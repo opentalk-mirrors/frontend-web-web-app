@@ -17,6 +17,7 @@ const Container = styled(Box)(({ theme }) => ({
   height: '100%',
   overflow: 'auto',
   gap: theme.spacing(2),
+  color: theme.palette.text.primary,
 }));
 
 const AttentionMessageTypography = styled(Typography)(({ theme }) => ({
@@ -77,7 +78,9 @@ const CreateDirectMeeting = () => {
   return (
     <Container>
       <Stack>
-        <Typography variant="h1">{pageHeading}</Typography>
+        <Typography variant="h1" fontWeight="bold">
+          {pageHeading}
+        </Typography>
         <AttentionMessageTypography>{t('dashboard-direct-meeting-attention')}</AttentionMessageTypography>
       </Stack>
       <InviteToMeeting

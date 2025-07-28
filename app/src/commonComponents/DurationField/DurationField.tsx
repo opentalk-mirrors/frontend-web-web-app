@@ -44,14 +44,15 @@ const NumberInput = styled(CommonTextField)({
 
 const Chip = styled(MuiChip)(({ theme }) => ({
   padding: theme.spacing(0.5, 1),
+  color: theme.palette.text.primary,
   '& .MuiChip-label': {
     padding: theme.spacing(0.5, 1),
   },
 }));
 
-const StyledClockIcon = styled(ClockIcon)({
-  fill: 'currentColor',
-});
+const StyledClockIcon = styled(ClockIcon)(({ theme }) => ({
+  fill: theme.palette.text.secondary,
+}));
 
 const Container = styled(Stack)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -190,7 +191,9 @@ export const DurationField = ({
         startIcon={<StyledClockIcon />}
         aria-label={getButtonAriaLabel()}
       >
-        {renderButtonText()}
+        <Typography component="span" variant="body2" color="text.secondary">
+          {renderButtonText()}
+        </Typography>
       </Button>
       <Popover
         open={open}
@@ -232,7 +235,7 @@ export const DurationField = ({
               justifyContent: 'space-between',
             }}
           >
-            <Button variant="text" size="small" onClick={handlePopoverClose}>
+            <Button variant="text" size="small" onClick={handlePopoverClose} color="primary">
               {t('field-duration-button-close')}
             </Button>
             <Button
@@ -242,6 +245,7 @@ export const DurationField = ({
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
               disabled={errorMessage.length > 0}
+              color="secondary"
             >
               {t('field-duration-button-save')}
             </Button>
