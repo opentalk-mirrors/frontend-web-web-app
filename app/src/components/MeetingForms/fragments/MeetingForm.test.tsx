@@ -116,12 +116,12 @@ describe('MeetingForm', () => {
               waitingRoomDefaultValue: false,
             },
             features: {
-              sharedFolder: true,
               e2eEncryption: false,
             },
           },
         },
       });
+      mockTariff = { ...defaultTariff, modules: { sharedFolder: { features: [] } } };
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
       expect(screen.getAllByRole('checkbox')).toHaveLength(4); // default + shared folder
       expect(screen.getByRole('checkbox', { name: 'dashboard-meeting-shared-folder-switch' })).toBeInTheDocument();
@@ -146,7 +146,6 @@ describe('MeetingForm', () => {
               waitingRoomDefaultValue: false,
             },
             features: {
-              sharedFolder: false,
               e2eEncryption: true,
             },
           },

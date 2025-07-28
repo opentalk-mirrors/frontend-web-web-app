@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCreateRoomInviteMutation, useGetMeQuery, useGetRoomInvitesQuery } from '../../../api/rest';
 import { useAppSelector } from '../../../hooks';
-import { selectBaseUrl, selectConfigFeatures } from '../../../store/slices/configSlice';
+import { selectBaseUrl } from '../../../store/slices/configSlice';
 import { composeInviteUrl } from '../../../utils/apiUtils';
 import MeetingLinkField from './MeetingLinkField';
 import { FieldKeys } from './constants';
@@ -45,7 +45,6 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
   const [createRoomInvite] = useCreateRoomInviteMutation();
 
   const roomPassword = event.room.password?.trim() || undefined;
-  const features = useAppSelector(selectConfigFeatures);
 
   const streamingTargets = event.streamingTargets;
   const streamingTargetURL = useMemo(() => {
@@ -111,7 +110,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
         tooltip={t('dashboard-invite-to-meeting-room-password-tooltip')}
         eventTitle={eventTitle}
       />
-      {features.sharedFolder && roomSharedFolderURL && (
+      {roomSharedFolderURL && (
         <>
           <MeetingLinkField
             fieldKey={FieldKeys.SharedFolderLink}
