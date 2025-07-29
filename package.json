@@ -4,7 +4,7 @@
   "description": "OpenTalk Monorepo",
   "private": true,
   "scripts": {
-    "lint": "eslint --max-warnings 0",
+    "lint": "eslint --max-warnings 0 --no-warn-ignored",
     "lint:pre-commit": "pnpm lint",
     "fmt": "prettier --write \"./*.{js,ts,jsx,tsx}\" \"./**/*.{js,ts,jsx,tsx}\"",
     "fmt:ci": "prettier --check \"./*.{js,ts,jsx,tsx}\" \"./**/*.{js,ts,jsx,tsx}\"",
@@ -64,7 +64,7 @@
     "licensee": "^11.1.1",
     "lint-staged": "^16.1.2",
     "madge": "^8.0.0",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0"
   },

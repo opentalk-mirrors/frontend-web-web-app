@@ -34,7 +34,9 @@ const Meetings = () => {
   return (
     <div>
       <AddMeeting />
-      {events?.data?.map((meeting) => <MeetingArticle key={meeting.title} meeting={meeting as Event} />)}
+      {events?.data?.map((meeting) => (
+        <MeetingArticle key={meeting.title} meeting={meeting as Event} />
+      ))}
       {isLoading && <span>Loading ...</span>}
     </div>
   );
