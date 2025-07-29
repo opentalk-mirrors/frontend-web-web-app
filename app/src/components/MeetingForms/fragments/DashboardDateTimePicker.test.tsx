@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { RecurrencePattern } from '@opentalk/rest-api-rtk-query';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { addMinutes } from 'date-fns';
 import { Formik } from 'formik';
 
@@ -57,10 +58,10 @@ describe('DashboardDateTimePicker', () => {
     expect(screen.getByText('Custom helper text')).toBeInTheDocument();
   });
 
-  it('calls onChange when date is changed', () => {
+  it('calls onChange when date is changed', async () => {
     renderComponent();
-    const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: '2025-12-31T12:00' } });
+    const monthInput = screen.getByRole('spinbutton', { name: 'Month' });
+    await userEvent.type(monthInput, '12');
 
     expect(mockOnChange).toHaveBeenCalled();
   });

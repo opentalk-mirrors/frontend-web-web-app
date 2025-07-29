@@ -6,9 +6,16 @@ import '@mui/material/ButtonBase';
 import '@mui/material/InputBase';
 import { SvgIconProps as OriginalSvgProps } from '@mui/material/SvgIcon';
 import '@mui/material/styles/createTheme';
+import type {} from '@mui/x-date-pickers/PickersTextField';
 
 declare module '@mui/material/InputBase' {
   interface InputBaseProps {
+    checked?: boolean;
+  }
+}
+
+declare module '@mui/x-date-pickers/PickersTextField' {
+  interface PickerTextFieldProps {
     checked?: boolean;
   }
 }

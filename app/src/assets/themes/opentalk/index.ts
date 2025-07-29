@@ -348,6 +348,7 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
           }),
         },
       },
+      // we need to double the style for the inputs https://next.mui.com/x/migration/migration-pickers-v7/ -> Migrate the theme
       MuiOutlinedInput: {
         styleOverrides: {
           root: ({ theme }) => ({
@@ -363,6 +364,33 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
           }),
         },
       },
+      MuiPickersOutlinedInput: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            '& > fieldset > legend': {
+              fontSize: `calc(0.7 * ${theme.typography.pxToRem(18)})`,
+            },
+            '&.Mui-focused': {
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: theme.palette.focus.color,
+              },
+            },
+            '& .MuiIconButton-edgeEnd:hover': {
+              backgroundColor: theme.palette.secondary.light,
+            },
+            '& .MuiIconButton-edgeEnd:active': {
+              backgroundColor: theme.palette.secondary.lighter,
+            },
+            '& .MuiTouchRipple-child': {
+              backgroundColor: theme.palette.secondary.lighter,
+            },
+            '& .MuiSvgIcon-root': {
+              color: theme.palette.secondary.contrastText,
+            },
+          }),
+        },
+      },
+      // we need to double the style for the inputs https://next.mui.com/x/migration/migration-pickers-v7/ -> Migrate the theme
       MuiInputBase: {
         styleOverrides: {
           root: ({ theme }) => ({
@@ -484,6 +512,121 @@ export function createOpenTalkTheme(mode: PaletteMode = 'light') {
             padding: theme.spacing(1, 4, 1, 1.5),
             fontSize: theme.typography.pxToRem(14),
           }),
+        },
+      },
+      MuiPickersInputBase: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            display: 'flex',
+            borderRadius: 2,
+            fontSize: theme.typography.pxToRem(16),
+            fontWeight: 400,
+            lineHeight: 1.25,
+            backgroundColor: theme.palette.secondary.main,
+            color: theme.palette.secondary.contrastText,
+            border: `1px ${theme.palette.secondary.main}`,
+            '& .MuiSvgIcon-root': {
+              color: theme.palette.primary.contrastText,
+            },
+            ':hover': {
+              border: `1px ${theme.palette.primary.main}`,
+            },
+            '&.Mui-focused': {
+              backgroundColor: mode === 'light' ? theme.palette.common.white : theme.palette.text.secondary,
+              color: theme.palette.primary.contrastText,
+              '& .MuiSvgIcon-root': {
+                color: theme.palette.primary.contrastText,
+              },
+            },
+            '&.Mui-disabled': {
+              backgroundColor: 'transparent',
+              color: theme.palette.primary.contrastText,
+              borderColor: theme.palette.secondary.main,
+              '& .MuiSvgIcon-root': {
+                color: theme.palette.primary.contrastText,
+              },
+            },
+            '&.Mui-readOnly': {
+              backgroundColor: 'transparent',
+              color: theme.palette.primary.contrastText,
+              borderColor: theme.palette.secondary.main,
+              '& .MuiSvgIcon-root': {
+                color: theme.palette.primary.contrastText,
+              },
+            },
+            '&.Mui-error': {
+              backgroundColor: mode === 'light' ? theme.palette.common.white : theme.palette.text.secondary,
+              color: theme.palette.primary.contrastText,
+              borderColor: theme.palette.error.main,
+            },
+            [theme.breakpoints.down('md')]: {
+              lineHeight: 'unset',
+            },
+            '& .MuiButtonBase-root.MuiIconButton-root.Mui-focusVisible': {
+              outline: theme.palette.focus.contrastOutline,
+              outlineOffset: '-2px',
+            },
+            variants: [
+              {
+                props: {
+                  color: 'primary',
+                },
+                style: {
+                  '& .MuiSvgIcon-root': {
+                    color: theme.palette.secondary.contrastText,
+                  },
+                },
+              },
+              {
+                props: {
+                  checked: true,
+                },
+                style: {
+                  '&:not(&.Mui-focused):not(:hover)': {
+                    backgroundColor: '#C1E9D2',
+                    color: mode === 'light' ? theme.palette.primary.contrastText : theme.palette.secondary.contrastText,
+                    border: '1px solid #24A037',
+                    '&::after': {
+                      content: `url(${doneSvg})`,
+                      position: 'absolute',
+                      backgroundColor: '#C1E9D2',
+                      paddingLeft: theme.spacing(1),
+                      right: theme.spacing(2),
+                      width: theme.typography.pxToRem(24),
+                      height: theme.typography.pxToRem(16),
+                      [theme.breakpoints.down('md')]: {
+                        width: theme.typography.pxToRem(20),
+                        height: theme.typography.pxToRem(12),
+                        transform: 'translateY(-1px)',
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          }),
+          input: ({ theme }) => ({
+            padding: theme.spacing(1.5, 2),
+            height: 'inherit',
+            '&.Mui-disabled': {
+              color: theme.palette.primary.contrastText,
+              WebkitTextFillColor: theme.palette.primary.contrastText,
+            },
+            '&::placeholder': {
+              color: theme.palette.text.placeholder,
+            },
+          }),
+          inputSizeSmall: ({ theme }) => ({
+            padding: theme.spacing(1, 4, 1, 1.5),
+            fontSize: theme.typography.pxToRem(14),
+          }),
+        },
+      },
+      MuiPickersSectionList: {
+        styleOverrides: {
+          sectionContent: {
+            fontFamily: 'Opentalk !important',
+          },
         },
       },
       MuiInputAdornment: {

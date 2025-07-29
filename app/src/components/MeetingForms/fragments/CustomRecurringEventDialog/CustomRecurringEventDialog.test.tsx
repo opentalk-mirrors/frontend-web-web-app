@@ -84,13 +84,20 @@ describe('Custom Recurrence Dialog', () => {
   it('enables date selection after selecting option "On"', () => {
     render(<CustomRecurringEventDialog {...mockDialogProps} />);
 
-    const datePickerInput = screen.getByRole('textbox');
-    expect(datePickerInput).toBeDisabled();
+    const dayInput = screen.getByRole('spinbutton', { name: 'Day' });
+    const monthInput = screen.getByRole('spinbutton', { name: 'Month' });
+    const yearInput = screen.getByRole('spinbutton', { name: 'Year' });
+
+    expect(dayInput).toHaveAttribute('aria-disabled', 'true');
+    expect(monthInput).toHaveAttribute('aria-disabled', 'true');
+    expect(yearInput).toHaveAttribute('aria-disabled', 'true');
 
     const optionOn = screen.getByRole('radio', { name: 'dashboard-recurrence-dialog-end-option-on' });
 
     fireEvent.click(optionOn);
 
-    expect(datePickerInput).not.toBeDisabled();
+    expect(dayInput).toHaveAttribute('aria-disabled', 'false');
+    expect(monthInput).toHaveAttribute('aria-disabled', 'false');
+    expect(yearInput).toHaveAttribute('aria-disabled', 'false');
   });
 });

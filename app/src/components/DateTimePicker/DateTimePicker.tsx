@@ -10,11 +10,9 @@ import {
   OutlinedInputProps,
   InputProps,
 } from '@mui/material';
-import { useTheme } from '@mui/material';
 import { DateTimePicker as MuiDateTimePicker, PickersActionBarAction, PickersLocaleText } from '@mui/x-date-pickers';
 import { isSameDay } from 'date-fns';
 import { isEmpty } from 'lodash';
-import { useState } from 'react';
 
 import { ErrorFormMessage } from '../../commonComponents';
 import PickerLocalizationProvider from '../../provider/PickerLocalizationProvider';
@@ -47,7 +45,6 @@ export type DateTimePickerProps = {
 
 const StartAdornmentTypography = styled(Typography)<{ component?: string; htmlFor?: string }>(({ theme }) => ({
   paddingRight: theme.spacing(2),
-  flex: '1',
   display: 'block',
   whiteSpace: 'nowrap',
 
@@ -76,13 +73,11 @@ const DateTimePicker = ({
   InputProps,
 }: DateTimePickerProps) => {
   const { placeholder, id, startAdornment, fullWidth, required } = textField || {};
-  const [focused, setFocused] = useState(false);
-  const [opened, setOpened] = useState(false);
   const isScreenHeightTooSmall = useMediaQuery((theme: Theme) => {
     const query = theme.breakpoints.up('sm') + ' and (max-height:900px)';
     return query;
   });
-  const theme = useTheme();
+
   const inputId = generateUniqueId();
 
   //If explicitly stated as null we do not give a min date.
@@ -118,16 +113,9 @@ const DateTimePicker = ({
 
   const actions: PickersActionBarAction[] = clearable ? ['clear', 'accept', 'cancel'] : ['accept', 'cancel'];
 
-  const actionButtonLabels: Pick<PickersLocaleText<Date>, 'okButtonLabel' | 'clearButtonLabel'> = {
+  const actionButtonLabels: Pick<PickersLocaleText, 'okButtonLabel' | 'clearButtonLabel'> = {
     okButtonLabel,
     clearButtonLabel,
-  };
-
-  const onFocus = () => {
-    setFocused(true);
-  };
-  const onBlur = () => {
-    setFocused(false);
   };
 
   // as adornment for input fields of the picker we want to have just text (no icons or such)
@@ -155,8 +143,6 @@ const DateTimePicker = ({
         <StyledDateTimePicker
           value={actualValue}
           onChange={onChange}
-          onOpen={() => setOpened(true)}
-          onClose={() => setOpened(false)}
           ampm={ampm}
           minDate={minDate}
           minTime={minTime}
@@ -167,8 +153,6 @@ const DateTimePicker = ({
               error,
               id,
               fullWidth,
-              onFocus,
-              onBlur,
               InputProps: {
                 ...InputProps,
                 startAdornment: getStartAdornment(),
@@ -180,16 +164,6 @@ const DateTimePicker = ({
             },
             actionBar: { actions },
             popper: { placement: 'bottom-start', modifiers: [getOffsetModifier()] },
-            openPickerButton: {
-              sx: {
-                ':hover': {
-                  backgroundColor: focused || opened ? theme.palette.secondary.lighter : theme.palette.secondary.light,
-                },
-                '& .MuiTouchRipple-child': {
-                  backgroundColor: theme.palette.secondary.lighter,
-                },
-              },
-            },
           }}
         />
       </PickerLocalizationProvider>
