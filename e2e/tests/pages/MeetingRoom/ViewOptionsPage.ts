@@ -18,10 +18,9 @@ export class ViewOptionsPage {
   private readonly gridViewContainer: Locator;
   public readonly gridViewParticipantWindow: Locator;
   private readonly speakerViewContainer: Locator;
+  private viewAndSortingPopupMenuItems: Locator;
 
   public readonly selectors = {
-    viewPopoverMenu: '#view-popover-menu',
-    viewPopoverMenuListItem: '#view-popover-menu > li',
     gridViewContainer: 'grid-container',
     speakerViewContainer: 'SpeakerView-Container',
     speakerViewParticipantsThumbsHolder: 'ThumbsHolder',
@@ -29,6 +28,7 @@ export class ViewOptionsPage {
     participantWindow: 'ParticipantWindow',
     participantName: 'nameTile',
     fullScreen: 'fullscreen',
+    viewOptionsMenuCheckIcon: 'CheckIcon',
   };
 
   public readonly videoPreviewName: Locator;
@@ -37,15 +37,19 @@ export class ViewOptionsPage {
     this.page = page;
 
     this.viewOptionsButton = this.page.getByRole('button', { name: 'Select view' });
-    this.viewAndSortingPopupMenu = this.page.locator(this.selectors.viewPopoverMenu);
-    // get by role doesn't work for the menu items because the label is nested in a div and not part of the li element
-    this.gridViewOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(0);
-    this.speakerViewOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(1);
-    this.fullScreenViewOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(2);
+    this.viewAndSortingPopupMenu = this.page.getByRole('menu', { name: 'Select view' });
+    this.viewAndSortingPopupMenuItems = this.viewAndSortingPopupMenu.getByRole('menuitemradio');
+    this.gridViewOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', { name: 'Grid-View' });
+    this.speakerViewOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', { name: 'Speaker-View' });
+    this.fullScreenViewOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', { name: 'Fullscreen' });
     this.fullScreenView = this.page.getByTestId(this.selectors.fullScreen);
     this.closeFullScreenButton = this.page.getByTestId(this.selectors.fullScreen).getByLabel('close fullscreen');
-    this.activatedCameraFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4);
-    this.moderatorsFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(5);
+    this.activatedCameraFirstSortingOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', {
+      name: 'Activated camera first',
+    });
+    this.moderatorsFirstSortingOption = this.viewAndSortingPopupMenu.getByRole('menuitemradio', {
+      name: 'Moderator(s) first',
+    });
     this.gridViewContainer = this.page.getByTestId(this.selectors.gridViewContainer);
     this.gridViewParticipantWindow = this.page.getByTestId(this.selectors.participantWindow);
     this.speakerViewContainer = this.page.getByTestId(this.selectors.speakerViewContainer);
@@ -55,20 +59,23 @@ export class ViewOptionsPage {
       .getByTestId(this.selectors.participantName);
   }
 
-  public allocateViewOptionLocatorsBasedOnSetup() {
-    // correct differences between test server and local setup
-    // constructor allocates locators to the UI version on test server, this function overwrites settings for local setup
-    if (process.env.INSTANCE_URL.startsWith('http://')) {
-      this.activatedCameraFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(3);
-      this.moderatorsFirstSortingOption = this.page.locator(this.selectors.viewPopoverMenuListItem).nth(4);
-    }
-  }
-
   public async displayViewOptionsMenu(): Promise<void> {
     await this.viewOptionsButton.waitFor();
     await this.viewOptionsButton.click();
     await this.viewAndSortingPopupMenu.waitFor();
     await this.viewAndSortingPopupMenu.isVisible();
+  }
+
+  public async getOptionsListText(): Promise<string[]> {
+    const optionsText: string[] = [];
+    for (const item of await this.getOptionsList()) {
+      optionsText.push(await item.innerText());
+    }
+    return optionsText;
+  }
+
+  public async getOptionsList(): Promise<Array<Locator>> {
+    return await this.viewAndSortingPopupMenuItems.all();
   }
 
   public async selectGridViewOption(): Promise<void> {
@@ -101,7 +108,7 @@ export class ViewOptionsPage {
 
   public async hasTickIcon(element: Locator): Promise<boolean> {
     // if menu item has a tick, count should be 1, else 0
-    return (await element.locator('div').first().locator('svg').count()) === 1;
+    return (await element.getByTestId(this.selectors.viewOptionsMenuCheckIcon).count()) === 1;
   }
 
   public async isFullScreen(): Promise<boolean> {
