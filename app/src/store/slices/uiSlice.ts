@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { PayloadAction, createSlice, createSelector } from '@reduxjs/toolkit';
+import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Event } from '@sentry/react';
 
 import type { RootState } from '../';
@@ -67,6 +67,7 @@ export type UIState = {
   gridViewOrder: GridViewOrder;
   currentMenuTab: MenuTab;
   presenterVideoPosition: PresenterVideoPosition;
+  visibleParticipantIds: ParticipantId[];
 };
 
 const initialState: UIState = {
@@ -106,6 +107,7 @@ const initialState: UIState = {
   gridViewOrder: GridViewOrder.FirstJoined,
   currentMenuTab: MenuTab.Chat,
   presenterVideoPosition: 'bottomRight',
+  visibleParticipantIds: [],
 };
 
 export const uiSlice = createSlice({
@@ -210,6 +212,9 @@ export const uiSlice = createSlice({
     setPresenterVideoPosition: (state, { payload }: PayloadAction<PresenterVideoPosition>) => {
       state.presenterVideoPosition = payload;
     },
+    setVisibleParticipantIds: (state, { payload }: PayloadAction<ParticipantId[]>) => {
+      state.visibleParticipantIds = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(leave, (state, { payload: { id } }: PayloadAction<{ id: ParticipantId }>) => {
@@ -297,6 +302,7 @@ export const {
   updatedGridViewOrder,
   setCurrentMenuTab,
   setPresenterVideoPosition,
+  setVisibleParticipantIds,
 } = uiSlice.actions;
 
 export const actions = uiSlice.actions;
@@ -345,5 +351,6 @@ export const selectIsDrawerOpen = (state: RootState) => state.ui.isDrawerOpen;
 export const selectGridViewOrder = (state: RootState) => state.ui.gridViewOrder;
 export const selectCurrentMenuTab = (state: RootState) => state.ui.currentMenuTab;
 export const selectPresenterVideoPosition = (state: RootState) => state.ui.presenterVideoPosition;
+export const selectVisibleParticipantIds = (state: RootState) => state.ui.visibleParticipantIds;
 
 export default uiSlice.reducer;

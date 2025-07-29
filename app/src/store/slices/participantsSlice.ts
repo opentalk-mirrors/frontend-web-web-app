@@ -11,14 +11,14 @@ import { notifications } from '../../commonComponents';
 import {
   BackendParticipant,
   ChatMessage,
+  LegalVote,
   MeetingNotesAccess,
   Participant,
   ParticipantId,
   ParticipantInOtherRoom,
+  ParticipationKind,
   Role,
   WaitingState,
-  LegalVote,
-  ParticipationKind,
 } from '../../types';
 import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';

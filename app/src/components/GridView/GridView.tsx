@@ -4,12 +4,12 @@
 import { ParticipantContext, useRemoteParticipants } from '@livekit/components-react';
 import { CircularProgress, Grid, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { MAX_GRID_TILES_DESKTOP } from '../../constants';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectParticipantsTotal, selectSlicedParticipants } from '../../store/slices/participantsSlice';
-import { selectGridViewOrder, selectPaginationPageState } from '../../store/slices/uiSlice';
+import { selectGridViewOrder, selectPaginationPageState, setVisibleParticipantIds } from '../../store/slices/uiSlice';
 import GridCell from './fragments/GridCell';
 
 const GridContainer = styled('div', {
@@ -27,13 +27,19 @@ const GridContainer = styled('div', {
 }));
 
 const GridView = () => {
+  const dispatch = useAppDispatch();
+  const remoteParticipants = useRemoteParticipants();
   const selectedPage = useAppSelector(selectPaginationPageState);
   const gridViewOrder = useAppSelector(selectGridViewOrder);
+  const totalParticipants = useAppSelector(selectParticipantsTotal);
   const slicedParticipants = useAppSelector((state) =>
     selectSlicedParticipants(state, gridViewOrder, selectedPage, MAX_GRID_TILES_DESKTOP)
   );
-  const remoteParticipants = useRemoteParticipants();
-  const totalParticipants = useAppSelector(selectParticipantsTotal);
+  const slicedParticipantIds = slicedParticipants.map((participant) => participant.id);
+
+  useEffect(() => {
+    dispatch(setVisibleParticipantIds(slicedParticipantIds));
+  }, [slicedParticipantIds, dispatch]);
 
   // Create a map for quick lookups of remoteParticipants by identity
   const remoteParticipantsMap = useMemo(() => {

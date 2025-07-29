@@ -5,7 +5,7 @@
 // We've decided to use a separate slice and declare an exception in the store for now.
 import { ParticipantPermission } from '@livekit/protocol';
 import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
-import { isAnyOf, ListenerEffectAPI } from '@reduxjs/toolkit';
+import { ListenerEffectAPI, isAnyOf } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import {
   ConnectionState as LivekitConnectionState,
@@ -29,11 +29,16 @@ import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { VideoSetting } from '../../types';
 import type { ParticipantId } from '../../types';
 import { hangUp, joinSuccess, startMedia } from '../commonActions';
-import type { RootState, AppDispatch } from '../index';
+import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
-import { setLivekitUnavailable, setLivekitAvailable, getLivekitRoom } from '../livekitRoom';
-import { setVideoDeviceId, setAudioDeviceId } from './mediaSlice';
-import { pinnedRemoteScreenshare, pinnedParticipantIdSet, updatedCinemaLayout } from './uiSlice';
+import { getLivekitRoom, setLivekitAvailable, setLivekitUnavailable } from '../livekitRoom';
+import { setAudioDeviceId, setVideoDeviceId } from './mediaSlice';
+import {
+  pinnedParticipantIdSet,
+  pinnedRemoteScreenshare,
+  selectVisibleParticipantIds,
+  updatedCinemaLayout,
+} from './uiSlice';
 
 type PopoutStreamAccess = {
   mediaDescriptor: MediaDescriptor;
@@ -177,7 +182,8 @@ const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
 
 const handleRoomConnected = async (room: Room, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
   listenerApi.dispatch(setLivekitUnavailable(false));
-  const { videoEnabled, audioEnabled, videoDeviceId, audioDeviceId } = listenerApi.getState().media;
+  const state = listenerApi.getState();
+  const { videoEnabled, audioEnabled, videoDeviceId, audioDeviceId } = state.media;
   if (room?.state === LivekitConnectionState.Connected) {
     if (videoEnabled !== room.localParticipant.isCameraEnabled) {
       listenerApi.dispatch(startMedia({ kind: 'videoinput', enabled: videoEnabled, deviceId: videoDeviceId }));
@@ -185,6 +191,17 @@ const handleRoomConnected = async (room: Room, listenerApi: ListenerEffectAPI<Ro
     if (audioEnabled !== room.localParticipant.isMicrophoneEnabled) {
       listenerApi.dispatch(startMedia({ kind: 'audioinput', enabled: audioEnabled, deviceId: audioDeviceId }));
     }
+
+    // Unsubscribe hidden participant video tracks after initial render
+    const remoteParticipants = Array.from(room.remoteParticipants.values());
+    const visibleParticipantIds = selectVisibleParticipantIds(state);
+    remoteParticipants.forEach((participant) => {
+      if (!visibleParticipantIds.includes(participant.identity as ParticipantId)) {
+        participant.videoTrackPublications?.forEach((publication) => {
+          publication.setSubscribed(false);
+        });
+      }
+    });
   }
 };
 
@@ -208,6 +225,13 @@ const handleTrackPublished = (
     listenerApi.dispatch(pinnedRemoteScreenshare(participant.identity as ParticipantId));
     listenerApi.dispatch(updatedCinemaLayout({ layout: LayoutOptions.Speaker, cacheLastLayout: true }));
   }
+
+  // Unsubscribe hidden participant video tracks after initial publish
+  const state = listenerApi.getState();
+  const visibleParticipantIds = selectVisibleParticipantIds(state);
+  if (!visibleParticipantIds.includes(participant.identity as ParticipantId) && pub.kind === Track.Kind.Video) {
+    pub.setSubscribed(false);
+  }
 };
 
 const handleTrackUnpublished = (
@@ -225,9 +249,9 @@ const handleTrackUnpublished = (
   }
 };
 
-const handleTrackSubscribed = (_: RemoteTrack, publication: RemoteTrackPublication, participant: RemoteParticipant) => {
-  if (publication.isEncrypted) {
-    log.debug(`subscribed encrypted ${publication.kind} stream from user with ID:`, participant.identity);
+const handleTrackSubscribed = (_: RemoteTrack, pub: RemoteTrackPublication, participant: RemoteParticipant) => {
+  if (pub.isEncrypted) {
+    log.debug(`subscribed encrypted ${pub.kind} stream from user with ID:`, participant.identity);
   }
 };
 
@@ -290,12 +314,14 @@ const deviceChangeOnLivekitTriggerListener = (startAppListening: StartAppListeni
     },
   });
 
+let listenersRegistered = false;
 const startToggleEmitterListener = (startAppListening: StartAppListening) =>
   startAppListening({
     matcher: isAnyOf(setLivekitAvailable, hangUp.fulfilled),
     effect: (action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
       const room = getLivekitRoom();
-      if (setLivekitAvailable.match(action)) {
+      if (setLivekitAvailable.match(action) && !listenersRegistered) {
+        listenersRegistered = true;
         room
           .on(RoomEvent.Connected, () => handleRoomConnected(room, listenerApi))
           .on(RoomEvent.Disconnected, () => handleRoomDisconnected(listenerApi))
@@ -307,6 +333,7 @@ const startToggleEmitterListener = (startAppListening: StartAppListening) =>
           )
           .on(RoomEvent.ConnectionStateChanged, (state) => handleConnectionStateChanged(state, listenerApi));
       } else if (hangUp.fulfilled.match(action)) {
+        listenersRegistered = false;
         room
           .off(RoomEvent.Connected, () => handleRoomConnected(room, listenerApi))
           .off(RoomEvent.Disconnected, () => handleRoomDisconnected(listenerApi))
