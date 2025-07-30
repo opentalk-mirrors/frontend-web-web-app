@@ -16,6 +16,7 @@ global-upgrade = Upgrade
 error-fetch-4xx = error loading resource
 error-general = Ups, something went wrong. Please try again.
 error-invite-link = This invite-link is not active anymore.
+error-access-forbidden = You cannot join the meeting. Either the meeting link is invalid or you were not invited to this meeting. Please check the meeting link or contact the moderator.
 signaling-subscription-failed = The connection to a participant failed.
 media-subscription-failed = No connection to the participant
 

@@ -16,6 +16,7 @@ global-upgrade = Upgrade
 error-fetch-4xx = Ladefehler
 error-general = Ups, hier ist leider etwas schiefgelaufen. Bitte versuche es erneut.
 error-invite-link = Dieser Einladungs-Link ist nicht mehr aktiv.
+error-access-forbidden = Sie können dem Meeting nicht beitreten. Entweder ist der Meeting-Link ungültig oder Sie sind nicht berechtigt an diesem Meeting teilzunehmen. Bitte überprüfen Sie den Meeting-Link oder kontaktieren Sie den Moderator.
 signaling-subscription-failed = Die Verbindung zu einen Teilnehmer ist leider fehlgeschlagen.
 media-subscription-failed = Keine Verbindung zum Teilnehmer
 

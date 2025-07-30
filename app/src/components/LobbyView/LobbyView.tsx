@@ -124,7 +124,11 @@ const LobbyView = () => {
     breakoutRoomId?: BreakoutRoomId;
   };
 
-  const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
+  const {
+    data: roomData,
+    error: roomDataError,
+    isLoading: isRoomDataLoading,
+  } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
 
   if (roomData?.e2eEncryption && !isE2EESupported()) {
     notifications.error(t('unsupported-browser-e2e-encryption-dialog-message'));
@@ -249,8 +253,13 @@ const LobbyView = () => {
     setShowPassword((prev) => !prev);
   };
 
-  if (inviteState.loading) {
+  if (inviteState.loading || isRoomDataLoading) {
     return <SuspenseLoading />;
+  }
+
+  const isRoomAccessForbidden = roomDataError && 'status' in roomDataError && roomDataError.status === 403;
+  if (isRoomAccessForbidden) {
+    return <OpentalkError title={t('error-access-forbidden')} />;
   }
 
   if (inviteCodeError) {
