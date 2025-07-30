@@ -51,7 +51,7 @@ stages:
   - pnpm config set store-dir .pnpm-store
 
 .e2e-default-setup: &e2e-default-setup
-  image: mcr.microsoft.com/playwright:v1.53.0-jammy
+  image: mcr.microsoft.com/playwright:v1.54.1-jammy
   stage: e2e
   before_script:
     - *setup-pnpm
