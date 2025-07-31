@@ -49,6 +49,7 @@ module.exports = {
         '\\.svg\\?react$': '<rootDir>/mocks/svgrMock.js',
         '@mui/styled-engine': '<rootDir>/node_modules/@mui/styled-engine',
         '^(camelcase-keys)$': '<rootDir>/mocks/camelcase-keys.js',
+        '^(snakecase-keys)$': '<rootDir>/mocks/snakecase-keys.js',
         uuid: require.resolve('uuid'),
       },
       modulePaths: [],
@@ -80,6 +81,7 @@ module.exports = {
       testMatch: ['<rootDir>/packages/rtk-rest-api/**/?(*.)+(spec|test).[jt]s?(x)'],
       moduleNameMapper: {
         '^(camelcase-keys)$': '<rootDir>/mocks/camelcase-keys.js',
+        '^(snakecase-keys)$': '<rootDir>/mocks/snakecase-keys.js',
         uuid: require.resolve('uuid'),
       },
     },
