@@ -9,12 +9,12 @@ import { ParticipantId } from '../../../types';
 import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
 import ThumbsRow from './ThumbsRow';
 
-jest.mock('./Thumbnail', () => ({
+vi.mock('./Thumbnail', () => ({
   __esModule: true,
   Thumbnail: () => <div data-testid="thumbnail"></div>,
 }));
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   ParticipantContext: {
     Provider: ({ children }: PropsWithChildren) => {
       return <div data-testid="participantContext"> {children}</div>;
@@ -24,7 +24,7 @@ jest.mock('@livekit/components-react', () => ({
     return <div data-testid="participantContext">{children}</div>;
   },
   useRemoteParticipants: () => [mockedParticipant(0)],
-  useRoomContext: () => jest.fn(),
+  useRoomContext: () => vi.fn(),
 }));
 
 describe('ThumbsRow', () => {

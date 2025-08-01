@@ -6,7 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MicOnIcon } from '../../../assets/icons';
 import ToolbarButton from './ToolbarButton';
 
-const handleClick = jest.fn();
+const handleClick = vi.fn();
 
 describe('<ToolbarButton />', () => {
   const toolbarButtonProps = {
@@ -16,10 +16,14 @@ describe('<ToolbarButton />', () => {
     tooltipTitle: 'toolbarMainButton',
     disabled: false,
     active: false,
-    onClick: jest.fn(),
-    openMenu: jest.fn(),
+    onClick: vi.fn(),
+    openMenu: vi.fn(),
     isLobby: false,
   };
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
 
   it('renders ToolbarButton with context and children', () => {
     render(

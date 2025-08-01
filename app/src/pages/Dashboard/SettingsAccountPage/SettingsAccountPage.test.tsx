@@ -6,8 +6,8 @@ import { screen } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import SettingsAccountPage from './SettingsAccountPage';
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeQuery: () => ({
     email: 'user@email.org',
     firstname: 'firstname',

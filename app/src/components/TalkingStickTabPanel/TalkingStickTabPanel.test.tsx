@@ -7,7 +7,7 @@ import { PropsWithChildren } from 'react';
 import { renderWithProviders, mockStore } from '../../utils/testUtils';
 import TalkingStickTabPanel from './TalkingStickTabPanel';
 
-jest.mock('../TalkingStickParticipantList/fragments/ParticipantListItem/ParticipantListItem', () => ({
+vi.mock('../TalkingStickParticipantList/fragments/ParticipantListItem/ParticipantListItem', () => ({
   __esModule: true,
   default: ({ children }: PropsWithChildren) => {
     return <div>{children}</div>;
@@ -77,6 +77,10 @@ describe('<TalkingStickTabPanel />', () => {
   });
 
   describe('automod active', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
     const { store, dispatchSpy } = mockStore(NUMBER_OF_PARTICIPANTS, {
       video: true,
       screen: true,

@@ -8,8 +8,8 @@ import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import WaitingView from './WaitingView';
 
-jest.mock('@livekit/components-react', () => ({
-  useRoomContext: () => jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useRoomContext: () => vi.fn(),
   useLocalParticipant: () => ({ localParticipant: mockedParticipant(0) }),
   useMediaDeviceSelect: () => [
     { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },
@@ -17,8 +17,8 @@ jest.mock('@livekit/components-react', () => ({
   ],
 }));
 
-jest.mock('../SelfTest', () => ({
-  ...jest.requireActual('../SelfTest'),
+vi.mock('../SelfTest', () => ({
+  ...vi.importActual('../SelfTest'),
   __esModule: true,
   default: (props: PropsWithChildren) => <div data-testid="selfTest">{props.children}</div>,
 }));

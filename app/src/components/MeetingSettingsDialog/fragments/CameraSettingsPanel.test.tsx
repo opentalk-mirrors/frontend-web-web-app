@@ -2,32 +2,35 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import { mockedVideoInputs } from '../../../utils/testUtils';
 import CameraSettingsPanel from './CameraSettingsPanel';
 
-jest.mock('./DeviceManager', () => ({
-  ...jest.requireActual('./DeviceManager'),
+vi.mock('./DeviceManager', () => ({
+  ...vi.importActual('./DeviceManager'),
   __esModule: true,
   default: () => <div data-testid="MockDeviceManager"></div>,
 }));
 
-jest.mock('../../../hooks/useMediaDevice', () => jest.fn());
+vi.mock('../../../hooks/useMediaDevice', () => ({
+  default: vi.fn(),
+}));
 
-const mockUseMediaDevice = useMediaDevice as jest.Mock;
+const mockUseMediaDevice = useMediaDevice as Mock;
 
-describe('AudioSettingsPanel', () => {
+describe('CameraSettingsPanel', () => {
   beforeEach(() => {
     mockUseMediaDevice.mockImplementation(() => ({
-      loadLocalDevices: jest.fn(() => Promise.resolve(undefined)),
+      loadLocalDevices: vi.fn(() => Promise.resolve(undefined)),
       localDevices: mockedVideoInputs,
       permissionDenied: false,
     }));
   });
-  // This test should be enhanced and fixed in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2678
-  it.skip('renders title and device manager', async () => {
+
+  it('renders title and device manager', async () => {
     const { store } = configureStore();
     renderWithProviders(<CameraSettingsPanel />, { store });
     expect(screen.getByRole('heading', { name: 'camera-settings-title' })).toBeInTheDocument();

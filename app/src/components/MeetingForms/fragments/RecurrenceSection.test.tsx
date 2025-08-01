@@ -14,7 +14,7 @@ import RecurrenceSection from './RecurrenceSection';
 const mockCustomRecurrency: FrequencyOption = { label: 'New custom recurrency', value: CommonFrequencies.WEEKLY };
 let formikInstance: FormikProps<MeetingFormValues> | null = null;
 
-jest.mock('./CustomRecurringEventDialog/CustomRecurringEventDialog', () => ({
+vi.mock('./CustomRecurringEventDialog/CustomRecurringEventDialog', () => ({
   CustomRecurringEventDialog: ({ open, selectCustomFrequencyOption }: CustomRecurringEventDialogProps) => {
     return (
       <div data-testid="custom-recurring-event-dialog">
@@ -25,11 +25,11 @@ jest.mock('./CustomRecurringEventDialog/CustomRecurringEventDialog', () => ({
 }));
 
 describe('RecurrenceSection', () => {
-  const onRecurrencePatternChange = jest.fn();
+  const onRecurrencePatternChange = vi.fn();
 
   const renderComponent = (existingEvent: Event) =>
     render(
-      <Formik initialValues={mockedMeetingFormValues} onSubmit={jest.fn()}>
+      <Formik initialValues={mockedMeetingFormValues} onSubmit={vi.fn()}>
         {(formik) => {
           formikInstance = formik;
           return (

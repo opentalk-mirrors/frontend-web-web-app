@@ -8,7 +8,7 @@ import { notifications } from '../../../commonComponents';
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import BreakoutRoomNotification, { Action } from './BreakoutRoomNotification';
 
-const actionFn = jest.fn();
+const actionFn = vi.fn();
 
 const SNACKBAR_KEY = 'test';
 const ACTIONS: Array<Action> = [
@@ -72,7 +72,7 @@ describe('BreakoutRoomNotification', () => {
       />,
       { store, provider: { snackbar: true, mui: true } }
     );
-    const spyClose = jest.spyOn(notifications, 'close');
+    const spyClose = vi.spyOn(notifications, 'close');
 
     const actionButton = await screen.findByRole('button', { name: ACTIONS[0].text });
 

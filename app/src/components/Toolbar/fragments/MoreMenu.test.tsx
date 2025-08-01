@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 // Switch off the rule, as it doesn't recognize assertion in the utility helper function
 // Maybe it's a bug or maybe it's not a good practice to use this kind of helper function
-/* eslint-disable jest/expect-expect */
+/* eslint-disable vitest/expect-expect */
 import { screen, fireEvent } from '@testing-library/react';
 
 import { notifications } from '../../../commonComponents';
@@ -11,15 +11,6 @@ import { ForceMuteType, Role } from '../../../types';
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import MenuButton from './MoreButton';
 import MoreMenu from './MoreMenu';
-
-jest.mock('../../../commonComponents', () => ({
-  ...jest.requireActual('../../../commonComponents'),
-  notifications: {
-    ...jest.requireActual('../../../commonComponents').notifications,
-    success: jest.fn(),
-    error: jest.fn(),
-  },
-}));
 
 describe('<MoreButton />', () => {
   const { store } = configureStore();
@@ -50,7 +41,7 @@ describe('<MoreButton />', () => {
   });
   describe('if the user is a moderator and room owner', () => {
     const setup = () =>
-      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
         provider: { snackbar: true },
       });
@@ -74,7 +65,7 @@ describe('<MoreButton />', () => {
 
         it('shows the enable training participation logging button, if the logging is disabled, and does not show the disable button', () => {
           const { store: storeWithModules } = configureStore({ initialState: { ...moderatorState, config } });
-          renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+          renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
             store: storeWithModules,
             provider: { mui: true, snackbar: true },
           });
@@ -92,7 +83,7 @@ describe('<MoreButton />', () => {
               },
             },
           });
-          renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+          renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
             store: storeWithModules,
             provider: { mui: true, snackbar: true },
           });
@@ -117,7 +108,7 @@ describe('<MoreButton />', () => {
           },
         },
       });
-      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
         provider: { snackbar: true },
       });
@@ -141,7 +132,7 @@ describe('<MoreButton />', () => {
           moderation: { forceMute: { type: ForceMuteType.Enabled, unrestrictedParticipants: [] } },
         },
       });
-      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
         provider: { snackbar: true },
       });
@@ -156,7 +147,7 @@ describe('<MoreButton />', () => {
           room: { isOwnedByCurrentUser: true, waitingRoomEnabled: true },
         },
       });
-      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
         provider: { snackbar: true },
       });
@@ -168,7 +159,7 @@ describe('<MoreButton />', () => {
       const { store } = configureStore({
         initialState: { ...moderatorState, config: { tariff: { modules: { meetingReport: { features: [] } } } } },
       });
-      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
         provider: { snackbar: true },
       });
@@ -182,25 +173,27 @@ describe('<MoreButton />', () => {
     });
 
     it('shows success notification when show test info option is clicked', () => {
-      renderWithProviders(<MoreMenu open anchorEl={document.createElement('div')} onClose={jest.fn()} />, {
+      renderWithProviders(<MoreMenu open anchorEl={document.createElement('div')} onClose={vi.fn()} />, {
         store,
         provider: { mui: true, snackbar: true },
       });
+      const spyNotificationsSuccess = vi.spyOn(notifications, 'success');
 
       fireEvent.click(screen.getByText('Show Test Info'));
 
-      expect(notifications.success).toHaveBeenCalledWith('You just triggered this notification. Success!');
+      expect(spyNotificationsSuccess).toHaveBeenCalledWith('You just triggered this notification. Success!');
     });
 
     it('shows error notification when show test error option is clicked', () => {
-      renderWithProviders(<MoreMenu open anchorEl={document.createElement('div')} onClose={jest.fn()} />, {
+      renderWithProviders(<MoreMenu open anchorEl={document.createElement('div')} onClose={vi.fn()} />, {
         store,
         provider: { mui: true, snackbar: true },
       });
+      const spyNotificationsError = vi.spyOn(notifications, 'error');
 
       fireEvent.click(screen.getByText('Show Test Error'));
 
-      expect(notifications.error).toHaveBeenCalledWith('Test error context: Error: Test Error');
+      expect(spyNotificationsError).toHaveBeenCalledWith('Test error context: Error: Test Error');
     });
     it('shows training participation button if module trainingParticipationReport is defined', async () => {
       const { store: storeWithModules } = configureStore({
@@ -211,7 +204,7 @@ describe('<MoreButton />', () => {
         },
       });
 
-      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => jest.fn()} open />, {
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store: storeWithModules,
         provider: { snackbar: true },
       });

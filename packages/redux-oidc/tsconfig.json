@@ -1,34 +1,19 @@
 {
-  "extends": "../../tsconfig.base.json",
+	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
-	  "esModuleInterop": true,
-	  "lib": [
-		"es6",
-		"dom.iterable",
-		"dom",
-		"esnext",
-		"es2021.intl",
-		"ES2020.String"
-	  ],
-	  "strict": true,
-	  "skipLibCheck": true,
-	  "jsx": "react-jsx",
-	  "module": "ESNext",
-	  "declaration": true,
-	  "declarationDir": "types",
-	  "outDir": "dist",
-	  "moduleResolution": "node",
-	  "emitDeclarationOnly": true,
-	  "allowSyntheticDefaultImports": true,
-	  "forceConsistentCasingInFileNames": true,
-    "composite": true
+		"jsx": "react-jsx",
+		"lib": [
+			"es6",
+			"dom.iterable",
+			"dom",
+			"esnext",
+			"es2021.intl",
+			"ES2020.String"
+		],
+		"declaration": true,
+		"composite": true,
+		"sourceMap": true,
+		"declarationMap": true
 	},
-	"types": ["node", "jest", "@testing-library/jest-dom"],
-	"exclude": [
-	  "dist",
-	  "node_modules",
-	  "components/**/*.test.tsx",
-	  "components/**/*.stories.tsx",
-	  "utils/**/*.test.tsx"
-	],
-  }
+	"exclude": ["node_modules", "dist"]
+}

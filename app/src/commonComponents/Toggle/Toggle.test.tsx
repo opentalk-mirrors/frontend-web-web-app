@@ -10,7 +10,7 @@ import Toggle from './Toggle';
 const commonProps = {
   label: 'Test Toggle',
   name: 'testToggle',
-  onChange: jest.fn(),
+  onChange: vi.fn(),
   checked: false,
   value: 1,
   options: [

@@ -8,27 +8,27 @@ import LayoutOptions from '../../../enums/LayoutOptions';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import DesktopMeetingHeader from './DesktopMeetingHeader';
 
-jest.mock('./LayoutSelection', () => ({
+vi.mock('./LayoutSelection', () => ({
   __esModule: true,
   default: () => <div>LayoutSelection</div>,
 }));
 
-jest.mock('./RoomTitle', () => ({
+vi.mock('./RoomTitle', () => ({
   __esModule: true,
   default: () => <div>RoomTitle</div>,
 }));
 
-jest.mock('./MeetingUtilsSection', () => ({
+vi.mock('./MeetingUtilsSection', () => ({
   __esModule: true,
   default: () => <div>MeetingUtilsSection</div>,
 }));
 
-jest.mock('./SharedFolderPopover', () => ({
+vi.mock('./SharedFolderPopover', () => ({
   __esModule: true,
   SharedFolderPopover: () => <div>SharedFolderPopover</div>,
 }));
 
-jest.mock('./VotesAndPollsResultsPopover', () => ({
+vi.mock('./VotesAndPollsResultsPopover', () => ({
   __esModule: true,
   default: () => <div>VotesAndPollsResultsPopover</div>,
 }));

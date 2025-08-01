@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import type { Event, EventId } from '@opentalk/rest-api-rtk-query';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { useUpdateEventMutation } from '../../api/rest';
 import { notifications } from '../../commonComponents';
@@ -14,22 +15,22 @@ interface FormElementWithEvent extends HTMLFormElement {
   _existingEvent?: Event;
 }
 
-jest.mock('../../api/rest', () => ({
-  useUpdateEventMutation: jest.fn(),
+vi.mock('../../api/rest', () => ({
+  useUpdateEventMutation: vi.fn(),
 }));
 
-jest.mock('../../commonComponents', () => ({
+vi.mock('../../commonComponents', () => ({
   notifications: {
-    success: jest.fn(),
-    error: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
   },
 }));
 
-jest.mock('./utils/payloadUtils', () => ({
-  createPayload: jest.fn(),
+vi.mock('./utils/payloadUtils', () => ({
+  createPayload: vi.fn(),
 }));
 
-jest.mock('./fragments/MeetingForm', () => ({
+vi.mock('./fragments/MeetingForm', () => ({
   __esModule: true,
   default: ({
     onSubmit,
@@ -52,7 +53,7 @@ jest.mock('./fragments/MeetingForm', () => ({
         }}
         onSubmit={(e) => {
           e.preventDefault();
-          onSubmit(mockValues, jest.fn());
+          onSubmit(mockValues, vi.fn());
         }}
       />
     );
@@ -65,28 +66,28 @@ const mockedEvent = {
 } as Event;
 
 describe('UpdateMeetingForm', () => {
-  const mockUpdateEvent = jest.fn();
+  const mockUpdateEvent = vi.fn();
 
   beforeEach(() => {
-    (useUpdateEventMutation as jest.Mock).mockReturnValue([mockUpdateEvent, { isLoading: false }]);
-    jest.clearAllMocks();
+    (useUpdateEventMutation as Mock).mockReturnValue([mockUpdateEvent, { isLoading: false }]);
+    vi.clearAllMocks();
   });
 
   it('renders the child form', () => {
-    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
+    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={vi.fn()} />);
 
     expect(screen.getByRole('form', { name: 'MeetingForm' })).toBeInTheDocument();
   });
 
   it('passes the updated event to the child form', () => {
-    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
+    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={vi.fn()} />);
 
     const form = screen.getByRole('form') as FormElementWithEvent;
     expect(form._existingEvent).toEqual(mockedEvent);
   });
 
   it('creates payload with form values and existing event on form submission', async () => {
-    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
+    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={vi.fn()} />);
 
     fireEvent.submit(screen.getByRole('form'));
     await waitFor(() => {
@@ -95,9 +96,9 @@ describe('UpdateMeetingForm', () => {
   });
 
   it('calls update event API with event id and payload', async () => {
-    (createPayload as jest.Mock).mockReturnValue({ title: 'Test Meeting' });
+    (createPayload as Mock).mockReturnValue({ title: 'Test Meeting' });
 
-    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
+    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={vi.fn()} />);
 
     fireEvent.submit(screen.getByRole('form'));
     await waitFor(() => {
@@ -107,10 +108,10 @@ describe('UpdateMeetingForm', () => {
 
   it('shows a success notification on successful event creation', async () => {
     mockUpdateEvent.mockImplementationOnce(() => ({
-      unwrap: jest.fn().mockResolvedValue({ id: '123', title: 'Test Meeting' }),
+      unwrap: vi.fn().mockResolvedValue({ id: '123', title: 'Test Meeting' }),
     }));
 
-    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
+    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={vi.fn()} />);
 
     fireEvent.submit(screen.getByRole('form'));
 
@@ -121,10 +122,10 @@ describe('UpdateMeetingForm', () => {
 
   it('shows an error notification on event creation failure', async () => {
     mockUpdateEvent.mockImplementationOnce(() => ({
-      unwrap: jest.fn().mockRejectedValueOnce({ error: 'Error updating event' }),
+      unwrap: vi.fn().mockRejectedValueOnce({ error: 'Error updating event' }),
     }));
 
-    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
+    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={vi.fn()} />);
 
     fireEvent.submit(screen.getByRole('form'));
 
@@ -140,13 +141,11 @@ describe('UpdateMeetingForm', () => {
     mockUpdateEvent.mockImplementationOnce(() => ({
       unwrap: () =>
         new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({ id: '123', title: 'Test Meeting' });
-          }, 100);
+          resolve({ id: '123', title: 'Test Meeting' });
         }),
     }));
 
-    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={jest.fn()} />);
+    render(<UpdateMeetingForm existingEvent={mockedEvent} onForwardButtonClick={vi.fn()} />);
 
     // Trigger first submission
     fireEvent.submit(screen.getByRole('form'));

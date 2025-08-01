@@ -10,7 +10,7 @@ import * as UseInviteCodeModule from '../../hooks/useInviteCode';
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import LobbyView from './LobbyView';
 
-jest.mock('../SelfTest', () => ({
+vi.mock('../SelfTest', () => ({
   __esModule: true,
   default: ({ children, actionButton }: { children?: React.ReactNode; actionButton?: React.ReactNode }) => {
     return (
@@ -22,8 +22,8 @@ jest.mock('../SelfTest', () => ({
   },
 }));
 
-jest.mock('../../api/rest', () => ({
-  ...jest.requireActual('../../api/rest'),
+vi.mock('../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeQuery: () => ({
     data: {
       displayName: 'Test',
@@ -44,7 +44,7 @@ describe('LobbyView', () => {
     },
   });
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders self test and join form correctly', () => {
@@ -73,7 +73,7 @@ describe('LobbyView', () => {
   });
 
   it('renders the submit button, which is enabled by default', () => {
-    const useInviteCodeMock = jest.spyOn(UseInviteCodeModule, 'useInviteCode');
+    const useInviteCodeMock = vi.spyOn(UseInviteCodeModule, 'useInviteCode');
     useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
 
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
@@ -100,7 +100,7 @@ describe('LobbyView', () => {
     const USERNAME = 'lobbyForm testUserName*7';
     const PASSWORD = 'lobbyFormPassword (*';
 
-    const useInviteCodeMock = jest.spyOn(UseInviteCodeModule, 'useInviteCode');
+    const useInviteCodeMock = vi.spyOn(UseInviteCodeModule, 'useInviteCode');
     useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 

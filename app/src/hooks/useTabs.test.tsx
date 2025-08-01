@@ -10,7 +10,7 @@ import { RoomMode, TimerStyle } from '../types';
 import { configureStore } from '../utils/testUtils';
 import useTabs from './useTabs';
 
-jest.mock('../config/moderationTabs', () => ({
+vi.mock('../config/moderationTabs', () => ({
   tabs: [
     { key: 'tab-home', featureKey: undefined, moduleKey: undefined, divider: false },
     { key: 'tab-timer', featureKey: 'timer', moduleKey: undefined, divider: false },
@@ -22,7 +22,7 @@ jest.mock('../config/moderationTabs', () => ({
 
 describe('useTabs', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('returns only tabs with enabled features or modules', () => {

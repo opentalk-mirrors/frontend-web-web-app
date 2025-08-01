@@ -16,11 +16,13 @@ import {
 import { mockedParticipant, mockStore, renderWithProviders } from '../../../utils/testUtils';
 import ParticipantListItem from './ParticipantListItem';
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   useRemoteParticipant: () => mockedParticipant(0),
   useLocalParticipant: () => mockedParticipant(0),
 }));
-jest.mock('../../../commonComponents/ParticipantAvatar', () => jest.fn());
+vi.mock('../../../commonComponents/ParticipantAvatar', () => ({
+  default: vi.fn(),
+}));
 const USER_IS_MODERATOR_STORE = {
   initialState: {
     user: {

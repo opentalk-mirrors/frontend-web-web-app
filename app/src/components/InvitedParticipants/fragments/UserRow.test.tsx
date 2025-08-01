@@ -4,13 +4,11 @@
 import { Email, EventId, InviteStatus, UserId, UserRole } from '@opentalk/rest-api-rtk-query';
 import { fireEvent, screen } from '@testing-library/react';
 import { v4 as uuidv4 } from 'uuid';
+import { Mock } from 'vitest';
 
 import { useGetEventQuery, useGetMeQuery } from '../../../api/rest';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import UserRow from './UserRow';
-
-const mockUseGetEventQuery = useGetEventQuery as jest.Mock;
-const mockUseGetMeQuery = useGetMeQuery as jest.Mock;
 
 const eventInviteRoleModerator = {
   profile: {
@@ -40,14 +38,14 @@ const eventInviteRoleUser = {
   status: InviteStatus.Accepted,
 };
 
-const mockOnRevokeUserInvite = jest.fn();
-const mockOnRemoveUser = jest.fn();
-const mockUpdateEventInvite = jest.fn();
+const mockOnRevokeUserInvite = vi.fn();
+const mockOnRemoveUser = vi.fn();
+const mockUpdateEventInvite = vi.fn();
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
-  useGetEventQuery: jest.fn().mockImplementation(() => mockUseGetEventQuery),
-  useGetMeQuery: jest.fn().mockImplementation(() => mockUseGetMeQuery),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useGetEventQuery: vi.fn().mockImplementation(() => vi.fn()),
+  useGetMeQuery: vi.fn().mockImplementation(() => vi.fn()),
   useUpdateEventInviteMutation: () => [mockUpdateEventInvite],
 }));
 
@@ -55,11 +53,11 @@ describe('UserRow', () => {
   const { store } = configureStore();
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   beforeEach(() => {
-    mockUseGetEventQuery.mockReturnValue({
+    (useGetEventQuery as Mock).mockReturnValue({
       isLoading: false,
       data: {
         createdBy: {
@@ -67,7 +65,7 @@ describe('UserRow', () => {
         },
       },
     });
-    mockUseGetMeQuery.mockReturnValue({
+    (useGetMeQuery as Mock).mockReturnValue({
       isLoading: false,
       data: {
         id: 'MOCK_USER_ID' as UserId,
@@ -107,7 +105,7 @@ describe('UserRow', () => {
   });
 
   it('does not render more menu if user is not creator', () => {
-    mockUseGetEventQuery.mockReturnValue({
+    (useGetEventQuery as Mock).mockReturnValue({
       isLoading: false,
       data: {
         createdBy: {

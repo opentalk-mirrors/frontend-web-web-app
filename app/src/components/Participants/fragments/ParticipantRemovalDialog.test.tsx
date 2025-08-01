@@ -10,10 +10,10 @@ import ParticipantRemovalDialog from './ParticipantRemovalDialog';
 
 describe('ParticipantRemovalDialog', () => {
   const participant = mockedParticipant(0);
-  const onClose = jest.fn();
+  const onClose = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders dialog with title, content, and buttons', async () => {
@@ -50,7 +50,7 @@ describe('ParticipantRemovalDialog', () => {
 
   it('dispatches kick and enableWaitingRoom, shows notification, and closes on confirm', async () => {
     const { store, dispatchSpy } = configureStore();
-    const spyNotificationInfo = jest.spyOn(notifications, 'info').mockImplementation(() => {});
+    const spyNotificationInfo = vi.spyOn(notifications, 'info').mockImplementation(() => {});
     renderWithProviders(<ParticipantRemovalDialog open={true} onClose={onClose} participant={participant} />, {
       store,
       provider: { mui: true, snackbar: true },

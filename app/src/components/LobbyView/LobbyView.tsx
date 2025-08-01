@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
-import { ApiErrorWithBody, StartRoomError, useGetMeQuery, useGetRoomEventInfoQuery } from '../../api/rest';
+import { isApiError, StartRoomError, useGetMeQuery, useGetRoomEventInfoQuery } from '../../api/rest';
 import { HiddenIcon, VisibleIcon } from '../../assets/icons';
 import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { CommonTextField as DefaultCommonTextField, notifications } from '../../commonComponents';
@@ -178,55 +178,53 @@ const LobbyView = () => {
         dispatch(startMedia({ kind: 'audioinput', enabled: false }));
         dispatch(startMedia({ kind: 'videoinput', enabled: false }));
       }
-
-      return dispatch(
-        startRoom({
-          roomId,
-          breakoutRoomId: breakoutRoomId || null,
-          displayName,
-          password,
-          inviteCode,
-        })
-      )
-        .unwrap()
-        .catch((e) => {
-          if ('code' in e) {
-            const error = e as ApiErrorWithBody<StartRoomError>;
-            switch (error.code) {
-              case StartRoomError.InvalidBreakoutRoomId:
-              case StartRoomError.NoBreakoutRooms:
-                notifications.info(t('breakout-notification-session-ended-header'));
-                navigate(composeRoomPath(roomId, inviteCode, breakoutRoomId));
-                break;
-              case StartRoomError.InvalidJson:
-                log.error('invalid json request in startRoom', e);
-                notifications.error(t('error-general'));
-                break;
-              case StartRoomError.WrongRoomPassword:
-              case StartRoomError.InvalidCredentials:
-                showWrongPasswordNotification();
-                break;
-              case StartRoomError.NotFound:
-                notifications.error(t('joinform-room-not-found'));
-                navigateToHome();
-                break;
-              case StartRoomError.Forbidden:
-                notifications.error(t('joinform-access-denied'));
-                navigateToHome();
-                break;
-              case StartRoomError.BadRequest:
-                notifications.error(t('error-invalid-invitation-code'));
-                navigateToHome();
-                break;
-              default:
-                log.error(`unknown error code ${e.code} in startRoom`, e);
-                notifications.error(t('error-general'));
-            }
-          } else {
-            log.error('unknown error in startRoom', e);
-            notifications.error(t('error-general'));
+      try {
+        return await dispatch(
+          startRoom({
+            roomId,
+            breakoutRoomId: breakoutRoomId || null,
+            displayName,
+            password,
+            inviteCode,
+          })
+        ).unwrap();
+      } catch (e: unknown) {
+        if (isApiError<StartRoomError>(e)) {
+          switch (e.code) {
+            case StartRoomError.InvalidBreakoutRoomId:
+            case StartRoomError.NoBreakoutRooms:
+              notifications.info(t('breakout-notification-session-ended-header'));
+              navigate(composeRoomPath(roomId, inviteCode, breakoutRoomId));
+              break;
+            case StartRoomError.InvalidJson:
+              log.error('invalid json request in startRoom', e);
+              notifications.error(t('error-general'));
+              break;
+            case StartRoomError.WrongRoomPassword:
+            case StartRoomError.InvalidCredentials:
+              showWrongPasswordNotification();
+              break;
+            case StartRoomError.NotFound:
+              notifications.error(t('joinform-room-not-found'));
+              navigateToHome();
+              break;
+            case StartRoomError.Forbidden:
+              notifications.error(t('joinform-access-denied'));
+              navigateToHome();
+              break;
+            case StartRoomError.BadRequest:
+              notifications.error(t('error-invalid-invitation-code'));
+              navigateToHome();
+              break;
+            default:
+              log.error(`unknown error code ${e.code} in startRoom`, e);
+              notifications.error(t('error-general'));
           }
-        });
+        } else {
+          log.error('unknown error in startRoom', e);
+          notifications.error(t('error-general'));
+        }
+      }
     },
     [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, startMedia]
   );
@@ -238,10 +236,10 @@ const LobbyView = () => {
     },
     enableReinitialize: true,
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       if (isLoggedIn || inviteCode !== undefined) {
         const name = disableDisplayNameField ? initialDisplayName : values.name;
-        enterRoom(name, values.password);
+        await enterRoom(name, values.password);
       }
     },
   });

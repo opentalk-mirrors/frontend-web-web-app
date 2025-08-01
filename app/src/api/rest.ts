@@ -16,6 +16,10 @@ export interface ApiErrorWithBody<T extends string> {
   message: string;
 }
 
+export function isApiError<T>(error: unknown): error is ApiErrorWithBody<T extends string ? string : never> {
+  return error !== null && typeof error === 'object' && 'code' in error;
+}
+
 type NewRoom = {
   password?: string;
 };

@@ -8,11 +8,11 @@ import { LegalVoteId } from '../../../types';
 import { renderWithProviders } from '../../../utils/testUtils';
 import { ReportSection } from './ReportSection';
 
-const mockAppDispatch = jest.fn();
+const mockAppDispatch = vi.fn();
 
-jest.mock('../../../hooks', () => ({
+vi.mock('../../../hooks', () => ({
   useAppDispatch: () => mockAppDispatch,
-  useAppSelector: jest.fn(),
+  useAppSelector: vi.fn(),
 }));
 
 const mockLegalVote = {

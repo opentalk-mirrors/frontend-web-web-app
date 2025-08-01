@@ -5,7 +5,7 @@ import { render, screen } from '@testing-library/react';
 
 import UserManualPage from './UserManualPage';
 
-jest.mock('../../../utils/apiUtils');
+vi.mock('../../../utils/apiUtils');
 
 describe('User Manual Page', () => {
   it('renders the page and its header', () => {

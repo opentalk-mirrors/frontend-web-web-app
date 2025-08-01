@@ -13,14 +13,14 @@ import {
 import CreateDirectMeeting from './CreateDirectMeeting';
 
 const mockCreateEvent = () => ({
-  unwrap: jest.fn().mockResolvedValue(createMockEvent()),
+  unwrap: vi.fn().mockResolvedValue(createMockEvent()),
 });
-const mockCreateEventInvite = jest.fn();
+const mockCreateEventInvite = vi.fn();
 const mockCreateRoomInvite = () => ({
-  unwrap: jest.fn().mockResolvedValue(createMockedPermanentRoomInvites()),
+  unwrap: vi.fn().mockResolvedValue(createMockedPermanentRoomInvites()),
 });
-const mockCreateSipConfig = jest.fn();
-const mockCreateStreamingTarget = jest.fn();
+const mockCreateSipConfig = vi.fn();
+const mockCreateStreamingTarget = vi.fn();
 
 const ROOM_ID = 'ROOM_ID' as RoomId;
 const MOCK_INVITE_CODE = 'MOCK_INVITE_CODE';
@@ -41,8 +41,8 @@ const createMockedPermanentRoomInvites = () => [
   },
 ];
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useCreateEventMutation: () => [
     mockCreateEvent,
     {
@@ -102,14 +102,14 @@ jest.mock('../../../api/rest', () => ({
   useGetStreamingTargetsQuery: () => [mockCreateStreamingTarget],
 }));
 
-jest.mock('../../../components/InvitedParticipants/InvitedParticipants', () => ({
+vi.mock('../../../components/InvitedParticipants/InvitedParticipants', () => ({
   __esModule: true,
   default: () => {
     return <div />;
   },
 }));
 
-jest.mock('../../../components/SelectParticipants/SelectParticipants', () => ({
+vi.mock('../../../components/SelectParticipants/SelectParticipants', () => ({
   __esModule: true,
   default: () => {
     return <div />;
@@ -118,28 +118,55 @@ jest.mock('../../../components/SelectParticipants/SelectParticipants', () => ({
 
 describe('CreateDirectMeeting', () => {
   it('should render without crash', () => {
-    const { store } = configureStore();
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          baseUrl: 'http://localhost:3000',
+          features: {
+            userSearch: true,
+          },
+        },
+      },
+    });
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true } });
 
     expect(screen.getByText('dashboard-direct-meeting-title')).toBeInTheDocument();
   });
 
   it('generates link and fills it into textfield', () => {
-    const { store } = configureStore();
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          baseUrl: 'http://localhost:3000',
+          features: {
+            userSearch: true,
+          },
+        },
+      },
+    });
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true } });
 
     expect(screen.getByDisplayValue(INVITE_LINK)).toBeInTheDocument();
   });
 
   it('copies the link', async () => {
-    const mockWriteText = jest.fn((value) => Promise.resolve(value));
+    const mockWriteText = vi.fn((value) => Promise.resolve(value));
     Object.defineProperty(navigator, 'clipboard', {
       writable: true,
       value: {
         writeText: mockWriteText,
       },
     });
-    const { store } = configureStore();
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          baseUrl: 'http://localhost:3000',
+          features: {
+            userSearch: true,
+          },
+        },
+      },
+    });
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true, mui: true } });
 
     const copyButton = screen.getByLabelText('dashboard-invite-to-meeting-copy-room-link-aria-label');
@@ -154,14 +181,23 @@ describe('CreateDirectMeeting', () => {
   });
 
   it('copies the guest link, if link exists', async () => {
-    const mockWriteText = jest.fn((value) => Promise.resolve(value));
+    const mockWriteText = vi.fn((value) => Promise.resolve(value));
     Object.defineProperty(navigator, 'clipboard', {
       writable: true,
       value: {
         writeText: mockWriteText,
       },
     });
-    const { store } = configureStore();
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          baseUrl: 'http://localhost:3000',
+          features: {
+            userSearch: true,
+          },
+        },
+      },
+    });
     renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true, mui: true } });
 
     const copyButton = screen.getByLabelText('dashboard-invite-to-meeting-copy-guest-link-aria-label');

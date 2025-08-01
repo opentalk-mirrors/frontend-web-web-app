@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { render, screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { useHeader } from '../../../hooks/useHeader';
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
@@ -9,34 +10,34 @@ import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import Home from './Home';
 import BannerContainer from './fragments/BannerContainer';
 
-jest.mock('./fragments/DesktopHome', () => ({
-  ...jest.requireActual('./fragments/DesktopHome'),
+vi.mock('./fragments/DesktopHome', () => ({
+  ...vi.importActual('./fragments/DesktopHome'),
   __esModule: true,
   default: () => <div data-testid="desktop-home"></div>,
 }));
 
-jest.mock('./fragments/MobileHome', () => ({
-  ...jest.requireActual('./fragments/MobileHome'),
+vi.mock('./fragments/MobileHome', () => ({
+  ...vi.importActual('./fragments/MobileHome'),
   __esModule: true,
   default: () => <div data-testid="mobile-home"></div>,
 }));
 
-jest.mock('../../../hooks/useMediaQuery', () => ({
-  useIsDesktop: jest.fn(),
+vi.mock('../../../hooks/useMediaQuery', () => ({
+  useIsDesktop: vi.fn(),
 }));
-const mockUseIsDesktop = useIsDesktop as jest.Mock;
+const mockUseIsDesktop = useIsDesktop as Mock;
 
-jest.mock('../../../hooks/useUpdateDocumentTitle', () => ({
-  useUpdateDocumentTitle: jest.fn(),
+vi.mock('../../../hooks/useUpdateDocumentTitle', () => ({
+  useUpdateDocumentTitle: vi.fn(),
 }));
 
-jest.mock('../../../hooks/useHeader', () => ({
-  useHeader: jest.fn(),
+vi.mock('../../../hooks/useHeader', () => ({
+  useHeader: vi.fn(),
 }));
-const mockUseHeader = useHeader as jest.Mock;
+const mockUseHeader = useHeader as Mock;
 
 describe('Home', () => {
-  beforeEach(() => mockUseHeader.mockReturnValue({ setHeader: jest.fn() }));
+  beforeEach(() => mockUseHeader.mockReturnValue({ setHeader: vi.fn() }));
 
   it('renders desktop view', () => {
     const isDesktop = true;
@@ -61,7 +62,7 @@ describe('Home', () => {
   });
 
   it('renders the banner container into the document header', () => {
-    const mockSetHeader = jest.fn();
+    const mockSetHeader = vi.fn();
     mockUseHeader.mockReturnValue({ setHeader: mockSetHeader });
 
     render(<Home />);

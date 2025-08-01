@@ -7,7 +7,7 @@ import PageIndex from './PageIndex';
 
 describe('PageIndex callback logic', () => {
   it('should call handleClick when clicked', () => {
-    const handleClick = jest.fn();
+    const handleClick = vi.fn();
     render(<PageIndex index={1} handleClick={handleClick} />);
     fireEvent.click(screen.getByText('1'));
     expect(handleClick).toHaveBeenCalled();

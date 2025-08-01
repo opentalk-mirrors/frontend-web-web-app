@@ -3,36 +3,37 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { render, screen, waitFor } from '@testing-library/react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Mock } from 'vitest';
 
 import { useLazyGetEventQuery } from '../../../api/rest';
 import EditEventsPage from './EditEventsPage';
 
-jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn(),
-  useParams: jest.fn(),
+vi.mock('react-router-dom', () => ({
+  useNavigate: vi.fn(),
+  useParams: vi.fn(),
 }));
 
-jest.mock('../../../components/MeetingForms', () => ({
+vi.mock('../../../components/MeetingForms', () => ({
   __esModule: true,
   UpdateMeetingForm: ({ onForwardButtonClick }: { onForwardButtonClick: () => void }) => (
     <button data-testid="UpdateMeetingForm" onClick={onForwardButtonClick} />
   ),
 }));
 
-jest.mock('../../../components/InviteToMeeting', () => ({
+vi.mock('../../../components/InviteToMeeting', () => ({
   __esModule: true,
   default: () => <div data-testid="InviteToMeeting" />,
 }));
 
-jest.mock('../../../api/rest', () => ({
-  useLazyGetEventQuery: jest.fn(),
+vi.mock('../../../api/rest', () => ({
+  useLazyGetEventQuery: vi.fn(),
 }));
 
-const mockUseParams = useParams as jest.Mock;
-const mockUseLazyGetEventQuery = useLazyGetEventQuery as jest.Mock;
-const mockLazyGetEvent = jest.fn();
-const mockUseNavigate = useNavigate as jest.Mock;
-const mockNavigate = jest.fn();
+const mockUseParams = useParams as Mock;
+const mockUseLazyGetEventQuery = useLazyGetEventQuery as Mock;
+const mockLazyGetEvent = vi.fn();
+const mockUseNavigate = useNavigate as Mock;
+const mockNavigate = vi.fn();
 
 const mockEventId = 'db61b29b-b944-422d-b20f-6ed4158aad4d';
 

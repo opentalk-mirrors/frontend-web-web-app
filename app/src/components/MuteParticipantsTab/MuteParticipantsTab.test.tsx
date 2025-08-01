@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipants } from '@livekit/components-react';
 import { fireEvent, screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { mockStore, renderWithProviders, mockedParticipant } from '../../utils/testUtils';
 import MuteParticipantsTab from './MuteParticipantsTab';
@@ -10,17 +11,17 @@ import MuteParticipantsTab from './MuteParticipantsTab';
 const NUMBER_OF_PARTICIPANTS = 4;
 const UNMUTED_PARTICIPANTS = 2;
 
-jest.mock('@livekit/components-react', () => ({
-  useRemoteParticipants: jest.fn(),
-  usePersistentUserChoices: () => jest.fn(),
-  useRoomContext: () => jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useRemoteParticipants: vi.fn(),
+  usePersistentUserChoices: () => vi.fn(),
+  useRoomContext: () => vi.fn(),
 }));
 
 describe('MuteParticipantsTab', () => {
   const { store, dispatchSpy } = mockStore(NUMBER_OF_PARTICIPANTS);
 
   beforeEach(() => {
-    (useRemoteParticipants as jest.Mock).mockReturnValue(
+    (useRemoteParticipants as Mock).mockReturnValue(
       Array.from({ length: NUMBER_OF_PARTICIPANTS }, (_, index) => ({
         ...mockedParticipant(index),
         isMicrophoneEnabled: index < UNMUTED_PARTICIPANTS,

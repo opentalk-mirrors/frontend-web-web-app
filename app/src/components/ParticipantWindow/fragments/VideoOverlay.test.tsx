@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { renderWithProviders, mockedParticipant, configureStore } from '../../../utils/testUtils';
 import VideoOverlay from './VideoOverlay';
@@ -10,21 +11,21 @@ import VideoOverlay from './VideoOverlay';
 const mockFullscreenContext = {
   active: true,
   node: null,
-  exit: jest.fn(),
-  enter: jest.fn(),
+  exit: vi.fn(),
+  enter: vi.fn(),
   fullscreenParticipantID: '',
-  setRootElement: jest.fn(),
+  setRootElement: vi.fn(),
   rootElement: null,
-  setHasActiveOverlay: jest.fn(),
-  isFullScreenAvailable: jest.fn(),
+  setHasActiveOverlay: vi.fn(),
+  isFullScreenAvailable: vi.fn(),
 };
 
-jest.mock('../../../hooks/useFullscreenContext.ts', () => ({
+vi.mock('../../../hooks/useFullscreenContext.ts', () => ({
   useFullscreenContext: () => mockFullscreenContext,
 }));
 
-jest.mock('@livekit/components-react', () => ({
-  useRemoteParticipant: jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useRemoteParticipant: vi.fn(),
 }));
 
 const mockedDefaultRemoteParticipant = { ...mockedParticipant(0), signalClient: { isDisconnected: true } };
@@ -33,7 +34,7 @@ describe('VideoOverlay general', () => {
   const { store } = configureStore();
 
   beforeEach(() => {
-    (useRemoteParticipant as jest.Mock).mockReturnValue(mockedDefaultRemoteParticipant);
+    (useRemoteParticipant as Mock).mockReturnValue(mockedDefaultRemoteParticipant);
   });
 
   it('does not render any button if overlay is not active', () => {
@@ -45,7 +46,7 @@ describe('VideoOverlay general', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
   it('renders fullscreen button if overlay is active', () => {
-    mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
+    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => true);
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
       provider: { snackbar: true },
@@ -56,7 +57,7 @@ describe('VideoOverlay general', () => {
     expect(fullscreenButton).toBeInTheDocument();
   });
   it('does not render fullscreen button if fullscreen feature is unavailable', () => {
-    mockFullscreenContext.isFullScreenAvailable = jest.fn(() => false);
+    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => false);
 
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
@@ -72,7 +73,7 @@ describe('VideoOverlay extend tab', () => {
   const { store } = configureStore();
 
   it('does not render extend new tab button if participant neither shares screen nor camera', () => {
-    (useRemoteParticipant as jest.Mock).mockReturnValue({
+    (useRemoteParticipant as Mock).mockReturnValue({
       ...mockedDefaultRemoteParticipant,
       isScreenShareEnabled: false,
       isCameraEnabled: false,
@@ -87,7 +88,7 @@ describe('VideoOverlay extend tab', () => {
     expect(extendNewTabButton).not.toBeInTheDocument();
   });
   it('renders extend new tab button if participant shares screen', () => {
-    (useRemoteParticipant as jest.Mock).mockReturnValue({
+    (useRemoteParticipant as Mock).mockReturnValue({
       ...mockedDefaultRemoteParticipant,
       isScreenShareEnabled: true,
       isCameraEnabled: false,
@@ -102,7 +103,7 @@ describe('VideoOverlay extend tab', () => {
     expect(extendNewTabButton).toBeInTheDocument();
   });
   it('renders extend new tab button if participant enabled camera', () => {
-    (useRemoteParticipant as jest.Mock).mockReturnValue({
+    (useRemoteParticipant as Mock).mockReturnValue({
       ...mockedDefaultRemoteParticipant,
       isScreenShareEnabled: false,
       isCameraEnabled: true,
@@ -117,7 +118,7 @@ describe('VideoOverlay extend tab', () => {
     expect(extendNewTabButton).toBeInTheDocument();
   });
   it('renders extend new tab button if participant shares screen AND enabled camera', () => {
-    (useRemoteParticipant as jest.Mock).mockReturnValue({
+    (useRemoteParticipant as Mock).mockReturnValue({
       ...mockedDefaultRemoteParticipant,
       isScreenShareEnabled: true,
       isCameraEnabled: true,

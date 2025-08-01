@@ -6,7 +6,7 @@ import { openUserManual, USER_MANUAL_URL } from './apiUtils';
 describe('api utils', () => {
   it('opens user manual in new tab', () => {
     const restoreWindowOpen = window.open;
-    window.open = jest.fn();
+    window.open = vi.fn();
 
     openUserManual();
 

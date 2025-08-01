@@ -39,13 +39,14 @@ import { initReactI18next } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { MockInstance } from 'vitest';
 
 import { createOpenTalkTheme } from '../assets/themes/opentalk';
 import { SnackbarProvider } from '../commonComponents';
 import { MeetingFormValues } from '../components/MeetingForms/fragments/DashboardDateTimePicker';
 import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
 import FullscreenProvider from '../provider/FullscreenProvider';
-import { appReducers } from '../store';
+import { AppDispatch, appReducers } from '../store';
 import type { RootState } from '../store';
 import { listenerMiddleware } from '../store/listenerMiddleware';
 import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
@@ -108,7 +109,7 @@ i18n.use(initReactI18next).init({
 
 type MockReduxStore = {
   store: ReturnType<typeof configureStoreTlk<RootState>>;
-  dispatchSpy: jest.SpyInstance;
+  dispatchSpy: MockInstance<AppDispatch>;
 };
 
 export const middleware: Array<Middleware> = [listenerMiddleware.middleware];
@@ -128,7 +129,7 @@ export const configureStore = (options?: ConfigureStoreOptions['preloadedState']
       }).concat(middleware),
   });
 
-  const dispatchSpy = jest.spyOn(store, 'dispatch');
+  const dispatchSpy = vi.spyOn(store, 'dispatch');
 
   return { store, dispatchSpy };
 };
@@ -318,14 +319,14 @@ export const mockedAudioInputs: Array<MediaDeviceInfo> = [
     groupId: 'group1',
     kind: 'audioinput',
     label: 'Audio Input 1',
-    toJSON: jest.fn(),
+    toJSON: vi.fn(),
   },
   {
     deviceId: 'audioInput2',
     groupId: 'group1',
     kind: 'audioinput',
     label: 'Audio Input 2',
-    toJSON: jest.fn(),
+    toJSON: vi.fn(),
   },
 ];
 
@@ -335,14 +336,14 @@ export const mockedVideoInputs: Array<MediaDeviceInfo> = [
     groupId: 'group1',
     kind: 'videoinput',
     label: 'Video Input 1',
-    toJSON: jest.fn(),
+    toJSON: vi.fn(),
   },
   {
     deviceId: 'videoInput2',
     groupId: 'group1',
     kind: 'videoinput',
     label: 'Video Input 2',
-    toJSON: jest.fn(),
+    toJSON: vi.fn(),
   },
 ];
 

@@ -138,7 +138,7 @@ const events: Array<Event> = [
 export const eventHandlers = [
   // Handles a POST /events request
 
-  http.post('/v1/events', ({ request }) => {
+  http.post('*/v1/events', ({ request }) => {
     let newEvent;
     if (typeof request.body === 'string') {
       newEvent = JSON.parse(request.body);
@@ -147,7 +147,7 @@ export const eventHandlers = [
   }),
 
   // Handles a GET /events request
-  http.get('/v1/events', ({ request }) => {
+  http.get('*/v1/events', ({ request }) => {
     const url = new URL(request.url);
     const perPage = url.searchParams.get('per_page') || 30;
     // Simple integer based cursor, mock implementation detail
@@ -160,7 +160,7 @@ export const eventHandlers = [
   }),
 
   // Handles a GET /v1/events/:id request
-  http.get<never, { eventId: string }, Event>('/v1/events/:eventId', ({ params }) => {
+  http.get<never, { eventId: string }, Event>('*/v1/events/:eventId', ({ params }) => {
     const { eventId } = params;
     const event = events.find((x) => x.id === eventId);
     if (!event) {
@@ -172,7 +172,7 @@ export const eventHandlers = [
   }),
 
   // Handles a DELETE /v1/events/:id request
-  http.delete<never, { eventId: string }, undefined>('/v1/events/:eventId', ({ params }) => {
+  http.delete<never, { eventId: string }, undefined>('*/v1/events/:eventId', ({ params }) => {
     const { eventId } = params;
     switch (eventId) {
       case 'NOT_FOUND':
@@ -191,7 +191,7 @@ export const eventHandlers = [
 const users: Array<User> = [generateMockUser(1), generateMockUser(2), generateMockUser(3)];
 export const userHandlers = [
   // Handles a GET /v1/users/me request
-  http.get<never, never, User & { theme: string; language: string }>('/v1/users/me', () => {
+  http.get<never, never, User & { theme: string; language: string }>('*/v1/users/me', () => {
     return HttpResponse.json({
       ...users[0],
       theme: 'string',
@@ -200,7 +200,7 @@ export const userHandlers = [
   }),
   // Handles a GET /v1/users/find?q= request
   // The filtering is mocked. The server impl is smarter with filtering
-  http.get<never, never, Array<User>>('/v1/users/find', ({ request }) => {
+  http.get<never, never, Array<User>>('*/v1/users/find', ({ request }) => {
     const url = new URL(request.url);
     const q = url.searchParams.get('q')?.toLowerCase() || '';
     const filtered = users.filter((x) => {
@@ -216,7 +216,7 @@ export const userHandlers = [
 
   // Handles a PUT users/event_favorites/${eventId}
   // marks an event as favorite for the user
-  http.put<never, { eventId: string }, undefined>('/v1/users/me/event_favorites/:eventId', ({ params }) => {
+  http.put<never, { eventId: string }, undefined>('*/v1/users/me/event_favorites/:eventId', ({ params }) => {
     const { eventId } = params;
     switch (eventId) {
       case 'NOT_FOUND':
@@ -233,7 +233,7 @@ export const userHandlers = [
 
   // Handles a PUT users/event_favorites/${eventId}
   // unmark an event as favorite for the user
-  http.delete<never, { eventId: string }, undefined>('/v1/users/me/event_favorites/:eventId', ({ params }) => {
+  http.delete<never, { eventId: string }, undefined>('*/v1/users/me/event_favorites/:eventId', ({ params }) => {
     const { eventId } = params;
     switch (eventId) {
       case 'NOT_FOUND':

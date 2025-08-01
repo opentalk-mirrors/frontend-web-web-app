@@ -10,7 +10,7 @@ describe('ParticipantsContainer', () => {
   const participants = [{ ...mockedParticipant(0), groups: ['Group A'] }];
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders search, grouping form, and grouped participants if grouping is enabled', () => {

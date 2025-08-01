@@ -3,24 +3,25 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { render, screen, waitFor } from '@testing-library/react';
 import { useFormikContext } from 'formik';
+import { Mock } from 'vitest';
 
 import AnswersFormElement from './AnswersFormElement';
 
-jest.mock('formik', () => {
+vi.mock('formik', () => {
   return {
-    ...jest.requireActual('formik'),
-    useFormikContext: jest.fn(),
+    ...vi.importActual('formik'),
+    useFormikContext: vi.fn(),
     FieldArray: (props: { render: () => React.ReactElement }) => props.render(),
     Field: () => <div />,
   };
 });
 
-jest.mock('../../../commonComponents', () => ({
+vi.mock('../../../commonComponents', () => ({
   CommonTextField: () => <div />,
 }));
 
 describe('AnswersFormElement', () => {
-  const mockUseFormikContext = useFormikContext as jest.Mock;
+  const mockUseFormikContext = useFormikContext as Mock;
 
   beforeEach(() => {
     mockUseFormikContext.mockReturnValue({

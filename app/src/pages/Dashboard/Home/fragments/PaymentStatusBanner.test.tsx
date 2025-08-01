@@ -3,22 +3,23 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Mock } from 'vitest';
 
 import { useGetMeQuery } from '../../../../api/rest';
 import { configureStore, renderWithProviders } from '../../../../utils/testUtils';
 import { PaymentStatusBanner } from './PaymentStatusBanner';
 
-jest.mock('../../../../api/rest', () => ({
-  ...jest.requireActual('../../../../api/rest'),
+vi.mock('../../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeTariffQuery: () => ({
     data: {
       name: 'OpenTalkStandard',
     },
   }),
-  useGetMeQuery: jest.fn(),
+  useGetMeQuery: vi.fn(),
 }));
 
-const mockUseGetMeQuery = useGetMeQuery as jest.Mock;
+const mockUseGetMeQuery = useGetMeQuery as Mock;
 
 const ACCOUNT_MANAGEMENT_URL = 'account.management.url';
 const { store } = configureStore({
@@ -47,7 +48,7 @@ describe('Payment Status Banner', () => {
 
     // mock window.open
     const jsdomOpen = window.open;
-    window.open = jest.fn();
+    window.open = vi.fn();
 
     renderWithProviders(<PaymentStatusBanner />, { store, provider: { mui: true } });
     expect(screen.getByText('dashboard-payment-status-downgraded')).toBeInTheDocument();

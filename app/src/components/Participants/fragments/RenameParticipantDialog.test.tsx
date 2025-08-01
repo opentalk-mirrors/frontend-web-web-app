@@ -9,10 +9,10 @@ import RenameParticipantDialog from './RenameParticipantDialog';
 
 describe('RenameParticipantDialog', () => {
   const participant = mockedParticipant(0);
-  const onClose = jest.fn();
+  const onClose = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders dialog with input and buttons', () => {

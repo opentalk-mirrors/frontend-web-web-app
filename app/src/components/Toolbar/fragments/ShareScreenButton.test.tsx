@@ -6,13 +6,13 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import ShareScreenButton from './ShareScreenButton';
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   useTrackToggle: () => ({
-    toggle: jest.fn(),
+    toggle: vi.fn(),
     enabled: true,
     pending: false,
   }),
-  useLocalParticipantPermissions: jest.fn(),
+  useLocalParticipantPermissions: vi.fn(),
 }));
 
 describe('<ShareScreenButton />', () => {

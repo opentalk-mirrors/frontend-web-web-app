@@ -7,7 +7,7 @@ import { TalkingStickMutedNotification } from './TalkingStickMutedNotification';
 
 describe('TalkingStickMutedNotification', () => {
   it('renders correctly', async () => {
-    render(<TalkingStickMutedNotification style={{}} onUnmute={jest.fn()} onNext={jest.fn()} />);
+    render(<TalkingStickMutedNotification style={{}} onUnmute={vi.fn()} onNext={vi.fn()} />);
     const element = await screen.findByRole('alertdialog');
     expect(element).toBeInTheDocument();
     const describedByElement = element.getAttribute('aria-describedby');
@@ -15,8 +15,8 @@ describe('TalkingStickMutedNotification', () => {
   });
 
   it('calls callback functions on button click', async () => {
-    const unmuteButtonFn = jest.fn();
-    const nextButtonFn = jest.fn();
+    const unmuteButtonFn = vi.fn();
+    const nextButtonFn = vi.fn();
     render(<TalkingStickMutedNotification style={{}} onUnmute={unmuteButtonFn} onNext={nextButtonFn} />);
     fireEvent.click(await screen.findByText('talking-stick-notification-unmute'));
     fireEvent.click(screen.getByText('talking-stick-notification-next-speaker'));

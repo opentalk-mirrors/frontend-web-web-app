@@ -13,7 +13,7 @@ import ChatList from './ChatList';
 describe('updateLastSeenTimestamp', () => {
   beforeEach(() => {
     // Silence reselect warnings during tests
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   it('updates the last seen timestamp for a public chat', () => {

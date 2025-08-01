@@ -9,9 +9,9 @@ import { formatBytes } from '../../../utils/numberUtils';
 import { mockedRoomAssets } from '../../../utils/testUtils';
 import { AssetTableRow } from './AssetTableRow';
 
-const mockHandleDownload = jest.fn();
+const mockHandleDownload = vi.fn();
 
-const mockHandleDelete = jest.fn();
+const mockHandleDelete = vi.fn();
 
 // checks all the text content inside a row
 const checkRowTextContent = (

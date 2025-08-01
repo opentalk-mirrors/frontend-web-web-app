@@ -12,8 +12,6 @@ path = [
     ".parcelrc.js",
     ".parcelrc",
     ".prettierrc.cjs",
-    "babel.config.js",
-    "jest.config.js",
     "README.md",
     "ci/README.md",
     "CHANGELOG.md",

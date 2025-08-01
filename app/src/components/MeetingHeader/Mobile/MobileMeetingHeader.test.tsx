@@ -5,27 +5,27 @@ import { render } from '@testing-library/react';
 
 import MobileMeetingHeader from './MobileMeetingHeader';
 
-jest.mock('../fragments/LayoutSelection', () => ({
+vi.mock('../fragments/LayoutSelection', () => ({
   __esModule: true,
   default: () => <div>LayoutSelection</div>,
 }));
 
-jest.mock('../fragments/MeetingTimer', () => ({
+vi.mock('../fragments/MeetingTimer', () => ({
   __esModule: true,
   default: () => <div>MeetingTimer</div>,
 }));
 
-jest.mock('../fragments/RoomTitle', () => ({
+vi.mock('../fragments/RoomTitle', () => ({
   __esModule: true,
   default: () => <div>RoomTitle</div>,
 }));
 
-jest.mock('./fragments/Drawer', () => ({
+vi.mock('./fragments/Drawer', () => ({
   __esModule: true,
   default: () => <div>Drawer</div>,
 }));
 
-jest.mock('./fragments/MobilePagination', () => ({
+vi.mock('./fragments/MobilePagination', () => ({
   __esModule: true,
   default: () => <div>MobilePagination</div>,
 }));

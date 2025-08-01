@@ -7,18 +7,18 @@ import { PropsWithChildren } from 'react';
 import { renderWithProviders, mockStore, mockedParticipant } from '../../utils/testUtils';
 import GridView from './GridView';
 
-jest.mock('./fragments/GridCell', () => ({
+vi.mock('./fragments/GridCell', () => ({
   __esModule: true,
   default: () => <div data-testid="gridCell"></div>,
 }));
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   ParticipantContext: {
     Provider: ({ children }: PropsWithChildren) => {
       return <div>{children}</div>;
     },
   },
-  useRoomContext: () => jest.fn(),
+  useRoomContext: () => vi.fn(),
   useRemoteParticipants: () => [mockedParticipant(0)],
 }));
 

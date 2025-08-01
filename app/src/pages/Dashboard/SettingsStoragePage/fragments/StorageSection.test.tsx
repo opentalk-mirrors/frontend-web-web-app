@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { useGetMeQuery, useGetMeTariffQuery } from '../../../../api/rest';
 import { renderWithProviders, configureStore } from '../../../../utils/testUtils';
@@ -10,14 +11,14 @@ import { StorageSection } from './StorageSection';
 const MAX_LIMITED_STORAGE_IN_MB = 100;
 const USED_HALF_STORAGE_IN_MB = MAX_LIMITED_STORAGE_IN_MB / 2;
 
-jest.mock('../../../../api/rest', () => ({
-  ...jest.requireActual('../../../../api/rest'),
-  useGetMeQuery: jest.fn(),
-  useGetMeTariffQuery: jest.fn(),
+vi.mock('../../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useGetMeQuery: vi.fn(),
+  useGetMeTariffQuery: vi.fn(),
 }));
 
-const mockUseGetMeQuery = useGetMeQuery as jest.Mock;
-const mockUseGetMeTariffQuery = useGetMeTariffQuery as jest.Mock;
+const mockUseGetMeQuery = useGetMeQuery as Mock;
+const mockUseGetMeTariffQuery = useGetMeTariffQuery as Mock;
 
 describe('Storage Section', () => {
   it('renders storage section for limited max storage and used half capacity', () => {

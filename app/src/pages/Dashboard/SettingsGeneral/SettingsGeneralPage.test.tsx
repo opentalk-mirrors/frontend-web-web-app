@@ -6,8 +6,8 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import SettingsGeneralPage from './SettingsGeneralPage';
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeQuery: () => ({
     data: {
       theme: 'light',

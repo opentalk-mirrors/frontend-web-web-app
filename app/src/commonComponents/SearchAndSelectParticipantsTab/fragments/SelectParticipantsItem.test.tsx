@@ -7,7 +7,7 @@ import { mockStore, mockedLivekitParticipant, renderWithProviders } from '../../
 import SelectParticipantsItem, { SelectableParticipant } from './SelectParticipantsItem';
 
 describe('SelectParticipantsItem', () => {
-  const handleCheck = jest.fn();
+  const handleCheck = vi.fn();
   const { store } = mockStore(1, { video: true, screen: true });
   const participant = { ...mockedLivekitParticipant(0), selected: false } as SelectableParticipant;
 

@@ -7,8 +7,8 @@ import { GroupId } from '../../../types';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import ParticipantSimpleList from './ParticipantSimpleList';
 
-jest.mock('@livekit/components-react', () => ({
-  useRemoteParticipant: jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useRemoteParticipant: vi.fn(),
   useLocalParticipant: () => ({
     isMicrophoneEnabled: false,
     isScreenShareEnabled: false,

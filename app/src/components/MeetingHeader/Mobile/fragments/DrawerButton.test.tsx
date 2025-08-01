@@ -6,14 +6,7 @@ import { fireEvent, screen } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../../../utils/testUtils';
 import { DrawerButton } from './DrawerButton';
 
-jest.mock('react-i18next', () => ({
-  ...jest.requireActual('react-i18next'),
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
-jest.mock('../../fragments/Indicator', () => ({
+vi.mock('../../fragments/Indicator', () => ({
   __esModule: true,
   Indicator: () => <div data-testid="indicator" />,
 }));
@@ -175,7 +168,7 @@ describe('DrawerButton callback logic', () => {
     const { store } = configureStore({
       initialState: {},
     });
-    const onClickMock = jest.fn();
+    const onClickMock = vi.fn();
     renderWithProviders(<DrawerButton onClick={onClickMock} />, { store });
     const button = screen.getByRole('button', { name: 'mobile-drawer-button-label' });
     fireEvent.click(button);

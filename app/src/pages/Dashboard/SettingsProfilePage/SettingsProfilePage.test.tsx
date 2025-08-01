@@ -6,10 +6,10 @@ import { screen } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import SettingsProfilePage from './SettingsProfilePage';
 
-const mockUpdateMe = jest.fn();
+const mockUpdateMe = vi.fn();
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeQuery: () => ({
     data: {
       displayName: 'Test User',

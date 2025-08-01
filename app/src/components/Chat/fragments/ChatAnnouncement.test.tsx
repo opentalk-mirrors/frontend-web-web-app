@@ -14,24 +14,24 @@ const mockGlobalChatMessage: ChatMessage = {
   scope: ChatScope.Global,
 };
 
-jest.mock('../../../hooks', () => ({
-  useAppSelector: jest.fn(),
+vi.mock('../../../hooks', () => ({
+  useAppSelector: vi.fn(),
 }));
 
 // To reduce test execution time
-jest.mock('./constants', () => ({
+vi.mock('./constants', () => ({
   ANNOUNCEMENT_TIMEOUT: 100,
 }));
 
 describe('ChatAnnouncement', () => {
   it('renders announcement', () => {
-    render(<ChatAnnouncement message={mockGlobalChatMessage} onAnnouncementEnd={jest.fn()} />);
+    render(<ChatAnnouncement message={mockGlobalChatMessage} onAnnouncementEnd={vi.fn()} />);
 
     expect(screen.getByText('chat-live-message-announcemenet')).toBeInTheDocument();
   });
 
   it('executes callback after announcement end', async () => {
-    const onAnnouncementEnd = jest.fn();
+    const onAnnouncementEnd = vi.fn();
     render(<ChatAnnouncement message={mockGlobalChatMessage} onAnnouncementEnd={onAnnouncementEnd} />);
 
     await waitFor(() => {

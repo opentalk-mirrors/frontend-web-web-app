@@ -1,16 +1,10 @@
 {
   "extends": "../tsconfig.base.json",
-  "include": ["src"],
   "compilerOptions": {
-    "allowJs": true,
-    "noEmit": true,
-    "sourceRoot": "/",
-    "types": ["./vite-env.d.ts", "@types/emscripten", "@types/node"],
-    "composite": true
-  },
-  "references": [
-    { "path": "../packages/rtk-rest-api" },
-    { "path": "../packages/i18next-fluent" },
-    { "path": "../packages/redux-oidc" },
-  ],
+    "jsx": "react-jsx",
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "types": ["@types/emscripten", "vitest/globals"]
+  }
 }

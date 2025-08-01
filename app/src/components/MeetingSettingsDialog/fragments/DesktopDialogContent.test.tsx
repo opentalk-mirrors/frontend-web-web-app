@@ -26,7 +26,7 @@ const SETTING_PANELS: Array<SettingsPanel> = [
 // and than set this variable to desired value before the test runs
 // either in the test itself or via beforeAll, beforeEach...
 let mockPanels: Array<SettingsPanel>;
-jest.mock('./settingPanels', () => {
+vi.mock('./settingPanels', () => {
   return {
     getSettingPanels: () => mockPanels,
   };
@@ -40,7 +40,7 @@ describe('DesktopDialogContent', () => {
     const version = window.config.version;
     window.config.version = undefined;
 
-    renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
+    renderWithProviders(<DesktopDialogContent onClose={vi.fn()} setting="audio" />, { provider: { mui: true } });
     const title = await screen.findByRole('heading', { name: 'meeting-settings-title' });
     expect(title).toBeInTheDocument();
     const footer = screen.getByText('OpenTalk dev-version');
@@ -51,7 +51,7 @@ describe('DesktopDialogContent', () => {
     window.config.version = version;
   });
   it('calls onClose if user clicks close button', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     renderWithProviders(<DesktopDialogContent onClose={onClose} setting="audio" />, { provider: { mui: true } });
     const closeButton = await screen.findByRole('button', { name: 'global-close-dialog' });
     expect(closeButton).toBeInTheDocument();
@@ -64,14 +64,14 @@ describe('DesktopDialogContent', () => {
     const product = 'v24.0.1';
     window.config.version = { product, frontend: 'v0.0.0' };
 
-    renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
+    renderWithProviders(<DesktopDialogContent onClose={vi.fn()} setting="audio" />, { provider: { mui: true } });
     const footer = await screen.findByText(`OpenTalk ${product}`);
     expect(footer).toBeInTheDocument();
 
     window.config.version = version;
   });
   it('renders all panels as tablist and tabs', async () => {
-    renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
+    renderWithProviders(<DesktopDialogContent onClose={vi.fn()} setting="audio" />, { provider: { mui: true } });
     const tabList = await screen.findByRole('tablist', { name: 'meeting-settings-title' });
     expect(tabList).toBeInTheDocument();
     const tabs = screen.getAllByRole('tab');
@@ -79,7 +79,7 @@ describe('DesktopDialogContent', () => {
   });
   it('opens audio tab by default', async () => {
     const audioTabTitle = 'audio-panel-title';
-    renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
+    renderWithProviders(<DesktopDialogContent onClose={vi.fn()} setting="audio" />, { provider: { mui: true } });
     const audioTab = await screen.findByRole('tab', { name: audioTabTitle });
     expect(audioTab).toHaveAttribute('aria-selected', 'true');
     const audioTabPanel = screen.getByRole('tabpanel', { name: audioTabTitle });
@@ -88,7 +88,7 @@ describe('DesktopDialogContent', () => {
   it('opens custom tab on opening, if specified', async () => {
     const tabValue = SETTING_PANELS[1].value;
     const tabTitle = `${tabValue}-panel-title`;
-    renderWithProviders(<DesktopDialogContent onClose={jest.fn()} setting={tabValue} />, { provider: { mui: true } });
+    renderWithProviders(<DesktopDialogContent onClose={vi.fn()} setting={tabValue} />, { provider: { mui: true } });
     const customTab = await screen.findByRole('tab', { name: tabTitle });
     expect(customTab).toHaveAttribute('aria-selected', 'true');
     const customTabPanel = screen.getByRole('tabpanel', { name: tabTitle });

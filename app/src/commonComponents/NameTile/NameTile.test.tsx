@@ -3,14 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useParticipants } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { ParticipantId } from '../../types';
 import { mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import NameTile from './NameTile';
 
-jest.mock('@livekit/components-react', () => ({
-  useParticipants: jest.fn(),
-  useRoomContext: jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useParticipants: vi.fn(),
+  useRoomContext: vi.fn(),
 }));
 
 describe('NameTile with activated media', () => {
@@ -18,9 +19,7 @@ describe('NameTile with activated media', () => {
   const displayName = participant.displayName;
   const participantId = participant.id as ParticipantId;
   beforeEach(() => {
-    (useParticipants as jest.Mock).mockReturnValue([
-      { ...participant, isMicrophoneEnabled: true, isCameraEnabled: true },
-    ]);
+    (useParticipants as Mock).mockReturnValue([{ ...participant, isMicrophoneEnabled: true, isCameraEnabled: true }]);
   });
 
   it('render NameTile component with audio on', () => {
@@ -59,7 +58,7 @@ describe('NameTile with deactivated media', () => {
   const displayName = participant.displayName;
   const participantId = participant.id as ParticipantId;
   beforeEach(() => {
-    (useParticipants as jest.Mock).mockReturnValue([participant]);
+    (useParticipants as Mock).mockReturnValue([participant]);
   });
 
   it('render NameTile component with audio off', () => {

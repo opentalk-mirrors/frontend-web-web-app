@@ -7,8 +7,8 @@ import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import EndCallButton from './EndCallButton';
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeQuery: () => ({
     data: {
       id: '3645d74d-9a4b-4cd4-9d9f-f1871c970167' as UserId,
@@ -27,7 +27,7 @@ describe('<EndCallButton />', () => {
   const { store } = configureStore();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render EndCallButton component', () => {

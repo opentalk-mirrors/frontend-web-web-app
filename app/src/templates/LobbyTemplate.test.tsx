@@ -6,7 +6,7 @@ import { PropsWithChildren } from 'react';
 
 import LobbyTemplate from './LobbyTemplate';
 
-jest.mock('./fragments/BrowserCompatibilityInfo', () => ({
+vi.mock('./fragments/BrowserCompatibilityInfo', () => ({
   __esModule: true,
   default: ({ children }: PropsWithChildren) => {
     return <>{children}</>;

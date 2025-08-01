@@ -8,9 +8,9 @@ import SortPopoverMenu from './SortPopoverMenu';
 describe('<SortPopoverMenu />', () => {
   const DEFAULT_PROPS = {
     isOpen: true,
-    onChange: jest.fn(),
-    onSelect: jest.fn(),
-    onClose: jest.fn(),
+    onChange: vi.fn(),
+    onSelect: vi.fn(),
+    onClose: vi.fn(),
     selectedOptionType: '',
     items: [],
     id: '',

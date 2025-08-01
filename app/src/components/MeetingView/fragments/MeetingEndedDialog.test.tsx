@@ -2,31 +2,36 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen, fireEvent } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { useInviteCode } from '../../../hooks/useInviteCode';
 import { mockStore, renderWithProviders } from '../../../utils/testUtils';
 import MeetingEndedDialog from './MeetingEndedDialog';
 
-const mockDispatch = jest.fn();
-const mockNavigate = jest.fn();
+const mockDispatch = vi.fn();
+const mockNavigate = vi.fn();
 
-jest.mock('../../../hooks', () => ({
+vi.mock('../../../hooks', () => ({
   useAppDispatch: () => mockDispatch,
 }));
 
-jest.mock('../../../hooks/useInviteCode', () => ({
-  useInviteCode: jest.fn(),
+vi.mock('../../../hooks/useInviteCode', () => ({
+  useInviteCode: vi.fn(),
 }));
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
 describe('MeetingEndedDialog', () => {
   const { store } = mockStore(0);
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('dispatches hangUp and navigates when button is clicked', () => {
-    const mockSetIsDialogOpen = jest.fn();
+    const mockSetIsDialogOpen = vi.fn();
     renderWithProviders(<MeetingEndedDialog setIsDialogOpen={mockSetIsDialogOpen} />, {
       store,
       provider: { mui: true },
@@ -40,8 +45,8 @@ describe('MeetingEndedDialog', () => {
   });
 
   it('does not navigate if inviteCode is present', () => {
-    (useInviteCode as jest.Mock).mockReturnValue('some-code');
-    const mockSetIsDialogOpen = jest.fn();
+    (useInviteCode as Mock).mockReturnValue('some-code');
+    const mockSetIsDialogOpen = vi.fn();
 
     renderWithProviders(<MeetingEndedDialog setIsDialogOpen={mockSetIsDialogOpen} />, {
       store,

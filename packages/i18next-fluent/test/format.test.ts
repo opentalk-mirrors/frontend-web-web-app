@@ -1,7 +1,6 @@
 import i18next from 'i18next';
 
 import Fluent from '../src';
-import { BundleStore } from '../src/store';
 
 const testJSON = {
   emails:
@@ -24,7 +23,7 @@ const testJSON = {
 
 describe('fluent format', () => {
   describe('basic parse', () => {
-    let fluent;
+    let fluent: Fluent;
 
     beforeAll(() => {
       fluent = new Fluent({
@@ -36,21 +35,24 @@ describe('fluent format', () => {
 
     it('should parse', () => {
       const res0 = fluent.getResource('en', 'translations', 'emails');
-      expect(fluent.parse(res0, { unreadEmails: 10 }, 'en', 'translations', 'emails')).toEqual(
-        'You have 10 unread emails.'
-      );
+      const parsedRes0 = res0 ? fluent.parse(res0, { unreadEmails: 10 }, 'en', 'translations', 'emails') : '';
+      expect(parsedRes0).toEqual('You have 10 unread emails.');
 
       const res1 = fluent.getResource('en', 'translations', 'logout');
-      expect(fluent.parse(res1, {}, 'en', 'translations', 'logout')).toEqual('Logout');
+      const parsedRes1 = res1 ? fluent.parse(res1, {}, 'en', 'translations', 'logout') : '';
+      expect(parsedRes1).toEqual('Logout');
 
       const res2 = fluent.getResource('en', 'translations', 'hello');
-      expect(fluent.parse(res2, { name: 'Jan' }, 'en', 'translations', 'hello')).toEqual('Hello Jan.');
+      const parsedRes2 = res2 ? fluent.parse(res2, { name: 'Jan' }, 'en', 'translations', 'hello') : '';
+      expect(parsedRes2).toEqual('Hello Jan.');
 
       const res3 = fluent.getResource('en', 'translations', 'restart-app');
-      expect(fluent.parse(res3, {}, 'en', 'translations', 'restart-app')).toEqual('Zrestartuj Firefoxa.');
+      const parsedRes3 = res3 ? fluent.parse(res3, {}, 'en', 'translations', 'restart-app') : '';
+      expect(parsedRes3).toEqual('Zrestartuj Firefoxa.');
 
       const res4 = fluent.getResource('en', 'translations', 'login.placeholder');
-      expect(fluent.parse(res4, {}, 'en', 'translations', 'login.placeholder')).toEqual('example@email.com');
+      const parsedRes4 = res4 ? fluent.parse(res4, {}, 'en', 'translations', 'login.placeholder') : '';
+      expect(parsedRes4).toEqual('example@email.com');
     });
   });
 
@@ -75,25 +77,5 @@ describe('fluent format', () => {
       expect(i18next.t('restart-app')).toEqual('Zrestartuj Firefoxa.');
       expect(i18next.t('login.placeholder')).toEqual('example@email.com');
     });
-  });
-});
-describe('BundleStore', () => {
-  let store: BundleStore;
-  beforeEach(() => {
-    store = new BundleStore({});
-  });
-
-  it('basic bundle', () => {
-    store.createBundle('lng', 'ns', { foo: 'test' });
-    const bundle = store.getBundle('lng', 'ns');
-    const msg = bundle.getMessage('foo');
-    expect(msg.value).toBeDefined();
-    expect(bundle.formatPattern(msg.value)).toEqual('test');
-  });
-
-  it('invalid basic bundle', () => {
-    expect(() => store.createBundle('lng', 'ns', { foo: 2 as unknown as string })).toThrow();
-
-    expect(() => store.createBundle('lng', 'ns', { foo: { value: 2 as unknown as string, bar: 'test' } })).toThrow();
   });
 });

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { AuthAdapter, AuthAdapterConfiguration } from './authAdapter';
 import { AuthContext } from './authContext';
-import { getNewToken } from './store/authActions';
+import { getNewToken } from './store';
 import {
   selectError,
   selectIsAuthenticated,
@@ -12,7 +12,7 @@ import {
   selectRefreshError,
   startLoading,
   getAppDispatch,
-} from './store/authSlice';
+} from './store';
 import { AuthTypeError, calculateTokenRenewalTime, hasValidToken, pkceChallenge } from './utils';
 
 export interface AuthProviderValues {

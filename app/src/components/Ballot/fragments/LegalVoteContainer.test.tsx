@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { useAppSelector } from '../../../hooks';
 import { selectOurUuid } from '../../../store/slices/userSlice';
@@ -9,25 +10,26 @@ import { LegalVoteId, LegalVoteKind, LegalVoteState, LegalVote, ParticipantId } 
 import { renderWithProviders } from '../../../utils/testUtils';
 import { LegalVoteContainer } from './LegalVoteContainer';
 
-const mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
 
-jest.mock('../../../hooks', () => ({
+vi.mock('../../../hooks', () => ({
   useAppDispatch: () => mockDispatch,
-  useAppSelector: jest.fn(),
+  useAppSelector: vi.fn(),
   useDateFormat: () => '',
 }));
 
-jest.mock('../../../store/slices/userSlice', () => ({
-  selectOurUuid: jest.fn(),
-  startUserListeners: jest.fn(),
+vi.mock('../../../store/slices/userSlice', async (importOriginal) => ({
+  ...(await importOriginal()),
+  selectOurUuid: vi.fn(),
+  startUserListeners: vi.fn(),
 }));
 
-jest.mock('./VoteResultTable', () => ({
+vi.mock('./VoteResultTable', () => ({
   __esModule: true,
   default: () => <div data-testid="result-table"></div>,
 }));
 
-jest.mock('./VoteResultDate', () => ({
+vi.mock('./VoteResultDate', () => ({
   __esModule: true,
   default: ({ showTableHint, showResultsHandler }: { showTableHint: boolean; showResultsHandler(): void }) =>
     showTableHint && <button onClick={showResultsHandler} data-testid="vote-result-date"></button>,
@@ -58,7 +60,7 @@ describe('LegalVoteContainer', () => {
   };
 
   it('can render', async () => {
-    renderWithProviders(<LegalVoteContainer legalVote={legalVote} onClose={jest.fn()} isAllowedToVote />, {
+    renderWithProviders(<LegalVoteContainer legalVote={legalVote} onClose={vi.fn()} isAllowedToVote />, {
       provider: { mui: true },
     });
     expect(await screen.findByText(legalVote.name)).toBeInTheDocument();
@@ -67,7 +69,7 @@ describe('LegalVoteContainer', () => {
   });
 
   it('executes onClose callback when close button is clicked.', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     renderWithProviders(<LegalVoteContainer legalVote={legalVote} onClose={onClose} isAllowedToVote />, {
       provider: { mui: true },
     });
@@ -81,7 +83,7 @@ describe('LegalVoteContainer', () => {
       ...legalVote,
       allowedParticipants: ['our-id' as ParticipantId],
     };
-    renderWithProviders(<LegalVoteContainer legalVote={vote} onClose={jest.fn()} isAllowedToVote={false} />, {
+    renderWithProviders(<LegalVoteContainer legalVote={vote} onClose={vi.fn()} isAllowedToVote={false} />, {
       provider: { mui: true },
     });
     expect(await screen.findByText('legal-vote-not-selected')).toBeInTheDocument();
@@ -93,13 +95,13 @@ describe('LegalVoteContainer', () => {
       ...legalVote,
       allowedParticipants: [mockedUuid as ParticipantId],
     };
-    (useAppSelector as unknown as jest.Mock).mockImplementation((selector) => {
+    (useAppSelector as unknown as Mock).mockImplementation((selector) => {
       if (selector === selectOurUuid) {
         return mockedUuid;
       }
       return null;
     });
-    renderWithProviders(<LegalVoteContainer legalVote={vote} onClose={jest.fn()} isAllowedToVote />, {
+    renderWithProviders(<LegalVoteContainer legalVote={vote} onClose={vi.fn()} isAllowedToVote />, {
       provider: { mui: true },
     });
     const submitButton = await screen.findByRole('button', { name: 'global-submit' });
@@ -122,13 +124,13 @@ describe('LegalVoteContainer', () => {
       },
       allowedParticipants: [mockedUuid as ParticipantId],
     };
-    (useAppSelector as unknown as jest.Mock).mockImplementation((selector) => {
+    (useAppSelector as unknown as Mock).mockImplementation((selector) => {
       if (selector === selectOurUuid) {
         return mockedUuid;
       }
       return null;
     });
-    renderWithProviders(<LegalVoteContainer legalVote={vote} onClose={jest.fn()} isAllowedToVote />, {
+    renderWithProviders(<LegalVoteContainer legalVote={vote} onClose={vi.fn()} isAllowedToVote />, {
       provider: { mui: true },
     });
     fireEvent.click(screen.getByTestId('vote-result-date'));

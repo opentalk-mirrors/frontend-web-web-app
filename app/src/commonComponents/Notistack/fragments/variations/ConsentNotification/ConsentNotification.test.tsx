@@ -5,12 +5,12 @@ import { fireEvent, render, screen } from '@testing-library/react';
 
 import ConsentNotification from './ConsentNotification';
 
-jest.mock('../../utils', () => ({
-  notifications: { consent: () => jest.fn(), close: () => jest.fn() },
+vi.mock('../../utils', () => ({
+  notifications: { consent: () => vi.fn(), close: () => vi.fn() },
 }));
 
-const acceptButtonFn = jest.fn();
-const declineButtonFn = jest.fn();
+const acceptButtonFn = vi.fn();
+const declineButtonFn = vi.fn();
 
 describe('ConsentNotification', () => {
   it('renders correctly', async () => {

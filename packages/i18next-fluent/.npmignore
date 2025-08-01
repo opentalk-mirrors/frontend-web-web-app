@@ -1,7 +1,6 @@
 test/
 src/
 coverage/
-.babelrc
 .editorconfig
 .eslintignore
 .eslintrc

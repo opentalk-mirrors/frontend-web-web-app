@@ -7,48 +7,41 @@ import { PropsWithChildren } from 'react';
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import FullscreenView from './FullscreenView';
 
-/**
- * By default, jest is hoisting all mock calls to the top, and when
- * declaring outside function with block scope keywords we end up with
- * the error that variable cannot be used before declaration.
- * This is why we have to define exit mock function as var in order to hoist
- * on top of the mock call.
- */
-const mockExitCall = jest.fn();
+const mockExitCall = vi.fn();
 
-jest.mock('../../hooks/useFullscreenContext.ts', () => ({
+vi.mock('../../hooks/useFullscreenContext.ts', () => ({
   useFullscreenContext: () => ({
     active: true,
     node: null,
     exit: mockExitCall,
-    enter: jest.fn(),
+    enter: vi.fn(),
     fullscreenParticipantID: '',
-    setRootElement: jest.fn(),
+    setRootElement: vi.fn(),
     rootElement: null,
-    setHasActiveOverlay: jest.fn(),
+    setHasActiveOverlay: vi.fn(),
   }),
 }));
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   ParticipantContext: {
     Provider: ({ children }: PropsWithChildren) => {
       return <div>{children}</div>;
     },
   },
-  useRoomContext: () => jest.fn(),
+  useRoomContext: () => vi.fn(),
 }));
 
-jest.mock('../LocalVideo', () => ({
+vi.mock('../LocalVideo', () => ({
   __esModule: true,
   default: () => <div />,
 }));
 
-jest.mock('../ParticipantWindow', () => ({
+vi.mock('../ParticipantWindow', () => ({
   __esModule: true,
   default: () => <div />,
 }));
 
-jest.mock('../Toolbar', () => ({
+vi.mock('../Toolbar', () => ({
   __esModule: true,
   default: () => <div data-testid="toolbar"></div>,
 }));

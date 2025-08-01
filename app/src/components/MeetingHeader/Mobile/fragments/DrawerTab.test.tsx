@@ -9,7 +9,7 @@ const props = {
   tabTitle: 'Test Tab',
   disabled: false,
   active: false,
-  handleClick: jest.fn(),
+  handleClick: vi.fn(),
   showIndicator: false,
 };
 

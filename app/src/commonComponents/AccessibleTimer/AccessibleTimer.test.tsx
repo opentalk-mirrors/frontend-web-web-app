@@ -7,7 +7,7 @@ import { Duration } from 'date-fns';
 import AccessibleTimer from './AccessibleTimer';
 import { LAST_SECONDS_OF_A_MINUTE, LAST_SECONDS_OF_TOTAL_TIME } from './constants';
 
-describe('Accessible Timer', () => {
+describe('AccessibleTimer', () => {
   it('announces remaining time as "more than "x" minutes left" on first render and ""x" minutes left" on the next minute update', () => {
     let remainingTime: Duration = { minutes: 4, seconds: 59 };
     const { rerender } = render(<AccessibleTimer remainingTime={remainingTime} />);

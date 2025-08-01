@@ -7,13 +7,13 @@ import { mockedAudioInputs } from '../../../utils/testUtils';
 import DeviceManager from './DeviceManager';
 import { DevicePermissionState } from './constants';
 
-jest.mock('./DeviceList', () => ({
-  ...jest.requireActual('./DeviceList'),
+vi.mock('./DeviceList', () => ({
+  ...vi.importActual('./DeviceList'),
   __esModule: true,
   default: () => <div data-testid="MockDeviceList"></div>,
 }));
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
   useTranslation: () => {
     return {
@@ -34,7 +34,7 @@ describe('DeviceManager', () => {
       <DeviceManager
         devices={mockedAudioInputs.slice(0, DEVICE_NUMBER)}
         selectedDevice={undefined}
-        onSelectDevice={jest.fn()}
+        onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
         state={DevicePermissionState.Confirmed}
       />
@@ -46,7 +46,7 @@ describe('DeviceManager', () => {
       <DeviceManager
         devices={undefined}
         selectedDevice={undefined}
-        onSelectDevice={jest.fn()}
+        onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
         state={DevicePermissionState.Pending}
       />
@@ -59,7 +59,7 @@ describe('DeviceManager', () => {
       <DeviceManager
         devices={undefined}
         selectedDevice={undefined}
-        onSelectDevice={jest.fn()}
+        onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
         state={DevicePermissionState.Denied}
       />

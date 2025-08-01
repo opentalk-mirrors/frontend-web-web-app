@@ -9,7 +9,7 @@ import TalkingStickSortButton from './TalkingStickSortButton';
 describe('TalkingStickSortButton', () => {
   const DEFAULT_PROPS = {
     selectedSortType: SortOption.NameASC,
-    onChange: jest.fn(),
+    onChange: vi.fn(),
   };
 
   afterEach(() => {

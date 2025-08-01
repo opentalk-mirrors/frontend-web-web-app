@@ -4,28 +4,29 @@
 import { useLocalParticipant, useMediaDeviceSelect, useTracks } from '@livekit/components-react';
 import type { IconButtonProps, SvgIconProps } from '@mui/material';
 import { fireEvent, screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import LocalVideo from './LocalVideo';
 
-jest.mock('@livekit/components-react', () => ({
-  useTracks: jest.fn().mockReturnValue([]),
-  useLocalParticipant: jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useTracks: vi.fn().mockReturnValue([]),
+  useLocalParticipant: vi.fn(),
   VideoTrack: () => (
     <video data-testid="video-track">
       <track kind="captions" />
     </video>
   ),
-  useMediaDeviceSelect: jest.fn(),
+  useMediaDeviceSelect: vi.fn(),
 }));
-jest.mock('../../assets/icons', () => ({
+vi.mock('../../assets/icons', () => ({
   PinIcon: () => <svg data-testid="pin-icon" />,
   WarningIcon: (props: SvgIconProps) => <svg data-testid="warning-icon" {...props} />,
 }));
-jest.mock('../../commonComponents', () => ({
+vi.mock('../../commonComponents', () => ({
   NameTile: (props: { displayName: string }) => <div data-testid="name-tile">{props.displayName}</div>,
 }));
-jest.mock('../ParticipantWindow/fragments/OverlayIconButton', () => ({
+vi.mock('../ParticipantWindow/fragments/OverlayIconButton', () => ({
   OverlayIconButton: (props: IconButtonProps) => (
     <button type="button" aria-label={props['aria-label']} onClick={props.onClick} data-testid="pin-btn">
       {props.children}
@@ -35,9 +36,9 @@ jest.mock('../ParticipantWindow/fragments/OverlayIconButton', () => ({
 
 describe('LocalVideo', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    HTMLCanvasElement.prototype.getContext = jest.fn();
-    (useLocalParticipant as jest.Mock).mockReturnValue({
+    vi.clearAllMocks();
+    HTMLCanvasElement.prototype.getContext = vi.fn();
+    (useLocalParticipant as Mock).mockReturnValue({
       isMicrophoneEnabled: false,
       isScreenShareEnabled: false,
       isCameraEnabled: true,
@@ -46,7 +47,7 @@ describe('LocalVideo', () => {
       lastMicrophoneError: undefined,
       lastCameraError: undefined,
     });
-    (useMediaDeviceSelect as jest.Mock).mockReturnValue({
+    (useMediaDeviceSelect as Mock).mockReturnValue({
       devices: [
         { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },
         { deviceId: 'xxxx1', groupId: 'xxxxx1', kind: 'videoinput', label: 'video' },
@@ -74,8 +75,8 @@ describe('LocalVideo', () => {
       },
     });
 
-    (useTracks as jest.Mock).mockReturnValue([]);
-    (useLocalParticipant as jest.Mock).mockReturnValue({
+    (useTracks as Mock).mockReturnValue([]);
+    (useLocalParticipant as Mock).mockReturnValue({
       isMicrophoneEnabled: false,
       isScreenShareEnabled: false,
       isCameraEnabled: false,
@@ -115,7 +116,7 @@ describe('LocalVideo', () => {
       participant: { isLocal: true, isScreenShareEnabled: false },
       publication: { videoTrack: { mediaStreamTrack: { readyState: 'live', enabled: true } } },
     };
-    (useTracks as jest.Mock).mockReturnValue([videoTrackRef]);
+    (useTracks as Mock).mockReturnValue([videoTrackRef]);
 
     renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
 
@@ -149,7 +150,7 @@ describe('LocalVideo', () => {
       publication: { videoTrack: { mediaStreamTrack: null, isMuted: false } },
     };
 
-    (useTracks as jest.Mock).mockReturnValue([videoTrackRef]);
+    (useTracks as Mock).mockReturnValue([videoTrackRef]);
 
     renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
@@ -175,7 +176,7 @@ describe('LocalVideo', () => {
       },
     });
 
-    (useTracks as jest.Mock).mockReturnValue([]);
+    (useTracks as Mock).mockReturnValue([]);
 
     renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
 
@@ -207,15 +208,15 @@ describe('LocalVideo', () => {
       publication: { videoTrack: { isMuted: true, mediaStreamTrack: undefined } },
     };
 
-    (useTracks as jest.Mock).mockReturnValue([videoTrackRef]);
-    (useMediaDeviceSelect as jest.Mock).mockReturnValue({ devices: [] });
+    (useTracks as Mock).mockReturnValue([videoTrackRef]);
+    (useMediaDeviceSelect as Mock).mockReturnValue({ devices: [] });
 
     renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
     expect(screen.getByText('localvideo-no-device')).toBeInTheDocument();
   });
 
   it('renders pin button in fullscreen mode and calls togglePinVideo', () => {
-    const togglePinVideo = jest.fn();
+    const togglePinVideo = vi.fn();
     const { store } = configureStore({
       initialState: {
         media: {
@@ -240,7 +241,7 @@ describe('LocalVideo', () => {
       publication: { videoTrack: { mediaStreamTrack: { readyState: 'live', enabled: true } } },
     };
 
-    (useTracks as jest.Mock).mockReturnValue([videoTrackRef]);
+    (useTracks as Mock).mockReturnValue([videoTrackRef]);
 
     renderWithProviders(<LocalVideo fullscreenMode togglePinVideo={togglePinVideo} isVideoPinned={true} />, {
       store,

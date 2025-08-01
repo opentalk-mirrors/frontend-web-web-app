@@ -5,6 +5,7 @@ import { useMediaQuery } from '@mui/material';
 import { DateTime } from '@opentalk/rest-api-rtk-query';
 import { render, screen } from '@testing-library/react';
 import { ComponentPropsWithoutRef } from 'react';
+import { Mock } from 'vitest';
 
 import { TimePerspectiveFilter } from '../../../../utils/eventUtils';
 import { EventFilterButtonBar } from './EventFilterButtonBar';
@@ -12,34 +13,33 @@ import { EventPageFilters } from './EventPageFilters';
 import { TimeFilter } from './EventsPageHeader';
 import EventsPageHeader from './EventsPageHeader';
 
-jest.mock('@mui/material', () => {
-  const mui = jest.requireActual('@mui/material');
+vi.mock('@mui/material', async () => {
+  const actual = await vi.importActual<typeof import('@mui/material')>('@mui/material');
+
   return {
-    ...mui,
-    useMediaQuery: jest.fn().mockReturnValue(false),
+    ...actual,
+    useMediaQuery: vi.fn().mockReturnValue(false),
   };
 });
 
-jest.mock('./CreateNewMeetingButton', () => ({
+vi.mock('./CreateNewMeetingButton', () => ({
   CreateNewMeetingButton: () => <div data-testid="create-new-meeting-button" />,
 }));
 
-jest.mock('./EventFilterButtonBar', () => ({
+vi.mock('./EventFilterButtonBar', () => ({
   EventFilterButtonBar: (props: ComponentPropsWithoutRef<typeof EventFilterButtonBar>) => (
     <button data-testid="event-filter-button-bar" onClick={() => props.onFilterChange('favoriteMeetings', true)} />
   ),
 }));
 
-jest.mock('./EventPageFilters', () => ({
+vi.mock('./EventPageFilters', () => ({
   EventPageFilters: (props: ComponentPropsWithoutRef<typeof EventPageFilters>) => (
     <button data-testid="event-page-filters" onClick={() => props.onFilterChange('favoriteMeetings', true)} />
   ),
 }));
 
-const mockUseMediaQuery = useMediaQuery as jest.Mock;
-
 describe('Events Page Header tests', () => {
-  const onFilterChange = jest.fn();
+  const onFilterChange = vi.fn();
 
   const filter = {
     timePeriod: TimeFilter.Month,
@@ -50,7 +50,7 @@ describe('Events Page Header tests', () => {
   };
 
   afterEach(() => {
-    mockUseMediaQuery.mockClear();
+    vi.resetAllMocks();
   });
 
   describe('mobile', () => {
@@ -63,7 +63,7 @@ describe('Events Page Header tests', () => {
 
   describe('tablet', () => {
     it('can render', () => {
-      mockUseMediaQuery.mockReturnValueOnce(false).mockReturnValueOnce(true);
+      (useMediaQuery as Mock).mockReturnValueOnce(false).mockReturnValueOnce(true);
       render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
 
       expect(screen.getByTestId('events-page-header-tablet')).toBeInTheDocument();
@@ -72,7 +72,7 @@ describe('Events Page Header tests', () => {
 
   describe('desktop', () => {
     it('can render', () => {
-      mockUseMediaQuery.mockReturnValueOnce(true).mockReturnValueOnce(false);
+      (useMediaQuery as Mock).mockReturnValueOnce(true).mockReturnValueOnce(false);
       render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
 
       expect(screen.getByTestId('events-page-header-desktop')).toBeInTheDocument();

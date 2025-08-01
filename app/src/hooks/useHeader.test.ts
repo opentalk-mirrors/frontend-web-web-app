@@ -3,21 +3,22 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { renderHook } from '@testing-library/react';
 import { useOutletContext } from 'react-router-dom';
+import { Mock } from 'vitest';
 
 import { useHeader } from './useHeader';
 
-jest.mock('react-router-dom', () => ({
-  useOutletContext: jest.fn(),
+vi.mock('react-router-dom', () => ({
+  useOutletContext: vi.fn(),
 }));
 
 describe('useHeader', () => {
   it('should return the header context from useOutletContext', () => {
     const mockContext = {
       header: '<div>Mock Header</div>',
-      setHeader: jest.fn(),
+      setHeader: vi.fn(),
     };
 
-    (useOutletContext as jest.Mock).mockReturnValue(mockContext);
+    (useOutletContext as Mock).mockReturnValue(mockContext);
 
     const { result } = renderHook(() => useHeader());
 

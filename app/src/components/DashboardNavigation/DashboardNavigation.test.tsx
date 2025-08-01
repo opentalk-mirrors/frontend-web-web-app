@@ -39,8 +39,8 @@ const routes = [
   },
 ];
 
-jest.mock('../../api/rest', () => ({
-  ...jest.requireActual('../../api/rest'),
+vi.mock('../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeQuery: () => ({
     data: {
       displayName: 'Test',

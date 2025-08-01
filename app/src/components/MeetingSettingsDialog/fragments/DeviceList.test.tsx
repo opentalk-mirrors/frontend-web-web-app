@@ -17,7 +17,7 @@ describe('DeviceList', () => {
       <DeviceList
         devices={mockedAudioInputs.slice(0, DEVICE_NUMBER)}
         selectedDevice={undefined}
-        onSelectDevice={jest.fn()}
+        onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
       />
     );
@@ -31,7 +31,7 @@ describe('DeviceList', () => {
       <DeviceList
         devices={mockedAudioInputs.slice(0, 2)}
         selectedDevice={mockedAudioInputs[0].deviceId as DeviceId}
-        onSelectDevice={jest.fn()}
+        onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
       />
     );
@@ -44,7 +44,7 @@ describe('DeviceList', () => {
   });
   it('returns device id on device selection', async () => {
     const CLICKED_DEVICE_INDEX = 0;
-    const mockedOnSelectDevice = jest.fn();
+    const mockedOnSelectDevice = vi.fn();
     render(
       <DeviceList
         devices={mockedAudioInputs.slice(0, 2)}

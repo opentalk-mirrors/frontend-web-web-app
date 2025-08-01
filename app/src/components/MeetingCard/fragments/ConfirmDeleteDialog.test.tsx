@@ -7,8 +7,8 @@ import { fireEvent, screen } from '@testing-library/react';
 import { renderWithProviders, eventMockedData } from '../../../utils/testUtils';
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
-jest.mock('@mui/material', () => ({
-  ...jest.requireActual('@mui/material'),
+vi.mock('@mui/material', async (importOriginal) => ({
+  ...(await importOriginal()),
   //Prevents TouchRipple error on autofocus of button
   Button: (props: ButtonProps) => (
     <button aria-label={props['aria-label']} onClick={props.onClick}>
@@ -17,16 +17,16 @@ jest.mock('@mui/material', () => ({
   ),
 }));
 
-const mockDeleteEvent = jest.fn();
+const mockDeleteEvent = vi.fn();
 const mockDeleteEventResponse = {
   error: false,
 };
-const mockCloseEvent = jest.fn();
+const mockCloseEvent = vi.fn();
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useUpdateEventInstanceMutation: () => [
-    jest.fn(),
+    vi.fn(),
     {
       isLoading: false,
     },

@@ -9,7 +9,7 @@ import { items } from './constants';
 
 describe('SearchTextField', () => {
   const { store, dispatchSpy } = configureStore();
-  const mockOnSearch = jest.fn();
+  const mockOnSearch = vi.fn();
 
   it('render SearchTextField component without crashing', () => {
     renderWithProviders(<SearchTextField onSearch={mockOnSearch} />, { store });

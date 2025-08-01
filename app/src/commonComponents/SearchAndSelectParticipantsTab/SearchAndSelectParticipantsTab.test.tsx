@@ -9,10 +9,10 @@ import SearchAndSelectParticipantsTab from './SearchAndSelectParticipantsTab';
 import { SelectableParticipant } from './fragments/SelectParticipantsItem';
 
 describe('Select Participants Tab', () => {
-  const mockHandleAllClick = jest.fn();
-  const mockHandleSelectedClick = jest.fn();
-  const mockHandleSearchChange = jest.fn();
-  const mockHandleSelectParticipant = jest.fn();
+  const mockHandleAllClick = vi.fn();
+  const mockHandleSelectedClick = vi.fn();
+  const mockHandleSearchChange = vi.fn();
+  const mockHandleSelectParticipant = vi.fn();
 
   it('should call passed functions', () => {
     render(

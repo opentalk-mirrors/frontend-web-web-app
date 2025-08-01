@@ -6,12 +6,12 @@ import { screen } from '@testing-library/react';
 import { mockStore, renderWithProviders, mockedParticipant } from '../../utils/testUtils';
 import ResetHandraisesTab from './ResetHandraisesTab';
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   useRemoteParticipants: () => [mockedParticipant(0), mockedParticipant(1), mockedParticipant(2)],
-  useRoomContext: () => jest.fn(),
+  useRoomContext: () => vi.fn(),
 }));
 
-jest.mock('../../commonComponents/SearchAndSelectParticipantsTab', () => ({
+vi.mock('../../commonComponents/SearchAndSelectParticipantsTab', () => ({
   SearchAndSelectParticipantsTab: () => <div data-testid="searchAndSelectParticipantsTab"></div>,
 }));
 

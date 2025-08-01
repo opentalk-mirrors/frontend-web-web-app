@@ -12,25 +12,25 @@ import {
 
 describe('MeetingForms initialValues utils', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
   describe('getDefaultEventDates', () => {
     it('should return start time, which is current system time rounded to next possible half hour', () => {
       const mockDate = new Date('2025-06-04T10:01:42Z');
-      jest.setSystemTime(mockDate);
+      vi.setSystemTime(mockDate);
       const { startDate } = getDefaultEventDates();
       expect(startDate).toBe('2025-06-04T10:30:00.000Z');
     });
 
     it('should return end date, which is 30 minutes apart from the start time', () => {
       const mockDate = new Date('2025-06-04T10:00:00Z');
-      jest.setSystemTime(mockDate);
+      vi.setSystemTime(mockDate);
       const { startDate, endDate } = getDefaultEventDates();
       expect(new Date(endDate).getTime() - new Date(startDate).getTime()).toBe(30 * 60 * 1000);
     });
@@ -55,7 +55,7 @@ describe('MeetingForms initialValues utils', () => {
   describe('getInitialValuesForNew', () => {
     it('should return default values for a new event', () => {
       const mockDate = new Date('2025-06-04T10:01:42Z');
-      jest.setSystemTime(mockDate);
+      vi.setSystemTime(mockDate);
 
       const memoizedRecurrencePattern = false;
       const isWaitingRoomEnabledByDefault = true;
@@ -105,7 +105,7 @@ describe('MeetingForms initialValues utils', () => {
 
     it('should set default dates for a time independet event', () => {
       const mockDate = new Date('2025-06-04T10:01:42Z');
-      jest.setSystemTime(mockDate);
+      vi.setSystemTime(mockDate);
 
       const memoizedRecurrencePattern = false;
 

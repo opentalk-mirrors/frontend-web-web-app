@@ -1,27 +1,53 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
 import { TariffId } from '@opentalk/rest-api-rtk-query';
-import '@testing-library/jest-dom';
-import 'cross-fetch/polyfill';
-import failOnConsole from 'jest-fail-on-console';
+import '@testing-library/jest-dom/vitest';
+import { fetch, Request, Response } from 'cross-fetch';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import React from 'react';
+import { beforeAll, afterEach, afterAll } from 'vitest';
 
 import { DefaultAvatarImage } from './store/slices/configSlice';
 
-failOnConsole();
+/*
+This will stop the tests directly if an unhandled rejection occurs, so that is easier to debug.
 
-global.React = React;
+process.on('unhandledRejection', (reason) => {
+  console.log(reason);
+  process.exit(1);
+});
+ */
+vi.stubGlobal('Response', Response);
+vi.stubGlobal('Request', Request);
+vi.stubGlobal('fetch', fetch);
 
-global.console = {
-  ...console,
-};
+const handlers = [
+  http.get('http://OP/.well-known/openid-configuration', () => {
+    return HttpResponse.json({
+      issuer: 'http://localhost/',
+      authorization_endpoint: 'http://localhost/auth',
+      token_endpoint: 'http://localhost/token',
+      revocation_endpoint: 'revoke',
+    });
+  }),
+  http.get('/notes', () => {
+    return HttpResponse.html('<div>Mocked Notes Page</div>');
+  }),
+  http.get('/locales/en-US/k3k.ftl', () => {
+    return HttpResponse.text('Mocked FTL Content');
+  }),
+  http.get('/locales/en/k3k.ftl', () => {
+    return HttpResponse.text('Mocked FTL Content');
+  }),
+];
+
+// Start msw node mock server
+const server = setupServer(...handlers);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 const config = {
   controller: 'localhost:8000',
@@ -137,30 +163,7 @@ const config = {
 
 window.config = config;
 
-const handlers = [
-  http.get('http://OP/.well-known/openid-configuration', async () => {
-    return HttpResponse.json({
-      issuer: 'http://localhost/',
-      authorization_endpoint: 'http://localhost/auth',
-      token_endpoint: 'http://localhost/token',
-      revocation_endpoint: 'revoke',
-    });
-  }),
-  http.get('http://localhost/locales/en-US/k3k.ftl', async () => {
-    return HttpResponse.text('Mocked FTL Content');
-  }),
-  http.get('http://localhost/locales/en/k3k.ftl', async () => {
-    return HttpResponse.text('Mocked FTL Content');
-  }),
-];
-
-// Start msw node mock server
-const server = setupServer(...handlers);
-
-global.beforeAll(() => server.listen());
-global.afterEach(() => server.resetHandlers());
-
-jest.mock('@opentalk/i18next-fluent', () => {
+vi.mock('@opentalk/i18next-fluent', () => {
   class Fluent {
     static type: string;
     constructor() {
@@ -172,16 +175,18 @@ jest.mock('@opentalk/i18next-fluent', () => {
     }
   }
   Fluent.type = 'fluent';
-  return Fluent;
+  return {
+    default: Fluent,
+  };
 });
 
-global.beforeEach(() => {
+beforeEach(() => {
   Object.defineProperty(global.navigator, 'mediaDevices', {
     writable: true,
     value: {
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      getDisplayMedia: jest.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      getDisplayMedia: vi.fn(),
     },
   });
 
@@ -194,13 +199,13 @@ global.beforeEach(() => {
   });
 });
 
-jest.mock('@livekit/components-react', () => ({
-  useRoomContext: () => jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useRoomContext: () => vi.fn(),
 }));
 
-export const mockChangeLanguage = jest.fn();
+export const mockChangeLanguage = vi.fn();
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   // this mock makes sure any components using translate hook can use it without a warning being shown
   useTranslation: () => {
     return {
@@ -208,7 +213,7 @@ jest.mock('react-i18next', () => ({
       i18n: {
         changeLanguage: mockChangeLanguage,
         language: {
-          split: () => ['en'],
+          split: () => ['en', 'de'],
         },
       },
     };
@@ -220,14 +225,4 @@ jest.mock('react-i18next', () => ({
   Trans: ({ i18nKey }: { children: React.ReactNode; i18nKey: string }) => i18nKey,
 }));
 
-jest.mock('i18next', () => {
-  const module = jest.requireActual('i18next');
-
-  return {
-    __esModule: true,
-    default: module,
-    t: (key: string) => key,
-  };
-});
-
-global.ImageData = jest.fn();
+global.ImageData = vi.fn();

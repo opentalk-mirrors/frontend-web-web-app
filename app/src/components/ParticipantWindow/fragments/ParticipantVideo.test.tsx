@@ -13,16 +13,16 @@ import {
 } from '../../../utils/testUtils';
 import ParticipantVideo from './ParticipantVideo';
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   useParticipantContext: () => mockedParticipant(0),
-  useRoomContext: () => jest.fn(),
+  useRoomContext: () => vi.fn(),
 }));
 
-jest.mock('./RemoteVideo', () => ({
+vi.mock('./RemoteVideo', () => ({
   __esModule: true,
   default: () => <div data-testid="remoteVideo"></div>,
 }));
-jest.mock('./ScreenPresenterVideo', () => ({
+vi.mock('./ScreenPresenterVideo', () => ({
   __esModule: true,
   default: () => <div data-testid="screenPresenterVideo"></div>,
 }));

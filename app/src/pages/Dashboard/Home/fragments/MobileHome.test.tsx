@@ -6,32 +6,32 @@ import userEvent from '@testing-library/user-event';
 
 import MobileHome from './MobileHome';
 
-jest.mock('./AdhocMeetingButton', () => ({
-  ...jest.requireActual('./AdhocMeetingButton'),
+vi.mock('./AdhocMeetingButton', () => ({
+  ...vi.importActual('./AdhocMeetingButton'),
   __esModule: true,
   default: () => <div data-testid="adhoc-button"></div>,
 }));
 
-jest.mock('../../../../components/JoinMeetingDialog', () => ({
-  ...jest.requireActual('../../../../components/JoinMeetingDialog'),
+vi.mock('../../../../components/JoinMeetingDialog', () => ({
+  ...vi.importActual('../../../../components/JoinMeetingDialog'),
   __esModule: true,
   default: () => <div data-testid="join-meeting-dialog"></div>,
 }));
 
-jest.mock('./NewMeetingButton', () => ({
-  ...jest.requireActual('./NewMeetingButton'),
+vi.mock('./NewMeetingButton', () => ({
+  ...vi.importActual('./NewMeetingButton'),
   __esModule: true,
   default: () => <div data-testid="new-meeting-button"></div>,
 }));
 
-jest.mock('./CurrentMeetings', () => ({
-  ...jest.requireActual('./CurrentMeetings'),
+vi.mock('./CurrentMeetings', () => ({
+  ...vi.importActual('./CurrentMeetings'),
   __esModule: true,
   default: () => <div data-testid="current-meetings"></div>,
 }));
 
-jest.mock('./FavoriteMeetings', () => ({
-  ...jest.requireActual('./FavoriteMeetings'),
+vi.mock('./FavoriteMeetings', () => ({
+  ...vi.importActual('./FavoriteMeetings'),
   __esModule: true,
   default: () => <div data-testid="favorite-meetings"></div>,
 }));

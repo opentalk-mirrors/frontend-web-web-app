@@ -7,11 +7,11 @@ import { fireEvent, screen } from '@testing-library/react';
 import { renderWithProviders, eventMockedData } from '../../../utils/testUtils';
 import { MeetingActions } from './MeetingActions';
 
-jest.mock('../../../commonComponents', () => ({
-  ...jest.requireActual('../../../commonComponents'),
+vi.mock('../../../commonComponents', async (importOriginal) => ({
+  ...(await importOriginal()),
   notifications: {
-    success: jest.fn(),
-    error: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
   },
 }));
 
@@ -27,28 +27,28 @@ const mockNotAcceptedEvent = {
   },
 } as Event;
 
-const mockDeclineEventInvite = jest.fn();
+const mockDeclineEventInvite = vi.fn();
 
-jest.mock('../../../hooks', () => ({
-  useAppSelector: jest.fn(),
+vi.mock('../../../hooks', () => ({
+  useAppSelector: vi.fn(),
 }));
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useMarkFavoriteEventMutation: () => [
-    jest.fn(),
+    vi.fn(),
     {
       isLoading: false,
     },
   ],
   useUnmarkFavoriteEventMutation: () => [
-    jest.fn(),
+    vi.fn(),
     {
       isLoading: false,
     },
   ],
   useLazyGetRoomInvitesQuery: () => [
-    jest.fn(),
+    vi.fn(),
     {
       isLoading: false,
     },
@@ -61,7 +61,7 @@ jest.mock('../../../api/rest', () => ({
   ],
 }));
 
-jest.mock('./ConfirmDeleteDialog', () => ({
+vi.mock('./ConfirmDeleteDialog', () => ({
   ConfirmDeleteDialog: () => <div></div>,
 }));
 

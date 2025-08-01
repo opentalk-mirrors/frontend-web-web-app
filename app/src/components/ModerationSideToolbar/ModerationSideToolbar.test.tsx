@@ -9,7 +9,7 @@ import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import ModerationSideToolbar from './ModerationSideToolbar';
 
 describe('ModerationSideToolbar', () => {
-  const mockOnSelect = jest.fn();
+  const mockOnSelect = vi.fn();
   const exampleTabs: TabProps[] = [
     {
       key: 'chat' as ModerationTabKey,
@@ -43,7 +43,7 @@ describe('ModerationSideToolbar', () => {
     );
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders all tabs and dividers correctly', () => {

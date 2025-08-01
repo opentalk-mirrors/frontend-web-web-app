@@ -27,11 +27,11 @@ const checkRowTextContent = (
   }
 };
 
-const handleDownload = jest.fn(() => {
+const handleDownload = vi.fn(() => {
   return sleep(100);
 });
 
-const handleDelete = jest.fn(() => {
+const handleDelete = vi.fn(() => {
   return sleep(100);
 });
 
@@ -65,7 +65,7 @@ describe('Asset Table', () => {
   });
 
   it('executes onDownload callback when asset is downloaded', async () => {
-    const onDownload = jest.fn().mockResolvedValue(true);
+    const onDownload = vi.fn().mockResolvedValue(true);
     render(<AssetTable assets={mockedRoomAssets} onDownload={onDownload} />);
     const rows = screen.getAllByRole('row');
     const assetRow = rows.find((row) => within(row).queryByRole('cell', { name: mockedRoomAssets[0].filename }));

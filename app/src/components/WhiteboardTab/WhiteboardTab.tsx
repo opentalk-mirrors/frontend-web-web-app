@@ -33,8 +33,8 @@ const WhiteboardTab = () => {
     dispatch(generateWhiteboardPdf.action());
   };
 
-  const handleDownload = ({ assetId, filename }: AssetRef) => {
-    downloadAsset({ roomId, assetId, filename });
+  const handleDownload = async ({ assetId, filename }: AssetRef) => {
+    await downloadAsset({ roomId, assetId, filename });
   };
 
   return (

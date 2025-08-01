@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useMediaQuery } from '@mui/material';
 import { act, screen, fireEvent } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import LayoutSelection from './LayoutSelection';
@@ -10,23 +11,23 @@ import LayoutSelection from './LayoutSelection';
 const mockFullscreenContext = {
   active: true,
   node: null,
-  exit: jest.fn(),
-  enter: jest.fn(),
+  exit: vi.fn(),
+  enter: vi.fn(),
   fullscreenParticipantID: '',
-  setRootElement: jest.fn(),
+  setRootElement: vi.fn(),
   rootElement: null,
-  setHasActiveOverlay: jest.fn(),
-  isFullScreenAvailable: jest.fn(),
+  setHasActiveOverlay: vi.fn(),
+  isFullScreenAvailable: vi.fn(),
 };
 
-jest.mock('../../../hooks/useFullscreenContext.ts', () => ({ useFullscreenContext: () => mockFullscreenContext }));
+vi.mock('../../../hooks/useFullscreenContext.ts', () => ({ useFullscreenContext: () => mockFullscreenContext }));
 
-jest.mock('@mui/material', () => {
-  const mui = jest.requireActual('@mui/material');
-  return { ...mui, useMediaQuery: jest.fn().mockReturnValue(false) };
-});
+vi.mock('@mui/material', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useMediaQuery: vi.fn().mockReturnValue(false),
+}));
 
-const mockUseMediaQuery = useMediaQuery as jest.Mock;
+const mockUseMediaQuery = useMediaQuery as Mock;
 const openMenu = () => {
   const openButton = screen.getByRole('button', { name: 'conference-view-trigger-button' });
   fireEvent.click(openButton);
@@ -59,7 +60,7 @@ describe('Layout selection menu', () => {
   });
 
   it('renders fullscreen button if the fullscreen feature is available', () => {
-    mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
+    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => true);
     renderWithProviders(<LayoutSelection />, { store });
     act(openMenu);
     expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
@@ -69,7 +70,7 @@ describe('Layout selection menu', () => {
   });
 
   it('opens fullscreen when clicking the fullscreen button', () => {
-    mockFullscreenContext.isFullScreenAvailable = jest.fn(() => true);
+    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => true);
 
     renderWithProviders(<LayoutSelection />, { store });
     act(openMenu);
@@ -81,7 +82,7 @@ describe('Layout selection menu', () => {
   });
 
   it('does not render fullscreen button if fullscreen feature is unavailable', () => {
-    mockFullscreenContext.isFullScreenAvailable = jest.fn(() => false);
+    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => false);
 
     renderWithProviders(<LayoutSelection />, { store });
 

@@ -7,10 +7,10 @@ import { idFromDescriptor } from '../../../modules/WebRTC';
 import { mockedVideoMediaDescriptor, mockStore, renderWithProviders } from '../../../utils/testUtils';
 import RemoteVideo from './RemoteVideo';
 
-jest.mock('@livekit/components-react', () => ({
-  VideoTrack: () => jest.fn(),
-  useParticipantTracks: () => jest.fn(),
-  useRoomContext: () => jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  VideoTrack: () => vi.fn(),
+  useParticipantTracks: () => vi.fn(),
+  useRoomContext: () => vi.fn(),
 }));
 
 describe('RemoteVideo', () => {

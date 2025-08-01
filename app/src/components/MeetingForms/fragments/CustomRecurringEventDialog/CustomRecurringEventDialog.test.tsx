@@ -2,14 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { renderWithProviders } from '../../../../utils/testUtils';
 import { CustomRecurringEventDialog, CustomRecurringEventDialogProps } from './CustomRecurringEventDialog';
 
 const mockDialogProps: CustomRecurringEventDialogProps = {
   open: true,
-  closeDialog: jest.fn(),
-  selectCustomFrequencyOption: jest.fn(),
+  closeDialog: vi.fn(),
+  selectCustomFrequencyOption: vi.fn(),
   recurrenceStartTimestamp: new Date().toISOString(),
 };
 
@@ -81,7 +82,7 @@ describe('Custom Recurrence Dialog', () => {
     expect(screen.getByTestId('weekly-options')).toBeInTheDocument();
   });
 
-  it('enables date selection after selecting option "On"', () => {
+  it('enables date selection after selecting option "On"', async () => {
     render(<CustomRecurringEventDialog {...mockDialogProps} />);
 
     const dayInput = screen.getByRole('spinbutton', { name: 'Day' });
@@ -94,7 +95,7 @@ describe('Custom Recurrence Dialog', () => {
 
     const optionOn = screen.getByRole('radio', { name: 'dashboard-recurrence-dialog-end-option-on' });
 
-    fireEvent.click(optionOn);
+    await userEvent.click(optionOn);
 
     expect(dayInput).toHaveAttribute('aria-disabled', 'false');
     expect(monthInput).toHaveAttribute('aria-disabled', 'false');

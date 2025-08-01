@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useNavigate } from 'react-router-dom';
+import { Mock } from 'vitest';
 
 import { useCreateEventMutation } from '../../api/rest';
 import { notifications } from '../../commonComponents';
@@ -10,26 +11,26 @@ import CreateMeetingForm from './CreateMeetingForm';
 import { MeetingFormValues } from './fragments/DashboardDateTimePicker';
 import { createPayload } from './utils/payloadUtils';
 
-jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn(),
+vi.mock('react-router-dom', () => ({
+  useNavigate: vi.fn(),
 }));
 
-jest.mock('../../api/rest', () => ({
-  useCreateEventMutation: jest.fn(),
+vi.mock('../../api/rest', () => ({
+  useCreateEventMutation: vi.fn(),
 }));
 
-jest.mock('../../commonComponents', () => ({
+vi.mock('../../commonComponents', () => ({
   notifications: {
-    success: jest.fn(),
-    error: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
   },
 }));
 
-jest.mock('./utils/payloadUtils', () => ({
-  createPayload: jest.fn(),
+vi.mock('./utils/payloadUtils', () => ({
+  createPayload: vi.fn(),
 }));
 
-jest.mock('./fragments/MeetingForm', () => ({
+vi.mock('./fragments/MeetingForm', () => ({
   __esModule: true,
   default: ({
     onSubmit,
@@ -53,13 +54,13 @@ jest.mock('./fragments/MeetingForm', () => ({
 }));
 
 describe('CreateMeetingForm', () => {
-  const mockNavigate = jest.fn();
-  const mockCreateEvent = jest.fn();
+  const mockNavigate = vi.fn();
+  const mockCreateEvent = vi.fn();
 
   beforeEach(() => {
-    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
-    (useCreateEventMutation as jest.Mock).mockReturnValue([mockCreateEvent, { isLoading: false }]);
-    jest.clearAllMocks();
+    (useNavigate as Mock).mockReturnValue(mockNavigate);
+    (useCreateEventMutation as Mock).mockReturnValue([mockCreateEvent, { isLoading: false }]);
+    vi.clearAllMocks();
   });
 
   it('renders the MeetingForm component', () => {
@@ -79,7 +80,7 @@ describe('CreateMeetingForm', () => {
 
   it('triggers event creation with proper payload on form submission', async () => {
     const mockPayload = { title: 'Test Meeting Payload' };
-    (createPayload as jest.Mock).mockReturnValue(mockPayload);
+    (createPayload as Mock).mockReturnValue(mockPayload);
 
     render(<CreateMeetingForm />);
 
@@ -92,7 +93,7 @@ describe('CreateMeetingForm', () => {
 
   it('shows a success notification on successful event creation', async () => {
     mockCreateEvent.mockImplementationOnce(() => ({
-      unwrap: jest.fn().mockResolvedValue({ id: '123', title: 'Test Meeting' }),
+      unwrap: vi.fn().mockResolvedValue({ id: '123', title: 'Test Meeting' }),
     }));
 
     render(<CreateMeetingForm />);
@@ -107,7 +108,7 @@ describe('CreateMeetingForm', () => {
   it('navigates to update page with event id on successful event creation', async () => {
     const mockEventId = '123';
     mockCreateEvent.mockImplementationOnce(() => ({
-      unwrap: jest.fn().mockResolvedValue({ id: mockEventId, title: 'Test Meeting' }),
+      unwrap: vi.fn().mockResolvedValue({ id: mockEventId, title: 'Test Meeting' }),
     }));
 
     render(<CreateMeetingForm />);
@@ -121,7 +122,7 @@ describe('CreateMeetingForm', () => {
 
   it('shows an error notification on event creation failure', async () => {
     mockCreateEvent.mockImplementationOnce(() => ({
-      unwrap: jest.fn().mockRejectedValueOnce({ error: 'Error creating event' }),
+      unwrap: vi.fn().mockRejectedValueOnce({ error: 'Error creating event' }),
     }));
 
     render(<CreateMeetingForm />);
@@ -140,9 +141,7 @@ describe('CreateMeetingForm', () => {
     mockCreateEvent.mockImplementationOnce(() => ({
       unwrap: () =>
         new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({ id: '123', title: 'Test Meeting' });
-          }, 100);
+          resolve({ id: '123', title: 'Test Meeting' });
         }),
     }));
 
@@ -160,7 +159,7 @@ describe('CreateMeetingForm', () => {
   });
 
   it('passes the loading state of event to the child MeetingForm', () => {
-    (useCreateEventMutation as jest.Mock).mockReturnValue([jest.fn(), { isLoading: true }]);
+    (useCreateEventMutation as Mock).mockReturnValue([vi.fn(), { isLoading: true }]);
 
     render(<CreateMeetingForm />);
 

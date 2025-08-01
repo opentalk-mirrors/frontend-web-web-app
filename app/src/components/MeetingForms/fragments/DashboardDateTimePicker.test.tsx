@@ -34,7 +34,7 @@ const initialValues = {
 };
 
 describe('DashboardDateTimePicker', () => {
-  const mockOnChange = jest.fn();
+  const mockOnChange = vi.fn();
 
   const renderComponent = (type: 'start' | 'end' = 'start', initialErrors = {}) =>
     renderWithProviders(

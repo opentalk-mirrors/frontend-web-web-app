@@ -6,30 +6,34 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { USER_MANUAL_URL } from '../../utils/apiUtils';
 import { SupportList } from './SupportList';
 
-jest.mock('react-i18next', () => ({
-  ...jest.requireActual('react-i18next'),
+vi.mock('react-i18next', () => ({
+  ...vi.importActual('react-i18next'),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-jest.mock('../../hooks', () => ({
+vi.mock('../../hooks', () => ({
   useAppSelector: (selector: () => unknown) => selector(),
   useLocale: () => ({ code: 'en' }),
 }));
 
-jest.mock('../Toolbar/fragments/ShortcutListDialog', () => ({
+vi.mock('../Toolbar/fragments/ShortcutListDialog', () => ({
   __esModule: true,
   default: ({ open }: { open: boolean }) => <div style={{ display: open ? 'block' : 'none' }}>ShortcutListDialog</div>,
 }));
 
-const mockSelectIsGlitchtipConfigured = jest.fn();
-const mockSelectContactSupportUrl = jest.fn();
+const mockSelectIsGlitchtipConfigured = vi.fn();
+const mockSelectContactSupportUrl = vi.fn();
 
-jest.mock('../../store/slices/configSlice', () => ({
+vi.mock('../../store/slices/configSlice', () => ({
   selectIsGlitchtipConfigured: () => mockSelectIsGlitchtipConfigured(),
   selectContactSupportUrl: () => mockSelectContactSupportUrl(),
 }));
 
-describe('SupportList component', () => {
+describe('SupportList', () => {
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
   it('should render without crashing', () => {
     render(<SupportList />);
     expect.assertions(0);
@@ -91,7 +95,7 @@ describe('SupportList component', () => {
   });
   it('should contain user manual proper link', () => {
     render(<SupportList />);
-    const link = screen.getByRole('link', { name: 'my-meeting-menu-user-manual' });
+    const link = screen.getByRole('link', { name: 'my-meeting-menu-user-manual global-open-new-tab' });
 
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute('href', USER_MANUAL_URL);

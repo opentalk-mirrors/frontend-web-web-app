@@ -19,8 +19,9 @@ const ProgressBar = ({ endTime, startTime, isFinished }: IProps) => {
   const [progress, setProgress] = React.useState(0);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (!isFinished) {
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         const fullTime = endTime - startTime;
         const currentTime = Date.now() - startTime;
         setProgress((oldProgress) => {
@@ -30,12 +31,10 @@ const ProgressBar = ({ endTime, startTime, isFinished }: IProps) => {
           return Math.round((currentTime / fullTime) * 100);
         });
       }, 1000);
-      return () => {
-        clearInterval(timer);
-      };
     } else {
       setProgress(100);
     }
+    return () => timer && clearInterval(timer);
   }, [endTime, startTime, isFinished]);
 
   return (

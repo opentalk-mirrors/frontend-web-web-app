@@ -7,7 +7,7 @@ import { ChatMessage, ChatScope, ParticipantId } from '../types';
 import { useChatScroll } from './useChatScroll';
 
 describe('useChatScroll', () => {
-  const scrollToBottom = jest.fn();
+  const scrollToBottom = vi.fn();
   const mockMessages = [
     {
       id: '1',
@@ -29,13 +29,13 @@ describe('useChatScroll', () => {
     scrollHeight: 1000,
     clientHeight: 500,
     scrollTop: 0,
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
   } as unknown as HTMLUListElement;
 
   beforeEach(() => {
     scrollToBottom.mockClear();
-    jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
       cb(0);
       return 0;
     });

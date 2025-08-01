@@ -4,14 +4,15 @@
 import { Button, Switch } from '@mui/material';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Mock } from 'vitest';
 
 import { useHotkeysActive } from './useHotkeys';
 import { usePreventSpaceKey } from './usePreventSpaceKey';
 
-jest.mock('./useHotkeys');
+vi.mock('./useHotkeys');
 
 interface WithProps {
-  handleChange: jest.Mock;
+  handleChange: Mock;
 }
 
 function WithButton(props: WithProps) {
@@ -29,10 +30,10 @@ function WithSwitch(props: WithProps) {
 describe('usePreventSpaceKey', () => {
   describe('shortkeys are enabled', () => {
     beforeEach(() => {
-      (useHotkeysActive as jest.Mock).mockReturnValue(true);
+      (useHotkeysActive as Mock).mockReturnValue(true);
     });
     it('prevents space key for a button', async () => {
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
       render(<WithButton handleChange={handleChange} />);
 
       const button = screen.getByRole('button');
@@ -43,7 +44,7 @@ describe('usePreventSpaceKey', () => {
       expect(handleChange).not.toHaveBeenCalled();
     });
     it('prevents space key for a switch', async () => {
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
       render(<WithSwitch handleChange={handleChange} />);
 
       const switchElement = screen.getByRole('checkbox');
@@ -57,10 +58,10 @@ describe('usePreventSpaceKey', () => {
 
   describe('shortkeys are disabled', () => {
     beforeEach(() => {
-      (useHotkeysActive as jest.Mock).mockReturnValue(false);
+      (useHotkeysActive as Mock).mockReturnValue(false);
     });
     it('does not prevent space key for a button', async () => {
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
       render(<WithButton handleChange={handleChange} />);
 
       const button = screen.getByRole('button');
@@ -71,7 +72,7 @@ describe('usePreventSpaceKey', () => {
       expect(handleChange).toHaveBeenCalled();
     });
     it('does not prevent space key for a switch', async () => {
-      const handleChange = jest.fn();
+      const handleChange = vi.fn();
       render(<WithSwitch handleChange={handleChange} />);
 
       const switchElement = screen.getByRole('checkbox');

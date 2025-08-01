@@ -69,7 +69,7 @@ describe('CommonTextField', () => {
     expect(label).toHaveAttribute('data-shrink', 'true');
   });
   it('propagates only keys defined in KEYS_TO_PROPAGATE', () => {
-    const onKeyboard = jest.fn();
+    const onKeyboard = vi.fn();
     render(
       <div role="presentation" onKeyDown={onKeyboard} onKeyUp={onKeyboard}>
         <CommonTextField label={LABEL} />
@@ -117,8 +117,8 @@ describe('CommonTextField', () => {
     expect(helperText).toBeInTheDocument();
   });
   it('shall call onBlur and onFocus props passed by parent', async () => {
-    const onFocus = jest.fn();
-    const onBlur = jest.fn();
+    const onFocus = vi.fn();
+    const onBlur = vi.fn();
     render(<CommonTextField label={LABEL} onFocus={onFocus} onBlur={onBlur} />);
     const textField = screen.getByRole('textbox', { name: LABEL });
     act(() => {

@@ -90,9 +90,9 @@ const InviteGuestDialog = (props: Omit<DialogProps, 'children'>) => {
     formik.setFieldValue('expirationDate', expirationDate);
   };
 
-  const copyToClipboard = () => {
+  const copyToClipboard = async () => {
     if (inviteUrl) {
-      navigator.clipboard.writeText(inviteUrl.toString());
+      await navigator.clipboard.writeText(inviteUrl.toString());
       notifications.success(t('global-copy-link-success'));
     } else {
       notifications.error(t('global-copy-permanent-guest-link-error'));

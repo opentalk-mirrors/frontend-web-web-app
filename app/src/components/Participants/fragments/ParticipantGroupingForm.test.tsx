@@ -8,7 +8,7 @@ import ParticipantGroupingForm from './ParticipantGroupingForm';
 
 describe('ParticipantGroupingForm', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders with switch checked and correct label when grouping is enabled', () => {

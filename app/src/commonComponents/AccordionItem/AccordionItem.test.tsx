@@ -7,7 +7,7 @@ import AccordionItem from './AccordionItem';
 
 describe('AccordionItem', () => {
   const defaultProps = {
-    onChange: jest.fn(),
+    onChange: vi.fn(),
     expanded: false,
     summaryText: 'Accordion summary',
     children: <div>Accordion details</div>,

@@ -27,7 +27,7 @@ const SETTING_PANELS: Array<SettingsPanel> = [
 // // and than set this variable to desired value before the test runs
 // // either in the test itself or via beforeAll, beforeEach...
 let mockPanels: Array<SettingsPanel>;
-jest.mock('./settingPanels', () => {
+vi.mock('./settingPanels', () => {
   return {
     getSettingPanels: () => mockPanels,
   };
@@ -38,12 +38,12 @@ describe('MobileDialogContent', () => {
     mockPanels = SETTING_PANELS;
   });
   it('renders the header', async () => {
-    renderWithProviders(<MobileDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
+    renderWithProviders(<MobileDialogContent onClose={vi.fn()} setting="audio" />, { provider: { mui: true } });
     const title = screen.getByRole('heading', { name: 'meeting-settings-title' });
     expect(title).toBeInTheDocument();
   });
   it('calls onClose if user clicks close button', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     renderWithProviders(<MobileDialogContent onClose={onClose} setting="audio" />, { provider: { mui: true } });
     const closeButton = screen.getByRole('button', { name: 'global-close-dialog' });
     expect(closeButton).toBeInTheDocument();
@@ -56,7 +56,7 @@ describe('MobileDialogContent', () => {
   it('renders the combobox with specified setting title and respective setting panel below', async () => {
     const setting = 'audio';
     const testId = AUDIO_PANEL_CONTENT_ID;
-    renderWithProviders(<MobileDialogContent onClose={jest.fn()} setting={setting} />, { provider: { mui: true } });
+    renderWithProviders(<MobileDialogContent onClose={vi.fn()} setting={setting} />, { provider: { mui: true } });
 
     const select = screen.getByRole('combobox', { name: 'meeting-settings-title' });
     expect(select).toHaveTextContent(setting);
@@ -65,7 +65,7 @@ describe('MobileDialogContent', () => {
     expect(panel).toBeInTheDocument();
   });
   it('renders all panel titles in the combobox dropdown', async () => {
-    renderWithProviders(<MobileDialogContent onClose={jest.fn()} setting="audio" />, { provider: { mui: true } });
+    renderWithProviders(<MobileDialogContent onClose={vi.fn()} setting="audio" />, { provider: { mui: true } });
 
     const select = screen.getByRole('combobox', { name: 'meeting-settings-title' });
     fireEvent.mouseDown(select);

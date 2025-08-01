@@ -13,13 +13,13 @@ import {
 } from '../../../utils/testUtils';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   useParticipantContext: () => mockedParticipant(0),
-  useRoomContext: () => jest.fn(),
+  useRoomContext: () => vi.fn(),
   useRemoteParticipant: () => mockedParticipant(0),
 }));
 
-jest.mock('./RemoteVideo', () => ({
+vi.mock('./RemoteVideo', () => ({
   __esModule: true,
   default: () => <div data-testid="remoteVideo"></div>,
 }));
@@ -32,13 +32,17 @@ const ScreenPresenterVideoProps = {
   isFullscreenMode: false,
   isVideoPinned: false,
   videoPosition: 'bottomRight' as PresenterVideoPosition,
-  togglePin: jest.fn(),
-  changeVideoPosition: jest.fn(),
+  togglePin: vi.fn(),
+  changeVideoPosition: vi.fn(),
 };
 
 describe('ScreenPresenterVideo Component', () => {
-  const handleClick = jest.fn();
+  const handleClick = vi.fn();
   const { store } = mockStore(1, { video: true, screen: true });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it('render component without crashing', () => {
     renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });

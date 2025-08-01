@@ -6,54 +6,54 @@ import { screen, within } from '@testing-library/react';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import Toolbar from './Toolbar';
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   useTrackToggle: () => ({ source: 'microphone' }),
-  useRoomContext: () => jest.fn(),
+  useRoomContext: () => vi.fn(),
   useLocalParticipant: () => ({ localParticipant: mockedParticipant(0) }),
-  useLocalParticipantPermissions: () => jest.fn(),
+  useLocalParticipantPermissions: () => vi.fn(),
 }));
 
-jest.mock('@livekit/components-core', () => ({
-  sortParticipants: () => jest.fn(),
+vi.mock('@livekit/components-core', () => ({
+  sortParticipants: () => vi.fn(),
 }));
 
-jest.mock('livekit-client', () => ({
+vi.mock('livekit-client', () => ({
   Track: {
     Source: {
       Camera: 'camera',
       Microphone: 'microphone',
     },
   },
-  VideoCaptureOptions: () => jest.fn(),
-  setLogExtension: () => jest.fn(),
+  VideoCaptureOptions: () => vi.fn(),
+  setLogExtension: () => vi.fn(),
 }));
 
-jest.mock('./fragments/EndCallButton', () => ({
+vi.mock('./fragments/EndCallButton', () => ({
   __esModule: true,
   default: () => <div data-testid="end-call-button"></div>,
 }));
 
-jest.mock('./fragments/MoreButton', () => ({
+vi.mock('./fragments/MoreButton', () => ({
   __esModule: true,
   default: () => <div data-testid="more-button"></div>,
 }));
 
-jest.mock('./fragments/VideoButton', () => ({
+vi.mock('./fragments/VideoButton', () => ({
   __esModule: true,
   default: () => <div data-testid="video-button"></div>,
 }));
 
-jest.mock('./fragments/AudioButton', () => ({
+vi.mock('./fragments/AudioButton', () => ({
   __esModule: true,
   default: () => <div data-testid="audio-button"></div>,
 }));
 
-jest.mock('./fragments/ShareScreenButton', () => ({
+vi.mock('./fragments/ShareScreenButton', () => ({
   __esModule: true,
   default: () => <div data-testid="share-screen-button"></div>,
 }));
 
-jest.mock('./fragments/HandraiseButton', () => ({
+vi.mock('./fragments/HandraiseButton', () => ({
   __esModule: true,
   default: () => <div data-testid="hand-raise-button"></div>,
 }));

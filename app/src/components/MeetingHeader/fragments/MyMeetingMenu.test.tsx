@@ -6,7 +6,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MyMeetingMenu from './MyMeetingMenu';
 
-jest.mock('../../../utils/apiUtils');
+vi.mock('../../../utils/apiUtils');
 
 describe('My Meeting Menu', () => {
   it('renders menu and all default menu items on button click', async () => {
@@ -21,7 +21,9 @@ describe('My Meeting Menu', () => {
     const menu = await screen.findByRole('menu', { name: 'my-meeting-menu' });
     expect(menu).toBeInTheDocument();
 
-    const userManualMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
+    const userManualMenuItem = screen.getByRole('menuitem', {
+      name: 'my-meeting-menu-user-manual global-open-new-tab',
+    });
     expect(userManualMenuItem).toBeInTheDocument();
 
     const shortcutsMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-keyboard-shortcuts' });
@@ -72,7 +74,7 @@ describe('My Meeting Menu', () => {
     const menuButton = await screen.findByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
 
-    const menuItem = await screen.findByRole('menuitem', { name: 'my-meeting-menu-user-manual' });
+    const menuItem = await screen.findByRole('menuitem', { name: 'my-meeting-menu-user-manual global-open-new-tab' });
 
     expect(menuItem).toBeInTheDocument();
     expect(menuItem).toHaveAttribute('href', 'https://docs.opentalk.eu/user/manual/');
