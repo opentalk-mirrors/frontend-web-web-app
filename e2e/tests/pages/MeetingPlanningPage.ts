@@ -100,9 +100,9 @@ export class MeetingPlanningPage {
       'Required fields are marked with an asterisk. Please fill them out.'
     );
     this.dateInputField = {
-      fromInputField: this.page.getByPlaceholder('MM/DD/YYYY hh:mm').nth(0),
+      fromInputField: this.page.getByLabel('from *'),
       datePicker: this.page.locator('.MuiPickersPopper-root'),
-      toInputField: this.page.getByPlaceholder('MM/DD/YYYY hh:mm').nth(1),
+      toInputField: this.page.getByLabel('to *'),
       calenderIcon: this.page.getByRole('button', { name: 'Choose date' }),
     };
     this.datePicker = {
