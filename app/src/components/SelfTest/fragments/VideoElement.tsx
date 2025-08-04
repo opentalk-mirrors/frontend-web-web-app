@@ -55,11 +55,20 @@ const VideoElement = () => {
   const { t } = useTranslation();
   const videoEnabled = useAppSelector(selectVideoEnabled);
   const videoDeviceId = useAppSelector(selectVideoDeviceId);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const processorRef = useRef<BackgroundBlur | null>(null);
 
-  const videoProcessor = new BackgroundBlur(videoBackgroundEffects);
+  const videoProcessor = useMemo(() => {
+    if (processorRef.current) {
+      processorRef.current.destroy();
+    }
+
+    const processor = new BackgroundBlur(videoBackgroundEffects);
+    processorRef.current = processor;
+    return processor;
+  }, [videoBackgroundEffects]);
 
   const previewTracks = usePreviewTracks({
     video: videoEnabled && { deviceId: videoDeviceId, processor: videoProcessor },
@@ -81,6 +90,15 @@ const VideoElement = () => {
       videoTrack?.detach();
     };
   }, [videoTrack]);
+
+  useEffect(() => {
+    return () => {
+      if (processorRef.current) {
+        processorRef.current.destroy();
+        processorRef.current = null;
+      }
+    };
+  }, []);
 
   if (!videoTrack) {
     return <CircularProgress color="primary" size="4rem" />;

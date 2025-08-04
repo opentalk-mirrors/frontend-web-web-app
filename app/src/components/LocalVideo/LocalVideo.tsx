@@ -1,20 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import type { TrackReference } from '@livekit/components-core';
 import { VideoTrack, useTracks } from '@livekit/components-react';
+import { useLocalParticipant } from '@livekit/components-react';
 import { CircularProgress, Grid, Typography, styled } from '@mui/material';
-import { RoomEvent, Track, LocalVideoTrack } from 'livekit-client';
-import { useEffect } from 'react';
+import { RoomEvent, Track } from 'livekit-client';
 import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PinIcon, WarningIcon } from '../../assets/icons';
 import { NameTile } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
-import log from '../../logger';
-import { BackgroundBlur } from '../../modules/Media/BackgroundBlur';
+import useMediaDevice from '../../hooks/useMediaDevice';
 import { selectLivekitUnavailable } from '../../store/slices/livekitSlice';
-import { selectAudioEnabled, selectVideoBackgroundEffects, selectVideoEnabled } from '../../store/slices/mediaSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
 import { selectDisplayName } from '../../store/slices/userSlice';
 import { OverlayIconButton } from '../ParticipantWindow/fragments/OverlayIconButton';
@@ -77,43 +76,37 @@ interface LocalVideoProps extends PropsType {
 }
 
 const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoPinned }: LocalVideoProps) => {
-  const videoTrackRef = useTracks([Track.Source.Camera], { updateOnlyOn: [RoomEvent.ActiveDeviceChanged] }).find(
-    (trackRef) => trackRef.participant.isLocal
-  );
-
   const screenShareTrackRef = useTracks([Track.Source.ScreenShare], {
-    updateOnlyOn: [RoomEvent.ActiveDeviceChanged],
+    updateOnlyOn: [RoomEvent.ActiveDeviceChanged, RoomEvent.TrackUnpublished],
   }).find((trackRef) => trackRef.participant.isLocal);
-  const isVideoEnabled = useAppSelector(selectVideoEnabled);
-  const isAudioEnabled = useAppSelector(selectAudioEnabled);
-  const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
+
   const { t } = useTranslation();
+  const { cameraTrack, localParticipant, isCameraEnabled, isMicrophoneEnabled, isScreenShareEnabled } =
+    useLocalParticipant();
 
   const displayName = useAppSelector(selectDisplayName);
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
+  const { devices } = useMediaDevice({ kind: 'videoinput' });
 
-  const screenShareEnabled = screenShareTrackRef?.participant.isScreenShareEnabled || false;
+  const videoTrackRef: TrackReference | undefined = cameraTrack && {
+    participant: localParticipant,
+    publication: cameraTrack,
+    source: cameraTrack.source,
+  };
 
-  const videoTrack = videoTrackRef?.publication?.videoTrack;
-  const videoProcessor = new BackgroundBlur(videoBackgroundEffects);
+  const outgoingVideoStreamTrack = cameraTrack?.videoTrack?.mediaStreamTrack || null;
 
-  useEffect(() => {
-    if (videoProcessor && videoTrack instanceof LocalVideoTrack) {
-      videoTrack.setProcessor(videoProcessor).catch((e) => log.error('set video processor', e));
-    }
-  }, [videoProcessor]);
-
-  const outgoingVideoStreamTrack = videoTrack?.mediaStreamTrack || null;
-
-  const isVideoRunning = outgoingVideoStreamTrack?.readyState === 'live' && outgoingVideoStreamTrack?.enabled;
-  const showLoadingSpinner =
-    isVideoEnabled && (outgoingVideoStreamTrack === null || outgoingVideoStreamTrack?.muted) && !isVideoRunning;
-  const isVideoMissing = isVideoEnabled && videoTrack?.isMuted && !videoTrack?.mediaStreamTrack;
-
+  /* TODO will not update - use cameraTrack event handler
+     we use outgoingVideoStreamTrack in the meantime
+  const isVideoRunning = cameraTrack?.videoTrack
+    outgoingVideoStreamTrack?.enabled &&
+    outgoingVideoStreamTrack?.readyState === 'live' &&
+    !outgoingVideoStreamTrack?.muted;
+  */
   return (
     <Container container justifyContent="center" alignItems="center">
-      {(isVideoEnabled || screenShareEnabled) && (screenShareTrackRef || videoTrackRef) && (
+      {(isCameraEnabled || isScreenShareEnabled) && (screenShareTrackRef || videoTrackRef) && (
         <>
           {fullscreenMode && (
             <PinIconButton
@@ -129,9 +122,9 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
           <Video
             trackRef={screenShareTrackRef || videoTrackRef}
             noRoundedCorners={noRoundedCorners}
-            mirroringEnabled={mirroredVideoEnabled && !screenShareEnabled}
+            mirroringEnabled={mirroredVideoEnabled && !isScreenShareEnabled}
           />
-          {screenShareEnabled && isVideoEnabled && videoTrackRef && (
+          {isScreenShareEnabled && isCameraEnabled && videoTrackRef && (
             <ThumbnailVideo
               trackRef={videoTrackRef}
               noRoundedCorners={noRoundedCorners}
@@ -139,16 +132,18 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
             />
           )}
           <NameTile
-            localAudioOn={!fullscreenMode || isAudioEnabled}
-            localVideoOn={!fullscreenMode || isVideoEnabled}
+            localAudioOn={!fullscreenMode || isMicrophoneEnabled}
+            localVideoOn={!fullscreenMode || isCameraEnabled}
             displayName={displayName || ''}
             className="positionBottom"
           />
         </>
       )}
-      {showLoadingSpinner && !isLivekitUnavailable && <CircularProgress color="primary" size="2.5rem" />}
+      {isCameraEnabled && !outgoingVideoStreamTrack && !isLivekitUnavailable && (
+        <CircularProgress color="primary" size="2.5rem" />
+      )}
       {isLivekitUnavailable && <WarningIcon color="error" fontSize="large" />}
-      {isVideoMissing && <NoVideoText>{t('localvideo-no-device')}</NoVideoText>}
+      {devices.length === 0 && <NoVideoText>{t('localvideo-no-device')}</NoVideoText>}
     </Container>
   );
 };

@@ -1,20 +1,22 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useTracks } from '@livekit/components-react';
-import type { SvgIconProps, IconButtonProps } from '@mui/material';
-import { screen, fireEvent } from '@testing-library/react';
+import { useLocalParticipant, useMediaDeviceSelect, useTracks } from '@livekit/components-react';
+import type { IconButtonProps, SvgIconProps } from '@mui/material';
+import { fireEvent, screen } from '@testing-library/react';
 
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import LocalVideo from './LocalVideo';
 
 jest.mock('@livekit/components-react', () => ({
   useTracks: jest.fn().mockReturnValue([]),
+  useLocalParticipant: jest.fn(),
   VideoTrack: () => (
     <video data-testid="video-track">
       <track kind="captions" />
     </video>
   ),
+  useMediaDeviceSelect: jest.fn(),
 }));
 jest.mock('../../assets/icons', () => ({
   PinIcon: () => <svg data-testid="pin-icon" />,
@@ -25,7 +27,7 @@ jest.mock('../../commonComponents', () => ({
 }));
 jest.mock('../ParticipantWindow/fragments/OverlayIconButton', () => ({
   OverlayIconButton: (props: IconButtonProps) => (
-    <button aria-label={props['aria-label']} onClick={props.onClick} data-testid="pin-btn">
+    <button type="button" aria-label={props['aria-label']} onClick={props.onClick} data-testid="pin-btn">
       {props.children}
     </button>
   ),
@@ -35,6 +37,21 @@ describe('LocalVideo', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     HTMLCanvasElement.prototype.getContext = jest.fn();
+    (useLocalParticipant as jest.Mock).mockReturnValue({
+      isMicrophoneEnabled: false,
+      isScreenShareEnabled: false,
+      isCameraEnabled: true,
+      microphoneTrack: undefined,
+      cameraTrack: undefined,
+      lastMicrophoneError: undefined,
+      lastCameraError: undefined,
+    });
+    (useMediaDeviceSelect as jest.Mock).mockReturnValue({
+      devices: [
+        { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },
+        { deviceId: 'xxxx1', groupId: 'xxxxx1', kind: 'videoinput', label: 'video' },
+      ],
+    });
   });
 
   it('renders nothing if video and screen share are disabled', () => {
@@ -58,8 +75,17 @@ describe('LocalVideo', () => {
     });
 
     (useTracks as jest.Mock).mockReturnValue([]);
+    (useLocalParticipant as jest.Mock).mockReturnValue({
+      isMicrophoneEnabled: false,
+      isScreenShareEnabled: false,
+      isCameraEnabled: false,
+      microphoneTrack: undefined,
+      cameraTrack: undefined,
+      lastMicrophoneError: undefined,
+      lastCameraError: undefined,
+    });
 
-    renderWithProviders(<LocalVideo />, { store });
+    renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
     expect(screen.queryByTestId('video-track')).not.toBeInTheDocument();
     expect(screen.queryByTestId('name-tile')).not.toBeInTheDocument();
   });
@@ -182,6 +208,7 @@ describe('LocalVideo', () => {
     };
 
     (useTracks as jest.Mock).mockReturnValue([videoTrackRef]);
+    (useMediaDeviceSelect as jest.Mock).mockReturnValue({ devices: [] });
 
     renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
     expect(screen.getByText('localvideo-no-device')).toBeInTheDocument();

@@ -50,6 +50,21 @@ export interface BackgroundConfig {
   imageUrl?: string;
 }
 
+function setupVideoElement(
+  videoTrack: MediaStreamTrack,
+  width: number,
+  height: number,
+  element?: HTMLVideoElement
+): HTMLVideoElement {
+  const videoElement: HTMLVideoElement = element || document.createElement('video');
+  videoElement.autoplay = true;
+  videoElement.width = width;
+  videoElement.height = height;
+  videoElement.srcObject = new MediaStream([videoTrack]);
+
+  return videoElement;
+}
+
 export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
   name: string;
   processedTrack?: MediaStreamTrack;
@@ -67,7 +82,7 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
   private videoElement?: HTMLVideoElement;
   private config: BackgroundConfig;
   private imageBackdrop?: HTMLImageElement;
-  private static _tfLite: TFLite;
+  private tfLite?: TFLite;
 
   /**
    * Creates a TFLiteSIMDModule or if this is not supported a TFLiteModule. Fetches the
@@ -97,21 +112,6 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
     return tfLite;
   }
 
-  private static setupVideoElement(
-    videoTrack: MediaStreamTrack,
-    width: number,
-    height: number,
-    element?: HTMLVideoElement
-  ): HTMLVideoElement {
-    const videoElement: HTMLVideoElement = element || document.createElement('video');
-    videoElement.autoplay = true;
-    videoElement.width = width;
-    videoElement.height = height;
-    videoElement.srcObject = new MediaStream([videoTrack]);
-
-    return videoElement;
-  }
-
   constructor(opt: BackgroundConfig) {
     this.config = opt || { style: 'blur' };
     this.canvas = document.createElement('canvas');
@@ -119,28 +119,17 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
     this.name = `background_${this.config.imageUrl ? this.config.imageUrl : this.config.style}`;
   }
 
-  static async initTFLite() {
+  public async init(opts: ProcessorOptions<Track.Kind.Video>): Promise<void> {
     if (!BackgroundBlur.tfLiteCache) {
       BackgroundBlur.tfLiteCache = BackgroundBlur.loadTFLiteModel();
       BackgroundBlur.tfLiteCache.catch(() => {
         BackgroundBlur.tfLiteCache = undefined;
       });
     }
-    BackgroundBlur.tfLite = await BackgroundBlur.tfLiteCache;
-  }
 
-  static get tfLite(): TFLite {
-    return this._tfLite;
-  }
-
-  static set tfLite(tfLite: TFLite) {
-    this._tfLite = tfLite;
-  }
-
-  async setup() {
-    await BackgroundBlur.initTFLite();
-    this.outputMemoryOffset = BackgroundBlur.tfLite && BackgroundBlur.tfLite?._getOutputMemoryOffset() / 4;
-    this.inputMemoryOffset = BackgroundBlur.tfLite && BackgroundBlur.tfLite?._getInputMemoryOffset() / 4;
+    this.tfLite = await BackgroundBlur.tfLiteCache;
+    this.outputMemoryOffset = this.tfLite?._getOutputMemoryOffset() / 4;
+    this.inputMemoryOffset = this.tfLite?._getInputMemoryOffset() / 4;
     this.segmentationMaskCanvas.width = this.segmentationMask.width;
     this.segmentationMaskCanvas.height = this.segmentationMask.height;
     this.segmentationMaskCtx = this.segmentationMaskCanvas.getContext('2d', { willReadFrequently: true });
@@ -155,34 +144,42 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
       }
       this.imageBackdrop.src = this.config.imageUrl;
     }
+
+    this.start(opts);
+  }
+
+  public async restart(opts: ProcessorOptions<Track.Kind.Video>) {
+    log.debug('restart', this.name);
+    this.stop();
+    this.start(opts);
+
+    return this.videoElement?.play();
+  }
+
+  public async destroy() {
+    log.debug('destroy', this.name);
+    this.stop();
+    this.tfLite = undefined;
+    this.segmentationMaskCtx = null;
   }
 
   /**
    * Stop the blurring effect, clear the video element and reset the drawingContext.
    */
-  public stop() {
-    this.stopRendering();
-    this.videoElement = undefined;
+  private stop() {
+    log.debug('_stop', this.name);
     this.drawingContext?.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.stopRendering();
+    if (this.videoElement) {
+      this.videoElement.pause();
+      this.videoElement.onloadeddata = null;
+      this.videoElement.onended = null;
+    }
+    this.videoElement = undefined;
   }
 
-  public async destroy() {
-    this.stop();
-  }
-
-  public async init(opts: ProcessorOptions<Track.Kind.Video>): Promise<void> {
-    await this.setup();
-    this.start(opts);
-  }
-
-  public async restart(opts: ProcessorOptions<Track.Kind.Video>) {
-    await this.destroy();
-    return this.init(opts);
-  }
-
-  public start({ track, element }: ProcessorOptions<Track.Kind.Video>) {
-    this.stop();
-
+  private start({ track, element }: ProcessorOptions<Track.Kind.Video>) {
+    log.debug('_start', this.name, track, element);
     if (this.config.style === 'off') {
       return undefined;
     }
@@ -203,11 +200,7 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
       throw new Error(`Video processing failed due to unknown input size: (width: ${width}, height: ${height})`);
     }
 
-    track.addEventListener('ended', () => {
-      this.stopRendering();
-    });
-
-    this.videoElement = BackgroundBlur.setupVideoElement(
+    this.videoElement = setupVideoElement(
       track,
       width,
       height,
@@ -222,6 +215,11 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
         height: video.height,
       };
       this.startRendering();
+    };
+
+    this.videoElement.onended = () => {
+      log.info('stop processor - track ended');
+      this.stopRendering();
     };
 
     this.processedTrack = this.canvas.captureStream(25).getVideoTracks()[0];
@@ -242,7 +240,7 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
     this.canvas.width = this.sourcePlayback.width;
     this.canvas.height = this.sourcePlayback.height;
 
-    if (!BackgroundBlur.tfLite) {
+    if (!this.tfLite) {
       throw Error('tfLite model is broken');
     }
 
@@ -271,14 +269,14 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
 
     for (let i = 0; i < imageData.data.length / 4; i++) {
       const data = imageData.data[i * 4];
-      BackgroundBlur.tfLite.HEAPF32[this.inputMemoryOffset + i * 3] = data / 255;
-      BackgroundBlur.tfLite.HEAPF32[this.inputMemoryOffset + i * 3 + 1] = data / 255;
-      BackgroundBlur.tfLite.HEAPF32[this.inputMemoryOffset + i * 3 + 2] = data / 255;
+      this.tfLite.HEAPF32[this.inputMemoryOffset + i * 3] = data / 255;
+      this.tfLite.HEAPF32[this.inputMemoryOffset + i * 3 + 1] = data / 255;
+      this.tfLite.HEAPF32[this.inputMemoryOffset + i * 3 + 2] = data / 255;
     }
 
-    BackgroundBlur.tfLite._runInference();
+    this.tfLite._runInference();
     for (let i = 0; i < this.segmentationMask.data.length / 4; i++) {
-      const confidence = BackgroundBlur.tfLite.HEAPF32[this.outputMemoryOffset + i] || 0;
+      const confidence = this.tfLite.HEAPF32[this.outputMemoryOffset + i] || 0;
       // Aplha blending in the edge area to smooth the mask corners
       // Original formula "edgeAlpha = (confidence - minConfidence) / (maxConfidence - minConfidence)"
       const edgeAlpha = (confidence - MIN_CONFIDENCE) * BLEND_COEFF;
@@ -338,6 +336,7 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
   }
 
   private stopRendering() {
+    log.debug('_stopRendering', this.name, this.interval);
     if (this.interval) {
       clearInterval(this.interval);
       this.interval = undefined;
@@ -345,6 +344,11 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
   }
 
   private startRendering() {
+    log.debug('_startRendering', this.name, this.interval);
+    if (this.interval) {
+      log.error('BgBlur already rendering');
+      return;
+    }
     this.interval = setInterval(async () => {
       try {
         this.render();
@@ -354,6 +358,4 @@ export class BackgroundBlur implements TrackProcessor<Track.Kind.Video> {
       }
     }, 1000 / REFRESH_RATE);
   }
-
-  private runPostProcessing() {}
 }
