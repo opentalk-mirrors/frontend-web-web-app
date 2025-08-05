@@ -1052,16 +1052,12 @@ const handleChatMessage = (dispatch: AppDispatch, data: chat.ChatMessage, timest
 const handleStreamingMessage = (dispatch: AppDispatch, data: streaming.Message, state: RootState) => {
   switch (data.message) {
     case 'stream_updated': {
-      const localParticipant = getLivekitRoom().localParticipant;
       dispatch(streamUpdated(data));
 
       const streamTarget = state.streaming.streams.entities[data.targetId];
       if (streamTarget) {
-        const publicUrl =
-          streamTarget.streamingKind === StreamingKind.Livestream && streamTarget.publicUrl
-            ? streamTarget.publicUrl
-            : undefined;
         //Add notification handler based on status
+        const publicUrl = streamTarget.streamingKind === StreamingKind.Livestream ? streamTarget.publicUrl : undefined;
         createStreamUpdatedNotification({
           kind: streamTarget.streamingKind,
           status: data.status,
@@ -1069,14 +1065,14 @@ const handleStreamingMessage = (dispatch: AppDispatch, data: streaming.Message, 
           eventId: state.room.eventInfo?.id,
         });
       }
-      if (data.status === StreamingStatus.Active && state.streaming.consent === undefined) {
-        showConsentNotification(dispatch);
-      }
-      if (
-        data.status === StreamingStatus.Active &&
-        !state.streaming.consent &&
-        (localParticipant.isCameraEnabled || localParticipant.isMicrophoneEnabled)
-      ) {
+
+      const { isCameraEnabled, isMicrophoneEnabled } = getLivekitRoom().localParticipant;
+      const isActiveStream = data.status === StreamingStatus.Active;
+      const isMediaActive = isCameraEnabled || isMicrophoneEnabled;
+      const isConsentRequired =
+        isActiveStream && (state.streaming.consent === undefined || (!state.streaming.consent && isMediaActive));
+
+      if (isConsentRequired) {
         showConsentNotification(dispatch);
       }
 
