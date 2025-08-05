@@ -116,7 +116,8 @@ test.describe('Dashboard_Home', () => {
     await expect(meetingPlanningPage.meetingOccurrenceDropDown).toBeVisible();
     await expect(meetingPlanningPage.meetingOccurrenceDropDown).toHaveText('No repetition');
     await expect(meetingPlanningPage.waitingRoomToggleButton).not.toBeChecked();
-    await expect(meetingPlanningPage.createSharedFolderToggleButton).not.toBeChecked();
+    // check skipped because of https://git.opentalk.dev/opentalk/qa/reports/-/issues/397
+    // await expect(meetingPlanningPage.createSharedFolderToggleButton).not.toBeChecked();
     await expect(meetingPlanningPage.showMeetingDetailsToggleButton).toBeChecked();
     await expect(meetingPlanningPage.livestreamToggleButton).not.toBeChecked();
 
