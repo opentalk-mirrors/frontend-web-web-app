@@ -34,44 +34,43 @@ export class HomePage {
   }
 
   async navigateToHomePage(): Promise<void> {
-    await Promise.all([
-      this.page.goto(process.env.INSTANCE_URL),
-      this.page.waitForLoadState('load'),
-      this.page.waitForResponse(async (response) => {
-        if (
-          response.request().url().includes('/events?time_min') &&
-          response.request().method() === 'GET' &&
-          response.status() === 200
-        ) {
-          // if the response has some meetings, then also wait till there is at least one
-          // meeting rendered on the page
-          const meetingCountFromResponse = Object.keys(await response.json()).length;
-          if (meetingCountFromResponse > 0) {
-            let meetingCountOnPage: number;
-            do {
-              meetingCountOnPage = await this.page
-                .getByRole(this.moreOptionsButtonProperties.role, this.moreOptionsButtonProperties.options)
-                .count();
-            } while (meetingCountOnPage <= 0);
-          }
-          return true;
+    const eventsTimeMinResponse = this.page.waitForResponse(async (response) => {
+      if (
+        response.request().url().includes('/events?time_min') &&
+        response.request().method() === 'GET' &&
+        response.status() === 200
+      ) {
+        // if the response has some meetings, then also wait till there is at least one
+        // meeting rendered on the page
+        const meetingCountFromResponse = Object.keys(await response.json()).length;
+        if (meetingCountFromResponse > 0) {
+          let meetingCountOnPage: number;
+          do {
+            meetingCountOnPage = await this.page
+              .getByRole(this.moreOptionsButtonProperties.role, this.moreOptionsButtonProperties.options)
+              .count();
+          } while (meetingCountOnPage <= 0);
         }
-      }),
-      this.page.waitForResponse(
-        (response) =>
-          response.request().url().includes('/events?per_page') &&
-          response.request().method() === 'GET' &&
-          response.status() === 200
-      ),
-      this.page.waitForResponse(
-        (response) =>
-          response.request().url().includes('/tariff') &&
-          response.request().method() === 'GET' &&
-          response.status() === 200
-      ),
-      // for dashboard page to be fully loaded, favorite meeting box should be rendered fully
-      await this.currentMeetingsHeaderSelector.waitFor({ timeout: 10_000 }),
-    ]);
+        return true;
+      }
+    });
+    const eventsPerPageResponse = this.page.waitForResponse(
+      (response) =>
+        response.request().url().includes('/events?per_page') &&
+        response.request().method() === 'GET' &&
+        response.status() === 200
+    );
+    const tariffResponse = this.page.waitForResponse(
+      (response) =>
+        response.request().url().includes('/tariff') &&
+        response.request().method() === 'GET' &&
+        response.status() === 200
+    );
+    await this.page.goto(process.env.INSTANCE_URL);
+    await this.page.waitForLoadState('load');
+    await Promise.all([eventsTimeMinResponse, eventsPerPageResponse, tariffResponse]);
+    // for dashboard page to be fully loaded, favorite meeting box should be rendered fully
+    await this.currentMeetingsHeaderSelector.waitFor({ timeout: 10_000 });
   }
 
   async planNewMeeting(): Promise<MeetingPlanningPage> {
@@ -135,26 +134,23 @@ export class HomePage {
     );
     const meetingMenu = await this.getThreeDotMenuOfMeeting(meetingTitle);
     await meetingMenu.waitFor({ timeout: 10_000 });
+    const deleteResponsePromise = this.page.waitForResponse(
+      (response) =>
+        response.request().url().includes('/events/') &&
+        response.request().method() === 'DELETE' &&
+        response.status() === 204
+    );
+    const eventsRefreshedPromise = this.page.waitForResponse(
+      (response) =>
+        response.request().url().includes('/events?') &&
+        response.request().method() === 'GET' &&
+        response.status() === 200
+    );
+    const loadStatePromise = this.page.waitForLoadState('domcontentloaded');
     await meetingMenu.click();
     await this.page.getByRole('menuitem', { name: 'Delete' }).click();
-    await Promise.all([
-      this.page.waitForResponse(
-        (response) =>
-          response.request().url().includes('/events/') &&
-          response.request().method() === 'DELETE' &&
-          response.status() === 204
-      ),
-      this.page.getByRole('button', { name: 'Delete' }).click(),
-      // After deletion, wait for the frontend to update the list:
-      this.page.waitForResponse(
-        (response) =>
-          response.request().url().includes('/events?') &&
-          response.request().method() === 'GET' &&
-          response.status() === 200
-      ),
-      this.page.waitForLoadState('domcontentloaded'),
-    ]);
-
+    await this.page.getByRole('button', { name: 'Delete' }).click();
+    await Promise.all([deleteResponsePromise, eventsRefreshedPromise, loadStatePromise]);
     let isStartMeetingButtonVisible: boolean;
     do {
       isStartMeetingButtonVisible = await uniqueMeetingStartButton.isVisible();
