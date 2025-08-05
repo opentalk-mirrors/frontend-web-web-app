@@ -1,14 +1,18 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Tabs as MuiTabs, styled, Typography, Badge, Tab as MuiTab } from '@mui/material';
+import { Badge, Tab as MuiTab, Tabs as MuiTabs, Typography, styled } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VisuallyHiddenTitle } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { selectUnreadGlobalMessageCount, selectUnreadPersonalMessageCount } from '../../store/slices/chatSlice';
+import {
+  selectHasAnyUnreadGroupChatMessage,
+  selectHasAnyUnreadPrivateChatMessage,
+  selectHasUnreadGlobalChatMessages,
+} from '../../store/slices/chatSlice';
 import { selectParticipantsTotal } from '../../store/slices/participantsSlice';
 import { selectCurrentMenuTab, setCurrentMenuTab } from '../../store/slices/uiSlice';
 import { ChatScope } from '../../types';
@@ -71,8 +75,9 @@ const Tab = styled(MuiTab)(({ theme }) => ({
 
 const MenuTabs = () => {
   const { t } = useTranslation();
-  const unreadGlobalMessageCount = useAppSelector(selectUnreadGlobalMessageCount);
-  const unreadPersonalMessageCount = useAppSelector(selectUnreadPersonalMessageCount);
+  const hasUnreadGlobalChatMessages = useAppSelector(selectHasUnreadGlobalChatMessages);
+  const hasUnreadGroupChatMessages = useAppSelector(selectHasAnyUnreadGroupChatMessage);
+  const hasUnreadPrivateChatMessages = useAppSelector(selectHasAnyUnreadPrivateChatMessage);
   const totalParticipants = useAppSelector(selectParticipantsTotal);
   const currentMenuTab = useAppSelector(selectCurrentMenuTab);
   const dispatch = useAppDispatch();
@@ -91,7 +96,7 @@ const MenuTabs = () => {
         <Tab
           id={`tab-${MenuTab.Chat}`}
           label={t('menutabs-chat')}
-          icon={unreadGlobalMessageCount > 0 ? <ChatBadge variant="dot" /> : undefined}
+          icon={hasUnreadGlobalChatMessages ? <ChatBadge variant="dot" role="presentation" /> : undefined}
           iconPosition="end"
           value={MenuTab.Chat}
           aria-controls={`tabpanel-${MenuTab.Chat}`}
@@ -112,7 +117,11 @@ const MenuTabs = () => {
         <Tab
           id={`tab-${MenuTab.Messages}`}
           label={t('menutabs-messages')}
-          icon={unreadPersonalMessageCount > 0 ? <MessagesBadge variant="dot" /> : undefined}
+          icon={
+            hasUnreadPrivateChatMessages || hasUnreadGroupChatMessages ? (
+              <MessagesBadge variant="dot" role="presentation" />
+            ) : undefined
+          }
           iconPosition="end"
           value={MenuTab.Messages}
           aria-controls={`tabpanel-${MenuTab.Messages}`}

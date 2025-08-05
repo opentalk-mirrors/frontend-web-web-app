@@ -166,7 +166,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
               {sender?.displayName}
             </EventNameTypography>
             <EventMessageTypography variant="caption">
-              {t(`participant-joined-event`, { time: getTimeStringFromTimestamp(message) })}
+              {t('participant-joined-event', { time: getTimeStringFromTimestamp(message) })}
             </EventMessageTypography>
           </EventTypography>
         );
@@ -226,7 +226,9 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       >
         {renderNameAndTime()}
         <ContentTypography singleEmoji={isItSingleEmojiMessage()} variant="body2" align={ownMessage ? 'right' : 'left'}>
-          <Linkify options={options}>{message.content}</Linkify>
+          <Linkify tagName="span" options={options}>
+            {message.content}
+          </Linkify>
         </ContentTypography>
       </Stack>
     </Box>

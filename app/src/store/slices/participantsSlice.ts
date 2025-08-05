@@ -198,12 +198,16 @@ export const participantsSlice = createSlice({
     });
     builder.addCase(connectionClosed, () => participantAdapter.getInitialState());
 
-    builder.addCase(received, (state, { payload }: PayloadAction<ChatMessage>) => {
-      participantAdapter.updateOne(state, {
-        id: payload.source,
-        changes: { lastActive: payload.timestamp },
-      });
-    });
+    builder.addCase(
+      received,
+      (state, { payload }: PayloadAction<{ chatMessage: ChatMessage; userId: ParticipantId }>) => {
+        const { chatMessage } = payload;
+        participantAdapter.updateOne(state, {
+          id: chatMessage.source,
+          changes: { lastActive: chatMessage.timestamp },
+        });
+      }
+    );
   },
 });
 

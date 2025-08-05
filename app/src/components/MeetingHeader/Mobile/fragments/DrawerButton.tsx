@@ -8,7 +8,11 @@ import { BurgermenuIcon } from '../../../../assets/icons';
 import { IconButton as DefaultIconButton } from '../../../../commonComponents';
 import { useAppSelector } from '../../../../hooks';
 import { selectPollsAndVotingsCount } from '../../../../store/selectors';
-import { selectUnreadGlobalMessageCount, selectUnreadPersonalMessageCount } from '../../../../store/slices/chatSlice';
+import {
+  selectHasAnyUnreadGroupChatMessage,
+  selectHasAnyUnreadPrivateChatMessage,
+  selectUnreadGlobalMessageCount,
+} from '../../../../store/slices/chatSlice';
 import { selectParticipantsWaitingCount } from '../../../../store/slices/participantsSlice';
 import { selectIsSharedFolderAvailableIndicatorVisible } from '../../../../store/slices/sharedFolderSlice';
 import {
@@ -45,12 +49,14 @@ type DrawerButtonProps = {
 export const DrawerButton = ({ onClick, expanded, controls }: DrawerButtonProps) => {
   const isModerator = useAppSelector(selectIsModerator);
   const unreadGlobalMessageCount = useAppSelector(selectUnreadGlobalMessageCount);
-  const unreadPersonalMessageCount = useAppSelector(selectUnreadPersonalMessageCount);
+  const hasAnyUnreadGroupChatMessage = useAppSelector(selectHasAnyUnreadGroupChatMessage);
+  const hasAnyUnreadPrivateChatMessage = useAppSelector(selectHasAnyUnreadPrivateChatMessage);
   const isCurrentWhiteboardHighlighted = useAppSelector(selectIsCurrentWhiteboardHighlighted);
   const isSharedFolderAvailableIndicatorVisible = useAppSelector(selectIsSharedFolderAvailableIndicatorVisible);
   const participantsWaitingCount = useAppSelector(selectParticipantsWaitingCount);
   const hasParticipantsWaiting = participantsWaitingCount > 0;
-  const hasUnreadMessages = unreadGlobalMessageCount > 0 || unreadPersonalMessageCount > 0;
+  const hasUnreadMessages =
+    unreadGlobalMessageCount > 0 || hasAnyUnreadGroupChatMessage || hasAnyUnreadPrivateChatMessage;
   const voteAndPollCount = useAppSelector(selectPollsAndVotingsCount);
   const haveSeenMobilePollsAndVotes = useAppSelector(selectHaveSeenMobilePollsAndVotes);
   const showWaitingRoomIndicator = isModerator && hasParticipantsWaiting;

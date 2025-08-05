@@ -31,15 +31,21 @@ describe('DrawerButton indicator rendering logic', () => {
     const { store } = configureStore({
       initialState: {
         chat: {
-          lastSeenTimestampGlobal: new Date(Date.now() - 1000).toISOString(),
-          lastSeenTimestampsPersonal: {
-            ids: [],
-            entities: {},
-          },
-          messages: {
-            ids: ['1'],
-            entities: {
-              1: { id: '1', scope: 'global', content: 'Test message', timestamp: new Date(Date.now()).toISOString() },
+          scope: {
+            global: {
+              messages: {
+                ids: ['1'],
+                entities: {
+                  1: {
+                    id: '1',
+                    scope: 'global',
+                    content: 'Test message',
+                    timestamp: new Date(Date.now()).toISOString(),
+                  },
+                },
+              },
+              nextIndex: null,
+              lastSeenTimestamp: new Date(Date.now() - 1000).toISOString(),
             },
           },
         },
@@ -53,20 +59,21 @@ describe('DrawerButton indicator rendering logic', () => {
     const { store } = configureStore({
       initialState: {
         chat: {
-          lastSeenTimestampGlobal: new Date(Date.now() - 1000).toISOString(),
-          lastSeenTimestampsPersonal: {
-            ids: [],
-            entities: {},
-          },
-          messages: {
-            ids: ['1'],
-            entities: {
-              1: {
-                id: '1',
-                scope: 'private',
-                content: 'Test message',
-                timestamp: new Date(Date.now()).toISOString(),
+          scope: {
+            global: {
+              messages: {
+                ids: ['1'],
+                entities: {
+                  1: {
+                    id: '1',
+                    scope: 'private',
+                    content: 'Test message',
+                    timestamp: new Date(Date.now()).toISOString(),
+                  },
+                },
               },
+              nextIndex: null,
+              lastSeenTimestamp: new Date(Date.now() - 1000).toISOString(),
             },
           },
         },

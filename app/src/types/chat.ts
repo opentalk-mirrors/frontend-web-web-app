@@ -9,15 +9,28 @@ export enum ChatScope {
   Group = 'group',
 }
 
+type GlobalChatMessage = {
+  scope: ChatScope.Global;
+  target?: never;
+  group?: never;
+};
+
+type PrivateChatMessage = {
+  scope: ChatScope.Private;
+  target: ParticipantId;
+};
+
+type GroupChatMessage = {
+  scope: ChatScope.Group;
+  target: GroupId;
+};
+
 export type ChatMessage = {
   id: string;
   timestamp: string;
   source: ParticipantId;
   content: string;
-  scope: ChatScope;
-  group?: GroupId;
-  target?: TargetId;
-};
+} & (GlobalChatMessage | PrivateChatMessage | GroupChatMessage);
 
 export interface ChatMessageBase {
   id: string;
@@ -36,14 +49,29 @@ export interface ChatBase extends ChatMessageBase {
 
 export type ChatMessageWithTimestamp = ChatBase & BaseMessageWithTimestamp;
 
-export type InitialChatHistory = [{ history: Array<BaseMessageWithTimestamp>; name: GroupId }];
-
 export interface InitialChat {
   enabled: boolean;
   lastSeenTimestampGlobal?: string;
   lastSeenTimestampsGroup?: Record<string, string>;
   lastSeenTimestampsPrivate?: Record<string, string>;
-  roomHistory: Array<ChatMessageWithTimestamp>;
   groups: Array<GroupId>;
-  groupsHistory: InitialChatHistory;
+  groupsHistory: Array<GroupsHistory>;
+  privateHistory: Array<PrivateHistory>;
+  roomHistory: ChatHistory;
+}
+
+export type GroupsHistory = {
+  history: ChatHistory;
+  id: string;
+  name: GroupId;
+};
+
+export interface PrivateHistory {
+  correspondent: ParticipantId;
+  history: ChatHistory;
+}
+
+export interface ChatHistory {
+  messages: Array<ChatMessage>;
+  nextIndex: number | null;
 }

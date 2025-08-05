@@ -15,6 +15,7 @@ import {
   showConsentNotification,
   startTimeLimitNotification,
 } from '../commonComponents';
+import { MenuTab } from '../components/MenuTabs/fragments/constants';
 import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification';
 import { showWithLinkNotification } from '../components/WithLinkNotification';
 import LayoutOptions from '../enums/LayoutOptions';
@@ -35,7 +36,16 @@ import {
   setAsInactiveSpeaker,
 } from '../store/slices/automodSlice';
 import * as breakoutStore from '../store/slices/breakoutSlice';
-import { received as chatReceived, clearGlobalChat, setChatSettings } from '../store/slices/chatSlice';
+import {
+  clearGlobalChat,
+  groupChatHistoryChunkReceived,
+  privateChatHistoryChunkReceived,
+  setChatSearchResults,
+  received,
+  roomChatHistoryChunkReceived,
+  setChatSettings,
+  setGlobalChatLastSeenTimestamp,
+} from '../store/slices/chatSlice';
 import { selectLibravatarDefaultImage } from '../store/slices/configSlice';
 import {
   canceled as legalVoteCanceled,
@@ -106,7 +116,6 @@ import {
   ChatMessage,
   ChatScope,
   GroupId,
-  InitialChatHistory,
   MeetingNotesAccess,
   MeetingNotesState,
   Participant,
@@ -150,21 +159,6 @@ import { acceptWhisperInvite, declineWhisperInvite } from './types/outgoing/subr
  * @param chatHistory
  * @returns {groupIds: Array<GroupId>, messages:Array<ChatMessage>}
  */
-
-const transformChatHistory = (
-  chatHistory: InitialChatHistory
-): { groupIds: Array<GroupId>; messages: Array<ChatMessage> } => {
-  if (Array.isArray(chatHistory) === false) {
-    return { groupIds: [], messages: [] };
-  }
-  const groupIds: GroupId[] = chatHistory.map((e) => e.name);
-
-  const messages = chatHistory.flatMap((e) => {
-    return e.history.map((m): ChatMessage => ({ ...m, group: e.name, scope: ChatScope.Group }));
-  });
-
-  return { groupIds, messages };
-};
 
 const mapMeetingNotesToMeetingNotesAccess = (meetingNotes?: MeetingNotesState) => {
   if (!meetingNotes) {
@@ -258,10 +252,8 @@ const handleControlMessage = async (
       const participantsReady = data.participants
         .filter((participant) => participant.timer && participant.timer.readyStatus === true)
         .map((participant) => participant.id as ParticipantId);
-      const { groupIds, messages: groupMessages } = transformChatHistory(data.chat.groupsHistory);
-      const groups = groupIds;
-      let roomHistory = data.chat.roomHistory as ChatMessage[];
-      roomHistory = roomHistory.concat(groupMessages);
+      const groups = data.chat.groupsHistory.map((group) => group.name as GroupId);
+      data.chat.groups = groups;
 
       let joinedParticipants: Participant[];
       joinedParticipants = data.participants.map((participant) => {
@@ -294,19 +286,13 @@ const handleControlMessage = async (
         joinedParticipants = unionBy(joinedParticipants, breakoutParticipants, 'id');
       }
 
-      const serverTimeOffset = new Date(timestamp).getTime() - new Date().getTime();
+      const serverTimeOffset = new Date(timestamp).getTime() - Date.now();
       dispatch(
         joinSuccess({
           participantId: data.id,
           avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
           role: data.role,
-          chat: {
-            enabled: data.chat.enabled,
-            roomHistory,
-            lastSeenTimestampGlobal: data.chat.lastSeenTimestampGlobal,
-            lastSeenTimestampsGroup: data.chat.lastSeenTimestampsGroup,
-            lastSeenTimestampsPrivate: data.chat.lastSeenTimestampsPrivate,
-          },
+          chat: data.chat,
           groups,
           automod: data.automod,
           breakout: data.breakout,
@@ -1016,7 +1002,12 @@ const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message
   }
 };
 
-const handleChatMessage = (dispatch: AppDispatch, data: chat.ChatMessage, timestamp: Timestamp, state: RootState) => {
+export const handleChatMessage = (
+  dispatch: AppDispatch,
+  data: chat.ChatMessage,
+  timestamp: Timestamp,
+  state: RootState
+) => {
   switch (data.message) {
     case 'chat_enabled':
     case 'chat_disabled': {
@@ -1026,20 +1017,59 @@ const handleChatMessage = (dispatch: AppDispatch, data: chat.ChatMessage, timest
       break;
     }
     case 'message_sent': {
-      const chatMessage = data;
-      if (chatMessage.scope === ChatScope.Private && chatMessage.target === state.user.uuid) {
-        data.target = data.source;
-        notifications.info(i18next.t('chat-new-private-message'));
+      const userId = state.user.uuid as ParticipantId;
+      let chatMessage: ChatMessage;
+
+      if (data.scope === ChatScope.Group) {
+        chatMessage = {
+          ...data,
+          timestamp,
+          scope: ChatScope.Group,
+          target: data.target as GroupId,
+        };
+        if (data.source !== userId) {
+          notifications.info(i18next.t('chat-new-group-message'));
+        }
+      } else if (data.scope === ChatScope.Private) {
+        chatMessage = {
+          ...data,
+          timestamp,
+          scope: ChatScope.Private,
+          target: data.target as ParticipantId,
+        };
+        if (data.target === userId) {
+          notifications.info(i18next.t('chat-new-private-message'));
+        }
+      } else {
+        chatMessage = {
+          ...data,
+          timestamp,
+          scope: ChatScope.Global,
+          target: undefined,
+        };
       }
-      if (chatMessage.scope === ChatScope.Group && data.source !== state.user.uuid) {
-        notifications.info(i18next.t('chat-new-group-message'));
+
+      dispatch(received({ chatMessage, userId }));
+      if (state.ui.currentMenuTab === MenuTab.Chat) {
+        dispatch(setGlobalChatLastSeenTimestamp({ value: timestamp }));
       }
-      dispatch(chatReceived({ timestamp, ...data }));
       break;
     }
     case 'history_cleared':
       dispatch(clearGlobalChat());
       notifications.info(i18next.t('chat-delete-global-messages-success'));
+      break;
+    case 'room_chat_history_chunk':
+      dispatch(roomChatHistoryChunkReceived(data));
+      break;
+    case 'group_chat_history_chunk':
+      dispatch(groupChatHistoryChunkReceived(data));
+      break;
+    case 'private_chat_history_chunk':
+      dispatch(privateChatHistoryChunkReceived(data));
+      break;
+    case 'search_results':
+      dispatch(setChatSearchResults(data.matches.messages));
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);

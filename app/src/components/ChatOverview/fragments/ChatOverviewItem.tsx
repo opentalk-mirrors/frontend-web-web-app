@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  ListItemButton,
-  ListItemAvatar as MuiListItemAvatar,
-  ListItemText,
-  Typography,
   Grid,
+  ListItemButton,
+  ListItemText,
+  ListItemAvatar as MuiListItemAvatar,
+  Typography,
   styled,
 } from '@mui/material';
 import { isEmpty } from 'lodash';
@@ -46,14 +46,14 @@ const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
   const formattedTime = useDateFormat(date, 'time');
   const getDisplayName = () => (isEmpty(participant) ? chat.id : participant?.displayName);
   const lastSeenTimestampCount = useAppSelector((state) => selectUnreadPersonalMessageCountByTarget(state, chat.id));
-  const [fontWeight, setFontWeigth] = useState('normal');
+  const [fontWeight, setFontWeight] = useState('normal');
 
   useEffect(() => {
     if (chat.scope === ChatScope.Private || chat.scope === ChatScope.Group) {
       if (lastSeenTimestampCount > 0) {
-        setFontWeigth('bold');
+        setFontWeight('bold');
       } else {
-        setFontWeigth('normal');
+        setFontWeight('normal');
       }
     }
   }, [chat, lastSeenTimestampCount]);

@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 
-import { renderWithProviders, configureStore } from '../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import MenuTabs from './MenuTabs';
 
 jest.mock('../Participants', () => ({

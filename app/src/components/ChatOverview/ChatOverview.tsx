@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, List as MuiList, styled, Typography, Stack } from '@mui/material';
+import { Box, Button, List as MuiList, Stack, Typography, styled } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -76,11 +76,9 @@ const ChatOverview = () => {
   const renderChats = () =>
     chats.length > 0 ? (
       <List>
-        {chats.map((chat) =>
-          chat.scope !== ChatScope.Global ? (
-            <ChatOverviewItem key={chat.id} onClick={() => setSelectedChat(chat.scope, chat.id)} chat={chat} />
-          ) : null
-        )}
+        {chats.map((chat) => (
+          <ChatOverviewItem key={chat.id} onClick={() => setSelectedChat(chat.scope, chat.id)} chat={chat} />
+        ))}
       </List>
     ) : (
       <Stack
