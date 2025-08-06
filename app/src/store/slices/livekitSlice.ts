@@ -8,8 +8,10 @@ import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ListenerEffectAPI, isAnyOf } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import {
+  ConnectionQuality,
   ConnectionState as LivekitConnectionState,
   LocalParticipant,
+  Participant,
   RemoteParticipant,
   RemoteTrack,
   RemoteTrackPublication,
@@ -33,6 +35,7 @@ import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { getLivekitRoom, setLivekitAvailable, setLivekitUnavailable } from '../livekitRoom';
 import { setAudioDeviceId, setVideoDeviceId } from './mediaSlice';
+import { selectAllOnlineParticipantsInConference, selectParticipantName } from './participantsSlice';
 import {
   pinnedParticipantIdSet,
   pinnedRemoteScreenshare,
@@ -46,6 +49,8 @@ type PopoutStreamAccess = {
 };
 
 type PopoutStreamAccesses = Array<PopoutStreamAccess>;
+
+const EAVESDROP_CHECK_TIMEOUT = 5000;
 
 export type LivekitState = {
   unavailable: boolean;
@@ -314,6 +319,38 @@ const deviceChangeOnLivekitTriggerListener = (startAppListening: StartAppListeni
     },
   });
 
+const handleParticipantConnected = (
+  listenerApi: ListenerEffectAPI<RootState, AppDispatch>,
+  remoteParticipant?: Participant
+) => {
+  setTimeout(() => {
+    const disconnectedStates = [ConnectionQuality.Lost, ConnectionQuality.Unknown];
+    const state = listenerApi.getState();
+    const connectedParticipantIds = new Set(selectAllOnlineParticipantsInConference(state).map((p) => p.id));
+
+    const isActiveAndUnauthorized = (p: Participant) =>
+      !disconnectedStates.includes(p.connectionQuality) && !connectedParticipantIds.has(p.identity as ParticipantId);
+
+    if (remoteParticipant) {
+      if (isActiveAndUnauthorized(remoteParticipant)) {
+        const displayName =
+          selectParticipantName(state, remoteParticipant.identity as ParticipantId) || remoteParticipant.identity;
+        notifications.error(t('security-breach-eavesdrop', { participants: displayName }));
+      }
+      return;
+    }
+
+    const remoteParticipants = Array.from(getLivekitRoom().remoteParticipants.values());
+    const unauthorizedParticipantNames = remoteParticipants
+      .filter(isActiveAndUnauthorized)
+      .map((p) => selectParticipantName(state, p.identity as ParticipantId) || p.identity);
+
+    if (unauthorizedParticipantNames.length > 0) {
+      notifications.error(t('security-breach-eavesdrop', { participants: unauthorizedParticipantNames.join(', ') }));
+    }
+  }, EAVESDROP_CHECK_TIMEOUT);
+};
+
 let listenersRegistered = false;
 const startToggleEmitterListener = (startAppListening: StartAppListening) =>
   startAppListening({
@@ -331,7 +368,9 @@ const startToggleEmitterListener = (startAppListening: StartAppListening) =>
           .on(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
             handlePermissionChanged(previousPermissions, participant, listenerApi)
           )
-          .on(RoomEvent.ConnectionStateChanged, (state) => handleConnectionStateChanged(state, listenerApi));
+          .on(RoomEvent.ConnectionStateChanged, (state) => handleConnectionStateChanged(state, listenerApi))
+          .on(RoomEvent.ParticipantConnected, (participant) => handleParticipantConnected(listenerApi, participant))
+          .on(RoomEvent.Connected, () => handleParticipantConnected(listenerApi));
       } else if (hangUp.fulfilled.match(action)) {
         listenersRegistered = false;
         room
@@ -343,7 +382,9 @@ const startToggleEmitterListener = (startAppListening: StartAppListening) =>
           .off(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
             handlePermissionChanged(previousPermissions, participant, listenerApi)
           )
-          .off(RoomEvent.ConnectionStateChanged, (state) => handleConnectionStateChanged(state, listenerApi));
+          .off(RoomEvent.ConnectionStateChanged, (state) => handleConnectionStateChanged(state, listenerApi))
+          .off(RoomEvent.ParticipantConnected, (participant) => handleParticipantConnected(listenerApi, participant))
+          .off(RoomEvent.Connected, () => handleParticipantConnected(listenerApi));
       }
     },
   });
