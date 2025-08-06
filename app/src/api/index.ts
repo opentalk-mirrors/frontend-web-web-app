@@ -40,9 +40,9 @@ import {
   clearGlobalChat,
   groupChatHistoryChunkReceived,
   privateChatHistoryChunkReceived,
-  setChatSearchResults,
   received,
   roomChatHistoryChunkReceived,
+  setChatSearchResults,
   setChatSettings,
   setGlobalChatLastSeenTimestamp,
 } from '../store/slices/chatSlice';
@@ -254,6 +254,11 @@ const handleControlMessage = async (
         .map((participant) => participant.id as ParticipantId);
       const groups = data.chat.groupsHistory.map((group) => group.name as GroupId);
       data.chat.groups = groups;
+
+      const chatEnabled = data.chat.enabled;
+      if (!chatEnabled) {
+        dispatch(setChatSettings({ id: data.id, timestamp, enabled: chatEnabled }));
+      }
 
       let joinedParticipants: Participant[];
       joinedParticipants = data.participants.map((participant) => {
