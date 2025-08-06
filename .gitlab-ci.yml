@@ -13,34 +13,9 @@ stages:
   - test
   - prepare-artifact
   - build
-  - review-app
   - e2e
-  - testrail
+  - review-app
   - cleanup
-
-.e2e-variables-chrome: &e2e-variables-chrome
-  USERNAME: ${E2E_CHROME_TEST_USERNAME}
-  USER_EMAIL: ${E2E_CHROME_TEST_USER_EMAIL}
-  PASSWORD: ${E2E_CHROME_TEST_USER_PASSWORD}
-  CONTROLLER_HOST: ${E2E_CONTROLLER_HOST}
-  PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
-  PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
-
-.e2e-variables-firefox: &e2e-variables-firefox
-  USERNAME: ${E2E_FIREFOX_TEST_USERNAME}
-  USER_EMAIL: ${E2E_FIREFOX_TEST_USER_EMAIL}
-  CONTROLLER_HOST: ${E2E_CONTROLLER_HOST}
-  PASSWORD: ${E2E_FIREFOX_TEST_USER_PASSWORD}
-  PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
-  PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
-
-.e2e-variables-webkit: &e2e-variables-webkit
-  USERNAME: ${E2E_WEBKIT_TEST_USERNAME}
-  USER_EMAIL: ${E2E_WEBKIT_TEST_USER_EMAIL}
-  CONTROLLER_HOST: ${E2E_CONTROLLER_HOST}
-  PASSWORD: ${E2E_WEBKIT_TEST_USER_PASSWORD}
-  PLAYWRIGHT_JUNIT_INPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
-  PLAYWRIGHT_JUNIT_OUTPUT_FILE: ./junit/junit-$CI_MERGE_REQUEST_IID-$BROWSER.xml
 
 .setup-pnpm: &setup-pnpm
   - npm install -g corepack@latest
@@ -49,28 +24,6 @@ stages:
     PNPM_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
     corepack prepare "pnpm@$PNPM_VERSION" --activate
   - pnpm config set store-dir .pnpm-store
-
-.e2e-default-setup: &e2e-default-setup
-  image: mcr.microsoft.com/playwright:v1.54.1-jammy
-  stage: e2e
-  before_script:
-    - *setup-pnpm
-    - pnpm install
-  variables:
-    INSTANCE_URL: https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "chromium"
-      variables:
-        *e2e-variables-chrome
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "webkit"
-      variables:
-        *e2e-variables-webkit
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "firefox"
-      variables:
-        *e2e-variables-firefox
-  parallel:
-    matrix:
-      - BROWSER: [chromium, firefox, webkit]
 
 code_review:
   stage: analyze
@@ -409,13 +362,46 @@ container-scanning:
     forward:
       pipeline_variables: true
 
+run-smoke-e2e-tests:
+  needs:
+    - container
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+  stage: e2e
+  variables:
+    FRONTEND_TAG: ${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
+    RUN_ONLY_SMOKE_TESTS: true
+  trigger:
+    project: opentalk/qa/e2e-tests
+    strategy: depend
+    forward:
+      pipeline_variables: true
+
+run-full-e2e-tests:
+  when: manual
+  allow_failure: true
+  needs:
+    - container
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+  stage: e2e
+  variables:
+    FRONTEND_TAG: ${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
+  trigger:
+    project: opentalk/qa/e2e-tests
+    strategy: depend
+    forward:
+      pipeline_variables: true
+
 deploy:
   stage: review-app
   dependencies:
     - container
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  image: alpine/helm:3.18.4
+  image: alpine/helm:3.18
   tags:
     - kubernetes
   before_script:
@@ -425,7 +411,7 @@ deploy:
     - DIGEST=$(cat "./digest.txt")
     - helm uninstall frontend-$CI_MERGE_REQUEST_IID -n review-latest || true
     - >
-      helm upgrade --version 3.1.3 --install --force frontend-$CI_MERGE_REQUEST_IID opentalk/opentalk-helm
+      helm upgrade --install --force frontend-$CI_MERGE_REQUEST_IID opentalk/opentalk-helm
       --set tags.standard=false
       --set tags.webapp=true
       --set webapp.image.pullPolicy=IfNotPresent
@@ -457,97 +443,15 @@ deploy:
       -n review-latest --wait
     - echo "https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run"
 
-browser-smoke:
-  <<: *e2e-default-setup
-  script:
-    - npx playwright install --with-deps
-    - npx playwright test --project=smoke-$BROWSER
-  after_script:
-    - npx ts-node ./ci/modifyJUnitReportForTestRail.ts
-  artifacts:
-    when: always
-    paths:
-      - html-report
-    expire_in: 7 days
-  allow_failure: true
-
-browser:
-  <<: *e2e-default-setup
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "chromium" && $CI_COMMIT_MESSAGE =~ /test\(e2e\)/
-      variables:
-        *e2e-variables-chrome
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "webkit" && $CI_COMMIT_MESSAGE =~ /test\(e2e\)/
-      variables:
-        *e2e-variables-webkit
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $BROWSER == "firefox" && $CI_COMMIT_MESSAGE =~ /test\(e2e\)/
-      variables:
-        *e2e-variables-firefox
-    - if: $CI_PIPELINE_SOURCE == 'schedule' && $BROWSER == "chromium"
-      variables:
-        INSTANCE_URL: https://testing.opentalk.eu/
-        <<: *e2e-variables-chrome
-    - if: $CI_PIPELINE_SOURCE == 'schedule' && $BROWSER == "webkit"
-      variables:
-        INSTANCE_URL: https://testing.opentalk.eu/
-        <<: *e2e-variables-webkit
-    - if: $CI_PIPELINE_SOURCE == 'schedule' && $BROWSER == "firefox"
-      variables:
-        INSTANCE_URL: https://testing.opentalk.eu/
-        <<: *e2e-variables-firefox
-  script:
-    - npx playwright install --with-deps
-    - npx playwright test --project=$BROWSER
-  after_script:
-    - npx ts-node ./ci/modifyJUnitReportForTestRail.ts
-  artifacts:
-    when: always
-    paths:
-      - junit
-      - html-report
-    expire_in: 7 days
-  allow_failure: true
-
-merge-and-upload-test-results:
-  stage: testrail
-  image: python:latest
-  needs:
-    - browser
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
-  before_script:
-    - pip install junitparser trcli
-  script: |
-    mkdir ./merged-reports
-    junitparser merge \
-      ./junit/junit-$CI_MERGE_REQUEST_IID-chromium.xml \
-      ./junit/junit-$CI_MERGE_REQUEST_IID-webkit.xml \
-      ./junit/junit-$CI_MERGE_REQUEST_IID-firefox.xml \
-      ./merged-reports/combined-report.xml
-    trcli -y \
-      -h https://opentalk.testrail.com/ \
-      --project "Automated Tests" \
-      -u $TESTRAIL_EMAIL \
-      -p $TESTRAIL_PASSWORD \
-      parse_junit \
-      -f "./merged-reports/combined-report.xml" \
-      --run-description "URL: $CI_PIPELINE_URL" \
-      --title "Automated Nightly Tests from GitLab CI/CD"
-  artifacts:
-    paths:
-      - merged-reports
-    expire_in: 7 days
-
 review-app:
   stage: cleanup
   rules:
-    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "close"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH &&
         $CI_PROJECT_ROOT_NAMESPACE == 'opentalk' &&
         $CI_PIPELINE_SOURCE == 'push'
   allow_failure: true
   image:
-    name: alpine/helm:3.18.4
+    name: alpine/helm:3.18
     entrypoint: ['']
   tags:
     - kubernetes
