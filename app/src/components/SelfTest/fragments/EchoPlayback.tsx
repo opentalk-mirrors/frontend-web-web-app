@@ -84,7 +84,7 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
     if (audioEnabled || activeDeviceId !== audioDeviceId) {
       dispatch(setMediaChangeInProgress('audioinput'));
       const deviceId = getDeviceIdString(audioDeviceId) === 'default' ? undefined : getDeviceIdString(audioDeviceId);
-      createLocalAudioTrack({ deviceId })
+      createLocalAudioTrack({ deviceId, echoCancellation: true })
         .then((audioTrack) => {
           setLocalAudioTrack(audioTrack);
           const usedDeviceId = getDeviceIdString(audioTrack.constraints.deviceId);
@@ -117,10 +117,7 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
     const echoTest = new EchoTest();
     const echoChangeHandler = changeHandler(echoTest);
     echoTest.addEventListener('stateChanged', echoChangeHandler);
-    localAudioTrack.mediaStream &&
-      echoTest.connect(localAudioTrack.mediaStream).catch((e) => {
-        log.error('Failed to connect EchoTest', e);
-      });
+    localAudioTrack.mediaStream && echoTest.connect(localAudioTrack.mediaStream);
 
     return () => {
       localAudioTrack.mediaStreamTrack.stop();
