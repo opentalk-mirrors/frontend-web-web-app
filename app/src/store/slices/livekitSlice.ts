@@ -351,14 +351,12 @@ const handleParticipantConnected = (
   }, EAVESDROP_CHECK_TIMEOUT);
 };
 
-let listenersRegistered = false;
 const startToggleEmitterListener = (startAppListening: StartAppListening) =>
   startAppListening({
     matcher: isAnyOf(setLivekitAvailable, hangUp.fulfilled),
     effect: (action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
       const room = getLivekitRoom();
-      if (setLivekitAvailable.match(action) && !listenersRegistered) {
-        listenersRegistered = true;
+      if (setLivekitAvailable.match(action)) {
         room
           .on(RoomEvent.Connected, () => handleRoomConnected(room, listenerApi))
           .on(RoomEvent.Disconnected, () => handleRoomDisconnected(listenerApi))
@@ -372,7 +370,6 @@ const startToggleEmitterListener = (startAppListening: StartAppListening) =>
           .on(RoomEvent.ParticipantConnected, (participant) => handleParticipantConnected(listenerApi, participant))
           .on(RoomEvent.Connected, () => handleParticipantConnected(listenerApi));
       } else if (hangUp.fulfilled.match(action)) {
-        listenersRegistered = false;
         room
           .off(RoomEvent.Connected, () => handleRoomConnected(room, listenerApi))
           .off(RoomEvent.Disconnected, () => handleRoomDisconnected(listenerApi))
