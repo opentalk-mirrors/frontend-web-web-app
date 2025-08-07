@@ -17,6 +17,7 @@ import {
   MeetingNotesAccess,
   MeetingNotesParticipant,
   Participant,
+  ParticipantId,
   ParticipationKind,
   SortOption,
   TargetId,
@@ -24,7 +25,13 @@ import {
 import { sortParticipantsWithConfig } from '../utils/sortParticipants';
 import { selectAutomoderationParticipantIds } from './slices/automodSlice';
 import { selectCurrentBreakoutRoom, selectCurrentBreakoutRoomId } from './slices/breakoutSlice';
-import { selectAllGroupChats, selectAllPrivateChats, selectChatMessagesByScope } from './slices/chatSlice';
+import {
+  globalMessagesSelectors,
+  groupMessagesSelectors,
+  privateMessagesSelectors,
+  selectAllGroupChats,
+  selectAllPrivateChats,
+} from './slices/chatSlice';
 import { RoomEvent, selectAllEvents } from './slices/eventSlice';
 import { selectAllVotes } from './slices/legalVoteSlice';
 import { selectForceMute, selectHandUp, selectHandUpdatedAt } from './slices/moderationSlice';
@@ -186,18 +193,35 @@ export const selectAllParticipantsSortedAndFiltered = createSelector(
 
 export const selectCombinedMessageAndEvents = createSelector(
   [
-    selectAllEvents,
+    (state: RootState) => state,
     (_state: RootState, scope: ChatScope) => scope,
     (_state: RootState, _scope: ChatScope, targetId?: TargetId) => targetId,
-    selectChatMessagesByScope,
   ],
-  (events, scope, _targetId, messages) => {
-    //we show events only in global chat
-    const globalEvents = scope === ChatScope.Global ? events : [];
-    const merged: Array<ChatMessageType | RoomEvent> = (messages as Array<ChatMessageType | RoomEvent>).concat(
-      globalEvents
-    );
-    return _.sortBy(merged, ['timestamp']);
+  (state, scope, targetId) => {
+    let messages: Array<ChatMessageType | RoomEvent> = [];
+
+    if (scope === ChatScope.Global) {
+      messages = globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
+
+      if (messages.length > 0) {
+        const events = selectAllEvents(state);
+        if (events.length > 0) {
+          return _.sortBy([...messages, ...events], ['timestamp']);
+        }
+      }
+
+      return messages.length > 0 ? messages : [];
+    }
+    if (scope === ChatScope.Private && targetId) {
+      const privateChat = state.chat.scope.private[targetId as ParticipantId];
+      return privateChat ? privateMessagesSelectors.selectAll(privateChat.messages) : [];
+    }
+    if (scope === ChatScope.Group && targetId) {
+      const groupChat = state.chat.scope.group[targetId as GroupId];
+      return groupChat ? groupMessagesSelectors.selectAll(groupChat.messages) : [];
+    }
+
+    return [];
   }
 );
 
