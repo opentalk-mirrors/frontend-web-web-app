@@ -22,21 +22,21 @@ const globalMessagesAdapter = createEntityAdapter<ChatMessage & { scope: ChatSco
   sortComparer: (a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp),
 });
 
-const globalMessagesSelectors = globalMessagesAdapter.getSelectors();
+export const globalMessagesSelectors = globalMessagesAdapter.getSelectors();
 
 const privateMessagesAdapter = createEntityAdapter<ChatMessage & { scope: ChatScope.Private }, ChatMessage['id']>({
   selectId: (message: ChatMessage) => `${message.source}@${message.timestamp}`,
   sortComparer: (a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp),
 });
 
-const privateMessagesSelectors = privateMessagesAdapter.getSelectors();
+export const privateMessagesSelectors = privateMessagesAdapter.getSelectors();
 
 const groupMessagesAdapter = createEntityAdapter<ChatMessage & { scope: ChatScope.Group }, ChatMessage['id']>({
   selectId: (message: ChatMessage) => `${message.source}@${message.timestamp}`,
   sortComparer: (a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp),
 });
 
-const groupMessagesSelectors = groupMessagesAdapter.getSelectors();
+export const groupMessagesSelectors = groupMessagesAdapter.getSelectors();
 
 export interface ChatState {
   settings: {
@@ -496,26 +496,29 @@ export const selectNotOwnGlobalChatMessages = createSelector(
 );
 
 export const selectUnreadPersonalMessageCountByTarget = createSelector(
-  (state: { chat: ChatState }, targetId: TargetId) => {
-    const privateChat = state.chat.scope.private[targetId as ParticipantId];
-    if (privateChat) {
-      return {
-        messages: privateMessagesSelectors.selectAll(privateChat.messages),
-        lastSeenTimestamp: privateChat.lastSeenTimestamp,
-      };
-    }
-
-    const groupChat = state.chat.scope.group[targetId as GroupId];
-    if (groupChat) {
-      return {
-        messages: groupMessagesSelectors.selectAll(groupChat.messages),
-        lastSeenTimestamp: groupChat.lastSeenTimestamp,
-      };
-    }
-
-    return { messages: [] as ChatMessage[], lastSeenTimestamp: undefined };
-  },
-  ({ messages, lastSeenTimestamp }: { messages: ChatMessage[]; lastSeenTimestamp: Timestamp | undefined }) => {
+  [
+    (state: { chat: ChatState }, targetId: TargetId) => {
+      const privateChat = state.chat.scope.private[targetId as ParticipantId];
+      return privateChat ? privateMessagesSelectors.selectAll(privateChat.messages) : undefined;
+    },
+    (state: { chat: ChatState }, targetId: TargetId) => {
+      const groupChat = state.chat.scope.group[targetId as GroupId];
+      return groupChat ? groupMessagesSelectors.selectAll(groupChat.messages) : undefined;
+    },
+    (state: { chat: ChatState }, targetId: TargetId) => {
+      const privateChat = state.chat.scope.private[targetId as ParticipantId];
+      if (privateChat) {
+        return privateChat.lastSeenTimestamp;
+      }
+      const groupChat = state.chat.scope.group[targetId as GroupId];
+      if (groupChat) {
+        return groupChat.lastSeenTimestamp;
+      }
+      return undefined;
+    },
+  ],
+  (privateMessages, groupMessages, lastSeenTimestamp) => {
+    const messages = privateMessages ?? groupMessages ?? [];
     if (!lastSeenTimestamp) {
       return messages.length;
     }

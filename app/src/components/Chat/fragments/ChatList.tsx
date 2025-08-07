@@ -96,29 +96,41 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
     [combinedMessageAndEvents, chatSearchValue, chatSearchResults]
   );
 
+  const updateLastSeenTimestamp = useCallback(() => {
+    const timestamp = new Date().toISOString() as Timestamp;
+
+    if (scope === ChatScope.Global) {
+      dispatch(setGlobalChatLastSeenTimestamp({ value: timestamp }));
+    } else if (scope === ChatScope.Private && targetId) {
+      dispatch(
+        setLastSeenTimestampForPrivateChat({
+          participantId: targetId as ParticipantId,
+          timestamp,
+        })
+      );
+    } else if (scope === ChatScope.Group && targetId) {
+      dispatch(
+        setLastSeenTimestampForGroupChat({
+          groupId: targetId as GroupId,
+          timestamp,
+        })
+      );
+    }
+  }, [dispatch, scope, targetId]);
+
   useEffect(() => {
     if (!isRoomDeleted) {
-      const timestamp = new Date().toISOString() as Timestamp;
-
-      if (scope === ChatScope.Global) {
-        dispatch(setGlobalChatLastSeenTimestamp({ value: timestamp }));
-      } else if (scope === ChatScope.Private && targetId) {
-        dispatch(
-          setLastSeenTimestampForPrivateChat({
-            participantId: targetId as ParticipantId,
-            timestamp,
-          })
-        );
-      } else if (scope === ChatScope.Group && targetId) {
-        dispatch(
-          setLastSeenTimestampForGroupChat({
-            groupId: targetId as GroupId,
-            timestamp,
-          })
-        );
-      }
+      updateLastSeenTimestamp();
     }
-  }, [dispatch, targetId, scope, searchedMessages]);
+  }, [isRoomDeleted]);
+
+  const lastProcessedCountRef = useRef(searchedMessages.length);
+  useEffect(() => {
+    if (searchedMessages.length > lastProcessedCountRef.current && !isRoomDeleted) {
+      updateLastSeenTimestamp();
+      lastProcessedCountRef.current = searchedMessages.length;
+    }
+  }, [searchedMessages.length]);
 
   useEffect(() => {
     const triggerElement = loadMoreTriggerRef.current;
