@@ -527,6 +527,8 @@ secure-connection-guests = Please note that guests are also present.
 secure-connection-contaminated = Please note that guests, including call-in participants, are present.
 secure-connection-sip = Please note that call-in participants are also present.
 
+security-breach-eavesdrop = Unrecognized participants are still connected and may be listening to your conversation: {participants}. To protect your privacy, please leave and create a new room.
+
 participant-joined-text = Joined {$joinedTime}
 participant-hand-raise-text = Hand raised {$handUpdated}
 participant-last-active-text = Last Active {$lastActive}
