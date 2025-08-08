@@ -5,7 +5,7 @@ import { render, screen } from '@testing-library/react';
 
 import { WithLinkNotification, NotificationProps } from './WithLinkNotification';
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   Trans: ({
     i18nKey,
     components,

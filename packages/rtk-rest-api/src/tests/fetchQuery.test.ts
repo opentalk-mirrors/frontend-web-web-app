@@ -80,7 +80,7 @@ beforeEach(() => {
     extra: undefined,
     type: 'query',
     endpoint: 'doesntmatterhere',
-    abort: jest.fn(),
+    abort: vi.fn(),
   };
 });
 
@@ -124,10 +124,10 @@ describe('fetchQuery', () => {
       const res = await req;
       expect(res).toBeInstanceOf(Object);
       expect(res.data).toEqual({
-        'kebab-case': 'kebab-case',
+        kebabCase: 'kebab-case',
         camelCase: 'camelCase',
-        snake_case: 'snake_case',
-        UpperCamelCase: 'UpperCamelCase',
+        snakeCase: 'snake_case',
+        upperCamelCase: 'UpperCamelCase',
       });
     });
 

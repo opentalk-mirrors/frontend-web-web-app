@@ -7,7 +7,7 @@ import CommonSwitch from './CommonSwitch';
 
 const commonProps = {
   checked: false,
-  onChange: jest.fn(),
+  onChange: vi.fn(),
   label: 'fake switch',
   inputProps: {
     role: 'switch',

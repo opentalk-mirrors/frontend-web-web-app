@@ -19,7 +19,7 @@ interface State {
 class AppErrorBoundary extends React.Component<Props, State> {
   errorInfo?: ErrorInfo = undefined;
 
-  public state: State = {
+  public override state: State = {
     hasError: false,
   };
 
@@ -27,7 +27,7 @@ class AppErrorBoundary extends React.Component<Props, State> {
     return { hasError: true, error: error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.errorInfo = errorInfo;
     log.error('AppErrorBoundary:', error, errorInfo);
     this.setState(() => {
@@ -35,7 +35,7 @@ class AppErrorBoundary extends React.Component<Props, State> {
     });
   }
 
-  render() {
+  override render() {
     if (this.state.hasError && this.state.error) {
       return <AppErrorPage error={this.state.error} errorInfo={this.errorInfo} />;
     }

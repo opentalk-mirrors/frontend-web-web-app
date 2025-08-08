@@ -12,15 +12,15 @@ type ComponentProps = {
   title: string;
 };
 
-const mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
 
-jest.mock('../../../hooks', () => ({
+vi.mock('../../../hooks', () => ({
   useAppDispatch: () => mockDispatch,
-  useAppSelector: jest.fn(),
+  useAppSelector: vi.fn(),
   useDateFormat: () => '',
 }));
 
-jest.mock('./VoteResult', () => ({
+vi.mock('./VoteResult', () => ({
   __esModule: true,
   default: ({ onVote, title }: ComponentProps) => (
     <button data-testid="vote-result" onClick={onVote}>
@@ -56,7 +56,7 @@ describe('PollContainer', () => {
   };
 
   it('renders expected elements', async () => {
-    render(<PollContainer poll={poll} onClose={jest.fn()} />);
+    render(<PollContainer poll={poll} onClose={vi.fn()} />);
 
     expect(await screen.findByText(poll.topic)).toBeInTheDocument();
     expect(screen.getAllByTestId('vote-result')).toHaveLength(2);
@@ -64,13 +64,13 @@ describe('PollContainer', () => {
   });
 
   it('has disabled submit button when no option is selected', async () => {
-    render(<PollContainer poll={poll} onClose={jest.fn()} />);
+    render(<PollContainer poll={poll} onClose={vi.fn()} />);
 
     expect(await screen.findByRole('button', { name: 'global-submit' })).toBeDisabled();
   });
 
   it('has submit button enabled when option is selected', async () => {
-    render(<PollContainer poll={poll} onClose={jest.fn()} />);
+    render(<PollContainer poll={poll} onClose={vi.fn()} />);
 
     fireEvent.click(screen.getByText('Option A'));
 
@@ -78,7 +78,7 @@ describe('PollContainer', () => {
   });
 
   it('has submit button disabled when choise is submitted.', async () => {
-    render(<PollContainer poll={{ ...poll, voted: true }} onClose={jest.fn()} />);
+    render(<PollContainer poll={{ ...poll, voted: true }} onClose={vi.fn()} />);
 
     fireEvent.click(screen.getByText('Option A'));
 
@@ -86,7 +86,7 @@ describe('PollContainer', () => {
   });
 
   it('executed onClose callback when close button is clicked', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     render(<PollContainer poll={poll} onClose={onClose} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'global-close-dialog' }));

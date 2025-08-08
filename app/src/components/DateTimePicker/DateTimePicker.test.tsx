@@ -14,7 +14,7 @@ const dateFns = new DateFnsAdapter();
 const dateTimePickerProps = {
   ampm: false,
   value: date.toString(),
-  onChange: jest.fn(),
+  onChange: vi.fn(),
 };
 
 const clearableDateTimePickerProps = {
@@ -22,7 +22,7 @@ const clearableDateTimePickerProps = {
   clearable: true,
   clearButtonLabel: 'Custom clear button text',
   placeholder: 'Cleared value',
-  onChange: jest.fn(),
+  onChange: vi.fn(),
   ampm: false,
 };
 
@@ -30,33 +30,22 @@ describe('render <DateTimePicker />', () => {
   const { store } = configureStore();
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
-  it('renders DateTimePicker component with german localization', () => {
-    // eslint disabled is needed because of recursion type definitions inside the library
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    jest.spyOn(require('react-i18next'), 'useTranslation').mockReturnValue({
-      t: (i18nKey: string) => i18nKey,
-      i18n: {
-        language: {
-          split: () => ['de'],
-        },
-      },
-    });
-
+  it('renders DateTimePicker component with localization', () => {
     renderWithProviders(<DateTimePicker {...dateTimePickerProps} />, { store, provider: { mui: true } });
     const deFormattedDate = dateFns.formatByString(date, 'dd.MM.yyyy HH:mm');
 
-    const dayInput = screen.getByRole('spinbutton', { name: 'Tag' });
+    const dayInput = screen.getByRole('spinbutton', { name: 'Day' });
     const dayValue = dayInput.textContent;
-    const monthInput = screen.getByRole('spinbutton', { name: 'Monat' });
+    const monthInput = screen.getByRole('spinbutton', { name: 'Month' });
     const monthValue = monthInput.textContent;
-    const yearInput = screen.getByRole('spinbutton', { name: 'Jahr' });
+    const yearInput = screen.getByRole('spinbutton', { name: 'Year' });
     const yearValue = yearInput.textContent;
-    const hourInput = screen.getByRole('spinbutton', { name: 'Stunden' });
+    const hourInput = screen.getByRole('spinbutton', { name: 'Hours' });
     const hourValue = hourInput.textContent;
-    const minuteInput = screen.getByRole('spinbutton', { name: 'Minuten' });
+    const minuteInput = screen.getByRole('spinbutton', { name: 'Minutes' });
     const minuteValue = minuteInput.textContent;
 
     const pickerValue = `${dayValue}.${monthValue}.${yearValue} ${hourValue}:${minuteValue}`;

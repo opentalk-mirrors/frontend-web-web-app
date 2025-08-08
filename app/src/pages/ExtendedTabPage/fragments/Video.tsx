@@ -25,14 +25,20 @@ const Video = ({ mediaDescriptor, room }: { mediaDescriptor: MediaDescriptor; ro
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout;
     if (videoTrack === undefined) {
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         const participant = room.remoteParticipants.get(mediaDescriptor.participantId);
         setParticipant(participant);
         const videoTrack = participant?.getTrackPublication(mediaDescriptor.mediaType);
         setVideoTrack(videoTrack);
       }, WAIT_FOR_LIVEKIT_ROOM_UPDATE);
     }
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
   }, [room]);
 
   const handleResize = useCallback(() => {

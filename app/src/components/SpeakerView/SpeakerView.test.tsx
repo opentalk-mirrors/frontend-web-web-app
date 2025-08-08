@@ -6,12 +6,12 @@ import { screen } from '@testing-library/react';
 import SpeakerView from '.';
 import { renderWithProviders, mockStore } from '../../utils/testUtils';
 
-jest.mock('./fragments/SpeakerWindow', () => ({
+vi.mock('./fragments/SpeakerWindow', () => ({
   __esModule: true,
   default: () => <div></div>,
 }));
 
-jest.mock('./fragments/ThumbsRow', () => ({
+vi.mock('./fragments/ThumbsRow', () => ({
   __esModule: true,
   default: () => <div></div>,
 }));

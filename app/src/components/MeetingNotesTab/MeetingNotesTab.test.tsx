@@ -27,8 +27,8 @@ describe.skip('MeetingNotesTab component tests', () => {
   });
 
   it('When there is a selected user send invitation button should be enable', () => {
-    const setState = jest.fn();
-    jest.spyOn(React, 'useState').mockImplementationOnce(() => [initialUserValue, setState]);
+    const setState = vi.fn();
+    vi.spyOn(React, 'useState').mockImplementationOnce(() => [initialUserValue, setState]);
 
     renderWithProviders(<MeetingNotesTab />, { store });
 
@@ -38,9 +38,9 @@ describe.skip('MeetingNotesTab component tests', () => {
   });
 
   it('Click on send invitation button should dispatch right action', () => {
-    const sendInvitations = jest.fn();
+    const sendInvitations = vi.fn();
     // const realUseState = React.useState;
-    // jest.spyOn(React, 'useState').mockImplementationOnce(() => realUseState(initialUserValue));
+    // vi.spyOn(React, 'useState').mockImplementationOnce(() => realUseState(initialUserValue));
 
     renderWithProviders(<MeetingNotesTab />, { store });
 

@@ -1,46 +1,46 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 import { fireEvent, render, screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { useAppSelector } from '../../hooks';
 import { mockLegalVote, mockPoll } from '../../utils/testUtils';
 import Ballot from './Ballot';
 
-// eslint-disable-next-line no-var
-var mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
 
-jest.mock('../../hooks', () => ({
+vi.mock('../../hooks', () => ({
   useAppDispatch: () => mockDispatch,
-  useAppSelector: jest.fn(),
+  useAppSelector: vi.fn(),
 }));
 
-jest.mock('./fragments/PollContainer', () => ({
+vi.mock('./fragments/PollContainer', () => ({
   PollContainer: () => <div data-testid="poll-container"></div>,
 }));
 
-jest.mock('./fragments/LegalVoteContainer', () => ({
+vi.mock('./fragments/LegalVoteContainer', () => ({
   LegalVoteContainer: () => <div data-testid="legal-vote-container"></div>,
 }));
 
-jest.mock('./fragments/ReportSection', () => ({
+vi.mock('./fragments/ReportSection', () => ({
   ReportSection: () => <div data-testid="report-section"></div>,
 }));
 
 // SPDX-License-Identifier: EUPL-1.2
 describe('Ballot', () => {
   it('renders empty on missing ids', () => {
-    (useAppSelector as unknown as jest.Mock).mockReturnValue(undefined);
+    (useAppSelector as unknown as Mock).mockReturnValue(undefined);
     render(<Ballot />);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   describe('poll and legal vote', () => {
     afterEach(() => {
-      (useAppSelector as unknown as jest.Mock).mockReset();
+      (useAppSelector as unknown as Mock).mockReset();
     });
 
     it('can render poll dialog', () => {
-      (useAppSelector as unknown as jest.Mock)
+      (useAppSelector as unknown as Mock)
         .mockReturnValueOnce(undefined) // voteIdToShow
         .mockReturnValueOnce(undefined) // pollIdToShow
         .mockReturnValueOnce(undefined) // voteOrPollIdToShow
@@ -52,7 +52,7 @@ describe('Ballot', () => {
     });
 
     it('can render legal vote dialog with report section', () => {
-      (useAppSelector as unknown as jest.Mock)
+      (useAppSelector as unknown as Mock)
         .mockReturnValueOnce(undefined) // voteIdToShow
         .mockReturnValueOnce(undefined) // pollIdToShow
         .mockReturnValueOnce(undefined) // voteOrPollIdToShow
@@ -67,7 +67,7 @@ describe('Ballot', () => {
     });
 
     it('executes onClose callback on escape key', () => {
-      (useAppSelector as unknown as jest.Mock)
+      (useAppSelector as unknown as Mock)
         .mockReturnValueOnce(undefined) // voteIdToShow
         .mockReturnValueOnce(undefined) // pollIdToShow
         .mockReturnValueOnce(undefined) // voteOrPollIdToShow

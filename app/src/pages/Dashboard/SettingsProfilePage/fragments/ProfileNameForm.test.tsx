@@ -6,22 +6,22 @@ import { waitFor, screen, fireEvent } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../../../utils/testUtils';
 import ProfileNameForm from './ProfileNameForm';
 
-const mockUpdateMe = jest.fn();
+const mockUpdateMe = vi.fn();
 
 const MOCK_DISPLAY_NAME = 'Test User';
 
-const mockSuccessNotification = jest.fn();
-const mockErrorNotification = jest.fn();
-jest.mock('../../../../commonComponents/Notistack/fragments/utils', () => ({
-  ...jest.requireActual('../../../../commonComponents/Notistack/fragments/utils'),
+const mockSuccessNotification = vi.fn();
+const mockErrorNotification = vi.fn();
+vi.mock('../../../../commonComponents/Notistack/fragments/utils', () => ({
+  ...vi.importActual('../../../../commonComponents/Notistack/fragments/utils'),
   notifications: {
     success: (key: string) => mockSuccessNotification(key),
     error: (key: string) => mockErrorNotification(key),
   },
 }));
 
-jest.mock('../../../../api/rest', () => ({
-  ...jest.requireActual('../../../../api/rest'),
+vi.mock('../../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeQuery: () => ({
     data: {
       displayName: MOCK_DISPLAY_NAME,
@@ -41,6 +41,7 @@ describe('ProfileNameForm', () => {
     mockUpdateMe.mockReturnValue({
       unwrap: () => Promise.resolve(),
     });
+    vi.clearAllMocks();
   });
 
   it('renders without crash', () => {

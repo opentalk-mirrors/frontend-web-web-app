@@ -6,7 +6,7 @@ import { render, screen } from '@testing-library/react';
 import { WhisperParticipantState } from '../../../types';
 import WhisperStateIcon from './WhisperStateIcon';
 
-jest.mock('../../../assets/icons', () => ({
+vi.mock('../../../assets/icons', () => ({
   WhisperEmptyIcon: () => <svg data-testid="whisper-empty-icon" />,
   WhisperFullIcon: () => <svg data-testid="whisper-full-icon" />,
 }));

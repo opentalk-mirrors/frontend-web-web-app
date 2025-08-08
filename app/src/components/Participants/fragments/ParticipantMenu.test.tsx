@@ -7,18 +7,18 @@ import userEvent from '@testing-library/user-event';
 import ParticipantMenu, { ParticipantMenuOption } from './ParticipantMenu';
 
 describe('ParticipantMenu', () => {
-  const setAnchorEl = jest.fn();
-  const onClose = jest.fn();
+  const setAnchorEl = vi.fn();
+  const onClose = vi.fn();
 
   const options: ParticipantMenuOption[] = [
-    { i18nKey: 'option1', action: jest.fn() },
-    { i18nKey: 'option2', action: jest.fn(), disabled: true },
+    { i18nKey: 'option1', action: vi.fn() },
+    { i18nKey: 'option2', action: vi.fn(), disabled: true },
   ];
 
   const anchorEl = document.createElement('div');
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders menu and all menu options with translation', () => {

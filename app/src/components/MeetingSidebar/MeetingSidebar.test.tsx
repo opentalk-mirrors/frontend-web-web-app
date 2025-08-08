@@ -7,7 +7,7 @@
 // import { render, screen, createStore, cleanup } from '../../utils/testUtils';
 // import MeetingSidebar from './MeetingSidebar';
 
-jest.mock('../Toolbar/fragments/EndCallButton', () => {
+vi.mock('../Toolbar/fragments/EndCallButton', () => {
   return {
     __esModule: true,
     default: () => <div data-testid="toolbarEndCallButton"></div>,

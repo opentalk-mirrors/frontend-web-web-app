@@ -58,10 +58,11 @@ const FullscreenView = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout;
     if (hasVisibleControls) {
-      const timer = setTimeout(() => setVisibleControls(false), 5000);
-      return () => clearTimeout(timer);
+      timeout = setTimeout(() => setVisibleControls(false), 5000);
     }
+    return () => timeout && clearTimeout(timeout);
   }, [hasVisibleControls]);
 
   const toggleLocalVideoPin = () => setIsLocalVideoPinned((prevState) => !prevState);

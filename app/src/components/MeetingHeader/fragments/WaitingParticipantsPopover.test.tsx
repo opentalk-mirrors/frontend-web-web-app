@@ -6,7 +6,7 @@ import { fireEvent, screen } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import WaitingParticipantsPopover from './WaitingParticipantsPopover';
 
-jest.mock('../../WaitingParticipantsList', () => ({
+vi.mock('../../WaitingParticipantsList', () => ({
   __esModule: true,
   default: () => <div>WaitingParticipantsList</div>,
 }));

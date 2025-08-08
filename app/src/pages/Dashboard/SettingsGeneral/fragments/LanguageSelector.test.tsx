@@ -7,18 +7,18 @@ import { mockChangeLanguage } from '../../../../setupTests';
 import { renderWithProviders, configureStore } from '../../../../utils/testUtils';
 import LanguageSelector from './LanguageSelector';
 
-const mockUpdateMe = jest.fn();
+const mockUpdateMe = vi.fn();
 
-const mockSuccessNotification = jest.fn();
-jest.mock('../../../../commonComponents/Notistack/fragments/utils', () => ({
-  ...jest.requireActual('../../../../commonComponents/Notistack/fragments/utils'),
+const mockSuccessNotification = vi.fn();
+vi.mock('../../../../commonComponents/Notistack/fragments/utils', () => ({
+  ...vi.importActual('../../../../commonComponents/Notistack/fragments/utils'),
   notifications: {
     success: (key: string) => mockSuccessNotification(key),
   },
 }));
 
-jest.mock('../../../../api/rest', () => ({
-  ...jest.requireActual('../../../../api/rest'),
+vi.mock('../../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeQuery: () => ({
     data: {
       theme: 'light',

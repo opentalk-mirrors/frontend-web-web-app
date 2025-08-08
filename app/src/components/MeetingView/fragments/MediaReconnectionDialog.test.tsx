@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
+import * as commonActions from '../../../store/commonActions';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MediaReconnectionDialog from './MediaReconnectionDialog';
 
@@ -10,22 +12,20 @@ describe('MediaReconnectionDialog', () => {
   const { store, dispatchSpy } = configureStore();
 
   it('will render without errors', async () => {
-    renderWithProviders(<MediaReconnectionDialog />, { store, provider: { mui: true } });
+    renderWithProviders(<MediaReconnectionDialog />, { store, provider: { mui: true, snackbar: true } });
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'breakout-room-notification-button-leave' })).toBeInTheDocument();
   });
 
   it('will call hangup', async () => {
-    renderWithProviders(<MediaReconnectionDialog />, { store, provider: { mui: true } });
+    renderWithProviders(<MediaReconnectionDialog />, { store, provider: { snackbar: true, mui: true } });
+    const spyHangUp = vi.spyOn(commonActions, 'hangUp');
+    const hangupButton = screen.getByRole('button', { name: 'breakout-room-notification-button-leave' });
 
-    fireEvent.click(screen.getByRole('button', { name: 'breakout-room-notification-button-leave' }));
+    await userEvent.click(hangupButton);
 
-    const dispatchedThunk = dispatchSpy.mock.calls[0][0];
-    const dispatch = jest.fn();
-    await dispatchedThunk(dispatch, store.getState, undefined);
-
-    expect(dispatch).toHaveBeenCalledTimes(2);
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'room/hangup/pending' }));
+    expect(dispatchSpy).toHaveBeenCalledTimes(1);
+    expect(spyHangUp).toHaveBeenCalledTimes(1);
   });
 });

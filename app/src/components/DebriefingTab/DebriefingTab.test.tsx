@@ -7,8 +7,8 @@ import { KickScope } from '../../types';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import DebriefingTab from './DebriefingTab';
 
-jest.mock('../../api/types/outgoing/moderation', () => ({
-  ...jest.requireActual('../../api/types/outgoing/moderation'),
+vi.mock('../../api/types/outgoing/moderation', async (importOriginal) => ({
+  ...(await importOriginal()),
   debrief: {
     action: ({ kickScope }: { kickScope: KickScope }) => ({
       type: 'debrief',

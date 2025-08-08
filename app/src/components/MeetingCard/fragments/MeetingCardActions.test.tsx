@@ -19,15 +19,15 @@ const mockPendingMeeting = {
   },
 } as Event;
 
-jest.mock('../../../commonComponents', () => ({
-  notifications: { error: () => jest.fn(), success: () => jest.fn() },
+vi.mock('../../../commonComponents', () => ({
+  notifications: { error: () => vi.fn(), success: () => vi.fn() },
 }));
 
-jest.mock('./PendingMeetingActions', () => ({
+vi.mock('./PendingMeetingActions', () => ({
   PendingMeetingActions: () => <div data-testid="PendingMeetingActions"></div>,
 }));
 
-jest.mock('./MeetingActions', () => ({
+vi.mock('./MeetingActions', () => ({
   MeetingActions: () => <div data-testid="MeetingActions"></div>,
 }));
 

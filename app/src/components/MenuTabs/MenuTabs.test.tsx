@@ -6,17 +6,17 @@ import { fireEvent, screen } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import MenuTabs from './MenuTabs';
 
-jest.mock('../Participants', () => ({
+vi.mock('../Participants', () => ({
   __esModule: true,
   default: () => <div data-testid="Participants" />,
 }));
 
-jest.mock('../Chat', () => ({
+vi.mock('../Chat', () => ({
   __esModule: true,
   default: () => <div data-testid="Chat" />,
 }));
 
-jest.mock('../ChatOverview', () => ({
+vi.mock('../ChatOverview', () => ({
   __esModule: true,
   default: () => <div data-testid="ChatOverview" />,
 }));

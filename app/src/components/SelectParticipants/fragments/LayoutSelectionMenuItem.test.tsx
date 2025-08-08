@@ -22,7 +22,7 @@ describe('LayoutSelectionMenuItem', () => {
   });
 
   it('calls onClick handler when clicked', () => {
-    const handleClick = jest.fn();
+    const handleClick = vi.fn();
     render(<LayoutSelectionMenuItem content="click me" onClick={handleClick} />);
     fireEvent.click(screen.getByRole('menuitemradio'));
     expect(handleClick).toHaveBeenCalled();

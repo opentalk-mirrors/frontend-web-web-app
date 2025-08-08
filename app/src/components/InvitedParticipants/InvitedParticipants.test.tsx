@@ -51,8 +51,8 @@ const mockInvitees: Array<EventInvite> = [
   },
 ];
 
-jest.mock('../../api/rest', () => ({
-  ...jest.requireActual('../../api/rest'),
+vi.mock('../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetEventInvitesQuery: () => ({
     data: mockInvitees,
   }),
@@ -76,7 +76,7 @@ describe('InvitedParticipants', () => {
   const { store } = configureStore();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('will render without errors', () => {

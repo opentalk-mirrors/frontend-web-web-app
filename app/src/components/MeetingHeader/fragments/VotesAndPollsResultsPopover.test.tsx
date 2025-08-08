@@ -6,7 +6,7 @@ import { fireEvent, screen } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import VotesAndPollsResultsPopover from './VotesAndPollsResultsPopover';
 
-jest.mock('./ResultsList', () => ({
+vi.mock('./ResultsList', () => ({
   __esModule: true,
   default: () => (
     <ul aria-label="ResultsList">
@@ -28,7 +28,7 @@ describe('VotesAndPollsResultsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<VotesAndPollsResultsPopover />, { store });
+    renderWithProviders(<VotesAndPollsResultsPopover />, { store, provider: { snackbar: true } });
     expect(screen.queryByRole('button', { name: 'votes-poll-button-show' })).not.toBeInTheDocument();
   });
 
@@ -45,7 +45,7 @@ describe('VotesAndPollsResultsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<VotesAndPollsResultsPopover />, { store });
+    renderWithProviders(<VotesAndPollsResultsPopover />, { store, provider: { snackbar: true } });
     expect(screen.getByRole('button', { name: 'votes-poll-button-show' })).toBeInTheDocument();
   });
 
@@ -62,7 +62,7 @@ describe('VotesAndPollsResultsPopover rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<VotesAndPollsResultsPopover />, { store });
+    renderWithProviders(<VotesAndPollsResultsPopover />, { store, provider: { snackbar: true } });
     const button = screen.getByRole('button', { name: 'votes-poll-button-show' });
     fireEvent.click(button);
     const resultsList = screen.getByRole('list', { hidden: true, name: 'ResultsList' });

@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
+import { renderWithProviders } from '../../utils/testUtils';
 import { LegalVoteTokenClipboard } from './LegalVoteTokenClipboard';
 
-jest.mock('../../hooks', () => ({
+vi.mock('../../hooks', () => ({
   useDateFormat: () => (date: Date, format: string) => {
     if (format === 'date') {
       return date.toLocaleDateString();
@@ -17,25 +19,20 @@ jest.mock('../../hooks', () => ({
   },
 }));
 
-jest.mock('../../commonComponents', () => ({
-  ...jest.requireActual('../../commonComponents'),
-  notifications: {
-    success: jest.fn(),
-  },
-}));
-
 describe('LegalVoteTokenClipboard', () => {
   it('renders without crashing', () => {
     expect(() => render(<LegalVoteTokenClipboard name="name" timestamp="" token="token" vote="" />)).not.toThrow();
   });
 
-  it('places content into clipboard on button click', () => {
+  it('places content into clipboard on button click', async () => {
     Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: jest.fn().mockResolvedValue(undefined) },
+      value: { writeText: vi.fn().mockResolvedValue(undefined) },
     });
-    render(<LegalVoteTokenClipboard name="name" timestamp="" token="token" vote="" />);
+    renderWithProviders(<LegalVoteTokenClipboard name="name" timestamp="" token="token" vote="" />, {
+      provider: { snackbar: true, mui: true },
+    });
     const button = screen.getByRole('button', { name: 'Copy token' });
-    fireEvent.click(button);
+    await userEvent.click(button);
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('name'));
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('token'));
   });

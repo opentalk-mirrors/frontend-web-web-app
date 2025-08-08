@@ -5,27 +5,22 @@ import { renderHook, act } from '@testing-library/react';
 import { de } from 'date-fns/locale/de';
 import { enUS } from 'date-fns/locale/en-US';
 import { useTranslation } from 'react-i18next';
+import { Mock } from 'vitest';
 
 import useLocale from './useLocale';
 
-jest.mock('react-i18next', () => ({
-  useTranslation: jest.fn(),
+vi.mock('react-i18next', () => ({
+  useTranslation: vi.fn(),
 }));
 
-/**
- * @jest-environment @happy-dom/jest-environment
- *
- * Its needed because js-dom does not support throwIfAborted which is used in the useLocale hook.
- * This will just be used for this specific test suite.
- * */
 describe('useLocale', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('returns enUS locale for English', async () => {
     const useTranslationSpy = useTranslation;
-    (useTranslationSpy as jest.Mock).mockReturnValue({
+    (useTranslationSpy as Mock).mockReturnValue({
       t: (i18nKey: string) => i18nKey,
       i18n: {
         changeLanguage: () => new Promise(() => {}),
@@ -46,7 +41,7 @@ describe('useLocale', () => {
 
   it('returns de locale for German', async () => {
     const useTranslationSpy = useTranslation;
-    (useTranslationSpy as jest.Mock).mockReturnValue({
+    (useTranslationSpy as Mock).mockReturnValue({
       t: (i18nKey: string) => i18nKey,
       i18n: {
         changeLanguage: () => new Promise(() => {}),

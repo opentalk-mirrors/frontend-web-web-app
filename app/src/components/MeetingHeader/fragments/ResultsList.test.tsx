@@ -6,7 +6,7 @@ import { screen } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ResultsList from './ResultsList';
 
-jest.mock('./ResultsItem', () => ({
+vi.mock('./ResultsItem', () => ({
   __esModule: true,
   default: () => <div>ResultsItem</div>,
 }));

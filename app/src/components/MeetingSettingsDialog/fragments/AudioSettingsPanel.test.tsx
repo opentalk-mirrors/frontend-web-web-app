@@ -2,26 +2,29 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import { mockedAudioInputs } from '../../../utils/testUtils';
 import AudioSettingsPanel from './AudioSettingsPanel';
 
-jest.mock('./DeviceManager', () => ({
-  ...jest.requireActual('./DeviceManager'),
+vi.mock('./DeviceManager', () => ({
+  ...vi.importActual('./DeviceManager'),
   __esModule: true,
   default: () => <div data-testid="MockDeviceManager"></div>,
 }));
 
-jest.mock('../../../hooks/useMediaDevice', () => jest.fn());
+vi.mock('../../../hooks/useMediaDevice', () => ({
+  default: vi.fn(),
+}));
 
-const mockUseMediaDevice = useMediaDevice as jest.Mock;
+const mockUseMediaDevice = useMediaDevice as Mock;
 
 describe('AudioSettingsPanel', () => {
   beforeEach(() => {
     mockUseMediaDevice.mockImplementation(() => ({
-      loadLocalDevices: jest.fn(() => Promise.resolve(undefined)),
+      loadLocalDevices: vi.fn(() => Promise.resolve(undefined)),
       localDevices: mockedAudioInputs,
       permissionDenied: false,
     }));

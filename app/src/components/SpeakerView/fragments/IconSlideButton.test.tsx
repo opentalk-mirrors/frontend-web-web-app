@@ -7,7 +7,7 @@ import IconSlideButton from './IconSlideButton';
 
 describe('IconSlideButton', () => {
   it('renders right IconSlideButton correctly', () => {
-    const slideRight = jest.fn();
+    const slideRight = vi.fn();
 
     render(<IconSlideButton direction="right" onClick={slideRight} />);
 
@@ -20,7 +20,7 @@ describe('IconSlideButton', () => {
   });
 
   it('renders left IconSlideButton correctly', () => {
-    const slideLeft = jest.fn();
+    const slideLeft = vi.fn();
 
     render(<IconSlideButton direction="left" onClick={slideLeft} />);
 

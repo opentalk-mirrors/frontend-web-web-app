@@ -7,12 +7,12 @@ import SortPopoverMenuItem from './SortPopoverMenuItem';
 
 describe('<SortPopoverMenuItem />', () => {
   it('should render with required properties.', () => {
-    render(<SortPopoverMenuItem i18nKey="test-key" value="test-value" onSelect={jest.fn()} />);
+    render(<SortPopoverMenuItem i18nKey="test-key" value="test-value" onSelect={vi.fn()} />);
     expect(screen.getByRole('menuitem')).toBeInTheDocument();
   });
 
   it('should execute onSelect callback with value when clicked.', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     render(<SortPopoverMenuItem i18nKey="test-key" value="test-value" onSelect={callback} selected={false} />);
     const li = screen.getByRole('menuitem');
     fireEvent.click(li);

@@ -25,12 +25,12 @@ const invitees = [
   },
 ];
 
-jest.mock('./UserRow', () => ({
+vi.mock('./UserRow', () => ({
   __esModule: true,
   default: () => <div>UserRowMocked</div>,
 }));
 
-const mockRemoveSelectedUser = jest.fn();
+const mockRemoveSelectedUser = vi.fn();
 
 describe('ParticipantList', () => {
   const { store } = configureStore();

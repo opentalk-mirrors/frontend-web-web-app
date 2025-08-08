@@ -6,9 +6,9 @@ import userEvent from '@testing-library/user-event';
 
 import ConfirmBrowserDialog from './ConfirmBrowserDialog';
 
-jest.mock('../../modules/BrowserSupport');
+vi.mock('../../modules/BrowserSupport');
 
-const mockHandleClick = jest.fn();
+const mockHandleClick = vi.fn();
 
 describe('ConfirmBrowserDialog', () => {
   it('renders without crash', () => {

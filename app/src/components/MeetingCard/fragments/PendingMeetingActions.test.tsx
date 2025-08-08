@@ -6,15 +6,15 @@ import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProviders, eventMockedData } from '../../../utils/testUtils';
 import { PendingMeetingActions } from './PendingMeetingActions';
 
-jest.mock('../../../commonComponents', () => ({
-  notifications: { error: () => jest.fn(), success: () => jest.fn() },
+vi.mock('../../../commonComponents', () => ({
+  notifications: { error: () => vi.fn(), success: () => vi.fn() },
 }));
 
-const mockAcceptEventInvite = jest.fn();
-const mockDeclineEventInvite = jest.fn();
+const mockAcceptEventInvite = vi.fn();
+const mockDeclineEventInvite = vi.fn();
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useAcceptEventInviteMutation: () => [mockAcceptEventInvite],
   useDeclineEventInviteMutation: () => [mockDeclineEventInvite],
 }));

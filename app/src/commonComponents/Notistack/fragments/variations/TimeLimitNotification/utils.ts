@@ -23,7 +23,7 @@ const DELAY_BETWEEN_SNACKBARS = 1000; //ms
 // new minute number.
 // User can close a notification manually, but a new one shall appear after current minute is over.
 // Last minute notification shows running seconds and cannot be closed.
-export const startTimeLimitNotification = (conferenceEndTimestamp: string) => {
+export const startTimeLimitNotification = async (conferenceEndTimestamp: string) => {
   let remainingNotificationMinutes: number;
   let showFirstNotificationInMs: number;
   let timeLimitSnackBarKey: SnackbarKey;
@@ -47,10 +47,10 @@ export const startTimeLimitNotification = (conferenceEndTimestamp: string) => {
     });
   };
 
-  const handleMinutesUpdate = () => {
+  const handleMinutesUpdate = async () => {
     if (remainingNotificationMinutes > 0) {
       --remainingNotificationMinutes;
-      updateNotification(remainingNotificationMinutes);
+      await updateNotification(remainingNotificationMinutes);
     } else {
       stopTimeLimitNotification();
     }
@@ -62,7 +62,7 @@ export const startTimeLimitNotification = (conferenceEndTimestamp: string) => {
   const doesNotificationTimeslotAlreadyStarted = remainingTimeOfConferenceMinutes <= MINUTES_BEFORE_CONFERENCE_END;
   if (doesNotificationTimeslotAlreadyStarted) {
     remainingNotificationMinutes = remainingTimeOfConferenceMinutes;
-    updateNotification(remainingTimeOfConferenceMinutes);
+    await updateNotification(remainingTimeOfConferenceMinutes);
     showFirstNotificationInMs =
       remainingTimeOfConferenceMs - Math.floor(remainingTimeOfConferenceMs / MINUTE_MS) * MINUTE_MS;
   } else {

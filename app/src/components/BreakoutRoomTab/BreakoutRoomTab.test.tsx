@@ -6,12 +6,12 @@ import { screen } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import BreakoutRoomTab from './BreakoutRoomTab';
 
-jest.mock('./fragments/RoomOverview', () => ({
+vi.mock('./fragments/RoomOverview', () => ({
   __esModule: true,
   default: () => <div>Room Overview</div>,
 }));
 
-jest.mock('./fragments/CreateRoomsForm', () => ({
+vi.mock('./fragments/CreateRoomsForm', () => ({
   __esModule: true,
   default: () => <div>Create Rooms Form</div>,
 }));

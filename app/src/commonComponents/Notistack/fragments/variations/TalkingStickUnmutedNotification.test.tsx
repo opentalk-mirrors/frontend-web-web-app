@@ -7,7 +7,7 @@ import { TalkingStickUnmutedNotification } from './TalkingStickUnmutedNotificati
 
 describe('TalkingStickUnmutedNotification', () => {
   it('renders correctly', async () => {
-    render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={false} onNext={jest.fn()} />);
+    render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={false} onNext={vi.fn()} />);
 
     const element = await screen.findByRole('alertdialog');
     expect(element).toBeInTheDocument();
@@ -17,12 +17,12 @@ describe('TalkingStickUnmutedNotification', () => {
   });
 
   it('shows different text on last speaker', async () => {
-    render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={true} onNext={jest.fn()} />);
+    render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={true} onNext={vi.fn()} />);
     expect(await screen.findByText('talking-stick-unmuted-notification-last-participant')).toBeInTheDocument();
   });
 
   it('calls callback functions on button click', async () => {
-    const nextButtonFn = jest.fn();
+    const nextButtonFn = vi.fn();
     render(<TalkingStickUnmutedNotification style={{}} isLastSpeaker={false} onNext={nextButtonFn} />);
 
     fireEvent.click(await screen.findByText('talking-stick-notification-next-speaker'));

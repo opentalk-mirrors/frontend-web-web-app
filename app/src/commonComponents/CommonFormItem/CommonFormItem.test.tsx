@@ -10,8 +10,8 @@ const commonProps = {
   label: 'Test Label',
   control: <TextField aria-label="Fake input field" type="text" />,
   name: 'testName',
-  onChange: jest.fn(),
-  onBlur: jest.fn(),
+  onChange: vi.fn(),
+  onBlur: vi.fn(),
 };
 
 describe('CommonFormItem', () => {

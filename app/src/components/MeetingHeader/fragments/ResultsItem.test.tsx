@@ -8,23 +8,17 @@ import { LegalVoteState, type LegalVote } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ResultsItem from './ResultsItem';
 
-jest.mock('react-i18next', () => ({
-  ...jest.requireActual('react-i18next'),
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
-jest.mock('../../../assets/icons', () => ({
+vi.mock('../../../assets/icons', async () => ({
+  ...(await vi.importActual('../../../assets/icons')),
   PollIcon: () => <div>PollIcon</div>,
   LegalBallotIcon: () => <div>LegalBallotIcon</div>,
 }));
 
-jest.mock('@mui/material', () => {
-  const module = jest.requireActual('@mui/material');
+vi.mock('@mui/material', async () => {
+  const actual = await vi.importActual<typeof import('@mui/material')>('@mui/material');
+
   return {
-    __esModule: true,
-    ...module,
+    ...actual,
     styled: (component: () => unknown) => () => component,
     Chip: (props: { color: string }) => <div>Color: {props.color} </div>,
   };

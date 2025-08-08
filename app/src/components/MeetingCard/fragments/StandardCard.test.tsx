@@ -13,28 +13,28 @@ const dummyMeetingCardData = {
   isMeetingCreator: true,
 };
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useMarkFavoriteEventMutation: () => [
-    jest.fn(),
+    vi.fn(),
     {
       isLoading: false,
     },
   ],
   useUnmarkFavoriteEventMutation: () => [
-    jest.fn(),
+    vi.fn(),
     {
       isLoading: false,
     },
   ],
   useDeleteEventMutation: () => [
-    jest.fn(),
+    vi.fn(),
     {
       isLoading: false,
     },
   ],
   useDeclineEventInviteMutation: () => [
-    jest.fn(),
+    vi.fn(),
     {
       isLoading: false,
     },

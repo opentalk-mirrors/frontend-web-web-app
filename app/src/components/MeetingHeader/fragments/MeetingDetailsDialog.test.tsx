@@ -2,7 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { EventId, EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { Mock } from 'vitest';
 
 import type { RoomInfo } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
@@ -32,13 +34,6 @@ const mockRoomInfo: RoomInfo = {
   },
 };
 
-jest.mock('../../../commonComponents', () => ({
-  ...jest.requireActual('../../../commonComponents'),
-  notifications: {
-    success: jest.fn(),
-  },
-}));
-
 const { store } = configureStore({
   initialState: {},
 });
@@ -50,7 +45,7 @@ describe('MeetingDetailsDialog', () => {
     clipboardWriteTextOriginal = navigator.clipboard?.writeText?.bind(navigator.clipboard);
     Object.defineProperty(navigator, 'clipboard', {
       value: {
-        writeText: jest.fn(),
+        writeText: vi.fn(),
       },
       writable: true,
     });
@@ -66,7 +61,7 @@ describe('MeetingDetailsDialog', () => {
 
   it('should render without crashing', async () => {
     renderWithProviders(
-      <MeetingDetailsDialog open={true} onClose={jest.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
+      <MeetingDetailsDialog open={true} onClose={vi.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
       { store }
     );
 
@@ -75,7 +70,7 @@ describe('MeetingDetailsDialog', () => {
 
   it('renders room password when provided.', async () => {
     const { unmount } = renderWithProviders(
-      <MeetingDetailsDialog open={true} onClose={jest.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
+      <MeetingDetailsDialog open={true} onClose={vi.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
       { store }
     );
     expect(await screen.findByLabelText('meeting-details-dialog-label-room-password')).toBeInTheDocument();
@@ -83,7 +78,7 @@ describe('MeetingDetailsDialog', () => {
     renderWithProviders(
       <MeetingDetailsDialog
         open={true}
-        onClose={jest.fn()}
+        onClose={vi.fn()}
         eventInfo={mockEventInfo}
         roomInfo={{ ...mockRoomInfo, password: '' }}
       />,
@@ -94,15 +89,15 @@ describe('MeetingDetailsDialog', () => {
   });
 
   it("writes content to the clipboard when 'Copy' button is clicked", async () => {
-    (navigator.clipboard.writeText as jest.Mock).mockResolvedValueOnce(undefined);
+    (navigator.clipboard.writeText as Mock).mockResolvedValueOnce(undefined);
 
     renderWithProviders(
-      <MeetingDetailsDialog open={true} onClose={jest.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
-      { store }
+      <MeetingDetailsDialog open={true} onClose={vi.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
+      { store, provider: { snackbar: true, mui: true } }
     );
 
     const copyButton = await screen.findByText('meeting-details-dialog-copy-button');
-    fireEvent.click(copyButton);
+    await userEvent.click(copyButton);
 
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
   });

@@ -5,11 +5,11 @@ import { render, screen } from '@testing-library/react';
 
 import VoteResultRow from './VoteResultRow';
 
-const mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
 
-jest.mock('../../../hooks', () => ({
+vi.mock('../../../hooks', () => ({
   useAppDispatch: () => mockDispatch,
-  useAppSelector: jest.fn(),
+  useAppSelector: vi.fn(),
 }));
 
 describe('VoteResultRow', () => {

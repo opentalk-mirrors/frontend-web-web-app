@@ -5,9 +5,9 @@ import { notifications } from '../../commonComponents';
 import { DEFAULT_AUTO_HIDE_DURATION } from '../../commonComponents/Notistack/fragments/utils';
 import { showWithLinkNotification } from './utils';
 
-jest.mock('../../commonComponents', () => ({
+vi.mock('../../commonComponents', () => ({
   notifications: {
-    toast: jest.fn(),
+    toast: vi.fn(),
   },
 }));
 

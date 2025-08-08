@@ -3,14 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Mock } from 'vitest';
 
 import { startWhiteboard, generateWhiteboardPdf } from '../../api/types/outgoing/whiteboard';
 import { useDownloadRoomAsset } from '../../hooks/useDownloadRoomAsset';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import WhiteboardTab from './';
 
-jest.mock('../../hooks/useDownloadRoomAsset', () => ({
-  useDownloadRoomAsset: jest.fn(),
+vi.mock('../../hooks/useDownloadRoomAsset', () => ({
+  useDownloadRoomAsset: vi.fn(),
 }));
 
 describe('WhiteboardTab', () => {
@@ -36,7 +37,7 @@ describe('WhiteboardTab', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   const renderComponent = () => {
@@ -80,8 +81,8 @@ describe('WhiteboardTab', () => {
   });
 
   it('calls downloadAsset function when clicking on a file link', () => {
-    const mockDownload = jest.fn();
-    (useDownloadRoomAsset as jest.Mock).mockReturnValue(mockDownload);
+    const mockDownload = vi.fn();
+    (useDownloadRoomAsset as Mock).mockReturnValue(mockDownload);
 
     renderComponent();
     fireEvent.click(screen.getByRole('button', { name: pdfFile }));

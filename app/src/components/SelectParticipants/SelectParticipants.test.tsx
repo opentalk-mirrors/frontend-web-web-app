@@ -7,7 +7,7 @@ import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import SelectParticipants from './SelectParticipants';
 
-const mockOnChange = jest.fn();
+const mockOnChange = vi.fn();
 
 const MOCK_USER_ME_ID = 'MOCK_USER_ID' as UserId;
 
@@ -18,10 +18,10 @@ const mockOtherUser = {
   avatarUrl: 'some avatarUrl',
 };
 
-const mockFindLazyUsersQuery = jest.fn();
+const mockFindLazyUsersQuery = vi.fn();
 
-jest.mock('../../api/rest', () => ({
-  ...jest.requireActual('../../api/rest'),
+vi.mock('../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetMeQuery: () => ({
     meId: MOCK_USER_ME_ID,
   }),

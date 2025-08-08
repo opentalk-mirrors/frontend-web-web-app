@@ -7,9 +7,9 @@ import { PropsWithChildren } from 'react';
 import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
 import SpeakerWindow from './SpeakerWindow';
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   useParticipantContext: () => mockedParticipant(0),
-  useRoomContext: () => jest.fn(),
+  useRoomContext: () => vi.fn(),
   useRemoteParticipants: () => [mockedParticipant(0)],
   useSortedParticipants: () => [mockedParticipant(0), mockedParticipant(1)],
   ParticipantContext: {
@@ -19,7 +19,7 @@ jest.mock('@livekit/components-react', () => ({
   },
 }));
 
-jest.mock('../../ParticipantWindow', () => ({
+vi.mock('../../ParticipantWindow', () => ({
   __esModule: true,
   default: () => <div data-testid="participantWindow"></div>,
 }));

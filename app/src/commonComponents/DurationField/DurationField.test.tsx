@@ -19,10 +19,10 @@ const commonProps = {
   max: 999,
   allowEmpty: true,
   value: null,
-  onChange: jest.fn(),
-  onBlur: jest.fn(),
+  onChange: vi.fn(),
+  onBlur: vi.fn(),
   error: false,
-  setFieldValue: jest.fn(),
+  setFieldValue: vi.fn(),
 };
 
 describe('DurationField', () => {

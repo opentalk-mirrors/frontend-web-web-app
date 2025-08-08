@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Tariff, TariffId, SingleEvent } from '@opentalk/rest-api-rtk-query';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { MockedFunction } from 'vitest';
 
 import { renderWithProviders, configureStore, mockedSingleEvent } from '../../../utils/testUtils';
 import { defaultValues } from '../utils/initialValues';
@@ -17,36 +18,36 @@ const defaultTariff: Tariff = {
 };
 
 let mockTariff: Tariff;
-let mockGetEvents: jest.MockedFunction<() => SingleEvent[]>;
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+let mockGetEvents: MockedFunction<() => SingleEvent[]>;
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useLazyGetEventsQuery: () => [mockGetEvents],
   useGetMeTariffQuery: () => ({
     data: mockTariff,
   }),
 }));
 
-jest.mock('./DateTimeSection', () => ({
+vi.mock('./DateTimeSection', () => ({
   __esModule: true,
   default: () => <div data-testid="date-time-section" />,
 }));
 
-jest.mock('./ActionButtons', () => ({
+vi.mock('./ActionButtons', () => ({
   __esModule: true,
   default: () => <div data-testid="action-buttons" />,
 }));
 
-jest.mock('./StreamingOptions', () => ({
+vi.mock('./StreamingOptions', () => ({
   __esModule: true,
   default: () => <div data-testid="streaming-options" />,
 }));
 
-jest.mock('./TrainingParticipationReportSelect/TrainingParticipationReportSelect', () => ({
+vi.mock('./TrainingParticipationReportSelect/TrainingParticipationReportSelect', () => ({
   __esModule: true,
   TrainingParticipationReportSelect: () => <div data-testid="training-participation-report-select" />,
 }));
 
-jest.mock('./EventConflictDialog', () => ({
+vi.mock('./EventConflictDialog', () => ({
   __esModule: true,
   default: ({ onConfirm }: { onConfirm: () => void }) => (
     <div data-testid="event-conflict-dialog">
@@ -55,7 +56,7 @@ jest.mock('./EventConflictDialog', () => ({
   ),
 }));
 
-jest.mock('./meetingFormValidationSchema', () => ({
+vi.mock('./meetingFormValidationSchema', () => ({
   meetingFormValidationSchema: {
     // Will always return validation success
     validate: () => Promise.resolve(),
@@ -63,25 +64,25 @@ jest.mock('./meetingFormValidationSchema', () => ({
 }));
 
 let mockInitialValues: Partial<MeetingFormValues>;
-jest.mock('../utils/initialValues', () => ({
-  ...jest.requireActual('../utils/initialValues'),
+vi.mock('../utils/initialValues', async (importOriginal) => ({
+  ...(await importOriginal()),
   getInitialValues: () => mockInitialValues,
 }));
 
 let mockOverlappingEvent: SingleEvent | undefined;
-jest.mock('../../../utils/eventUtils', () => ({
-  ...jest.requireActual('../../../utils/eventUtils'),
+vi.mock('../../../utils/eventUtils', async (importOriginal) => ({
+  ...(await importOriginal()),
   findOverlappingEvent: () => mockOverlappingEvent,
 }));
 
 describe('MeetingForm', () => {
-  const onSubmit = jest.fn().mockResolvedValue(undefined);
+  const onSubmit = vi.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
     mockTariff = defaultTariff;
     mockInitialValues = defaultValues;
-    mockGetEvents = jest.fn().mockReturnValue({});
-    jest.clearAllMocks();
+    mockGetEvents = vi.fn().mockReturnValue({});
+    vi.clearAllMocks();
   });
 
   it('renders all main fields and sections', () => {
@@ -220,7 +221,7 @@ describe('MeetingForm', () => {
       mockInitialValues = { ...defaultValues, startDate: mockStartDate, endDate: mockEndDate };
 
       mockOverlappingEvent = mockedSingleEvent;
-      mockGetEvents = jest.fn().mockReturnValue({ data: mockedSingleEvent });
+      mockGetEvents = vi.fn().mockReturnValue({ data: mockedSingleEvent });
 
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
@@ -243,7 +244,7 @@ describe('MeetingForm', () => {
       mockInitialValues = { ...defaultValues, startDate: mockStartDate, endDate: mockEndDate };
 
       mockOverlappingEvent = mockedSingleEvent;
-      mockGetEvents = jest.fn().mockReturnValue({ data: mockedSingleEvent });
+      mockGetEvents = vi.fn().mockReturnValue({ data: mockedSingleEvent });
 
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });

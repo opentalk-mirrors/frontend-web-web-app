@@ -6,8 +6,8 @@ import { render, screen } from '@testing-library/react';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
 import { SupportPage } from './SupportPage';
 
-jest.mock('../../hooks/useUpdateDocumentTitle', () => ({
-  useUpdateDocumentTitle: jest.fn(),
+vi.mock('../../hooks/useUpdateDocumentTitle', () => ({
+  useUpdateDocumentTitle: vi.fn(),
 }));
 
 describe('SupportPage', () => {

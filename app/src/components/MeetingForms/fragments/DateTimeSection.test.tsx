@@ -12,7 +12,7 @@ import DateTimeSection from './DateTimeSection';
 let mockTestOnChangeValue: Date | null = null;
 let formikInstance: FormikProps<MeetingFormValues> | null = null;
 
-jest.mock('./DashboardDateTimePicker', () => ({
+vi.mock('./DashboardDateTimePicker', () => ({
   DashboardDateTimePicker: ({ type, onChange, minTimeDate }: DashboardDateTimePickerProps) => {
     return (
       <div data-testid={`datetime-picker-${type}`}>
@@ -25,17 +25,17 @@ jest.mock('./DashboardDateTimePicker', () => ({
   },
 }));
 
-jest.mock('./RecurrenceSection', () => ({
+vi.mock('./RecurrenceSection', () => ({
   __esModule: true,
   default: () => <div data-testid="recurrence-section" />,
 }));
 
 describe('DateTimeSection', () => {
-  const onRecurrencePatternChange = jest.fn();
+  const onRecurrencePatternChange = vi.fn();
 
   const renderComponent = (existingEvent?: Event) =>
     render(
-      <Formik initialValues={mockedMeetingFormValues} onSubmit={jest.fn()}>
+      <Formik initialValues={mockedMeetingFormValues} onSubmit={vi.fn()}>
         {(formik) => {
           formikInstance = formik;
           return (
@@ -60,7 +60,7 @@ describe('DateTimeSection', () => {
     it('sets empty string if start date is null', async () => {
       mockTestOnChangeValue = null;
       renderComponent();
-      const validateFieldSpy = jest.spyOn(formikInstance!, 'validateField');
+      const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
       fireEvent.click(screen.getByTestId('trigger-onchange-start'));
 
       await waitFor(() => {
@@ -75,7 +75,7 @@ describe('DateTimeSection', () => {
     it('sets invalid date string if start date is invalid', async () => {
       mockTestOnChangeValue = new Date('invalid');
       renderComponent();
-      const validateFieldSpy = jest.spyOn(formikInstance!, 'validateField');
+      const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
       fireEvent.click(screen.getByTestId('trigger-onchange-start'));
 
       await waitFor(() => {
@@ -90,7 +90,7 @@ describe('DateTimeSection', () => {
     it('sets correct start date in ISO format and updates end date if start date is valid', async () => {
       mockTestOnChangeValue = new Date('05 October 2025 14:48 UTC');
       renderComponent();
-      const validateFieldSpy = jest.spyOn(formikInstance!, 'validateField');
+      const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
       fireEvent.click(screen.getByTestId('trigger-onchange-start'));
 
       await waitFor(() => {
@@ -111,7 +111,7 @@ describe('DateTimeSection', () => {
     it('sets empty string if end date is null', async () => {
       mockTestOnChangeValue = null;
       renderComponent();
-      const validateFieldSpy = jest.spyOn(formikInstance!, 'validateField');
+      const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
       fireEvent.click(screen.getByTestId('trigger-onchange-end'));
 
       await waitFor(() => {
@@ -126,7 +126,7 @@ describe('DateTimeSection', () => {
     it('sets invalid date string if end date is invalid', async () => {
       mockTestOnChangeValue = new Date('invalid');
       renderComponent();
-      const validateFieldSpy = jest.spyOn(formikInstance!, 'validateField');
+      const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
       fireEvent.click(screen.getByTestId('trigger-onchange-end'));
 
       await waitFor(() => {
@@ -141,7 +141,7 @@ describe('DateTimeSection', () => {
     it('sets correct start date in ISO format and updates end date if start date is valid', async () => {
       mockTestOnChangeValue = new Date('05 October 2025 14:48 UTC');
       renderComponent();
-      const validateFieldSpy = jest.spyOn(formikInstance!, 'validateField');
+      const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
       fireEvent.click(screen.getByTestId('trigger-onchange-end'));
 
       await waitFor(() => {
@@ -155,12 +155,12 @@ describe('DateTimeSection', () => {
   });
   describe('min time date passed to pickers', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jest.runOnlyPendingTimers();
-      jest.useRealTimers();
+      vi.runOnlyPendingTimers();
+      vi.useRealTimers();
     });
 
     it('sets min time date to current time for a new event', () => {
@@ -181,7 +181,7 @@ describe('DateTimeSection', () => {
     });
     it('sets min time date to current time for time dependant existing event, which start time is in the future', () => {
       const mockNow = new Date('2025-10-05T14:48:00.000Z');
-      jest.setSystemTime(mockNow);
+      vi.setSystemTime(mockNow);
       renderComponent({
         ...mockedSingleEvent,
         isTimeIndependent: true,
@@ -197,7 +197,7 @@ describe('DateTimeSection', () => {
     });
     it('unsets min time date to for time dependant existing event, which start time is in the past', () => {
       const mockNow = new Date('2025-10-05T14:48:00.000Z');
-      jest.setSystemTime(mockNow);
+      vi.setSystemTime(mockNow);
       renderComponent({
         ...mockedSingleEvent,
         isTimeIndependent: false,

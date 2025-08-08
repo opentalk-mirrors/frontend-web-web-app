@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
-//
-// SPDX-License-Identifier: EUPL-1.2
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
@@ -13,14 +10,15 @@ export default defineConfig({
       formats: ['es', 'cjs'],
       fileName: (format) => {
         if (format === 'es') {
-          return `main.js`;
+          return 'main.js';
         } else if (format === 'cjs') {
-          return `main.cjs`;
+          return 'main.cjs';
         }
+        return 'main.js';
       },
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react-redux', '@reduxjs/toolkit'],
+      external: ['i18next'],
       output: {
         exports: 'named',
       },
@@ -28,9 +26,13 @@ export default defineConfig({
   },
   plugins: [
     dts({
-      entryRoot: 'src',
-      outputDir: 'dist/types',
-      include: ['src'],
+      tsconfigPath: resolve(__dirname, 'tsconfig.json'),
     }),
   ],
+  test: {
+    name: { label: 'packages/i18next-fluent', color: 'blue' },
+    logHeapUsage: true,
+    globals: true,
+    environment: 'jsdom',
+  },
 });

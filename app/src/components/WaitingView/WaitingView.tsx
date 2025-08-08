@@ -53,7 +53,7 @@ const WaitingView = () => {
 
   const readyToEnter = connectionState === ConnectionState.ReadyToEnter;
 
-  const moveToRoom = useCallback(async () => {
+  const moveToRoom = useCallback(() => {
     if (joinWithoutMedia) {
       dispatch(startMedia({ kind: 'audioinput', enabled: false }));
       dispatch(startMedia({ kind: 'videoinput', enabled: false }));

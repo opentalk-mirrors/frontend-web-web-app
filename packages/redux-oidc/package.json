@@ -5,14 +5,11 @@
   "source": "src/index.ts",
   "main": "dist/main.cjs",
   "module": "dist/main.js",
-  "types": "dist/types.d.ts",
+  "types": "dist/src/index.d.ts",
   "author": "Daniél Kerkmann",
   "scripts": {
     "build": "vite build"
   },
-  "declaration": true,
-  "declarationDir": "types",
-  "emitDeclarationOnly": true,
   "devDependencies": {
     "@reduxjs/toolkit": "^2.8.2",
     "react-redux": "^9.2.0",

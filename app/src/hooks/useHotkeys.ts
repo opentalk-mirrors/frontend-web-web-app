@@ -98,7 +98,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
       }
       switch (type) {
         case 'keydown': {
-          toggleAudio(false);
+          await toggleAudio(false);
           if (pushToTalkState === PushToTalkState.Inactive) {
             if (REMEMBER_MICROPHONE_STATE) {
               microphoneStateCache.current = audioEnabled;
@@ -115,7 +115,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
             await whisperRoom?.localParticipant.setMicrophoneEnabled(false);
             setPushToTalkState(PushToTalkState.Inactive);
             if (REMEMBER_MICROPHONE_STATE) {
-              toggleAudio(microphoneStateCache.current);
+              await toggleAudio(microphoneStateCache.current);
             }
           }
           break;
@@ -146,12 +146,12 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
         if (hasMicrophoneDisabledByModerator) {
           return;
         }
-        toggleAudio(true);
+        await toggleAudio(true);
         startingAudio.current = undefined;
       };
 
       const stopAudio = async () => {
-        toggleAudio(false);
+        await toggleAudio(false);
         startingAudio.current = undefined;
         stoppingAudio.current = undefined;
       };
@@ -193,7 +193,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   const pressedKeys = new Set<string>();
 
   const handleKeyPress = useCallback(
-    (event: KeyboardEvent) => {
+    async (event: KeyboardEvent) => {
       if (!hotkeysActive || !HOTKEYS.includes(event.key)) {
         return;
       }
@@ -216,16 +216,16 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
         switch (key) {
           case HOTKEY_MICROPHONE:
             if (type === 'keyup' && audioDevices.length > 0 && !hasMicrophoneDisabledByModerator) {
-              toggleAudio();
+              await toggleAudio();
             }
             break;
           case HOTKEY_WHISPERGROUP:
-            subroomAudioEnabled && pushToWhisper(type);
+            subroomAudioEnabled && (await pushToWhisper(type));
 
             break;
           case HOTKEY_VIDEO:
             if (type === 'keyup' && videoDevices.length > 0) {
-              toggleVideo();
+              await toggleVideo();
             }
             break;
           case HOTKEY_FULLSCREEN:

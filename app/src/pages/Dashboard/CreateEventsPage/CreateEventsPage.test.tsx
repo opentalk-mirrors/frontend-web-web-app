@@ -5,12 +5,12 @@ import { render, screen } from '@testing-library/react';
 
 import CreateEventsPage from './CreateEventsPage';
 
-jest.mock('../../../components/MeetingForms', () => ({
+vi.mock('../../../components/MeetingForms', () => ({
   __esModule: true,
   CreateMeetingForm: () => <div data-testid="CreateMeetingForm" />,
 }));
 
-jest.mock('../../../components/RequiredFieldsInfo', () => ({
+vi.mock('../../../components/RequiredFieldsInfo', () => ({
   __esModule: true,
   RequiredFieldsInfo: () => <div data-testid="RequiredFieldsInfo" />,
 }));

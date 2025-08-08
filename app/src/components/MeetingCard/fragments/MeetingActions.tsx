@@ -108,10 +108,10 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
     );
   };
 
-  const copyMeetingLink = (): void => {
+  const copyMeetingLink = async () => {
     setPopoverOpen(false);
     const link = `${baseUrl}/room/${roomId}`;
-    navigator.clipboard.writeText(link);
+    await navigator.clipboard.writeText(link);
     notifications.success(t('global-copy-link-success'));
   };
 
@@ -124,7 +124,7 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
         if (permanentInvite) {
           setPopoverOpen(false);
           const inviteURLString = composeInviteUrl(baseUrl, roomId, permanentInvite.inviteCode).toString();
-          navigator.clipboard.writeText(inviteURLString);
+          await navigator.clipboard.writeText(inviteURLString);
           notifications.success(t('global-copy-link-success'));
         } else {
           notifications.error(t('global-copy-permanent-guest-link-error'), { persist: true });

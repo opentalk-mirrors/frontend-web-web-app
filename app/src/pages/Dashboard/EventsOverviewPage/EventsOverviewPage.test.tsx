@@ -14,12 +14,12 @@ const createMockEvent = () => ({
   events: [{ ...eventMockedData }],
 });
 
-jest.mock('../../../api/rest', () => ({
-  ...jest.requireActual('../../../api/rest'),
+vi.mock('../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetEventsQuery: () => ({
     isLoading: false,
     events: [createMockEvent()],
-    isFatching: false,
+    isFetching: false,
   }),
   useGetMeQuery: () => ({
     data: {
@@ -28,9 +28,9 @@ jest.mock('../../../api/rest', () => ({
   }),
 }));
 
-jest.mock('../../../templates/DashboardTemplate', () => ({
+vi.mock('../../../templates/DashboardTemplate', () => ({
   useHeader: () => ({
-    setHeader: jest.fn(),
+    setHeader: vi.fn(),
   }),
 }));
 

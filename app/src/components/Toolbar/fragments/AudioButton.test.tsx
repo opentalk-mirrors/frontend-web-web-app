@@ -3,13 +3,14 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useLocalParticipantPermissions } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { LIVEKIT_AUDIO_PERMISSION_NUMBER } from '../../../constants';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import AudioButton from './AudioButton';
 
-jest.mock('@livekit/components-react', () => ({
-  useLocalParticipantPermissions: jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useLocalParticipantPermissions: vi.fn(),
   useMaybeRoomContext: () => ({ localParticipant: mockedParticipant(0) }),
   useMediaDeviceSelect: () => ({
     devices: [
@@ -23,7 +24,7 @@ describe('Audio Button', () => {
   const { store } = configureStore();
 
   it('Button is disabled if microphones are disabled', async () => {
-    (useLocalParticipantPermissions as jest.Mock).mockReturnValue({
+    (useLocalParticipantPermissions as Mock).mockReturnValue({
       canPublishSources: [],
     });
     renderWithProviders(<AudioButton />, { store, provider: { snackbar: true } });
@@ -34,7 +35,7 @@ describe('Audio Button', () => {
   });
 
   it('Button is enabled if microphones are enabled', () => {
-    (useLocalParticipantPermissions as jest.Mock).mockReturnValue({
+    (useLocalParticipantPermissions as Mock).mockReturnValue({
       canPublishSources: [LIVEKIT_AUDIO_PERMISSION_NUMBER],
     });
 
@@ -59,7 +60,7 @@ describe('Audio Button', () => {
   });
 
   it('button is disabled and shows expected tooltip when audio is disabled by moderator', () => {
-    (useLocalParticipantPermissions as jest.Mock).mockReturnValue({
+    (useLocalParticipantPermissions as Mock).mockReturnValue({
       canPublishSources: [],
     });
     const { store } = configureStore();

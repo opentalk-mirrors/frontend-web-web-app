@@ -9,3 +9,8 @@ packages:
 
 onlyBuiltDependencies:
   - msw
+
+# can be removed when the following issue with tinypool is resolved:
+# https://github.com/vitest-dev/vitest/issues/8201
+overrides:
+  "vitest>tinypool": 1.0.2

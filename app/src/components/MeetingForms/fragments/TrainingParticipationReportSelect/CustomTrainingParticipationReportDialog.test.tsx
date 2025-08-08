@@ -9,8 +9,8 @@ import {
 } from './CustomTrainingParticipationReportDialog';
 
 const mockDialogProps: CustomTrainingParticipationReportDialogProps = {
-  closeDialog: jest.fn(),
-  saveOption: jest.fn(),
+  closeDialog: vi.fn(),
+  saveOption: vi.fn(),
   previousOption: {
     initialCheckpointDelay: { after: 60, within: 60 },
     checkpointInterval: { after: 120, within: 120 },

@@ -2,19 +2,20 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, screen } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import { ModerationTabKey } from '../../../../config/constants';
 import useTabs from '../../../../hooks/useTabs';
 import { configureStore, renderWithProviders } from '../../../../utils/testUtils';
 import Drawer from './Drawer';
 
-jest.mock('../../../../hooks/useTabs', () => ({
+vi.mock('../../../../hooks/useTabs', () => ({
   __esModule: true,
-  default: jest.fn(),
+  default: vi.fn(),
 }));
 
-jest.mock('../../../../config/moderationTabs', () => {
-  const originalModule = jest.requireActual('../../../../config/moderationTabs');
+vi.mock('../../../../config/moderationTabs', () => {
+  const originalModule = vi.importActual('../../../../config/moderationTabs');
   return {
     ...originalModule,
     SupportMenuMobileTab: {
@@ -35,7 +36,7 @@ jest.mock('../../../../config/moderationTabs', () => {
   };
 });
 
-jest.mock('./DrawerButton', () => ({
+vi.mock('./DrawerButton', () => ({
   __esModule: true,
   DrawerButton: (props: { onClick: () => void; expanded: boolean }) => (
     <button type="button" onClick={props.onClick} data-expanded={props.expanded}>
@@ -54,7 +55,7 @@ describe('Drawer rendering logic', () => {
   });
 
   beforeEach(() => {
-    (useTabs as jest.Mock).mockReturnValue([]);
+    (useTabs as Mock).mockReturnValue([]);
   });
 
   it('should not render drawer content when its closed', () => {
@@ -65,7 +66,7 @@ describe('Drawer rendering logic', () => {
 
 describe('Drawer behavior logic', () => {
   beforeEach(() => {
-    (useTabs as jest.Mock).mockReturnValue([]);
+    (useTabs as Mock).mockReturnValue([]);
   });
 
   it('should open drawer when drawer button is clicked', () => {
@@ -103,9 +104,7 @@ describe('Drawer behavior logic', () => {
 
 describe('Drawer participant tabs', () => {
   beforeEach(() => {
-    (useTabs as jest.Mock).mockReturnValue([
-      { divider: false, key: ModerationTabKey.Home, component: <div>home</div> },
-    ]);
+    (useTabs as Mock).mockReturnValue([{ divider: false, key: ModerationTabKey.Home, component: <div>home</div> }]);
   });
 
   it('should only render home and support tabs', () => {
@@ -156,7 +155,7 @@ describe('Drawer participant tabs', () => {
 
 describe('Drawer moderator tabs', () => {
   beforeEach(() => {
-    (useTabs as jest.Mock).mockReturnValue([
+    (useTabs as Mock).mockReturnValue([
       { divider: false, key: ModerationTabKey.Home, component: <div>home</div> },
       { divider: false, key: ModerationTabKey.MuteUsers, component: <div>mute</div> },
       { divider: true, key: ModerationTabKey.Divider, component: <div>divider</div> },

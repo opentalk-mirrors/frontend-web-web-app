@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Mock } from 'vitest';
 
 import { useGetMeQuery, useGetMeTariffQuery } from '../../../../api/rest';
 import { configureStore, renderWithProviders } from '../../../../utils/testUtils';
@@ -12,14 +13,14 @@ import { STORAGE_SECTION_PATH, CRITICAL_STORAGE_CAPACITY_IN_PERCENT } from './co
 const MAX_LIMITED_STORAGE_IN_MB = 100;
 const CRITICAL_USED_STORAGE_IN_MB = (MAX_LIMITED_STORAGE_IN_MB * CRITICAL_STORAGE_CAPACITY_IN_PERCENT) / 100;
 
-jest.mock('../../../../api/rest', () => ({
-  ...jest.requireActual('../../../../api/rest'),
-  useGetMeQuery: jest.fn(),
-  useGetMeTariffQuery: jest.fn(),
+vi.mock('../../../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useGetMeQuery: vi.fn(),
+  useGetMeTariffQuery: vi.fn(),
 }));
 
-const mockUseGetMeQuery = useGetMeQuery as jest.Mock;
-const mockUseGetMeTariffQuery = useGetMeTariffQuery as jest.Mock;
+const mockUseGetMeQuery = useGetMeQuery as Mock;
+const mockUseGetMeTariffQuery = useGetMeTariffQuery as Mock;
 
 const ACCOUNT_MANAGEMENT_URL = 'account.management.url';
 const { store } = configureStore({
@@ -92,7 +93,7 @@ describe('Storage almost full Banner', () => {
     // Test navigation to account management url
     // mock window.open
     const jsdomOpen = window.open;
-    window.open = jest.fn();
+    window.open = vi.fn();
 
     const upgradeButton = screen.getByRole('button', { name: 'global-upgrade' });
     await userEvent.click(upgradeButton);

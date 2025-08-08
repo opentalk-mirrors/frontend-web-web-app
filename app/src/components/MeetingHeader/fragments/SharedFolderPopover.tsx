@@ -2,10 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { MenuItem, Popover } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SharedFolderIcon } from '../../../assets/icons';
+import { notifications } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import {
   selectIsSharedFolderOpened,
@@ -23,6 +24,19 @@ export const SharedFolderPopover = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const isExpanded = Boolean(anchorElement);
+
+  const handlePasswordClick = useCallback(async () => {
+    try {
+      if (sharedFolderPassword !== undefined) {
+        await navigator.clipboard.writeText(sharedFolderPassword);
+      }
+    } catch (e) {
+      console.error('Failed to copy password to clipboard:', e);
+      notifications.error(t('error-general'));
+    } finally {
+      setAnchorElement(null);
+    }
+  }, [sharedFolderPassword]);
 
   return (
     <>
@@ -59,16 +73,7 @@ export const SharedFolderPopover = () => {
             {t('shared-folder-open-label')}
           </MenuItem>
         )}
-        {sharedFolderPassword && (
-          <MenuItem
-            onClick={() => {
-              navigator.clipboard.writeText(sharedFolderPassword);
-              setAnchorElement(null);
-            }}
-          >
-            {t('shared-folder-password-label')}
-          </MenuItem>
-        )}
+        {sharedFolderPassword && <MenuItem onClick={handlePasswordClick}>{t('shared-folder-password-label')}</MenuItem>}
       </Popover>
     </>
   );

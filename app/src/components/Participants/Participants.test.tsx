@@ -8,11 +8,11 @@ import { configureStore, mockedParticipant, renderWithProviders } from '../../ut
 import Participants from './Participants';
 
 // Mock child components
-jest.mock('./fragments/ParticipantsContainer', () => ({
+vi.mock('./fragments/ParticipantsContainer', () => ({
   __esModule: true,
   default: () => <div>ParticipantsContainer</div>,
 }));
-jest.mock('../TalkingStickParticipantList', () => ({
+vi.mock('../TalkingStickParticipantList', () => ({
   TalkingStickParticipantList: ({ participants }: { participants: Array<Participant> }) => (
     <div>TalkingStickParticipantList: {participants?.length ?? 0}</div>
   ),
@@ -20,7 +20,7 @@ jest.mock('../TalkingStickParticipantList', () => ({
 
 describe('Participants', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const participants = [

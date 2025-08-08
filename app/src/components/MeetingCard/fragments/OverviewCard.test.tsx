@@ -7,12 +7,12 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders, eventMockedData } from '../../../utils/testUtils';
 import OverviewCard from './OverviewCard';
 
-jest.mock('../../EventTimePreview/EventTimePreview', () => ({
+vi.mock('../../EventTimePreview/EventTimePreview', () => ({
   __esModule: true,
   default: () => <time />,
 }));
 
-jest.mock('./MeetingCardActions', () => ({
+vi.mock('./MeetingCardActions', () => ({
   MeetingCardActions: () => <div data-testid="MeetingCardActions"></div>,
 }));
 

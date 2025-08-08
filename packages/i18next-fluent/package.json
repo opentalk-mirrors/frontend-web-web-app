@@ -6,7 +6,7 @@
   "source": "src/index.ts",
   "main": "dist/main.cjs",
   "module": "dist/main.js",
-  "types": "dist/types.d.ts",
+  "types": "dist/src/index.d.ts",
   "keywords": [
     "i18next",
     "i18next-format",

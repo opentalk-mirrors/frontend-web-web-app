@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import eslint from '@eslint/js';
-import jest from 'eslint-plugin-jest';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -10,6 +9,7 @@ import testingLibrary from 'eslint-plugin-testing-library';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+import vitest from '@vitest/eslint-plugin'
 
 export default defineConfig([
   globalIgnores([
@@ -55,19 +55,28 @@ export default defineConfig([
   },
   {
     name: 'tests',
+    files: ['**/*.test.{ts,tsx}'],
+    plugins: { vitest, 'testing-library': testingLibrary },
+    rules: {
+      ...vitest.configs.recommended.rules,
+      ...testingLibrary.configs['flat/react'].rules,
+      'vitest/no-commented-out-tests': 'off',
+      'vitest/no-disabled-tests': 'off',
+      'vitest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
+    },
     settings: {
-      jest: {
-        version: 'detect',
+      vitest: {
+        typecheck: true,
       },
     },
-    files: ['**/*.test.{ts,tsx}'],
-    plugins: { jest, 'testing-library': testingLibrary },
-    rules: {
-      ...jest.configs['flat/recommended'].rules,
-      ...testingLibrary.configs['flat/react'].rules,
-      'jest/no-commented-out-tests': 'off',
-      'jest/no-disabled-tests': 'off',
-      'jest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
+    languageOptions: {
+      globals: {
+        ...vitest.environments.env.globals,
+      },
+      parserOptions: {
+        projectService: true,
+        allowAutomaticSingleRunInference: true,
+      },
     },
   },
   {

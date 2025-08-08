@@ -4,18 +4,19 @@
 import { renderHook, act } from '@testing-library/react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { useNavigate, MemoryRouter } from 'react-router-dom';
+import { Mock } from 'vitest';
 
 import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
 import { roomReset } from '../store/slices/roomSlice';
 import { configureStore } from '../utils/testUtils';
 import useNavigateToHome from './useNavigateToHome';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+vi.mock('react-router-dom', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useNavigate: vi.fn(),
 }));
 
-const mockNavigate = jest.fn();
+const mockNavigate = vi.fn();
 
 const setup = (connectionState: ConnectionState) => {
   const { store, dispatchSpy } = configureStore({
@@ -26,7 +27,7 @@ const setup = (connectionState: ConnectionState) => {
     },
   });
 
-  const mockHangUp = jest.fn();
+  const mockHangUp = vi.fn();
   dispatchSpy.mockImplementationOnce(mockHangUp);
 
   const { result } = renderHook(() => useNavigateToHome(), {
@@ -49,8 +50,8 @@ const setup = (connectionState: ConnectionState) => {
 
 describe('useNavigateToHome', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+    vi.clearAllMocks();
+    (useNavigate as Mock).mockReturnValue(mockNavigate);
   });
 
   it('dispatches hangUp, roomReset and navigates if state is Waiting', async () => {

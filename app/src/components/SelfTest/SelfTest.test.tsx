@@ -9,25 +9,25 @@ import { CommonTextField } from '../../commonComponents';
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import SelfTest from './SelfTest';
 
-jest.mock('../../utils/apiUtils');
+vi.mock('../../utils/apiUtils');
 
-jest.mock('../../api/rest', () => ({
-  ...jest.requireActual('../../api/rest'),
+vi.mock('../../api/rest', async (importOriginal) => ({
+  ...(await importOriginal()),
   useGetRoomEventInfoQuery: () => ({
     data: {},
   }),
 }));
 
-jest.mock('@livekit/components-react', () => ({
-  useRoomContext: () => jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useRoomContext: () => vi.fn(),
   useMediaDeviceSelect: () => [
     { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },
     { deviceId: 'xxxx1', groupId: 'xxxxx1', kind: 'videoinput', label: 'video' },
   ],
 }));
 
-jest.mock('./fragments/ToolbarContainer', () => ({
-  ...jest.requireActual('./fragments/ToolbarContainer'),
+vi.mock('./fragments/ToolbarContainer', () => ({
+  ...vi.importActual('./fragments/ToolbarContainer'),
   __esModule: true,
   default: ({ children }: PropsWithChildren) => {
     return <div data-testid="buttomContainer"> {children}</div>;

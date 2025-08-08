@@ -11,11 +11,11 @@ import CloseMeetingDialog, { CloseMeetingDialogProps } from './CloseMeetingDialo
 const TEST_DATE = '2024-02-16T10:30:00Z';
 const VERIFY_TODAY_DATE = '20240216T103000Z';
 
-const mockRefetch = jest.fn();
+const mockRefetch = vi.fn();
 
 const dialogProps: CloseMeetingDialogProps = {
   open: true,
-  onClose: jest.fn(),
+  onClose: vi.fn(),
   container: null,
 };
 
@@ -28,7 +28,7 @@ describe('generate instance id', () => {
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
     expect(instanceId).toEqual(VERIFY_TODAY_DATE);
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 });
 
@@ -36,7 +36,7 @@ describe('CloseMeetingDialog', () => {
   const { store } = configureStore();
 
   it('should not render with open={false}', () => {
-    jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ refetch: mockRefetch });
+    vi.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ refetch: mockRefetch });
     renderWithProviders(<CloseMeetingDialog {...dialogProps} open={false} />, {
       store,
       provider: { router: true, snackbar: true },
@@ -49,7 +49,7 @@ describe('CloseMeetingDialog', () => {
   });
 
   it('should render properly for single events', async () => {
-    jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedSingleEvent, refetch: mockRefetch });
+    vi.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedSingleEvent, refetch: mockRefetch });
     renderWithProviders(<CloseMeetingDialog {...dialogProps} />, {
       store,
       provider: { router: true, snackbar: true },
@@ -62,7 +62,7 @@ describe('CloseMeetingDialog', () => {
   });
 
   it('should render properly for recurring events', async () => {
-    jest.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedRecurringEvent, refetch: mockRefetch });
+    vi.spyOn(restAPI, 'useGetEventQuery').mockReturnValue({ data: mockedRecurringEvent, refetch: mockRefetch });
     renderWithProviders(<CloseMeetingDialog {...dialogProps} />, {
       store,
       provider: { router: true, snackbar: true },

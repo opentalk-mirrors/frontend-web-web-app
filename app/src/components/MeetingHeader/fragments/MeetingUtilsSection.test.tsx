@@ -4,38 +4,39 @@
 import { useLocalParticipant } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
 import { ConnectionQuality } from 'livekit-client';
+import { Mock } from 'vitest';
 
 import { getLocationProtocol } from '../../../utils/apiUtils';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MeetingUtilsSection from './MeetingUtilsSection';
 
-jest.mock('@livekit/components-react', () => ({
-  useLocalParticipant: jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useLocalParticipant: vi.fn(),
 }));
 
-jest.mock('../../SecurityBadge/SecurityBadge', () => ({
+vi.mock('../../SecurityBadge/SecurityBadge', () => ({
   __esModule: true,
   default: () => <div>SecurityBadge</div>,
 }));
 
-jest.mock('./MeetingTimer', () => ({
+vi.mock('./MeetingTimer', () => ({
   __esModule: true,
   default: () => <div>MeetingTimer</div>,
 }));
 
-jest.mock('./WaitingParticipantsPopover', () => ({
+vi.mock('./WaitingParticipantsPopover', () => ({
   __esModule: true,
   default: () => <div>WaitingParticipantsPopover</div>,
 }));
 
-jest.mock('../../../utils/apiUtils', () => ({
-  getLocationProtocol: jest.fn(),
+vi.mock('../../../utils/apiUtils', () => ({
+  getLocationProtocol: vi.fn(),
 }));
 
 describe('MeetingUtilsSection rendering logic', () => {
   beforeEach(() => {
-    (getLocationProtocol as jest.Mock).mockReturnValue('http:');
-    (useLocalParticipant as jest.Mock).mockReturnValue({
+    (getLocationProtocol as Mock).mockReturnValue('http:');
+    (useLocalParticipant as Mock).mockReturnValue({
       localParticipant: {
         connectionQuality: ConnectionQuality.Good,
       },
@@ -52,7 +53,7 @@ describe('MeetingUtilsSection rendering logic', () => {
     });
     const { unmount } = renderWithProviders(<MeetingUtilsSection />, { store });
     expect(screen.queryByLabelText('bad-media-connection-button-label')).not.toBeInTheDocument();
-    (useLocalParticipant as jest.Mock).mockReturnValue({
+    (useLocalParticipant as Mock).mockReturnValue({
       localParticipant: {
         connectionQuality: ConnectionQuality.Poor,
       },
@@ -75,14 +76,14 @@ describe('MeetingUtilsSection rendering logic', () => {
   });
 
   it('should render security badge for secure connection', () => {
-    (getLocationProtocol as jest.Mock).mockReturnValue('https:');
+    (getLocationProtocol as Mock).mockReturnValue('https:');
     const { store } = configureStore();
     renderWithProviders(<MeetingUtilsSection />, { store });
     expect(screen.getByText('SecurityBadge')).toBeInTheDocument();
   });
 
   it('should not render security badge for insecure connection', () => {
-    (getLocationProtocol as jest.Mock).mockReturnValue('http:');
+    (getLocationProtocol as Mock).mockReturnValue('http:');
     const { store } = configureStore();
     renderWithProviders(<MeetingUtilsSection />, { store });
     expect(screen.queryByText('SecurityBadge')).not.toBeInTheDocument();

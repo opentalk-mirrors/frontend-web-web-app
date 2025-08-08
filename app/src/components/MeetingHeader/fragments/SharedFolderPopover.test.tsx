@@ -111,11 +111,11 @@ describe('SharedFolderMenuItem callback logic', () => {
 
   beforeEach(() => {
     originalWindowOpen = window.open;
-    window.open = jest.fn();
+    window.open = vi.fn();
     originalClipboard = navigator.clipboard;
     Object.defineProperty(navigator, 'clipboard', {
       value: {
-        writeText: jest.fn(),
+        writeText: vi.fn(),
       },
       writable: true, // Allow it to be restored
       configurable: true,

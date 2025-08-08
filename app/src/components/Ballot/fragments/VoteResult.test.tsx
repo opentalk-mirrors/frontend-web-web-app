@@ -25,7 +25,7 @@ describe('testing vote results', () => {
     optionIndex: 1,
     voteData: voteData,
     showResult: true,
-    onVote: jest.fn(),
+    onVote: vi.fn(),
   };
 
   const pollData: IVoteData = {
@@ -41,7 +41,7 @@ describe('testing vote results', () => {
     title: '1',
     optionIndex: 0,
     voteData: pollData,
-    onVote: jest.fn(),
+    onVote: vi.fn(),
     multipleChoice: true,
   };
 

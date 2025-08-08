@@ -6,8 +6,8 @@ import { screen } from '@testing-library/react';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import VideoButton from './VideoButton';
 
-jest.mock('@livekit/components-react', () => ({
-  useLocalParticipantPermissions: jest.fn(),
+vi.mock('@livekit/components-react', () => ({
+  useLocalParticipantPermissions: vi.fn(),
   useMaybeRoomContext: () => ({ localParticipant: mockedParticipant(0) }),
   useMediaDeviceSelect: () => ({
     devices: [

@@ -8,17 +8,17 @@ import { ParticipantId } from '../../../types';
 import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
 import Thumbnail from './Thumbnail';
 
-jest.mock('@livekit/components-react', () => ({
+vi.mock('@livekit/components-react', () => ({
   ParticipantContext: {
     Provider: ({ children }: PropsWithChildren) => {
       return <div data-testid="buttomContainer"> {children}</div>;
     },
   },
-  useRoomContext: () => jest.fn(),
+  useRoomContext: () => vi.fn(),
   useParticipantContext: () => mockedParticipant(0),
 }));
 
-jest.mock('../../ParticipantWindow', () => ({
+vi.mock('../../ParticipantWindow', () => ({
   __esModule: true,
   default: () => <div data-testid="participantWindow"></div>,
 }));

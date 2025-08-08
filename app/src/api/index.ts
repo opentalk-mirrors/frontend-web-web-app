@@ -339,7 +339,7 @@ const handleControlMessage = async (
       }
 
       if (data.closesAt) {
-        startTimeLimitNotification(data.closesAt);
+        await startTimeLimitNotification(data.closesAt);
       }
 
       // Notify moderator, in case he took the last position of the room and now it's full
@@ -373,7 +373,7 @@ const handleControlMessage = async (
         });
 
         if (state.streaming.consent === undefined) {
-          showConsentNotification(dispatch);
+          await showConsentNotification(dispatch);
         }
       }
 
@@ -1084,7 +1084,7 @@ export const handleChatMessage = (
   }
 };
 
-const handleStreamingMessage = (dispatch: AppDispatch, data: streaming.Message, state: RootState) => {
+const handleStreamingMessage = async (dispatch: AppDispatch, data: streaming.Message, state: RootState) => {
   switch (data.message) {
     case 'stream_updated': {
       dispatch(streamUpdated(data));
@@ -1108,7 +1108,7 @@ const handleStreamingMessage = (dispatch: AppDispatch, data: streaming.Message, 
         isActiveStream && (state.streaming.consent === undefined || (!state.streaming.consent && isMediaActive));
 
       if (isConsentRequired) {
-        showConsentNotification(dispatch);
+        await showConsentNotification(dispatch);
       }
 
       break;
@@ -1363,10 +1363,11 @@ const handleTrainingParticipationReportMessage = (
  * anonymous function that dispatches redux actions based on the Signaling API incoming message
  */
 const onMessage =
-  (dispatch: AppDispatch, getState: () => RootState, conference: ConferenceRoom) => (message: IncomingMessage) => {
+  (dispatch: AppDispatch, getState: () => RootState, conference: ConferenceRoom) =>
+  async (message: IncomingMessage) => {
     switch (message.namespace) {
       case 'control':
-        handleControlMessage(dispatch, getState(), conference, message.payload, message.timestamp);
+        await handleControlMessage(dispatch, getState(), conference, message.payload, message.timestamp);
         break;
       case 'breakout':
         handleBreakoutMessage(dispatch, getState(), message.payload, message.timestamp);
@@ -1404,7 +1405,7 @@ const onMessage =
         handleWhiteboardMessage(dispatch, message.payload);
         break;
       case 'recording':
-        handleStreamingMessage(dispatch, message.payload, getState());
+        await handleStreamingMessage(dispatch, message.payload, getState());
         break;
       case 'shared_folder':
         handleSharedFolderMessage(dispatch, message.payload);
