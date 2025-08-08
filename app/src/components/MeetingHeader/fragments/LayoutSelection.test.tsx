@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useMediaQuery } from '@mui/material';
-import { act, screen, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
@@ -13,14 +13,16 @@ const mockFullscreenContext = {
   node: null,
   exit: vi.fn(),
   enter: vi.fn(),
-  fullscreenParticipantID: '',
+  fullscreenParticipantId: '',
   setRootElement: vi.fn(),
   rootElement: null,
   setHasActiveOverlay: vi.fn(),
   isFullScreenAvailable: vi.fn(),
 };
 
-vi.mock('../../../hooks/useFullscreenContext.ts', () => ({ useFullscreenContext: () => mockFullscreenContext }));
+vi.mock('../../../hooks/useFullscreenContext.ts', () => ({
+  useFullscreenContext: () => mockFullscreenContext,
+}));
 
 vi.mock('@mui/material', async (importOriginal) => ({
   ...(await importOriginal()),

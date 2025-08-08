@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
-import { renderWithProviders, configureStore } from '../../utils/testUtils';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import FullscreenView from './FullscreenView';
 
 const mockExitCall = vi.fn();
@@ -15,7 +15,7 @@ vi.mock('../../hooks/useFullscreenContext.ts', () => ({
     node: null,
     exit: mockExitCall,
     enter: vi.fn(),
-    fullscreenParticipantID: '',
+    fullscreenParticipantId: '',
     setRootElement: vi.fn(),
     rootElement: null,
     setHasActiveOverlay: vi.fn(),
@@ -29,6 +29,8 @@ vi.mock('@livekit/components-react', () => ({
     },
   },
   useRoomContext: () => vi.fn(),
+  useRemoteParticipant: () => mockedParticipant(0),
+  useRemoteParticipants: () => [mockedParticipant(0)],
 }));
 
 vi.mock('../LocalVideo', () => ({

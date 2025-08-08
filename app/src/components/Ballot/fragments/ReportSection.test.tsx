@@ -10,7 +10,7 @@ import { ReportSection } from './ReportSection';
 
 const mockAppDispatch = vi.fn();
 
-vi.mock('../../../hooks', () => ({
+vi.mock('../../../hooks/useCustomRedux', () => ({
   useAppDispatch: () => mockAppDispatch,
   useAppSelector: vi.fn(),
 }));

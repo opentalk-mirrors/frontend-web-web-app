@@ -5,7 +5,7 @@ import { useRemoteParticipant } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
-import { renderWithProviders, mockedParticipant, configureStore } from '../../../utils/testUtils';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import VideoOverlay from './VideoOverlay';
 
 const mockFullscreenContext = {
@@ -13,7 +13,7 @@ const mockFullscreenContext = {
   node: null,
   exit: vi.fn(),
   enter: vi.fn(),
-  fullscreenParticipantID: '',
+  fullscreenParticipantId: '',
   setRootElement: vi.fn(),
   rootElement: null,
   setHasActiveOverlay: vi.fn(),

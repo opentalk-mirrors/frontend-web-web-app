@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, GlobalStyles, Theme } from '@mui/material';
+import { GlobalStyles, Theme, styled } from '@mui/material';
 import {
   SnackbarKey,
   SnackbarProvider as SnackbarProviderDefault,
@@ -9,7 +9,7 @@ import {
 } from 'notistack';
 import React from 'react';
 
-import { useFullscreenContext } from '../../../../provider/FullscreenProvider';
+import { useFullscreenContext } from '../../../../hooks/useFullscreenContext';
 import { CloseButton } from '../CloseButton';
 import { notifications } from '../utils';
 import { getNotistackComponents } from '../variations';
@@ -78,7 +78,7 @@ const SnackbarProvider = (props: SnackbarProviderProps) => {
         }}
         action={(snackbarKey: SnackbarKey) => <StyledCloseButton onClick={() => onClickDismiss(snackbarKey)} />}
         Components={{ ...getNotistackComponents(Components) }}
-        domRoot={fullscreenHandle.rootElement ? fullscreenHandle.rootElement : domRoot}
+        domRoot={fullscreenHandle?.rootElement ? fullscreenHandle.rootElement : domRoot}
       >
         {children}
       </SnackbarProviderDefault>

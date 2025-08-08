@@ -1,15 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RemoteParticipant, Participant } from 'livekit-client';
 import React, { createContext } from 'react';
 
 export type ExtendedFullScreenHandle = {
   node: React.RefObject<HTMLDivElement | null>;
   active: boolean;
-  enter: (participant?: RemoteParticipant) => void;
+  enter: (participantId?: string) => void;
   exit: () => void;
-  fullscreenParticipant: Participant | undefined;
   hasActiveOverlay: boolean;
   setHasActiveOverlay: (hasActiveOverlay: boolean) => void;
   rootElement: HTMLElement | null;
