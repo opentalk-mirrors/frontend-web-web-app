@@ -32,7 +32,7 @@ describe('ParticipantsContainer', () => {
     renderWithProviders(<ParticipantsContainer />, { store });
 
     expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(screen.getByRole('switch')).toBeInTheDocument();
     // Grouped view: should render ParticipantGroups
     expect(screen.getByRole('heading', { level: 4 })).toBeInTheDocument();
   });

@@ -23,7 +23,7 @@ describe('ParticipantGroupingForm', () => {
 
     expect(screen.getByLabelText('sort-groups-on')).toBeInTheDocument();
 
-    const switchInput = screen.getByRole('checkbox');
+    const switchInput = screen.getByRole('switch');
 
     expect(switchInput).toBeChecked();
   });
@@ -40,7 +40,7 @@ describe('ParticipantGroupingForm', () => {
 
     expect(screen.getByLabelText('sort-groups-off')).toBeInTheDocument();
 
-    const switchInput = screen.getByRole('checkbox');
+    const switchInput = screen.getByRole('switch');
 
     expect(switchInput).not.toBeChecked();
   });
@@ -55,7 +55,7 @@ describe('ParticipantGroupingForm', () => {
     });
     renderWithProviders(<ParticipantGroupingForm />, { store });
 
-    const switchInput = screen.getByRole('checkbox');
+    const switchInput = screen.getByRole('switch');
     fireEvent.click(switchInput);
 
     expect(store.getState().ui.showParticipantGroups).toEqual(true);
