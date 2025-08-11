@@ -24,6 +24,25 @@ interface EchoPlayBackProps {
   setLocalAudioTrack: (audioTrack: LocalAudioTrack | undefined) => void;
 }
 
+function getDeviceIdString(deviceId: string | ConstrainDOMString | { exact: string } | undefined): string | undefined {
+  if (!deviceId) {
+    return undefined;
+  }
+  if (typeof deviceId === 'string') {
+    return deviceId;
+  }
+  if (typeof deviceId === 'object' && 'exact' in deviceId) {
+    const exact = deviceId.exact;
+    if (typeof exact === 'string') {
+      return exact;
+    }
+    if (Array.isArray(exact) && exact.length > 0) {
+      return exact[0];
+    }
+  }
+  return undefined;
+}
+
 const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps) => {
   const { t } = useTranslation();
   const audioEnabled = useAppSelector(selectAudioEnabled);
@@ -64,18 +83,19 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
   useEffect(() => {
     if (audioEnabled || activeDeviceId !== audioDeviceId) {
       dispatch(setMediaChangeInProgress('audioinput'));
-      const deviceId = audioDeviceId === 'default' ? undefined : audioDeviceId;
-      createLocalAudioTrack({ deviceId })
+      const deviceId = getDeviceIdString(audioDeviceId) === 'default' ? undefined : getDeviceIdString(audioDeviceId);
+      createLocalAudioTrack({ deviceId, echoCancellation: true })
         .then((audioTrack) => {
           setLocalAudioTrack(audioTrack);
-          const usedDeviceId = audioTrack.constraints.deviceId as string;
-          if (usedDeviceId !== audioDeviceId) {
+          const usedDeviceId = getDeviceIdString(audioTrack.constraints.deviceId);
+          const wantedDeviceId = getDeviceIdString(audioDeviceId);
+          if (usedDeviceId && usedDeviceId !== wantedDeviceId) {
             dispatch(setAudioDeviceId(usedDeviceId));
           }
         })
         .catch((error) => {
           dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-          handleMediaPermissionError({ error, deviceId: audioDeviceId, kind: 'audioinput' });
+          handleMediaPermissionError({ error, deviceId: getDeviceIdString(audioDeviceId), kind: 'audioinput' });
         })
         .finally(() => {
           dispatch(setMediaChangeInProgress(null));
@@ -97,10 +117,7 @@ const EchoPlayBack = ({ localAudioTrack, setLocalAudioTrack }: EchoPlayBackProps
     const echoTest = new EchoTest();
     const echoChangeHandler = changeHandler(echoTest);
     echoTest.addEventListener('stateChanged', echoChangeHandler);
-    localAudioTrack.mediaStream &&
-      echoTest.connect(localAudioTrack.mediaStream).catch((e) => {
-        log.error('Failed to connect EchoTest', e);
-      });
+    localAudioTrack.mediaStream && echoTest.connect(localAudioTrack.mediaStream);
 
     return () => {
       localAudioTrack.mediaStreamTrack.stop();
