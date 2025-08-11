@@ -29,14 +29,14 @@ describe('<TalkingStickTabPanel />', () => {
     it('should render include moderator checkbox, which is set by default', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
-      const includeModerator = screen.getByRole('checkbox', { name: 'talking-stick-include-moderator-switch' });
+      const includeModerator = screen.getByRole('switch', { name: 'talking-stick-include-moderator-switch' });
       expect(includeModerator).toHaveAttribute('value', 'true');
     });
 
     it('should unset include moderator checkbox, on user click', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
 
-      const includeModerator = screen.getByRole('checkbox', { name: 'talking-stick-include-moderator-switch' });
+      const includeModerator = screen.getByRole('switch', { name: 'talking-stick-include-moderator-switch' });
 
       fireEvent.click(includeModerator);
 

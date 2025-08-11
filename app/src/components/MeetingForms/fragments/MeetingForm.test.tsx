@@ -95,10 +95,10 @@ describe('MeetingForm', () => {
     expect(screen.getByRole('textbox', { name: 'dashboard-meeting-textfield-details' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'dashboard-direct-meeting-password-label' })).toBeInTheDocument();
 
-    expect(screen.getAllByRole('checkbox')).toHaveLength(3); // Date/Time, Waiting Room, Details
-    expect(screen.getByRole('checkbox', { name: 'dashboard-meeting-date-and-time-switch' })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'dashboard-meeting-waiting-room-switch' })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'dashboard-meeting-details-tooltip' })).toBeInTheDocument();
+    expect(screen.getAllByRole('switch')).toHaveLength(3); // Date/Time, Waiting Room, Details
+    expect(screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' })).toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: 'dashboard-meeting-waiting-room-switch' })).toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: 'dashboard-meeting-details-tooltip' })).toBeInTheDocument();
 
     expect(screen.getByTestId('date-time-section')).toBeInTheDocument();
     expect(screen.getByTestId('action-buttons')).toBeInTheDocument();
@@ -124,8 +124,8 @@ describe('MeetingForm', () => {
       });
       mockTariff = { ...defaultTariff, modules: { sharedFolder: { features: [] } } };
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
-      expect(screen.getAllByRole('checkbox')).toHaveLength(4); // default + shared folder
-      expect(screen.getByRole('checkbox', { name: 'dashboard-meeting-shared-folder-switch' })).toBeInTheDocument();
+      expect(screen.getAllByRole('switch')).toHaveLength(4); // default + shared folder
+      expect(screen.getByRole('switch', { name: 'dashboard-meeting-shared-folder-switch' })).toBeInTheDocument();
     });
     it('renders streaming options section if streaming feature is enabled', () => {
       const { store } = configureStore({});
@@ -153,8 +153,8 @@ describe('MeetingForm', () => {
         },
       });
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
-      expect(screen.getAllByRole('checkbox')).toHaveLength(4); // default + e2e encryption
-      expect(screen.getByRole('checkbox', { name: 'dashboard-meeting-e2ee-tooltip' })).toBeInTheDocument();
+      expect(screen.getAllByRole('switch')).toHaveLength(4); // default + e2e encryption
+      expect(screen.getByRole('switch', { name: 'dashboard-meeting-e2ee-tooltip' })).toBeInTheDocument();
     });
   });
 
@@ -163,7 +163,7 @@ describe('MeetingForm', () => {
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
 
-      const timeSwitch = screen.getByRole('checkbox', { name: 'dashboard-meeting-date-and-time-switch' });
+      const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       fireEvent.click(timeSwitch);
 
       await waitFor(() => {
@@ -185,7 +185,7 @@ describe('MeetingForm', () => {
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
 
-      const timeSwitch = screen.getByRole('checkbox', { name: 'dashboard-meeting-date-and-time-switch' });
+      const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       expect(timeSwitch).toBeChecked();
 
       fireEvent.submit(screen.getByRole('form'));
@@ -205,7 +205,7 @@ describe('MeetingForm', () => {
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
 
-      const timeSwitch = screen.getByRole('checkbox', { name: 'dashboard-meeting-date-and-time-switch' });
+      const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       expect(timeSwitch).toBeChecked();
 
       fireEvent.submit(screen.getByRole('form'));
@@ -226,7 +226,7 @@ describe('MeetingForm', () => {
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
 
-      const timeSwitch = screen.getByRole('checkbox', { name: 'dashboard-meeting-date-and-time-switch' });
+      const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       expect(timeSwitch).toBeChecked();
 
       fireEvent.submit(screen.getByRole('form'));
@@ -249,7 +249,7 @@ describe('MeetingForm', () => {
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, { store });
 
-      const timeSwitch = screen.getByRole('checkbox', { name: 'dashboard-meeting-date-and-time-switch' });
+      const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
       expect(timeSwitch).toBeChecked();
 
       fireEvent.submit(screen.getByRole('form'));

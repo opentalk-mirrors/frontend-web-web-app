@@ -47,7 +47,7 @@ describe('usePreventSpaceKey', () => {
       const handleChange = vi.fn();
       render(<WithSwitch handleChange={handleChange} />);
 
-      const switchElement = screen.getByRole('checkbox');
+      const switchElement = screen.getByRole('switch');
       await userEvent.tab();
       expect(switchElement).toHaveFocus();
 
@@ -75,7 +75,7 @@ describe('usePreventSpaceKey', () => {
       const handleChange = vi.fn();
       render(<WithSwitch handleChange={handleChange} />);
 
-      const switchElement = screen.getByRole('checkbox');
+      const switchElement = screen.getByRole('switch');
       await userEvent.tab();
       expect(switchElement).toHaveFocus();
 
