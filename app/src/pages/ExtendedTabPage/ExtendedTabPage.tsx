@@ -11,6 +11,8 @@ import { useAppDispatch } from '../../hooks';
 import useE2EE from '../../hooks/useE2EE';
 import useRoom from '../../hooks/useRoom';
 import { startMedia } from '../../store/commonActions';
+import { setPopoutParticipantId } from '../../store/slices/livekitSlice';
+import { setVisibleParticipantIds } from '../../store/slices/uiSlice';
 import Video from './fragments/Video';
 import { useBroadcastChannel } from './hooks/useBroadcastChannel';
 
@@ -29,9 +31,13 @@ const ExtendedTabPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-    dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-  }, []);
+    dispatch(startMedia({ kind: 'audioinput', enabled: false, isPopoutStream: true }));
+    dispatch(startMedia({ kind: 'videoinput', enabled: false, isPopoutStream: true }));
+    if (participantId) {
+      dispatch(setVisibleParticipantIds([participantId]));
+      dispatch(setPopoutParticipantId(participantId));
+    }
+  }, [participantId]);
 
   if (room === undefined || mediaType === undefined || participantId === undefined) {
     return <CircularProgress />;

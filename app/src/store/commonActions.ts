@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RoomId, InviteCode } from '@opentalk/rest-api-rtk-query';
+import { InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
@@ -13,11 +13,11 @@ import { stopTimeLimitNotification } from '../commonComponents/Notistack/fragmen
 import { BackgroundBlur } from '../modules/Media/BackgroundBlur';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
-import { BreakoutRoomId, JoinSuccessInternalState, FetchRequestError } from '../types';
+import { BreakoutRoomId, FetchRequestError, JoinSuccessInternalState } from '../types';
 import { getControllerBaseUrl } from '../utils/apiUtils';
 import { handleMediaPermissionError } from '../utils/mediaErrorUtils';
 import { getDeviceId } from '../utils/mediaUtils';
-import type { RootState, AppDispatch } from './index';
+import type { AppDispatch, RootState } from './index';
 import { getLivekitRoom } from './livekitRoom';
 import type { MediaDeviceKindExtended } from './slices/mediaSlice';
 
@@ -90,6 +90,7 @@ interface StartMediaInterface {
   enabled: boolean;
   deviceId?: string;
   forceDisableAudioBeforePromptIsShown?: boolean;
+  isPopoutStream?: boolean;
 }
 
 interface FetchPermissionError extends FetchRequestError {
@@ -188,34 +189,39 @@ export const startMedia = createAsyncThunk<
   StartMediaInterface,
   StartMediaInterface,
   { state: RootState; rejectValue: FetchPermissionError }
->('media/startMedia', async ({ kind, enabled, deviceId, forceDisableAudioBeforePromptIsShown }, thunkApi) => {
-  const state = thunkApi.getState();
-  const inMeetingView =
-    state.room.connectionState === ConnectionState.Online || state.room.connectionState === ConnectionState.Leaving;
+>(
+  'media/startMedia',
+  async ({ kind, enabled, deviceId, forceDisableAudioBeforePromptIsShown, isPopoutStream }, thunkApi) => {
+    const state = thunkApi.getState();
+    const inMeetingView =
+      isPopoutStream ||
+      state.room.connectionState === ConnectionState.Online ||
+      state.room.connectionState === ConnectionState.Leaving;
 
-  try {
-    switch (kind) {
-      case 'audioinput':
-      case 'videoinput':
-        return await handleLocalMediaTrack({ thunkApi, kind, enabled, deviceId, inMeetingView });
+    try {
+      switch (kind) {
+        case 'audioinput':
+        case 'videoinput':
+          return await handleLocalMediaTrack({ thunkApi, kind, enabled, deviceId, inMeetingView });
 
-      case 'screenshare':
-        if (inMeetingView) {
-          await getLivekitRoom().localParticipant.setScreenShareEnabled(enabled);
-        }
-        return {
-          kind,
-          enabled,
-        };
-      default:
-        return {
-          kind,
-          enabled,
-          forceDisableAudioBeforePromptIsShown,
-        };
+        case 'screenshare':
+          if (inMeetingView) {
+            await getLivekitRoom().localParticipant.setScreenShareEnabled(enabled);
+          }
+          return {
+            kind,
+            enabled,
+          };
+        default:
+          return {
+            kind,
+            enabled,
+            forceDisableAudioBeforePromptIsShown,
+          };
+      }
+    } catch (error) {
+      const mediaError = handleMediaPermissionError({ error, deviceId, kind });
+      return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind });
     }
-  } catch (error) {
-    const mediaError = handleMediaPermissionError({ error, deviceId, kind });
-    return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind });
   }
-});
+);
