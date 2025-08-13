@@ -58,6 +58,7 @@ export type LivekitState = {
   publicUrl: string | undefined;
   popoutStreamAccesses: PopoutStreamAccesses;
   qualityCap: VideoSetting;
+  popoutParticipantId: string | undefined;
 };
 
 const initialState: LivekitState = {
@@ -66,6 +67,7 @@ const initialState: LivekitState = {
   publicUrl: undefined,
   popoutStreamAccesses: [],
   qualityCap: VideoSetting.High,
+  popoutParticipantId: undefined,
 };
 
 export const livekitSlice = createSlice({
@@ -100,6 +102,9 @@ export const livekitSlice = createSlice({
     setDisableRemoteVideos: (state, { payload }: PayloadAction<boolean>) => {
       state.qualityCap = payload ? VideoSetting.Off : VideoSetting.High;
     },
+    setPopoutParticipantId: (state, { payload }: PayloadAction<string | undefined>) => {
+      state.popoutParticipantId = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload }) => {
@@ -124,6 +129,7 @@ export const {
   setLivekitPopoutStreamAccessToken,
   deleteLivekitPopoutStreamAccessToken,
   setDisableRemoteVideos,
+  setPopoutParticipantId,
   setNewAccessToken,
 } = livekitSlice.actions;
 
@@ -144,6 +150,7 @@ export const selectLivekitPopoutStreamAccessByParticipantId = createSelector(
 );
 
 export const selectQualityCap = (state: RootState) => state.livekit.qualityCap;
+export const selectPopoutParticipantId = (state: RootState) => state.livekit.popoutParticipantId;
 
 export default livekitSlice.reducer;
 
@@ -343,6 +350,7 @@ const handleParticipantConnected = (
     const remoteParticipants = Array.from(getLivekitRoom().remoteParticipants.values());
     const unauthorizedParticipantNames = remoteParticipants
       .filter(isActiveAndUnauthorized)
+      .filter((p) => p.identity !== selectPopoutParticipantId(state))
       .map((p) => selectParticipantName(state, p.identity as ParticipantId) || p.identity);
 
     if (unauthorizedParticipantNames.length > 0) {
