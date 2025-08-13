@@ -5,6 +5,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { Room } from 'livekit-client';
 
 import type { AppDispatch } from '.';
+import log from '../logger';
 
 let room: Room;
 
@@ -20,7 +21,7 @@ export const getLivekitRoom = (dispatch?: AppDispatch): Room => {
     if (dispatch) {
       dispatch(setLivekitUnavailable(true));
     }
-    console.warn('[LiveKit]: Room was not set');
+    log.warn('[LiveKit]: Room was not set');
   }
 
   return room;

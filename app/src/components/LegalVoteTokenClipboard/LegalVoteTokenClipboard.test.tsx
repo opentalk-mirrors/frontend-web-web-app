@@ -19,6 +19,11 @@ vi.mock('../../hooks', () => ({
   },
 }));
 
+vi.mock('../../hooks/useCustomRedux', () => ({
+  useAppSelector: vi.fn(),
+  useAppDispatch: vi.fn(),
+}));
+
 describe('LegalVoteTokenClipboard', () => {
   it('renders without crashing', () => {
     expect(() => render(<LegalVoteTokenClipboard name="name" timestamp="" token="token" vote="" />)).not.toThrow();

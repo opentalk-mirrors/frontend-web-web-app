@@ -5,7 +5,7 @@ import { useParticipants } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
-import { ParticipantId } from '../../types';
+import type { ParticipantId } from '../../types';
 import { mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import NameTile from './NameTile';
 

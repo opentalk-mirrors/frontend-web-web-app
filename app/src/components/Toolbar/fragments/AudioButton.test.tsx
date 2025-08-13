@@ -6,12 +6,11 @@ import { screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
 import { LIVEKIT_AUDIO_PERMISSION_NUMBER } from '../../../constants';
-import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import AudioButton from './AudioButton';
 
 vi.mock('@livekit/components-react', () => ({
   useLocalParticipantPermissions: vi.fn(),
-  useMaybeRoomContext: () => ({ localParticipant: mockedParticipant(0) }),
   useMediaDeviceSelect: () => ({
     devices: [
       { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },

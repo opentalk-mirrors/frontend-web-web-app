@@ -1,15 +1,23 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantContext } from '@livekit/components-react';
+import { sortParticipants } from '@livekit/components-core';
+import { ParticipantContext, useRemoteParticipant, useRemoteParticipants } from '@livekit/components-react';
 import { Box, IconButton as MuiIconButton, Slide, styled } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CloseIcon } from '../../assets/icons';
-import { useAppDispatch } from '../../hooks';
+import { CloseIcon, PinIcon } from '../../assets/icons';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useFullscreenContext } from '../../hooks/useFullscreenContext';
-import { toggledFullScreenMode } from '../../store/slices/uiSlice';
+import { selectParticipantName } from '../../store/slices/participantsSlice';
+import {
+  pinnedParticipantIdSet,
+  selectPinnedParticipantId,
+  setVisibleParticipantIds,
+  toggledFullScreenMode,
+} from '../../store/slices/uiSlice';
+import type { ParticipantId } from '../../types';
 import LocalVideo from '../LocalVideo';
 import ParticipantWindow from '../ParticipantWindow';
 import Toolbar from '../Toolbar';
@@ -19,6 +27,15 @@ const Container = styled(Box)({
   width: '100%',
   height: '100%',
 });
+
+const ButtonsContainer = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: 15,
+  right: 15,
+  zIndex: theme.zIndex.mobileStepper,
+  display: 'flex',
+  gap: theme.spacing(1.5),
+}));
 
 const ToolbarWrapper = styled(Box)(({ theme }) => ({
   position: 'absolute',
@@ -39,9 +56,6 @@ const LocalVideoContainer = styled(Box)(({ theme }) => ({
 }));
 
 const IconButton = styled(MuiIconButton)(({ theme }) => ({
-  position: 'absolute',
-  top: 15,
-  right: 15,
   zIndex: theme.zIndex.mobileStepper,
   opacity: 0.6,
   padding: theme.spacing(0.75),
@@ -52,10 +66,34 @@ const FullscreenView = () => {
   const { t } = useTranslation();
   const [hasVisibleControls, setVisibleControls] = useState<boolean>(false);
   const [isLocalVideoPinned, setIsLocalVideoPinned] = useState<boolean>(false);
+  const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
 
-  const isActive = fullscreenHandle.hasActiveOverlay || hasVisibleControls;
+  const remoteParticipants = useRemoteParticipants();
+  const lastSpeakerId = useMemo(() => {
+    const activeSpeaker = sortParticipants(remoteParticipants)?.at(0);
+    return activeSpeaker?.identity as ParticipantId | undefined;
+  }, [remoteParticipants]);
+  const selectedParticipantId = pinnedParticipantId || lastSpeakerId;
+
+  const selectedParticipant = useRemoteParticipant({ identity: selectedParticipantId || '' });
+  const displayName = useAppSelector((state) =>
+    selectedParticipantId ? selectParticipantName(state, selectedParticipantId) : undefined
+  );
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (selectedParticipant) {
+      dispatch(setVisibleParticipantIds([selectedParticipant.identity as ParticipantId]));
+
+      // Remove once unsubscribing hidden tracks is solved (https://github.com/livekit/client-sdk-js/issues/1610)
+      selectedParticipant.videoTrackPublications?.forEach((publication) => {
+        if (publication.isEnabled && !publication.isSubscribed) {
+          publication.setSubscribed(true);
+        }
+      });
+    }
+  }, [selectedParticipant, dispatch]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -72,8 +110,15 @@ const FullscreenView = () => {
     dispatch(toggledFullScreenMode());
   };
 
+  const isActive = fullscreenHandle.hasActiveOverlay || hasVisibleControls;
+  const isPinned = pinnedParticipantId ? pinnedParticipantId === selectedParticipant?.identity : false;
+  const togglePin = useCallback(() => {
+    const updatePinnedId = pinnedParticipantId === lastSpeakerId ? undefined : lastSpeakerId;
+    dispatch(pinnedParticipantIdSet(updatePinnedId));
+  }, [dispatch, lastSpeakerId, pinnedParticipantId]);
+
   return (
-    <ParticipantContext.Provider value={fullscreenHandle.fullscreenParticipant}>
+    <ParticipantContext.Provider value={selectedParticipant}>
       <Container
         ref={(containerElement: HTMLDivElement | null) => fullscreenHandle.setRootElement(containerElement)}
         onMouseMove={() => setVisibleControls(true)}
@@ -81,9 +126,20 @@ const FullscreenView = () => {
         id="fullscreen-container"
         data-testid="fullscreen"
       >
-        <IconButton aria-label={t('indicator-fullscreen-close')} onClick={handleCloseFullscreen} color="secondary">
-          <CloseIcon />
-        </IconButton>
+        <ButtonsContainer>
+          <IconButton
+            aria-label={t('indicator-pinned', {
+              participantName: displayName || '',
+            })}
+            onClick={togglePin}
+            color={isPinned ? 'primary' : 'secondary'}
+          >
+            <PinIcon />
+          </IconButton>
+          <IconButton aria-label={t('indicator-fullscreen-close')} onClick={handleCloseFullscreen} color="secondary">
+            <CloseIcon />
+          </IconButton>
+        </ButtonsContainer>
         <Slide direction="down" in={isLocalVideoPinned || isActive} mountOnEnter>
           <LocalVideoContainer data-testid="fullscreenLocalVideo">
             <LocalVideo fullscreenMode togglePinVideo={toggleLocalVideoPin} isVideoPinned={isLocalVideoPinned} />
@@ -94,7 +150,7 @@ const FullscreenView = () => {
             <Toolbar layout="fullscreen" />
           </ToolbarWrapper>
         </Slide>
-        {fullscreenHandle.fullscreenParticipant && <ParticipantWindow activePresenter={isActive} />}
+        {selectedParticipant && <ParticipantWindow activePresenter={isActive} />}
       </Container>
     </ParticipantContext.Provider>
   );

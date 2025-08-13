@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 
-import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import VideoButton from './VideoButton';
 
 vi.mock('@livekit/components-react', () => ({
   useLocalParticipantPermissions: vi.fn(),
-  useMaybeRoomContext: () => ({ localParticipant: mockedParticipant(0) }),
   useMediaDeviceSelect: () => ({
     devices: [
       { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },

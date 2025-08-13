@@ -127,7 +127,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const openFullScreenView: MouseEventHandler = useCallback(
     (e) => {
       e.stopPropagation();
-      fullscreenHandle.enter(participant);
+      fullscreenHandle.enter(participant?.identity);
     },
     [fullscreenHandle, participant]
   );
