@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, styled } from '@mui/material';
 import { debounce } from 'lodash';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { LastSeenTimestampAddedPayload, setLastSeenTimestamp } from '../../api/types/outgoing/chat';
 import { useAppSelector } from '../../hooks';
+import { lastSeenTimestampAdded, selectLastMessageForScope } from '../../store/slices/chatSlice';
+import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
 import { selectChatSearchValue, setChatSearchValue } from '../../store/slices/uiSlice';
-import { ChatScope, TargetId } from '../../types';
+import { ChatMessage, ChatScope, GroupId, ParticipantId, TargetId, Timestamp } from '../../types';
 import ChatForm from './fragments/ChatForm';
 import ChatList from './fragments/ChatList';
 import ChatLiveRegion from './fragments/ChatLiveRegion';
@@ -29,9 +32,43 @@ interface ChatProps {
 const Chat = ({ target, scope = ChatScope.Global, autoFocusMessageInput }: ChatProps) => {
   // Default value is used when we switch tabs and component remounts.
   const defaultChatValue = useAppSelector(selectChatSearchValue);
+  const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const [searchValue, setSearchValue] = useState<string>(defaultChatValue);
   const dispatch = useDispatch();
   const chatSearchInputReference = useRef<HTMLInputElement | null>(null);
+  const lastMessageForScope = useAppSelector((state) => selectLastMessageForScope(state, scope, target));
+
+  const constructLastSeenPayload = useCallback((lastMessageForScope: ChatMessage): LastSeenTimestampAddedPayload => {
+    const { scope, target } = lastMessageForScope;
+    const timestamp = lastMessageForScope.timestamp as Timestamp;
+
+    switch (scope) {
+      case ChatScope.Global:
+        return { scope, timestamp };
+      case ChatScope.Private:
+        return { scope, timestamp, target: target as ParticipantId };
+      case ChatScope.Group:
+        return { scope, timestamp, target: target as GroupId };
+    }
+  }, []);
+
+  // Debounce has to be wrapped in a callback else it won't trigger
+  const debouncedSetLastSeenTimestamp = useCallback(
+    debounce((message: LastSeenTimestampAddedPayload) => {
+      dispatch(setLastSeenTimestamp.action(message));
+    }, 1000),
+    []
+  );
+
+  // Adds a last seen timestamp when the specific scope is opened or a message in the scope is received while open
+  useEffect(() => {
+    if (!isRoomDeleted && lastMessageForScope) {
+      const message = constructLastSeenPayload(lastMessageForScope);
+
+      dispatch(lastSeenTimestampAdded(message));
+      debouncedSetLastSeenTimestamp(message);
+    }
+  }, [dispatch, lastMessageForScope, debouncedSetLastSeenTimestamp, constructLastSeenPayload, isRoomDeleted]);
 
   const debouncedSetChatSearchValue = useCallback(
     debounce((value: string) => {

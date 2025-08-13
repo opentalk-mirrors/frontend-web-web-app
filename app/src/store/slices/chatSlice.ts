@@ -456,26 +456,26 @@ export function selectLastMessageForScope(
   state: { chat: ChatState },
   scope: ChatScope,
   target?: TargetId
-): ChatMessage | null {
+): ChatMessage | undefined {
   if (scope === ChatScope.Global) {
     const messages = globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
-    return messages[0];
+    return messages.at(-1);
   }
   if (scope === ChatScope.Private && target) {
     const privateChat = state.chat.scope.private[target as ParticipantId];
     if (privateChat) {
       const messages = privateMessagesSelectors.selectAll(privateChat.messages);
-      return messages[0];
+      return messages.at(-1);
     }
   }
   if (scope === ChatScope.Group && target) {
     const groupChat = state.chat.scope.group[target as GroupId];
     if (groupChat) {
       const messages = groupMessagesSelectors.selectAll(groupChat.messages);
-      return messages[0];
+      return messages.at(-1);
     }
   }
-  return null;
+  return undefined;
 }
 
 export const selectUnreadGlobalMessageCount = createSelector(
