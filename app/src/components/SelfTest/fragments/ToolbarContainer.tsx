@@ -8,7 +8,10 @@ import { useTranslation } from 'react-i18next';
 
 import { BackIcon } from '../../../assets/icons';
 import { CircularIconButton as CircularIconButtonDefault } from '../../../commonComponents';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useNavigateToHome from '../../../hooks/useNavigateToHome';
+import { changeLocalMedia } from '../../../store/commonActions';
+import { selectLobbyAudioEnabled, selectLobbyVideoEnabled } from '../../../store/slices/livekitSlice';
 import { isBackgroundEffectSupported } from '../../../utils/mediaUtils';
 import AudioButton from '../../Toolbar/fragments/AudioButton';
 import BlurScreenButton from '../../Toolbar/fragments/BlurScreenButton';
@@ -56,9 +59,20 @@ interface ToolbarContainerProps {
 const ToolbarContainer = ({ children, actionButton, localAudioTrack, waitingRoom }: ToolbarContainerProps) => {
   const { t } = useTranslation();
   const navigateToHome = useNavigateToHome();
+  const lobbyVideoEnabled = useAppSelector(selectLobbyVideoEnabled);
+  const lobbyAudioEnabled = useAppSelector(selectLobbyAudioEnabled);
+  const dispatch = useAppDispatch();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleVideoButtonToggle = () => {
+    dispatch(changeLocalMedia({ kind: 'videoinput', enabled: !lobbyVideoEnabled }));
+  };
+
+  const handleAudioButtonToggle = () => {
+    dispatch(changeLocalMedia({ kind: 'audioinput', enabled: !lobbyAudioEnabled }));
+  };
 
   return (
     <Container>
@@ -77,8 +91,13 @@ const ToolbarContainer = ({ children, actionButton, localAudioTrack, waitingRoom
         )}
         {children}
         <ButtonStack spacing={2} direction="row" waitingRoom={waitingRoom}>
-          <AudioButton isLobby localAudioTrack={localAudioTrack} />
-          <VideoButton isLobby />
+          <AudioButton
+            isLobby
+            localAudioTrack={localAudioTrack}
+            audioEnabled={lobbyAudioEnabled}
+            onAudioButtonToggle={handleAudioButtonToggle}
+          />
+          <VideoButton isLobby videoEnabled={lobbyVideoEnabled} onVideoButtonToggle={handleVideoButtonToggle} />
           {isBackgroundEffectSupported() && <BlurScreenButton isLobby />}
           {waitingRoom && actionButton}
         </ButtonStack>

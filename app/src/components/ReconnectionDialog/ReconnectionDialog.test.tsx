@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { Mock } from 'vitest';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { startMedia } from '../../store/commonActions';
+import { changeMedia } from '../../store/commonActions';
 import { abortedReconnection } from '../../store/slices/roomSlice';
 import ReconnectionDialog from './ReconnectionDialog';
 
@@ -20,7 +20,7 @@ vi.mock('../../store/slices/roomSlice', () => ({
 }));
 
 vi.mock('../../store/commonActions', () => ({
-  startMedia: vi.fn(),
+  changeMedia: vi.fn(),
 }));
 
 describe('ReconnectionDialog', () => {
@@ -40,8 +40,8 @@ describe('ReconnectionDialog', () => {
     render(<ReconnectionDialog />);
     await userEvent.click(screen.getByText('reconnection-loop-abort-button'));
 
-    expect(mockDispatch).toHaveBeenCalledWith(startMedia({ kind: 'audioinput', enabled: false }));
-    expect(mockDispatch).toHaveBeenCalledWith(startMedia({ kind: 'videoinput', enabled: false }));
+    expect(mockDispatch).toHaveBeenCalledWith(changeMedia({ kind: 'audioinput', enabled: false }));
+    expect(mockDispatch).toHaveBeenCalledWith(changeMedia({ kind: 'videoinput', enabled: false }));
     expect(mockDispatch).toHaveBeenCalledWith(abortedReconnection());
   });
 

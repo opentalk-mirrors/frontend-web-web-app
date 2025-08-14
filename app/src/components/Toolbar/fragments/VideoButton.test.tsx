@@ -26,7 +26,10 @@ describe('Video Button', () => {
       },
     });
 
-    renderWithProviders(<VideoButton />, { store, provider: { snackbar: true } });
+    renderWithProviders(<VideoButton videoEnabled={false} onVideoButtonToggle={vi.fn()} />, {
+      store,
+      provider: { snackbar: true },
+    });
     expect(screen.getByTestId('toolbarVideoButton')).toBeDisabled();
   });
 });

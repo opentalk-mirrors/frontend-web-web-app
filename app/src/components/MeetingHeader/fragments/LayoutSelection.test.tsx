@@ -5,7 +5,7 @@ import { useMediaQuery } from '@mui/material';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
-import { configureStore, renderWithProviders } from '../../../utils/testUtils';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import LayoutSelection from './LayoutSelection';
 
 const mockFullscreenContext = {
@@ -20,8 +20,9 @@ const mockFullscreenContext = {
   isFullScreenAvailable: vi.fn(),
 };
 
-vi.mock('../../../hooks/useFullscreenContext.ts', () => ({
-  useFullscreenContext: () => mockFullscreenContext,
+vi.mock('../../../hooks/useFullscreenContext.ts', () => ({ useFullscreenContext: () => mockFullscreenContext }));
+vi.mock('@livekit/components-react', () => ({
+  useRemoteParticipants: () => [mockedParticipant(0)],
 }));
 
 vi.mock('@mui/material', async (importOriginal) => ({

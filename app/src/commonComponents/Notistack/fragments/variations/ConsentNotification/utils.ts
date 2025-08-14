@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { sendStreamConsentSignal } from '../../../../../api/types/outgoing/streaming';
 import type { AppDispatch } from '../../../../../store';
-import { startMedia } from '../../../../../store/commonActions';
+import { changeMedia, setScreenShareEnabled } from '../../../../../store/commonActions';
 import { notifications } from '../../utils';
 
 export const showConsentNotification = (dispatch: AppDispatch) =>
@@ -14,9 +14,9 @@ export const showConsentNotification = (dispatch: AppDispatch) =>
       dispatch(sendStreamConsentSignal.action({ consent }));
       notifications.close(key);
       if (!consent) {
-        dispatch(startMedia({ kind: 'audioinput', enabled: false }));
-        dispatch(startMedia({ kind: 'videoinput', enabled: false }));
-        dispatch(startMedia({ kind: 'screenshare', enabled: false }));
+        dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
+        dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
+        dispatch(setScreenShareEnabled({ enabled: false }));
       }
       resolve(consent);
     };

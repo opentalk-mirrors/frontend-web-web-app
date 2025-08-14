@@ -3,15 +3,18 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { styled } from '@mui/material';
-import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { memo, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 
 import { useAppSelector } from '../../hooks';
-import useE2EE from '../../hooks/useE2EE';
 import { useHotkeys } from '../../hooks/useHotkeys';
-import useRoom from '../../hooks/useRoom';
-import { selectLivekitAccessToken, selectLivekitPublicUrl } from '../../store/slices/livekitSlice';
+import {
+  selectAudioEnabled,
+  selectLivekitAccessToken,
+  selectLivekitPublicUrl,
+  selectLivekitRoom,
+  selectLivekitWhisperRoom,
+  selectVideoEnabled,
+} from '../../store/slices/livekitSlice';
 import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
 import { selectSubroomAudioToken } from '../../store/slices/subroomAudioSlice';
 import { selectShowCoffeeBreakCurtain } from '../../store/slices/uiSlice';
@@ -56,10 +59,6 @@ const CachedTimerPopover = memo(TimerPopover);
 const CachedInnerLayout = memo(InnerLayout);
 
 const MeetingView = () => {
-  const { roomId } = useParams<'roomId'>() as {
-    roomId: RoomId;
-  };
-  const e2eeData = useE2EE(roomId);
   const livekitAccessToken = useAppSelector(selectLivekitAccessToken);
   const publicUrl = useAppSelector(selectLivekitPublicUrl);
   const whisperToken = useAppSelector(selectSubroomAudioToken);
@@ -67,12 +66,15 @@ const MeetingView = () => {
   const showCoffeeBreakCurtain = useAppSelector(selectShowCoffeeBreakCurtain);
   const isModerator = useAppSelector(selectIsModerator);
   const enableAudio = isModerator || !showCoffeeBreakCurtain;
+  const isAudioEnabled = useAppSelector(selectAudioEnabled);
+  const isVideoEnabled = useAppSelector(selectVideoEnabled);
 
   const containerRef = useRef(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const room = useRoom({ e2eeData });
-  const whisperRoom = useRoom({ e2eeData, isWhisperRoom: true });
+  const room = useAppSelector(selectLivekitRoom);
+  const whisperRoom = useAppSelector(selectLivekitWhisperRoom);
+
   useHotkeys(room, whisperRoom);
 
   useEffect(() => {
@@ -88,7 +90,13 @@ const MeetingView = () => {
           <RoomAudioRenderer />
         </WhisperContext>
       )}
-      <RoomContainer room={room} token={livekitAccessToken} serverUrl={publicUrl} video={false} audio={false}>
+      <RoomContainer
+        room={room}
+        token={livekitAccessToken}
+        serverUrl={publicUrl}
+        video={isVideoEnabled}
+        audio={isAudioEnabled}
+      >
         <Container ref={containerRef}>
           {showCoffeeBreakCurtain && !isModerator ? (
             <CoffeeBreakView />

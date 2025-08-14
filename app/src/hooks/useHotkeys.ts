@@ -18,11 +18,11 @@ import {
   HOTKEYS,
 } from '../constants';
 import { useFullscreenContext } from '../hooks/useFullscreenContext';
-import { startMedia } from '../store/commonActions';
+import { changeMedia } from '../store/commonActions';
 import { selectIsUserMicDisabled } from '../store/selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker } from '../store/slices/automodSlice';
 import { selectEnabledModulesList } from '../store/slices/configSlice';
-import { selectAudioEnabled, selectVideoEnabled } from '../store/slices/mediaSlice';
+import { selectAudioEnabled, selectVideoEnabled } from '../store/slices/livekitSlice';
 import { selectCurrentRoomMode } from '../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../store/slices/streamingSlice';
 import { selectSubroomAudioState, setIsWhisperActive } from '../store/slices/subroomAudioSlice';
@@ -63,7 +63,6 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   const timerStyle = useAppSelector(selectTimerStyle);
   const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).subroomAudio;
   const isWhisperingPossible = useAppSelector(selectSubroomAudioState).whisperId;
-
   const hotkeysActive = hotkeysEnabled && timerStyle !== TimerStyle.CoffeeBreak;
 
   const { devices: audioDevices } = useMediaDeviceSelect({ kind: 'audioinput', requestPermissions: false });
@@ -86,9 +85,9 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
 
       const permission = await navigator.permissions.query({ name: 'microphone' });
       const forceDisableAudioBeforePromptIsShown = permission.state === 'prompt';
-      dispatch(startMedia({ kind: 'audioinput', enabled: shouldEnable, forceDisableAudioBeforePromptIsShown }));
+      dispatch(changeMedia({ kind: 'audioinput', enabled: shouldEnable, forceDisableAudioBeforePromptIsShown }));
     },
-    [askConsent, audioEnabled, dispatch, room, startMedia]
+    [askConsent, audioEnabled, dispatch, room, changeMedia]
   );
 
   const pushToWhisper = useCallback(
@@ -132,7 +131,7 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
         return;
       }
     }
-    dispatch(startMedia({ kind: 'videoinput', enabled: !videoEnabled }));
+    dispatch(changeMedia({ kind: 'videoinput', enabled: !videoEnabled }));
   }, [videoEnabled, askConsent, dispatch]);
 
   // Push-to-talk function shall work ONLY if the user is muted (audio is disabled)
@@ -187,7 +186,9 @@ export const useHotkeys = (room?: Room, whisperRoom?: Room) => {
   );
 
   const toggleFullscreenView = useCallback(() => {
-    fullscreenContext[fullscreenContext.active ? 'exit' : 'enter']();
+    if (room) {
+      fullscreenContext[fullscreenContext.active ? 'exit' : 'enter']();
+    }
   }, [fullscreenContext]);
 
   const pressedKeys = new Set<string>();

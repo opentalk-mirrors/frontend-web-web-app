@@ -3,16 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { LiveKitRoom } from '@livekit/components-react';
 import { CircularProgress, styled } from '@mui/material';
-import { RoomId } from '@opentalk/rest-api-rtk-query';
-import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { useAppDispatch } from '../../hooks';
-import useE2EE from '../../hooks/useE2EE';
-import useRoom from '../../hooks/useRoom';
-import { startMedia } from '../../store/commonActions';
-import { setPopoutParticipantId } from '../../store/slices/livekitSlice';
-import { setVisibleParticipantIds } from '../../store/slices/uiSlice';
+import { useAppSelector } from '../../hooks';
+import { selectLivekitRoom } from '../../store/slices/livekitSlice';
 import Video from './fragments/Video';
 import { useBroadcastChannel } from './hooks/useBroadcastChannel';
 
@@ -25,19 +19,9 @@ const RoomContainer = styled(LiveKitRoom)({
 
 const ExtendedTabPage = () => {
   const { channelId } = useParams();
-  const { accessToken, mediaType, participantId, livekitUrl, roomId } = useBroadcastChannel(channelId);
-  const e2eeData = useE2EE(roomId as RoomId);
-  const room = useRoom({ e2eeData });
-  const dispatch = useAppDispatch();
+  const { accessToken, mediaType, participantId, livekitUrl } = useBroadcastChannel(channelId);
 
-  useEffect(() => {
-    dispatch(startMedia({ kind: 'audioinput', enabled: false, isPopoutStream: true }));
-    dispatch(startMedia({ kind: 'videoinput', enabled: false, isPopoutStream: true }));
-    if (participantId) {
-      dispatch(setVisibleParticipantIds([participantId]));
-      dispatch(setPopoutParticipantId(participantId));
-    }
-  }, [participantId]);
+  const room = useAppSelector(selectLivekitRoom);
 
   if (room === undefined || mediaType === undefined || participantId === undefined) {
     return <CircularProgress />;

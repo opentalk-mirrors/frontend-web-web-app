@@ -40,6 +40,12 @@ describe('<ShareScreenButton />', () => {
       initialState: {
         livekit: {
           unavailable: true,
+          videoBackgroundEffects: { style: 'off', loading: false },
+          mediaSettings: {
+            cameraEnabled: false,
+            microphoneEnabled: false,
+            screenShareEnabled: false,
+          },
         },
       },
     });

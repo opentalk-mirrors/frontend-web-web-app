@@ -12,6 +12,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
+import { ConnectionState } from 'livekit-client';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,14 +20,15 @@ import { CloseIcon, MicOnIcon, SettingsIcon } from '../../../assets/icons';
 import { CommonSwitch } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
+import { setBackgroundEffects, switchActiveDevice, switchLocalDevice } from '../../../store/commonActions';
 import { selectVideoBackgrounds } from '../../../store/slices/configSlice';
-import { selectQualityCap, setDisableRemoteVideos } from '../../../store/slices/livekitSlice';
 import {
+  selectLivekitRoom,
+  selectQualityCap,
   selectVideoBackgroundEffects,
   selectVideoDeviceId,
-  setBackgroundEffects,
-  setVideoDeviceId,
-} from '../../../store/slices/mediaSlice';
+  setDisableRemoteVideos,
+} from '../../../store/slices/livekitSlice';
 import { mirroredVideoSet, selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
 import { VideoSetting } from '../../../types';
 import { DeviceId } from '../../../types/device';
@@ -100,6 +102,7 @@ const CameraSettingsPanel = () => {
   const mirroringEnabled = useAppSelector(selectMirroredVideoEnabled);
   const videoBackgrounds = useAppSelector(selectVideoBackgrounds);
   const qualityCap = useAppSelector(selectQualityCap);
+  const room = useAppSelector(selectLivekitRoom);
 
   const areParticipantVideosEnabled = qualityCap !== VideoSetting.Off;
 
@@ -131,7 +134,11 @@ const CameraSettingsPanel = () => {
   const toggleMirroring = () => dispatch(mirroredVideoSet(!mirroringEnabled));
 
   const handleSelectDevice = async (deviceId: DeviceId) => {
-    dispatch(setVideoDeviceId(deviceId));
+    if (room?.state === ConnectionState.Connected) {
+      dispatch(switchActiveDevice({ kind: 'videoinput', deviceId }));
+    } else {
+      dispatch(switchLocalDevice({ kind: 'videoinput', deviceId }));
+    }
   };
 
   useEffect(() => {

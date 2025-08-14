@@ -59,7 +59,6 @@ const LayoutSelection = () => {
   const isWhiteboardAvailable = useAppSelector(selectIsWhiteboardAvailable);
   const isMeetingNotesFeatureAvailable = useAppSelector(selectIsMeetingNotesFeatureAvailable);
   const isCurrentMeetingNotesHighlighted = useAppSelector(selectIsCurrentMeetingNotesHighlighted);
-
   /**
    * Placeholder condition for all features that has to show indicator.
    */

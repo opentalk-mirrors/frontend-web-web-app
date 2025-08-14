@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { startMedia } from '../../store/commonActions';
-import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/mediaSlice';
+import { changeMedia } from '../../store/commonActions';
+import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/livekitSlice';
 import { abortedReconnection } from '../../store/slices/roomSlice';
 
 const ReconnectionDialog = () => {
@@ -20,10 +20,10 @@ const ReconnectionDialog = () => {
   const handleAbortReconnectionLoop = useCallback(async () => {
     try {
       if (audioEnabled) {
-        dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+        dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
       }
       if (videoEnabled) {
-        dispatch(startMedia({ kind: 'videoinput', enabled: false }));
+        dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
       }
     } catch (e) {
       console.error('Failed to disable media:', e);

@@ -12,14 +12,12 @@ import { SuspenseLoading, showConsentNotification } from '../../../commonCompone
 import { LIVEKIT_AUDIO_PERMISSION_NUMBER, ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
-import { startMedia } from '../../../store/commonActions';
-import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
+import { changeMedia } from '../../../store/commonActions';
 import {
   selectAudioChangeInProgress,
-  selectAudioEnabled,
   selectAudioPermissionDenied,
-  selectMediaChangeInProgress,
-} from '../../../store/slices/mediaSlice';
+  selectLivekitUnavailable,
+} from '../../../store/slices/livekitSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import MeetingSettingsDialog from '../../MeetingSettingsDialog';
@@ -33,19 +31,19 @@ const MicOnStyled = styled(MicOnIcon)({
 interface AudioButtonProps {
   localAudioTrack?: LocalAudioTrack;
   isLobby?: boolean;
+  audioEnabled: boolean;
+  onAudioButtonToggle: () => void;
 }
 
-const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => {
+const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioButtonToggle }: AudioButtonProps) => {
   const { t } = useTranslation();
   const askConsent = useAppSelector(selectNeedRecordingConsent);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const dispatch = useAppDispatch();
-  const audioEnabled = useAppSelector(selectAudioEnabled);
   const localParticipantPermissions = (!isLobby && useLocalParticipantPermissions()) || undefined;
   const microphoneEnabled = audioEnabled && !isLivekitUnavailable;
   const permissionDenied = useAppSelector(selectAudioPermissionDenied);
   const audioChangeInProgress = useAppSelector(selectAudioChangeInProgress);
-  const mediaChangeInProgress = useAppSelector(selectMediaChangeInProgress);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
 
   const [showMenu, setShowMenu] = useState(false);
@@ -62,8 +60,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
         return;
       }
     }
-
-    dispatch(startMedia({ kind: 'audioinput', enabled: !audioEnabled }));
+    onAudioButtonToggle();
   };
 
   const indicator = useMemo(() => {
@@ -103,7 +100,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
       if (canPublishAudio !== undefined) {
         setCanPublishAudio(canPublishAudio);
         if (!canPublishAudio && microphoneEnabled) {
-          dispatch(startMedia({ kind: 'audioinput', enabled: false }));
+          dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
         }
       }
     }
@@ -115,12 +112,12 @@ const AudioButton = ({ localAudioTrack, isLobby = false }: AudioButtonProps) => 
         tooltipTitle={tooltipText()}
         onClick={onClick}
         hasContext
-        contextDisabled={mediaChangeInProgress || devices.length === 0}
+        contextDisabled={audioChangeInProgress || devices.length === 0}
         disabled={
-          !canPublishAudio || mediaChangeInProgress || devices.length === 0 || isLivekitUnavailable || isRoomDeleted
+          !canPublishAudio || audioChangeInProgress || devices.length === 0 || isLivekitUnavailable || isRoomDeleted
         }
         openMenu={() => setShowMenu(true)}
-        active={Boolean(microphoneEnabled && localAudioTrack)}
+        active={Boolean(microphoneEnabled)}
         isLobby={isLobby}
         data-testid="toolbarAudioButton"
         contextTitle={t('toolbar-button-audio-context-title')}

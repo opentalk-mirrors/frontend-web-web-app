@@ -1,19 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { usePreviewTracks } from '@livekit/components-react';
 import { CircularProgress, Grid, Typography, styled } from '@mui/material';
-import { LocalVideoTrack, Track } from 'livekit-client';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../../hooks';
-import { BackgroundBlur } from '../../../modules/Media/BackgroundBlur';
-import {
-  selectVideoBackgroundEffects,
-  selectVideoDeviceId,
-  selectVideoEnabled,
-} from '../../../store/slices/mediaSlice';
+import { selectLobbyVideoTrack, selectVideoEnabled } from '../../../store/slices/livekitSlice';
 import { selectMirroredVideoEnabled } from '../../../store/slices/uiSlice';
 
 const Container = styled(Grid)({
@@ -54,30 +47,9 @@ const Video = styled('video', {
 const VideoElement = () => {
   const { t } = useTranslation();
   const videoEnabled = useAppSelector(selectVideoEnabled);
-  const videoDeviceId = useAppSelector(selectVideoDeviceId);
-  const videoBackgroundEffects = useAppSelector(selectVideoBackgroundEffects);
-  const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const processorRef = useRef<BackgroundBlur | null>(null);
-
-  const videoProcessor = useMemo(() => {
-    if (processorRef.current) {
-      processorRef.current.destroy();
-    }
-
-    const processor = new BackgroundBlur(videoBackgroundEffects);
-    processorRef.current = processor;
-    return processor;
-  }, [videoBackgroundEffects]);
-
-  const previewTracks = usePreviewTracks({
-    video: videoEnabled && { deviceId: videoDeviceId, processor: videoProcessor },
-  });
-
-  const videoTrack = useMemo(
-    () => previewTracks?.filter((track) => track.kind === Track.Kind.Video)[0] as LocalVideoTrack,
-    [previewTracks]
-  );
+  const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
+  const videoTrack = useAppSelector(selectLobbyVideoTrack);
 
   const isVideoMissing = videoEnabled && videoTrack?.isMuted;
 
@@ -90,15 +62,6 @@ const VideoElement = () => {
       videoTrack?.detach();
     };
   }, [videoTrack]);
-
-  useEffect(() => {
-    return () => {
-      if (processorRef.current) {
-        processorRef.current.destroy();
-        processorRef.current = null;
-      }
-    };
-  }, []);
 
   if (!videoTrack) {
     return <CircularProgress color="primary" size="4rem" />;
