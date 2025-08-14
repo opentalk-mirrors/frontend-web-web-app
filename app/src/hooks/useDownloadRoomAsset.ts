@@ -41,7 +41,7 @@ const downloadRoomAsset = async ({
   if (fileSize && onDownloadProgress) {
     // Reading the response body as a stream so we can calculate download progress.
     const reader = response.body?.getReader();
-    const chunks: Uint8Array[] = [];
+    const chunks: Uint8Array<ArrayBuffer>[] = [];
     let loadedBytes = 0;
     const done = false;
 
