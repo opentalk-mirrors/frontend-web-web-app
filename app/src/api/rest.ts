@@ -106,9 +106,12 @@ export const sendFeedback = createAsyncThunk<void, FeedbackData, { state: RootSt
 const baseQuery = fetchQuery({
   baseUrl: ({ getState }) => `${getControllerBaseUrl((getState() as RootState).config).toString()}v1`,
   prepareHeaders: (headers) => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      headers.set('authorization', `Bearer ${token}`);
+    // Don't override existing authorization header, e.g. invite code
+    if (!headers.get('authorization')) {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
     }
     return headers;
   },
