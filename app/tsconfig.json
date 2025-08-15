@@ -3,7 +3,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "lib": ["es2022", "dom", "dom.iterable"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "module": "ESNext",
     "types": ["@types/emscripten", "vitest/globals"]
   }
