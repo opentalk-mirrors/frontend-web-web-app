@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { assert } from 'vitest';
+
 import { BrowserSupport } from './BrowserSupport';
 
 describe('BrowserSupport', () => {
@@ -11,7 +13,7 @@ describe('BrowserSupport', () => {
     });
 
     const browserSupport = new BrowserSupport();
-    expect(browserSupport.getBrowserSignature()).toBe('chrome91');
+    assert(browserSupport.signature === 'chrome91');
   });
 
   it('should detect supported Chrome version', () => {
