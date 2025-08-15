@@ -7,7 +7,7 @@ import react from '@vitejs/plugin-react';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { defineConfig, HmrContext, ResolvedConfig } from 'vite';
+import { defineConfig, HmrContext, ResolvedConfig, Plugin } from 'vite';
 import svgr from 'vite-plugin-svgr';
 
 import { cleanPackageVersion } from './utils/build';
@@ -29,7 +29,7 @@ const monorepoPackageAliases = {
 
 // This plugin is only for development.
 // Enables Hot Module Replacement for the libs in the monorepo to speed up their development
-const packagesHmrPlugin = () => ({
+const packagesHmrPlugin = (): Plugin => ({
   name: 'opentalk-packages-hmr-plugin',
   apply: 'serve',
   config: () => ({
