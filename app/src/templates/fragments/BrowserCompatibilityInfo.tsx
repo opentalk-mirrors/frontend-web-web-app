@@ -15,11 +15,10 @@ import { selectSuppressBrowserCompatibilityInfo } from '../../store/slices/confi
 const BrowserCompatibilityInfo = ({ children }: PropsWithChildren) => {
   const { t } = useTranslation();
   const suppressBrowserCompatibilityInfo = useAppSelector(selectSuppressBrowserCompatibilityInfo);
-  const signature = browser.getBrowserSignature();
   const [isConfirmed, setBrowserConfirmed] = useState(browser.isBrowserConfirmed());
 
   const handleClick = useCallback(() => {
-    localStorage.setItem(localStorageItems.browserConfirmed, signature);
+    localStorage.setItem(localStorageItems.browserConfirmed, browser.signature);
     setBrowserConfirmed(true);
   }, []);
 
