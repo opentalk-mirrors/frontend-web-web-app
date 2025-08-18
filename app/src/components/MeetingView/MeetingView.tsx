@@ -6,7 +6,6 @@ import { styled } from '@mui/material';
 import { memo, useEffect, useRef, useState } from 'react';
 
 import { useAppSelector } from '../../hooks';
-import { useHotkeys } from '../../hooks/useHotkeys';
 import {
   selectAudioEnabled,
   selectLivekitAccessToken,
@@ -75,8 +74,6 @@ const MeetingView = () => {
 
   const room = useAppSelector(selectLivekitRoom);
   const whisperRoom = useAppSelector(selectLivekitWhisperRoom);
-
-  useHotkeys(room, whisperRoom);
 
   useEffect(() => {
     if (isRoomDeleted) {

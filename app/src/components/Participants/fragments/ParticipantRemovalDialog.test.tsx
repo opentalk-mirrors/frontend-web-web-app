@@ -4,6 +4,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { enableWaitingRoom, kickParticipant } from '../../../api/types/outgoing/moderation';
 import { notifications } from '../../../commonComponents';
 import { renderWithProviders, mockedParticipant, configureStore } from '../../../utils/testUtils';
 import ParticipantRemovalDialog from './ParticipantRemovalDialog';
@@ -14,6 +15,7 @@ describe('ParticipantRemovalDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it('renders dialog with title, content, and buttons', async () => {
@@ -57,7 +59,8 @@ describe('ParticipantRemovalDialog', () => {
     });
     await userEvent.click(screen.getByRole('button', { name: 'participant-remove-dialog-confirm' }));
     // Check that dispatch was called for kick and enableWaitingRoom
-    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    expect(dispatchSpy.mock.calls).toContainEqual([kickParticipant.action({ target: participant.id })]);
+    expect(dispatchSpy.mock.calls).toContainEqual([enableWaitingRoom.action()]);
     expect(spyNotificationInfo).toHaveBeenCalled();
     expect(onClose).toHaveBeenCalled();
   });

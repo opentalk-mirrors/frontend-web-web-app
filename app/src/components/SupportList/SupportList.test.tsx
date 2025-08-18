@@ -16,9 +16,9 @@ vi.mock('../../hooks', () => ({
   useLocale: () => ({ code: 'en' }),
 }));
 
-vi.mock('../Toolbar/fragments/ShortcutListDialog', () => ({
+vi.mock('../Toolbar/fragments/HotkeyDialog', () => ({
   __esModule: true,
-  default: ({ open }: { open: boolean }) => <div style={{ display: open ? 'block' : 'none' }}>ShortcutListDialog</div>,
+  default: ({ open }: { open: boolean }) => <div style={{ display: open ? 'block' : 'none' }}>HotkeyDialog</div>,
 }));
 
 const mockSelectIsGlitchtipConfigured = vi.fn();
@@ -39,14 +39,14 @@ describe('SupportList', () => {
     expect.assertions(0);
   });
   describe('children', () => {
-    it('renders list with accessibility, user manual, keyboard shortcuts and report a bug elements by default', () => {
+    it('renders list with accessibility, user manual, keyboard hotkeys and report a bug elements by default', () => {
       render(<SupportList />);
       const list = screen.getByRole('list');
 
       expect(list).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-accessibility')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-user-manual')).toBeInTheDocument();
-      expect(within(list).getByText('my-meeting-menu-keyboard-shortcuts')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-keyboard-hotkeys')).toBeInTheDocument();
       expect(within(list).queryByText('my-meeting-menu-glitchtip-trigger')).not.toBeInTheDocument();
       expect(within(list).queryByText('my-meeting-menu-support')).not.toBeInTheDocument();
     });
@@ -58,7 +58,7 @@ describe('SupportList', () => {
       expect(list).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-accessibility')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-user-manual')).toBeInTheDocument();
-      expect(within(list).getByText('my-meeting-menu-keyboard-shortcuts')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-keyboard-hotkeys')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-glitchtip-trigger')).toBeInTheDocument();
       expect(within(list).queryByText('my-meeting-menu-support')).not.toBeInTheDocument();
     });
@@ -70,7 +70,7 @@ describe('SupportList', () => {
       expect(list).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-accessibility')).toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-user-manual')).toBeInTheDocument();
-      expect(within(list).getByText('my-meeting-menu-keyboard-shortcuts')).toBeInTheDocument();
+      expect(within(list).getByText('my-meeting-menu-keyboard-hotkeys')).toBeInTheDocument();
       expect(within(list).queryByText('my-meeting-menu-glitchtip-trigger')).not.toBeInTheDocument();
       expect(within(list).getByText('my-meeting-menu-support')).toBeInTheDocument();
     });
@@ -86,10 +86,10 @@ describe('SupportList', () => {
       const openNewTabImage = within(userManual).getByRole('img', { name: 'global-open-new-tab' });
       expect(openNewTabImage).toBeInTheDocument();
     });
-    it('renders shortcut list item with open new tab image', () => {
+    it('renders hotkey list item with open new tab image', () => {
       render(<SupportList />);
-      const keyboardShortcut = screen.getAllByRole('listitem')[2];
-      const openNewTabImage = within(keyboardShortcut).queryByRole('img', { name: 'global-open-new-tab' });
+      const keyboardHotkeys = screen.getAllByRole('listitem')[2];
+      const openNewTabImage = within(keyboardHotkeys).queryByRole('img', { name: 'global-open-new-tab' });
       expect(openNewTabImage).not.toBeInTheDocument();
     });
   });
@@ -100,17 +100,17 @@ describe('SupportList', () => {
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute('href', USER_MANUAL_URL);
   });
-  it('should contain option that expands/collapses the shortcut dialog', () => {
+  it('should contain option that expands/collapses the hotkey dialog', () => {
     render(<SupportList />);
-    const button = screen.getByRole('button', { name: 'my-meeting-menu-keyboard-shortcuts' });
+    const button = screen.getByRole('button', { name: 'my-meeting-menu-keyboard-hotkeys' });
 
     expect(button).toBeInTheDocument();
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
-  it('should expand shortcut dialog on click', () => {
+  it('should expand hotkey dialog on click', () => {
     render(<SupportList />);
-    const dialog = screen.getByText('ShortcutListDialog');
-    const button = screen.getByRole('button', { name: 'my-meeting-menu-keyboard-shortcuts' });
+    const dialog = screen.getByText('HotkeyDialog');
+    const button = screen.getByRole('button', { name: 'my-meeting-menu-keyboard-hotkeys' });
 
     expect(button).toHaveAttribute('aria-expanded', 'false');
     expect(dialog).not.toBeVisible();

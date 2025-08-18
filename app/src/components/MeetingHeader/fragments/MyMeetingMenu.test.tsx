@@ -26,8 +26,8 @@ describe('My Meeting Menu', () => {
     });
     expect(userManualMenuItem).toBeInTheDocument();
 
-    const shortcutsMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-keyboard-shortcuts' });
-    expect(shortcutsMenuItem).toBeInTheDocument();
+    const hotkeysMenuItem = screen.getByRole('menuitem', { name: 'my-meeting-menu-keyboard-hotkeys' });
+    expect(hotkeysMenuItem).toBeInTheDocument();
   });
 
   it('does not show Report error button if glitchtip is not configured', async () => {

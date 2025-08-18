@@ -694,7 +694,7 @@ global-microphone = Microphone
 global-video = Video
 global-description = Description
 global-fullscreen = Fullscreen
-global-shortcut = Shortcut
+global-hotkey = Hotkey
 global-spacebar = spacebar
 global-anonymous = Anonymous
 global-start-now = Start now
@@ -1126,10 +1126,13 @@ whiteboard-start-whiteboard-button = Show whiteboard
 whiteboard-new-pdf-message = A new whiteboard pdf is available
 whiteboard-hide = Hide whiteboard
 
-shortcut-hold-to-speak = Hold to speak
-shortcut-pass-talking-stick = Pass on talking stick
-shortcut-deactive-message = Shortcuts deactivated
-shortcut-table-summary = Table of available shortcuts
+hotkey-hold-to-speak = Hold to speak
+hotkey-pass-talking-stick = Pass on talking stick
+hotkey-deactive-message = Hotkeys deactivated
+hotkey-table-summary = Table of available hotkeys
+hotkey-whisper-to-whisper-group = Whisper to whisper group
+hotkey-microphone-toggle = Microphone on / off
+hotkey-video-toggle = Video on / off
 
 meeting-required-start-date = Start date is required
 meeting-required-end-date = End date is required
@@ -1205,7 +1208,7 @@ landmark-complementary-toolbar = Personal control panel
 
 my-meeting-menu-accessibility = Accessibility
 my-meeting-menu = My meeting
-my-meeting-menu-keyboard-shortcuts = Keyboard Shortcuts
+my-meeting-menu-keyboard-hotkeys = Hotkeys
 my-meeting-menu-user-manual = User manual
 my-meeting-menu-glitchtip-trigger = Report a bug
 my-meeting-menu-support = Support

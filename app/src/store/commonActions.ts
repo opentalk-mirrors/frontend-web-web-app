@@ -36,22 +36,22 @@ export type RoomCredentials = {
   inviteCode?: InviteCode;
   breakoutRoomId: BreakoutRoomId | null;
 };
-interface changeLocalMedia {
+interface ChangeLocalMedia {
   enabled: boolean;
   kind: MediaDeviceKind;
   deviceId?: string;
-  forceDisableAudioBeforePromptIsShown?: boolean;
+  preventActiveMediaAfterPermissionPrompt?: boolean;
 }
 export interface ChangeMediaInterface {
   enabled: boolean;
   kind: MediaDeviceKind;
   deviceId?: string;
-  forceDisableAudioBeforePromptIsShown?: boolean;
+  preventActiveMediaAfterPermissionPrompt?: boolean;
 }
 interface FetchPermissionError extends FetchRequestError {
   kind: MediaDeviceKind;
 }
-export interface changeLocalMediaResponse extends changeLocalMedia {
+export interface ChangeLocalMediaResponse extends ChangeLocalMedia {
   track?: LocalAudioTrack | LocalVideoTrack;
 }
 
@@ -100,10 +100,10 @@ export const joinSuccess = createAction<JoinSuccessInternalState>('signaling/con
 export const exitingRoomContext = createAction('room/exitingRoomContext');
 
 export const changeLocalMedia = createAsyncThunk<
-  changeLocalMediaResponse,
-  changeLocalMedia,
+  ChangeLocalMediaResponse,
+  ChangeLocalMedia,
   { state: RootState; rejectValue: FetchRequestError }
->('media/changeLocalMedia', async ({ enabled, deviceId, kind, forceDisableAudioBeforePromptIsShown }, thunkApi) => {
+>('media/changeLocalMedia', async ({ enabled, deviceId, kind, preventActiveMediaAfterPermissionPrompt }, thunkApi) => {
   let track: LocalAudioTrack | LocalVideoTrack | undefined;
   const state = thunkApi.getState();
   const storedDeviceId =
@@ -112,8 +112,24 @@ export const changeLocalMedia = createAsyncThunk<
   try {
     if (enabled) {
       if (kind === 'audioinput') {
+        const permission = await navigator.permissions.query({ name: 'microphone' });
+        const isPermissionPromptShown = permission.state === 'prompt';
+
         track = await createLocalAudioTrack({ deviceId: trackDeviceId });
         trackDeviceId = await track.getDeviceId();
+
+        if (isPermissionPromptShown) {
+          window.dispatchEvent(new CustomEvent('hotkeys:clearPushedKeys'));
+
+          if (preventActiveMediaAfterPermissionPrompt) {
+            return {
+              enabled: false,
+              deviceId: trackDeviceId,
+              track: undefined,
+              kind,
+            };
+          }
+        }
       }
       if (kind === 'videoinput') {
         const videoBackgroundSettings = state.livekit?.videoBackgroundEffects;
@@ -129,7 +145,6 @@ export const changeLocalMedia = createAsyncThunk<
       deviceId: trackDeviceId,
       track,
       kind,
-      forceDisableAudioBeforePromptIsShown,
     };
   } catch (error) {
     const mediaError = handleMediaPermissionError({ error, deviceId, kind });
@@ -204,35 +219,54 @@ export const changeMedia = createAsyncThunk<
   ChangeMediaInterface,
   ChangeMediaInterface,
   { state: RootState; rejectValue: FetchPermissionError }
->('livekit/changeMedia', async ({ enabled, deviceId: deviceIdOption, kind }, thunkApi) => {
-  const state = thunkApi.getState();
-  const room = state.livekit.room;
-  const storedDeviceId =
-    kind === 'audioinput' ? state.livekit.mediaSettings?.audioDeviceId : state.livekit.mediaSettings?.videoDeviceId;
-  const deviceId = deviceIdOption || storedDeviceId;
-  try {
-    if (kind === 'audioinput') {
-      await room?.localParticipant.setMicrophoneEnabled(enabled, { deviceId: deviceId });
-    }
-    if (kind === 'videoinput') {
-      const videoBackgroundSettings = state.livekit?.videoBackgroundEffects;
+>(
+  'livekit/changeMedia',
+  async ({ enabled, deviceId: deviceIdOption, kind, preventActiveMediaAfterPermissionPrompt }, thunkApi) => {
+    const state = thunkApi.getState();
+    const room = state.livekit.room;
+    const storedDeviceId =
+      kind === 'audioinput' ? state.livekit.mediaSettings?.audioDeviceId : state.livekit.mediaSettings?.videoDeviceId;
+    const deviceId = deviceIdOption || storedDeviceId;
+    try {
+      if (kind === 'audioinput') {
+        const permission = await navigator.permissions.query({ name: 'microphone' });
+        const isPermissionPromptShown = permission.state === 'prompt';
+        await room?.localParticipant.setMicrophoneEnabled(enabled, { deviceId: deviceId });
 
-      await room?.localParticipant.setCameraEnabled(enabled, {
-        deviceId: deviceId,
-        processor: enabled ? new BackgroundBlur(videoBackgroundSettings) : undefined,
-      });
-    }
+        if (isPermissionPromptShown) {
+          window.dispatchEvent(new CustomEvent('hotkeys:clearPushedKeys'));
 
-    return {
-      enabled,
-      deviceId,
-      kind,
-    };
-  } catch (error) {
-    const mediaError = handleMediaPermissionError({ error, deviceId, kind });
-    return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind });
+          if (preventActiveMediaAfterPermissionPrompt) {
+            await room?.localParticipant.setMicrophoneEnabled(false, { deviceId: deviceId });
+
+            return {
+              enabled: false,
+              deviceId,
+              kind,
+            };
+          }
+        }
+      }
+      if (kind === 'videoinput') {
+        const videoBackgroundSettings = state.livekit?.videoBackgroundEffects;
+
+        await room?.localParticipant.setCameraEnabled(enabled, {
+          deviceId: deviceId,
+          processor: enabled ? new BackgroundBlur(videoBackgroundSettings) : undefined,
+        });
+      }
+
+      return {
+        enabled,
+        deviceId,
+        kind,
+      };
+    } catch (error) {
+      const mediaError = handleMediaPermissionError({ error, deviceId, kind });
+      return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind });
+    }
   }
-});
+);
 
 export const setScreenShareEnabled = createAsyncThunk<
   { enabled: boolean },

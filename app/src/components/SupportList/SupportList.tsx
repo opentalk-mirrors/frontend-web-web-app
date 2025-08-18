@@ -30,12 +30,12 @@ import { useAppSelector, useLocale } from '../../hooks';
 import { selectContactSupportUrl, selectIsGlitchtipConfigured } from '../../store/slices/configSlice';
 import { getAccessibilityUrl, USER_MANUAL_URL } from '../../utils/apiUtils';
 import { triggerGlitchtipManually } from '../../utils/glitchtipUtils';
-import ShortcutListDialog from '../Toolbar/fragments/ShortcutListDialog';
+import HotkeyDialog from '../Toolbar/fragments/HotkeyDialog';
 
 enum ListItemKeys {
   Accessibility = 'accessibility',
   UserManual = 'user-manual',
-  KeyboardShortcuts = 'keyboard-shortcuts',
+  KeyboardHotkeys = 'keyboard-hotkeys',
   GlitchtipTrigger = 'glitchtip-trigger',
   Support = 'support',
 }
@@ -85,7 +85,7 @@ export const SupportList = ({
 }: SupportListProps) => {
   const { t } = useTranslation();
   const isGlitchtipConfigured = useAppSelector(selectIsGlitchtipConfigured);
-  const [isShortcutListDialogOpen, setIsShortcutListDialogOpen] = useState(false);
+  const [isHotkeyListDialogOpen, setIsHotkeyListDialogOpen] = useState(false);
   const contactSupportUrl = useAppSelector(selectContactSupportUrl);
   const locale = useLocale();
   const accessibilityUrl = getAccessibilityUrl(locale);
@@ -115,14 +115,14 @@ export const SupportList = ({
         },
       },
       {
-        key: ListItemKeys.KeyboardShortcuts,
-        name: 'my-meeting-menu-keyboard-shortcuts',
+        key: ListItemKeys.KeyboardHotkeys,
+        name: 'my-meeting-menu-keyboard-hotkeys',
         icon: <KeyboardIcon fontSize="small" />,
         componentProps: {
           onClick: () => {
-            setIsShortcutListDialogOpen(!isShortcutListDialogOpen);
+            setIsHotkeyListDialogOpen(!isHotkeyListDialogOpen);
           },
-          'aria-expanded': isShortcutListDialogOpen,
+          'aria-expanded': isHotkeyListDialogOpen,
         },
       },
     ];
@@ -152,7 +152,7 @@ export const SupportList = ({
     }
 
     return output;
-  }, [isGlitchtipConfigured, isShortcutListDialogOpen, contactSupportUrl]);
+  }, [isGlitchtipConfigured, isHotkeyListDialogOpen, contactSupportUrl]);
 
   const willOpenNewTab = (item: Item) => {
     return 'target' in item.componentProps && item.componentProps.target === '_blank';
@@ -183,7 +183,7 @@ export const SupportList = ({
             </MenuItem>
           ))}
         </MenuList>
-        <ShortcutListDialog open={isShortcutListDialogOpen} onClose={() => setIsShortcutListDialogOpen(false)} />
+        <HotkeyDialog open={isHotkeyListDialogOpen} onClose={() => setIsHotkeyListDialogOpen(false)} />
       </>
     );
   }
@@ -201,7 +201,7 @@ export const SupportList = ({
           </ListItem>
         ))}
       </List>
-      <ShortcutListDialog open={isShortcutListDialogOpen} onClose={() => setIsShortcutListDialogOpen(false)} />
+      <HotkeyDialog open={isHotkeyListDialogOpen} onClose={() => setIsHotkeyListDialogOpen(false)} />
     </>
   );
 };

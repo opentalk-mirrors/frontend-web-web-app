@@ -7,7 +7,6 @@ import React, { useEffect } from 'react';
 import LobbyView from '../../components/LobbyView';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
-import { usePreventSpaceKey } from '../../hooks/usePreventSpaceKey';
 import log from '../../logger';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { exitingRoomContext } from '../../store/commonActions';
@@ -21,8 +20,6 @@ const RoomPage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const connectionState: ConnectionState = useAppSelector(selectRoomConnectionState);
   const dispatch = useAppDispatch();
-
-  usePreventSpaceKey();
 
   useEffect(() => {
     return () => {
