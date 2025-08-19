@@ -75,7 +75,7 @@
     "@types/react-dom": "19.1.7",
     "@types/react-window": "^1.8.8",
     "@types/uuid": "^10.0.0",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^5.0.1",
     "cross-fetch": "^4.1.0",
     "happy-dom": "^18.0.1",
     "msw": "^2.10.5",
