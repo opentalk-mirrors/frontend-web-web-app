@@ -12,6 +12,25 @@ import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import MenuButton from './MoreButton';
 import MoreMenu from './MoreMenu';
 
+vi.mock('../../../commonComponents', async (importOriginal) => ({
+  ...(await importOriginal()),
+  notifications: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
+vi.mock('./InviteGuestDialog', () => ({
+  __esModule: true,
+  default: ({ open }: { open: boolean }) => {
+    return (
+      <div data-testid="invite-guest-dialog">
+        <span>{open ? 'Invite Guest Open' : undefined}</span>
+      </div>
+    );
+  },
+}));
+
 describe('<MoreButton />', () => {
   const { store } = configureStore();
 
@@ -48,6 +67,46 @@ describe('<MoreButton />', () => {
 
     const moderatorState = { user: { role: Role.Moderator }, room: { isOwnedByCurrentUser: true } };
     const { store } = configureStore({ initialState: { ...moderatorState } });
+
+    describe('invite guest options', () => {
+      it('does not render invite guest options if the guests allowed feature is not enabled', () => {
+        setup();
+        expect(screen.queryByRole('menuitem', { name: 'more-menu-create-invite' })).not.toBeInTheDocument();
+      });
+      it('renders invite guest options if the guests allowed feature is enabled', () => {
+        const { store: storeWithGuestsAllowed } = configureStore({
+          initialState: {
+            ...moderatorState,
+            config: { tariff: { modules: { core: { features: ['guests_allowed'] } } } },
+          },
+        });
+        renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
+          store: storeWithGuestsAllowed,
+          provider: { snackbar: true },
+        });
+        expect(screen.getByRole('menuitem', { name: 'more-menu-create-invite' })).toBeInTheDocument();
+      });
+      it('renders inivte guest dialog and it"s closed by default', () => {
+        setup();
+        expect(screen.getByTestId('invite-guest-dialog')).toBeInTheDocument();
+        expect(screen.queryByText('Invite Guest Open')).not.toBeInTheDocument();
+      });
+      it('opens invite guest dialog when user clicks on inivte guest menu option', () => {
+        const { store: storeWithGuestsAllowed } = configureStore({
+          initialState: {
+            ...moderatorState,
+            config: { tariff: { modules: { core: { features: ['guests_allowed'] } } } },
+          },
+        });
+        renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
+          store: storeWithGuestsAllowed,
+          provider: { snackbar: true },
+        });
+        const inviteGuest = screen.getByRole('menuitem', { name: 'more-menu-create-invite' });
+        fireEvent.click(inviteGuest);
+        expect(screen.getByText('Invite Guest Open')).toBeInTheDocument();
+      });
+    });
 
     it('shows the enable waiting room option and does not show the disable waiting room option, if the waiting room is inactive', () => {
       setup();
@@ -164,6 +223,23 @@ describe('<MoreButton />', () => {
         provider: { snackbar: true },
       });
       checkMenuItem('more-menu-export-attendance-report');
+    });
+  });
+
+  describe('if the user is a moderator and not a room owner', () => {
+    const moderatorState = { user: { role: Role.Moderator }, room: { isOwnedByCurrentUser: false } };
+    it('does not render invite guest options even if the guests allowed feature is enabled', () => {
+      const { store: storeWithGuestsAllowed } = configureStore({
+        initialState: {
+          ...moderatorState,
+          config: { tariff: { modules: { core: { features: ['guests_allowed'] } } } },
+        },
+      });
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
+        store: storeWithGuestsAllowed,
+        provider: { snackbar: true },
+      });
+      expect(screen.queryByRole('menuitem', { name: 'more-menu-create-invite' })).not.toBeInTheDocument();
     });
   });
 

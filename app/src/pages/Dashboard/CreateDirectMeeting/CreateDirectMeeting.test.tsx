@@ -100,6 +100,15 @@ vi.mock('../../../api/rest', async (importOriginal) => ({
     },
   ],
   useGetStreamingTargetsQuery: () => [mockCreateStreamingTarget],
+  useGetRoomTariffQuery: () => ({
+    data: {
+      modules: {
+        core: {
+          features: ['guests_allowed'],
+        },
+      },
+    },
+  }),
 }));
 
 vi.mock('../../../components/InvitedParticipants/InvitedParticipants', () => ({

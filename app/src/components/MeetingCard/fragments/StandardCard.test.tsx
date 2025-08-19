@@ -44,6 +44,15 @@ vi.mock('../../../api/rest', async (importOriginal) => ({
       id: '3645d74d-9a4b-4cd4-9d9f-f1871c970167',
     },
   }),
+  useGetRoomTariffQuery: () => ({
+    data: {
+      modules: {
+        core: {
+          features: ['guests_allowed'],
+        },
+      },
+    },
+  }),
 }));
 
 describe('Standard Card', () => {

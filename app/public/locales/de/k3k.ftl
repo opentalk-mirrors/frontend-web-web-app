@@ -1098,6 +1098,7 @@ meeting-details-dialog-mail-button = E-Mail
 meeting-details-dialog-button-header = Meetingdetails teilen
 meeting-details-dialog-invite-line = {$name} lädt Sie zu einem OpenTalk-Meeting ein
 meeting-details-dialog-join-line = Sie können auf eine der folgenden Arten beitreten
+meeting-details-dialog-join-prohibited-line = Gäste-Zugang und Telefoneinwahl sind in diesem Meeting nicht erlaubt
 
 send-error-button-text = Diagnosedaten senden
 hide-diagnostic-data-button = Diagnosedaten verbergen
