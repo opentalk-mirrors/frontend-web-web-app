@@ -101,7 +101,7 @@ export type LivekitState = {
   publicUrl: string | undefined;
   popoutStreamAccesses: PopoutStreamAccesses;
   qualityCap: VideoSetting;
-  popoutParticipantId: string | undefined;
+  isPopoutStream: boolean;
   mediaChangeInProgress?: MediaDeviceKindExtended[];
   room: Room | undefined;
   whisperRoom: Room | undefined;
@@ -117,7 +117,7 @@ export const initialState: LivekitState = {
   publicUrl: undefined,
   popoutStreamAccesses: [],
   qualityCap: VideoSetting.High,
-  popoutParticipantId: undefined,
+  isPopoutStream: false,
   mediaChangeInProgress: [],
   room: undefined,
   whisperRoom: undefined,
@@ -180,9 +180,6 @@ export const livekitSlice = createSlice({
     },
     setDisableRemoteVideos: (state, { payload }: PayloadAction<boolean>) => {
       state.qualityCap = payload ? VideoSetting.Off : VideoSetting.High;
-    },
-    setPopoutParticipantId: (state, { payload }: PayloadAction<string | undefined>) => {
-      state.popoutParticipantId = payload;
     },
   },
   extraReducers: (builder) => {
@@ -307,6 +304,9 @@ export const livekitSlice = createSlice({
         }
       }
     });
+    builder.addCase(startBroadcastRoom, (state) => {
+      state.isPopoutStream = true;
+    });
   },
 });
 
@@ -315,7 +315,6 @@ export const {
   setLivekitPopoutStreamAccessToken,
   deleteLivekitPopoutStreamAccessToken,
   setDisableRemoteVideos,
-  setPopoutParticipantId,
   setNewAccessToken,
   setLivekitRoom,
 } = livekitSlice.actions;
@@ -371,7 +370,7 @@ export const selectLivekitPopoutStreamAccessByParticipantId = createSelector(
 );
 
 export const selectQualityCap = (state: RootState) => state.livekit.qualityCap;
-export const selectPopoutParticipantId = (state: RootState) => state.livekit.popoutParticipantId;
+export const selectIsPopoutStream = (state: RootState) => state.livekit.isPopoutStream;
 
 export default livekitSlice.reducer;
 
@@ -383,7 +382,15 @@ export default livekitSlice.reducer;
 const startConnectLivekitListeners = (startAppListening: StartAppListening) => {
   startAppListening({
     actionCreator: connectRoom.fulfilled,
-    effect: async ({ payload: { room, isWhisperRoom } }, listenerApi) => {
+    effect: async (
+      {
+        payload: { room },
+        meta: {
+          arg: { isWhisperRoom },
+        },
+      },
+      listenerApi
+    ) => {
       attachRoomListeners(listenerApi.dispatch, listenerApi.getState, room);
       listenerApi.dispatch(setLivekitRoom({ room, isWhisperRoom }));
     },
@@ -413,7 +420,6 @@ const startBroadcastRoomListeners = (startAppListening: StartAppListening) => {
   startAppListening({
     actionCreator: startBroadcastRoom,
     effect: async (action, listenerApi) => {
-      listenerApi.dispatch(setPopoutParticipantId(action.payload.participantId));
       listenerApi.dispatch(connectRoom({ isWhisperRoom: false, accessToken: action.payload.accessToken }));
       action.payload.participantId && listenerApi.dispatch(setVisibleParticipantIds([action.payload.participantId]));
     },
@@ -587,7 +593,8 @@ const attachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, r
       handlePermissionChanged(previousPermissions, participant, dispatch)
     )
     .on(RoomEvent.ConnectionStateChanged, () => handleConnectionStateChanged(dispatch, getState))
-    .on(RoomEvent.EncryptionError, (error) => handleEncryptionError(error));
+    .on(RoomEvent.EncryptionError, (error) => handleEncryptionError(error))
+    .on(RoomEvent.ParticipantConnected, (participant) => handleParticipantConnected(getState, participant));
 };
 const detachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, room?: Room) => {
   room
@@ -603,7 +610,8 @@ const detachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, r
       handlePermissionChanged(previousPermissions, participant, dispatch)
     )
     .off(RoomEvent.ConnectionStateChanged, () => handleConnectionStateChanged(dispatch, getState))
-    .off(RoomEvent.EncryptionError, (error) => handleEncryptionError(error));
+    .off(RoomEvent.EncryptionError, (error) => handleEncryptionError(error))
+    .off(RoomEvent.ParticipantConnected, (participant) => handleParticipantConnected(getState, participant));
 };
 
 const handleRoomConnected = async (room: Room, dispatch: AppDispatch, getState: () => RootState) => {
@@ -729,8 +737,14 @@ const handleConnectionStateChanged = (dispatch: AppDispatch, getState: () => Roo
 
 const handleParticipantConnected = (getState: () => RootState, remoteParticipant?: Participant) => {
   setTimeout(() => {
-    const disconnectedStates = [ConnectionQuality.Lost, ConnectionQuality.Unknown];
     const state = getState();
+
+    // If the user is in a popout stream, we don't check for unauthorized participants
+    if (selectIsPopoutStream(state)) {
+      return;
+    }
+
+    const disconnectedStates = [ConnectionQuality.Lost, ConnectionQuality.Unknown];
     const connectedParticipantIds = new Set(selectAllOnlineParticipantsInConference(state).map((p) => p.id));
 
     const isActiveAndUnauthorized = (p: Participant) =>
@@ -748,7 +762,6 @@ const handleParticipantConnected = (getState: () => RootState, remoteParticipant
     const remoteParticipants = Array.from(state.livekit.room?.remoteParticipants.values() || []);
     const unauthorizedParticipantNames = remoteParticipants
       .filter(isActiveAndUnauthorized)
-      .filter((p) => p.identity !== selectPopoutParticipantId(state))
       .map((p) => selectParticipantName(state, p.identity as ParticipantId) || p.identity);
 
     if (unauthorizedParticipantNames.length > 0) {
