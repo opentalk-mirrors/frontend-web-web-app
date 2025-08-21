@@ -5,29 +5,29 @@
 // Either way room object would be kept in the store for reference. All updated on the room object should be listened and react to on the room middlware actions and listeners.
 import { ParticipantPermission } from '@livekit/protocol';
 import {
-  Draft,
-  ListenerEffectAPI,
-  PayloadAction,
   createAction,
   createSelector,
   createSlice,
+  Draft,
   isAnyOf,
+  ListenerEffectAPI,
+  PayloadAction,
 } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import {
-  LocalAudioTrack,
-  LocalVideoTrack,
-  Room,
-  ConnectionState as LivekitConnectionState,
-  RoomEvent,
-  RemoteTrackPublication,
-  RemoteParticipant,
-  Track,
-  RemoteTrack,
-  LocalParticipant,
   ConnectionQuality,
-  Participant,
   DeviceUnsupportedError,
+  ConnectionState as LivekitConnectionState,
+  LocalAudioTrack,
+  LocalParticipant,
+  LocalVideoTrack,
+  Participant,
+  RemoteParticipant,
+  RemoteTrack,
+  RemoteTrackPublication,
+  Room,
+  RoomEvent,
+  Track,
 } from 'livekit-client';
 
 import { Credentials } from '../../api/types/incoming/livekit';
@@ -637,10 +637,7 @@ const handleRoomConnected = async (room: Room, dispatch: AppDispatch, getState: 
 
 const handleRoomDisconnected = (dispatch: AppDispatch, getState: () => RootState) => {
   const connectionState = getState().room.connectionState;
-  if (
-    connectionState !== ConnectionState.Leaving &&
-    [ConnectionState.ReadyToEnter, ConnectionState.Waiting, ConnectionState.Online].includes(connectionState)
-  ) {
+  if (connectionState === ConnectionState.Online) {
     dispatch({ type: 'livekit/triggerReconnect' });
   }
 };
