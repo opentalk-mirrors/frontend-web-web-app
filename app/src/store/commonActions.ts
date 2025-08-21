@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { XORCipher } from '@opentalk/redux-oidc';
-import { RoomId, InviteCode, EventInfo } from '@opentalk/rest-api-rtk-query';
+import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
 import {
@@ -296,10 +296,10 @@ export const disconnectRoom = createAsyncThunk<
 });
 
 export const connectRoom = createAsyncThunk<
-  { room: Room; isWhisperRoom: boolean },
+  { room: Room },
   { eventInfo?: EventInfo; isWhisperRoom: boolean; accessToken?: string },
   { state: RootState; rejectValue: FetchRequestError }
->('livekit/connectRoom', async ({ isWhisperRoom, eventInfo, accessToken }, thunkApi) => {
+>('livekit/connectRoom', async ({ eventInfo, accessToken }, thunkApi) => {
   try {
     const token = accessToken || thunkApi.getState().livekit.accessToken;
 
@@ -309,10 +309,7 @@ export const connectRoom = createAsyncThunk<
     const e2eeSalt = thunkApi.getState().config.livekit?.e2eeSalt;
     const room = await createRoom(e2eeSalt, eventInfo || thunkApi.getState().room.eventInfo);
 
-    return {
-      room,
-      isWhisperRoom,
-    };
+    return { room };
   } catch (error) {
     if (error instanceof Error) {
       return thunkApi.rejectWithValue({ status: 409, statusText: error?.message });
