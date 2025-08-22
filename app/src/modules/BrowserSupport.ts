@@ -5,9 +5,9 @@
 //! Mostly removed support for Electron and NW.js and limited to our current feature target
 import Bowser from 'bowser';
 
-const MIN_REQUIRED_CHROME_VERSION = 90;
-const MIN_REQUIRED_FIREFOX_VERSION = 91;
-const MIN_REQUIRED_SAFARI_VERSION = 14;
+const MIN_REQUIRED_CHROME_VERSION = 127;
+const MIN_REQUIRED_FIREFOX_VERSION = 128;
+const MIN_REQUIRED_SAFARI_VERSION = 17;
 
 enum Browsers {
   Firefox = 'firefox',
