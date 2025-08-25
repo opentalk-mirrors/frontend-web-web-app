@@ -669,7 +669,7 @@ const handleTrackPublished = (
 
   // Unsubscribe hidden participant video tracks after initial publish
   const visibleParticipantIds = selectVisibleParticipantIds(getState());
-  if (!visibleParticipantIds.includes(participant.identity as ParticipantId) && pub.kind === Track.Kind.Video) {
+  if (!visibleParticipantIds.includes(participant.identity as ParticipantId) && pub.source === Track.Source.Camera) {
     pub.setSubscribed(false);
   }
 };
