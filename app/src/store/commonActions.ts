@@ -217,11 +217,10 @@ export const changeMedia = createAsyncThunk<
     if (kind === 'videoinput') {
       const videoBackgroundSettings = state.livekit?.videoBackgroundEffects;
 
-      const track = await room?.localParticipant.setCameraEnabled(enabled, {
+      await room?.localParticipant.setCameraEnabled(enabled, {
         deviceId: deviceId,
+        processor: enabled ? new BackgroundBlur(videoBackgroundSettings) : undefined,
       });
-      // adding processor separatly is a workaround for Chrome -> not displaying video feed on toggle
-      enabled && (await track?.videoTrack?.setProcessor(new BackgroundBlur(videoBackgroundSettings)));
     }
 
     return {
