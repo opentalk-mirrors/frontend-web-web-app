@@ -11,12 +11,7 @@ import { CloseIcon, PinIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useFullscreenContext } from '../../hooks/useFullscreenContext';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
-import {
-  pinnedParticipantIdSet,
-  selectPinnedParticipantId,
-  setVisibleParticipantIds,
-  toggledFullScreenMode,
-} from '../../store/slices/uiSlice';
+import { pinnedParticipantIdSet, selectPinnedParticipantId, toggledFullScreenMode } from '../../store/slices/uiSlice';
 import type { ParticipantId } from '../../types';
 import LocalVideo from '../LocalVideo';
 import ParticipantWindow from '../ParticipantWindow';
@@ -81,19 +76,6 @@ const FullscreenView = () => {
   );
 
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (selectedParticipant) {
-      dispatch(setVisibleParticipantIds([selectedParticipant.identity as ParticipantId]));
-
-      // Remove once unsubscribing hidden tracks is solved (https://github.com/livekit/client-sdk-js/issues/1610)
-      selectedParticipant.videoTrackPublications?.forEach((publication) => {
-        if (publication.isEnabled && !publication.isSubscribed) {
-          publication.setSubscribed(true);
-        }
-      });
-    }
-  }, [selectedParticipant, dispatch]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
