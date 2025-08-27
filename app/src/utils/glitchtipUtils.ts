@@ -4,7 +4,7 @@
 import * as Sentry from '@sentry/browser';
 import i18next from 'i18next';
 
-export const DELAY_BETWEEN_EVENT_AND_REPORT_MS = 2500;
+export const DELAY_BETWEEN_EVENT_AND_REPORT_MS = 5000;
 
 const glitchtipDialogProps = () => {
   return {
