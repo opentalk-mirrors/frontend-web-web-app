@@ -60,13 +60,7 @@ import { selectAllOnlineParticipantsInConference, selectParticipantName } from '
 import { enteredWaitingRoom } from './roomSlice';
 import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice';
 import { timerStarted } from './timerSlice';
-import {
-  pinnedParticipantIdSet,
-  pinnedRemoteScreenshare,
-  selectVisibleParticipantIds,
-  setVisibleParticipantIds,
-  updatedCinemaLayout,
-} from './uiSlice';
+import { pinnedParticipantIdSet, pinnedRemoteScreenshare, updatedCinemaLayout } from './uiSlice';
 
 type WritableDraft<T> = {
   -readonly [K in keyof T]: Draft<T[K]>;
@@ -421,7 +415,6 @@ const startBroadcastRoomListeners = (startAppListening: StartAppListening) => {
     actionCreator: startBroadcastRoom,
     effect: async (action, listenerApi) => {
       listenerApi.dispatch(connectRoom({ isWhisperRoom: false, accessToken: action.payload.accessToken }));
-      action.payload.participantId && listenerApi.dispatch(setVisibleParticipantIds([action.payload.participantId]));
     },
   });
 };
@@ -586,7 +579,7 @@ const attachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, r
       handleParticipantConnected(getState);
     })
     .on(RoomEvent.Disconnected, () => handleRoomDisconnected(dispatch, getState))
-    .on(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, dispatch, getState))
+    .on(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, dispatch))
     .on(RoomEvent.TrackUnpublished, (pub, participant) => handleTrackUnpublished(pub, participant, dispatch, getState))
     .on(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
     .on(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
@@ -603,7 +596,7 @@ const detachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, r
       handleParticipantConnected(getState);
     })
     .off(RoomEvent.Disconnected, () => handleRoomDisconnected(dispatch, getState))
-    .off(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, dispatch, getState))
+    .off(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, dispatch))
     .off(RoomEvent.TrackUnpublished, (pub, participant) => handleTrackUnpublished(pub, participant, dispatch, getState))
     .off(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
     .off(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
@@ -629,16 +622,6 @@ const handleRoomConnected = async (room: Room, dispatch: AppDispatch, getState: 
       dispatch(changeMedia({ kind: 'audioinput', enabled: isLobbyMicrophoneEnabled, deviceId: audioDeviceId }));
     }
 
-    // Unsubscribe hidden participant video tracks after initial render
-    const remoteParticipants = Array.from(room.remoteParticipants.values());
-    const visibleParticipantIds = selectVisibleParticipantIds(state);
-    remoteParticipants.forEach((participant) => {
-      if (!visibleParticipantIds.includes(participant.identity as ParticipantId)) {
-        participant.videoTrackPublications?.forEach((publication) => {
-          publication.setSubscribed(false);
-        });
-      }
-    });
     dispatch(cleanLocalTracks());
   }
 };
@@ -656,21 +639,10 @@ const handleEncryptionError = (error: Error) => {
   }
 };
 
-const handleTrackPublished = (
-  pub: RemoteTrackPublication,
-  participant: RemoteParticipant,
-  dispatch: AppDispatch,
-  getState: () => RootState
-) => {
+const handleTrackPublished = (pub: RemoteTrackPublication, participant: RemoteParticipant, dispatch: AppDispatch) => {
   if (pub.source === Track.Source.ScreenShare) {
     dispatch(pinnedRemoteScreenshare(participant.identity as ParticipantId));
     dispatch(updatedCinemaLayout({ layout: LayoutOptions.Speaker }));
-  }
-
-  // Unsubscribe hidden participant video tracks after initial publish
-  const visibleParticipantIds = selectVisibleParticipantIds(getState());
-  if (!visibleParticipantIds.includes(participant.identity as ParticipantId) && pub.source === Track.Source.Camera) {
-    pub.setSubscribed(false);
   }
 };
 
