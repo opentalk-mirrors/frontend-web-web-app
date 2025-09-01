@@ -39,6 +39,8 @@ export type {
   UnregisteredUser,
   UserOwnedAssets,
   UserOwnedAsset,
+  ParticipantOption,
+  EmailUser,
 } from './types/user';
 export { UserRole } from './types/user';
 export type {

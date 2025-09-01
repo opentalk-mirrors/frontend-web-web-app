@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Stack, Typography } from '@mui/material';
+import type { ParticipantOption } from '@opentalk/rest-api-rtk-query';
 
 import { ParticipantAvatar, setLibravatarOptions } from '../../../commonComponents';
 import { LibravatarDefaultImage } from '../../../types';
 import { HTMLLIElementWithSxProps } from '../types';
-import { ParticipantOption } from './ParticipantOption';
 
 export const SuggestedUserStrategy = {
   getOptionLabel: (option: ParticipantOption) => {
@@ -17,13 +17,15 @@ export const SuggestedUserStrategy = {
     return '';
   },
   renderOption:
-    (defaultImage: LibravatarDefaultImage) => (props: HTMLLIElementWithSxProps, option: ParticipantOption) => {
+    (defaultImage: LibravatarDefaultImage) =>
+    (props: HTMLLIElementWithSxProps & { key: string }, option: ParticipantOption) => {
       if ('firstname' in option) {
+        const { key, ...propsWithoutKey } = props;
         return (
           <Box
-            key={option.email}
+            key={key}
             component="li"
-            {...props}
+            {...propsWithoutKey}
             sx={[
               {
                 display: 'flex',

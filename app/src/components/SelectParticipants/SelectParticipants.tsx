@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Autocomplete, CircularProgress, InputAdornment, TextField, styled } from '@mui/material';
-import { EventId, EventInvite } from '@opentalk/rest-api-rtk-query';
+import { EventInvite } from '@opentalk/rest-api-rtk-query';
+import type { EventId, User, EmailUser, Email, ParticipantOption } from '@opentalk/rest-api-rtk-query';
 import { debounce, differenceBy } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +13,6 @@ import { CopyIcon, SearchIcon } from '../../assets/icons';
 import { useAppSelector } from '../../hooks';
 import { selectLibravatarDefaultImage } from '../../store/slices/configSlice';
 import { EmailStrategy } from './fragments/EmailStrategy';
-import { ParticipantOption } from './fragments/ParticipantOption';
 import { SuggestedUserStrategy } from './fragments/SuggestedUserStrategy';
 
 type SelectParticipantsProps = {
@@ -66,21 +66,23 @@ const SelectParticipants = ({
     debounce((inputValue: string) => {
       inputValue.length > 2 && findUsers({ q: inputValue });
     }, 250),
-    []
+    [findUsers]
   );
 
-  const suggestedParticipants: Array<{ firstname: string; lastname: string; email: string; avatarUrl?: string }> =
-    useMemo(() => {
-      if (isLoading || searchValue.length < 3) {
-        return [];
-      }
-      const invitedUsers = invitees?.map((invited) => invited.profile) || [];
-      return differenceBy(foundUsers, invitedUsers, selectedUsers, 'email').sort((a, b) => {
-        const aName = `${a.firstname} ${a.lastname}`;
-        const bName = `${b.firstname} ${b.lastname}`;
-        return aName.localeCompare(bName);
-      });
-    }, [isLoading, foundUsers, selectedUsers, searchValue, invitees?.map]);
+  const suggestedParticipants: Array<User> = useMemo(() => {
+    if (isLoading || searchValue.length < 3) {
+      return [];
+    }
+    const invitedUsers = invitees?.map((invited) => invited.profile) || [];
+
+    return differenceBy(foundUsers, invitedUsers, selectedUsers, 'email').sort((a, b) => {
+      const aName = `${a.firstname} ${a.lastname}`;
+      const bName = `${b.firstname} ${b.lastname}`;
+      return aName.localeCompare(bName);
+    });
+  }, [isLoading, foundUsers, selectedUsers, searchValue, invitees?.map]);
+
+  const hasParticipantsSuggestion = suggestedParticipants?.length > 0;
 
   const searchEntryHandler = useCallback(
     (inputValue: string) => {
@@ -95,14 +97,15 @@ const SelectParticipants = ({
     setSearchValue('');
   };
 
-  const emailSuggestion = useMemo(() => {
+  const emailSuggestions: Array<EmailUser> = useMemo(() => {
+    const lowercaseSearchValue = searchValue.toLowerCase();
     if (
       !(
-        selectedUsers.find((user) => user.email === searchValue) ||
-        invitees.find((invitee) => invitee.profile.email === searchValue)
+        selectedUsers.find((user) => user.email === lowercaseSearchValue) ||
+        invitees.find((invitee) => invitee.profile.email === lowercaseSearchValue)
       )
     ) {
-      return [{ email: searchValue }];
+      return [{ email: lowercaseSearchValue as Email }];
     }
     return [];
   }, [searchValue, selectedUsers, invitees]);
@@ -112,16 +115,10 @@ const SelectParticipants = ({
   return (
     <Autocomplete
       data-testid="SelectParticipants"
-      options={
-        suggestedParticipants.length
-          ? (suggestedParticipants as ParticipantOption[])
-          : (emailSuggestion as ParticipantOption[])
-      }
-      getOptionLabel={
-        suggestedParticipants.length ? SuggestedUserStrategy.getOptionLabel : EmailStrategy.getOptionLabel
-      }
+      options={hasParticipantsSuggestion ? suggestedParticipants : emailSuggestions}
+      getOptionLabel={hasParticipantsSuggestion ? SuggestedUserStrategy.getOptionLabel : EmailStrategy.getOptionLabel}
       renderOption={
-        suggestedParticipants.length
+        hasParticipantsSuggestion
           ? SuggestedUserStrategy.renderOption(avatarDefaultImage)
           : EmailStrategy.renderOption(t('global-no-result'))
       }
@@ -132,7 +129,7 @@ const SelectParticipants = ({
       onInputChange={(_, value) => searchEntryHandler(value || '')}
       noOptionsText={t('global-no-result')}
       loading={isLoading}
-      open={!isLoading && (suggestedParticipants.length !== 0 || searchValue.length > 2)}
+      open={!isLoading && (hasParticipantsSuggestion || searchValue.length > 2)}
       renderInput={({ InputProps, ...params }) => (
         <AutocompleteTextField
           {...params}

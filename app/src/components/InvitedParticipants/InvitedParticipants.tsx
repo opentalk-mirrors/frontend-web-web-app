@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Grid } from '@mui/material';
 import { EventInvite, InviteStatus, EventId } from '@opentalk/rest-api-rtk-query';
+import type { ParticipantOption } from '@opentalk/rest-api-rtk-query';
 import { sortBy } from 'lodash';
 
 import { useGetEventInvitesQuery } from '../../api/rest';
 import { isRegisteredUser } from '../../utils/typeGuardUtils';
-import { ParticipantOption } from '../SelectParticipants';
 import ParticipantList from './fragments/ParticipantList';
 
 type InvitedParticipantsProps = {

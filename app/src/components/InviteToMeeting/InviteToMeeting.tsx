@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Grid, styled } from '@mui/material';
 import { Event, EventInvite, isEvent, UserRole } from '@opentalk/rest-api-rtk-query';
+import type { ParticipantOption } from '@opentalk/rest-api-rtk-query/src/types/user';
 import { merge } from 'lodash';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +16,6 @@ import SelectParticipants from '../../components/SelectParticipants';
 import { useAppSelector } from '../../hooks';
 import { selectConfigFeatures } from '../../store/slices/configSlice';
 import InvitedParticipants from '../InvitedParticipants';
-import { ParticipantOption } from '../SelectParticipants';
 import MeetingLinksAndPasswords from './fragments/MeetingLinksAndPasswords';
 
 interface InviteToMeetingProps {
