@@ -4,8 +4,10 @@
 import { Collapse, Grid } from '@mui/material';
 import { Event, RecurrencePattern, isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { FormikProps } from 'formik';
+import { useEffect } from 'react';
 
 import roundToUpper30 from '../../../utils/roundToUpper30';
+import { CommonFrequencies } from '../../../utils/rruleUtils';
 import { isInvalidDate } from '../../../utils/typeGuardUtils';
 import { DashboardDateTimePicker } from './DashboardDateTimePicker';
 import { MeetingFormValues } from './DashboardDateTimePicker';
@@ -63,9 +65,17 @@ const DateTimeSection = ({ formik, existingEvent, onRecurrencePatternChange }: R
     minDate = new Date();
   }
 
+  // Use case: user set a recurrency pattern and than made the meeting time independent
+  const isTimeDependent = formik.values.isTimeDependent;
+  useEffect(() => {
+    if (!isTimeDependent) {
+      formik.setFieldValue('recurrencePattern', CommonFrequencies.NONE);
+    }
+  }, [isTimeDependent]);
+
   return (
     <>
-      <Collapse orientation="vertical" in={formik.values.isTimeDependent} unmountOnExit mountOnEnter>
+      <Collapse orientation="vertical" in={isTimeDependent} unmountOnExit mountOnEnter>
         <Grid container columnSpacing={{ xs: 2, sm: 5 }}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <DashboardDateTimePicker type="start" formik={formik} onChange={onChangeStartDate} minTimeDate={minDate} />

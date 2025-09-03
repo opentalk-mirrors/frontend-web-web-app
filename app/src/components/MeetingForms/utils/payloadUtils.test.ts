@@ -211,4 +211,14 @@ describe('createPayload', () => {
 
     expect(payload.recurrencePattern).toStrictEqual([CommonFrequencies.DAILY]);
   });
+
+  it('should set recurrence pattern to undefined if the event is time independent', () => {
+    const payload = createPayload({
+      ...mockedMeetingFormValues,
+      isTimeDependent: false,
+      recurrencePattern: CommonFrequencies.DAILY,
+    }) as CreateTimedEventPayload;
+
+    expect(payload.recurrencePattern).toBeUndefined();
+  });
 });

@@ -5,6 +5,7 @@ import { Event, TimedEvent } from '@opentalk/rest-api-rtk-query';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Formik, FormikProps } from 'formik';
 
+import { CommonFrequencies } from '../../../utils/rruleUtils';
 import { mockedMeetingFormValues, mockedSingleEvent } from '../../../utils/testUtils';
 import { MeetingFormValues, DashboardDateTimePickerProps } from './DashboardDateTimePicker';
 import DateTimeSection from './DateTimeSection';
@@ -33,9 +34,10 @@ vi.mock('./RecurrenceSection', () => ({
 describe('DateTimeSection', () => {
   const onRecurrencePatternChange = vi.fn();
 
-  const renderComponent = (existingEvent?: Event) =>
+  const renderComponent = (existingEvent?: Event, meetingFormValues?: MeetingFormValues) => {
+    const initialMeetingFormValues = meetingFormValues ?? mockedMeetingFormValues;
     render(
-      <Formik initialValues={mockedMeetingFormValues} onSubmit={vi.fn()}>
+      <Formik initialValues={initialMeetingFormValues} onSubmit={vi.fn()}>
         {(formik) => {
           formikInstance = formik;
           return (
@@ -48,12 +50,25 @@ describe('DateTimeSection', () => {
         }}
       </Formik>
     );
+  };
 
   it('renders start and end date pickers and recurrence section', () => {
     renderComponent();
     expect(screen.getByTestId('datetime-picker-start')).toBeInTheDocument();
     expect(screen.getByTestId('datetime-picker-end')).toBeInTheDocument();
     expect(screen.getByTestId('recurrence-section')).toBeInTheDocument();
+  });
+
+  it('resets recurrence pattern for time independent events', async () => {
+    const formValues: MeetingFormValues = {
+      ...mockedMeetingFormValues,
+      isTimeDependent: false,
+      recurrencePattern: CommonFrequencies.WEEKLY,
+    };
+    renderComponent(undefined, formValues);
+    await waitFor(() => {
+      expect(formikInstance?.values.recurrencePattern).toBe(CommonFrequencies.NONE);
+    });
   });
 
   describe('start date picker', () => {

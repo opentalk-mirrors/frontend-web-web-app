@@ -18,7 +18,7 @@ export const createPayload = (
     showMeetingDetails: values.showMeetingDetails,
     password: values.password?.trim() !== '' ? values.password?.trim() : undefined,
     isTimeIndependent: !values.isTimeDependent,
-    recurrencePattern: createRecurrencePatternPayload(values.recurrencePattern),
+    recurrencePattern: values.isTimeDependent ? createRecurrencePatternPayload(values.recurrencePattern) : undefined,
     isAdhoc: values.isAdhoc || false,
     hasSharedFolder: values.sharedFolder,
     streamingTargets: createStreamingPayload(values.streaming),
