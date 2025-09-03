@@ -11,7 +11,7 @@ import { CloseIcon, PinIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useFullscreenContext } from '../../hooks/useFullscreenContext';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
-import { pinnedParticipantIdSet, selectPinnedParticipantId, toggledFullScreenMode } from '../../store/slices/uiSlice';
+import { pinnedParticipantIdSet, selectPinnedParticipantId } from '../../store/slices/uiSlice';
 import type { ParticipantId } from '../../types';
 import LocalVideo from '../LocalVideo';
 import ParticipantWindow from '../ParticipantWindow';
@@ -89,7 +89,6 @@ const FullscreenView = () => {
 
   const handleCloseFullscreen = () => {
     fullscreenHandle.exit();
-    dispatch(toggledFullScreenMode());
   };
 
   const isActive = fullscreenHandle.hasActiveOverlay || hasVisibleControls;

@@ -7,6 +7,20 @@ import { Mock } from 'vitest';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import MeetingSettingsDialog from './MeetingSettingsDialog';
 
+const mockFullscreenContext = {
+  active: true,
+  node: null,
+  exit: vi.fn(),
+  enter: vi.fn(),
+  fullscreenParticipantId: '',
+  setRootElement: vi.fn(),
+  rootElement: null,
+  setHasActiveOverlay: vi.fn(),
+  isFullScreenAvailable: vi.fn(),
+};
+
+vi.mock('../../provider/FullscreenProvider', () => ({ useFullscreenContext: () => mockFullscreenContext }));
+
 vi.mock('./fragments/DesktopDialogContent', () => ({
   ...vi.importActual('./fragments/DesktopDialogContent'),
   __esModule: true,

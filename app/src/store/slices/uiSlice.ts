@@ -54,7 +54,6 @@ export type UIState = {
   isCurrentMeetingNotesHighlighted?: boolean;
   showCoffeeBreakCurtain: boolean;
   activeTab: ModerationTabKey;
-  isFullscreenMode: boolean;
   chatAutosavedInputs: {
     [ChatScope.Global]: string;
     [ChatScope.Group]: Record<TargetId, string>;
@@ -90,7 +89,6 @@ const initialState: UIState = {
   isCurrentMeetingNotesHighlighted: undefined,
   showCoffeeBreakCurtain: false,
   activeTab: ModerationTabKey.Home,
-  isFullscreenMode: false,
   chatAutosavedInputs: {
     [ChatScope.Global]: '',
     [ChatScope.Group]: {},
@@ -173,9 +171,6 @@ export const uiSlice = createSlice({
       if (tabKey === ModerationTabKey.PollsAndLegalVote) {
         state.haveSeenMobilePollsAndVotes = true;
       }
-    },
-    toggledFullScreenMode(state) {
-      state.isFullscreenMode = !state.isFullscreenMode;
     },
     pinnedRemoteScreenshare(state, { payload: id }: PayloadAction<ParticipantId>) {
       state.pinnedParticipantId = id;
@@ -288,7 +283,6 @@ export const {
   setMeetingNotesHighlight,
   setCoffeeBreakCurtainOpenFlag,
   setActiveTab,
-  toggledFullScreenMode,
   pinnedRemoteScreenshare,
   saveDefaultChatMessage,
   setHotkeysEnabled,
@@ -317,7 +311,6 @@ export const selectIsCurrentWhiteboardHighlighted = (state: RootState) => state.
 export const selectIsCurrentMeetingNotesHighlighted = (state: RootState) => state.ui.isCurrentMeetingNotesHighlighted;
 export const selectShowCoffeeBreakCurtain = (state: RootState) => state.ui.showCoffeeBreakCurtain;
 export const selectActiveTab = (state: RootState) => state.ui.activeTab;
-export const selectIsFullscreenMode = (state: RootState) => state.ui.isFullscreenMode;
 export const selectDefaultChatMessage = createSelector(
   [
     (state: RootState) => state.ui.chatAutosavedInputs,
