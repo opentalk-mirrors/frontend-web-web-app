@@ -72,7 +72,10 @@ describe('Audio Button', () => {
       canPublishSources: [],
     });
     const { store } = configureStore();
-    renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, { store });
+    renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
+      store,
+      provider: { snackbar: true },
+    });
     const button = screen.getByRole('button', { name: 'toolbar-button-audio-disabled-tooltip', hidden: true });
     expect(button).toBeInTheDocument();
     expect(button).toBeDisabled();

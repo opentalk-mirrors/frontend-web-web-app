@@ -22,7 +22,6 @@ import {
   selectCinemaLayout,
   selectGridViewOrder,
   selectIsCurrentMeetingNotesHighlighted,
-  toggledFullScreenMode,
   updatedCinemaLayout,
   updatedGridViewOrder,
 } from '../../../store/slices/uiSlice';
@@ -67,8 +66,7 @@ const LayoutSelection = () => {
   const openFullscreenView = useCallback(() => {
     setAnchorElement(null);
     fullscreenHandle.enter();
-    dispatch(toggledFullScreenMode());
-  }, [fullscreenHandle, dispatch]);
+  }, [fullscreenHandle]);
 
   const handleSelectedView = (layout: LayoutOptions, order: GridViewOrder = GridViewOrder.FirstJoined) => {
     setAnchorElement(null);
