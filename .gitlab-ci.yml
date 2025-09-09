@@ -93,7 +93,7 @@ compliance:
 licensing:
   stage: lint
   image:
-    name: fsfe/reuse:5.1.0
+    name: fsfe/reuse:5.1.1
     entrypoint: ['']
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
