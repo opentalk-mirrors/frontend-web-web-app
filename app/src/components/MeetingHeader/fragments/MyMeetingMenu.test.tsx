@@ -11,7 +11,7 @@ vi.mock('../../../utils/apiUtils');
 describe('My Meeting Menu', () => {
   it('renders menu and all default menu items on button click', async () => {
     const { store } = configureStore();
-    renderWithProviders(<MyMeetingMenu />, { store });
+    renderWithProviders(<MyMeetingMenu />, { store, provider: { mui: true } });
 
     const menuButton = await screen.findByRole('button', { name: 'my-meeting-menu' });
     expect(menuButton).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe('My Meeting Menu', () => {
       },
     });
 
-    renderWithProviders(<MyMeetingMenu />, { store });
+    renderWithProviders(<MyMeetingMenu />, { store, provider: { mui: true } });
 
     const menuButton = await screen.findByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
@@ -58,7 +58,7 @@ describe('My Meeting Menu', () => {
         },
       },
     });
-    renderWithProviders(<MyMeetingMenu />, { store });
+    renderWithProviders(<MyMeetingMenu />, { store, provider: { mui: true } });
 
     const menuButton = await screen.findByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);
@@ -69,7 +69,7 @@ describe('My Meeting Menu', () => {
 
   it('opens user manual when clicking on User Manual option', async () => {
     const { store } = configureStore();
-    renderWithProviders(<MyMeetingMenu />, { store });
+    renderWithProviders(<MyMeetingMenu />, { store, provider: { mui: true } });
 
     const menuButton = await screen.findByRole('button', { name: 'my-meeting-menu' });
     fireEvent.click(menuButton);

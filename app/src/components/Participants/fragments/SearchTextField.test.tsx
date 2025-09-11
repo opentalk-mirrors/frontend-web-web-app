@@ -12,7 +12,7 @@ describe('SearchTextField', () => {
   const mockOnSearch = vi.fn();
 
   it('render SearchTextField component without crashing', () => {
-    renderWithProviders(<SearchTextField onSearch={mockOnSearch} />, { store });
+    renderWithProviders(<SearchTextField onSearch={mockOnSearch} />, { store, provider: { mui: true } });
     const searchInput = screen.getByRole('textbox', { name: 'participant-search-label' });
 
     expect(searchInput).toBeInTheDocument();
@@ -20,14 +20,14 @@ describe('SearchTextField', () => {
   });
 
   it('render SearchTextField component with showSort flag', () => {
-    renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store });
+    renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store, provider: { mui: true } });
     const sortButton = screen.getByRole('button', { name: /sort-by/i });
 
     expect(sortButton).toBeInTheDocument();
   });
 
   it('add value into input should trigger onSearch()', () => {
-    renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store });
+    renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store, provider: { mui: true } });
     const searchInput = screen.getByRole('textbox', { name: 'participant-search-label' });
 
     expect(searchInput).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe('SearchTextField', () => {
   });
 
   it('click on sortButton should open menu with list of sortOptionItems', () => {
-    renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store });
+    renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store, provider: { mui: true } });
     const sortButton = screen.getByRole('button', { name: /sort-by/i });
     expect(sortButton).toBeInTheDocument();
 
@@ -50,7 +50,7 @@ describe('SearchTextField', () => {
   });
 
   it('click on sort-raised-hand item should dispatch setParticipantsSortOption with raisedHandFirst', () => {
-    renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store });
+    renderWithProviders(<SearchTextField onSearch={mockOnSearch} showSort />, { store, provider: { mui: true } });
     const sortButton = screen.getByRole('button', { name: /sort-by/i });
     expect(sortButton).toBeInTheDocument();
 

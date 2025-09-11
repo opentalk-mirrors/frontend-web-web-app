@@ -10,12 +10,13 @@ import { useRevokeEventUserInviteMutation, useRevokeEventUserInviteByEmailMutati
 import { isRegisteredUser } from '../../../utils/typeGuardUtils';
 import UserRow from './UserRow';
 
-const ParticipantListBox = styled(Stack)({
+const ParticipantListBox = styled(Stack)(({ theme }) => ({
   alignItems: 'baseline',
   overflow: 'auto',
   maxHeight: '15rem',
   width: '100%',
-});
+  color: theme.palette.text.primary,
+}));
 
 type ParticipantListProps = {
   status: InviteStatus;

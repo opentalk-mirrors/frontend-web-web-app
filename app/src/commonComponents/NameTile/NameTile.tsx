@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useParticipants } from '@livekit/components-react';
 import { Box, BoxProps, Stack, Typography, styled } from '@mui/material';
+import Color from 'colorjs.io';
 import { omit } from 'lodash';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,33 +11,41 @@ import { useTranslation } from 'react-i18next';
 import { CameraOffIcon, MicOffIcon } from '../../assets/icons';
 import { ParticipantId } from '../../types';
 
-const NameBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexWrap: 'nowrap',
-  alignItems: 'center',
-  justifyContent: 'center',
-  maxWidth: '80%',
-  padding: theme.spacing(0.5, 1),
-  background: theme.palette.background.secondaryOverlay,
-  color: theme.palette.primary.contrastText,
-  borderRadius: +theme.borderRadius.small * 2,
-  borderBottomLeftRadius: 0,
-  borderBottomRightRadius: 0,
-  '&.positionBottom': {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    width: 'fit-content',
-  },
-}));
+const NameBox = styled(Box)(({ theme }) => {
+  const background = new Color(theme.palette.background.customPaper.primary);
+  background.alpha = 0.6;
+
+  return {
+    display: 'flex',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxWidth: '80%',
+    padding: theme.spacing(0.5, 1),
+    background: background.toString({ format: 'rgba' }),
+    color: theme.palette.text.primary,
+    borderRadius: +theme.borderRadius.small * 2,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    '&.positionBottom': {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      width: 'fit-content',
+    },
+  };
+});
 
 const IconBox = styled(Stack)(({ theme }) => ({
   paddingRight: theme.spacing(0.5),
   '& svg': {
     fontSize: 'inherit',
+  },
+  '& .off-line': {
+    fill: theme.palette.danger.light,
   },
 }));
 

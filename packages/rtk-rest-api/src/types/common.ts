@@ -45,6 +45,7 @@ export enum Tag {
   EventInvite = 'EventInvite',
   Asset = 'Asset',
   StreamingTargets = 'StreamingTargets',
+  Palette = 'Palette',
 }
 
 export const tags = Object.entries(Tag).map(([, value]) => value);

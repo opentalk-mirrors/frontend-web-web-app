@@ -33,7 +33,7 @@ const CloseButtonContainer = styled('span')(({ theme }) => ({
   },
   '&:hover': {
     '& svg': {
-      fill: theme.palette.primary.main,
+      fill: theme.palette.secondary.main,
     },
   },
 }));

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Stack, Skeleton, Typography } from '@mui/material';
+import { Stack, Skeleton, Typography, useTheme } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import FavoriteMeetingsCard, { FavoriteMeetingProps } from '../../../../componen
 
 const FavoriteMeetings = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const { data: favoritesEvents, isLoading: favoritesEventsIsLoading } = useGetEventsQuery({
     favorites: true,
@@ -43,6 +44,7 @@ const FavoriteMeetings = () => {
       sx={{
         flex: 1,
         justifyContent: 'flex-end',
+        color: theme.palette.background.highlight.contrastText,
       }}
     >
       <Typography variant="body1" component="h2">

@@ -10,7 +10,7 @@ const Container = styled(Stack)({
 });
 
 const ErrorTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.error.contrastText,
+  color: theme.palette.text.primary,
 }));
 
 interface ErrorTextProps {

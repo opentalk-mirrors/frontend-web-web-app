@@ -1,28 +1,20 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Tooltip, ThemeProvider, Theme, IconButtonProps, IconButton } from '@mui/material';
+import { styled, Tooltip, IconButtonProps, IconButton } from '@mui/material';
 import { MouseEvent, ReactNode } from 'react';
 
 import { ArrowDownIcon } from '../../../assets/icons';
-import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 
 interface IButtonProps {
   isActive?: boolean;
   isLobby?: boolean;
 }
 
-const ButtonContainer = styled('div')(({ theme }) => ({
+const ButtonContainer = styled('div')(() => ({
   cursor: 'pointer',
   position: 'relative',
-  borderRadius: theme.borderRadius.large,
 }));
-
-const keyboardFocusStyle = (theme: Theme, isActive: boolean | undefined) => ({
-  '& .MuiTouchRipple-ripple .MuiTouchRipple-childPulsate': {
-    background: isActive ? theme.palette.secondary.light : theme.palette.secondary.lightest,
-  },
-});
 
 const ToolbarIconButton = styled(IconButton, {
   shouldForwardProp: (prop) => prop !== 'isActive' && prop !== 'isLobby',
@@ -33,23 +25,23 @@ const ToolbarIconButton = styled(IconButton, {
   minWidth: 0,
   width: '2.5rem',
   height: '2.08rem',
-  backgroundColor: theme.palette.secondary.main,
+  backgroundColor: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
   borderRadius: theme.borderRadius.large,
   '&:hover': {
-    background: theme.palette.secondary.lightest,
+    background: theme.palette.primary.main,
     '& > svg': {
-      fill: theme.palette.secondary.main,
+      fill: theme.palette.primary.contrastText,
     },
   },
   '& svg': {
-    fill: theme.palette.common.white,
+    fill: theme.palette.background.main.contrastText,
   },
-  '& .mic-off-line': {
-    fill: theme.palette.warning.main,
+  '& .off-line': {
+    fill: theme.palette.danger.light,
   },
-  ...keyboardFocusStyle(theme, isActive),
   '&.Mui-focusVisible': {
-    outline: theme.palette.focus.contrastOutline,
+    outline: theme.palette.focus.outline,
   },
   '& .MuiSvgIcon-root': {
     fontSize: theme.typography.pxToRem(18),
@@ -61,11 +53,22 @@ const ToolbarIconButton = styled(IconButton, {
     },
   },
   ':disabled': {
-    opacity: 0.5,
-    backgroundColor: theme.palette.secondary.main,
-    fill: theme.palette.text.disabled,
-    '& .mic-off-line': {
-      fill: theme.palette.text.disabled,
+    backgroundColor: theme.palette.background.main.primary,
+    '& svg': {
+      fill: theme.palette.background.main.contrastText,
+    },
+    '& .off-line': {
+      fill: theme.palette.background.main.contrastText,
+    },
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'rgba(0.5, 0.5, 0.5, 0.2)',
+      borderRadius: theme.borderRadius.large,
     },
   },
   [theme.breakpoints.down('sm')]: {
@@ -73,18 +76,18 @@ const ToolbarIconButton = styled(IconButton, {
     height: '2.704rem',
   },
   ...(isActive && {
-    background: theme.palette.secondary.lightest,
+    background: theme.palette.primary.main,
     '& svg': {
-      fill: theme.palette.secondary.main,
+      fill: theme.palette.primary.contrastText,
     },
   }),
   ...(isLobby && {
     width: '3.25rem',
     height: '2.75rem',
-    border: `2px solid ${theme.palette.warning.main}`,
+    border: `1px solid ${theme.palette.common.white}`,
 
     ...(isActive && {
-      border: `2px solid ${theme.palette.secondary.lightest}`,
+      border: `1px solid ${theme.palette.primary.main}`,
     }),
   }),
 }));
@@ -92,15 +95,15 @@ const ToolbarIconButton = styled(IconButton, {
 const ToggleButton = styled(IconButton, {
   shouldForwardProp: (prop) => prop !== 'isActive' && prop !== 'isLobby',
 })<IButtonProps>(({ theme, isActive, isLobby }) => ({
-  backgroundColor: isActive ? theme.palette.text.secondary : theme.palette.secondary.main,
+  backgroundColor: isActive ? theme.palette.primary.main : theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
   padding: theme.spacing(0.4),
-  border: `solid 0.125em #17313A`,
+  border: `solid 0.125em ${theme.palette.background.customPaper.primary}`,
   position: 'absolute',
   bottom: '-0.25em',
   right: '-0.25em',
-  ...keyboardFocusStyle(theme, isActive),
   '&.Mui-focusVisible': {
-    outline: theme.palette.focus.contrastOutline,
+    outline: theme.palette.focus.outline,
   },
   '& .MuiSvgIcon-root': {
     [theme.breakpoints.down('sm')]: {
@@ -108,14 +111,14 @@ const ToggleButton = styled(IconButton, {
     },
   },
   '& svg': {
-    fill: isActive ? theme.palette.secondary.light : theme.palette.text.secondary,
+    fill: isActive ? theme.palette.primary.contrastText : theme.palette.text.primary,
     width: '0.5em',
     height: '0.5em',
   },
   '&:hover': {
-    background: isActive ? theme.palette.secondary.light : theme.palette.secondary.lightest,
+    background: theme.palette.primary.main,
     '& svg': {
-      fill: isActive ? theme.palette.secondary.lightest : theme.palette.secondary.light,
+      fill: theme.palette.primary.contrastText,
     },
   },
   [theme.breakpoints.down('sm')]: {
@@ -125,7 +128,7 @@ const ToggleButton = styled(IconButton, {
   },
   ...(isLobby && {
     padding: theme.spacing(0.625),
-    border: `1px solid ${theme.palette.warning.main}`,
+    border: `1px solid ${theme.palette.common.white}`,
   }),
   [theme.breakpoints.down('md')]: {
     padding: isLobby ? theme.spacing(0.625) : theme.spacing(0.4),
@@ -162,7 +165,7 @@ const ToolbarButton = ({
   isLobby,
   ...props
 }: ToolbarButtonProps) => (
-  <ThemeProvider theme={createOpenTalkTheme()}>
+  <>
     <Tooltip placement="top" title={tooltipTitle}>
       <ButtonContainer>
         <ToolbarIconButton
@@ -194,7 +197,7 @@ const ToolbarButton = ({
         )}
       </ButtonContainer>
     </Tooltip>
-  </ThemeProvider>
+  </>
 );
 
 export default ToolbarButton;

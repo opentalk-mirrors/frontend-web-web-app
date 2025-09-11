@@ -217,6 +217,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
               disabled={isSubmitButtonDisabled}
               variant={isSubmitButtonDisabled ? 'conference-inactive' : 'contained'}
               fullWidth
+              color="secondary"
             >
               {t('global-submit')}
             </Button>

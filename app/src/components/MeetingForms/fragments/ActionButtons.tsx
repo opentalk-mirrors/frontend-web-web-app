@@ -33,7 +33,7 @@ const ActionButtons = ({
     >
       <Grid size={{ xs: 12, sm: 'auto' }}>
         {isExistingEvent && (
-          <Button variant="text" color="secondary" endIcon={<ForwardIcon />} onClick={onForwardButtonClick}>
+          <Button variant="text" endIcon={<ForwardIcon />} onClick={onForwardButtonClick}>
             {t('dashboard-meeting-to-step', { step: 2 })}
           </Button>
         )}
@@ -52,7 +52,7 @@ const ActionButtons = ({
               component={Link}
               to="/dashboard/"
               variant="outlined"
-              color="secondary"
+              color="primary"
               fullWidth
               disabled={disableCancelButton}
             >
@@ -61,7 +61,7 @@ const ActionButtons = ({
           </Grid>
         )}
         <Grid>
-          <Button fullWidth disabled={disableSaveButton} type="submit">
+          <Button fullWidth disabled={disableSaveButton} type="submit" color="secondary">
             {t(`global-save${isExistingEvent ? '-changes' : ''}`)}
           </Button>
         </Grid>

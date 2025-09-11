@@ -32,12 +32,14 @@ interface MeetingFormProps {
   onForwardButtonClick?: () => void;
 }
 
-const Form = styled('form')({
+const Form = styled('form')(({ theme }) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
-});
+  background: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
+}));
 
 const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonClick }: MeetingFormProps) => {
   const { t } = useTranslation();

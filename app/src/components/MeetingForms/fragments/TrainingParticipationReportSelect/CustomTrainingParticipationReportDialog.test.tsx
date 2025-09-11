@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
+import { renderWithProviders } from '../../../../utils/testUtils';
 import {
   CustomTrainingParticipationReportDialog,
   CustomTrainingParticipationReportDialogProps,
@@ -19,7 +20,7 @@ const mockDialogProps: CustomTrainingParticipationReportDialogProps = {
 
 describe('Custom Recurrence Dialog', () => {
   it('Dialog renders correctly', () => {
-    render(<CustomTrainingParticipationReportDialog {...mockDialogProps} />);
+    renderWithProviders(<CustomTrainingParticipationReportDialog {...mockDialogProps} />, { provider: { mui: true } });
 
     expect(screen.getByTestId('custom-training-participation-report-dialog')).toBeInTheDocument();
   });

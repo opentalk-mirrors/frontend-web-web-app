@@ -10,13 +10,13 @@ describe('<HandraiseButton />', () => {
   const { store, dispatchSpy } = configureStore();
 
   it('should render HandraiseButton component', () => {
-    renderWithProviders(<HandraiseButton />, { store });
+    renderWithProviders(<HandraiseButton />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('toolbarHandraiseButton')).toBeInTheDocument();
   });
 
   it('should dispatch raise_hand by clicking on HandraiseButton', () => {
-    renderWithProviders(<HandraiseButton />, { store });
+    renderWithProviders(<HandraiseButton />, { store, provider: { mui: true } });
     const endButton = screen.getByTestId('toolbarHandraiseButton');
     expect(endButton).toBeInTheDocument();
 

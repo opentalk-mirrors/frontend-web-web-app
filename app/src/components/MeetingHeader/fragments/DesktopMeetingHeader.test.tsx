@@ -60,11 +60,11 @@ const { store } = configureStore({
 
 describe('DesktopMeetingHeader rendering logic', () => {
   it('should render without crashing', () => {
-    expect(() => renderWithProviders(<DesktopMeetingHeader />, { store })).not.toThrow();
+    expect(() => renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } })).not.toThrow();
   });
 
   it('renders header pagination when layout is grid.', () => {
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
     expect(screen.queryByText('1')).not.toBeInTheDocument();
     expect(screen.queryByText('2')).not.toBeInTheDocument();
     const { store: nextStore } = configureStore({
@@ -74,7 +74,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
       },
     });
     unmount();
-    renderWithProviders(<DesktopMeetingHeader />, { store: nextStore });
+    renderWithProviders(<DesktopMeetingHeader />, { store: nextStore, provider: { mui: true } });
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
   });
@@ -88,7 +88,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         whiteboard: { isWhiteboardAvailable: false },
       },
     });
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
     expect(screen.queryByLabelText(label)).not.toBeInTheDocument();
     unmount();
     const { store: nextStore } = configureStore({
@@ -98,7 +98,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         whiteboard: { isWhiteboardAvailable: true },
       },
     });
-    renderWithProviders(<DesktopMeetingHeader />, { store: nextStore });
+    renderWithProviders(<DesktopMeetingHeader />, { store: nextStore, provider: { mui: true } });
     expect(screen.getByLabelText(label)).toBeInTheDocument();
   });
 
@@ -111,7 +111,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         meetingNotes: { meetingNotesUrl: undefined },
       },
     });
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
     expect(screen.queryByLabelText(label)).not.toBeInTheDocument();
     const { store: secondStore } = configureStore({
       initialState: {
@@ -121,7 +121,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
       },
     });
     unmount();
-    renderWithProviders(<DesktopMeetingHeader />, { store: secondStore });
+    renderWithProviders(<DesktopMeetingHeader />, { store: secondStore, provider: { mui: true } });
     expect(screen.queryByLabelText(label)).not.toBeInTheDocument();
     const { store: thirdStore } = configureStore({
       initialState: {
@@ -131,12 +131,12 @@ describe('DesktopMeetingHeader rendering logic', () => {
       },
     });
     unmount();
-    renderWithProviders(<DesktopMeetingHeader />, { store: thirdStore });
+    renderWithProviders(<DesktopMeetingHeader />, { store: thirdStore, provider: { mui: true } });
     expect(screen.getByLabelText(label)).toBeInTheDocument();
   });
 
   it('should render shared folder button when shared folder is available.', () => {
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
     expect(screen.queryByText('SharedFolderPopover')).not.toBeInTheDocument();
     unmount();
     const { store: secondStore } = configureStore({
@@ -154,7 +154,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DesktopMeetingHeader />, { store: secondStore });
+    renderWithProviders(<DesktopMeetingHeader />, { store: secondStore, provider: { mui: true } });
     expect(screen.getByText('SharedFolderPopover')).toBeInTheDocument();
   });
 
@@ -171,7 +171,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         },
       },
     });
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
     expect(screen.queryByText('VotesAndPollsResultsPopover')).not.toBeInTheDocument();
     unmount();
     const { store: secondStore } = configureStore({
@@ -196,7 +196,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DesktopMeetingHeader />, { store: secondStore });
+    renderWithProviders(<DesktopMeetingHeader />, { store: secondStore, provider: { mui: true } });
     expect(screen.getByText('VotesAndPollsResultsPopover')).toBeInTheDocument();
   });
 });

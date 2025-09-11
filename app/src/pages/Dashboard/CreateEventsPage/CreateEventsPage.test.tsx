@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
+import { renderWithProviders } from '../../../utils/testUtils';
 import CreateEventsPage from './CreateEventsPage';
 
 vi.mock('../../../components/MeetingForms', () => ({
@@ -17,28 +18,28 @@ vi.mock('../../../components/RequiredFieldsInfo', () => ({
 
 describe('CreateEventsPage', () => {
   it('sets document title', () => {
-    render(<CreateEventsPage />);
+    renderWithProviders(<CreateEventsPage />, { provider: { mui: true } });
     expect(document.title).toBe('dashboard-meetings-create-title in OpenTalk');
   });
 
   it('renders heading', () => {
-    render(<CreateEventsPage />);
+    renderWithProviders(<CreateEventsPage />, { provider: { mui: true } });
     expect(screen.getByRole('heading', { name: 'dashboard-meetings-create-title', level: 1 })).toBeInTheDocument();
   });
 
   it('renders form progress steps', () => {
-    render(<CreateEventsPage />);
+    renderWithProviders(<CreateEventsPage />, { provider: { mui: true } });
     expect(screen.getByText('global-meeting')).toBeInTheDocument();
     expect(screen.getByText('global-participants')).toBeInTheDocument();
   });
 
   it('renders the required info fields', () => {
-    render(<CreateEventsPage />);
+    renderWithProviders(<CreateEventsPage />, { provider: { mui: true } });
     expect(screen.getByTestId('RequiredFieldsInfo')).toBeInTheDocument();
   });
 
   it('renders create meeting form', () => {
-    render(<CreateEventsPage />);
+    renderWithProviders(<CreateEventsPage />, { provider: { mui: true } });
     expect(screen.getByTestId('CreateMeetingForm')).toBeInTheDocument();
   });
 });

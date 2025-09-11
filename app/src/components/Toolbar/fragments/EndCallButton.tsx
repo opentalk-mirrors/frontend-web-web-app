@@ -21,18 +21,14 @@ import CloseMeetingDialog from '../../CloseMeetingDialog';
 import ToolbarButton from './ToolbarButton';
 
 const HangupButton = styled(ToolbarButton)(({ theme }) => ({
-  // We should always use theme.palette.error.main instead of hard-coding '#fe5f60'
-  // but currently we wrap conference toolbar buttons into
-  // light mode instead of dark for some reason. Therefore the palette color do not match.
-  // Should be fixed during https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2096
-  background: '#fe5f60',
+  background: theme.palette.danger.main,
   svg: {
-    fill: theme.palette.common.white,
+    fill: theme.palette.danger.contrastText,
   },
   ':hover': {
-    background: theme.palette.common.white,
+    background: theme.palette.primary.main,
     svg: {
-      fill: '#fe5f60',
+      fill: theme.palette.primary.contrastText,
     },
   },
 }));

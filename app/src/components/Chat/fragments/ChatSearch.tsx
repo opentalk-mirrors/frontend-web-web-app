@@ -49,7 +49,7 @@ const ClearButton = styled(({ onClick, className, hasValue, parentHasFocus }: En
   </AdornmentIconButton>
 ))(({ theme }) => ({
   '& .MuiTouchRipple-child': {
-    backgroundColor: theme.palette.secondary.lightest,
+    backgroundColor: theme.palette.secondary.light,
   },
   padding: theme.typography.pxToRem(8),
   left: theme.typography.pxToRem(12),

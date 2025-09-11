@@ -12,7 +12,8 @@ import { SupportList } from '../../SupportList/SupportList';
 
 const ViewPopperContainer = styled(Stack)(({ theme }) => ({
   position: 'relative',
-  background: theme.palette.background.video,
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
   borderRadius: '0.25rem',
   maxWidth: '60px',
   float: 'right',
@@ -20,7 +21,6 @@ const ViewPopperContainer = styled(Stack)(({ theme }) => ({
   alignItems: 'center',
   '& .MuiPopover-paper': {
     marginTop: '0.3rem',
-    background: theme.palette.background.defaultGradient,
   },
 }));
 
@@ -32,13 +32,6 @@ const BurgerIconButton = styled(IconButton)(({ theme }) => ({
   padding: theme.spacing(1),
   '& .MuiSvgIcon-root': {
     fontSize: theme.typography.pxToRem(24),
-  },
-}));
-
-const StyledSupportList = styled(SupportList)(({ theme }) => ({
-  background: theme.palette.background.video,
-  '& .MuiButtonBase-root:hover': {
-    background: theme.palette.secondary.lighter,
   },
 }));
 
@@ -74,7 +67,7 @@ const MyMeetingMenu = () => {
           }}
           onClose={() => setAnchorElement(null)}
         >
-          <StyledSupportList
+          <SupportList
             icons
             menu
             menuListProps={{

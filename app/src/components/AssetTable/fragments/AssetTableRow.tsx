@@ -48,7 +48,6 @@ export const AssetTableRow = ({
       <TableCell>
         <Stack spacing={0.5} direction="column">
           <DownloadButton
-            color="secondary"
             onClick={() => handleDownload({ assetId, filename, fileSize: size })}
             disabled={disabledDownload}
             progressPercentage={progress}
@@ -57,7 +56,7 @@ export const AssetTableRow = ({
             {t(disabledDownload ? 'download-in-progress' : 'action-download')}
           </DownloadButton>
           {handleDelete && (
-            <Button color="error" onClick={() => handleDelete(assetId)} disabled={disabledDelete} fullWidth>
+            <Button color="danger" onClick={() => handleDelete(assetId)} disabled={disabledDelete} fullWidth>
               {t('action-delete')}
             </Button>
           )}

@@ -6,6 +6,7 @@ import { visuallyHidden } from '@mui/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { getContrastText } from '../../assets/themes/opentalk/colorUtils';
 import { VisuallyHiddenTitle } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import {
@@ -26,7 +27,7 @@ const MessagesBadge = styled(Badge)(({ theme }) => ({
   right: -4,
   top: -3,
   '& .MuiBadge-badge': {
-    background: theme.palette.primary.main,
+    background: theme.palette.secondary.main,
   },
 }));
 
@@ -34,14 +35,15 @@ const ChatBadge = styled(Badge)(({ theme }) => ({
   right: -4,
   top: -3,
   '& .MuiBadge-badge': {
-    background: theme.palette.primary.main,
+    background: theme.palette.secondary.main,
   },
 }));
 
 const Tabs = styled(MuiTabs)(({ theme }) => ({
   minHeight: 0,
   borderRadius: theme.borderRadius.large,
-  background: '#20434F', //todo theme.palette.text.secondary would be the wrong context here
+  backgroundColor: theme.palette.background.highlight.primary,
+  color: theme.palette.background.highlight.contrastText,
   '& .MuiTabs-flexContainer': {
     alignItems: 'center',
     justifyContent: 'center',
@@ -59,14 +61,21 @@ const Tab = styled(MuiTab)(({ theme }) => ({
   minHeight: 0,
   fontSize: '0.75rem',
   borderRadius: theme.borderRadius.large,
-  color: theme.palette.text.primary,
   textTransform: 'initial',
   fontWeight: 400,
   padding: theme.spacing(1),
   whiteSpace: 'nowrap',
+  color: 'currentColor',
   '&:hover, &.Mui-selected': {
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.text.secondary,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    '.MuiBadge-badge': {
+      background: getContrastText(theme.palette.secondary.main, theme.palette.primary.main),
+    },
+  },
+  '&.Mui-selected:hover': {
+    backgroundColor: theme.palette.primary.light,
+    color: theme.palette.primary.contrastText,
   },
   '& .MuiTab-icon': {
     marginLeft: theme.spacing(0.2),
@@ -82,7 +91,7 @@ const MenuTabs = () => {
   const currentMenuTab = useAppSelector(selectCurrentMenuTab);
   const dispatch = useAppDispatch();
 
-  const handleChange = (event: React.SyntheticEvent<Element, Event>, newValue: MenuTab) => {
+  const handleChange = (_event: React.SyntheticEvent<Element, Event>, newValue: MenuTab) => {
     dispatch(setCurrentMenuTab(newValue));
   };
 
@@ -105,7 +114,7 @@ const MenuTabs = () => {
           id={`tab-${MenuTab.People}`}
           label={t('menutabs-people')}
           icon={
-            <Typography variant="caption" aria-hidden="true">
+            <Typography variant="caption" aria-hidden="true" lineHeight={1}>
               ({totalParticipants})
             </Typography>
           }

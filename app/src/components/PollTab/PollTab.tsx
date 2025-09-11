@@ -35,7 +35,9 @@ const PollTab = () => {
     return (
       <PollOverviewContainer spacing={1} padding={1}>
         <PollOverview onClickItem={handleOnClickSavedPollItem} />
-        <Button onClick={() => setShowPollForm(true)}>{t('poll-overview-button-create-poll')}</Button>
+        <Button onClick={() => setShowPollForm(true)} color="secondary">
+          {t('poll-overview-button-create-poll')}
+        </Button>
       </PollOverviewContainer>
     );
   };

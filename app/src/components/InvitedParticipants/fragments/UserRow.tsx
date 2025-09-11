@@ -16,15 +16,22 @@ import { convertStringToColorHex } from '../../../utils/colorUtils';
 import { isRegisteredUser } from '../../../utils/typeGuardUtils';
 import { isModerator } from '../../../utils/userUtils';
 
-const StyledChip = styled(Chip)({
+const StyledChip = styled(Chip)(({ theme }) => ({
   marginRight: 0,
   borderColor: 'transparent',
   backgroundColor: 'transparent',
   '& .MuiSvgIcon-root': {
     fontSize: '0.7rem',
+    color: theme.palette.background.highlight.contrastText,
+    '&:hover, &:focus': {
+      color: theme.palette.background.highlight.contrastText,
+    },
+  },
+  ':hover': {
+    backgroundColor: theme.palette.background.customPaper.primary,
   },
   minHeight: '3rem',
-});
+}));
 
 const ModeratorIcon = styled(CommonModeratorIcon, { shouldForwardProp: (prop) => prop !== 'visible' })<{
   visible: boolean;
@@ -33,6 +40,10 @@ const ModeratorIcon = styled(CommonModeratorIcon, { shouldForwardProp: (prop) =>
     fontSize: '1.25rem',
   },
   visibility: !visible ? 'hidden' : 'unset',
+}));
+
+const LabelStack = styled(Stack)(({ theme }) => ({
+  color: theme.palette.background.highlight.contrastText,
 }));
 
 type UserRowProps = {
@@ -90,7 +101,7 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
           size="small"
           onClick={handleMoreIconClick}
         >
-          <MoreIcon />
+          <MoreIcon color="primary" />
         </IconButton>
         <Menu
           data-testid="MoreMenu"
@@ -134,7 +145,7 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
   const renderLabel = (eventInvite: EventInvite) => {
     if (isRegisteredUser(eventInvite.profile)) {
       return (
-        <Stack
+        <LabelStack
           direction="row"
           spacing={1}
           sx={{
@@ -149,13 +160,15 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
           ) : (
             <ModeratorIcon color="secondary" visible={isModerator(eventInvite.profile)} />
           )}
-        </Stack>
+        </LabelStack>
       );
     }
     return (
-      <Typography variant="body2" noWrap>
-        {eventInvite.profile.email}
-      </Typography>
+      <LabelStack>
+        <Typography variant="body2" noWrap>
+          {eventInvite.profile.email}
+        </Typography>
+      </LabelStack>
     );
   };
 
@@ -183,6 +196,7 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
           aria-label={t('dashboard-invite-to-meeting-delete-participant-label', {
             name: getLabel(eventInvite.profile),
           })}
+          color="primary"
         />
       }
       onDelete={isHovered && isUpdatable ? onDelete : undefined}

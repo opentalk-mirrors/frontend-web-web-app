@@ -59,21 +59,21 @@ const PickerContainer = styled('div')(({ theme }) => ({
   width: '100%',
 
   '.EmojiPickerReact.epr-dark-theme': {
-    '--epr-dark': theme.palette.background.voteResult,
-    '--epr-bg-color': theme.palette.background.voteResult,
-    '--epr-category-label-bg-color': theme.palette.background.voteResult,
-    '--epr-picker-border-color': theme.palette.background.voteResult,
-    '--epr-search-input-bg-color': theme.palette.secondary.main,
-    '--epr-hover-bg-color': theme.palette.secondary.main,
-    '--epr-category-icon-active-color': theme.palette.primary.main,
-    '--epr-highlight-color': theme.palette.secondary.main,
+    '--epr-dark': theme.palette.background.highlight.primary,
+    '--epr-bg-color': theme.palette.background.highlight.primary,
+    '--epr-category-label-bg-color': theme.palette.background.highlight.primary,
+    '--epr-picker-border-color': theme.palette.background.highlight.primary,
+    '--epr-search-input-bg-color': theme.palette.primary.main,
+    '--epr-hover-bg-color': theme.palette.primary.main,
+    '--epr-category-icon-active-color': theme.palette.secondary.main,
+    '--epr-highlight-color': theme.palette.primary.main,
     '--epr-search-border-color': theme.palette.primary.main,
-    '--epr-search-input-text-color': theme.palette.background.voteResult,
-    '--epr-focus-bg-color': theme.palette.background.paper,
+    '--epr-search-input-text-color': theme.palette.background.highlight.primary,
+    '--epr-focus-bg-color': theme.palette.background.highlight.primary,
   },
 
   '.EmojiPickerReact .epr-search-container input[aria-controls="epr-search-id"]:focus': {
-    '--epr-search-input-text-color': theme.palette.text.primary,
+    '--epr-search-input-text-color': theme.palette.background.highlight.contrastText,
   },
 
   '.EmojiPickerReact .epr-category-nav': {
@@ -317,6 +317,7 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
                 data-testid="send-message-button"
                 disabled={!isChatEnabled}
                 parentHasFocus={hasFocus}
+                parentDisabled={!isChatEnabled}
               >
                 <SendMessageIcon />
               </SendMessageButton>
@@ -333,6 +334,7 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
                 edge="start"
                 disabled={!isChatEnabled}
                 parentHasFocus={hasFocus}
+                parentDisabled={!isChatEnabled}
               >
                 <EmojiIcon />
                 <VisuallyHiddenTitle component="span" label={`chat-${openPicker ? 'close' : 'open'}-emoji-picker`} />

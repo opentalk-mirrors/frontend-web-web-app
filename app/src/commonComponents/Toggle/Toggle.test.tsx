@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ThemeProvider } from '@mui/material';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 
-import { createOpenTalkTheme } from '../../assets/themes/opentalk';
+import { renderWithProviders } from '../../utils/testUtils';
 import Toggle from './Toggle';
 
 const commonProps = {
@@ -19,15 +18,9 @@ const commonProps = {
   ],
 };
 
-const theme = createOpenTalkTheme();
-
 describe('Toggle', () => {
   it('calls onChange when the toggle is clicked', async () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <Toggle {...commonProps} />
-      </ThemeProvider>
-    );
+    renderWithProviders(<Toggle {...commonProps} />, { provider: { mui: true } });
     const toggleButton = screen.getByRole('button', { name: '2' });
     fireEvent.click(toggleButton);
     await waitFor(() => {

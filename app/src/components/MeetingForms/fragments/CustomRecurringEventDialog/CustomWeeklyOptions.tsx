@@ -19,10 +19,9 @@ const DayChip = styled(Chip)(({ theme, variant }) => ({
   paddingRight: 0,
   overflow: 'clip',
   ...(variant === 'filled' && {
-    color: theme.palette.text.secondary,
-    background: theme.palette.primary.main,
+    background: theme.palette.secondary.main,
     ':hover': {
-      background: theme.palette.primary.main,
+      background: theme.palette.secondary.main,
     },
   }),
   '& .MuiChip-label': {

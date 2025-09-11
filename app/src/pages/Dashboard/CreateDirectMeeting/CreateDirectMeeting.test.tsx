@@ -137,7 +137,7 @@ describe('CreateDirectMeeting', () => {
         },
       },
     });
-    renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true } });
+    renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true, mui: true } });
 
     expect(screen.getByText('dashboard-direct-meeting-title')).toBeInTheDocument();
   });
@@ -153,7 +153,7 @@ describe('CreateDirectMeeting', () => {
         },
       },
     });
-    renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true } });
+    renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true, mui: true } });
 
     expect(screen.getByDisplayValue(INVITE_LINK)).toBeInTheDocument();
   });

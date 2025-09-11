@@ -17,7 +17,7 @@ const ToolbarMenu = styled(Menu)(({ theme }) => ({
   },
 }));
 
-const ToolbarMenuItem = styled(MenuItem)(({ theme }) => ({
+const ToolbarMenuItem = styled(MenuItem)(() => ({
   minWidth: '25rem',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -25,7 +25,6 @@ const ToolbarMenuItem = styled(MenuItem)(({ theme }) => ({
 
   '& .MuiSvgIcon-root': {
     fontSize: '1.15em',
-    color: theme.palette.text.primary,
   },
 }));
 

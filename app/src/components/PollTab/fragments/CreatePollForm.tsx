@@ -123,7 +123,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: ICrea
                 paddingTop: 0.5,
               }}
             >
-              <Button variant="text" onClick={onClose} startIcon={<BackIcon />}>
+              <Button variant="text" onClick={onClose} startIcon={<BackIcon />} color="secondary">
                 {t('poll-button-back')}
               </Button>
             </Box>
@@ -225,10 +225,10 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: ICrea
               padding: 1,
             }}
           >
-            <Button type="button" onClick={() => saveFormValues(formik.values)} fullWidth>
+            <Button type="button" onClick={() => saveFormValues(formik.values)} fullWidth color="secondary">
               {t('poll-form-button-save')}
             </Button>
-            <Button disabled={isCoffeeBreakActive} type="submit" fullWidth>
+            <Button disabled={isCoffeeBreakActive} type="submit" fullWidth color="secondary">
               {t('poll-form-button-submit')}
             </Button>
           </Box>

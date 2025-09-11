@@ -23,7 +23,7 @@ import { selectIsModerator } from '../../../../store/slices/userSlice';
 import { Indicator } from '../../fragments/Indicator';
 
 const IconButton = styled(DefaultIconButton)(({ theme }) => ({
-  background: theme.palette.background.video,
+  background: theme.palette.background.customPaper.primary,
   borderRadius: '0.25rem',
   width: 'auto',
   [theme.breakpoints.down('sm')]: {
@@ -31,6 +31,7 @@ const IconButton = styled(DefaultIconButton)(({ theme }) => ({
   },
   '& .MuiSvgIcon-root': {
     fontSize: '1.5rem',
+    fill: theme.palette.background.customPaper.contrastText,
   },
 }));
 
@@ -78,7 +79,7 @@ export const DrawerButton = ({ onClick, expanded, controls }: DrawerButtonProps)
       aria-label={t('mobile-drawer-button-label')}
     >
       <BurgermenuIcon />
-      {showIndicator && <ButtonIndicator />}
+      {showIndicator && <ButtonIndicator color="secondary" />}
     </IconButton>
   );
 };

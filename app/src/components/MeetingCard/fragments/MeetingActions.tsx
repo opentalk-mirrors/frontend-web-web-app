@@ -50,17 +50,22 @@ const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
     fontSize: theme.typography.pxToRem(12),
   },
   '&.Mui-selected, &.Mui-selected:hover, &:hover': {
-    backgroundColor: theme.palette.secondary.lighter,
+    backgroundColor: theme.palette.background.highlight.primary,
   },
 }));
 
 const MoreButton = styled(IconButton)(({ theme }) => ({
   marginRight: theme.spacing(1),
-  padding: theme.spacing(1),
+  padding: theme.spacing(1.25),
 
   '& svg': {
     width: theme.typography.pxToRem(20),
     height: theme.typography.pxToRem(20),
+  },
+
+  '&:focus': {
+    outline: theme.palette.focus.outline,
+    outlineOffset: theme.palette.focus.outlineOffset,
   },
 }));
 
@@ -251,7 +256,6 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
   return (
     <Stack direction="row">
       <MoreButton
-        color="inherit"
         aria-label={t('toolbar-button-more-tooltip-title')}
         size="small"
         onMouseDown={openPopupMenu}
@@ -280,13 +284,13 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
       </MuiPopover>
       <ConfirmDeleteDialog open={isConfirmDialogVisible} onClose={handleCloseConfirmDeleteDialog} event={event} />
       <Button
-        color="secondary"
         variant={highlighted ? 'contained' : 'outlined'}
         to={`/room/${roomId}`}
         component={NavLink}
         target="_blank"
         onMouseDown={stopPropagation}
         aria-label={t('dashboard-home-join-label', { title })}
+        color="primary"
       >
         {t('dashboard-home-join')}
       </Button>

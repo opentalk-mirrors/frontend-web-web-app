@@ -5,6 +5,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query';
 import { createApi as createReactApi } from '@reduxjs/toolkit/query/react';
 
 import { tags } from '../types/common';
+import { addConfigurationEndpoints } from './config';
 import { addEventsEndpoints } from './events';
 import { addRoomEndpoints } from './rooms';
 import { addUserEndpoints } from './users';
@@ -26,6 +27,7 @@ export const createOpenTalkApi = (baseQuery: ReturnType<typeof fetchBaseQuery>) 
       ...addRoomEndpoints(builder),
       ...addUserEndpoints(builder),
       ...addEventsEndpoints(builder),
+      ...addConfigurationEndpoints(builder),
     }),
   });
 };
@@ -44,6 +46,7 @@ export const createOpenTalkApiWithReactHooks = (baseQuery: ReturnType<typeof fet
       ...addRoomEndpoints(builder),
       ...addUserEndpoints(builder),
       ...addEventsEndpoints(builder),
+      ...addConfigurationEndpoints(builder),
     }),
   });
 };

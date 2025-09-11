@@ -24,19 +24,19 @@ import SelfTest from '../SelfTest';
 
 const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
   '&.MuiFormControlLabel-root, .MuiButtonBase-root.MuiCheckbox-root': {
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.primary,
   },
   '& .MuiButtonBase-root.MuiCheckbox-root.Mui-checked': {
-    color: theme.palette.primary.main,
+    color: theme.palette.secondary.main,
   },
 }));
 
 const WaitingRoomText = styled(Typography)(({ theme }) => ({
   textAlign: 'center',
   fontSize: '1.37rem',
-  color: theme.palette.text.secondary,
   justifyContent: 'center',
   width: '100%',
+  color: theme.palette.text.primary,
 }));
 
 const ActionButton = styled(Button)({
@@ -77,6 +77,7 @@ const WaitingView = () => {
                 onClick={moveToRoom}
                 disabled={!readyToEnter}
                 variant={readyToEnter ? 'contained' : 'conference-inactive'}
+                color="secondary"
               >
                 {readyToEnter ? t('joinform-enter-now') : t('joinform-waiting-room-enter')}
               </ActionButton>

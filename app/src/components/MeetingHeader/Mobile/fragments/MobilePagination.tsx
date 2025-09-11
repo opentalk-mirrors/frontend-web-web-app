@@ -14,7 +14,7 @@ import PageIndex from './PageIndex';
 const Container = styled(Stack, {
   shouldForwardProp: (prop) => prop !== 'isVisible',
 })<{ isVisible: boolean }>(({ theme, isVisible }) => ({
-  background: theme.palette.background.video,
+  background: theme.palette.background.customPaper.primary,
   borderRadius: '0.25rem',
   justifyContent: 'center',
   alignItems: 'center',
@@ -24,7 +24,7 @@ const Container = styled(Stack, {
 
   '& .MuiPopover-paper': {
     marginTop: '0.7rem',
-    background: theme.palette.background.defaultGradient,
+    background: theme.palette.background.customPaper.primary,
   },
 }));
 
@@ -35,7 +35,7 @@ const PopoverContainer = styled(Stack)(({ theme }) => ({
   alignItems: 'space-between',
   padding: theme.spacing(1, 1),
   borderRadius: '0.1rem',
-  background: theme.palette.background.video,
+  background: theme.palette.background.highlight.primary,
 }));
 
 const MobilePagination = () => {

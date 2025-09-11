@@ -28,7 +28,7 @@ const MenuItem = styled(MuiMenuItem, { shouldForwardProp: (prop) => prop !== 'ha
     display: hasIndicator ? 'block' : 'none',
     width: '0.5rem',
     height: '0.5rem',
-    background: theme.palette.primary.main,
+    background: theme.palette.secondary.main,
     borderRadius: '50%',
     marginLeft: '0.5rem',
   },

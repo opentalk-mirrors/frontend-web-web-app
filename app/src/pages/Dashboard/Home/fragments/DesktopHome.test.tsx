@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
+import { renderWithProviders } from '../../../../utils/testUtils';
 import DesktopHome from './DesktopHome';
 
 vi.mock('./AdhocMeetingButton', () => ({
@@ -38,7 +39,7 @@ vi.mock('./FavoriteMeetings', () => ({
 describe('MobileHome', () => {
   it('renders header and all elements', () => {
     const pageHeading = 'heading';
-    render(<DesktopHome pageHeading={pageHeading} />);
+    renderWithProviders(<DesktopHome pageHeading={pageHeading} />, { provider: { mui: true } });
 
     const header = screen.getByRole('heading', { name: pageHeading });
     expect(header).toBeInTheDocument();

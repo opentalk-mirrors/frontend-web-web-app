@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Dialog, DialogContent, DialogTitle, Paper, Stack, Typography, styled } from '@mui/material';
+import { Box, Dialog, DialogContent, DialogTitle, Stack, Typography, styled } from '@mui/material';
 import type { EventInfo, StreamingLink } from '@opentalk/rest-api-rtk-query';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -28,6 +28,13 @@ const SubTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 'normal',
   padding: theme.spacing(0, 3),
   marginTop: theme.spacing(-2),
+}));
+
+const CustomCopyTextField = styled(CopyTextField)(({ theme }) => ({
+  '& .MuiInputBase-root': {
+    background: 'transparent',
+    color: theme.palette.text.primary,
+  },
 }));
 
 const MeetingDetailsDialog = ({ open, onClose, eventInfo, roomInfo }: MeetingDetailsDialogProps) => {
@@ -87,14 +94,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, roomInfo }: MeetingDet
   }, [open]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="xs"
-      PaperComponent={Paper}
-      aria-labelledby="detail-invite-title"
-    >
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs" aria-labelledby="detail-invite-title">
       <DialogTitle aria-hidden="true" sx={{ width: '95%' }}>
         {t('meeting-details-dialog-title', { title })}
       </DialogTitle>
@@ -113,7 +113,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, roomInfo }: MeetingDet
       <DialogContent>
         <Stack spacing={2}>
           {isGuestsAllowedFeatureEnabled && (
-            <CopyTextField
+            <CustomCopyTextField
               label={getLabelText(FieldKeys.InviteLink)}
               value={inviteUrl?.toString()}
               ariaLabel={getAriaLabelText(FieldKeys.InviteLink)}
@@ -122,7 +122,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, roomInfo }: MeetingDet
               onClick={() => setCopiedUrl(inviteUrl?.toString())}
             />
           )}
-          <CopyTextField
+          <CustomCopyTextField
             label={getLabelText(FieldKeys.SipLink)}
             value={sipLink}
             ariaLabel={getAriaLabelText(FieldKeys.SipLink)}
@@ -131,7 +131,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, roomInfo }: MeetingDet
             onClick={() => setCopiedUrl(sipLink)}
           />
           {roomPassword && (
-            <CopyTextField
+            <CustomCopyTextField
               label={getLabelText(FieldKeys.RoomPassword)}
               value={roomPassword}
               ariaLabel={getAriaLabelText(FieldKeys.RoomPassword)}

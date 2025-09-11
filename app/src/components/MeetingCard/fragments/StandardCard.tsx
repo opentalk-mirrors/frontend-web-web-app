@@ -14,7 +14,8 @@ import { PendingInviteIcon } from './PendingInviteIcon';
 
 const CardWrapper = styled('div')(({ theme }) => ({
   width: '100%',
-  background: theme.palette.background.paper,
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
   borderRadius: theme.borderRadius ? theme.borderRadius.medium : 0,
   padding: theme.spacing(3),
   position: 'relative',

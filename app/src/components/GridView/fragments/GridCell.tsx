@@ -44,7 +44,7 @@ const CinemaCell = styled('div', {
     height: '100%',
     inset: '0',
     borderRadius: theme.borderRadius.card,
-    boxShadow: `inset 0px 0px 0px ${highlight ? 2 : 0}px ${theme.palette.primary.main}`,
+    boxShadow: `inset 0px 0px 0px ${highlight ? 2 : 0}px ${theme.palette.secondary.main}`,
     transition: 'all 300ms linear',
     pointerEvents: 'none',
     animation: highlight ? `${breathe} 1s infinite ease-in-out alternate` : 'none',

@@ -4,16 +4,17 @@
 import { styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { LogoGradientIcon } from '../../assets/icons';
+import { LogoIcon } from '../../assets/icons';
 
-const StyledLogo = styled(LogoGradientIcon)({
+const StyledLogo = styled(LogoIcon)(({ theme }) => ({
   '&.MuiSvgIcon-root': {
     gridArea: 'Logo',
-    height: '1.55rem',
+    height: '2rem',
     width: 'max-content',
     fontSize: '1rem',
+    color: theme.palette.background.main.contrastText,
   },
-});
+}));
 
 const DashboardLogo = () => {
   const { t } = useTranslation();

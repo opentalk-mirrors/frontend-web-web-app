@@ -10,8 +10,8 @@ import { useIsMobile } from '../../../../hooks/useMediaQuery';
 import getReferrerRouterState from '../../../../utils/getReferrerRouterState';
 
 const CustomIconButton = styled(IconButton)(({ theme }) => ({
-  backgroundColor: theme.palette.text.primary,
-  color: theme.palette.common.white,
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
   borderRadius: theme.borderRadius.circle,
   width: '3rem',
   height: '3rem',
@@ -31,7 +31,6 @@ export const CreateNewMeetingButton = () => {
   const isMobile = useIsMobile();
 
   const commonProps = {
-    color: 'secondary',
     to: '/dashboard/meetings/create',
     state: getReferrerRouterState(window.location),
     component: Link,

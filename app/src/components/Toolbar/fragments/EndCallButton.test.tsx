@@ -31,12 +31,12 @@ describe('<EndCallButton />', () => {
   });
 
   it('should render EndCallButton component', () => {
-    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
+    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true, mui: true } });
     expect(screen.getByTestId('toolbarEndCallButton')).toBeInTheDocument();
   });
 
   it('If creator of meeting click on EndCallButton, popup should be displayed with delete room option', async () => {
-    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
+    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true, mui: true } });
     const endButton = await screen.findByTestId('toolbarEndCallButton');
     expect(endButton).toBeInTheDocument();
 
@@ -52,7 +52,7 @@ describe('<EndCallButton />', () => {
   });
 
   it('should dispatch leave by clicking on leaveWithoutDeletingButton', async () => {
-    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
+    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true, mui: true } });
     const endButton = await screen.findByTestId('toolbarEndCallButton');
     expect(endButton).toBeInTheDocument();
 
@@ -77,7 +77,7 @@ describe('<EndCallButton />', () => {
   });
 
   it('should dispatch delete and leave by clicking on deleteMeeting button', async () => {
-    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true } });
+    renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true, mui: true } });
     const endButton = await screen.findByTestId('toolbarEndCallButton');
 
     expect(endButton).toBeInTheDocument();

@@ -26,18 +26,14 @@ const StyledListItem = styled(ListItem, {
   }
 
   if (isActiveSpeaker) {
-    styles.borderColor = theme.palette.primary.main;
+    styles.borderColor = theme.palette.secondary.main;
   }
 
   return styles;
 });
 
-const JoinedText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
-}));
-
 const MicOnIcon = styled(MicOnDefaultIcon)(({ theme }) => ({
-  color: theme.palette.primary.main,
+  color: theme.palette.secondary.main,
 }));
 
 interface ParticipantListItem extends ListableParticipant {
@@ -81,11 +77,11 @@ const ParticipantListItem = ({
               </Typography>
             }
             secondary={
-              <JoinedText variant="caption">
+              <Typography variant="caption">
                 {t('participant-joined-text', {
                   joinedTime: formattedJoinedTime,
                 })}
-              </JoinedText>
+              </Typography>
             }
           />
         </Grid>

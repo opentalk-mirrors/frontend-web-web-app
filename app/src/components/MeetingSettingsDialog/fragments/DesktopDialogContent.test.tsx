@@ -45,8 +45,6 @@ describe('DesktopDialogContent', () => {
     expect(title).toBeInTheDocument();
     const footer = screen.getByText('OpenTalk dev-version');
     expect(footer).toBeInTheDocument();
-    const divider = screen.getByRole('separator');
-    expect(divider).toBeInTheDocument();
 
     window.config.version = version;
   });

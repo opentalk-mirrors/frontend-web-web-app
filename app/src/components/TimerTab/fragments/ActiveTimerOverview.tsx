@@ -40,7 +40,7 @@ const ActiveTimerOverview = ({ timerStyle }: { timerStyle: TimerStyle }) => {
 
         {timerStyle === TimerStyle.Normal && <UserList />}
       </TimerContainer>
-      <Button color="secondary" onClick={handleStop}>
+      <Button onClick={handleStop}>
         {timerStyle === TimerStyle.Normal ? t('timer-overview-button-stop') : t('coffee-break-overview-button-stop')}
       </Button>
     </Stack>

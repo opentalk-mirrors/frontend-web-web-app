@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Dialog, Paper, ThemeProvider, styled } from '@mui/material';
+import { Dialog } from '@mui/material';
 import { useEffect } from 'react';
 
-import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import { useFullscreenContext } from '../../provider/FullscreenProvider';
 import DesktopDialogContent from './fragments/DesktopDialogContent';
@@ -12,11 +11,6 @@ import MobileDialogContent from './fragments/MobileDialogContent';
 import { MeetingSettings } from './fragments/settingPanels';
 
 const DEFAULT_SETTING: MeetingSettings = 'audio';
-
-const StyledPaper = styled(Paper)(() => ({
-  backgroundColor: 'transparent',
-  boxShadow: 'none',
-}));
 
 interface MeetingSettingsProps {
   open: boolean;
@@ -48,15 +42,13 @@ const MeetingSettingsDialog = (props: MeetingSettingsProps) => {
   }, [open]);
 
   return (
-    <ThemeProvider theme={createOpenTalkTheme('light')}>
-      <Dialog PaperComponent={StyledPaper} container={container} onClose={onClose} open={open} maxWidth="md" fullWidth>
-        {isMobile ? (
-          <MobileDialogContent onClose={onClose} setting={setting} />
-        ) : (
-          <DesktopDialogContent onClose={onClose} setting={setting} />
-        )}
-      </Dialog>
-    </ThemeProvider>
+    <Dialog container={container} onClose={onClose} open={open} maxWidth="md" fullWidth>
+      {isMobile ? (
+        <MobileDialogContent onClose={onClose} setting={setting} />
+      ) : (
+        <DesktopDialogContent onClose={onClose} setting={setting} />
+      )}
+    </Dialog>
   );
 };
 

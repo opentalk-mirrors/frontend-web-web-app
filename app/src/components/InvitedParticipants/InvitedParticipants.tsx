@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Grid } from '@mui/material';
+import { Grid, styled } from '@mui/material';
 import { EventInvite, InviteStatus, EventId } from '@opentalk/rest-api-rtk-query';
 import type { ParticipantOption } from '@opentalk/rest-api-rtk-query';
 import { sortBy } from 'lodash';
@@ -27,6 +27,10 @@ type InviteeMap = { [key in DisplayedInviteStatuses]: Array<EventInvite> };
 
 const inviteeSorter = (user: EventInvite) =>
   isRegisteredUser(user.profile) ? user.profile.displayName.toUpperCase() : user.profile.email.toUpperCase();
+
+const ContainerGrid = styled(Grid)(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
 
 const InvitedParticipants = ({
   isUpdatable,
@@ -88,7 +92,7 @@ const InvitedParticipants = ({
   };
 
   return (
-    <Grid container spacing={2} data-testid="InvitedParticipants">
+    <ContainerGrid container spacing={2} data-testid="InvitedParticipants">
       {/* Type assertion, since Object.keys assumes that key is of type string */}
       {(Object.keys(inviteeMap) as Array<keyof typeof inviteeMap>).map((inviteStatus) => {
         if (showColumn(inviteStatus)) {
@@ -108,7 +112,7 @@ const InvitedParticipants = ({
           );
         }
       })}
-    </Grid>
+    </ContainerGrid>
   );
 };
 

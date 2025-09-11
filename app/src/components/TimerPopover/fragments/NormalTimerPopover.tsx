@@ -43,7 +43,7 @@ const NormalTimerPopover = () => {
         {hasReadyCheckEnabled && (
           /* When timer popover is open we want to focus it so screen reader can tell the content. */
           /* eslint-disable jsx-a11y/no-autofocus */
-          <Button onClick={handleDone} color={isUserReady ? 'secondary' : 'primary'} autoFocus fullWidth>
+          <Button onClick={handleDone} color={isUserReady ? 'primary' : 'secondary'} autoFocus fullWidth>
             {t(`timer-popover-button-${isUserReady ? 'not-' : ''}done`)}
           </Button>
         )}

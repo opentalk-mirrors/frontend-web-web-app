@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 
 import { MicOnIcon } from '../../../assets/icons';
+import { renderWithProviders } from '../../../utils/testUtils';
 import ToolbarButton from './ToolbarButton';
 
 const handleClick = vi.fn();
@@ -26,10 +27,11 @@ describe('<ToolbarButton />', () => {
   });
 
   it('renders ToolbarButton with context and children', () => {
-    render(
+    renderWithProviders(
       <ToolbarButton {...toolbarButtonProps}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
-      </ToolbarButton>
+      </ToolbarButton>,
+      { provider: { mui: true } }
     );
 
     expect(screen.getByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
@@ -38,10 +40,11 @@ describe('<ToolbarButton />', () => {
   });
 
   it('renders ToolbarButton without context', () => {
-    render(
+    renderWithProviders(
       <ToolbarButton {...toolbarButtonProps} hasContext={false}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
-      </ToolbarButton>
+      </ToolbarButton>,
+      { provider: { mui: true } }
     );
 
     expect(screen.getByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
@@ -50,10 +53,11 @@ describe('<ToolbarButton />', () => {
   });
 
   it('handles click events on ToolbarButton', () => {
-    render(
+    renderWithProviders(
       <ToolbarButton {...toolbarButtonProps} onClick={handleClick}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
-      </ToolbarButton>
+      </ToolbarButton>,
+      { provider: { mui: true } }
     );
     const button = screen.getByRole('button', { name: 'toolbarMainButton' });
 
@@ -65,10 +69,11 @@ describe('<ToolbarButton />', () => {
   });
 
   it('does not trigger click events when ToolbarButton is disabled', () => {
-    render(
+    renderWithProviders(
       <ToolbarButton {...toolbarButtonProps} openMenu={handleClick} disabled>
         <MicOnIcon data-testid="toolbarChildrenTest" />
-      </ToolbarButton>
+      </ToolbarButton>,
+      { provider: { mui: true } }
     );
     const button = screen.getByRole('button', { name: 'toolbarMainButton' });
 
@@ -81,10 +86,11 @@ describe('<ToolbarButton />', () => {
   });
 
   it('handles click events on ToggleToolbarButton', () => {
-    render(
+    renderWithProviders(
       <ToolbarButton {...toolbarButtonProps} openMenu={handleClick}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
-      </ToolbarButton>
+      </ToolbarButton>,
+      { provider: { mui: true } }
     );
     const toggleButton = screen.getByRole('button', { name: 'toolbarToggleButton' });
     expect(toggleButton).toBeInTheDocument();

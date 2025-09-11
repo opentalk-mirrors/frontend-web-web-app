@@ -10,7 +10,7 @@ describe('<MoreButton />', () => {
   const { store } = configureStore();
 
   it('renders MoreButton component', () => {
-    renderWithProviders(<MoreButton />, { store, provider: { snackbar: true } });
+    renderWithProviders(<MoreButton />, { store, provider: { snackbar: true, mui: true } });
 
     expect(screen.getByTestId('toolbarMenuButton')).toBeInTheDocument();
   });

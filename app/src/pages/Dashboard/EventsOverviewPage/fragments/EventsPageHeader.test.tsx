@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useMediaQuery } from '@mui/material';
 import { DateTime } from '@opentalk/rest-api-rtk-query';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { ComponentPropsWithoutRef } from 'react';
 import { Mock } from 'vitest';
 
 import { TimePerspectiveFilter } from '../../../../utils/eventUtils';
+import { renderWithProviders } from '../../../../utils/testUtils';
 import { EventFilterButtonBar } from './EventFilterButtonBar';
 import { EventPageFilters } from './EventPageFilters';
 import { TimeFilter } from './EventsPageHeader';
@@ -55,7 +56,9 @@ describe('Events Page Header tests', () => {
 
   describe('mobile', () => {
     it('can render', () => {
-      render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
+      renderWithProviders(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />, {
+        provider: { mui: true },
+      });
 
       expect(screen.getByTestId('events-page-header-mobile')).toBeInTheDocument();
     });
@@ -64,7 +67,9 @@ describe('Events Page Header tests', () => {
   describe('tablet', () => {
     it('can render', () => {
       (useMediaQuery as Mock).mockReturnValueOnce(false).mockReturnValueOnce(true);
-      render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
+      renderWithProviders(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />, {
+        provider: { mui: true },
+      });
 
       expect(screen.getByTestId('events-page-header-tablet')).toBeInTheDocument();
     });
@@ -73,7 +78,9 @@ describe('Events Page Header tests', () => {
   describe('desktop', () => {
     it('can render', () => {
       (useMediaQuery as Mock).mockReturnValueOnce(true).mockReturnValueOnce(false);
-      render(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />);
+      renderWithProviders(<EventsPageHeader entries={[]} onFilterChange={onFilterChange} filters={filter} title="" />, {
+        provider: { mui: true },
+      });
 
       expect(screen.getByTestId('events-page-header-desktop')).toBeInTheDocument();
     });

@@ -1,16 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  Box,
-  ListItemIcon,
-  MenuList,
-  Divider as MuiDivider,
-  Stack,
-  ThemeProvider,
-  Typography,
-  styled,
-} from '@mui/material';
+import { Box, ListItemIcon, MenuList, Divider as MuiDivider, Stack, Typography, styled } from '@mui/material';
 import { BackendModules, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +33,6 @@ import {
   TrashIcon,
 } from '../../../assets/icons';
 import ShareScreenOnIcon from '../../../assets/icons/ShareScreenOnIcon';
-import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import {
   ParticipantAvatar,
   notificationAction,
@@ -427,6 +417,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     alignItems: 'center',
     padding: theme.spacing(0, 2, 0, 1),
     justifyContent: 'space-between',
+    color: theme.palette.text.primary,
   }));
 
   const MenuTitle = styled(Typography)(({ theme }) => ({
@@ -451,7 +442,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   }, []);
 
   return (
-    <ThemeProvider theme={createOpenTalkTheme()}>
+    <>
       <ToolbarMenu
         anchorOrigin={{
           vertical: 'bottom',
@@ -493,7 +484,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         </MenuList>
       </ToolbarMenu>
       <InviteGuestDialog open={showInviteModal} onClose={() => setShowInviteModal(false)} />
-    </ThemeProvider>
+    </>
   );
 };
 

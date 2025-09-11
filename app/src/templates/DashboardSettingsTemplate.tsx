@@ -4,11 +4,12 @@
 import { Container as MuiContainer, styled } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 
-const Container = styled(MuiContainer)({
+const Container = styled(MuiContainer)(({ theme }) => ({
   maxWidth: 944,
   margin: 0,
   overflow: 'auto',
-});
+  color: theme.palette.background.highlight.contrastText,
+}));
 
 const DashboardSettingsTemplate = () => {
   return (

@@ -1,7 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Checkbox, FormControlLabel as MuiFormControlLabel, Popover, styled, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel as MuiFormControlLabel,
+  Popover,
+  styled,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { concat, without } from 'lodash';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,7 +50,14 @@ const Title = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(2),
   padding: theme.spacing(1),
   borderRadius: 6,
-  backgroundColor: '#385865',
+  backgroundColor: theme.palette.background.highlight.primary,
+}));
+
+const CustomEditButton = styled(Button)(({ theme }) => ({
+  '&:hover': {
+    backgroundColor: theme.palette.background.main.primary,
+    color: theme.palette.background.main.contrastText,
+  },
 }));
 
 const ParticipantsEditor = ({
@@ -53,6 +69,7 @@ const ParticipantsEditor = ({
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [participantsToAssign, setParticipantsToAssign] = React.useState<Participant[]>(assignedParticipants);
   const { t } = useTranslation();
+  const theme = useTheme();
 
   useEffect(() => {
     setParticipantsToAssign(assignedParticipants);
@@ -93,8 +110,8 @@ const ParticipantsEditor = ({
               participantsToAssign.findIndex((participantToAssign) => participantToAssign.id === participant.id) !== -1
             }
             id={participant.id}
-            color="primary"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleOnChangeParticipant(event, participant)}
+            color={theme.palette.mode === 'light' ? 'primary' : 'secondary'}
           />
         }
         translate="no"
@@ -106,10 +123,15 @@ const ParticipantsEditor = ({
   const open = Boolean(anchorEl);
 
   return (
-    <div>
-      <Button size="small" variant="text" onClick={handlePopoverOpen}>
+    <Box position="absolute" top={8} right={4}>
+      <CustomEditButton
+        size="small"
+        variant="text"
+        onClick={handlePopoverOpen}
+        color={theme.palette.mode === 'light' ? 'primary' : 'secondary'}
+      >
         {t('user-editor-button-edit')}
-      </Button>
+      </CustomEditButton>
       <Popover
         open={open}
         onClose={handlePopoverClose}
@@ -132,15 +154,15 @@ const ParticipantsEditor = ({
           {renderParticipants(assignedParticipants)}
         </ParticipantContainer>
         <ButtonGroup>
-          <Button size="small" variant="text" onClick={handlePopoverClose}>
+          <Button size="small" variant="text" onClick={handlePopoverClose} color="inherit">
             {t('user-selection-button-cancel')}
           </Button>
-          <Button size="small" onClick={handleSaveParticipants}>
+          <Button size="small" onClick={handleSaveParticipants} color="secondary">
             {t('user-selection-button-save')}
           </Button>
         </ButtonGroup>
       </Popover>
-    </div>
+    </Box>
   );
 };
 

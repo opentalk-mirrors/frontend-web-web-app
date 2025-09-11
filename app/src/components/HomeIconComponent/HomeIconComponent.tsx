@@ -13,7 +13,7 @@ const ChatBadge = styled(Badge)(({ theme }) => ({
   right: -4,
   top: -3,
   '& .MuiBadge-badge': {
-    background: theme.palette.primary.main,
+    background: theme.palette.secondary.main,
   },
 }));
 

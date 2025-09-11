@@ -42,7 +42,7 @@ describe('SelectParticipants', () => {
   const setup = () => {
     renderWithProviders(
       <SelectParticipants label="Test" onParticipantSelect={mockOnChange} eventId={'id' as EventId} />,
-      { store }
+      { store, provider: { mui: true } }
     );
   };
 

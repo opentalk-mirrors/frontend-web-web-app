@@ -53,7 +53,7 @@ function AnimationTimerDown() {
           cy="20"
           cx="20"
           strokeWidth="3"
-          stroke={theme.palette.primary.main}
+          stroke={theme.palette.secondary.main}
           fill="none"
           strokeDasharray={initialOffset}
           strokeDashoffset={currentOffset}

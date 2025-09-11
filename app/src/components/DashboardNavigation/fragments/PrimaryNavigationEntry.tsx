@@ -9,7 +9,7 @@ export const ListItem = styled(MuiListItem, {
   padding: 0,
   paddingRight: theme.spacing(3),
   borderRadius: `${theme.borderRadius.large}px 0 0 ${theme.borderRadius.large}px`,
-  background: isSubmenuOpen ? theme.palette.secondary.lightest : 'transparent',
+  background: isSubmenuOpen ? theme.palette.background.highlight.primary : theme.palette.background.customPaper.primary,
 
   [theme.breakpoints.down('md')]: {
     borderRadius: 0,
@@ -18,7 +18,9 @@ export const ListItem = styled(MuiListItem, {
   },
 
   '> *, & .MuiButton-root': {
-    color: theme.palette.text.primary,
+    color: isSubmenuOpen
+      ? theme.palette.background.highlight.contrastText
+      : theme.palette.background.customPaper.contrastText,
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(1.5, 3),
@@ -48,7 +50,8 @@ export const ListItem = styled(MuiListItem, {
     },
 
     '&:hover': {
-      background: theme.palette.secondary.lightest,
+      background: theme.palette.background.highlight.primary,
+      color: theme.palette.background.highlight.contrastText,
     },
 
     [theme.breakpoints.down('md')]: {
@@ -62,7 +65,8 @@ export const ListItem = styled(MuiListItem, {
     },
   },
   '& .active-link': {
-    background: theme.palette.secondary.lightest,
+    background: theme.palette.background.highlight.primary,
+    color: theme.palette.background.highlight.contrastText,
   },
 }));
 interface NavigationProps {

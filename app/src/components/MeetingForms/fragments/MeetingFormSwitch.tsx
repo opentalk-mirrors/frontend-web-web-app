@@ -39,7 +39,7 @@ const MeetingFormSwitch = ({
     <ConditionalTooltip title={tooltipTitle}>
       <FormControlLabel
         checked={checked}
-        control={<Switch {...switchProps} />}
+        control={<Switch {...switchProps} color="primary" />}
         label={switchValueLabel}
         disabled={disabled}
       />

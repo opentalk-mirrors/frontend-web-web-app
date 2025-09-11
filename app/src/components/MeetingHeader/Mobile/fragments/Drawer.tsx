@@ -37,7 +37,7 @@ import DrawerTab from './DrawerTab';
 const DrawerContentContainer = styled(Stack)<{ component?: string }>(({ theme }) => ({
   height: '100%',
   width: '100%',
-  background: theme.palette.background.video,
+  background: theme.palette.background.customPaper.primary,
   padding: theme.spacing(1, 1),
   overflow: 'auto',
   marginTop: 'auto',
@@ -47,7 +47,7 @@ const DrawerContentContainer = styled(Stack)<{ component?: string }>(({ theme })
 const StyledDrawer = styled(MuiDrawer)(({ theme }) => ({
   '& .MuiPaper-root.MuiDrawer-paper': {
     width: '80%',
-    background: theme.palette.background.defaultGradient,
+    background: theme.palette.background.customPaper.primary,
   },
 }));
 

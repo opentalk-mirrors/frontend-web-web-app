@@ -58,7 +58,6 @@ const TalkingStickSortButton = ({ selectedSortType, onChange }: TalkingSortButto
         aria-controls={id}
         aria-haspopup="menu"
         onClick={toggleExpandedState}
-        color="secondary"
       >
         {t(selectedItem.i18nKey)}
       </Button>

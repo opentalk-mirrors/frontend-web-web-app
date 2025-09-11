@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
+import { configureStore, renderWithProviders } from '../utils/testUtils';
 import LobbyTemplate from './LobbyTemplate';
 
 vi.mock('./fragments/BrowserCompatibilityInfo', () => ({
@@ -13,24 +14,27 @@ vi.mock('./fragments/BrowserCompatibilityInfo', () => ({
   },
 }));
 
+const { store } = configureStore({ initialState: {} });
+
 describe('LobbyTemplate', () => {
   it('licenses are not displayed by default', () => {
-    render(<LobbyTemplate />);
+    renderWithProviders(<LobbyTemplate />, { store });
 
     expect(screen.queryByTestId('LegalContainer')).toBeNull();
   });
 
   it('licenses are displayed on demand', () => {
-    render(<LobbyTemplate legal />);
+    renderWithProviders(<LobbyTemplate legal />, { store });
 
     expect(screen.getByTestId('LegalContainer')).toBeInTheDocument();
   });
 
   it('template renders children', () => {
-    render(
+    renderWithProviders(
       <LobbyTemplate>
         <div data-testid="test-child" />
-      </LobbyTemplate>
+      </LobbyTemplate>,
+      { store }
     );
     expect(screen.getByTestId('test-child')).toBeInTheDocument();
   });

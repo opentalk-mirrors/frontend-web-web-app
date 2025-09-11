@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Container, Stack, ThemeProvider, Typography, styled, useTheme } from '@mui/material';
+import { Container, Stack, Typography, styled, useTheme } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
+import Color from 'colorjs.io';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -10,7 +11,6 @@ import { useParams } from 'react-router-dom';
 import { useGetRoomEventInfoQuery } from '../../api/rest';
 import { BackIcon, LogoIcon } from '../../assets/icons';
 import arrowImage from '../../assets/images/arrow-illustration.png';
-import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { CircularIconButton, IconButton as MuiIconButton } from '../../commonComponents';
 import { CircularIconButtonStyles } from '../../commonComponents/IconButtons/CircularIconButton';
 import { useAppSelector } from '../../hooks';
@@ -26,21 +26,30 @@ import EchoPlayBack from './fragments/EchoPlayback';
 import ToolbarContainer from './fragments/ToolbarContainer';
 import VideoElement from './fragments/VideoElement';
 
-const InnerContainer = styled('div')(({ theme }) => ({
-  position: 'relative',
-  padding: 0,
-  width: '100%',
-  maxWidth: '1200px',
+const InnerContainer = styled('div')(({ theme }) => {
+  const background = new Color(theme.palette.background.customPaper.primary);
+  background.alpha = 0.5;
 
-  //The blur should be part of the theme and handled globally
-  backdropFilter: 'blur(100px)',
-  WebkitBackdropFilter: 'blur(100px)',
-  background: `rgba(0, 22, 35, 0.5) url(${arrowImage}) no-repeat 77% 67%`,
-  backgroundSize: '10rem',
-  '& .MuiButtonBase-root.Mui-focusVisible': {
-    outline: theme.palette.focus.contrastOutline,
-  },
-}));
+  return {
+    position: 'relative',
+    padding: 0,
+    width: '100%',
+    maxWidth: '1200px',
+
+    //The blur should be part of the theme and handled globally
+    backdropFilter: 'blur(100px)',
+    WebkitBackdropFilter: 'blur(100px)',
+    backgroundImage: `url(${arrowImage})`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: '77% 67%',
+    backgroundColor: background.toString({ format: 'rgba' }),
+    color: theme.palette.background.customPaper.contrastText,
+    backgroundSize: '10rem',
+    '& .MuiButtonBase-root.Mui-focusVisible': {
+      outline: theme.palette.focus.outline,
+    },
+  };
+});
 
 const Header = styled('header')(({ theme }) => ({
   display: 'flex',
@@ -69,8 +78,8 @@ const UtilitiesContainer = styled(Stack)(({ theme }) => ({
       transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     },
     '&:hover, &:focus, &[aria-expanded="true"]': {
-      background: theme.palette.secondary.lightest,
-      color: theme.palette.text.primary,
+      background: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
     },
   },
 }));
@@ -84,23 +93,20 @@ const MobileBackButton = styled(CircularIconButton)(({ theme }) => ({
   left: theme.spacing(2),
 }));
 
-const MonitorContainer = styled('main')(({ theme }) => ({
+const MonitorContainer = styled('main')(() => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   aspectRatio: '16/9',
-
-  '& h1, p': {
-    color: theme.palette.secondary.contrastText,
-  },
 }));
 
 const IconButton = styled(MuiIconButton)(({ theme }) => ({
-  color: theme.palette.secondary.contrastText,
+  color: theme.palette.text.primary,
   '& > .MuiSvgIcon-root': {
     height: '2rem',
     width: 'auto',
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -141,11 +147,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
           </IconButton>
           <UtilitiesContainer>
             <SpeedTestDialog />
-            {!isMobile && (
-              <ThemeProvider theme={createOpenTalkTheme('dark')}>
-                <MyMeetingMenu />
-              </ThemeProvider>
-            )}
+            {!isMobile && <MyMeetingMenu />}
           </UtilitiesContainer>
         </Header>
 
@@ -155,13 +157,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
           ) : (
             <>
               {roomData?.title && (
-                <Typography
-                  variant="h2"
-                  textAlign="center"
-                  color={theme.palette.common.white}
-                  marginBottom={theme.spacing(5)}
-                  component="h1"
-                >
+                <Typography variant="h2" textAlign="center" marginBottom={theme.spacing(5)} component="h1">
                   {t('joinform-room-title', { title: roomData?.title })}
                 </Typography>
               )}
@@ -172,7 +168,6 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
                 lineHeight="2.9rem"
                 mb={2}
                 component="h2"
-                color={theme.palette.common.white}
                 lang="en"
               >
                 {t('selftest-header')}

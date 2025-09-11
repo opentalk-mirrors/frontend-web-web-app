@@ -11,7 +11,6 @@ import {
   Paper,
   Stack,
   styled,
-  ThemeProvider,
   Typography,
 } from '@mui/material';
 import { SdkInfo, Event } from '@sentry/browser';
@@ -22,7 +21,6 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 
 import { CloseIcon } from '../../assets/icons';
-import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { IconButton } from '../../commonComponents';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { selectGlitchtipConfig, selectIsGlitchtipConfigured } from '../../store/slices/configSlice';
@@ -31,16 +29,26 @@ import { DELAY_BETWEEN_EVENT_AND_REPORT_MS } from '../../utils/glitchtipUtils';
 import { sleep } from '../../utils/timeUtils';
 import UserFeedbackFormFields from './fragments/UserFeedbackFormFields';
 
-const DialogTitle = styled(MuiDialogTitle)({
+const DialogTitle = styled(MuiDialogTitle)(({ theme }) => ({
   display: 'inline-flex',
   justifyContent: 'space-between',
   alignContent: 'center',
-});
+  color: theme.palette.text.primary,
+}));
 
 const StacktracePaper = styled(Paper)(({ theme }) => ({
   maxHeight: '100px',
   overflowY: 'auto',
   padding: theme.spacing(1),
+  backgroundColor: theme.palette.common.white,
+  color: theme.palette.common.black,
+}));
+
+const CloseIconButton = styled(IconButton)(({ theme }) => ({
+  '&:focus': {
+    outline: theme.palette.focus.outline,
+    outlineOffset: theme.palette.focus.outlineOffset,
+  },
 }));
 
 export type UserFeedbackFormValues = {
@@ -155,7 +163,7 @@ const GlitchtipErrorDialog = () => {
         <StacktracePaper elevation={7}>
           {event.exception?.values?.map(({ value, stacktrace }, index) => (
             <Stack spacing={1} key={index}>
-              <Typography color="error">{value}</Typography>
+              <Typography color="danger">{value}</Typography>
               {stacktrace?.frames?.map(({ filename, function: func, lineno, colno }, index) => (
                 <Typography
                   key={index}
@@ -179,9 +187,9 @@ const GlitchtipErrorDialog = () => {
         }}
       >
         <DialogTitle>{t('glitchtip-crash-report-title')}</DialogTitle>
-        <IconButton aria-label={t('global-close-dialog')} onClick={handleCloseDialog}>
+        <CloseIconButton aria-label={t('global-close-dialog')} onClick={handleCloseDialog}>
           <CloseIcon />
-        </IconButton>
+        </CloseIconButton>
       </Box>
       <DialogContent>
         <Stack spacing={2}>
@@ -190,10 +198,10 @@ const GlitchtipErrorDialog = () => {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" color="secondary" onClick={handleCloseDialog} disabled={isSubmitting}>
+        <Button variant="outlined" color="primary" onClick={handleCloseDialog} disabled={isSubmitting}>
           {t('glitchtip-crash-report-labelAbort')}
         </Button>
-        <Button color="primary" type="submit" disabled={isSubmitting}>
+        <Button color="secondary" type="submit" disabled={isSubmitting}>
           {t('glitchtip-crash-report-labelSubmit')}
         </Button>
       </DialogActions>
@@ -215,36 +223,32 @@ const GlitchtipErrorDialog = () => {
       </Box>
       <DialogContent>{t('glitchtip-crash-report-successMessage')}</DialogContent>
       <DialogActions>
-        <Button color="primary" onClick={handleCloseDialog}>
-          {t('glitchtip-crash-report-labelClose')}
-        </Button>
+        <Button onClick={handleCloseDialog}>{t('glitchtip-crash-report-labelClose')}</Button>
       </DialogActions>
     </>
   );
 
   return (
-    <ThemeProvider theme={createOpenTalkTheme('light')}>
-      <Dialog
-        slotProps={{
-          transition: {
-            onExited: () => setDataHasBeenSent(false),
-          },
+    <Dialog
+      slotProps={{
+        transition: {
+          onExited: () => setDataHasBeenSent(false),
+        },
+      }}
+      open={showErrorDialog}
+      onClose={handleCloseDialog}
+      fullWidth
+      maxWidth="md"
+    >
+      <form
+        onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+          event.preventDefault();
+          formik.handleSubmit(event);
         }}
-        open={showErrorDialog}
-        onClose={handleCloseDialog}
-        fullWidth
-        maxWidth="md"
       >
-        <form
-          onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            formik.handleSubmit(event);
-          }}
-        >
-          {dataHasBeenSent ? renderDataHasSentContent() : renderFormContent()}
-        </form>
-      </Dialog>
-    </ThemeProvider>
+        {dataHasBeenSent ? renderDataHasSentContent() : renderFormContent()}
+      </form>
+    </Dialog>
   );
 };
 

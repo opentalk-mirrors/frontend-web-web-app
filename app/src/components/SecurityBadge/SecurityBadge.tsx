@@ -13,7 +13,7 @@ import { Participant, ParticipationKind } from '../../types';
 import PopoverButton from '../PopoverButton.tsx/PopoverButton';
 
 const getColor = (theme: Theme, warning?: boolean) =>
-  warning ? theme.palette.warning.main : theme.palette.primary.main;
+  warning ? theme.palette.warning.main : theme.palette.secondary.main;
 
 const SecureIconSmall = styled(DefaultSecureIcon, { shouldForwardProp: (prop) => prop !== 'warning' })<{
   warning?: boolean;

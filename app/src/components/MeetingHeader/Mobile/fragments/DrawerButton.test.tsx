@@ -16,7 +16,7 @@ describe('DrawerButton indicator rendering logic', () => {
     const { store } = configureStore({
       initialState: {},
     });
-    renderWithProviders(<DrawerButton onClick={() => {}} />, { store });
+    renderWithProviders(<DrawerButton onClick={() => {}} />, { store, provider: { mui: true } });
     expect(screen.queryByTestId('indicator')).not.toBeInTheDocument();
   });
 
@@ -44,7 +44,7 @@ describe('DrawerButton indicator rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DrawerButton onClick={() => {}} />, { store });
+    renderWithProviders(<DrawerButton onClick={() => {}} />, { store, provider: { mui: true } });
     expect(screen.getByTestId('indicator')).toBeInTheDocument();
   });
 
@@ -72,7 +72,7 @@ describe('DrawerButton indicator rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DrawerButton onClick={() => {}} />, { store });
+    renderWithProviders(<DrawerButton onClick={() => {}} />, { store, provider: { mui: true } });
     expect(screen.getByTestId('indicator')).toBeInTheDocument();
   });
 
@@ -84,7 +84,7 @@ describe('DrawerButton indicator rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DrawerButton onClick={() => {}} />, { store });
+    renderWithProviders(<DrawerButton onClick={() => {}} />, { store, provider: { mui: true } });
     expect(screen.getByTestId('indicator')).toBeInTheDocument();
   });
 
@@ -100,7 +100,7 @@ describe('DrawerButton indicator rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DrawerButton onClick={() => {}} />, { store });
+    renderWithProviders(<DrawerButton onClick={() => {}} />, { store, provider: { mui: true } });
     expect(screen.queryByTestId('indicator')).not.toBeInTheDocument();
   });
 
@@ -116,7 +116,7 @@ describe('DrawerButton indicator rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DrawerButton onClick={() => {}} />, { store });
+    renderWithProviders(<DrawerButton onClick={() => {}} />, { store, provider: { mui: true } });
     expect(screen.getByTestId('indicator')).toBeInTheDocument();
   });
 
@@ -137,7 +137,7 @@ describe('DrawerButton indicator rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DrawerButton onClick={() => {}} />, { store });
+    renderWithProviders(<DrawerButton onClick={() => {}} />, { store, provider: { mui: true } });
     expect(screen.queryByTestId('indicator')).not.toBeInTheDocument();
   });
 
@@ -158,7 +158,7 @@ describe('DrawerButton indicator rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DrawerButton onClick={() => {}} />, { store });
+    renderWithProviders(<DrawerButton onClick={() => {}} />, { store, provider: { mui: true } });
     expect(screen.getByTestId('indicator')).toBeInTheDocument();
   });
 });
@@ -169,7 +169,7 @@ describe('DrawerButton callback logic', () => {
       initialState: {},
     });
     const onClickMock = vi.fn();
-    renderWithProviders(<DrawerButton onClick={onClickMock} />, { store });
+    renderWithProviders(<DrawerButton onClick={onClickMock} />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'mobile-drawer-button-label' });
     fireEvent.click(button);
     expect(onClickMock).toHaveBeenCalledTimes(1);

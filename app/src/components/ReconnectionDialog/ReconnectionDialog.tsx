@@ -48,7 +48,7 @@ const ReconnectionDialog = () => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button fullWidth onClick={handleAbortReconnectionLoop}>
+        <Button fullWidth onClick={handleAbortReconnectionLoop} color="secondary">
           {t('reconnection-loop-abort-button')}
         </Button>
       </DialogActions>

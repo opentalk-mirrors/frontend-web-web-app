@@ -22,7 +22,8 @@ import MeetingTimer from './MeetingTimer';
 import WaitingParticipantsPopover from './WaitingParticipantsPopover';
 
 const ContainerWithBackground = styled(Stack)(({ theme }) => ({
-  background: theme.palette.background.video,
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
   height: '100%',
   alignItems: 'center',
   justifyContet: 'center',

@@ -26,11 +26,30 @@ const steps = [
   },
 ];
 
-const StepButton = styled(MuiStepButton)({
+const StepButton = styled(MuiStepButton)(({ theme }) => ({
   padding: 0,
   margin: 0,
   textTransform: 'capitalize',
-});
+  '& .MuiStepLabel-label': {
+    background: theme.palette.background.main.primary,
+    color: theme.palette.background.main.contrastText,
+    opacity: 0.9,
+  },
+  '& .MuiStepLabel-label.Mui-disabled': {
+    opacity: 1,
+  },
+  '& .MuiStepLabel-label.Mui-completed': {
+    background: theme.palette.background.main.primary,
+    color: theme.palette.background.main.contrastText,
+    opacity: 0.9,
+  },
+  '& .MuiStepLabel-label.Mui-active': {
+    color: theme.palette.primary.main,
+  },
+  '&:not(.Mui-disabled) .MuiStepLabel-iconContainer .MuiSvgIcon-root': {
+    background: theme.palette.background.highlightContrast.primary,
+  },
+}));
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'grid',
@@ -39,13 +58,8 @@ const Container = styled(Box)(({ theme }) => ({
   height: '100%',
   overflow: 'hidden auto',
   gap: theme.spacing(2),
-}));
-
-const ActiveStep = styled(Step)(({ theme }) => ({
-  //Safari icon, Other browsers icon
-  '& .MuiSvgIcon-root.MuiStepIcon-root.Mui-active, & .MuiSvgIcon-root circle': {
-    color: theme.palette.secondary.dark,
-  },
+  background: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
 }));
 
 const MAX_INVITEES = 10;
@@ -77,14 +91,11 @@ const EditEventsPage = () => {
   const StepperHeader = () => (
     <Stepper activeStep={activeStep}>
       {steps.map(({ label, options }, index) => (
-        // #1457 When dealing with the edit page, all steps must be available per design.
-        // Default value of future step for disabled is `true` and therefor button
-        // appears unclickable.
-        <ActiveStep key={label} disabled={activeStep === index}>
+        <Step key={label} disabled={activeStep === index}>
           <StepButton icon={activeStep !== index && <EditIcon />} onClick={() => setActiveStep(index)}>
             {t(label, options)}
           </StepButton>
-        </ActiveStep>
+        </Step>
       ))}
     </Stepper>
   );

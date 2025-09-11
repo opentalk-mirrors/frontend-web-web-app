@@ -25,24 +25,26 @@ const EventTypography = styled(TextWithDivider)(({ theme }) => ({
 
 const EventNameTypography = styled(Typography)(({ theme }) => ({
   display: 'inline-block',
-  color: theme.palette.common.white,
+  color: theme.palette.text.primary,
   marginRight: theme.typography.pxToRem(5),
 }));
 
 const EventMessageTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.placeholder,
+  color: theme.palette.text.primary,
+  opacity: 0.7,
   display: 'inline-block',
 }));
 
 const NameTypography = styled(Typography, {
   shouldForwardProp: (prop) => !['isModerator'].includes(prop as string),
 })<{ isModerator?: boolean }>(({ theme, isModerator }) => ({
-  color: isModerator ? theme.palette.primary.main : theme.palette.common.white,
+  color: isModerator ? theme.palette.secondary.main : theme.palette.text.primary,
   flex: 1,
 }));
 
 const TimeTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.placeholder,
+  color: theme.palette.text.primary,
+  opacity: 0.7,
   whiteSpace: 'nowrap',
 }));
 
@@ -125,7 +127,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
     target: '_blank',
     attributes: {
       style: {
-        color: theme.palette.primary.main,
+        color: theme.palette.secondary.main,
       },
     },
   };
@@ -196,7 +198,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       </NameTypography>
       {isModerator && (
         <ModeratorIcon
-          color="primary"
+          color="secondary"
           type="functional"
           title={t('moderator-icon-title')}
           titleId={uniqueId('moderator-icon-title-')}

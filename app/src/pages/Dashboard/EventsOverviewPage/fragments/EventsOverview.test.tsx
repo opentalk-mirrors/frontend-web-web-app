@@ -25,7 +25,7 @@ describe('EventsOverview', () => {
         isLoading={false}
         setExpandAccordion={() => ''}
       />,
-      { store }
+      { store, provider: { mui: true } }
     );
     expect(screen.getAllByTestId('EventAccordion')).toHaveLength(1);
   });
@@ -40,7 +40,7 @@ describe('EventsOverview', () => {
         isLoading={false}
         setExpandAccordion={() => ''}
       />,
-      { store }
+      { store, provider: { mui: true } }
     );
     expect(screen.getByText('Time Independent Meetings')).toBeInTheDocument();
   });

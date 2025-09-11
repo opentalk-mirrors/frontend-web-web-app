@@ -5,8 +5,7 @@ import { Divider, Pagination, styled } from '@mui/material';
 import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icons';
-import Logo from '../../../assets/images/logo.svg?react';
+import { LogoIcon, MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icons';
 import { MAX_GRID_TILES_DESKTOP } from '../../../constants';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -32,32 +31,32 @@ import RoomTitle from './RoomTitle';
 import { SharedFolderPopover } from './SharedFolderPopover';
 import VotesAndPollsResultsPopover from './VotesAndPollsResultsPopover';
 
-const OpenTalkLogo = styled(Logo)(({ theme }) => ({
-  width: theme.typography.pxToRem(150),
+const OpenTalkLogo = styled(LogoIcon)(({ theme }) => ({
+  width: 'auto',
   height: theme.typography.pxToRem(35),
-  fill: 'white',
+  fill: theme.palette.text.primary,
 }));
 
 const HeaderItem = styled('div')<{ highlighted?: boolean }>(({ theme, highlighted }) => ({
-  background: highlighted ? theme.palette.primary.main : theme.palette.background.video,
+  background: highlighted ? theme.palette.secondary.main : theme.palette.background.customPaper.primary,
   borderRadius: '0.25rem',
   display: 'inline-flex',
   padding: theme.spacing(0.9),
   justifyContent: 'center',
   alignItems: 'center',
   '& .MuiIconButton-root .MuiSvgIcon-root': {
-    fill: highlighted ? theme.palette.background.default : theme.palette.text.primary,
+    fill: highlighted ? theme.palette.secondary.contrastText : theme.palette.background.customPaper.contrastText,
   },
 }));
 
 const HeaderPagination = styled(Pagination)(({ theme }) => ({
   '& .MuiPaginationItem-root:hover': {
-    color: theme.palette.primary.main,
+    color: theme.palette.secondary.main,
     fontWeight: 'bold',
   },
   '& .Mui-selected': {
-    color: theme.palette.primary.main,
-    borderColor: theme.palette.primary.main,
+    color: theme.palette.secondary.main,
+    borderColor: theme.palette.secondary.main,
   },
 }));
 
@@ -82,7 +81,7 @@ const HeaderContainer = styled('div', {
 const HeaderDivider = styled(Divider)(({ theme }) => ({
   height: '1.2rem',
   alignSelf: 'center',
-  backgroundColor: theme.palette.secondary.dark,
+  backgroundColor: theme.palette.divider,
   margin: theme.spacing(0, 1),
 }));
 

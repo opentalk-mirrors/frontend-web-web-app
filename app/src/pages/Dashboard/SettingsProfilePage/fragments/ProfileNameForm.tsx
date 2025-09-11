@@ -68,7 +68,7 @@ const ProfileNameForm = () => {
           </Grid>
         </Grid>
         <Grid>
-          <Button type="submit" disabled={isLoading || disallowCustomDisplayName}>
+          <Button type="submit" disabled={isLoading || disallowCustomDisplayName} color="secondary">
             {t('dashboard-settings-profile-button-save')}
           </Button>
         </Grid>

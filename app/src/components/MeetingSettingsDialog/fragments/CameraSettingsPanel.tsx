@@ -61,7 +61,7 @@ const VideoBackgroundImage = styled(Avatar, {
   width: 'auto',
   cursor: 'pointer',
   borderRadius: active ? theme.borderRadius.small : 0,
-  outline: ` ${active ? '3px' : 0} solid ${theme.palette.warning.main}`,
+  outline: ` ${active ? '3px' : 0} solid ${theme.palette.secondary.main}`,
 }));
 
 const BackgroundImageList = styled(MenuList)(({ theme }) => ({
@@ -87,9 +87,9 @@ const BackgroundImageItem = styled(MenuItem)(({ theme }) => ({
 }));
 
 const ClearBackground = styled(VideoBackgroundImage)(({ theme }) => ({
-  border: `1px solid ${theme.palette.secondary.main}`,
-  backgroundColor: theme.palette.secondary.lightest,
-  color: theme.palette.secondary.main,
+  border: `1px solid ${theme.palette.primary.main}`,
+  backgroundColor: theme.palette.background.highlight.primary,
+  color: theme.palette.background.highlight.contrastText,
 }));
 
 // It is a dummy component, for future extension of the meeting settings dialog
@@ -186,6 +186,7 @@ const CameraSettingsPanel = () => {
                 onChange={(_, enabled) => dispatch(setDisableRemoteVideos(!enabled))}
                 value={areParticipantVideosEnabled}
                 checked={areParticipantVideosEnabled}
+                color="primary"
               />
             }
             label={
@@ -206,7 +207,12 @@ const CameraSettingsPanel = () => {
               {isBackgroundEffectSupported() && (
                 <FormControlLabel
                   control={
-                    <CommonSwitch onChange={(_, enabled) => setBlur(enabled)} value={isBlurred} checked={isBlurred} />
+                    <CommonSwitch
+                      onChange={(_, enabled) => setBlur(enabled)}
+                      value={isBlurred}
+                      checked={isBlurred}
+                      color="primary"
+                    />
                   }
                   label={
                     <Typography fontWeight="normal" component="span">
@@ -219,7 +225,12 @@ const CameraSettingsPanel = () => {
               )}
               <FormControlLabel
                 control={
-                  <CommonSwitch onChange={toggleMirroring} value={mirroringEnabled} checked={mirroringEnabled} />
+                  <CommonSwitch
+                    onChange={toggleMirroring}
+                    value={mirroringEnabled}
+                    checked={mirroringEnabled}
+                    color="primary"
+                  />
                 }
                 label={
                   <Typography fontWeight="normal" component="span">

@@ -20,7 +20,7 @@ describe('SharedFolderPopover rendering logic', () => {
       },
     });
 
-    renderWithProviders(<SharedFolderPopover />, { store });
+    renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
     expect(button).toBeInTheDocument();
   });
@@ -39,7 +39,7 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<SharedFolderPopover />, { store });
+    renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     expect(screen.queryByRole('menuitem', { name: 'shared-folder-open-label' })).not.toBeInTheDocument();
   });
 
@@ -55,7 +55,7 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<SharedFolderPopover />, { store });
+    renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
     fireEvent.click(button);
     expect(screen.queryByText('shared-folder-password-label')).not.toBeInTheDocument();
@@ -76,7 +76,7 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<SharedFolderPopover />, { store });
+    renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
     fireEvent.click(button);
     expect(screen.getByText('shared-folder-open-label')).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<SharedFolderPopover />, { store });
+    renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
 
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
     fireEvent.click(button);
@@ -149,7 +149,7 @@ describe('SharedFolderMenuItem callback logic', () => {
         },
       },
     });
-    renderWithProviders(<SharedFolderPopover />, { store });
+    renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
     fireEvent.click(button);
     const menuitem = screen.getByRole('menuitem', { name: 'shared-folder-open-label', hidden: true });
@@ -172,7 +172,7 @@ describe('SharedFolderMenuItem callback logic', () => {
         },
       },
     });
-    renderWithProviders(<SharedFolderPopover />, { store });
+    renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
     fireEvent.click(button);
     const menuitem = screen.getByRole('menuitem', { name: 'shared-folder-password-label', hidden: true });

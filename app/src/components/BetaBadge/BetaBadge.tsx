@@ -1,24 +1,32 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ThemeProvider, styled, Link, Popover, Container, Typography } from '@mui/material';
+import { styled, Link, Popover, Container, Typography } from '@mui/material';
 import React, { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { createOpenTalkTheme } from '../../assets/themes/opentalk';
 import { useAppSelector } from '../../hooks';
 import { selectBetaBadgeUrl, selectErrorReportEmail } from '../../store/slices/configSlice';
 
 const Badge = styled('span')(({ theme }) => ({
-  background: theme.palette.primary.main,
+  background: theme.palette.secondary.main,
   transform: 'rotate(-45deg) scale(1) skew(0deg) translate(-12px)',
   position: 'absolute',
   top: theme.spacing(0),
   left: theme.spacing(-2),
   zIndex: theme.zIndex.fab,
   padding: theme.spacing(0, 4),
-  color: theme.palette.secondary.main,
+  color: theme.palette.secondary.contrastText,
   textDecoration: 'none',
+}));
+
+const Content = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
+
+const ContentLink = styled(Link)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  textDecoration: 'underline',
 }));
 
 const BetaBadge = () => {
@@ -39,7 +47,7 @@ const BetaBadge = () => {
   const open = Boolean(anchorEl);
 
   return (
-    <ThemeProvider theme={createOpenTalkTheme('light')}>
+    <>
       <Badge onMouseEnter={handlePopoverOpen} ref={badgeRef}>
         {t('global-beta')}
       </Badge>
@@ -62,19 +70,19 @@ const BetaBadge = () => {
           sx={{ py: 2 }}
           onMouseLeave={handlePopoverClose}
         >
-          <Typography variant="body2">
+          <Content variant="body2">
             <Trans
               i18nKey="beta-flag-tooltip-text"
               values={{ reportEmail }}
               components={{
-                reportEmailLink: <Link href={`mailto:${reportEmail}`} />,
-                demoLink: badgeUrl ? <Link href={badgeUrl} target="_blank" /> : <span />,
+                reportEmailLink: <ContentLink href={`mailto:${reportEmail}`} />,
+                demoLink: badgeUrl ? <ContentLink href={badgeUrl} target="_blank" /> : <span />,
               }}
             />
-          </Typography>
+          </Content>
         </Container>
       </Popover>
-    </ThemeProvider>
+    </>
   );
 };
 

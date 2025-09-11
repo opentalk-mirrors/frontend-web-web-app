@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Mock } from 'vitest';
 
 import { useLazyGetEventQuery } from '../../../api/rest';
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import EditEventsPage from './EditEventsPage';
 
 vi.mock('react-router-dom', () => ({
@@ -25,7 +26,8 @@ vi.mock('../../../components/InviteToMeeting', () => ({
   default: () => <div data-testid="InviteToMeeting" />,
 }));
 
-vi.mock('../../../api/rest', () => ({
+vi.mock('../../../api/rest', async () => ({
+  ...(await vi.importActual('../../../api/rest')),
   useLazyGetEventQuery: vi.fn(),
 }));
 
@@ -36,6 +38,8 @@ const mockUseNavigate = useNavigate as Mock;
 const mockNavigate = vi.fn();
 
 const mockEventId = 'db61b29b-b944-422d-b20f-6ed4158aad4d';
+
+const { store } = configureStore();
 
 describe('EditEventsPage', () => {
   beforeEach(() => {
@@ -51,17 +55,17 @@ describe('EditEventsPage', () => {
   });
 
   it('sets document title', () => {
-    render(<EditEventsPage />);
+    renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
     expect(document.title).toBe('dashboard-meetings-create-title in OpenTalk');
   });
 
   it('renders heading', () => {
-    render(<EditEventsPage />);
+    renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
     expect(screen.getByRole('heading', { name: 'dashboard-meetings-create-title', level: 1 })).toBeInTheDocument();
   });
 
   it('queries the event with the passed event id and default max inivitees number', async () => {
-    render(<EditEventsPage />);
+    renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
 
     await waitFor(() => {
       expect(mockLazyGetEvent).toHaveBeenCalledWith({
@@ -72,7 +76,7 @@ describe('EditEventsPage', () => {
   });
 
   it('renders update meeting form when active step is 0', () => {
-    render(<EditEventsPage />);
+    renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('UpdateMeetingForm')).toBeInTheDocument();
     expect(screen.queryByTestId('InviteToMeeting')).not.toBeInTheDocument();
@@ -84,7 +88,7 @@ describe('EditEventsPage', () => {
       formStep: '1',
     });
 
-    render(<EditEventsPage />);
+    renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
 
     expect(screen.queryByTestId('UpdateMeetingForm')).not.toBeInTheDocument();
     expect(screen.getByTestId('InviteToMeeting')).toBeInTheDocument();
@@ -96,7 +100,7 @@ describe('EditEventsPage', () => {
       { data: null, isLoading: false, error: new Error('') },
     ]);
 
-    render(<EditEventsPage />);
+    renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
 
     expect(mockNavigate).toHaveBeenCalledWith('/dashboard/meetings/create');
   });

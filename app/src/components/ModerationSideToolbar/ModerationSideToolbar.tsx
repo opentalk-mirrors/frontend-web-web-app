@@ -14,10 +14,9 @@ const INDICATOR_WIDTH_IN_PIXELS = 2;
 
 const Tabs = styled(MuiTabs)(({ theme }) => ({
   //todo align a proper background color from theme (for now nothing fit)
-  background: theme.palette.background.voteResult,
+  background: theme.palette.background.highlight.primary,
+  // backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))',
   padding: theme.spacing(4.5, 0),
-  borderBottomLeftRadius: theme.borderRadius.medium,
-  borderTopLeftRadius: theme.borderRadius.medium,
   height: '100%',
   '& .MuiTabs-flexContainer': {
     display: 'grid',
@@ -35,18 +34,17 @@ const Tabs = styled(MuiTabs)(({ theme }) => ({
     left: 0,
     width: `${INDICATOR_WIDTH_IN_PIXELS}px`,
     display: 'block',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.secondary.main,
     transition: 'none',
   },
-  //Makes outline visible without changing overflow settings
-  width: `calc(100% - ${theme.typography.pxToRem(2)} * 2)`,
   '& .MuiTabs-scroller': {
-    padding: theme.typography.pxToRem(2),
+    background: theme.palette.background.highlight.primary,
+    // backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))',
   },
 }));
 
 const Tab = styled(MuiTab)<{ component?: React.ElementType }>(({ theme }) => ({
-  color: theme.palette.secondary.light,
+  color: theme.palette.background.highlight.contrastText,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -59,18 +57,21 @@ const Tab = styled(MuiTab)<{ component?: React.ElementType }>(({ theme }) => ({
     width: '1.25rem',
     fill: 'currentcolor',
   },
+  '& .off-line': {
+    fill: theme.palette.danger.light,
+  },
   '&.MuiButtonBase-root.Mui-disabled': {
     backgroundColor: 'transparent',
   },
   '&:hover:not(&.Mui-disabled)': {
-    background: theme.palette.secondary.main,
-    color: theme.palette.secondary.contrastText,
+    background: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
   },
   '&.Mui-selected': {
     //adjust for MuiTabs-indicator
     width: `calc(100% + ${INDICATOR_WIDTH_IN_PIXELS}px)`,
-    background: theme.palette.secondary.main,
-    color: theme.palette.secondary.contrastText,
+    background: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
   },
   '&.Mui-selected svg': {
     transform: `translate(-${INDICATOR_WIDTH_IN_PIXELS}px)`,
@@ -88,8 +89,15 @@ const ToolbarDivider = styled(Divider, {
 })(({ theme }) => ({
   padding: theme.spacing(0),
   margin: theme.spacing(0, 1),
-  borderBottom: `3px solid ${theme.palette.secondary.lightest}`,
+  borderBottom: `3px solid ${theme.palette.background.customPaper.primary}`,
   alignSelf: 'center',
+}));
+
+const Aside = styled('aside')(({ theme }) => ({
+  background: theme.palette.background.customPaper.primary,
+  borderBottomLeftRadius: theme.borderRadius.medium,
+  borderTopLeftRadius: theme.borderRadius.medium,
+  overflow: 'hidden',
 }));
 
 export type ModerationSideToolbarProps = {
@@ -137,11 +145,11 @@ const ModerationSideToolbar = ({ onSelect, displayedTabs, activeTab }: Moderatio
     );
 
   return (
-    <aside aria-label={t('landmark-complementary-moderation-panel')}>
+    <Aside aria-label={t('landmark-complementary-moderation-panel')}>
       <Tabs value={activeTab} onChange={handleChange} orientation="vertical">
         {renderTabs()}
       </Tabs>
-    </aside>
+    </Aside>
   );
 };
 

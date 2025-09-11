@@ -32,7 +32,8 @@ import { MeetingNotesParticipant } from '../../types';
 
 const ParticipantSelectContainer = styled(Container)(({ theme }) => ({
   width: '19rem',
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
   padding: theme.spacing(2),
 }));
 
@@ -41,14 +42,15 @@ const ParticipantsListGrid = styled(Grid)({
   overflowY: 'auto',
 });
 
-const FormControlLabel = styled(MuiFormControlLabel)({
+const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
   flex: 1,
   marginLeft: 0,
   minWidth: 0,
+  color: theme.palette.background.customPaper.contrastText,
   '& .MuiTypography-root': {
     flex: 1,
   },
-});
+}));
 
 const SelectedParticipantsList = styled(List)({
   overflow: 'auto',
@@ -241,6 +243,7 @@ const MeetingNotesTab = () => {
           onClick={openParticipantsListPanel}
           aria-label={meetingNotesUrl ? t('meeting-notes-edit-invite-button') : t('meeting-notes-invite-button')}
           id={`meeting-notes-popover-trigger-${salt}`}
+          color="secondary"
         >
           {meetingNotesUrl ? t('meeting-notes-edit-invite-button') : t('meeting-notes-invite-button')}
         </Button>
@@ -255,7 +258,12 @@ const MeetingNotesTab = () => {
         }}
       >
         {meetingNotesUrl && (
-          <Button fullWidth onClick={uploadPdfAction} aria-label={t('meeting-notes-upload-pdf-button')}>
+          <Button
+            fullWidth
+            onClick={uploadPdfAction}
+            aria-label={t('meeting-notes-upload-pdf-button')}
+            color="secondary"
+          >
             {t('meeting-notes-upload-pdf-button')}
           </Button>
         )}
@@ -266,6 +274,7 @@ const MeetingNotesTab = () => {
           }
           disabled={!hasSelectedParticipants}
           onClick={sendInvitations}
+          color="secondary"
         >
           {meetingNotesUrl ? t('meeting-notes-update-invite-send-button') : t('meeting-notes-invite-send-button')}
         </Button>
@@ -305,7 +314,7 @@ const MeetingNotesTab = () => {
               fullWidth
             />
             <Stack direction="row">
-              <Button size="small" fullWidth onClick={checkAllHandler}>
+              <Button size="small" fullWidth onClick={checkAllHandler} color="secondary">
                 {t('poll-participant-list-button-select-all')}
               </Button>
             </Stack>
@@ -319,7 +328,7 @@ const MeetingNotesTab = () => {
                           checked={participant.isSelected}
                           id={participant.id}
                           onChange={checkHandler}
-                          color="primary"
+                          color="secondary"
                         />
                       }
                       label={
@@ -340,10 +349,12 @@ const MeetingNotesTab = () => {
                 justifyContent: 'space-between',
               }}
             >
-              <Button variant="text" onClick={closeParticipantsListPanel}>
+              <Button variant="text" onClick={closeParticipantsListPanel} color="secondary">
                 {t('poll-participant-list-button-close')}
               </Button>
-              <Button onClick={assignButtonHandler}>{t('poll-participant-list-button-select')}</Button>
+              <Button onClick={assignButtonHandler} color="secondary">
+                {t('poll-participant-list-button-select')}
+              </Button>
             </Stack>
           </Stack>
         </ParticipantSelectContainer>

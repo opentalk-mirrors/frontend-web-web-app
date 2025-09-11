@@ -18,7 +18,7 @@ vi.mock('../../../api/rest', async (importOriginal) => ({
 describe('SettingsAccountPage', () => {
   it('page will not crash', () => {
     const { store } = configureStore();
-    renderWithProviders(<SettingsAccountPage />, { store });
+    renderWithProviders(<SettingsAccountPage />, { store, provider: { mui: true } });
 
     expect(screen.getByText('dashboard-settings-account-title')).toBeInTheDocument();
   });

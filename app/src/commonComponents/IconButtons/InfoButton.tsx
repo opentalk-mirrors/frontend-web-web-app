@@ -9,7 +9,7 @@ import IconButton from './IconButton';
 const InfoButtonStyle = styled(IconButton)(({ theme }) => ({
   margin: 0,
   padding: theme.spacing(1),
-  color: theme.palette.secondary.light,
+  color: theme.palette.primary.light,
   '&& svg': {
     fontSize: '1.3rem',
   },

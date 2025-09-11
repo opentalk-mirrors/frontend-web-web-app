@@ -43,14 +43,14 @@ describe('<MoreButton />', () => {
   };
 
   it('renders MoreMenuButton component', () => {
-    renderWithProviders(<MenuButton />, { store, provider: { snackbar: true } });
+    renderWithProviders(<MenuButton />, { store, provider: { snackbar: true, mui: true } });
 
     expect(screen.getByTestId('toolbarMenuButton')).toBeInTheDocument();
     expect(screen.queryByTestId('moreMenu')).not.toBeInTheDocument();
   });
 
   it('renders moreMenu after clicking on MoreMenuButton', () => {
-    renderWithProviders(<MenuButton />, { store, provider: { snackbar: true } });
+    renderWithProviders(<MenuButton />, { store, provider: { snackbar: true, mui: true } });
     const button = screen.getByTestId('toolbarMenuButton');
     expect(button).toBeInTheDocument();
 
@@ -62,7 +62,7 @@ describe('<MoreButton />', () => {
     const setup = () =>
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
-        provider: { snackbar: true },
+        provider: { snackbar: true, mui: true },
       });
 
     const moderatorState = { user: { role: Role.Moderator }, room: { isOwnedByCurrentUser: true } };
@@ -82,7 +82,7 @@ describe('<MoreButton />', () => {
         });
         renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
           store: storeWithGuestsAllowed,
-          provider: { snackbar: true },
+          provider: { snackbar: true, mui: true },
         });
         expect(screen.getByRole('menuitem', { name: 'more-menu-create-invite' })).toBeInTheDocument();
       });
@@ -100,7 +100,7 @@ describe('<MoreButton />', () => {
         });
         renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
           store: storeWithGuestsAllowed,
-          provider: { snackbar: true },
+          provider: { snackbar: true, mui: true },
         });
         const inviteGuest = screen.getByRole('menuitem', { name: 'more-menu-create-invite' });
         fireEvent.click(inviteGuest);
@@ -169,7 +169,7 @@ describe('<MoreButton />', () => {
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
-        provider: { snackbar: true },
+        provider: { snackbar: true, mui: true },
       });
       checkMenuItem('more-menu-turn-handraises-on');
       checkMenuItem('more-menu-turn-handraises-off', true);
@@ -193,7 +193,7 @@ describe('<MoreButton />', () => {
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
-        provider: { snackbar: true },
+        provider: { snackbar: true, mui: true },
       });
       checkMenuItem('more-menu-disable-microphones', true);
       checkMenuItem('more-menu-enable-microphones');
@@ -208,7 +208,7 @@ describe('<MoreButton />', () => {
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
-        provider: { snackbar: true },
+        provider: { snackbar: true, mui: true },
       });
       checkMenuItem('more-menu-enable-waiting-room', true);
       checkMenuItem('more-menu-disable-waiting-room');
@@ -220,7 +220,7 @@ describe('<MoreButton />', () => {
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
-        provider: { snackbar: true },
+        provider: { snackbar: true, mui: true },
       });
       checkMenuItem('more-menu-export-attendance-report');
     });
@@ -237,7 +237,7 @@ describe('<MoreButton />', () => {
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store: storeWithGuestsAllowed,
-        provider: { snackbar: true },
+        provider: { snackbar: true, mui: true },
       });
       expect(screen.queryByRole('menuitem', { name: 'more-menu-create-invite' })).not.toBeInTheDocument();
     });
@@ -282,7 +282,7 @@ describe('<MoreButton />', () => {
 
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store: storeWithModules,
-        provider: { snackbar: true },
+        provider: { snackbar: true, mui: true },
       });
 
       expect(await screen.findByText('Test training participation report on')).toBeInTheDocument();

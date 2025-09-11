@@ -141,7 +141,7 @@ const InviteToMeeting = ({
         >
           <Grid size={{ xs: 12, sm: 'auto' }}>
             {onBackButtonClick && (
-              <StepButton variant="text" color="secondary" startIcon={<BackIcon />} onClick={onBackButtonClick}>
+              <StepButton variant="text" startIcon={<BackIcon />} onClick={onBackButtonClick}>
                 {t('dashboard-meeting-to-step', { step: 1 })}
               </StepButton>
             )}
@@ -156,24 +156,23 @@ const InviteToMeeting = ({
             }}
           >
             <Grid>
-              <Button fullWidth color="secondary" variant="outlined" onClick={handleCancelMeetingPress}>
+              <Button fullWidth variant="outlined" onClick={handleCancelMeetingPress}>
                 {t('global-cancel')}
               </Button>
             </Grid>
             <Grid>
-              <Button
-                component={Link}
-                to={`/room/${existingEvent?.room.id}`}
-                color="secondary"
-                fullWidth
-                target="_blank"
-              >
+              <Button component={Link} to={`/room/${existingEvent?.room.id}`} fullWidth target="_blank">
                 {t('dashboard-direct-meeting-button-open-room')}
               </Button>
             </Grid>
             {features.userSearch && (
               <Grid>
-                <Button onClick={sendInvitations} disabled={!selectedUsers.length || sendingInvitation} fullWidth>
+                <Button
+                  onClick={sendInvitations}
+                  disabled={!selectedUsers.length || sendingInvitation}
+                  fullWidth
+                  color="secondary"
+                >
                   {t('dashboard-direct-meeting-button-send-invitations')}
                 </Button>
               </Grid>

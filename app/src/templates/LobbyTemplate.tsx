@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import LegalContainer from '../components/LegalContainer';

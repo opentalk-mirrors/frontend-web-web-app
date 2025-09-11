@@ -20,20 +20,20 @@ const StyledSnackbarContent = styled(SnackbarContent)(({ theme }) => ({
   flexWrap: 'nowrap',
 
   '&.notistack-MuiContent-success': {
-    backgroundColor: theme.palette.notistack.success.backgroundColor,
-    color: theme.palette.notistack.success.color,
+    backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.contrastText,
   },
   '&.notistack-MuiContent-error': {
-    backgroundColor: theme.palette.notistack.error.backgroundColor,
-    color: theme.palette.notistack.error.color,
+    backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
   },
   '&.notistack-MuiContent-warning': {
-    backgroundColor: theme.palette.notistack.warning.backgroundColor,
-    color: theme.palette.notistack.warning.color,
+    backgroundColor: theme.palette.warning.main,
+    color: theme.palette.warning.contrastText,
   },
   '&.notistack-MuiContent-info': {
-    backgroundColor: theme.palette.notistack.info.backgroundColor,
-    color: theme.palette.notistack.info.color,
+    backgroundColor: theme.palette.info.main,
+    color: theme.palette.info.contrastText,
   },
 
   '& > span': {

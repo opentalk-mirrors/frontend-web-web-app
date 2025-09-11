@@ -25,7 +25,7 @@ const MobileSettingsDialogContent = styled(DialogContent)(({ theme }) => ({
 const MobileSettingsDialogTitle = styled(DialogTitle)(({ theme }) => ({
   borderTopLeftRadius: theme.borderRadius.medium,
   borderTopRightRadius: theme.borderRadius.medium,
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: theme.palette.background.customPaper.primary,
   paddingLeft: theme.spacing(2),
 }));
 
@@ -42,7 +42,7 @@ const MobileCloseButton = styled(IconButton)(() => ({
 const MobileSettingsContainer = styled(Stack)(({ theme }) => ({
   borderBottomLeftRadius: theme.borderRadius.medium,
   borderBottomRightRadius: theme.borderRadius.medium,
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: theme.palette.background.customPaper.primary,
   height: '25rem',
   flex: '1',
   paddingBottom: theme.spacing(2),

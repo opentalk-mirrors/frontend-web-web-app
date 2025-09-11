@@ -18,7 +18,7 @@ const waveAnimation = keyframes`
 const HandIconContainer = styled('div', {
   shouldForwardProp: (prop) => prop !== 'display',
 })<{ display?: boolean }>(({ display, theme }) => ({
-  background: theme.palette.secondary.light,
+  background: theme.palette.primary.light,
   width: theme.spacing(6),
   height: theme.spacing(6),
   borderRadius: '100%',
@@ -32,7 +32,7 @@ const HandIconContainer = styled('div', {
 
   '& svg': {
     animation: display ? `${waveAnimation} 3s 1 ease 400ms` : 'none',
-    fill: theme.palette.secondary.contrastText,
+    fill: theme.palette.primary.contrastText,
   },
 }));
 

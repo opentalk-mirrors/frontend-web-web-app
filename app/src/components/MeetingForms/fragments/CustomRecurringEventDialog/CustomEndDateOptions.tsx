@@ -57,7 +57,7 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
       <Grid>
         <FormControlLabel
           value={EndOption.Never}
-          control={<Radio />}
+          control={<Radio color="primary" />}
           label={t('dashboard-recurrence-dialog-end-option-never')}
           onClick={() => handleClick(EndOption.Never)}
         />
@@ -73,7 +73,7 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
         <Grid>
           <FormControlLabel
             value={EndOption.OnDate}
-            control={<Radio />}
+            control={<Radio color="primary" />}
             label={t('dashboard-recurrence-dialog-end-option-on')}
             onClick={() => handleClick(EndOption.OnDate)}
           />
@@ -89,6 +89,7 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
               onChange={(value) => updateRRuleObject({ until: value })}
               disabled={endOption === EndOption.Never}
               minDate={minDate}
+              slotProps={{ textField: { InputProps: { color: 'primary' } } }}
             />
           </PickerLocalizationProvider>
         </Grid>

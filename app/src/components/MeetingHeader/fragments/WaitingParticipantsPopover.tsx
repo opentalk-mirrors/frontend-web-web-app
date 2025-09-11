@@ -14,14 +14,15 @@ import WaitingParticipantsList from '../../WaitingParticipantsList';
 const blink = keyframes`from { opacity: 1; } to { opacity: 0.3; }`;
 
 const WaitingListButton = styled(IconButton)(({ theme }) => ({
-  background: theme.palette.background.video,
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
   borderRadius: '0.25rem',
 }));
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
     color: theme.palette.secondary.contrastText,
-    background: theme.palette.primary.main,
+    background: theme.palette.secondary.main,
     animation: `${blink} 1s ease alternate`,
     animationIterationCount: 'infinite',
   },

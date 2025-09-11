@@ -29,7 +29,8 @@ interface MouseValues {
 }
 
 const CardWrapper = styled(Grid)(({ theme }) => ({
-  background: theme.palette.background.paper,
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
   borderRadius: theme.borderRadius.medium,
   padding: theme.spacing(2),
   gap: theme.spacing(1),

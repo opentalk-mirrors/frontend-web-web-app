@@ -26,6 +26,8 @@ const Main = styled('main')(({ theme }) => ({
   flex: 1,
   padding: theme.spacing(3, 5),
   overflowX: 'auto',
+  zIndex: 1,
+  color: theme.palette.background.main.contrastText,
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(3, 2),
     overflowX: 'unset',
@@ -33,14 +35,13 @@ const Main = styled('main')(({ theme }) => ({
 }));
 
 const Container = styled(MuiContainer)(({ theme }) => ({
-  background: theme.palette.common.white,
   width: '100%',
   '&::before': {
     position: 'absolute',
     inset: 0,
     content: "''",
-    background: theme.palette.background?.defaultGradient || theme.palette.background?.default,
-    backgroundColor: theme.palette.background?.defaultGradient || theme.palette.background?.default,
+    background: theme.palette.background.main.primary,
+    color: theme.palette.background.main.contrastText,
     pointerEvents: 'none',
   },
 }));

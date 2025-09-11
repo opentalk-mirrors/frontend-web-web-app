@@ -14,8 +14,8 @@ import { AdditionalButtonAttributes } from '../SnackbarActionButtons';
 const AlertBox = styled(Box, {
   shouldForwardProp: (prop: string) => !['type'].includes(prop),
 })<{ type: keyof NotistackPalette }>(({ theme, type = 'info' }) => ({
-  color: theme.palette.notistack[type].color,
-  backgroundColor: theme.palette.notistack[type].backgroundColor,
+  color: theme.palette[type].contrastText,
+  backgroundColor: theme.palette[type].main,
   borderRadius: theme.spacing(1),
   display: 'flex',
   flexDirection: 'column',
@@ -38,10 +38,10 @@ const CustomButton = styled(Button)(({ theme, color, variant }) => {
 
     if (color === 'primary' || color === 'secondary') {
       return {
-        backgroundColor: theme.palette.notistack[color].backgroundColor,
-        color: theme.palette.notistack[color].color,
+        backgroundColor: theme.palette[color].main,
+        color: theme.palette[color].contrastText,
         '&:hover': {
-          backgroundColor: theme.palette.notistack[color].hovered,
+          backgroundColor: theme.palette[color].light,
         },
       };
     }

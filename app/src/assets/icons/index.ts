@@ -53,7 +53,6 @@ import KeyboardIcon from './KeyboardIcon';
 import LegalBallotIcon from './LegalBallotIcon';
 import LiveIcon from './LiveIcon';
 import LockedIcon from './LockedIcon';
-import LogoGradientIcon from './LogoGradientIcon';
 import LogoIcon from './LogoIcon';
 import MeetingNotesIcon from './MeetingNotesIcon';
 import MeetingsIcon from './MeetingsIcon';
@@ -157,7 +156,6 @@ export {
   LegalBallotIcon,
   LiveIcon,
   LockedIcon,
-  LogoGradientIcon,
   LogoIcon,
   MeetingNotesIcon,
   MeetingsIcon,

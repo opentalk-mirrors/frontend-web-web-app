@@ -10,7 +10,7 @@ const Ratings = styled(MuiRating)(({ theme }) => ({
   '&.MuiRating-root': {
     display: 'flex',
     '& .MuiRating-icon, & .MuiRating-iconEmpty': {
-      color: theme.palette.primary.main,
+      color: theme.palette.secondary.main,
     },
   },
 }));

@@ -41,6 +41,7 @@ export type DashboardDateTimePickerProps = {
   id?: string;
   onChange(date: Date | null): void;
   formik: FormikProps<MeetingFormValues>;
+  InputProps?: Partial<DateTimePickerProps['InputProps']>;
   type: 'start' | 'end';
   //Extend min date so we can pass it down.
   //If more props needed we could add more to the Pick or define the whole props of type DateTimePickerProps.
@@ -64,6 +65,9 @@ export const DashboardDateTimePicker = (props: DashboardDateTimePickerProps) => 
           required: true,
         }}
         helperText={props.formik.errors[`${props.type}Date`] || props.helperText}
+        InputProps={{
+          color: 'primary',
+        }}
       />
     </Stack>
   );

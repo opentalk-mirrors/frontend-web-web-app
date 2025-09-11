@@ -10,7 +10,6 @@ import {
   DialogProps,
   DialogTitle,
   IconButton as MuiIconButton,
-  Paper,
   Stack,
   styled,
   Typography,
@@ -22,7 +21,6 @@ import * as yup from 'yup';
 
 import { useCreateRoomInviteMutation } from '../../../api/rest';
 import { CloseIcon } from '../../../assets/icons';
-import { getPalette } from '../../../assets/themes/opentalk/palette';
 import { notifications } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectCurrentBreakoutRoomId } from '../../../store/slices/breakoutSlice';
@@ -100,7 +98,7 @@ const InviteGuestDialog = (props: Omit<DialogProps, 'children'>) => {
   };
 
   return (
-    <Dialog {...props} fullWidth PaperComponent={Paper} onClose={onClose}>
+    <Dialog {...props} fullWidth onClose={onClose}>
       <DialogTitle variant="body1">{t('dialog-invite-guest-title')}</DialogTitle>
       <IconButton aria-label={t('global-close-dialog')} onClick={onClose}>
         <CloseIcon />
@@ -111,7 +109,7 @@ const InviteGuestDialog = (props: Omit<DialogProps, 'children'>) => {
             <Typography gutterBottom>{inviteUrl.toString()}</Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={copyToClipboard} color="primary">
+            <Button onClick={copyToClipboard} color="secondary">
               {t('dialog-invite-guest-button-copy')}
             </Button>
           </DialogActions>
@@ -134,19 +132,10 @@ const InviteGuestDialog = (props: Omit<DialogProps, 'children'>) => {
                 startAdornment: t('dialog-invite-guest-expiration-date'),
                 fullWidth: true,
               }}
-              InputProps={{
-                sx: {
-                  '& .MuiInputBase-input::placeholder': {
-                    // Invite dialog is a special case where we use light theme on the dialog while the datepicker is in the dark scheme
-                    // so we end up with a placeholder color that is not readable in the light dialog
-                    color: getPalette('dark').text?.placeholder,
-                  },
-                },
-              }}
             />
           </DialogContent>
           <DialogActions>
-            <Button type="submit" color="primary">
+            <Button type="submit" color="secondary">
               {t('dialog-invite-guest-button-submit')}
             </Button>
           </DialogActions>

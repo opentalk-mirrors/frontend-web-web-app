@@ -17,7 +17,12 @@ import { DurationField, CommonTextField, notifications } from '../../../commonCo
 import { CommonFormItem } from '../../../commonComponents';
 import { savedLegalVoteForm, selectLegalVoteId } from '../../../store/slices/legalVoteSlice';
 import { LegalVoteFormValues, SavedLegalVoteForm } from '../../../types';
-import { formikDurationFieldProps, formikSwitchProps, formikProps } from '../../../utils/formikUtils';
+import {
+  formikDurationFieldProps,
+  formikSwitchProps,
+  formikProps,
+  formikSelectProps,
+} from '../../../utils/formikUtils';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
 import ParticipantSelector, { AllowedParticipant } from './ParticipantSelector';
 
@@ -149,7 +154,7 @@ const CreateLegalVoteForm = ({
               />
             </Grid>
             <Grid size={{ xs: 12 }}>
-              <Select {...formikProps('kind', formik)} defaultValue={formik.initialValues['kind']} id="vote-kind">
+              <Select {...formikSelectProps('kind', formik)} defaultValue={formik.initialValues['kind']} id="vote-kind">
                 {legalVoteOptions.map((kind) => (
                   <MenuItem key={kind} value={kind}>
                     {t(`legal-vote-${kind}`)}
@@ -230,12 +235,12 @@ const CreateLegalVoteForm = ({
       }}
     >
       {!isLastStep && (
-        <Button type="button" onClick={() => saveFormValues(values as LegalVoteFormValues)} fullWidth>
+        <Button type="button" onClick={() => saveFormValues(values as LegalVoteFormValues)} fullWidth color="secondary">
           {t('legal-vote-form-button-save')}
         </Button>
       )}
 
-      <Button type="button" disabled={isCoffeeBreakActive} onClick={handleNext} fullWidth>
+      <Button type="button" disabled={isCoffeeBreakActive} onClick={handleNext} fullWidth color="secondary">
         {isLastStep ? t('poll-participant-list-button-start') : t('legal-vote-form-button-continue')}
       </Button>
     </Box>
@@ -281,6 +286,7 @@ const CreateLegalVoteForm = ({
                   onClick={currentStepIndex && currentStepIndex > 0 ? handlePrev : onClose}
                   startIcon={<BackIcon />}
                   size="small"
+                  color="secondary"
                 >
                   {t('legal-vote-button-back')}
                 </Button>

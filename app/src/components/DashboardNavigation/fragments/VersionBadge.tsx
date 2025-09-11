@@ -10,13 +10,14 @@ const CustomChip = styled(Chip, {
   shouldForwardProp: (prop) => prop !== 'collapsed',
 })<{ collapsed: boolean }>(({ theme, collapsed }) => ({
   padding: collapsed ? '0' : undefined,
-  borderColor: theme.palette.secondary.lighter,
+  borderColor: theme.palette.text.primary,
   transition: 'padding 300ms ease-out',
 
   '& > .MuiChip-icon': {
     margin: 0,
     zIndex: 2,
     width: '2rem',
+    fill: theme.palette.text.primary,
   },
 
   '& > span': {
@@ -25,6 +26,7 @@ const CustomChip = styled(Chip, {
     maxWidth: collapsed ? '0' : '20rem',
     transition: 'max-width 300ms ease-out',
     padding: 0,
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -42,7 +44,6 @@ const VersionBadge = (props: VersionBadgeProps) => {
         aria-label={t('version-label', { version })}
         label={version}
         variant="outlined"
-        color="secondary"
         icon={<InfoIcon />}
         collapsed={props.collapsed}
       />

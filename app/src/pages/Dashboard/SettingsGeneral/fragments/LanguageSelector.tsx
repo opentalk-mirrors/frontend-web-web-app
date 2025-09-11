@@ -70,7 +70,7 @@ const LanguageSelector = () => {
           </CommonTextField>
         </Grid>
         <Grid size={{ xs: 12 }}>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading} color="secondary">
             {t('dashboard-settings-profile-button-save')}
           </Button>
         </Grid>

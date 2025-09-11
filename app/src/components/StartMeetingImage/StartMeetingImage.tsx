@@ -440,9 +440,14 @@ const fadeOutInR8 = keyframes`
 
 const StartMeetingImage = styled(Svg, {
   shouldForwardProp: (prop) => prop !== 'animated',
-})<{ animated: boolean }>(({ animated }) => ({
+})<{ animated: boolean }>(({ animated, theme }) => ({
   width: 'auto',
   height: 'auto',
+  color: theme.palette.secondary.main,
+
+  '& .regular-fill': {
+    color: theme.palette.background.main.contrastText,
+  },
 
   '#Lamp': {
     animation: animated && `${fadeOutInLamp} 3s infinite linear`,

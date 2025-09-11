@@ -24,6 +24,7 @@ const Chip = styled(MuiChip)(({ theme }) => ({
     textOverflow: 'unset',
     whiteSpace: 'pre-wrap',
     wordBreak: 'break-word',
+    color: theme.palette.text.primary,
   },
   '& .MuiSvgIcon-root': {
     fontSize: '1rem',
@@ -34,6 +35,19 @@ const Add = styled(AddIcon)({
   width: '0.6em',
   height: '0.6em',
 });
+
+const StyledCommonTextField = styled(CommonTextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root.Mui-focused': {
+    backgroundColor: theme.palette.background.highlight.primary,
+    color: theme.palette.background.highlight.contrastText,
+  },
+}));
+
+const StyledAddButton = styled(Button)(({ theme }) => ({
+  '&.Mui-disabled': {
+    color: theme.palette.text.disabled,
+  },
+}));
 
 const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
   const [editingIndex, setEditingIndex] = useState<number>();
@@ -63,7 +77,7 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
                 <Field
                   name={`${name}.${index}`}
                   component={({ field: { value, onBlur, onChange, name } }: FieldProps) => (
-                    <CommonTextField
+                    <StyledCommonTextField
                       inputRef={inputRef}
                       name={name}
                       size="small"
@@ -108,16 +122,17 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
             </Grid>
           ))}
           <Grid>
-            <Button
+            <StyledAddButton
               size="small"
               type="button"
               variant="text"
               onClick={() => arrayHelpers.push('')}
               startIcon={<Add />}
               disabled={editingIndex !== undefined}
+              color="secondary"
             >
               {t('poll-input-choices')}
-            </Button>
+            </StyledAddButton>
           </Grid>
         </Grid>
       )}

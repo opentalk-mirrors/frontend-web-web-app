@@ -18,8 +18,10 @@ import SideTabPanel from './fragments/SideTabPanel';
 const SideBar = styled('aside')(({ theme }) => ({
   gridArea: 'sidebar',
   display: 'flex',
-  background: theme.palette.background.paper,
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.text.primary,
   borderRadius: theme.borderRadius.medium,
+  boxShadow: '0 1.187rem 3.187rem 0 rgb(0 0 0 / 16%), 0 0.875rem 1.187rem 0 rgb(0 0 0 / 7%)',
   flex: 1,
 }));
 
@@ -28,10 +30,12 @@ const ProfileWindow = styled('div', {
 })<{ isModerator?: boolean }>(({ theme, isModerator }) => ({
   display: 'flex',
   flexDirection: isModerator ? 'column-reverse' : 'column',
-  borderRadius: theme.borderRadius.medium,
   padding: theme.spacing(2),
   transform: 'translateZ(0)',
-  boxShadow: '0 1.187rem 3.187rem 0 rgb(0 0 0 / 16%), 0 0.875rem 1.187rem 0 rgb(0 0 0 / 7%)',
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
+  borderTopRightRadius: theme.borderRadius.medium,
+  borderBottomRightRadius: theme.borderRadius.medium,
   width: '21rem',
   overflow: 'hidden',
 }));

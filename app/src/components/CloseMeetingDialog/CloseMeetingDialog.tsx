@@ -204,7 +204,7 @@ export const CloseMeetingDialog = ({ open, onClose }: CloseMeetingDialogProps) =
       </Box>
       {getConfigurationForm()}
       <DialogActions>
-        <Button onClick={handleLeaveButton} color="error" variant="contained" disabled={disableLeaveAndDeleteButton}>
+        <Button onClick={handleLeaveButton} color="danger" variant="contained" disabled={disableLeaveAndDeleteButton}>
           {t('meeting-delete-metadata-button-leave-and-delete')}
         </Button>
         {/* eslint-disable jsx-a11y/no-autofocus */}
@@ -212,7 +212,7 @@ export const CloseMeetingDialog = ({ open, onClose }: CloseMeetingDialogProps) =
         Trade-off for this, NVDA reads out some content doubled, which can be fixed in NVDA settings itself
         https://github.com/nvaccess/nvda/issues/8971#issuecomment-1758193765
         */}
-        <Button onClick={handleHangUp} color="primary" variant="contained" autoFocus>
+        <Button onClick={handleHangUp} color="secondary" variant="contained" autoFocus>
           {t('meeting-delete-metadata-button-leave-without-delete')}
         </Button>
       </DialogActions>

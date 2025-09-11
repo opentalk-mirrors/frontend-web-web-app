@@ -9,13 +9,21 @@ import { DashboardEventsFilters, FilterChangeCallbackType } from '../types';
 
 const IconButtonBig = styled(IconButton, { shouldForwardProp: (prop) => prop !== 'active' })<{ active?: boolean }>(
   ({ theme, active }) => ({
-    color: active ? theme.palette.text.secondary : '',
-    backgroundColor: active ? theme.palette.secondary.main : '',
+    color: active ? theme.palette.primary.contrastText : theme.palette.background.highlightContrast.contrastText,
+    backgroundColor: active ? theme.palette.primary.main : theme.palette.background.highlightContrast.primary,
     borderRadius: theme.borderRadius.circle,
     width: '3rem',
     height: '3rem',
     '.MuiSvgIcon-root': {
       fontSize: '1.25rem',
+    },
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
+    },
+    '&:focus': {
+      outline: theme.palette.focus.outline,
+      outlineOffset: theme.palette.focus.outlineOffset,
     },
   })
 );
@@ -33,7 +41,6 @@ export const EventFilterButtonBar = ({ filters, onFilterChange }: EventFilterBut
       <Tooltip placement="top" title={t('dashboard-events-filter-by-invites')}>
         <IconButtonBig
           data-testid="filter-by-invites"
-          color="secondary"
           active={filters.openInvitedMeeting}
           aria-pressed={filters.openInvitedMeeting}
           onClick={() => onFilterChange('openInvitedMeeting', !filters.openInvitedMeeting)}
@@ -46,7 +53,6 @@ export const EventFilterButtonBar = ({ filters, onFilterChange }: EventFilterBut
           data-testid="favoriteMeeting"
           active={filters.favoriteMeetings}
           aria-pressed={filters.favoriteMeetings}
-          color="secondary"
           onClick={() => onFilterChange('favoriteMeetings', !filters.favoriteMeetings)}
         >
           <FavoriteIcon />

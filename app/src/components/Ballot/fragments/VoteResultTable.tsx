@@ -14,7 +14,7 @@ import VoteResultRow from './VoteResultRow';
 
 const CustomTable = styled(Table)(({ theme }) => ({
   '.MuiTableRow-head > .MuiTableCell-root': {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.customPaper.primary,
   },
   '.MuiTableBody-root .MuiTableCell-root': {
     borderBottomColor: theme.palette.secondary.light,

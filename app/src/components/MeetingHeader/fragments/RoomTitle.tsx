@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Typography, styled, Tooltip, Stack, ThemeProvider } from '@mui/material';
+import { Typography, styled, Tooltip, Stack } from '@mui/material';
 import { truncate } from 'lodash';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { createOpenTalkTheme } from '../../../assets/themes/opentalk';
 import { InfoButton } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectRoomTitle } from '../../../store/selectors';
@@ -16,7 +15,8 @@ import { ROOM_TITLE_MAX_LENGTH } from './constants';
 
 //Container is needed in order to limit text from overflowing
 const Container = styled(Stack)(({ theme }) => ({
-  background: theme.palette.background.video,
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
   borderRadius: '0.25rem',
   justifyContent: 'center',
   alignItems: 'center',
@@ -56,14 +56,12 @@ const RoomTitle = () => {
             aria-label={t('room-title-info-button-aria-label')}
             onClick={() => setMeetingDetailsDialogOpen(true)}
           />
-          <ThemeProvider theme={createOpenTalkTheme()}>
-            <MeetingDetailsDialog
-              eventInfo={eventInfo}
-              roomInfo={roomInfo}
-              open={meetingDetailsDialogOpen}
-              onClose={() => setMeetingDetailsDialogOpen(false)}
-            />
-          </ThemeProvider>
+          <MeetingDetailsDialog
+            eventInfo={eventInfo}
+            roomInfo={roomInfo}
+            open={meetingDetailsDialogOpen}
+            onClose={() => setMeetingDetailsDialogOpen(false)}
+          />
         </>
       )}
     </Container>

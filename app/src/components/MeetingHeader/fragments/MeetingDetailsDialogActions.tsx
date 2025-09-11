@@ -108,10 +108,10 @@ ${t('global-call-in-pin')}: ${callIn.password}
       <DialogActionsTitle>{t('meeting-details-dialog-button-header')}</DialogActionsTitle>
       <DialogActionsLeftAligned>
         {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-        <Button type="submit" variant="outlined" color="secondary" onClick={handleClipboardClick} autoFocus>
+        <Button type="submit" variant="contained" color="secondary" onClick={handleClipboardClick} autoFocus>
           {t('meeting-details-dialog-copy-button')}
         </Button>
-        <Button type="submit" variant="outlined" color="secondary" onClick={handleMailToClick}>
+        <Button type="submit" variant="contained" color="secondary" onClick={handleMailToClick}>
           {t('meeting-details-dialog-mail-button')}
         </Button>
       </DialogActionsLeftAligned>

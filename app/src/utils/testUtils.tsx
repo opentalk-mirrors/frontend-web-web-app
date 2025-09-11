@@ -22,6 +22,7 @@ import {
   AssetId,
   InviteCode,
   SipId,
+  ThemeBasePalette,
 } from '@opentalk/rest-api-rtk-query';
 import { ConfigureStoreOptions, Store, combineReducers, configureStore as configureStoreTlk } from '@reduxjs/toolkit';
 import { Middleware } from '@reduxjs/toolkit';
@@ -41,7 +42,9 @@ import { MemoryRouter } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { MockInstance } from 'vitest';
 
+import { restApi } from '../api/rest';
 import { createOpenTalkTheme } from '../assets/themes/opentalk';
+import { defaultDarkModeColors, defaultLightModeColors } from '../assets/themes/opentalk/palette';
 import { SnackbarProvider } from '../commonComponents';
 import { MeetingFormValues } from '../components/MeetingForms/fragments/DashboardDateTimePicker';
 import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
@@ -112,7 +115,7 @@ type MockReduxStore = {
   dispatchSpy: MockInstance<AppDispatch>;
 };
 
-export const middleware: Array<Middleware> = [listenerMiddleware.middleware];
+export const middleware: Array<Middleware> = [restApi.middleware, listenerMiddleware.middleware];
 
 export const configureStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined): MockReduxStore => {
   const regexIgnoredPaths = /\b(getTrackPublication|setMicrophoneEnabled|videoTrackPublications)\b/;
@@ -144,6 +147,11 @@ interface Render {
   };
 }
 
+const palette: ThemeBasePalette = {
+  light: defaultLightModeColors,
+  dark: defaultDarkModeColors,
+};
+
 export const renderWithProviders = (
   component: React.ReactElement,
   { options, store, provider }: Render
@@ -162,7 +170,7 @@ export const renderWithProviders = (
       component = <MemoryRouter>{component}</MemoryRouter>;
     }
     if (provider?.mui) {
-      component = <ThemeProvider theme={createOpenTalkTheme()}>{component}</ThemeProvider>;
+      component = <ThemeProvider theme={createOpenTalkTheme('dark', palette)}>{component}</ThemeProvider>;
     }
     if (store) {
       component = <Provider store={store}>{component}</Provider>;

@@ -59,7 +59,7 @@ describe('Standard Card', () => {
   const { store } = configureStore();
 
   it('render component without crashing', () => {
-    renderWithProviders(<StandardCard {...dummyMeetingCardData} />, { store, provider: { router: true } });
+    renderWithProviders(<StandardCard {...dummyMeetingCardData} />, { store, provider: { router: true, mui: true } });
 
     expect(screen.getByRole('link', { name: 'dashboard-home-join-label' })).toBeInTheDocument();
     expect(screen.getByLabelText('toolbar-button-more-tooltip-title')).toBeInTheDocument();
@@ -70,7 +70,7 @@ describe('Standard Card', () => {
   it('card is not marked as favorite with flag favorite={false}, svg fav should not be in document', () => {
     renderWithProviders(
       <StandardCard {...dummyMeetingCardData} event={{ ...dummyMeetingCardData.event, isFavorite: false }} />,
-      { store, provider: { router: true } }
+      { store, provider: { router: true, mui: true } }
     );
 
     expect(screen.queryByTestId('favorite-icon-visible')).not.toBeInTheDocument();
@@ -78,7 +78,7 @@ describe('Standard Card', () => {
   });
 
   it('click on more menu should display popup with edit, fav and delete option for meeting creator', async () => {
-    renderWithProviders(<StandardCard {...dummyMeetingCardData} />, { store, provider: { router: true } });
+    renderWithProviders(<StandardCard {...dummyMeetingCardData} />, { store, provider: { router: true, mui: true } });
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
 
     expect(MoreMenu).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('Standard Card', () => {
   it('when user is not creator, meeting is marked as fav, click on more menu should display popup with remove favorite option', async () => {
     renderWithProviders(<StandardCard {...dummyMeetingCardData} isMeetingCreator={false} />, {
       store,
-      provider: { router: true },
+      provider: { router: true, mui: true },
     });
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
     expect(MoreMenu).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe('Standard Card', () => {
         event={{ ...dummyMeetingCardData.event, isFavorite: false }}
         isMeetingCreator={false}
       />,
-      { store, provider: { router: true } }
+      { store, provider: { router: true, mui: true } }
     );
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
     expect(MoreMenu).toBeInTheDocument();

@@ -18,14 +18,14 @@ const PlanUpgradeLink = styled(Link)(({ theme }) => ({
 const StorageProgress = styled(LinearProgress)(({ theme, value }) => ({
   height: '3rem',
   [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor: theme.palette.secondary.contrastText,
+    backgroundColor: theme.palette.primary.main,
     borderRadius: '0.3rem',
     borderStyle: 'solid',
     borderWidth: '0.1rem',
   },
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: '0.2rem',
-    backgroundColor: value !== undefined && value < 100 ? theme.palette.secondary.main : theme.palette.error.main,
+    backgroundColor: value !== undefined && value < 100 ? theme.palette.primary.main : theme.palette.error.main,
   },
 }));
 
@@ -59,7 +59,7 @@ const StorageFullMessage = ({ usedStorage, maxStorage, isStorageUpgradable }: St
 
 /*
   Normal case is when used storage and max storage are defined (limited storage)
-  
+
   It can happen, that max storage is not set for the user, as it is an optional plan quota.
   In case max storage is undeifned, we assume that the user has unlimited storage and we don't show the progress bar.
 */
@@ -126,7 +126,7 @@ const StorageUsage = () => {
   const isFull = displayedOccupancy >= 100;
   return (
     <Stack spacing={1}>
-      <Typography variant="body1" color={isFull ? 'error' : 'secondary'}>
+      <Typography variant="body1" color={isFull ? 'error' : 'primary'}>
         {getLimitedStorageText(usedStorage, maxStorage)}
       </Typography>
       <StorageProgress variant="determinate" value={displayedOccupancy} />
@@ -138,7 +138,7 @@ export const StorageSection = () => {
   const { t } = useTranslation();
   return (
     <Stack spacing={2}>
-      <Typography variant="h1" component="h2">
+      <Typography variant="h1" component="h2" fontWeight="bold">
         {t('dashboard-settings-storage')}
       </Typography>
       <StorageUsage />

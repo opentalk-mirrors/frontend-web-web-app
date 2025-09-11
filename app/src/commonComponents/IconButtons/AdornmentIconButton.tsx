@@ -19,19 +19,16 @@ const stylePropNames = ['parentHasFocus', 'parentDisabled'];
 const StyledIconButton = styled(IconButton, {
   shouldForwardProp: (prop: string) => !stylePropNames.includes(prop),
 })<StyledButtonProps>(({ theme, parentHasFocus = false, parentDisabled = false }) => {
-  let focusColor = parentDisabled ? theme.palette.secondary.light : theme.palette.background.light;
-  let nonFocusColor = parentDisabled ? theme.palette.background.light : theme.palette.secondary.light;
-
-  if (theme.palette.mode === 'light') {
-    focusColor = parentDisabled ? theme.palette.background.light : theme.palette.secondary.lighter;
-    nonFocusColor = parentDisabled ? theme.palette.secondary.lighter : theme.palette.background.light;
-  }
+  const focusColor = theme.palette.background.highlight.primary;
+  const nonFocusColor = theme.palette.primary.dark;
 
   return {
     padding: theme.typography.pxToRem(12),
+    opacity: parentDisabled ? 0.5 : 1,
     ':hover': { backgroundColor: parentHasFocus ? focusColor : nonFocusColor },
-    '& .MuiTouchRipple-child': {
-      backgroundColor: theme.palette.mode === 'light' ? theme.palette.secondary.light : theme.palette.background.light,
+    ':focus': {
+      backgroundColor: parentHasFocus ? focusColor : nonFocusColor,
+      outline: parentHasFocus ? theme.palette.focus.contrastOutline : theme.palette.focus.outline,
     },
   };
 });

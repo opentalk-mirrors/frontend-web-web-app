@@ -289,7 +289,7 @@ const CreateRoomsForm = () => {
           />
         </Box>
       )}
-      <Button onClick={customSubmit} disabled={formik.isSubmitting}>
+      <Button onClick={customSubmit} disabled={formik.isSubmitting} color="secondary">
         {t('breakout-room-start-button')}
       </Button>
       {error && (
