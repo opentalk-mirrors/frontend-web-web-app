@@ -26,7 +26,7 @@ const AuthCallbackComponent = ({ children, redirectUrl = '/' }: AuthCallbackCont
     if (code && auth) {
       const codeVerifier = sessionStorage.getItem('code_verifier');
       if (isEmpty(codeVerifier)) {
-        auth.signIn('/dashboard');
+        auth.signIn(window.location.href);
         return;
       }
       const clientId = auth.configuration.clientId;
