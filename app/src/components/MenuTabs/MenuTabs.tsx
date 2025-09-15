@@ -42,8 +42,8 @@ const ChatBadge = styled(Badge)(({ theme }) => ({
 const Tabs = styled(MuiTabs)(({ theme }) => ({
   minHeight: 0,
   borderRadius: theme.borderRadius.large,
-  backgroundColor: theme.palette.background.highlight.primary,
-  color: theme.palette.background.highlight.contrastText,
+  backgroundColor: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
   '& .MuiTabs-flexContainer': {
     alignItems: 'center',
     justifyContent: 'center',

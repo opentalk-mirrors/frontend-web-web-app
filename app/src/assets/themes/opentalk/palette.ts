@@ -6,10 +6,12 @@ import { ThemeBasePalette, BasePalette } from '@opentalk/rest-api-rtk-query';
 
 import { getContrastText, otDarken, otLighten } from './colorUtils';
 
+const LIGHTNESS_STEP = 0.09;
+
 export const defaultLightModeColors: BasePalette = {
   primary: '#20434F',
   secondary: '#D1E545',
-  background: '#F2F4F4',
+  background: '#f1f3f4',
   error: '#ff7f74',
   danger: '#ff6e65',
   success: '#66d669',
@@ -21,7 +23,7 @@ export const defaultLightModeColors: BasePalette = {
 };
 
 export const defaultDarkModeColors: BasePalette = {
-  primary: '#DBE0E2',
+  primary: '#dfe2e2',
   secondary: '#D1E545',
   background: '#20434F',
   error: '#db3836',
@@ -62,18 +64,18 @@ export function getColorSchemes(
   const lightComputedPalette: PaletteOptions = {
     primary: {
       main: basePalette.light.primary,
-      dark: otDarken(basePalette.light.primary, 0.12),
-      light: otLighten(basePalette.light.primary, 0.12),
+      dark: otDarken(basePalette.light.primary, LIGHTNESS_STEP),
+      light: otLighten(basePalette.light.primary, LIGHTNESS_STEP),
     },
     secondary: {
       main: basePalette.light.secondary,
-      dark: otDarken(basePalette.light.secondary, 0.12),
-      light: otLighten(basePalette.light.secondary, 0.12),
+      dark: otDarken(basePalette.light.secondary, LIGHTNESS_STEP),
+      light: otLighten(basePalette.light.secondary, LIGHTNESS_STEP),
     },
     text: {
       primary: basePalette.light.textPrimary,
       secondary: basePalette.light.textSecondary,
-      disabled: otLighten(basePalette.light.textPrimary, 0.4),
+      disabled: otLighten(basePalette.light.textPrimary, LIGHTNESS_STEP),
       error: basePalette.light.textError,
     },
     success: {
@@ -90,8 +92,8 @@ export function getColorSchemes(
     },
     danger: {
       main: basePalette.light.danger,
-      light: otDarken(basePalette.light.danger, 0.02),
-      dark: otLighten(basePalette.light.danger, 0.04),
+      light: otDarken(basePalette.light.danger, LIGHTNESS_STEP),
+      dark: otLighten(basePalette.light.danger, LIGHTNESS_STEP),
       contrastText: getContrastText(basePalette.light.textPrimary, basePalette.light.danger),
     },
     avatar: {
@@ -104,16 +106,25 @@ export function getColorSchemes(
         contrastText: getContrastText(basePalette.light.textPrimary, basePalette.light.background),
       },
       highlight: {
-        primary: otDarken(basePalette.light.background, 0.06),
-        contrastText: getContrastText(basePalette.light.textPrimary, otDarken(basePalette.light.background, 0.06)),
+        primary: otDarken(basePalette.light.background, LIGHTNESS_STEP),
+        contrastText: getContrastText(
+          basePalette.light.textPrimary,
+          otDarken(basePalette.light.background, LIGHTNESS_STEP)
+        ),
       },
       highlightContrast: {
-        primary: otDarken(basePalette.light.background, 0.16),
-        contrastText: getContrastText(basePalette.light.textPrimary, otLighten(basePalette.light.background, 0.16)),
+        primary: otDarken(basePalette.light.background, 2 * LIGHTNESS_STEP),
+        contrastText: getContrastText(
+          basePalette.light.textPrimary,
+          otLighten(basePalette.light.background, 2 * LIGHTNESS_STEP)
+        ),
       },
       customPaper: {
-        primary: otLighten(basePalette.light.background, 0.1),
-        contrastText: getContrastText(basePalette.light.textPrimary, otLighten(basePalette.light.background, 0.1)),
+        primary: otLighten(basePalette.light.background, LIGHTNESS_STEP),
+        contrastText: getContrastText(
+          basePalette.light.textPrimary,
+          otLighten(basePalette.light.background, LIGHTNESS_STEP)
+        ),
       },
     },
     focus: {
@@ -128,18 +139,18 @@ export function getColorSchemes(
   const darkComputedPalette: PaletteOptions = {
     primary: {
       main: basePalette.dark.primary,
-      dark: otDarken(basePalette.dark.primary, 0.12),
-      light: otLighten(basePalette.dark.primary, 0.12),
+      dark: otDarken(basePalette.dark.primary, LIGHTNESS_STEP),
+      light: otLighten(basePalette.dark.primary, LIGHTNESS_STEP),
     },
     secondary: {
       main: basePalette.dark.secondary,
-      dark: otDarken(basePalette.dark.secondary, 0.12),
-      light: otLighten(basePalette.dark.secondary, 0.12),
+      dark: otDarken(basePalette.dark.secondary, LIGHTNESS_STEP),
+      light: otLighten(basePalette.dark.secondary, LIGHTNESS_STEP),
     },
     text: {
       primary: basePalette.dark.textPrimary,
       secondary: basePalette.dark.textSecondary,
-      disabled: otDarken(basePalette.dark.textPrimary, 0.2),
+      disabled: otDarken(basePalette.dark.textPrimary, LIGHTNESS_STEP),
       error: basePalette.dark.textError,
     },
     success: {
@@ -156,8 +167,8 @@ export function getColorSchemes(
     },
     danger: {
       main: basePalette.dark.danger,
-      light: otLighten(basePalette.dark.danger, 0.08),
-      dark: otDarken(basePalette.dark.danger, 0.02),
+      light: otLighten(basePalette.dark.danger, LIGHTNESS_STEP),
+      dark: otDarken(basePalette.dark.danger, LIGHTNESS_STEP),
       contrastText: getContrastText(basePalette.dark.textPrimary, basePalette.dark.danger),
     },
     avatar: {
@@ -170,16 +181,25 @@ export function getColorSchemes(
         contrastText: getContrastText(basePalette.dark.textPrimary, basePalette.dark.background),
       },
       highlight: {
-        primary: otLighten(basePalette.dark.background, 0.06),
-        contrastText: getContrastText(basePalette.dark.textPrimary, otLighten(basePalette.dark.background, 0.06)),
+        primary: otLighten(basePalette.dark.background, LIGHTNESS_STEP),
+        contrastText: getContrastText(
+          basePalette.dark.textPrimary,
+          otLighten(basePalette.dark.background, LIGHTNESS_STEP)
+        ),
       },
       highlightContrast: {
-        primary: otLighten(basePalette.dark.background, 0.16),
-        contrastText: getContrastText(basePalette.dark.textPrimary, otLighten(basePalette.dark.background, 0.16)),
+        primary: otLighten(basePalette.dark.background, 2 * LIGHTNESS_STEP),
+        contrastText: getContrastText(
+          basePalette.dark.textPrimary,
+          otLighten(basePalette.dark.background, 2 * LIGHTNESS_STEP)
+        ),
       },
       customPaper: {
-        primary: otDarken(basePalette.dark.background, 0.1),
-        contrastText: getContrastText(basePalette.dark.textPrimary, otDarken(basePalette.dark.background, 0.1)),
+        primary: otDarken(basePalette.dark.background, LIGHTNESS_STEP),
+        contrastText: getContrastText(
+          basePalette.dark.textPrimary,
+          otDarken(basePalette.dark.background, LIGHTNESS_STEP)
+        ),
       },
     },
     focus: {

@@ -11,7 +11,7 @@ import { EndpointBuilder } from './helper';
 export const defaultLightModeColors: BasePalette = {
   primary: '#20434F',
   secondary: '#D1E545',
-  background: '#F2F4F4',
+  background: '#f1f3f4',
   error: '#ff7f74',
   danger: '#ff6e65',
   success: '#66d669',
@@ -22,7 +22,7 @@ export const defaultLightModeColors: BasePalette = {
   textError: '#a42424',
 };
 export const defaultDarkModeColors: BasePalette = {
-  primary: '#DBE0E2',
+  primary: '#dfe2e2',
   secondary: '#D1E545',
   background: '#20434F',
   error: '#db3836',
