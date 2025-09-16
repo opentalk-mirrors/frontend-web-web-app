@@ -10,6 +10,7 @@ import convertToSnakeCase from 'snakecase-keys';
 import type { RootState } from '../store';
 import { FetchRequestError, ParticipantId } from '../types';
 import { fetchWithAuth, getControllerBaseUrl } from '../utils/apiUtils';
+import { navigateTo } from '../utils/navigation';
 
 export interface ApiErrorWithBody<T extends string> {
   code: T;
@@ -127,7 +128,7 @@ export const rtkQueryErrorLoggerMiddleware: Middleware =
     // If rtk query get rejected dispatch auth error
     if (isAction(action) && isRejectedWithValue(action)) {
       // At some point we could define a common type for rejected payload
-      const payload = action.payload as { status: number; data: { message: string } };
+      const payload = action.payload as { status: number | string; data: { message: string } };
 
       if (payload.status === 401) {
         if (payload.data.message === AuthTypeErrorMessage.InvalidTokenOrInvite) {
@@ -150,14 +151,10 @@ export const rtkQueryErrorLoggerMiddleware: Middleware =
         // left unhandled as next callback was never called.
         return next(action);
       }
-      if (payload.status >= 500) {
-        dispatch(
-          authError({
-            status: payload.status,
-            name: AuthTypeError.SystemCurrentlyUnavailable,
-            message: AuthTypeError.SystemCurrentlyUnavailable,
-          })
-        );
+      const isServerError = typeof payload.status === 'number' && payload.status >= 500;
+      const isFetchError = payload.status === 'FETCH_ERROR';
+      if (isServerError || isFetchError) {
+        navigateTo('/server-issue', { replace: true });
         return next(action);
       }
     }

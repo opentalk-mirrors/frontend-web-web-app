@@ -4,6 +4,7 @@
 import i18next from 'i18next';
 import { RouteObject, Outlet } from 'react-router-dom';
 
+import Error from '../components/Error';
 import {
   SettingsProfilePage,
   SettingsGeneralPage,
@@ -141,6 +142,16 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
         ],
       },
     ],
+  },
+  {
+    path: 'server-issue',
+    element: (
+      <Error
+        title={i18next.t('server-issue-page-title')}
+        description={i18next.t('server-issue-page-description')}
+        logout
+      />
+    ),
   },
   {
     path: redirectUri,

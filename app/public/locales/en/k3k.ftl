@@ -639,6 +639,9 @@ error-session-expired-message = Login session has expired, if you want to contin
 error-oidc-configuration = Incorrect OIDC configuration
 error-oidc-configuration-message = Failed to load correct OIDC configuration. Please, contact your administrator.
 
+server-issue-page-title = Something went wrong
+server-issue-page-description = There are issues with the server. Please try again later or contact your admin.
+
 asset-table-filename = Filename
 asset-table-created = Created
 asset-table-actions = Actions
@@ -661,6 +664,7 @@ global-state-active = active
 global-state-started = active
 global-state-finished = finished
 global-state-canceled = canceled
+global-logout = Logout
 global-accept = Accept
 global-cancel = Cancel
 global-decline = Decline
@@ -750,7 +754,6 @@ dashboard-settings-account-title = Account settings
 dashboard-settings-profile-title = Profile settings
 dashboard-settings-storage-title = Storage settings
 
-dashboard-logout = Logout
 dashboard-account-management = Account management
 dashboard-legal = Legal
 dashboard-legal-imprint = Imprint
