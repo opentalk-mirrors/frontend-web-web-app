@@ -220,6 +220,9 @@ export const uiSlice = createSlice({
     builder.addCase(hangUp.pending, (state) => {
       state.voteOrPollIdToShow = undefined;
     });
+    builder.addCase(hangUp.fulfilled, (state) => {
+      state.showCoffeeBreakCurtain = false;
+    });
     builder.addCase(connectionClosed, (state) => {
       state.chatConversationState = initialState.chatConversationState;
       state.cinemaLayout = initialState.cinemaLayout;
