@@ -22,7 +22,7 @@
   "devDependencies": {
     "i18next": "^25.5.2",
     "typescript": "^5.9.2",
-    "vite": "^7.1.5",
+    "vite": "^7.1.6",
     "vite-plugin-dts": "^4.5.4"
   },
   "scripts": {
