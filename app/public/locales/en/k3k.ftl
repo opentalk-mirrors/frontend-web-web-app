@@ -568,11 +568,11 @@ poll-overview-panel-status-active = Active
 poll-overview-panel-status-finished = Finished
 
 timer-tab-title = Timer
-timer-form-button-submit = Create Timer
+timer-form-button-submit = Start Timer
 timer-form-ready-to-continue = Ask participants if they are ready
 timer-counter-remaining-time = Remaining time
 timer-counter-elapsed-time = Elapsed time
-timer-overview-button-stop = Stop timer
+timer-overview-button-stop = End timer
 timer-notification-stopped = The timer was stopped
 timer-notification-ran-out = The timer ran out
 timer-notification-error = There was an issue with the start time

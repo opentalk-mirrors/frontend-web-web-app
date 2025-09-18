@@ -568,11 +568,11 @@ poll-overview-panel-status-active = Aktiv
 poll-overview-panel-status-finished = Beendet
 
 timer-tab-title = Stoppuhr
-timer-form-button-submit = Stoppuhr erstellen
+timer-form-button-submit = Stoppuhr starten
 timer-counter-remaining-time = Verbleibende Zeit
 timer-counter-elapsed-time = Verstrichene Zeit
 timer-form-ready-to-continue = Teilnehmer fragen, ob sie fertig sind
-timer-overview-button-stop = Stoppuhr unterbrechen
+timer-overview-button-stop = Stoppuhr beenden
 timer-notification-stopped = Die Stoppuhr wurde unterbrochen
 timer-notification-ran-out = Die Zeit ist abgelaufen
 timer-notification-error = Es gab ein Problem mit der Startzeit
