@@ -5,7 +5,7 @@ import { Box, Button, MenuItem, Select, Stack, Switch, styled } from '@mui/mater
 import { FormikValues, useFormik } from 'formik';
 import i18next from 'i18next';
 import { reduce, shuffle } from 'lodash';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 
@@ -217,6 +217,11 @@ const CreateRoomsForm = () => {
       setError(error);
     }
   };
+
+  useEffect(() => {
+    formik.setFieldValue('maxParticipantsPerRoom', maxParticipantsPerRoom);
+    formik.setFieldValue('maxRooms', maxRooms);
+  }, [maxParticipantsPerRoom, maxRooms]);
 
   return (
     <Form onSubmit={formik.handleSubmit} sx={{ overflow: 'auto' }}>
