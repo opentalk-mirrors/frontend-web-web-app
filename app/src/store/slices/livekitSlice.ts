@@ -20,6 +20,7 @@ import {
   ConnectionState as LivekitConnectionState,
   LocalAudioTrack,
   LocalParticipant,
+  LocalTrackPublication,
   LocalVideoTrack,
   Participant,
   RemoteParticipant,
@@ -580,7 +581,10 @@ const attachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, r
     })
     .on(RoomEvent.Disconnected, () => handleRoomDisconnected(dispatch, getState))
     .on(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, dispatch))
-    .on(RoomEvent.TrackUnpublished, (pub, participant) => handleTrackUnpublished(pub, participant, dispatch, getState))
+    .on(RoomEvent.TrackUnpublished, (pub, participant) =>
+      handleRemoteTrackUnpublished(pub, participant, dispatch, getState)
+    )
+    .on(RoomEvent.LocalTrackUnpublished, (pub) => handleLocalTrackUnpublished(pub, dispatch, getState))
     .on(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
     .on(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
       handlePermissionChanged(previousPermissions, participant, dispatch)
@@ -597,7 +601,10 @@ const detachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, r
     })
     .off(RoomEvent.Disconnected, () => handleRoomDisconnected(dispatch, getState))
     .off(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, dispatch))
-    .off(RoomEvent.TrackUnpublished, (pub, participant) => handleTrackUnpublished(pub, participant, dispatch, getState))
+    .off(RoomEvent.TrackUnpublished, (pub, participant) =>
+      handleRemoteTrackUnpublished(pub, participant, dispatch, getState)
+    )
+    .off(RoomEvent.LocalTrackUnpublished, (pub) => handleLocalTrackUnpublished(pub, dispatch, getState))
     .off(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
     .off(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
       handlePermissionChanged(previousPermissions, participant, dispatch)
@@ -646,17 +653,24 @@ const handleTrackPublished = (pub: RemoteTrackPublication, participant: RemotePa
   }
 };
 
-const handleTrackUnpublished = (
+const handleRemoteTrackUnpublished = (
   pub: RemoteTrackPublication,
   participant: RemoteParticipant,
   dispatch: AppDispatch,
   getState: () => RootState
 ) => {
-  const pinnedParticipantId = getState().ui.pinnedParticipantId;
-  if (pub.source === Track.Source.ScreenShare && participant.identity === pinnedParticipantId) {
-    const lastCinemaLayout = getState().ui.cinemaLayout;
+  const state = getState();
+  if (pub.source === Track.Source.ScreenShare && participant.identity === state.ui.pinnedParticipantId) {
+    const lastCinemaLayout = state.ui.cinemaLayout;
     dispatch(pinnedParticipantIdSet(undefined));
     dispatch(updatedCinemaLayout({ layout: lastCinemaLayout }));
+  }
+};
+
+const handleLocalTrackUnpublished = (pub: LocalTrackPublication, dispatch: AppDispatch, getState: () => RootState) => {
+  const state = getState();
+  if (pub.source === Track.Source.ScreenShare && state.livekit.mediaSettings.screenShareEnabled) {
+    dispatch(setScreenShareEnabled({ enabled: false }));
   }
 };
 
