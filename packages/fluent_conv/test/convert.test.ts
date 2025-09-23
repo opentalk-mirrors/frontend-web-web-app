@@ -41,7 +41,7 @@ describe('convert without callback', () => {
     expect(() => ftl2js(wrongInput as unknown as string)).toThrow(Error);
   });
 
-  it('it converts js to ftl', () => {
+  it('converts js to ftl', () => {
     const res = js2ftl(example.js);
     // Compensate for newline at the end of example.ftl
     expect(res).toEqual(example.ftl + '\n');
