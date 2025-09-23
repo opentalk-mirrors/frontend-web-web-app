@@ -32,6 +32,48 @@
     },
     {
       "matchPackagePatterns": [
+        "uuid",
+        "@types/uuid"
+      ],
+      "groupName": "uuid",
+      "groupSlug": "uuid"
+    },
+    {
+      "matchPackagePatterns": [
+        "react-window",
+        "@types/react-window"
+      ],
+      "groupName": "react-window",
+      "groupSlug": "react-window"
+    },
+    {
+      "matchPackagePatterns": [
+        "fscreen",
+        "@types/fscreen"
+      ],
+      "groupName": "fscreen",
+      "groupSlug": "fscreen"
+    },
+    {
+      "matchPackagePatterns": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "groupName": "react",
+      "groupSlug": "react"
+    },
+    {
+      "matchPackagePatterns": [
+        "lodash",
+        "@types/lodash"
+      ],
+      "groupName": "lodash",
+      "groupSlug": "lodash"
+    },
+    {
+      "matchPackagePatterns": [
         "@types/*"
       ],
       "groupName": "@types",
