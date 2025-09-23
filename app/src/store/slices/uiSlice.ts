@@ -42,7 +42,7 @@ export type UIState = {
   participantsSearchValue: string;
   chatConversationState: IChatConversationState;
   cinemaLayout: LayoutOptions;
-  lastCinemaLayout?: LayoutOptions;
+  lastCinemaLayout: LayoutOptions;
   paginationPage: number;
   pinnedParticipantId?: ParticipantId;
   localVideoMirroringEnabled: boolean;
@@ -77,7 +77,7 @@ const initialState: UIState = {
     targetId: undefined,
   },
   cinemaLayout: LayoutOptions.Grid,
-  lastCinemaLayout: undefined,
+  lastCinemaLayout: LayoutOptions.Grid,
   paginationPage: 1,
   pinnedParticipantId: undefined,
   localVideoMirroringEnabled: true,
@@ -127,9 +127,7 @@ export const uiSlice = createSlice({
     },
     updatedCinemaLayout: (state, action: PayloadAction<{ layout: LayoutOptions; cacheLastLayout?: boolean }>) => {
       if (action.payload.cacheLastLayout) {
-        state.lastCinemaLayout = state.cinemaLayout;
-      } else {
-        state.lastCinemaLayout = undefined;
+        state.lastCinemaLayout = action.payload.layout;
       }
       state.cinemaLayout = action.payload.layout;
       if (action.payload.layout === LayoutOptions.Whiteboard && state.isCurrentWhiteboardHighlighted) {
