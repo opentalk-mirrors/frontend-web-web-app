@@ -67,7 +67,7 @@ const LayoutSelection = () => {
 
   const handleSelectedView = (layout: LayoutOptions, order: GridViewOrder = GridViewOrder.FirstJoined) => {
     setAnchorElement(null);
-    dispatch(updatedCinemaLayout({ layout }));
+    dispatch(updatedCinemaLayout({ layout, cacheLastLayout: true }));
     dispatch(updatedGridViewOrder(order));
   };
 

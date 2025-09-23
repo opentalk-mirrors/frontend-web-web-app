@@ -661,9 +661,8 @@ const handleRemoteTrackUnpublished = (
 ) => {
   const state = getState();
   if (pub.source === Track.Source.ScreenShare && participant.identity === state.ui.pinnedParticipantId) {
-    const lastCinemaLayout = state.ui.cinemaLayout;
     dispatch(pinnedParticipantIdSet(undefined));
-    dispatch(updatedCinemaLayout({ layout: lastCinemaLayout }));
+    dispatch(updatedCinemaLayout({ layout: state.ui.lastCinemaLayout }));
   }
 };
 
