@@ -203,11 +203,9 @@ export const selectCombinedMessageAndEvents = createSelector(
     if (scope === ChatScope.Global) {
       messages = globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
 
-      if (messages.length > 0) {
-        const events = selectAllEvents(state);
-        if (events.length > 0) {
-          return _.sortBy([...messages, ...events], ['timestamp']);
-        }
+      const events = selectAllEvents(state);
+      if (events.length > 0) {
+        return _.sortBy([...messages, ...events], ['timestamp']);
       }
 
       return messages.length > 0 ? messages : [];
