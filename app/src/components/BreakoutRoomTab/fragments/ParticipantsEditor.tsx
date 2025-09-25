@@ -11,7 +11,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { concat, without } from 'lodash';
+import { concat, intersectionBy, without } from 'lodash';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -33,10 +33,11 @@ const FormControlLabel = styled(MuiFormControlLabel)({
 const ParticipantContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
+  gap: theme.spacing(0.5),
   maxHeight: 200,
   width: '17.875rem',
   overflowY: 'scroll',
-  padding: theme.spacing(0, 1, 0, 2),
+  padding: theme.spacing(0, 1, 2, 2),
 }));
 
 const ButtonGroup = styled('div')(({ theme }) => ({
@@ -72,8 +73,13 @@ const ParticipantsEditor = ({
   const theme = useTheme();
 
   useEffect(() => {
-    setParticipantsToAssign(assignedParticipants);
-  }, [assignedParticipants]);
+    const availableParticipants = [...assignedParticipants, ...unAssignedParticipants];
+
+    setParticipantsToAssign((selectedParticipants) => {
+      // Filter out participants that were selected but are no longer available.
+      return intersectionBy(availableParticipants, selectedParticipants, 'id');
+    });
+  }, [assignedParticipants, unAssignedParticipants]);
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -100,8 +106,12 @@ const ParticipantsEditor = ({
     setAnchorEl(null);
   };
 
-  const renderParticipants = (participants: Participant[]) =>
-    participants.map((participant) => (
+  const renderParticipants = (participants: Participant[]) => {
+    if (participants.length === 0) {
+      return <span>━</span>;
+    }
+
+    return participants.map((participant) => (
       <FormControlLabel
         key={participant.id}
         control={
@@ -119,6 +129,7 @@ const ParticipantsEditor = ({
         labelPlacement="start"
       />
     ));
+  };
 
   const open = Boolean(anchorEl);
 
