@@ -24,6 +24,7 @@ export const bindDomEventsToRedux = (dispatch: AppDispatch) => {
     onRelease: async (params) => await toggleMicrophone(params, false),
     descriptionKey: 'hotkey-hold-to-speak',
     preventActiveMediaAfterPermissionPrompt: true,
+    forcePreventDefault: true,
   });
   registerHotkey({
     key: 'm',

@@ -63,6 +63,7 @@ describe('bindDomEventsToRedux', () => {
       onRelease: expect.any(Function),
       descriptionKey: 'hotkey-hold-to-speak',
       preventActiveMediaAfterPermissionPrompt: true,
+      forcePreventDefault: true,
     });
     expect(registerHotkey).toHaveBeenCalledWith({
       key: 'm',

@@ -29,6 +29,7 @@ export const registerHotkey = ({
   onRelease,
   descriptionKey,
   preventActiveMediaAfterPermissionPrompt,
+  forcePreventDefault,
 }: Hotkey) => {
   const exists = hotkeys.some((hotkey) => hotkey.key === key && hotkey.modifier === modifier);
 
@@ -43,6 +44,7 @@ export const registerHotkey = ({
     onRelease,
     descriptionKey,
     preventActiveMediaAfterPermissionPrompt,
+    forcePreventDefault,
   });
 };
 
@@ -65,13 +67,17 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
       const state = listenerApi.getState() as RootState;
       const hotkey = findHotkey(event);
 
-      if (!hotkey) {
+      if (hotkey?.forcePreventDefault) {
+        event.preventDefault();
+      }
+
+      if (!hotkey || hotkeysDisabled) {
         return;
       }
 
       event.preventDefault();
 
-      if (state.ui.hotkeysEnabled === false || hotkeysDisabled || event.repeat) {
+      if (state.ui.hotkeysEnabled === false || event.repeat) {
         return;
       }
 

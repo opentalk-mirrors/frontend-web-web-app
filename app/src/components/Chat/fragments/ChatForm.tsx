@@ -153,7 +153,6 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
   };
 
   const onEmojiPickerContainerKeyDown = (event: KeyboardEvent) => {
-    event.stopPropagation();
     /**
      * Since we don't have direct access to the library's search field, we depend on event bubbling and identify the source element of the event.
      *

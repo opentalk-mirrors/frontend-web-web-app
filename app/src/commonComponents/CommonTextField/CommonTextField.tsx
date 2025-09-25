@@ -2,11 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { InputProps, InputLabelProps, TextField, TextFieldProps, styled } from '@mui/material';
-import React, { KeyboardEvent, useState, useEffect, FocusEvent } from 'react';
+import React, { useState, useEffect, FocusEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { generateUniqueId } from '../../utils/stringUtils';
-import { KEYS_TO_PROPAGATE } from './constants';
 
 type ComposedTextFieldProps = TextFieldProps & {
   maxCharacters?: number;
@@ -93,12 +92,6 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
       }
     };
 
-    const handlePropagation = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      if (!KEYS_TO_PROPAGATE.includes(event.key)) {
-        event.stopPropagation();
-      }
-    };
-
     // we shall take care to execute onFocus event passed from the parent component as well (if any)
     const handleFocus = (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => {
       setFocused(true);
@@ -160,8 +153,6 @@ const CommonTextField = React.forwardRef<HTMLInputElement, ComposedTextFieldProp
         inputProps={{
           ...props.inputProps,
           maxLength: maxCharacters,
-          onKeyDown: handlePropagation,
-          onKeyUp: handlePropagation,
           // we need explicitly set the accessible name of the text field if we hide the label,
           // otherwise browser will use placeholder as the accessible name
           // strangely, we don't need to do it for the combobox
