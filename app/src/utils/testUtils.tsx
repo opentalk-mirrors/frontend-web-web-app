@@ -53,6 +53,9 @@ import { AppDispatch, appReducers } from '../store';
 import type { RootState } from '../store';
 import { listenerMiddleware } from '../store/listenerMiddleware';
 import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
+import { bindDomEventsToRedux } from '../store/slices/hotkeys/eventBindings';
+import { resetHotkeys } from '../store/slices/hotkeys/listener';
+import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from '../store/slices/hotkeys/slice';
 import { Poll } from '../store/slices/pollSlice';
 import {
   AutomodSelectionStrategy,
@@ -115,9 +118,15 @@ type MockReduxStore = {
   dispatchSpy: MockInstance<AppDispatch>;
 };
 
+type UnbindDomEvents = {
+  unbindDomEvents: ReturnType<typeof bindDomEventsToRedux>;
+};
+
 export const middleware: Array<Middleware> = [restApi.middleware, listenerMiddleware.middleware];
 
-export const configureStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined): MockReduxStore => {
+export const configureStore = (
+  options?: ConfigureStoreOptions['preloadedState'] | undefined
+): MockReduxStore & UnbindDomEvents => {
   const regexIgnoredPaths = /\b(getTrackPublication|setMicrophoneEnabled|videoTrackPublications)\b/;
 
   const store = configureStoreTlk({
@@ -127,14 +136,18 @@ export const configureStore = (options?: ConfigureStoreOptions['preloadedState']
       getDefaultMiddleware({
         serializableCheck: {
           ignoredActionPaths: ['meta.arg', 'meta.baseQueryMeta', 'meta.history', 'payload.conferenceContext'],
-          ignoredPaths: [regexIgnoredPaths],
+          ignoredPaths: [regexIgnoredPaths, 'livekit.room', 'livekit.whisperRoom', 'livekit.lobby'],
+          ignoredActions: [domKeyDown.type, domKeyUp.type, domFocusIn.type, domFocusOut.type],
         },
       }).concat(middleware),
   });
 
   const dispatchSpy = vi.spyOn(store, 'dispatch');
 
-  return { store, dispatchSpy };
+  resetHotkeys();
+  const unbindDomEvents = bindDomEventsToRedux(store.dispatch);
+
+  return { store, dispatchSpy, unbindDomEvents };
 };
 
 interface Render {

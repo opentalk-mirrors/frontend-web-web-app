@@ -45,8 +45,7 @@ describe('ParticipationConfirmationDialog', () => {
     const button = await screen.findByRole('button', { name: 'participation-confirmation-dialog-confirm-button' });
     fireEvent.click(button);
 
-    expect(dispatchSpy).toHaveBeenCalledTimes(2);
-    expect(dispatchSpy).toHaveBeenCalledWith(confirmPresence.action());
-    expect(dispatchSpy).toHaveBeenCalledWith(presenceConfirmationDone());
+    expect(dispatchSpy.mock.calls).toContainEqual([confirmPresence.action()]);
+    expect(dispatchSpy.mock.calls).toContainEqual([presenceConfirmationDone()]);
   });
 });

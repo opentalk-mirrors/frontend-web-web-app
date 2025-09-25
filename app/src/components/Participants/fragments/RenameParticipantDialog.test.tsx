@@ -38,7 +38,9 @@ describe('RenameParticipantDialog', () => {
     renderWithProviders(<RenameParticipantDialog open={true} onClose={onClose} participant={participant} />, { store });
     fireEvent.click(screen.getByRole('button', { name: 'global-save' }));
     expect(await screen.findByText(/field-error-required/)).toBeInTheDocument();
-    expect(dispatchSpy).not.toHaveBeenCalled();
+    expect(dispatchSpy.mock.calls).not.toContainEqual([
+      changeDisplayName.action({ target: participant.id, newName: '' }),
+    ]);
   });
 
   it('dispatches changeDisplayName and closes on valid submit', async () => {

@@ -9,7 +9,7 @@ import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MediaReconnectionDialog from './MediaReconnectionDialog';
 
 describe('MediaReconnectionDialog', () => {
-  const { store, dispatchSpy } = configureStore();
+  const { store } = configureStore();
 
   it('will render without errors', async () => {
     renderWithProviders(<MediaReconnectionDialog />, { store, provider: { mui: true, snackbar: true } });
@@ -25,7 +25,6 @@ describe('MediaReconnectionDialog', () => {
 
     await userEvent.click(hangupButton);
 
-    expect(dispatchSpy).toHaveBeenCalledTimes(1);
     expect(spyHangUp).toHaveBeenCalledTimes(1);
   });
 });

@@ -17,6 +17,8 @@ import chatReducer from './slices/chatSlice';
 import { initialState as initialConfig } from './slices/configSlice';
 import configReducer from './slices/configSlice';
 import eventReducer from './slices/eventSlice';
+import { bindDomEventsToRedux } from './slices/hotkeys/eventBindings';
+import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from './slices/hotkeys/slice';
 import legalVoteReducer from './slices/legalVoteSlice';
 import livekitReducer, { setLivekitRoom, initialState as livekitInitialState } from './slices/livekitSlice';
 import mediaReducer from './slices/mediaSlice';
@@ -138,6 +140,10 @@ const store = configureStore({
           'livekit/connectRoom',
           'media/changeLocalMedia',
           'media/changeMedia',
+          domKeyDown.type,
+          domKeyUp.type,
+          domFocusIn.type,
+          domFocusOut.type,
         ],
         ignoredActionPaths: [
           'meta.arg',
@@ -159,6 +165,11 @@ const store = configureStore({
     actionSanitizer: actionSanitizer,
   },
 });
+
+// fixme called directly inside tests for some reason https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2746
+if (import.meta.env.VITEST === undefined || import.meta.env.VITEST === 'false') {
+  bindDomEventsToRedux(store.dispatch);
+}
 
 setupListeners(store.dispatch);
 

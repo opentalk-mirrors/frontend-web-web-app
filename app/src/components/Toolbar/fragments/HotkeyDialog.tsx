@@ -18,11 +18,11 @@ import { useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../../assets/icons';
 import { CommonSwitch } from '../../../commonComponents';
-import { useAppDispatch, useAppSelector } from '../../../hooks/index';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectHotkeysEnabled, setHotkeysEnabled } from '../../../store/slices/uiSlice';
-import { ShortcutTable } from './ShortcutTable';
+import HotkeyTable from './HotkeyTable';
 
-interface ShortcutListDialogProps {
+interface HotkeyDialogProps {
   onClose: () => void;
   open: boolean;
 }
@@ -49,7 +49,7 @@ const DeactivatedContainer = styled(Box)(({ theme }) => ({
   aspectRatio: '2/1',
 }));
 
-const ShortcutListDialog = (props: ShortcutListDialogProps) => {
+const HotkeyDialog = (props: HotkeyDialogProps) => {
   const { t } = useTranslation();
   const { onClose, open } = props;
   const switchId = 'switch-shortcut-activation';
@@ -61,7 +61,7 @@ const ShortcutListDialog = (props: ShortcutListDialogProps) => {
       open={open}
       onClose={onClose}
       fullWidth
-      maxWidth="xs"
+      maxWidth="sm"
       PaperComponent={Paper}
       aria-describedby="shortcut-dialog-description"
     >
@@ -79,7 +79,7 @@ const ShortcutListDialog = (props: ShortcutListDialogProps) => {
               position: 'relative',
             }}
           >
-            <DialogTitle sx={{ p: 0 }}>{t('my-meeting-menu-keyboard-shortcuts')}</DialogTitle>
+            <DialogTitle sx={{ p: 0 }}>{t('my-meeting-menu-keyboard-hotkeys')}</DialogTitle>
             <CloseButton aria-label={t('global-close-dialog')} onClick={onClose} edge="end">
               <CloseIcon />
             </CloseButton>
@@ -93,7 +93,7 @@ const ShortcutListDialog = (props: ShortcutListDialogProps) => {
               position: 'relative',
             }}
           >
-            <SwitchLabel htmlFor={switchId}>{t('my-meeting-menu-keyboard-shortcuts')}</SwitchLabel>
+            <SwitchLabel htmlFor={switchId}>{t('my-meeting-menu-keyboard-hotkeys')}</SwitchLabel>
             <CommonSwitch
               id={switchId}
               checked={hotkeysEnabled}
@@ -106,14 +106,10 @@ const ShortcutListDialog = (props: ShortcutListDialogProps) => {
             />
           </Box>
         </Stack>
-        {hotkeysEnabled ? (
-          <ShortcutTable />
-        ) : (
-          <DeactivatedContainer>{t('shortcut-deactive-message')}</DeactivatedContainer>
-        )}
+        {hotkeysEnabled ? <HotkeyTable /> : <DeactivatedContainer>{t('hotkey-deactive-message')}</DeactivatedContainer>}
       </DialogContent>
     </Dialog>
   );
 };
 
-export default ShortcutListDialog;
+export default HotkeyDialog;

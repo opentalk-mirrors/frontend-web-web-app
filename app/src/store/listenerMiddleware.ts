@@ -5,6 +5,7 @@ import { createListenerMiddleware, TypedStartListening } from '@reduxjs/toolkit'
 
 import { startCommonListeners } from './commonListeners';
 import type { RootState, AppDispatch } from './index';
+import { startHotkeyListeners } from './slices/hotkeys/listener';
 import { startLivekitListeners } from './slices/livekitSlice';
 import { startParticipantsListeners } from './slices/participantsSlice';
 import { startRoomListeners } from './slices/roomSlice';
@@ -24,6 +25,7 @@ const startListening = () => {
   startParticipantsListeners(startAppListening);
   startRoomListeners(startAppListening);
   startUserListeners(startAppListening);
+  startHotkeyListeners(startAppListening);
 };
 
 startListening();

@@ -49,7 +49,6 @@ export type RoomState = {
   eventInfo?: EventInfo;
   roomInfo?: RoomInfo;
   reconnectTimerId: ReturnType<typeof setTimeout> | null;
-  hotkeysEnabled: boolean;
   isOwnedByCurrentUser: boolean;
   isPresenceConfirmationActive: boolean;
   isDeleted: boolean;
@@ -78,7 +77,6 @@ const initialState: RoomState = {
   passwordRequired: false,
   participantLimit: 0,
   reconnectTimerId: null,
-  hotkeysEnabled: true,
   isOwnedByCurrentUser: false,
   isPresenceConfirmationActive: false,
   isDeleted: false,
@@ -156,9 +154,6 @@ export const roomSlice = createSlice({
       }
       state.reconnectTimerId = null;
       state.connectionState = ConnectionState.Left;
-    },
-    setHotkeysEnabled: (state, { payload }) => {
-      state.hotkeysEnabled = payload;
     },
     presenceConfirmationRequested: (state) => {
       state.isPresenceConfirmationActive = true;
@@ -287,7 +282,6 @@ export const {
   disableWaitingRoom,
   updatedReconnectTimerId,
   abortedReconnection,
-  setHotkeysEnabled,
   roomReset,
   presenceConfirmationRequested,
   presenceConfirmationDone,
@@ -305,7 +299,6 @@ export const selectParticipantLimit = (state: RootState) => state.room.participa
 export const selectCurrentRoomMode = (state: RootState) => state.room.currentMode;
 export const selectEventInfo = (state: RootState) => state.room.eventInfo;
 export const selectRoomInfo = (state: RootState) => state.room.roomInfo;
-export const selectHotkeysEnabled = (state: RootState) => state.room.hotkeysEnabled;
 export const selectIsRoomOwner = (state: RootState) => state.room.isOwnedByCurrentUser;
 export const selectIsParticipationConfirmationActive = (state: RootState) => state.room.isPresenceConfirmationActive;
 export const selectIsRoomDeleted = (state: RootState) => state.room.isDeleted;
