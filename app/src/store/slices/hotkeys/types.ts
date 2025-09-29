@@ -18,4 +18,6 @@ export interface Hotkey {
   onRelease?: (params: HotkeyCallbackParams) => void;
   descriptionKey: string;
   preventActiveMediaAfterPermissionPrompt?: boolean;
+  //force prevent from default action for this hotkey
+  forcePreventDefault?: boolean;
 }

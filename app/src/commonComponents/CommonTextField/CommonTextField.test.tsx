@@ -5,7 +5,6 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
 import CommonTextField from './CommonTextField';
-import { KEYS_TO_PROPAGATE } from './constants';
 
 // https://stackoverflow.com/questions/68468203/why-am-i-getting-textencoder-is-not-defined-in-jest
 Object.assign(global, { TextDecoder, TextEncoder });
@@ -67,25 +66,6 @@ describe('CommonTextField', () => {
     render(<CommonTextField label={LABEL} value={LABEL} InputProps={{ startAdornment: START_ADORNMENT }} />);
     const label = screen.getByText(LABEL, { selector: 'label' });
     expect(label).toHaveAttribute('data-shrink', 'true');
-  });
-  it('propagates only keys defined in KEYS_TO_PROPAGATE', () => {
-    const onKeyboard = vi.fn();
-    render(
-      <div role="presentation" onKeyDown={onKeyboard} onKeyUp={onKeyboard}>
-        <CommonTextField label={LABEL} />
-      </div>
-    );
-    const textField = screen.getByRole('textbox', { name: LABEL });
-    fireEvent.keyDown(textField, { key: 'Space' });
-    expect(onKeyboard).not.toHaveBeenCalled();
-
-    fireEvent.keyDown(textField, { key: 'm' });
-    expect(onKeyboard).not.toHaveBeenCalled();
-
-    KEYS_TO_PROPAGATE.forEach((key) => {
-      fireEvent.keyDown(textField, { key });
-      expect(onKeyboard).toHaveBeenCalled();
-    });
   });
   it('shows remaining characters helper text if max characters defined', () => {
     render(<CommonTextField label={LABEL} value={VALUE} maxCharacters={VALUE.length} />);

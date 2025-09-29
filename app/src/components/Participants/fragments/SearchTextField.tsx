@@ -51,12 +51,6 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
     <CommonTextField
       fullWidth={fullWidth}
       value={searchValue}
-      onKeyDown={(event) => {
-        event.stopPropagation();
-      }}
-      onKeyUp={(event) => {
-        event.stopPropagation();
-      }}
       onChange={handleSearchChange}
       size="small"
       onFocus={handleFocus}
