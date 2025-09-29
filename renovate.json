@@ -1,98 +1,68 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "rangeStrategy": "bump",
-  "reviewers": [
-    "@opentalk/tools/renovate-reviewers/frontend"
-  ],
-  "extends": [
-    "config:recommended"
-  ],
+  "reviewers": ["@opentalk/tools/renovate-reviewers/frontend"],
+  "extends": ["config:recommended"],
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "@fluent/*"
-      ],
       "groupName": "fluent",
-      "groupSlug": "fluent"
+      "groupSlug": "fluent",
+      "matchPackageNames": ["/@fluent/*/"]
     },
     {
-      "matchPackagePatterns": [
-        "eslint*"
-      ],
       "groupName": "eslint-plugins",
-      "groupSlug": "eslint-plugins"
+      "groupSlug": "eslint-plugins",
+      "matchPackageNames": ["/eslint*/"]
     },
     {
-      "matchPackagePatterns": [
-        "@rollup*",
-        "rollup"
-      ],
       "groupName": "rollup",
-      "groupSlug": "rollup"
+      "groupSlug": "rollup",
+      "matchPackageNames": ["/@rollup*/", "/rollup/"]
     },
     {
-      "matchPackagePatterns": [
-        "uuid",
-        "@types/uuid"
-      ],
       "groupName": "uuid",
-      "groupSlug": "uuid"
+      "groupSlug": "uuid",
+      "matchPackageNames": ["/uuid/", "/@types/uuid/"]
     },
     {
-      "matchPackagePatterns": [
-        "react-window",
-        "@types/react-window"
-      ],
       "groupName": "react-window",
-      "groupSlug": "react-window"
+      "groupSlug": "react-window",
+      "matchPackageNames": ["/react-window/", "/@types/react-window/"]
     },
     {
-      "matchPackagePatterns": [
-        "fscreen",
-        "@types/fscreen"
-      ],
       "groupName": "fscreen",
-      "groupSlug": "fscreen"
+      "groupSlug": "fscreen",
+      "matchPackageNames": ["/fscreen/", "/@types/fscreen/"]
     },
     {
-      "matchPackagePatterns": [
-        "react",
-        "react-dom",
-        "@types/react",
-        "@types/react-dom"
-      ],
       "groupName": "react",
-      "groupSlug": "react"
+      "groupSlug": "react",
+      "matchPackageNames": [
+        "/react/",
+        "/react-dom/",
+        "/@types/react/",
+        "/@types/react-dom/"
+      ]
     },
     {
-      "matchPackagePatterns": [
-        "lodash",
-        "@types/lodash"
-      ],
       "groupName": "lodash",
-      "groupSlug": "lodash"
+      "groupSlug": "lodash",
+      "matchPackageNames": ["/lodash/", "/@types/lodash/"]
     },
     {
-      "matchPackagePatterns": [
-        "@types/*"
-      ],
       "groupName": "@types",
-      "groupSlug": "@types"
+      "groupSlug": "@types",
+      "matchPackageNames": ["/@types/*/"]
     },
     {
-      "matchPackagePatterns": [
-        "^i18next"
-      ],
       "groupName": "i18next",
-      "groupSlug": "i18next"
+      "groupSlug": "i18next",
+      "matchPackageNames": ["/^i18next/"]
     },
     {
-      "matchPackagePatterns": [
-        "^livekit",
-        "^@livekit"
-      ],
       "groupName": "livekit",
-      "groupSlug": "livekit"
+      "groupSlug": "livekit",
+      "matchPackageNames": ["/^livekit/", "/^@livekit/"]
     }
   ]
 }
