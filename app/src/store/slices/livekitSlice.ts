@@ -186,9 +186,11 @@ export const livekitSlice = createSlice({
       state.accessToken = undefined;
       state.unavailable = false;
     });
-    builder.addCase(disconnectRoom.fulfilled, (state) => {
-      state.mediaSettings.cameraEnabled = false;
-      state.mediaSettings.microphoneEnabled = false;
+    builder.addCase(disconnectRoom.fulfilled, (state, { meta }) => {
+      if (!meta.arg.isWhisperRoom) {
+        state.mediaSettings.cameraEnabled = false;
+        state.mediaSettings.microphoneEnabled = false;
+      }
     });
     builder.addCase(cleanLocalTracks, (state) => {
       state.lobby.audioTrackPublication?.stop();
