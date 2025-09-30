@@ -14,8 +14,8 @@ import { requestPopoutStreamAccessToken } from '../../../api/types/outgoing/live
 import { ExtendToTabIcon, FullscreenViewIcon, PinIcon } from '../../../assets/icons';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { MediaDescriptor } from '../../../modules/WebRTC';
+import { fullscreenActions, selectFullscreenSupported } from '../../../store/slices/fullscreen/slice';
 import {
   addPopoutStreamAccess,
   deleteLivekitPopoutStreamAccessToken,
@@ -78,11 +78,11 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
     selectLivekitPopoutStreamAccessByParticipantId(state, participantId)
   );
   const { t } = useTranslation();
-  const fullscreenHandle = useFullscreenContext();
   const livekitUrl = useAppSelector(selectLivekitPublicUrl);
   const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
   };
+  const isFullscreenSupported = useAppSelector(selectFullscreenSupported);
 
   const openChannel = () => {
     if (channelId && popoutStreamAccess && popoutStreamAccess.token) {
@@ -127,9 +127,10 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   const openFullScreenView: MouseEventHandler = useCallback(
     (e) => {
       e.stopPropagation();
-      fullscreenHandle.enter(participant?.identity);
+      dispatch(pinnedParticipantIdSet(participantId as ParticipantId));
+      dispatch(fullscreenActions.request());
     },
-    [fullscreenHandle, participant]
+    [participant]
   );
 
   const openInNewTab: MouseEventHandler = (event) => {
@@ -158,7 +159,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
                 </OverlayIconButton>
               </Tooltip>
             )}
-            {fullscreenHandle.isFullScreenAvailable() && (
+            {isFullscreenSupported && (
               <Tooltip title={t('video-overlay-tooltip-fullscreen')}>
                 <OverlayIconButton
                   aria-label={t('indicator-fullscreen-open')}

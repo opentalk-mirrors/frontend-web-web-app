@@ -12,8 +12,8 @@ import { useGetMeQuery, useGetRoomQuery } from '../../../api/rest';
 import { EndCallIcon } from '../../../assets/icons';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { hangUp } from '../../../store/commonActions';
+import { selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
 import { selectEventInfo } from '../../../store/slices/roomSlice';
 import { selectIsGuest } from '../../../store/slices/userSlice';
 import { isRegisteredUser } from '../../../utils/typeGuardUtils';
@@ -50,14 +50,13 @@ const EndCallButton = () => {
     roomData?.createdBy && isRegisteredUser(roomData.createdBy) && me?.id === roomData.createdBy.id;
   const eventInfo = useAppSelector(selectEventInfo);
   const requiresConfirmDialog = isMeetingCreator && !eventInfo?.isAdhoc;
-  const fullscreenContext = useFullscreenContext();
+  const fullscreenElement = useAppSelector(selectFullscreenElement);
 
   const hangUpHandler = useCallback(() => dispatch(hangUp()), [dispatch]);
 
   const handleEndCall = () => {
     if (requiresConfirmDialog) {
       showConfirmDialog(true);
-      fullscreenContext.setHasActiveOverlay(true);
     } else {
       hangUpHandler();
     }
@@ -79,7 +78,7 @@ const EndCallButton = () => {
         <CloseMeetingDialog
           open={isConfirmDialogVisible}
           onClose={() => showConfirmDialog(false)}
-          container={fullscreenContext.rootElement}
+          container={fullscreenElement ?? null}
         />
       )}
     </>

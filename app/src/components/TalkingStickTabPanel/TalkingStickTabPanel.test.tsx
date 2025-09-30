@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen, fireEvent } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
+import { expect } from 'vitest';
 
+import { start, talkingStickStart } from '../../api/types/outgoing/automod';
 import { renderWithProviders, mockStore } from '../../utils/testUtils';
 import TalkingStickTabPanel from './TalkingStickTabPanel';
 
@@ -17,7 +19,7 @@ vi.mock('../TalkingStickParticipantList/fragments/ParticipantListItem/Participan
 const NUMBER_OF_PARTICIPANTS = 2;
 describe('<TalkingStickTabPanel />', () => {
   describe('automod inactive', () => {
-    const { store, dispatchSpy } = mockStore(NUMBER_OF_PARTICIPANTS, { video: true, screen: true });
+    const { store } = mockStore(NUMBER_OF_PARTICIPANTS, { video: true, screen: true });
 
     it('should render start button', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
@@ -56,21 +58,23 @@ describe('<TalkingStickTabPanel />', () => {
     it('should dispatch correct user by click on global-start-now button', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store });
 
+      const spyAutomodStartAction = vi.spyOn(start, 'action');
+      const spyTalkingStickStartAction = vi.spyOn(talkingStickStart, 'action');
       const startButton = screen.getByRole('button', { name: 'global-start-now' });
 
       fireEvent.click(startButton);
 
-      expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith({
-        type: 'signaling/automod/start',
-        payload: {
-          allowDoubleSelection: false,
-          animationOnRandom: false,
-          autoAppendOnJoin: true,
-          considerHandRaise: false,
-          playlist: ['00000000-e6b4-4759-000', '00000000-e6b4-4759-001'],
-          selectionStrategy: 'playlist',
-          showList: true,
-        },
+      expect(spyTalkingStickStartAction).toHaveBeenCalledExactlyOnceWith({
+        playlist: ['00000000-e6b4-4759-000', '00000000-e6b4-4759-001'],
+      });
+      expect(spyAutomodStartAction).toHaveBeenCalledExactlyOnceWith({
+        allowDoubleSelection: false,
+        animationOnRandom: false,
+        autoAppendOnJoin: true,
+        considerHandRaise: false,
+        playlist: ['00000000-e6b4-4759-000', '00000000-e6b4-4759-001'],
+        selectionStrategy: 'playlist',
+        showList: true,
       });
     });
   });

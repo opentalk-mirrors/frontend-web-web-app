@@ -2,11 +2,12 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
+import { useEffect, useRef } from 'react';
 
 import { VisuallyHiddenTitle } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
-import { useAppSelector } from '../../../hooks';
-import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { fullscreenActions, selectFullscreenActive } from '../../../store/slices/fullscreen/slice';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { selectCinemaLayout } from '../../../store/slices/uiSlice';
 import FullscreenView from '../../FullscreenView';
@@ -27,10 +28,21 @@ const Container = styled('main')({
 const Cinema = () => {
   const userLayout = useAppSelector(selectCinemaLayout);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
-  const fullscreenHandle = useFullscreenContext();
+  const isFullscreenActive = useAppSelector(selectFullscreenActive);
+  const refForFullscreen = useRef<HTMLDivElement | null>(null);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (refForFullscreen.current) {
+      dispatch(fullscreenActions.setElement({ element: refForFullscreen.current }));
+    }
+    return () => {
+      dispatch(fullscreenActions.setElement({ element: undefined }));
+    };
+  }, [refForFullscreen]);
 
   const renderView = () => {
-    if (fullscreenHandle.active) {
+    if (isFullscreenActive) {
       return <FullscreenView />;
     }
 
@@ -47,7 +59,7 @@ const Cinema = () => {
   };
 
   return (
-    <Container ref={fullscreenHandle.node}>
+    <Container ref={refForFullscreen}>
       <VisuallyHiddenTitle component="h2" label="videoroom-hidden-heading" />
       {isLivekitUnavailable && <MediaReconnectionDialog />}
       {renderView()}

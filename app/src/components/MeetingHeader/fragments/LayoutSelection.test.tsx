@@ -5,22 +5,10 @@ import { useMediaQuery } from '@mui/material';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
+import { fullscreenActions } from '../../../store/slices/fullscreen/slice';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import LayoutSelection from './LayoutSelection';
 
-const mockFullscreenContext = {
-  active: true,
-  node: null,
-  exit: vi.fn(),
-  enter: vi.fn(),
-  fullscreenParticipantId: '',
-  setRootElement: vi.fn(),
-  rootElement: null,
-  setHasActiveOverlay: vi.fn(),
-  isFullScreenAvailable: vi.fn(),
-};
-
-vi.mock('../../../hooks/useFullscreenContext.ts', () => ({ useFullscreenContext: () => mockFullscreenContext }));
 vi.mock('@livekit/components-react', () => ({
   useRemoteParticipants: () => [mockedParticipant(0)],
 }));
@@ -63,35 +51,38 @@ describe('Layout selection menu', () => {
   });
 
   it('renders fullscreen button if the fullscreen feature is available', () => {
-    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => true);
+    const { store } = configureStore({
+      initialState: { fullscreen: { supported: true, active: false } },
+    });
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
     act(openMenu);
-    expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
     const fullscreenMenuItem = getButtonSelector('conference-view-fullscreen');
     expect(fullscreenMenuItem).toBeInTheDocument();
   });
 
   it('opens fullscreen when clicking the fullscreen button', () => {
-    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => true);
-
+    const { store } = configureStore({
+      initialState: { fullscreen: { supported: true, active: false } },
+    });
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
+    const spyFullscreenRequest = vi.spyOn(fullscreenActions, 'request');
+
     act(openMenu);
-    expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
+
     const fullscreenMenuItem = getButtonSelector('conference-view-fullscreen');
 
     fireEvent.click(fullscreenMenuItem);
-    expect(mockFullscreenContext.enter).toHaveBeenCalled();
+    expect(spyFullscreenRequest).toHaveBeenCalled();
   });
 
   it('does not render fullscreen button if fullscreen feature is unavailable', () => {
-    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => false);
-
+    const { store } = configureStore({
+      initialState: { fullscreen: { supported: false, active: false } },
+    });
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
 
     act(openMenu);
-
-    expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
     expect(
       screen.queryByRole('menuitemradio', { name: 'conference-view-fullscreen', hidden: true })

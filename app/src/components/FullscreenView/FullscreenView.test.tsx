@@ -4,23 +4,9 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
+import { fullscreenActions } from '../../store/slices/fullscreen/slice';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import FullscreenView from './FullscreenView';
-
-const mockExitCall = vi.fn();
-
-vi.mock('../../hooks/useFullscreenContext.ts', () => ({
-  useFullscreenContext: () => ({
-    active: true,
-    node: null,
-    exit: mockExitCall,
-    enter: vi.fn(),
-    fullscreenParticipantId: '',
-    setRootElement: vi.fn(),
-    rootElement: null,
-    setHasActiveOverlay: vi.fn(),
-  }),
-}));
 
 vi.mock('@livekit/components-react', () => ({
   ParticipantContext: {
@@ -75,12 +61,14 @@ describe('FullscreenView', () => {
   it('triggers react-full-screen exit function when clicking on close button', () => {
     renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
 
+    const spyFullscreenActionsExit = vi.spyOn(fullscreenActions, 'exit');
     const closeBtn = screen.getByRole('button', { name: /indicator-fullscreen-close/i });
+
     expect(screen.getByTestId('fullscreen')).toBeInTheDocument();
     expect(closeBtn).toBeInTheDocument();
 
     fireEvent.click(closeBtn);
 
-    expect(mockExitCall).toHaveBeenCalled();
+    expect(spyFullscreenActionsExit).toHaveBeenCalled();
   });
 });

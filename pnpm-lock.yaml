@@ -173,9 +173,6 @@ importers:
       formik-wizard-form:
         specifier: ^2.1.0
         version: 2.1.0(formik@2.4.6(@types/react@19.2.2)(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      fscreen:
-        specifier: ^1.2.0
-        version: 1.2.0
       i18next:
         specifier: ^25.5.3
         version: 25.5.3(typescript@5.9.3)
@@ -258,9 +255,6 @@ importers:
       '@types/emscripten':
         specifier: ^1.41.2
         version: 1.41.2
-      '@types/fscreen':
-        specifier: ^1.0.4
-        version: 1.0.4
       '@types/lodash':
         specifier: ^4.17.20
         version: 4.17.20
@@ -1852,9 +1846,6 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
-  '@types/fscreen@1.0.4':
-    resolution: {integrity: sha512-TsjxyAUvlvuQyao9vNk0yES4nY07K9xoAbkhgXU948JG39EqlLxniWuW9OiZde9Q8ACSpu3fmbXXRAfb/l/HqQ==}
-
   '@types/hoist-non-react-statics@3.3.7':
     resolution: {integrity: sha512-PQTyIulDkIDro8P+IHbKCsw7U2xxBYflVzW/FgWdCAePD9xGSidgA76/GeJ6lBKoblyhf9pBY763gbrN+1dI8g==}
     peerDependencies:
@@ -2989,9 +2980,6 @@ packages:
 
   fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
-
-  fscreen@1.2.0:
-    resolution: {integrity: sha512-hlq4+BU0hlPmwsFjwGGzZ+OZ9N/wq9Ljg/sq3pX+2CD7hrJsX9tJgWWK/wiNTFM212CLHWhicOoqwXyZGGetJg==}
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -6768,8 +6756,6 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
-  '@types/fscreen@1.0.4': {}
-
   '@types/hoist-non-react-statics@3.3.7(@types/react@19.2.2)':
     dependencies:
       '@types/react': 19.2.2
@@ -8170,8 +8156,6 @@ snapshots:
       minipass: 7.1.2
 
   fs.realpath@1.0.0: {}
-
-  fscreen@1.2.0: {}
 
   fsevents@2.3.3:
     optional: true

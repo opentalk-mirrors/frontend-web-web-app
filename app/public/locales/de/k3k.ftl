@@ -693,7 +693,6 @@ global-off = Aus
 global-microphone = Mikrofon
 global-video = Video
 global-description = Beschreibung
-global-fullscreen = ganzer Bildschirm
 global-hotkey = Abkürzung
 global-spacebar = Leertaste
 global-anonymous = Anonym
@@ -1133,6 +1132,7 @@ hotkey-table-summary = Tabelle der verfügbaren Tastaturkürzel
 hotkey-whisper-to-whisper-group = Flüstern an Flüstergruppe
 hotkey-microphone-toggle = Mikrofon an / aus
 hotkey-video-toggle = Video an / aus
+hotkey-fullscreen-toggle = Ganzer Bildschirm an / aus
 
 meeting-required-start-date = Startdatum ist erforderlich
 meeting-required-end-date = Enddatum ist erforderlich

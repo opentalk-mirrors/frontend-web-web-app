@@ -48,7 +48,6 @@ import { defaultDarkModeColors, defaultLightModeColors } from '../assets/themes/
 import { SnackbarProvider } from '../commonComponents';
 import { MeetingFormValues } from '../components/MeetingForms/fragments/DashboardDateTimePicker';
 import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
-import FullscreenProvider from '../provider/FullscreenProvider';
 import { AppDispatch, appReducers } from '../store';
 import type { RootState } from '../store';
 import { listenerMiddleware } from '../store/listenerMiddleware';
@@ -173,11 +172,7 @@ export const renderWithProviders = (
     let component = children;
 
     if (provider?.snackbar) {
-      component = (
-        <FullscreenProvider>
-          <SnackbarProvider>{component}</SnackbarProvider>
-        </FullscreenProvider>
-      );
+      component = <SnackbarProvider>{component}</SnackbarProvider>;
     }
     if (provider?.router) {
       component = <MemoryRouter>{component}</MemoryRouter>;
