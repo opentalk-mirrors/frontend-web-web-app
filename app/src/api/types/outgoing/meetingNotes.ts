@@ -6,8 +6,13 @@ import { createModule, Namespaced, ParticipantId } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
-export interface SelectMeetingNotesAccess {
-  action: 'select_writer' | 'deselect_writer';
+export interface GrantWriteAccess {
+  action: 'grant_write_access';
+  participantIds: Array<ParticipantId>;
+}
+
+export interface RevokeWriteAccess {
+  action: 'revoke_write_access';
   participantIds: Array<ParticipantId>;
 }
 
@@ -15,19 +20,19 @@ export interface GeneratePdf {
   action: 'generate_pdf';
 }
 
-export type Action = SelectMeetingNotesAccess | GeneratePdf;
+export type Action = GrantWriteAccess | RevokeWriteAccess | GeneratePdf;
 export type MeetingNotes = Namespaced<Action, 'meeting_notes'>;
 
-export const selectWriter = createSignalingApiCall<SelectMeetingNotesAccess>('meeting_notes', 'select_writer');
-export const deselectWriter = createSignalingApiCall<SelectMeetingNotesAccess>('meeting_notes', 'deselect_writer');
+export const grantWriteAccess = createSignalingApiCall<GrantWriteAccess>('meeting_notes', 'grant_write_access');
+export const revokeWriteAccess = createSignalingApiCall<RevokeWriteAccess>('meeting_notes', 'revoke_write_access');
 export const uploadPdf = createSignalingApiCall<GeneratePdf>('meeting_notes', 'generate_pdf');
 
 export const handler = createModule<RootState>((builder) => {
-  builder.addCase(selectWriter.action, (_state, action) => {
-    sendMessage(selectWriter(action.payload));
+  builder.addCase(grantWriteAccess.action, (_state, action) => {
+    sendMessage(grantWriteAccess(action.payload));
   });
-  builder.addCase(deselectWriter.action, (_state, action) => {
-    sendMessage(deselectWriter(action.payload));
+  builder.addCase(revokeWriteAccess.action, (_state, action) => {
+    sendMessage(revokeWriteAccess(action.payload));
   });
   builder.addCase(uploadPdf.action, (_state, action) => {
     sendMessage(uploadPdf(action.payload));

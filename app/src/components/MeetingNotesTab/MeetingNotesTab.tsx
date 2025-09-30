@@ -22,7 +22,7 @@ import { unionBy, intersectionBy } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { deselectWriter, selectWriter, uploadPdf } from '../../api/types/outgoing/meetingNotes';
+import { revokeWriteAccess, grantWriteAccess, uploadPdf } from '../../api/types/outgoing/meetingNotes';
 import { DoneIcon, SearchIcon } from '../../assets/icons';
 import { CommonTextField, ParticipantAvatar } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -69,7 +69,7 @@ const MeetingNotesTab = () => {
   const [searchMask, setSearchMask] = useState('');
   const salt = React.useId();
 
-  // List of selected participants with permission writes is stored locally, untill moderator pressed `Show meeting notes to all`
+  // List of selected participants with permission writes is stored locally, until moderator pressed `Show meeting notes to all`
   // button. Only then we send all selected participants to the controller.
   // Therefore we need to preserve this state, if during the selection a `meeting notes` participant joins or leaves the conference.
   const mergeParticipants = (
@@ -149,14 +149,14 @@ const MeetingNotesTab = () => {
         .map((participant) => participant.id);
       if (selectedParticipantIds.length > 0) {
         dispatch(
-          selectWriter.action({
+          grantWriteAccess.action({
             participantIds: selectedParticipantIds,
           })
         );
       }
       if (deselectedParticipantIds.length > 0) {
         dispatch(
-          deselectWriter.action({
+          revokeWriteAccess.action({
             participantIds: deselectedParticipantIds,
           })
         );

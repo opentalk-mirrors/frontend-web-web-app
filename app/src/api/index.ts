@@ -81,13 +81,7 @@ import {
 } from './types/incoming';
 import { RoomserverMessageKey } from './types/incoming/core';
 import * as outgoing from './types/outgoing';
-
-/**
- * Transforms the dictionary of group chat histories into a list of groupIds and a flat list
- * chat messages with scope 'group'.
- * @param chatHistory
- * @returns {groupIds: Array<GroupId>, messages:Array<ChatMessage>}
- */
+import { mapMeetingNotesToMeetingNotesAccess } from './handlers/helpers';
 
 const mapRoomserverParticipantToUi = (
   state: RootState,
@@ -103,19 +97,16 @@ const mapRoomserverParticipantToUi = (
     avatarUrl: setLibravatarOptions(participant.moduleData.core.avatarUrl, {
       defaultImage: selectLibravatarDefaultImage(state),
     }),
-    // not sent by default, part of module if present
     handIsUp: false,
     joinedAt: participant.moduleData.core.joinedAt,
     leftAt: participant.moduleData.core.leftAt ?? null,
-    // not sent by default, part of module if present
     handUpdatedAt: undefined,
     breakoutRoomId: breakoutRoomId,
     participationKind: participant.moduleData.core.participationKind,
     lastActive: new Date().toISOString(),
     role: participant.moduleData.core.role,
     waitingState,
-    // not sent by default, part of module if present
-    meetingNotesAccess: MeetingNotesAccess.Write,
+    meetingNotesAccess: mapMeetingNotesToMeetingNotesAccess(participant.moduleData.meetingNotes),
     isRoomOwner: participant.moduleData.core.isRoomOwner,
   };
 };
@@ -142,7 +133,7 @@ const mapJoinedParticipantToUi = (
   lastActive: new Date().toISOString(),
   role: participant.peerData.core.role,
   waitingState,
-  meetingNotesAccess: MeetingNotesAccess.Write,
+  meetingNotesAccess: mapMeetingNotesToMeetingNotesAccess(participant.peerData.meetingNotes),
   isRoomOwner: participant.peerData.core.isRoomOwner,
 });
 
@@ -241,7 +232,7 @@ const handleRoomServerCoreMessage = async (
               lastActive: new Date().toISOString(),
               role: undefined,
               waitingState: WaitingState.Waiting,
-              meetingNotesAccess: MeetingNotesAccess.Write,
+              meetingNotesAccess: MeetingNotesAccess.None,
               isRoomOwner: false,
             };
           }

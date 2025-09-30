@@ -14,7 +14,7 @@ import { showErrorNotification } from './helpers';
  */
 export const handleBreakoutMessage = (
   dispatch: AppDispatch,
-  state: RootState,
+  _state: RootState,
   data: breakout.Message,
   timestamp: Timestamp
 ) => {

@@ -22,10 +22,10 @@ export const handleMeetingNotesMessage = (
   state: RootState
 ) => {
   switch (data.message) {
-    case 'pdf_asset':
+case 'pdf_created':
       notifications.info(i18next.t('meeting-notes-upload-pdf-message'));
       break;
-    case 'write_url':
+    case 'write_access_received':
       if (state.user.meetingNotesAccess === MeetingNotesAccess.None) {
         const message = i18next.t(
           state.user.role === Role.Moderator
@@ -42,7 +42,7 @@ export const handleMeetingNotesMessage = (
       }
       dispatch(setMeetingNotesWriteUrl(data.url.toString()));
       break;
-    case 'read_url':
+    case 'read_access_received':
       if (state.user.meetingNotesAccess === MeetingNotesAccess.None) {
         const message = i18next.t(
           state.user.role === Role.Moderator
@@ -58,6 +58,8 @@ export const handleMeetingNotesMessage = (
         });
       }
       dispatch(setMeetingNotesReadUrl(data.url.toString()));
+      break;
+    case 'access_changed':
       break;
     case 'error':
       handleStorageExceededError(state, data.error);
