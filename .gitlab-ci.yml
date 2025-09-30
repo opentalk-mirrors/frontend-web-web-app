@@ -17,6 +17,9 @@ stages:
   - review-app
   - cleanup
 
+variables:
+  KANIKO_IMAGE: git.opentalk.dev:5050/opentalk/opentalk-devops/containers/kaniko:debug-1.25.2
+
 .setup-pnpm: &setup-pnpm
   - npm install -g corepack@latest
   - corepack enable
@@ -259,7 +262,8 @@ container:
     - upload-sourcemaps
     - build
   image:
-    name: gcr.io/kaniko-project/executor:debug
+    name: $KANIKO_IMAGE
+    pull_policy: if-not-present
     entrypoint: ['']
   rules:
     # set variable for push to main
@@ -307,7 +311,8 @@ container-profiling:
   dependencies:
     - build-profiling
   image:
-    name: gcr.io/kaniko-project/executor:debug
+    name: $KANIKO_IMAGE
+    pull_policy: if-not-present
     entrypoint: ['']
   # todo - check when profiling should be build
   rules:
