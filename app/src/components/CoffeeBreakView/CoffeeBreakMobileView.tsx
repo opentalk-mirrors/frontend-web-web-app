@@ -1,16 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-/* eslint-disable jsx-a11y/no-autofocus */
-import { Button, styled } from '@mui/material';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Box, Button, Stack, styled, Typography } from '@mui/material';
 import Color from 'colorjs.io';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { readyToContinue } from '../../api/types/outgoing/timer';
-import { CoffeeBreakIcon as CoffeeBreakIconDefault, LogoIcon } from '../../assets/icons';
+import { CoffeeBreakIcon, LogoIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectCoffeeBreakTimerId, selectTimerActive } from '../../store/slices/timerSlice';
 import { setCoffeeBreakCurtainOpenFlag } from '../../store/slices/uiSlice';
@@ -23,18 +20,15 @@ const BackgroundCover = styled(Box)<{ roundBorders?: boolean }>(({ theme, roundB
   height: '100%',
 }));
 
-const InnerContainer = styled(Box, {
+const InnerContainer = styled(Stack, {
   shouldForwardProp: (prop) => prop !== 'roundBorders',
 })<{ roundBorders?: boolean }>(({ theme, roundBorders }) => {
   const background = new Color(theme.palette.background.customPaper.primary);
   background.alpha = 0.5;
 
   return {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gridTemplateRows: '0fr 2fr',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     height: '100%',
     width: '100%',
     backdropFilter: 'blur(100px)',
@@ -42,8 +36,8 @@ const InnerContainer = styled(Box, {
     backgroundColor: background.toString({ format: 'rgba' }),
     color: theme.palette.text.primary,
     overflow: 'auto',
-    padding: 50,
     borderRadius: roundBorders ? theme.borderRadius.medium : undefined,
+    padding: theme.spacing(4, 1),
   };
 });
 
@@ -53,7 +47,7 @@ const Logo = styled(LogoIcon)(({ theme }) => ({
   fill: theme.palette.secondary.main,
 }));
 
-const CoffeeBreakIcon = styled(CoffeeBreakIconDefault)(({ theme }) => ({
+const CustomCoffeeBreakIcon = styled(CoffeeBreakIcon)(({ theme }) => ({
   height: '6rem',
   width: 'auto',
   fill: theme.palette.secondary.light,
@@ -61,18 +55,7 @@ const CoffeeBreakIcon = styled(CoffeeBreakIconDefault)(({ theme }) => ({
   left: '1rem',
 }));
 
-const Content = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '2rem',
-});
-
-interface CoffeeBreakViewProps {
-  roundBorders?: boolean;
-}
-
-export const CoffeeBreakView = memo(({ roundBorders }: CoffeeBreakViewProps) => {
+export const CoffeeBreakMobileView = memo(function CoffeeBreakMobileViewComponent() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const isTimerActive = useAppSelector(selectTimerActive);
@@ -86,25 +69,18 @@ export const CoffeeBreakView = memo(({ roundBorders }: CoffeeBreakViewProps) => 
   };
 
   return (
-    <BackgroundCover role="alertdialog" aria-label={t('coffee-break-layer-aria-title')} roundBorders={roundBorders}>
-      <InnerContainer roundBorders={roundBorders}>
+    <BackgroundCover role="alertdialog" aria-label={t('coffee-break-layer-aria-title')}>
+      <InnerContainer gap={4}>
         <Logo />
-
-        <Content>
-          <CoffeeBreakIcon />
-
-          <Typography component="h2" variant="h3">
-            {isTimerActive ? t('coffee-break-layer-title') : t('coffee-break-stopped-title')}
-          </Typography>
-
-          <CoffeeBreakTimer />
-
-          <Button autoFocus={true} onClick={handleClose} color="secondary">
-            {t('coffee-break-layer-button')}
-          </Button>
-        </Content>
+        <CustomCoffeeBreakIcon />
+        <Typography component="h2" variant="h3" textAlign="center">
+          {isTimerActive ? t('coffee-break-layer-title') : t('coffee-break-stopped-title')}
+        </Typography>
+        <CoffeeBreakTimer />
+        <Button onClick={handleClose} color="secondary" size="large">
+          {t('coffee-break-layer-button')}
+        </Button>
       </InnerContainer>
     </BackgroundCover>
   );
 });
-CoffeeBreakView.displayName = 'CoffeeBreakView';
