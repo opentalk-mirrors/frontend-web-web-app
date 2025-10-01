@@ -298,7 +298,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.1.6
+        specifier: ^7.1.7
         version: 7.1.7(@types/node@22.18.7)(jiti@2.6.0)(yaml@2.8.1)
       vite-plugin-svgr:
         specifier: ^4.5.0
@@ -314,7 +314,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.1.6
+        specifier: ^7.1.7
         version: 7.1.7(@types/node@22.18.7)(jiti@2.6.0)(yaml@2.8.1)
       vite-plugin-dts:
         specifier: ^4.5.4
@@ -336,7 +336,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.1.6
+        specifier: ^7.1.7
         version: 7.1.7(@types/node@22.18.7)(jiti@2.6.0)(yaml@2.8.1)
       vite-plugin-dts:
         specifier: ^4.5.4
@@ -364,7 +364,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.1.6
+        specifier: ^7.1.7
         version: 7.1.7(@types/node@22.18.7)(jiti@2.6.0)(yaml@2.8.1)
       vite-plugin-dts:
         specifier: ^4.5.4
@@ -407,7 +407,7 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       vite:
-        specifier: ^7.1.6
+        specifier: ^7.1.7
         version: 7.1.7(@types/node@22.18.7)(jiti@2.6.0)(yaml@2.8.1)
       vite-plugin-dts:
         specifier: ^4.5.4
