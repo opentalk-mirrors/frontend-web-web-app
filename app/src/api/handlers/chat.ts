@@ -94,7 +94,9 @@ export const handleChatMessage = (
       dispatch(setChatSearchResults(data.matches.messages));
       break;
     case 'set_last_seen_timestamp':
-      console.warn('TODO: handle set_last_seen_timestamp');
+      log.warn('TODO: handle set_last_seen_timestamp');
+      //TODO - #3062 implement set_last_seen_timestamp handling
+      log.warn('handle set_last_seen_timestamp is not implemented');
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);

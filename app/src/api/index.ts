@@ -455,8 +455,8 @@ const handleRaiseHandsMessage = (
       switch (error) {
         // TODO - handle cases
         default:
-          log.error(`Livekit Error: ${data}`);
-          throw new Error(`Livekit Error: ${error}`);
+          log.error(`Raise Hands Error: ${data}`);
+          throw new Error(`Raise Hands Error: ${error}`);
       }
       // break;
     }
@@ -483,7 +483,8 @@ const onMessage =
         handleRoomServerCoreMessage(dispatch, message.payload, message.timestamp, getState(), conference);
         break;
       case 'e2ee':
-        console.error('E2EE namespace is not implemented yet');
+        // TODO - #3063 implement e2ee module
+        log.error('E2EE module is not implemented yet');
         break;
       case 'breakout':
         handleBreakoutMessage(dispatch, getState(), message.payload, message.timestamp);

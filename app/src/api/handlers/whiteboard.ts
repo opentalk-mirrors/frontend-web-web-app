@@ -15,20 +15,22 @@ import { handleStorageExceededError } from './helpers';
  */
 export const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message, state: RootState) => {
   switch (data.message) {
-    case 'space_url':
+    case 'initialized':
       dispatch(setWhiteboardAvailable({ showWhiteboard: true, url: data.url }));
       break;
-    case 'pdf_asset':
+    case 'pdf_created':
       dispatch(addWhiteboardAsset({ asset: { assetId: data.assetId, filename: data.filename } }));
       notificationAction({ msg: i18next.t('whiteboard-new-pdf-message'), variant: 'info', ariaLive: 'polite' });
 
+      break;
+    case 'initialization_started':
       break;
     case 'error':
       handleStorageExceededError(state, data.error);
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown whiteboard message type: ${dataString}`);
+      log.error(`Unknown timer message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }

@@ -12,7 +12,7 @@ import {
   removeParticipant,
   resetSubroomAudioData,
   selectSubroomAudioParticipants,
-  selectSubroomAudioState,
+  selectWhisperGroupId,
   setSubroomAudioData,
   setWhisperParticipants,
   updateParticipantInviteState,
@@ -31,7 +31,7 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
       dispatch(setSubroomAudioData({ whisperId: data.whisperId, token: data.token, participants: data.participants }));
       break;
     case 'whisper_invite': {
-      const isAlreadyInWhisperGroup = selectSubroomAudioState(state).whisperId;
+      const isAlreadyInWhisperGroup = selectWhisperGroupId(state);
       if (isAlreadyInWhisperGroup) {
         dispatch(declineWhisperInvite.action({ whisperId: data.whisperId }));
         break;
@@ -104,8 +104,8 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
       const error = data.error;
       switch (error) {
         default:
-          log.error(`Livekit Error: ${data}`);
-          throw new Error(`Livekit Error: ${error}`);
+          log.error(`Subroom Audio Error: ${data}`);
+          throw new Error(`Subroom Audio Error: ${error}`);
       }
     }
     default: {

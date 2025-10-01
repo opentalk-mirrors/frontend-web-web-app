@@ -12,7 +12,7 @@ import { handleStorageExceededError } from './helpers';
  * Handles meetingReport messages.
  */
 export const handleMeetingReportMessage = (data: meetingReport.Message, state: RootState) => {
-  let assetLocation;
+  let assetLocation: string | undefined;
   switch (data.message) {
     case 'pdf_asset':
       if (state.room.eventInfo?.id) {

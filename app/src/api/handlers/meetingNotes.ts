@@ -22,7 +22,7 @@ export const handleMeetingNotesMessage = (
   state: RootState
 ) => {
   switch (data.message) {
-case 'pdf_created':
+    case 'pdf_created':
       notifications.info(i18next.t('meeting-notes-upload-pdf-message'));
       break;
     case 'write_access_received':

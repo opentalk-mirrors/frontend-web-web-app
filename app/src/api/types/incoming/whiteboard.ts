@@ -5,8 +5,12 @@ import { AssetId } from '@opentalk/rest-api-rtk-query';
 
 import { ErrorStruct, NamespacedIncoming } from '../../../types';
 
-export interface SpaceUrl {
-  message: 'space_url';
+export interface InitializationStarted {
+  message: 'initialization_started';
+}
+
+export interface Initialized {
+  message: 'initialized';
   url: string;
 }
 
@@ -18,15 +22,31 @@ export interface AssetRef {
 export interface PdfUrl extends AssetRef {
   message: 'pdf_asset';
 }
-export enum WhiteboardError {
-  InsufficientPermissions = 'insufficient_permissions',
-  StorageExceeded = 'storage_exceeded',
-  GenerateFailed = 'generate_failed',
-  AlreadyInitialized = 'already_initialized',
-  CurrentlyInitializing = 'currently_initializing',
+
+export interface PdfCreated extends AssetRef {
+  message: 'pdf_created';
 }
 
-export type Message = SpaceUrl | PdfUrl | ErrorStruct<WhiteboardError>;
+export enum WhiteboardError {
+  /// The requesting user has insufficient permissions for the operation.
+  InsufficientPermissions = 'insufficient_permissions',
+  /// Spacedeck has not been initialized yet.
+  NotInitialized = 'not_initialized',
+  /// Spacedeck is already initializing.
+  CurrentlyInitializing = 'currently_initializing',
+  /// The spacedeck initialization failed.
+  InitializationFailed = 'initialization_failed',
+  /// Spacedeck is already initialized.
+  AlreadyInitialized = 'already_initialized',
+  /// The requesting user has exceeded their storage.
+  StorageExceeded = 'storage_exceeded',
+  /// An internal error occurred while saving the whiteboard pdf.
+  InternalStorage = 'internal_storage',
+  ///
+  GenerateFailed = 'generate_failed',
+}
+
+export type Message = InitializationStarted | Initialized | PdfCreated | ErrorStruct<WhiteboardError>;
 
 export type Whiteboard = NamespacedIncoming<Message, 'whiteboard'>;
 

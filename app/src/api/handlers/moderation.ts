@@ -16,7 +16,12 @@ import { moderation } from '../types/incoming';
 /**
  * Handles messages in the moderation namespace.
  */
-export const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message, timestamp: Timestamp, state: RootState) => {
+export const handleModerationMessage = (
+  dispatch: AppDispatch,
+  data: moderation.Message,
+  timestamp: Timestamp,
+  state: RootState
+) => {
   switch (data.message) {
     case 'kicked':
       dispatch(hangUp());

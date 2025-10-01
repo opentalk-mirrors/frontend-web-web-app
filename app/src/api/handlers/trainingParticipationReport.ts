@@ -73,7 +73,7 @@ export const handleTrainingParticipationReportMessage = (
       break;
     case 'pdf_asset': {
       if (state.room.isOwnedByCurrentUser) {
-        let assetLocation;
+        let assetLocation: string | undefined;
         if (state.room.eventInfo?.id) {
           assetLocation = composeMeetingDetailsUrl(state.config.baseUrl, state.room.eventInfo?.id).href;
         }
