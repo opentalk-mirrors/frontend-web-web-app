@@ -282,19 +282,19 @@ const handleRoomServerCoreMessage = async (
         })
       );
 
-      // if (moduleData.automod) {
-      //   if (moduleData.automod.config.selectionStrategy === AutomodSelectionStrategy.Playlist) {
-      //     notificationAction({
-      //       key: startedId,
-      //       msg: createStackedMessages([
-      //         i18next.t('talking-stick-started-first-line'),
-      //         i18next.t('talking-stick-started-second-line'),
-      //       ]),
-      //       variant: 'info',
-      //       ariaLive: 'polite',
-      //     });
-      //   }
-      // }
+      if (moduleData.automod) {
+        if (moduleData.automod.config.selectionStrategy === AutomodSelectionStrategy.Playlist) {
+          notificationAction({
+            key: startedId,
+            msg: createStackedMessages([
+              i18next.t('talking-stick-started-first-line'),
+              i18next.t('talking-stick-started-second-line'),
+            ]),
+            variant: 'info',
+            ariaLive: 'polite',
+          });
+        }
+      }
 
       if (moduleData.whiteboard?.status === 'initialized') {
         dispatch(setWhiteboardAvailable({ showWhiteboard: true, url: moduleData.whiteboard.url }));

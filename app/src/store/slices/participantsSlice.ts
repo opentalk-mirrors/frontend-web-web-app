@@ -357,7 +357,7 @@ export const selectParticipantsTotal = createSelector(
 
 export const selectParticipantAvatarUrl: (state: RootState, id: ParticipantId) => string | undefined = createSelector(
   [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
-  (participant) => participant?.avatarUrl
+  (participant: Participant) => participant?.avatarUrl
 );
 
 export const selectParticipantName: (state: RootState, id: ParticipantId) => string | undefined = createSelector(
