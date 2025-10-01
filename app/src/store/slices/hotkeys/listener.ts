@@ -4,11 +4,22 @@
 import { ListenerMiddlewareInstance } from '@reduxjs/toolkit';
 import { debounce, isEmpty, some } from 'lodash';
 
+import browser from '../../../modules/BrowserSupport';
 import type { AppDispatch, RootState } from '../../../store';
 import { domKeyDown, domKeyUp, domFocusIn, domFocusOut } from './slice';
 import type { Hotkey } from './types';
 
 const INPUT_TYPES = ['input', 'textarea', 'select'];
+
+const isTargetInputTypeAndContentEditable = (target: EventTarget | null) => {
+  if (target instanceof HTMLElement) {
+    const tagName = target.tagName.toLowerCase();
+    if (INPUT_TYPES.includes(tagName) || target.isContentEditable) {
+      return true;
+    }
+  }
+  return false;
+};
 
 const pushedKeyIsActive = new Set<Hotkey>();
 
@@ -66,6 +77,15 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
       const event = action.payload;
       const state = listenerApi.getState() as RootState;
       const hotkey = findHotkey(event);
+
+      // safari and firefox do not emit focusout event when pressing enter in an input or contenteditable element
+      if (
+        (browser.isSafari() || browser.isFirefox()) &&
+        event.key === 'Enter' &&
+        isTargetInputTypeAndContentEditable(event.target)
+      ) {
+        window.dispatchEvent(new CustomEvent('focusout', { detail: { target: event.target } }));
+      }
 
       if (hotkey?.forcePreventDefault) {
         event.preventDefault();
@@ -146,11 +166,9 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
     actionCreator: domFocusIn,
     effect: (action) => {
       const event = action.payload;
-      if (event.target instanceof HTMLElement) {
-        const tagName = event.target.tagName.toLowerCase();
-        if (INPUT_TYPES.includes(tagName) || event.target.isContentEditable) {
-          hotkeysDisabled = true;
-        }
+
+      if (isTargetInputTypeAndContentEditable(event.target)) {
+        hotkeysDisabled = true;
       }
     },
   });
@@ -159,11 +177,10 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
     actionCreator: domFocusOut,
     effect: (action) => {
       const event = action.payload;
-      if (event.target instanceof HTMLElement) {
-        const tagName = event.target.tagName.toLowerCase();
-        if (INPUT_TYPES.includes(tagName) || event.target.isContentEditable) {
-          hotkeysDisabled = false;
-        }
+      const target = event.detail.target || event.target;
+
+      if (isTargetInputTypeAndContentEditable(target)) {
+        hotkeysDisabled = false;
       }
     },
   });

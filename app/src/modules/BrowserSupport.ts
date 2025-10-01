@@ -62,6 +62,10 @@ export class BrowserSupport {
     return this.name === Browsers.Safari;
   }
 
+  isFirefox() {
+    return this.name === Browsers.Firefox;
+  }
+
   browserData() {
     return `name: ${this.bowser.getBrowserName()}, version: ${this.bowser.getBrowserVersion()}, os: ${this.bowser.getOSName()}-${this.bowser.getOSVersion()}`;
   }

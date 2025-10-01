@@ -143,6 +143,14 @@ declare global {
     ): void;
     get(key: string): RTCStatsCollection | undefined;
   }
+
+  interface GlobalEventHandlersEventMap {
+    build: CustomEvent<{ target: EventTarget | null }>;
+  }
+
+  interface FocusEvent {
+    detail: { target: EventTarget | null };
+  }
 }
 
 declare module '*.png' {
