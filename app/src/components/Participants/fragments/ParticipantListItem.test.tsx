@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Store } from '@reduxjs/toolkit';
 import { screen, within, fireEvent } from '@testing-library/react';
+import { List } from 'react-window';
 
 import { selectAllParticipants } from '../../../store/slices/participantsSlice';
 import {
@@ -68,11 +69,17 @@ describe('participant context menu', () => {
 
   const renderEachParticipant = (store: Store) => {
     participants = selectAllParticipants(store.getState());
-    participants.forEach((_, index) =>
-      renderWithProviders(<ParticipantListItem data={participants} index={index} style={{}} />, {
+    renderWithProviders(
+      <List
+        rowComponent={ParticipantListItem}
+        rowHeight={69}
+        rowCount={participants.length}
+        rowProps={{ data: participants }}
+      />,
+      {
         store,
         provider: { mui: true },
-      })
+      }
     );
   };
   const openMenu = (store: Store) => {
