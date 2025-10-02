@@ -403,7 +403,7 @@ deploy:
     - container
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  image: alpine/helm:3.18
+  image: alpine/helm:3.19
   tags:
     - kubernetes
   before_script:
@@ -453,7 +453,7 @@ review-app:
         $CI_PIPELINE_SOURCE == 'push'
   allow_failure: true
   image:
-    name: alpine/helm:3.18
+    name: alpine/helm:3.19
     entrypoint: ['']
   tags:
     - kubernetes
