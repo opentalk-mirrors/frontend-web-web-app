@@ -97,7 +97,9 @@ export class AuthAdapter {
    * Redirect user to sign in provider
    */
   public async startOidcSignIn(redirectUrl = window.location.pathname, codeChallenge?: string) {
-    this.saveLocationForRedirect(redirectUrl);
+    if (!redirectUrl.includes(this._configuration.redirectUri)) {
+      this.saveLocationForRedirect(redirectUrl);
+    }
     window.location.replace(await this.getLoginUrl(codeChallenge));
   }
 
