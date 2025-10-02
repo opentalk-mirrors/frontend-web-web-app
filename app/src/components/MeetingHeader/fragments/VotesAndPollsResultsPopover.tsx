@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Popover } from '@mui/material';
-import { useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PollIcon } from '../../../assets/icons';
@@ -12,7 +12,17 @@ import { generateUniqueId } from '../../../utils/stringUtils';
 import { MeetingHeaderButton } from './MeetingHeaderButton';
 import ResultsList from './ResultsList';
 
-const VotesAndPollsResultsPopover = () => {
+type RenderButtonProps = Partial<{
+  isPopoverOpen: boolean;
+  id: string;
+  label: string;
+  onClick: (event: React.MouseEvent<HTMLElement>) => void;
+  active: boolean;
+}>;
+
+type RenderButtonFunc = (props: RenderButtonProps) => ReactElement | null;
+
+const VotesAndPollsResultsPopover = ({ renderButton }: { renderButton?: RenderButtonFunc }) => {
   const id = generateUniqueId();
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const votingsAndPollsCount = useAppSelector(selectPollsAndVotingsCount);
@@ -23,12 +33,8 @@ const VotesAndPollsResultsPopover = () => {
 
   const isPopoverOpen = Boolean(anchorElement);
 
-  if (!hasVotingsOrPolls) {
-    return null;
-  }
-
-  return (
-    <>
+  const Button =
+    typeof renderButton !== 'function' ? (
       <MeetingHeaderButton
         aria-expanded={isPopoverOpen}
         aria-controls={id}
@@ -39,6 +45,23 @@ const VotesAndPollsResultsPopover = () => {
       >
         <PollIcon />
       </MeetingHeaderButton>
+    ) : (
+      renderButton({
+        isPopoverOpen,
+        id,
+        label: t('votes-poll-button-show'),
+        onClick: (event: React.MouseEvent<HTMLElement>) => setAnchorElement(event.currentTarget),
+        active: hasActiveVotesOrPolls,
+      })
+    );
+
+  if (!hasVotingsOrPolls) {
+    return null;
+  }
+
+  return (
+    <>
+      {Button}
       <Popover
         id={id}
         open={isPopoverOpen}

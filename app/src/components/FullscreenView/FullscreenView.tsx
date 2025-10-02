@@ -7,14 +7,17 @@ import { Box, IconButton as MuiIconButton, Slide, styled } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CloseIcon, PinIcon } from '../../assets/icons';
+import { CloseIcon, PinIcon, PollIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { fullscreenActions } from '../../store/slices/fullscreen/slice';
+import { fullscreenActions, selectFullscreenElement } from '../../store/slices/fullscreen/slice';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
 import { pinnedParticipantIdSet, selectPinnedParticipantId } from '../../store/slices/uiSlice';
 import type { ParticipantId } from '../../types';
+import Ballot from '../Ballot';
 import LocalVideo from '../LocalVideo';
+import VotesAndPollsResultsPopover from '../MeetingHeader/fragments/VotesAndPollsResultsPopover';
 import ParticipantWindow from '../ParticipantWindow';
+import TimerPopover from '../TimerPopover/TimerPopover';
 import Toolbar from '../Toolbar';
 
 const Container = styled(Box)({
@@ -26,10 +29,12 @@ const Container = styled(Box)({
 const ButtonsContainer = styled(Box)(({ theme }) => ({
   position: 'absolute',
   top: 15,
-  right: 15,
-  zIndex: theme.zIndex.mobileStepper,
-  display: 'flex',
-  gap: theme.spacing(1.5),
+  left: 0,
+  width: '100%',
+  padding: theme.spacing(0, 2),
+  zIndex: theme.zIndex.fab,
+  display: 'grid',
+  gridTemplateAreas: `'votes buttons'`,
 }));
 
 const ToolbarWrapper = styled(Box)(({ theme }) => ({
@@ -77,6 +82,7 @@ const FullscreenView = () => {
   const displayName = useAppSelector((state) =>
     selectedParticipantId ? selectParticipantName(state, selectedParticipantId) : undefined
   );
+  const fullscreenElement = useAppSelector(selectFullscreenElement);
 
   const dispatch = useAppDispatch();
 
@@ -109,18 +115,29 @@ const FullscreenView = () => {
         data-testid="fullscreen"
       >
         <ButtonsContainer>
-          <IconButton
-            aria-label={t('indicator-pinned', {
-              participantName: displayName || '',
-            })}
-            onClick={togglePin}
-            color={isPinned ? 'primary' : 'secondary'}
-          >
-            <PinIcon />
-          </IconButton>
-          <IconButton aria-label={t('indicator-fullscreen-close')} onClick={handleCloseFullscreen} color="primary">
-            <CloseIcon />
-          </IconButton>
+          <VotesAndPollsResultsPopover
+            renderButton={(props) => (
+              <Box gridArea="votes" justifySelf="flex-start">
+                <IconButton {...props}>
+                  <PollIcon />
+                </IconButton>
+              </Box>
+            )}
+          />
+          <Box display="flex" gap={1} alignItems="center" justifySelf="flex-end" gridArea="buttons">
+            <IconButton
+              aria-label={t('indicator-pinned', {
+                participantName: displayName || '',
+              })}
+              onClick={togglePin}
+              color={isPinned ? 'primary' : 'secondary'}
+            >
+              <PinIcon />
+            </IconButton>
+            <IconButton aria-label={t('indicator-fullscreen-close')} onClick={handleCloseFullscreen} color="primary">
+              <CloseIcon />
+            </IconButton>
+          </Box>
         </ButtonsContainer>
         <Slide direction="down" in={isLocalVideoPinned || isActive} mountOnEnter>
           <LocalVideoContainer data-testid="fullscreenLocalVideo">
@@ -134,6 +151,8 @@ const FullscreenView = () => {
         </Slide>
         {selectedParticipant && <ParticipantWindow activePresenter={isActive} />}
       </Container>
+      <Ballot container={fullscreenElement} />
+      <TimerPopover />
     </ParticipantContext.Provider>
   );
 };
