@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 
 import i18n from './i18n';
 import store from './store';

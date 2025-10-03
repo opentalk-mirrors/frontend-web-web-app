@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Event } from '@sentry/react';
+import { ErrorEvent } from '@sentry/react';
 
 import type { RootState } from '../';
 import { VoteStarted } from '../../api/types/incoming/legalVote';
@@ -28,7 +28,7 @@ export interface IChatConversationState {
 }
 
 interface ErrorDialog {
-  event: Event | undefined;
+  event: ErrorEvent | undefined;
   showErrorDialog: boolean;
 }
 
