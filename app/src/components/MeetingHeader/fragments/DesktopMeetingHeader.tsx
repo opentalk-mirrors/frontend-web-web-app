@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Divider, Pagination, styled } from '@mui/material';
-import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { LogoIcon, MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icons';
@@ -11,7 +11,7 @@ import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectPollsAndVotingsCount } from '../../../store/selectors';
 import { selectMeetingNotesUrl } from '../../../store/slices/meetingNotesSlice';
-import { selectAllOnlineParticipantsInConference } from '../../../store/slices/participantsSlice';
+import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
 import { selectIsSharedFolderAvailable } from '../../../store/slices/sharedFolderSlice';
 import {
   selectCinemaLayout,
@@ -114,7 +114,7 @@ const RoomTitleContainer = styled('div')(({ theme }) => ({
 const DesktopMeetingHeader = () => {
   const dispatch = useAppDispatch();
   const selectedLayout = useAppSelector(selectCinemaLayout);
-  const participants = useAppSelector(selectAllOnlineParticipantsInConference);
+  const participants = useAppSelector(selectAllOnlineParticipants);
   const selectedPage = useAppSelector(selectPaginationPageState);
   const meetingNotesUrl = useAppSelector(selectMeetingNotesUrl);
   const isWhiteboardAvailable = useAppSelector(selectIsWhiteboardAvailable);
@@ -149,9 +149,7 @@ const DesktopMeetingHeader = () => {
     }
   }, [dispatch, clickCount]);
 
-  const pageCount = useMemo(() => {
-    return Math.ceil(participants.length / MAX_GRID_TILES_DESKTOP);
-  }, [participants]);
+  const pageCount = Math.ceil(participants.length / MAX_GRID_TILES_DESKTOP);
 
   useEffect(() => {
     if (selectedPage > pageCount || selectedPage === 0) {

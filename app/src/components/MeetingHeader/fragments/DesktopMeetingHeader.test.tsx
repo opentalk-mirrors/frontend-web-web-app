@@ -39,6 +39,7 @@ const MOCK_PARTICIPANTS = {
     id: String(i),
     waitingState: 'joined',
     leftAt: null,
+    breakoutRoomId: null,
   })),
 };
 
@@ -50,6 +51,9 @@ const { store } = configureStore({
   initialState: {
     participants: MOCK_PARTICIPANTS,
     ui: MOCK_UI,
+    breakout: {
+      selectCurrentBreakoutRoomId: null,
+    },
     sharedFolder: {
       sharedFolderData: {
         read: undefined,
@@ -70,7 +74,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
     const { store: nextStore } = configureStore({
       initialState: {
         participants: MOCK_PARTICIPANTS,
-        ui: { cinemaLayout: LayoutOptions.Grid },
+        ui: { cinemaLayout: LayoutOptions.Grid, lastCinemaLayout: LayoutOptions.Grid },
       },
     });
     unmount();
@@ -108,6 +112,9 @@ describe('DesktopMeetingHeader rendering logic', () => {
       initialState: {
         participants: MOCK_PARTICIPANTS,
         ui: { cinemaLayout: LayoutOptions.MeetingNotes },
+        breakout: {
+          selectCurrentBreakoutRoomId: null,
+        },
         meetingNotes: { meetingNotesUrl: undefined },
       },
     });
@@ -117,6 +124,9 @@ describe('DesktopMeetingHeader rendering logic', () => {
       initialState: {
         participants: MOCK_PARTICIPANTS,
         ui: { cinemaLayout: LayoutOptions.MeetingNotes },
+        breakout: {
+          selectCurrentBreakoutRoomId: null,
+        },
         meetingNotes: { meetingNotesUrl: 'https://example.com' },
       },
     });
@@ -127,6 +137,9 @@ describe('DesktopMeetingHeader rendering logic', () => {
       initialState: {
         participants: MOCK_PARTICIPANTS,
         ui: { cinemaLayout: LayoutOptions.Grid },
+        breakout: {
+          selectCurrentBreakoutRoomId: null,
+        },
         meetingNotes: { meetingNotesUrl: 'https://example.com' },
       },
     });
@@ -143,6 +156,9 @@ describe('DesktopMeetingHeader rendering logic', () => {
       initialState: {
         participants: MOCK_PARTICIPANTS,
         ui: { cinemaLayout: LayoutOptions.Grid },
+        breakout: {
+          selectCurrentBreakoutRoomId: null,
+        },
         sharedFolder: {
           sharedFolderData: {
             read: {
