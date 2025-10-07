@@ -100,7 +100,7 @@ describe('MeetingForms initialValues utils', () => {
       expect(values.showMeetingDetails).toBe(Boolean(mockedSingleEvent.showMeetingDetails));
       expect(values.streaming.enabled).toBe(true);
       expect(values.e2eEncryption).toBe(mockedSingleEvent.room.e2eEncryption);
-      expect(values.trainingParticipationReport.enabled).toBe(true);
+      expect(values.trainingParticipationReport.enabled).toBe(false);
     });
 
     it('should set default dates for a time independet event', () => {

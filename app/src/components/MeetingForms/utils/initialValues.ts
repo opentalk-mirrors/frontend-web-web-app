@@ -78,10 +78,12 @@ export const getInitialValuesForExisting = (
     showMeetingDetails: Boolean(existingEvent.showMeetingDetails),
     streaming: getStreamingInitialValue(existingEvent),
     e2eEncryption: existingEvent.room.e2eEncryption,
-    trainingParticipationReport: {
-      enabled: true,
-      parameter: existingEvent.trainingParticipationReport as TrainingParticipationReportParameterSet,
-    },
+    trainingParticipationReport: existingEvent?.trainingParticipationReport
+      ? {
+          enabled: true,
+          parameter: existingEvent.trainingParticipationReport as TrainingParticipationReportParameterSet,
+        }
+      : defaultValues.trainingParticipationReport,
   };
 };
 
