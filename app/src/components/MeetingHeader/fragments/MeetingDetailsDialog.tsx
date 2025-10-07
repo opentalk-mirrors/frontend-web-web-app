@@ -122,14 +122,16 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, roomInfo }: MeetingDet
               onClick={() => setCopiedUrl(inviteUrl?.toString())}
             />
           )}
-          <CustomCopyTextField
-            label={getLabelText(FieldKeys.SipLink)}
-            value={sipLink}
-            ariaLabel={getAriaLabelText(FieldKeys.SipLink)}
-            notificationText={getNotificationText(FieldKeys.SipLink)}
-            checked={inviteUrl ? copiedUrl === sipLink : false}
-            onClick={() => setCopiedUrl(sipLink)}
-          />
+          {sipLink && (
+            <CustomCopyTextField
+              label={getLabelText(FieldKeys.SipLink)}
+              value={sipLink}
+              ariaLabel={getAriaLabelText(FieldKeys.SipLink)}
+              notificationText={getNotificationText(FieldKeys.SipLink)}
+              checked={inviteUrl ? copiedUrl === sipLink : false}
+              onClick={() => setCopiedUrl(sipLink)}
+            />
+          )}
           {roomPassword && (
             <CustomCopyTextField
               label={getLabelText(FieldKeys.RoomPassword)}
