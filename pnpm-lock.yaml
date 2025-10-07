@@ -48,8 +48,8 @@ importers:
         specifier: ^7.37.5
         version: 7.37.5(eslint@9.36.0(jiti@2.6.0))
       eslint-plugin-react-refresh:
-        specifier: ^0.4.21
-        version: 0.4.22(eslint@9.36.0(jiti@2.6.0))
+        specifier: ^0.4.23
+        version: 0.4.23(eslint@9.36.0(jiti@2.6.0))
       eslint-plugin-testing-library:
         specifier: ^7.11.0
         version: 7.11.0(eslint@9.36.0(jiti@2.6.0))(typescript@5.9.3)
@@ -57,7 +57,7 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       globals:
-        specifier: ^16.3.0
+        specifier: ^16.4.0
         version: 16.4.0
       husky:
         specifier: ^9.1.7
@@ -144,8 +144,8 @@ importers:
         specifier: ^10.10.0
         version: 10.16.0
       '@sentry/react':
-        specifier: ^10.10.0
-        version: 10.16.0(react@19.2.0)
+        specifier: ^10.17.0
+        version: 10.18.0(react@19.2.0)
       bowser:
         specifier: ^2.12.1
         version: 2.12.1
@@ -165,8 +165,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0(date-fns@4.1.0)
       emoji-picker-react:
-        specifier: ^4.13.3
-        version: 4.13.3(react@19.2.0)
+        specifier: ^4.14.0
+        version: 4.14.0(react@19.2.0)
       formik:
         specifier: ^2.4.6
         version: 2.4.6(@types/react@19.2.2)(react@19.2.0)
@@ -219,8 +219,8 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0(@types/react@19.2.2)(react@19.2.0)(redux@5.0.1)
       react-router-dom:
-        specifier: 7.9.1
-        version: 7.9.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: 7.9.3
+        version: 7.9.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-viewport-list:
         specifier: ^7.1.2
         version: 7.1.2(react@19.2.0)
@@ -277,7 +277,7 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
       '@vitejs/plugin-react':
-        specifier: ^5.0.3
+        specifier: ^5.0.4
         version: 5.0.4(vite@7.1.8(@types/node@22.18.8)(jiti@2.6.0)(yaml@2.8.1))
       cross-fetch:
         specifier: ^4.1.0
@@ -352,8 +352,8 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0(@types/react@19.2.2)(react@19.2.0)(redux@5.0.1)
       react-router-dom:
-        specifier: 7.9.1
-        version: 7.9.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: 7.9.3
+        version: 7.9.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1574,16 +1574,32 @@ packages:
     resolution: {integrity: sha512-0o6fI2FUPlwa6AyqNY8RfCMhzveVDKW27uFyFXZ6d+tMfnjFO7iRe7UlzM/9cJ6lDiCtjoIXiuttZsMXDlosWg==}
     engines: {node: '>=18'}
 
+  '@sentry-internal/browser-utils@10.18.0':
+    resolution: {integrity: sha512-6Y5VkNcj5ecIFsKdL8/7hrLt7pCuWR4BRLsKOHAmhdCnXtobf7v6DeBow2Hk5yEYO0AwjP5mqvoBAewbS+h3GA==}
+    engines: {node: '>=18'}
+
   '@sentry-internal/feedback@10.16.0':
     resolution: {integrity: sha512-dyFNQMkqe0YKTkdAVpFenV+5KUjcu7SqysmXUE91vpqfc/9J+6KAYJH9hE6IvoCf7GlwyzH85bJDniUjF2vt4A==}
+    engines: {node: '>=18'}
+
+  '@sentry-internal/feedback@10.18.0':
+    resolution: {integrity: sha512-uuupIivGPCpRStMU1I3sYPgD+pl8PqNV1DSVgVS5LF99h8tqjmRGS1xkCrUaUhVhVmsnxzbnvXb1hsOaCXX7DA==}
     engines: {node: '>=18'}
 
   '@sentry-internal/replay-canvas@10.16.0':
     resolution: {integrity: sha512-JGwcWItG4evtE/Clz/33y59cTJIeAOD9EQh3iEZC6wJ94eNy1cjjUTYBrmUAsW4sMpv820yksSrskSMzYHofFw==}
     engines: {node: '>=18'}
 
+  '@sentry-internal/replay-canvas@10.18.0':
+    resolution: {integrity: sha512-asp1biXA+F5HAKl7RvPbf5s087bg1bpxMB9E69xWc1ECUfFMPrFRNS7mAJ5A8DTd1K74E9cFsLl6zO29HpH4+w==}
+    engines: {node: '>=18'}
+
   '@sentry-internal/replay@10.16.0':
     resolution: {integrity: sha512-cKCkXNS+giNTo6euhYXpiIit2hH7YLa3s8Kl/QE8CJw9ao1oMNezNPHR1dxZzhr5+oziGdIphMVR7EAhdA4tsQ==}
+    engines: {node: '>=18'}
+
+  '@sentry-internal/replay@10.18.0':
+    resolution: {integrity: sha512-ixr3K19q4oTRgM0xANi+8ThDUbxV5iixUIgvJrT7c1L6yyidovIwO0D82ZY3phUfMkgE+mX3cxX46gXTRTglKQ==}
     engines: {node: '>=18'}
 
   '@sentry/babel-plugin-component-annotate@3.6.1':
@@ -1592,6 +1608,10 @@ packages:
 
   '@sentry/browser@10.16.0':
     resolution: {integrity: sha512-NHufRQ5sjXcAXInHKjQrm561DyGNO0bscKPDbwsSGAXGwOhyz+WOaNSZJmx9/v6JJfAYSa7fr/zKG/bMuc3+OQ==}
+    engines: {node: '>=18'}
+
+  '@sentry/browser@10.18.0':
+    resolution: {integrity: sha512-JrPfxjCsuVYUe16U4fo4W2Fn0f9BwRev3G28a4ZIkwKwJo+qSnIk1mT8Eam8nwNCU8MZjB4KNE9w2p0kaoQxvQ==}
     engines: {node: '>=18'}
 
   '@sentry/bundler-plugin-core@3.6.1':
@@ -1654,8 +1674,12 @@ packages:
     resolution: {integrity: sha512-jGcigU8kU8DfmTjWoLUpftgkayWjKLPBWm8TN3OJOevoQ319MwqoyukWXTMVu4FoyH+Vw6+xovDqMgPd/Mexsg==}
     engines: {node: '>=18'}
 
-  '@sentry/react@10.16.0':
-    resolution: {integrity: sha512-QuUXNATNFWUaFMHV7CPwmRF1HX1RIQ1GwO5ACDSoN+1CUkUotlHwI5M64tX/L5MabMjPiiGlooUsuC/wEWAPIA==}
+  '@sentry/core@10.18.0':
+    resolution: {integrity: sha512-zlhAlzc/Qpza8f/CMUb7zg/9FOhWouKAm9zyV9jZlx9lL6WceVbUEwQ3rq8ncGgM+LMwlASCOjsz5a728vAhCw==}
+    engines: {node: '>=18'}
+
+  '@sentry/react@10.18.0':
+    resolution: {integrity: sha512-mLVJzF/+VFTNkqVqApU9QLrTAahASLKLaPreJ5LUXhEbCEiBUTQNZIn8Js+tDisHwbdy9k94XC1/OLxld3Calg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^16.14.0 || 17.x || 18.x || 19.x
@@ -2728,8 +2752,8 @@ packages:
   electron-to-chromium@1.5.227:
     resolution: {integrity: sha512-ITxuoPfJu3lsNWUi2lBM2PaBPYgH3uqmxut5vmBxgYvyI4AlJ6P3Cai1O76mOrkJCBzq0IxWg/NtqOrpu/0gKA==}
 
-  emoji-picker-react@4.13.3:
-    resolution: {integrity: sha512-aZaxCI72oUQfvZtYuQ9RaYLEwmH3GVgAr5SEeB97Y7gWL06zJ4VTuSl8rAMVY7GNmd0tf/EQ1W2SDuXTl0q9AA==}
+  emoji-picker-react@4.14.0:
+    resolution: {integrity: sha512-HYqNhvbhYWonp/ArIDcbElTlwPHC3g59CVPDVPt5DgfOOKIyabKIucVODBslul3+5r+rnmH22LrTk0SlWiqRfg==}
     engines: {node: '>=10'}
     peerDependencies:
       react: '>=16'
@@ -2831,8 +2855,8 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9
 
-  eslint-plugin-react-refresh@0.4.22:
-    resolution: {integrity: sha512-atkAG6QaJMGoTLc4MDAP+rqZcfwQuTIh2IqHWFLy2TEjxr0MOK+5BSG4RzL2564AAPpZkDRsZXAUz68kjnU6Ug==}
+  eslint-plugin-react-refresh@0.4.23:
+    resolution: {integrity: sha512-G4j+rv0NmbIR45kni5xJOrYvCtyD3/7LjpVH8MPPcudXDcNu8gv+4ATTDXTtbRR8rTCM5HxECvCSsRmxKnWDsA==}
     peerDependencies:
       eslint: '>=8.40'
 
@@ -4328,15 +4352,15 @@ packages:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
 
-  react-router-dom@7.9.1:
-    resolution: {integrity: sha512-U9WBQssBE9B1vmRjo9qTM7YRzfZ3lUxESIZnsf4VjR/lXYz9MHjvOxHzr/aUm4efpktbVOrF09rL/y4VHa8RMw==}
+  react-router-dom@7.9.3:
+    resolution: {integrity: sha512-1QSbA0TGGFKTAc/aWjpfW/zoEukYfU4dc1dLkT/vvf54JoGMkW+fNA+3oyo2gWVW1GM7BxjJVHz5GnPJv40rvg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
 
-  react-router@7.9.1:
-    resolution: {integrity: sha512-pfAByjcTpX55mqSDGwGnY9vDCpxqBLASg0BMNAuMmpSGESo/TaOUG6BllhAtAkCGx8Rnohik/XtaqiYUJtgW2g==}
+  react-router@7.9.3:
+    resolution: {integrity: sha512-4o2iWCFIwhI/eYAIL43+cjORXYn/aRQPgtFRRZb3VzoyQ5Uej0Bmqj7437L97N9NJW4wnicSwLOLS+yCXfAPgg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       react: '>=18'
@@ -6507,19 +6531,37 @@ snapshots:
     dependencies:
       '@sentry/core': 10.16.0
 
+  '@sentry-internal/browser-utils@10.18.0':
+    dependencies:
+      '@sentry/core': 10.18.0
+
   '@sentry-internal/feedback@10.16.0':
     dependencies:
       '@sentry/core': 10.16.0
+
+  '@sentry-internal/feedback@10.18.0':
+    dependencies:
+      '@sentry/core': 10.18.0
 
   '@sentry-internal/replay-canvas@10.16.0':
     dependencies:
       '@sentry-internal/replay': 10.16.0
       '@sentry/core': 10.16.0
 
+  '@sentry-internal/replay-canvas@10.18.0':
+    dependencies:
+      '@sentry-internal/replay': 10.18.0
+      '@sentry/core': 10.18.0
+
   '@sentry-internal/replay@10.16.0':
     dependencies:
       '@sentry-internal/browser-utils': 10.16.0
       '@sentry/core': 10.16.0
+
+  '@sentry-internal/replay@10.18.0':
+    dependencies:
+      '@sentry-internal/browser-utils': 10.18.0
+      '@sentry/core': 10.18.0
 
   '@sentry/babel-plugin-component-annotate@3.6.1': {}
 
@@ -6530,6 +6572,14 @@ snapshots:
       '@sentry-internal/replay': 10.16.0
       '@sentry-internal/replay-canvas': 10.16.0
       '@sentry/core': 10.16.0
+
+  '@sentry/browser@10.18.0':
+    dependencies:
+      '@sentry-internal/browser-utils': 10.18.0
+      '@sentry-internal/feedback': 10.18.0
+      '@sentry-internal/replay': 10.18.0
+      '@sentry-internal/replay-canvas': 10.18.0
+      '@sentry/core': 10.18.0
 
   '@sentry/bundler-plugin-core@3.6.1(encoding@0.1.13)':
     dependencies:
@@ -6591,10 +6641,12 @@ snapshots:
 
   '@sentry/core@10.16.0': {}
 
-  '@sentry/react@10.16.0(react@19.2.0)':
+  '@sentry/core@10.18.0': {}
+
+  '@sentry/react@10.18.0(react@19.2.0)':
     dependencies:
-      '@sentry/browser': 10.16.0
-      '@sentry/core': 10.16.0
+      '@sentry/browser': 10.18.0
+      '@sentry/core': 10.18.0
       hoist-non-react-statics: 3.3.2
       react: 19.2.0
 
@@ -7798,7 +7850,7 @@ snapshots:
 
   electron-to-chromium@1.5.227: {}
 
-  emoji-picker-react@4.13.3(react@19.2.0):
+  emoji-picker-react@4.14.0(react@19.2.0):
     dependencies:
       flairup: 1.0.0
       react: 19.2.0
@@ -7996,7 +8048,7 @@ snapshots:
       safe-regex-test: 1.1.0
       string.prototype.includes: 2.0.1
 
-  eslint-plugin-react-refresh@0.4.22(eslint@9.36.0(jiti@2.6.0)):
+  eslint-plugin-react-refresh@0.4.23(eslint@9.36.0(jiti@2.6.0)):
     dependencies:
       eslint: 9.36.0(jiti@2.6.0)
 
@@ -9614,13 +9666,13 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react-router-dom@7.9.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  react-router-dom@7.9.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
-      react-router: 7.9.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react-router: 7.9.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
 
-  react-router@7.9.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  react-router@7.9.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       cookie: 1.0.2
       react: 19.2.0

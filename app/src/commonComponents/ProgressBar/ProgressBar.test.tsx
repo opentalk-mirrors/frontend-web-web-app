@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 
 import ProgressBar from './ProgressBar';
 
@@ -13,7 +13,9 @@ describe('ProgressBar', () => {
   it('can render progress bar with 50%', async () => {
     render(<ProgressBar startTime={0} endTime={2000} isFinished={false} />);
 
-    await vi.advanceTimersByTimeAsync(1000); // Simulate time passing
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
 
     const progressBar = screen.getByRole('progressbar');
 
@@ -40,7 +42,9 @@ describe('ProgressBar', () => {
   it('renders progress bar with 100% when time advances over endTime', async () => {
     render(<ProgressBar startTime={0} endTime={2000} isFinished={false} />);
 
-    await vi.advanceTimersByTimeAsync(3000);
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
 
     const progressBar = screen.getByRole('progressbar');
 
