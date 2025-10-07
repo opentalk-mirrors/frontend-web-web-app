@@ -44,7 +44,7 @@
     "i18next-http-backend": "^3.0.2",
     "linkify-react": "^4.3.2",
     "linkifyjs": "^4.3.2",
-    "livekit-client": "=2.15.7",
+    "livekit-client": "=2.15.8",
     "lodash": "^4.17.21",
     "loglevel": "^1.9.2",
     "mitt": "^3.0.1",
