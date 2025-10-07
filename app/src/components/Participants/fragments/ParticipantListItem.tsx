@@ -13,8 +13,9 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 import { isEmpty, uniqueId } from 'lodash';
-import React, { CSSProperties, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { RowComponentProps } from 'react-window';
 
 import { Role } from '../../../api/types/incoming/control';
 import { grantModeratorRole, revokeModeratorRole } from '../../../api/types/outgoing/control';
@@ -138,13 +139,11 @@ const IconsContainer = styled(Box)({
 
 type ParticipantRowProps = {
   data: Participant[];
-  index: number;
-  style: CSSProperties;
 };
 
 const PARTICIPANT_MENU_ID = 'participant_menu_id';
 
-const ParticipantListItem = ({ data, index, style }: ParticipantRowProps) => {
+const ParticipantListItem = ({ data, index, style }: RowComponentProps<ParticipantRowProps>) => {
   const participant = data[index];
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const sortType = useAppSelector(selectParticipantsSortOption);

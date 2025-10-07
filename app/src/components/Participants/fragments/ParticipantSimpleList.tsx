@@ -2,13 +2,14 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { List, ListProps, styled } from '@mui/material';
-import { isEmpty } from 'lodash';
 import { FC } from 'react';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import { FixedSizeList } from 'react-window';
+import { List as ReactWindowList } from 'react-window';
 
 import { Participant } from '../../../types';
 import ParticipantListItem from './ParticipantListItem';
+
+const ROW_HEIGHT = 69;
+const OVERSCAN_COUNT = 4;
 
 const CustomList = styled(List)(({ theme }) => ({
   overflow: 'hidden',
@@ -18,47 +19,25 @@ const CustomList = styled(List)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
     minHeight: '40vh',
   },
-}));
+})) as typeof List;
 
 interface ParticipantSimpleListProps extends ListProps {
   participants: Participant[];
 }
 
-const ParticipantSimpleList: FC<ParticipantSimpleListProps> = ({ participants, ...props }) => {
-  const root = document.querySelector(':root');
-  const DEFAULT_FONT_SIZE = 16; // "The default font size in all browsers tends to be approximately 16 pixels."
-
-  return (
-    <CustomList {...props}>
-      <AutoSizer>
-        {({ height, width }: { height: number; width: number }) => {
-          let rootFontSize = DEFAULT_FONT_SIZE;
-          if (!isEmpty(root)) {
-            const fontSize = window.getComputedStyle(root, null).getPropertyValue('font-size');
-            const parsedFontSize = Number.parseFloat(fontSize);
-            if (!Number.isNaN(parsedFontSize)) {
-              rootFontSize = parsedFontSize;
-            }
-          }
-          const ITEM_SIZE_SCALE = 3.75; // On 16px base, 60px height is proper height for list item, therefore we got the scale of 3.75
-
-          return (
-            <FixedSizeList
-              height={height}
-              width={width}
-              itemSize={rootFontSize * ITEM_SIZE_SCALE}
-              itemCount={participants.length}
-              itemData={participants}
-              overscanCount={4}
-              itemKey={(index: number, data: Participant[]) => data[index].id as string}
-            >
-              {ParticipantListItem}
-            </FixedSizeList>
-          );
-        }}
-      </AutoSizer>
-    </CustomList>
-  );
-};
+const ParticipantSimpleList: FC<ParticipantSimpleListProps> = ({ participants, ...props }) => (
+  <CustomList
+    {...props}
+    component={() => (
+      <ReactWindowList
+        rowComponent={ParticipantListItem}
+        rowHeight={ROW_HEIGHT}
+        rowCount={participants.length}
+        rowProps={{ data: participants }}
+        overscanCount={OVERSCAN_COUNT}
+      />
+    )}
+  />
+);
 
 export default ParticipantSimpleList;
