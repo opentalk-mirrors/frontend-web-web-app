@@ -13,7 +13,7 @@ import {
   styled,
   Typography,
 } from '@mui/material';
-import { SdkInfo, Event } from '@sentry/browser';
+import { SdkInfo } from '@sentry/browser';
 import { useFormik } from 'formik';
 import { pick } from 'lodash';
 import React, { useState } from 'react';
@@ -114,7 +114,7 @@ const GlitchtipErrorDialog = () => {
       if (event) {
         // For some reason default value of the `sdk` is corrupt and confuses
         // the GlitchTip server. We need to fix it before sending the event.
-        const fixedEvent: Partial<Event> = { ...event, sdk: { ...sdk } };
+        const fixedEvent = { ...event, sdk: { ...sdk } };
 
         await fetch(
           `${url.origin}/api${url.pathname}/envelope/?sentry_key=${url.username}&sentry_version=0&sentry_client=${sdk.name}/${sdk.version}`,
