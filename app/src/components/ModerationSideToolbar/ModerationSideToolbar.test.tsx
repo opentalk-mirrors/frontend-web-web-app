@@ -57,7 +57,7 @@ describe('ModerationSideToolbar', () => {
     renderComponent();
     const chatTab = screen.getByRole('tab', { name: /vote/i });
     fireEvent.click(chatTab);
-    expect(mockOnSelect).toHaveBeenCalledWith('vote');
+    expect(mockOnSelect).toHaveBeenCalledExactlyOnceWith('vote');
   });
 
   it('renders tooltip content using translation keys', () => {

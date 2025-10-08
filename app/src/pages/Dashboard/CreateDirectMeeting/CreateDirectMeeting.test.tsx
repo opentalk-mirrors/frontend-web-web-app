@@ -186,7 +186,7 @@ describe('CreateDirectMeeting', () => {
     await waitFor(() => {
       expect(mockWriteText).toHaveBeenCalledTimes(1);
     });
-    expect(mockWriteText).toHaveBeenCalledWith(INVITE_LINK);
+    expect(mockWriteText).toHaveBeenCalledExactlyOnceWith(INVITE_LINK);
   });
 
   it('copies the guest link, if link exists', async () => {
@@ -217,6 +217,6 @@ describe('CreateDirectMeeting', () => {
     await waitFor(() => {
       expect(mockWriteText).toHaveBeenCalledTimes(1);
     });
-    expect(mockWriteText).toHaveBeenCalledWith(INVITE_GUEST_LINK);
+    expect(mockWriteText).toHaveBeenCalledExactlyOnceWith(INVITE_GUEST_LINK);
   });
 });

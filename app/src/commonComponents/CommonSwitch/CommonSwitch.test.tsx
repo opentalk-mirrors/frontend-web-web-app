@@ -22,6 +22,9 @@ describe('CommonSwitch', () => {
     fireEvent.keyDown(switchElement, { code: 'Enter' });
 
     // Check if onChange was called with the expected parameters
-    expect(commonProps.onChange).toHaveBeenCalledWith(expect.objectContaining({ target: { checked: true } }), true);
+    expect(commonProps.onChange).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ target: { checked: true } }),
+      true
+    );
   });
 });

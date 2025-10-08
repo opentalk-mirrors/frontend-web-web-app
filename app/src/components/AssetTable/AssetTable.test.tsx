@@ -80,7 +80,7 @@ describe('Asset Table', () => {
     expect(downloadButton).toBeInTheDocument();
     fireEvent.click(downloadButton);
     await waitFor(() => {
-      expect(onDownload).toHaveBeenCalledWith({
+      expect(onDownload).toHaveBeenCalledExactlyOnceWith({
         assetId: mockedRoomAssets[0].id,
         filename: mockedRoomAssets[0].filename,
         fileSize: mockedRoomAssets[0].size,
@@ -102,7 +102,7 @@ describe('Asset Table', () => {
     expect(deleteButton).toBeInTheDocument();
     fireEvent.click(deleteButton);
     await waitFor(() => {
-      expect(handleDelete).toHaveBeenCalledWith(mockedRoomAssets[0].id);
+      expect(handleDelete).toHaveBeenCalledExactlyOnceWith(mockedRoomAssets[0].id);
     });
   });
 });

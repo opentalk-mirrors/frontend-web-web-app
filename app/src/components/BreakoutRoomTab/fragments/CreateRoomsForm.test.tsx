@@ -1,9 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
+import { start } from '../../../api/types/outgoing/breakout';
+import * as hooks from '../../../hooks/useCustomRedux';
 import { mockStore, renderWithProviders } from '../../../utils/testUtils';
 import { Seconds } from '../../../utils/tsUtils';
 import CreateRoomsForm from './CreateRoomsForm';
@@ -31,6 +34,10 @@ vi.mock('formik', async () => {
 });
 
 describe('CreateRoomForm', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
   it('renders the form correctly', async () => {
     const { store } = mockStore(4);
 
@@ -43,20 +50,24 @@ describe('CreateRoomForm', () => {
   });
 
   it('starts breakout room with 5 minutes duration should send 300sec to backend', async () => {
-    const { store, dispatchSpy } = mockStore(4, { store: { breakout: { active: false } } });
+    const mockDispatch = vi.fn();
+    vi.spyOn(hooks, 'useAppDispatch').mockReturnValue(mockDispatch);
+
+    const { store } = mockStore(4, { store: { breakout: { active: false } } });
 
     renderWithProviders(<CreateRoomsForm />, { store, provider: { mui: true, snackbar: true } });
 
-    fireEvent.click(await screen.findByRole('button', { name: 'global-duration field-duration-unlimited-time' }));
-    fireEvent.click(await screen.findByRole('button', { name: '5 global-minute' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'field-duration-button-save' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'breakout-room-start-button' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'global-duration field-duration-unlimited-time' }));
+    await userEvent.click(await screen.findByRole('button', { name: '5 global-minute' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'field-duration-button-save' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'breakout-room-start-button' }));
 
     const duration = (5 * 60) as Seconds;
-    await waitFor(() =>
-      expect(dispatchSpy).toHaveBeenCalledWith({
-        type: 'signaling/breakout/start',
-        payload: { duration: duration, strategy: 'manual', rooms: expect.any(Array) },
+    expect(mockDispatch).toHaveBeenCalledExactlyOnceWith(
+      start.action({
+        duration,
+        strategy: 'manual',
+        rooms: expect.any(Array),
       })
     );
   });

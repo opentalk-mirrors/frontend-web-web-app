@@ -68,7 +68,7 @@ describe('AssetTableRow', () => {
     // check download button
     const downloadButton = within(tableRow).getByRole('button', { name: /action-download/i });
     await userEvent.click(downloadButton);
-    expect(mockHandleDownload).toHaveBeenCalledWith({
+    expect(mockHandleDownload).toHaveBeenCalledExactlyOnceWith({
       assetId: asset.id,
       filename: asset.filename,
       fileSize: asset.size,
@@ -77,7 +77,7 @@ describe('AssetTableRow', () => {
     // check delete button
     const deleteButton = within(tableRow).getByRole('button', { name: /action-delete/i });
     await userEvent.click(deleteButton);
-    expect(mockHandleDelete).toHaveBeenCalledWith(asset.id);
+    expect(mockHandleDelete).toHaveBeenCalledExactlyOnceWith(asset.id);
   });
 
   it('disables buttons from the parent', () => {

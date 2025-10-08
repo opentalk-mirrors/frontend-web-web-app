@@ -37,7 +37,10 @@ vi.mock('../../../hooks/useHeader', () => ({
 const mockUseHeader = useHeader as Mock;
 
 describe('Home', () => {
-  beforeEach(() => mockUseHeader.mockReturnValue({ setHeader: vi.fn() }));
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mockUseHeader.mockReturnValue({ setHeader: vi.fn() });
+  });
 
   it('renders desktop view', () => {
     const isDesktop = true;
@@ -58,7 +61,7 @@ describe('Home', () => {
 
   it('updates the document title', () => {
     render(<Home />);
-    expect(useUpdateDocumentTitle).toHaveBeenCalledWith('dashboard-current-meetings');
+    expect(useUpdateDocumentTitle).toHaveBeenCalledExactlyOnceWith('dashboard-current-meetings');
   });
 
   it('renders the banner container into the document header', () => {
@@ -67,6 +70,6 @@ describe('Home', () => {
 
     render(<Home />);
 
-    expect(mockSetHeader).toHaveBeenCalledWith(<BannerContainer />);
+    expect(mockSetHeader).toHaveBeenCalledExactlyOnceWith(<BannerContainer />);
   });
 });

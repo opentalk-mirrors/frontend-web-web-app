@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Event, TimedEvent } from '@opentalk/rest-api-rtk-query';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Formik, FormikProps } from 'formik';
 
 import { CommonFrequencies } from '../../../utils/rruleUtils';
@@ -76,50 +77,50 @@ describe('DateTimeSection', () => {
       mockTestOnChangeValue = null;
       renderComponent();
       const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
-      fireEvent.click(screen.getByTestId('trigger-onchange-start'));
+      await userEvent.click(screen.getByTestId('trigger-onchange-start'));
 
-      await waitFor(() => {
-        expect(formikInstance?.values.startDate).toBe('');
-      });
+      expect(formikInstance?.values.startDate).toBe('');
+      expect(validateFieldSpy).toHaveBeenCalledExactlyOnceWith('startDate');
 
-      await waitFor(() => {
-        expect(validateFieldSpy).toHaveBeenCalledWith('startDate');
-      });
       validateFieldSpy.mockRestore();
     });
     it('sets invalid date string if start date is invalid', async () => {
       mockTestOnChangeValue = new Date('invalid');
       renderComponent();
       const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
-      fireEvent.click(screen.getByTestId('trigger-onchange-start'));
+      await userEvent.click(screen.getByTestId('trigger-onchange-start'));
 
-      await waitFor(() => {
-        expect(formikInstance?.values.startDate).toBe('Invalid Date');
-      });
+      expect(formikInstance?.values.startDate).toBe('Invalid Date');
+      expect(validateFieldSpy).toHaveBeenCalledExactlyOnceWith('startDate');
 
-      await waitFor(() => {
-        expect(validateFieldSpy).toHaveBeenCalledWith('startDate');
-      });
       validateFieldSpy.mockRestore();
     });
-    it('sets correct start date in ISO format and updates end date if start date is valid', async () => {
+    it('sets start and end date and validates each exactly once', async () => {
       mockTestOnChangeValue = new Date('05 October 2025 14:48 UTC');
       renderComponent();
-      const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
-      fireEvent.click(screen.getByTestId('trigger-onchange-start'));
 
-      await waitFor(() => {
-        expect(formikInstance?.values.startDate).toBe('2025-10-05T14:48:00.000Z');
+      const startValidateSpy = vi.fn();
+      const endValidateSpy = vi.fn();
+
+      const originalValidate = formikInstance!.validateField.bind(formikInstance);
+
+      vi.spyOn(formikInstance!, 'validateField').mockImplementation((field) => {
+        if (field === 'startDate') {
+          startValidateSpy('startDate');
+        }
+        if (field === 'endDate') {
+          endValidateSpy('endDate');
+        }
+        return originalValidate(field);
       });
-      await waitFor(() => {
-        expect(validateFieldSpy).toHaveBeenCalledWith('startDate');
-      });
-      await waitFor(() => {
-        expect(formikInstance?.values.endDate).toBe('2025-10-05T15:00:00.000Z');
-      });
-      await waitFor(() => {
-        expect(validateFieldSpy).toHaveBeenCalledWith('endDate');
-      });
+
+      await userEvent.click(screen.getByTestId('trigger-onchange-start'));
+
+      expect(formikInstance?.values.startDate).toBe('2025-10-05T14:48:00.000Z');
+      expect(startValidateSpy).toHaveBeenCalledExactlyOnceWith('startDate');
+
+      expect(formikInstance?.values.endDate).toBe('2025-10-05T15:00:00.000Z');
+      expect(endValidateSpy).toHaveBeenCalledExactlyOnceWith('endDate');
     });
   });
   describe('end date picker', () => {
@@ -127,44 +128,33 @@ describe('DateTimeSection', () => {
       mockTestOnChangeValue = null;
       renderComponent();
       const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
-      fireEvent.click(screen.getByTestId('trigger-onchange-end'));
+      await userEvent.click(screen.getByTestId('trigger-onchange-end'));
 
-      await waitFor(() => {
-        expect(formikInstance?.values.endDate).toBe('');
-      });
+      expect(formikInstance?.values.endDate).toBe('');
+      expect(validateFieldSpy).toHaveBeenCalledExactlyOnceWith('endDate');
 
-      await waitFor(() => {
-        expect(validateFieldSpy).toHaveBeenCalledWith('endDate');
-      });
       validateFieldSpy.mockRestore();
     });
     it('sets invalid date string if end date is invalid', async () => {
       mockTestOnChangeValue = new Date('invalid');
       renderComponent();
       const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
-      fireEvent.click(screen.getByTestId('trigger-onchange-end'));
+      await userEvent.click(screen.getByTestId('trigger-onchange-end'));
 
-      await waitFor(() => {
-        expect(formikInstance?.values.endDate).toBe('Invalid Date');
-      });
+      expect(formikInstance?.values.endDate).toBe('Invalid Date');
+      expect(validateFieldSpy).toHaveBeenCalledExactlyOnceWith('endDate');
 
-      await waitFor(() => {
-        expect(validateFieldSpy).toHaveBeenCalledWith('endDate');
-      });
       validateFieldSpy.mockRestore();
     });
     it('sets correct start date in ISO format and updates end date if start date is valid', async () => {
       mockTestOnChangeValue = new Date('05 October 2025 14:48 UTC');
       renderComponent();
       const validateFieldSpy = vi.spyOn(formikInstance!, 'validateField');
-      fireEvent.click(screen.getByTestId('trigger-onchange-end'));
+      await userEvent.click(screen.getByTestId('trigger-onchange-end'));
 
-      await waitFor(() => {
-        expect(formikInstance?.values.endDate).toBe('2025-10-05T14:48:00.000Z');
-      });
-      await waitFor(() => {
-        expect(validateFieldSpy).toHaveBeenCalledWith('endDate');
-      });
+      expect(formikInstance?.values.endDate).toBe('2025-10-05T14:48:00.000Z');
+      expect(validateFieldSpy).toHaveBeenCalledExactlyOnceWith('endDate');
+
       validateFieldSpy.mockRestore();
     });
   });

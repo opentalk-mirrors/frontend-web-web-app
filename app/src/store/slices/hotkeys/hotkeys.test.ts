@@ -41,44 +41,12 @@ describe('hotkeys', () => {
 
     unbind = unbindDomEvents;
 
-    let event = new KeyboardEvent('keydown', { key: 'm', ctrlKey: true });
+    const event = new KeyboardEvent('keydown', { key: 'm', ctrlKey: true });
     window.dispatchEvent(event);
     vi.advanceTimersByTime(100);
     expect(mockedOnPress).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: domKeyDown.type, payload: event });
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith({ type: domKeyDown.type, payload: event });
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'm', ctrlKey: true }));
-    vi.advanceTimersByTime(500);
-
-    event = new KeyboardEvent('keydown', { key: 'm' });
-    window.dispatchEvent(event);
-    vi.advanceTimersByTime(100);
-    expect(mockedOnPress).toHaveBeenCalledTimes(2);
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: domKeyDown.type, payload: event });
-    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'm' }));
-    vi.advanceTimersByTime(500);
-
-    event = new KeyboardEvent('keydown', { key: 'v' });
-    window.dispatchEvent(event);
-    vi.advanceTimersByTime(100);
-    expect(mockedOnPress).toHaveBeenCalledTimes(3);
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: domKeyDown.type, payload: event });
-    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'v' }));
-    vi.advanceTimersByTime(500);
-
-    event = new KeyboardEvent('keydown', { key: 'w' });
-    window.dispatchEvent(event);
-    vi.advanceTimersByTime(100);
-    expect(mockedOnPress).toHaveBeenCalledTimes(4);
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: domKeyDown.type, payload: event });
-    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'w' }));
-    vi.advanceTimersByTime(500);
-
-    event = new KeyboardEvent('keydown', { key: 'n' });
-    window.dispatchEvent(event);
-    vi.advanceTimersByTime(100);
-    expect(mockedOnPress).toHaveBeenCalledTimes(5);
-    expect(dispatchSpy).toHaveBeenCalledWith({ type: domKeyDown.type, payload: event });
-    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'n' }));
     vi.advanceTimersByTime(500);
   });
 

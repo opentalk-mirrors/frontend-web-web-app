@@ -59,7 +59,7 @@ describe('useNavigateToHome', () => {
 
     expect(mockHangUp).toHaveBeenCalledTimes(1);
     expect(dispatchSpy).toHaveBeenNthCalledWith(2, roomReset());
-    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+    expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/dashboard');
   });
 
   it('dispatches hangUp, roomReset and navigates if state is ReadyToEnter', () => {
@@ -67,7 +67,7 @@ describe('useNavigateToHome', () => {
 
     expect(mockHangUp).toHaveBeenCalledTimes(1);
     expect(dispatchSpy).toHaveBeenNthCalledWith(2, roomReset());
-    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+    expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/dashboard');
   });
 
   it('dispatches only roomReset and navigates if state is other', () => {
@@ -92,7 +92,7 @@ describe('useNavigateToHome', () => {
     });
 
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith(roomReset());
-    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(roomReset());
+    expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/dashboard');
   });
 });

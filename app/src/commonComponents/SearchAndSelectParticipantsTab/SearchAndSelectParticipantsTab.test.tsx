@@ -50,7 +50,7 @@ describe('Select Participants Tab', () => {
     const searchInput = screen.getByRole('textbox');
 
     fireEvent.change(searchInput, { target: { value: 'a' } });
-    expect(mockHandleSearchChange).toHaveBeenCalledWith('a');
+    expect(mockHandleSearchChange).toHaveBeenCalledExactlyOnceWith('a');
   });
   it('should render participants', () => {
     const participants = [1, 2, 3].map((value) => ({
@@ -104,6 +104,6 @@ describe('Select Participants Tab', () => {
     const checkbox1 = screen.getByRole('checkbox', { name: participants[1].name });
 
     fireEvent.click(checkbox1);
-    expect(mockHandleSelectParticipant).toHaveBeenCalledWith(true, participants[1].identity);
+    expect(mockHandleSelectParticipant).toHaveBeenCalledExactlyOnceWith(true, participants[1].identity);
   });
 });

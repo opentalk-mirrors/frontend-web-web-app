@@ -91,7 +91,7 @@ describe('UpdateMeetingForm', () => {
 
     fireEvent.submit(screen.getByRole('form'));
     await waitFor(() => {
-      expect(createPayload).toHaveBeenCalledWith({ title: 'Test Meeting' }, mockedEvent);
+      expect(createPayload).toHaveBeenCalledExactlyOnceWith({ title: 'Test Meeting' }, mockedEvent);
     });
   });
 
@@ -102,7 +102,7 @@ describe('UpdateMeetingForm', () => {
 
     fireEvent.submit(screen.getByRole('form'));
     await waitFor(() => {
-      expect(mockUpdateEvent).toHaveBeenCalledWith({ eventId: mockedEvent.id, title: 'Test Meeting' });
+      expect(mockUpdateEvent).toHaveBeenCalledExactlyOnceWith({ eventId: mockedEvent.id, title: 'Test Meeting' });
     });
   });
 
@@ -116,7 +116,7 @@ describe('UpdateMeetingForm', () => {
     fireEvent.submit(screen.getByRole('form'));
 
     await waitFor(() => {
-      expect(notifications.success).toHaveBeenCalledWith('dashboard-meeting-notification-success-edit');
+      expect(notifications.success).toHaveBeenCalledExactlyOnceWith('dashboard-meeting-notification-success-edit');
     });
   });
 
@@ -130,7 +130,7 @@ describe('UpdateMeetingForm', () => {
     fireEvent.submit(screen.getByRole('form'));
 
     await waitFor(() => {
-      expect(notifications.error).toHaveBeenCalledWith('dashboard-meeting-notification-error');
+      expect(notifications.error).toHaveBeenCalledExactlyOnceWith('dashboard-meeting-notification-error');
     });
   });
 

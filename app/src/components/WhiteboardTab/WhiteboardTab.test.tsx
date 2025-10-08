@@ -61,7 +61,7 @@ describe('WhiteboardTab', () => {
     renderComponent();
     const startButton = screen.getByRole('button', { name: 'whiteboard-start-whiteboard-button' });
     fireEvent.click(startButton);
-    expect(dispatchSpy).toHaveBeenCalledWith(startWhiteboard.action());
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(startWhiteboard.action());
   });
 
   it('dispatches generateWhiteboardPdf when create PDF button is clicked', () => {
@@ -77,7 +77,7 @@ describe('WhiteboardTab', () => {
     renderComponent();
     const pdfButton = screen.getByRole('button', { name: 'whiteboard-create-pdf-button' });
     fireEvent.click(pdfButton);
-    expect(dispatchSpy).toHaveBeenCalledWith(generateWhiteboardPdf.action());
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(generateWhiteboardPdf.action());
   });
 
   it('calls downloadAsset function when clicking on a file link', () => {
@@ -86,6 +86,6 @@ describe('WhiteboardTab', () => {
 
     renderComponent();
     fireEvent.click(screen.getByRole('button', { name: pdfFile }));
-    expect(mockDownload).toHaveBeenCalledWith({ roomId, assetId: '1', filename: pdfFile });
+    expect(mockDownload).toHaveBeenCalledExactlyOnceWith({ roomId, assetId: '1', filename: pdfFile });
   });
 });

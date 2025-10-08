@@ -25,7 +25,7 @@ describe('DebriefingTab', () => {
     const button = screen.getByRole('button', { name: 'debriefing-button-all' });
     fireEvent.click(button);
 
-    expect(dispatchSpy).toHaveBeenCalledWith(expect.objectContaining({ kickScope: KickScope.All }));
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ kickScope: KickScope.All }));
   });
 
   it('calls debrief moderators action on button click', () => {
@@ -35,7 +35,9 @@ describe('DebriefingTab', () => {
     const button = screen.getByRole('button', { name: 'debriefing-button-moderators' });
     fireEvent.click(button);
 
-    expect(dispatchSpy).toHaveBeenCalledWith(expect.objectContaining({ kickScope: KickScope.UsersAndGuests }));
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ kickScope: KickScope.UsersAndGuests })
+    );
   });
 
   it('calls debrief guests action on button click', () => {
@@ -45,6 +47,6 @@ describe('DebriefingTab', () => {
     const button = screen.getByRole('button', { name: 'debriefing-button-moderators-and-users' });
     fireEvent.click(button);
 
-    expect(dispatchSpy).toHaveBeenCalledWith(expect.objectContaining({ kickScope: KickScope.Guests }));
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ kickScope: KickScope.Guests }));
   });
 });

@@ -60,8 +60,7 @@ describe('<TalkingStickTabPanel />', () => {
 
       fireEvent.click(startButton);
 
-      expect(dispatchSpy).toHaveBeenCalledTimes(1);
-      expect(dispatchSpy).toHaveBeenCalledWith({
+      expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith({
         type: 'signaling/automod/start',
         payload: {
           allowDoubleSelection: false,
@@ -114,8 +113,7 @@ describe('<TalkingStickTabPanel />', () => {
 
       fireEvent.click(stopButton);
 
-      expect(dispatchSpy).toHaveBeenCalledTimes(1);
-      expect(dispatchSpy).toHaveBeenCalledWith({
+      expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith({
         type: 'signaling/automod/stop',
         payload: undefined,
       });
@@ -128,8 +126,7 @@ describe('<TalkingStickTabPanel />', () => {
 
       fireEvent.click(skipSpeakerButton);
 
-      expect(dispatchSpy).toHaveBeenCalledTimes(1);
-      expect(dispatchSpy).toHaveBeenCalledWith({
+      expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith({
         type: 'signaling/automod/select',
         payload: {
           how: 'next',

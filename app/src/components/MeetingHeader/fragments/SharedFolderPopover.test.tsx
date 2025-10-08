@@ -154,7 +154,7 @@ describe('SharedFolderMenuItem callback logic', () => {
     fireEvent.click(button);
     const menuitem = screen.getByRole('menuitem', { name: 'shared-folder-open-label', hidden: true });
     fireEvent.click(menuitem);
-    expect(window.open).toHaveBeenCalledWith('https://example.com', 'sharedFolder');
+    expect(window.open).toHaveBeenCalledExactlyOnceWith('https://example.com', 'sharedFolder');
   });
 
   it('should call clipboard.writeText when clicked on the shared password menu item.', () => {
@@ -177,7 +177,7 @@ describe('SharedFolderMenuItem callback logic', () => {
     fireEvent.click(button);
     const menuitem = screen.getByRole('menuitem', { name: 'shared-folder-password-label', hidden: true });
     fireEvent.click(menuitem);
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('password');
+    expect(navigator.clipboard.writeText).toHaveBeenCalledExactlyOnceWith('password');
     expect(window.open).not.toHaveBeenCalled();
   });
 });

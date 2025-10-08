@@ -15,7 +15,6 @@ describe('SupportPage', () => {
     render(<SupportPage />);
 
     expect(screen.getByRole('heading', { name: 'dashboard-help-support' })).toBeInTheDocument();
-    expect(useUpdateDocumentTitle).toHaveBeenCalledTimes(1);
-    expect(useUpdateDocumentTitle).toHaveBeenCalledWith('dashboard-help-support');
+    expect(useUpdateDocumentTitle).toHaveBeenCalledExactlyOnceWith('dashboard-help-support');
   });
 });

@@ -15,7 +15,6 @@ describe('ImprintPage', () => {
     render(<ImprintPage />);
 
     expect(screen.getByRole('heading', { name: 'dashboard-legal-imprint' })).toBeInTheDocument();
-    expect(useUpdateDocumentTitle).toHaveBeenCalledTimes(1);
-    expect(useUpdateDocumentTitle).toHaveBeenCalledWith('dashboard-legal-imprint');
+    expect(useUpdateDocumentTitle).toHaveBeenCalledExactlyOnceWith('dashboard-legal-imprint');
   });
 });

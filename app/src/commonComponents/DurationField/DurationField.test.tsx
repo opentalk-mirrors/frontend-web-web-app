@@ -62,6 +62,6 @@ describe('DurationField', () => {
     fireEvent.change(customInput, { target: { value: '20' } });
     expect(customInput).toHaveValue(20);
     fireEvent.click(await screen.findByRole('button', { name: 'field-duration-button-save' }));
-    expect(commonProps.setFieldValue).toHaveBeenCalledWith('test', 20);
+    expect(commonProps.setFieldValue).toHaveBeenCalledExactlyOnceWith('test', 20);
   });
 });

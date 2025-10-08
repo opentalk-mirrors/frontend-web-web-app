@@ -43,6 +43,7 @@ const { store } = configureStore();
 
 describe('EditEventsPage', () => {
   beforeEach(() => {
+    vi.resetAllMocks();
     // Since we are using 'resetMocks: true,' property globally, we have to redeclare return value on each run.
     mockUseParams.mockReturnValue({
       eventId: mockEventId,
@@ -68,7 +69,7 @@ describe('EditEventsPage', () => {
     renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
 
     await waitFor(() => {
-      expect(mockLazyGetEvent).toHaveBeenCalledWith({
+      expect(mockLazyGetEvent).toHaveBeenCalledExactlyOnceWith({
         eventId: mockEventId,
         inviteesMax: 10,
       });
@@ -102,6 +103,6 @@ describe('EditEventsPage', () => {
 
     renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
 
-    expect(mockNavigate).toHaveBeenCalledWith('/dashboard/meetings/create');
+    expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/dashboard/meetings/create');
   });
 });

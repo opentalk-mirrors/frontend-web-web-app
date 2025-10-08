@@ -130,7 +130,7 @@ describe('GuestLinkField', () => {
     it('requests permanent invite if there is no permanent invite for event and user is the event creator', () => {
       setupGetRoomInvitesMock({});
       renderComponent();
-      expect(mockCreateRoomInvite).toHaveBeenCalledWith({ id: mockRoomId });
+      expect(mockCreateRoomInvite).toHaveBeenCalledExactlyOnceWith({ id: mockRoomId });
     });
     it('does not request permanent invite if there is no permanent invite for event and user is not the event creator', () => {
       setupGetRoomInvitesMock({});

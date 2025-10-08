@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 
 import { mockChangeLanguage } from '../../../../setupTests';
 import { renderWithProviders, configureStore } from '../../../../utils/testUtils';
@@ -35,6 +36,11 @@ vi.mock('../../../../api/rest', async (importOriginal) => ({
 
 describe('LanguageSelector', () => {
   const { store } = configureStore();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('renders without crashing', () => {
     renderWithProviders(<LanguageSelector />, { store });
 
@@ -65,6 +71,8 @@ describe('LanguageSelector', () => {
     await waitFor(() => {
       expect(mockChangeLanguage).toHaveBeenCalled();
     });
-    expect(mockSuccessNotification).toHaveBeenCalledWith('dashboard-settings-general-notification-save-success');
+    expect(mockSuccessNotification).toHaveBeenCalledExactlyOnceWith(
+      'dashboard-settings-general-notification-save-success'
+    );
   });
 });
