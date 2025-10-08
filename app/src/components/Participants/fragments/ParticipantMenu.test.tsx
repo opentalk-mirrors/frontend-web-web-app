@@ -82,9 +82,7 @@ describe('ParticipantMenu', () => {
 
     await userEvent.keyboard('{Escape}');
 
-    expect(setAnchorEl).toHaveBeenCalledWith(undefined);
-    expect(setAnchorEl).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalled();
-    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(setAnchorEl).toHaveBeenCalledExactlyOnceWith(undefined);
+    expect(onClose).toHaveBeenCalledExactlyOnceWith();
   });
 });

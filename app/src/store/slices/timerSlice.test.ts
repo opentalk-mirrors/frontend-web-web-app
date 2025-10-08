@@ -40,7 +40,7 @@ describe('timer slice', () => {
         const listenerApi = getMockListenerApi(TimerStyle.Normal);
         handleNotificationOnTimerStoppedEffect(action, listenerApi);
 
-        expect(notifications.info).toHaveBeenCalledWith('timer-notification-ran-out');
+        expect(notifications.info).toHaveBeenCalledExactlyOnceWith('timer-notification-ran-out');
       });
 
       it('should notify when timer is stopped by moderator', () => {
@@ -49,7 +49,7 @@ describe('timer slice', () => {
 
         handleNotificationOnTimerStoppedEffect(action, listenerApi);
 
-        expect(notifications.info).toHaveBeenCalledWith('timer-notification-stopped');
+        expect(notifications.info).toHaveBeenCalledExactlyOnceWith('timer-notification-stopped');
       });
 
       it('should not notify when timer is stopped because the creator left', () => {
@@ -65,7 +65,7 @@ describe('timer slice', () => {
         const listenerApi = getMockListenerApi(TimerStyle.CoffeeBreak);
         handleNotificationOnTimerStoppedEffect(action, listenerApi);
 
-        expect(notifications.info).toHaveBeenCalledWith('coffee-break-notification');
+        expect(notifications.info).toHaveBeenCalledExactlyOnceWith('coffee-break-notification');
       });
     });
   });

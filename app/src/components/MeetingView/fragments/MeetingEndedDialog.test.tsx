@@ -1,19 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Mock } from 'vitest';
 
 import { useInviteCode } from '../../../hooks/useInviteCode';
+import * as commonActions from '../../../store/commonActions';
 import { mockStore, renderWithProviders } from '../../../utils/testUtils';
 import MeetingEndedDialog from './MeetingEndedDialog';
 
-const mockDispatch = vi.fn();
 const mockNavigate = vi.fn();
-
-vi.mock('../../../hooks', () => ({
-  useAppDispatch: () => mockDispatch,
-}));
 
 vi.mock('../../../hooks/useInviteCode', () => ({
   useInviteCode: vi.fn(),
@@ -30,21 +27,22 @@ describe('MeetingEndedDialog', () => {
     vi.clearAllMocks();
   });
 
-  it('dispatches hangUp and navigates when button is clicked', () => {
+  it('dispatches hangUp and navigates when button is clicked', async () => {
     const mockSetIsDialogOpen = vi.fn();
     renderWithProviders(<MeetingEndedDialog setIsDialogOpen={mockSetIsDialogOpen} />, {
       store,
-      provider: { mui: true },
+      provider: { mui: true, snackbar: true },
     });
+    const spyHangUp = vi.spyOn(commonActions, 'hangUp');
 
     const leaveButton = screen.getByRole('button', { name: /meeting-ended-dialog-button-title/i });
-    fireEvent.click(leaveButton);
+    await userEvent.click(leaveButton);
 
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+    expect(spyHangUp).toHaveBeenCalledExactlyOnceWith();
+    expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/dashboard');
   });
 
-  it('does not navigate if inviteCode is present', () => {
+  it('does not navigate if inviteCode is present', async () => {
     (useInviteCode as Mock).mockReturnValue('some-code');
     const mockSetIsDialogOpen = vi.fn();
 
@@ -53,10 +51,12 @@ describe('MeetingEndedDialog', () => {
       provider: { mui: true },
     });
 
-    const leaveButton = screen.getByRole('button', { name: /meeting-ended-dialog-button-title/i });
-    fireEvent.click(leaveButton);
+    const spyHangUp = vi.spyOn(commonActions, 'hangUp');
 
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    const leaveButton = screen.getByRole('button', { name: /meeting-ended-dialog-button-title/i });
+    await userEvent.click(leaveButton);
+
+    expect(spyHangUp).toHaveBeenCalledExactlyOnceWith();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

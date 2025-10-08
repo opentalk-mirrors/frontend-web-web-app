@@ -20,7 +20,7 @@ describe('showWithLinkNotification', () => {
 
     showWithLinkNotification(props);
 
-    expect(notifications.toast).toHaveBeenCalledWith(
+    expect(notifications.toast).toHaveBeenCalledExactlyOnceWith(
       expect.any(Object), // The WithLinkNotification component
       {
         variant: 'info',

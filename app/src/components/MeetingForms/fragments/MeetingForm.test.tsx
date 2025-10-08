@@ -209,7 +209,7 @@ describe('MeetingForm', () => {
       fireEvent.submit(screen.getByRole('form'));
 
       await waitFor(() => {
-        expect(mockGetEvents).toHaveBeenCalledWith({ timeMin: mockStartDate, timeMax: mockEndDate });
+        expect(mockGetEvents).toHaveBeenCalledExactlyOnceWith({ timeMin: mockStartDate, timeMax: mockEndDate });
       });
     });
 

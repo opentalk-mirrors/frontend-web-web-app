@@ -97,7 +97,7 @@ describe('Storage almost full Banner', () => {
 
     const upgradeButton = screen.getByRole('button', { name: 'global-upgrade' });
     await userEvent.click(upgradeButton);
-    expect(window.open).toHaveBeenCalledWith(ACCOUNT_MANAGEMENT_URL, '_self');
+    expect(window.open).toHaveBeenCalledExactlyOnceWith(ACCOUNT_MANAGEMENT_URL, '_self');
 
     // restore window.open
     window.open = jsdomOpen;

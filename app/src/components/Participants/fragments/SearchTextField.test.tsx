@@ -35,8 +35,7 @@ describe('SearchTextField', () => {
 
     fireEvent.change(searchInput, { target: { value: 'testing...' } });
 
-    expect(mockOnSearch).toHaveBeenCalledWith('testing...');
-    expect(mockOnSearch).toHaveBeenCalledTimes(1);
+    expect(mockOnSearch).toHaveBeenCalledExactlyOnceWith('testing...');
   });
 
   it('click on sortButton should open menu with list of sortOptionItems', () => {

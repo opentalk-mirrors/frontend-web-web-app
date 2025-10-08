@@ -55,7 +55,7 @@ describe('Payment Status Banner', () => {
 
     const addPaymentButton = screen.getByRole('button', { name: 'dashboard-add-payment-button' });
     await userEvent.click(addPaymentButton);
-    expect(window.open).toHaveBeenCalledWith(ACCOUNT_MANAGEMENT_URL, '_self');
+    expect(window.open).toHaveBeenCalledExactlyOnceWith(ACCOUNT_MANAGEMENT_URL, '_self');
 
     // restore window.open
     window.open = jsdomOpen;

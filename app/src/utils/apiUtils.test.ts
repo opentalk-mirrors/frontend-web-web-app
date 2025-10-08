@@ -10,7 +10,7 @@ describe('api utils', () => {
 
     openUserManual();
 
-    expect(window.open).toHaveBeenCalledWith(USER_MANUAL_URL, '_blank');
+    expect(window.open).toHaveBeenCalledExactlyOnceWith(USER_MANUAL_URL, '_blank');
 
     window.open = restoreWindowOpen;
   });

@@ -55,6 +55,6 @@ describe('DeviceList', () => {
     );
     const selectedDevice = screen.getByRole('menuitemradio', { name: mockedAudioInputs[CLICKED_DEVICE_INDEX].label });
     await userEvent.click(selectedDevice);
-    expect(mockedOnSelectDevice).toHaveBeenCalledWith(mockedAudioInputs[CLICKED_DEVICE_INDEX].deviceId);
+    expect(mockedOnSelectDevice).toHaveBeenCalledExactlyOnceWith(mockedAudioInputs[CLICKED_DEVICE_INDEX].deviceId);
   });
 });

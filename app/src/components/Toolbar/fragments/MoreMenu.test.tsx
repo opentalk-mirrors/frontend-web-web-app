@@ -31,7 +31,7 @@ vi.mock('./InviteGuestDialog', () => ({
   },
 }));
 
-describe('<MoreButton />', () => {
+describe('<MoreMenu />', () => {
   const { store } = configureStore();
 
   const checkMenuItem = (name: string, falsify?: boolean) => {
@@ -257,7 +257,7 @@ describe('<MoreButton />', () => {
 
       fireEvent.click(screen.getByText('Show Test Info'));
 
-      expect(spyNotificationsSuccess).toHaveBeenCalledWith('You just triggered this notification. Success!');
+      expect(spyNotificationsSuccess).toHaveBeenCalledExactlyOnceWith('You just triggered this notification. Success!');
     });
 
     it('shows error notification when show test error option is clicked', () => {
@@ -269,7 +269,7 @@ describe('<MoreButton />', () => {
 
       fireEvent.click(screen.getByText('Show Test Error'));
 
-      expect(spyNotificationsError).toHaveBeenCalledWith('Test error context: Error: Test Error');
+      expect(spyNotificationsError).toHaveBeenCalledExactlyOnceWith('Test error context: Error: Test Error');
     });
     it('shows training participation button if module trainingParticipationReport is defined', async () => {
       const { store: storeWithModules } = configureStore({

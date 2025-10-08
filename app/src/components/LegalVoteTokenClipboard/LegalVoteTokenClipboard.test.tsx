@@ -38,7 +38,7 @@ describe('LegalVoteTokenClipboard', () => {
     });
     const button = screen.getByRole('button', { name: 'Copy token' });
     await userEvent.click(button);
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('name'));
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('token'));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledExactlyOnceWith(expect.stringContaining('name'));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledExactlyOnceWith(expect.stringContaining('token'));
   });
 });

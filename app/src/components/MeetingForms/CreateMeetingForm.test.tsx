@@ -74,7 +74,7 @@ describe('CreateMeetingForm', () => {
 
     fireEvent.submit(screen.getByRole('form'));
     await waitFor(() => {
-      expect(createPayload).toHaveBeenCalledWith({ title: 'Test Meeting' });
+      expect(createPayload).toHaveBeenCalledExactlyOnceWith({ title: 'Test Meeting' });
     });
   });
 
@@ -87,7 +87,7 @@ describe('CreateMeetingForm', () => {
     fireEvent.submit(screen.getByRole('form'));
 
     await waitFor(() => {
-      expect(mockCreateEvent).toHaveBeenCalledWith(mockPayload);
+      expect(mockCreateEvent).toHaveBeenCalledExactlyOnceWith(mockPayload);
     });
   });
 
@@ -101,7 +101,7 @@ describe('CreateMeetingForm', () => {
     fireEvent.submit(screen.getByRole('form'));
 
     await waitFor(() => {
-      expect(notifications.success).toHaveBeenCalledWith('dashboard-meeting-notification-success-create');
+      expect(notifications.success).toHaveBeenCalledExactlyOnceWith('dashboard-meeting-notification-success-create');
     });
   });
 
@@ -116,7 +116,10 @@ describe('CreateMeetingForm', () => {
     fireEvent.submit(screen.getByRole('form'));
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith(`/dashboard/meetings/update/${mockEventId}/1`, expect.any(Object));
+      expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(
+        `/dashboard/meetings/update/${mockEventId}/1`,
+        expect.any(Object)
+      );
     });
   });
 
@@ -130,7 +133,7 @@ describe('CreateMeetingForm', () => {
     fireEvent.submit(screen.getByRole('form'));
 
     await waitFor(() => {
-      expect(notifications.error).toHaveBeenCalledWith('dashboard-meeting-notification-error');
+      expect(notifications.error).toHaveBeenCalledExactlyOnceWith('dashboard-meeting-notification-error');
     });
   });
 

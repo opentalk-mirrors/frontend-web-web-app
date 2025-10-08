@@ -163,8 +163,7 @@ describe('UserRow', () => {
 
     fireEvent.click(screen.getByText('dashboard-meeting-grant-moderator-rights'));
 
-    expect(mockUpdateEventInvite).toHaveBeenCalledTimes(1);
-    expect(mockUpdateEventInvite).toHaveBeenCalledWith({
+    expect(mockUpdateEventInvite).toHaveBeenCalledExactlyOnceWith({
       userId: eventInviteRoleUser.profile.id,
       eventId: 'SOME_EVENT_ID',
       role: UserRole.MODERATOR,
@@ -190,8 +189,7 @@ describe('UserRow', () => {
 
     fireEvent.click(screen.getByText('dashboard-meeting-revoke-moderator-rights'));
 
-    expect(mockUpdateEventInvite).toHaveBeenCalledTimes(1);
-    expect(mockUpdateEventInvite).toHaveBeenCalledWith({
+    expect(mockUpdateEventInvite).toHaveBeenCalledExactlyOnceWith({
       userId: eventInviteRoleModerator.profile.id,
       eventId: 'SOME_EVENT_ID',
       role: UserRole.USER,

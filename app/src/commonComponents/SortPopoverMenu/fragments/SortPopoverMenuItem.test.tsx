@@ -17,6 +17,6 @@ describe('<SortPopoverMenuItem />', () => {
     const li = screen.getByRole('menuitem');
     fireEvent.click(li);
 
-    expect(callback).toHaveBeenCalledWith('test-value');
+    expect(callback).toHaveBeenCalledExactlyOnceWith('test-value');
   });
 });

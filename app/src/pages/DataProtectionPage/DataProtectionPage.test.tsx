@@ -15,7 +15,6 @@ describe('DataProtectionPage', () => {
     render(<DataProtectionPage />);
 
     expect(screen.getByRole('heading', { name: 'dashboard-legal-data-protection' })).toBeInTheDocument();
-    expect(useUpdateDocumentTitle).toHaveBeenCalledTimes(1);
-    expect(useUpdateDocumentTitle).toHaveBeenCalledWith('dashboard-legal-data-protection');
+    expect(useUpdateDocumentTitle).toHaveBeenCalledExactlyOnceWith('dashboard-legal-data-protection');
   });
 });

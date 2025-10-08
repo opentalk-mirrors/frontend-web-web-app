@@ -50,6 +50,6 @@ describe('<SortPopoverMenu />', () => {
 
     fireEvent.click(screen.getByText(items[0].i18nKey));
 
-    expect(DEFAULT_PROPS.onChange).toHaveBeenCalledWith(items[0].type);
+    expect(DEFAULT_PROPS.onChange).toHaveBeenCalledExactlyOnceWith(items[0].type);
   });
 });
