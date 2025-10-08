@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import log from '../../logger';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { exitingRoomContext } from '../../store/commonActions';
+import { hangUp } from '../../store/commonActions';
 import { selectRoomConnectionState } from '../../store/slices/roomSlice';
 import RoomLoadingView from './fragments/RoomLoadingView';
 
@@ -23,7 +23,9 @@ const RoomPage = () => {
 
   useEffect(() => {
     return () => {
-      dispatch(exitingRoomContext());
+      if (connectionState === ConnectionState.Online) {
+        dispatch(hangUp());
+      }
     };
   }, []);
 
