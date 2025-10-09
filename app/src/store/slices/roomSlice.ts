@@ -302,6 +302,7 @@ export const selectRoomInfo = (state: RootState) => state.room.roomInfo;
 export const selectIsRoomOwner = (state: RootState) => state.room.isOwnedByCurrentUser;
 export const selectIsParticipationConfirmationActive = (state: RootState) => state.room.isPresenceConfirmationActive;
 export const selectIsRoomDeleted = (state: RootState) => state.room.isDeleted;
+export const selectE2EEncryption = (state: RootState) => state.room.eventInfo?.e2eEncryption;
 
 export default roomSlice.reducer;
 
