@@ -52,24 +52,37 @@ const InviteToMeeting = ({
   const userTariffLimit = tariff?.quotas.roomParticipantLimit;
 
   const sendInvitations = async () => {
-    const allInvites = selectedUsers.map((selectedUser) => {
-      const invitee =
-        'id' in selectedUser ? { invitee: selectedUser.id, role: UserRole.USER } : { email: selectedUser.email };
+    const allInvites = selectedUsers.map(async (selectedUser) => {
+      const isUser = 'id' in selectedUser;
+      const invitee = isUser ? { invitee: selectedUser.id, role: UserRole.USER } : { email: selectedUser.email };
 
-      return creatEventInvitation(merge({ eventId: existingEvent.id }, invitee)).unwrap();
+      const data = await creatEventInvitation(merge({ eventId: existingEvent.id }, invitee)).unwrap();
+      return { invitee: isUser ? invitee.invitee : invitee.email, data: data };
     });
 
     //RTK query mutations will be sent out individually regardless of us using all or allSettled.
     //This part is used to determine, which notification to show based on if at least one got rejected.
     const results = await Promise.allSettled(allInvites);
     if (results.some((result) => result.status === 'rejected')) {
+      const successfulInvites = results.map((result) => {
+        if (result.status === 'fulfilled') {
+          return result.value.invitee;
+        }
+      });
+
+      if (successfulInvites.length > 0) {
+        setSelectedUsers((state) =>
+          state.filter((user) => !successfulInvites.includes('id' in user ? user.id : user.email))
+        );
+      }
+
       notifications.error(t('dashboard-direct-meeting-invitations-error'));
     } else {
       notifications.success(t('dashboard-direct-meeting-invitations-successful'));
+      setSelectedUsers([]);
     }
 
     invitationsSent && invitationsSent();
-    setSelectedUsers([]);
   };
 
   const handleCancelMeetingPress = () => {
