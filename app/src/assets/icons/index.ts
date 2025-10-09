@@ -79,6 +79,7 @@ import RecordingsIcon from './RecordingsIcon';
 import RectAddPlusIcon from './RectAddPlusIcon';
 import RemoveIcon from './RemoveIcon';
 import SearchIcon from './SearchIcon';
+import SecureFilledIcon from './SecureFilledIcon';
 import SecureIcon from './SecureIcon';
 import SendMessageIcon from './SendMessageIcon';
 import SettingsIcon from './SettingsIcon';
@@ -183,6 +184,7 @@ export {
   RemoveIcon,
   SearchIcon,
   SecureIcon,
+  SecureFilledIcon,
   SendMessageIcon,
   SettingsIcon,
   ShareScreenOffIcon,

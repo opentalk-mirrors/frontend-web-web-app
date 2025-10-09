@@ -138,4 +138,20 @@ describe('<SecurityBadge />', () => {
 
     expect(screen.queryByText('secure-connection-contaminated')).not.toBeInTheDocument();
   });
+  it('should show the high security popover message when e2ee is enabled in the room', async () => {
+    const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {
+      e2eEncryption: true,
+    });
+    renderWithProviders(<SecurityBadge />, { store });
+
+    const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
+    expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
+
+    await userEvent.click(button);
+    expect(screen.getByText('secure-connection-high-security')).toBeInTheDocument();
+
+    await userEvent.click(button);
+
+    expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
+  });
 });

@@ -526,6 +526,7 @@ secure-connection-no-sip = Keine Telefon-Teilnehmer
 secure-connection-guests = Bitte beachten Sie, dass auch Gäste anwesend sind.
 secure-connection-contaminated = Bitte beachten Sie, dass Gäste, darunter auch Telefon-Teilnehmer anwesend sind.
 secure-connection-sip = Bitte beachten Sie, dass auch Telefon-Teilnehmer anwesend sind.
+secure-connection-high-security = Sehr hohes Schutzniveau aktiv.
 
 security-breach-eavesdrop = Folgende unbekannte Teilnehmer sind weiterhin verbunden und könnten Ihre Unterhaltung mithören: {participants}. Bitte verlassen Sie den Raum und erstellen Sie einen neuen, um Ihre Privatsphäre zu gewährleisten.
 

@@ -215,6 +215,7 @@ export const mockStore = (
     role?: Role[];
     participantKinds?: ParticipationKind[];
     store?: ConfigureStoreOptions['preloadedState'];
+    e2eEncryption?: boolean;
   }
 ) => {
   const participantsIds = range(participantCount);
@@ -266,6 +267,11 @@ export const mockStore = (
     automod: {
       ...automodState,
       active: options?.automodActive,
+    },
+    room: {
+      eventInfo: {
+        e2eEncryption: options?.e2eEncryption || false,
+      },
     },
     ...options?.store?.initialState,
   };
