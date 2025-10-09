@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 import { NameTile } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
-import { useFullscreenContext } from '../../hooks/useFullscreenContext';
+import { selectFullscreenActive } from '../../store/slices/fullscreen/slice';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
 import type { ParticipantId } from '../../types';
 import HandRaisedIndicator from './fragments/HandRaisedIndicator';
@@ -36,8 +36,8 @@ interface ParticipantWindowProps {
 const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: ParticipantWindowProps) => {
   const participant = useParticipantContext();
   const participantId = participant.identity as ParticipantId;
+  const isFullscreenActive = useAppSelector(selectFullscreenActive);
 
-  const fullscreenHandle = useFullscreenContext();
   const displayName = useAppSelector((state) => selectParticipantName(state, participant.identity as ParticipantId));
   const [activeOverlay, setActiveOverlay] = useState<boolean>(!!alwaysShowOverlay);
 
@@ -54,8 +54,8 @@ const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: 
         presenterVideoIsActive={activePresenter}
         isThumbnail={isThumbnail}
       />
-      <VideoOverlay participantId={participantId} active={activeOverlay && !fullscreenHandle.active} />
-      {!fullscreenHandle.active && (
+      <VideoOverlay participantId={participantId} active={activeOverlay && !isFullscreenActive} />
+      {!isFullscreenActive && (
         <NameTile
           displayName={displayName || participant.name || ''}
           participantId={participantId}

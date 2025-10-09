@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, PinIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useFullscreenContext } from '../../hooks/useFullscreenContext';
+import { fullscreenActions } from '../../store/slices/fullscreen/slice';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
 import { pinnedParticipantIdSet, selectPinnedParticipantId } from '../../store/slices/uiSlice';
 import type { ParticipantId } from '../../types';
@@ -61,7 +61,6 @@ const IconButton = styled(MuiIconButton)(({ theme }) => ({
 }));
 
 const FullscreenView = () => {
-  const fullscreenHandle = useFullscreenContext();
   const { t } = useTranslation();
   const [hasVisibleControls, setVisibleControls] = useState<boolean>(false);
   const [isLocalVideoPinned, setIsLocalVideoPinned] = useState<boolean>(false);
@@ -92,10 +91,10 @@ const FullscreenView = () => {
   const toggleLocalVideoPin = () => setIsLocalVideoPinned((prevState) => !prevState);
 
   const handleCloseFullscreen = () => {
-    fullscreenHandle.exit();
+    dispatch(fullscreenActions.exit());
   };
 
-  const isActive = fullscreenHandle.hasActiveOverlay || hasVisibleControls;
+  const isActive = hasVisibleControls;
   const isPinned = pinnedParticipantId ? pinnedParticipantId === selectedParticipant?.identity : false;
   const togglePin = useCallback(() => {
     const updatePinnedId = pinnedParticipantId === lastSpeakerId ? undefined : lastSpeakerId;
@@ -105,10 +104,8 @@ const FullscreenView = () => {
   return (
     <ParticipantContext.Provider value={selectedParticipant}>
       <Container
-        ref={(containerElement: HTMLDivElement | null) => fullscreenHandle.setRootElement(containerElement)}
         onMouseMove={() => setVisibleControls(true)}
         onMouseLeave={() => setVisibleControls(false)}
-        id="fullscreen-container"
         data-testid="fullscreen"
       >
         <ButtonsContainer>

@@ -11,7 +11,6 @@ import { defaultDarkModeColors, defaultLightModeColors } from './assets/themes/o
 import { SnackbarProvider, SuspenseLoading } from './commonComponents';
 import { useAppSelector } from './hooks';
 import BreakoutRoomProvider from './provider/BreakoutRoomProvider';
-import FullscreenProvider from './provider/FullscreenProvider';
 import { selectBaseUrl, selectControllerUrl, selectOidcConfig } from './store/slices/configSlice';
 
 interface ProviderProps {
@@ -49,9 +48,7 @@ const Provider = ({ children }: ProviderProps) => {
         >
           <CssBaseline />
           <BreakoutRoomProvider>
-            <FullscreenProvider>
-              <SnackbarProvider>{isLoading ? <SuspenseLoading /> : children}</SnackbarProvider>
-            </FullscreenProvider>
+            <SnackbarProvider>{isLoading ? <SuspenseLoading /> : children}</SnackbarProvider>
           </BreakoutRoomProvider>
         </ThemeProvider>
       </AuthProvider>

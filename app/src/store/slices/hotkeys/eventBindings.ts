@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { AppDispatch } from '../../../store';
-import { nextSpeaker, toggleMicrophone, toggleVideo, toggleAudioToWhisperGroup } from './events';
+import { bindFullscreenEventsToRedux } from '../fullscreen/listener';
+import { nextSpeaker, toggleMicrophone, toggleVideo, toggleAudioToWhisperGroup, toggleFullscreen } from './events';
 import { registerHotkey, resetHotkeys } from './listener';
 import { domKeyDown, domKeyUp, domFocusIn, domFocusOut } from './slice';
 
@@ -16,6 +17,7 @@ export const bindDomEventsToRedux = (dispatch: AppDispatch) => {
   window.addEventListener('keyup', keyUp);
   window.addEventListener('focusin', focusIn);
   window.addEventListener('focusout', focusOut);
+  const removeFullscreenEventsFromRedux = bindFullscreenEventsToRedux(dispatch);
 
   registerHotkey({
     key: 'm',
@@ -47,22 +49,18 @@ export const bindDomEventsToRedux = (dispatch: AppDispatch) => {
     onPress: nextSpeaker,
     descriptionKey: 'hotkey-pass-talking-stick',
   });
-  // todo add fullscreen toggle hotkey "f" https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2745
-  /*
-      key: HOTKEY_FULLSCREEN,
-      description: `${t('global-fullscreen')} ${t('global-on')} / ${t('global-off')}`,
-      () => {
-         if (room) {
-           fullscreenContext[fullscreenContext.active ? 'exit' : 'enter']();
-        }
-      }
-   */
+  registerHotkey({
+    key: 'f',
+    onPress: toggleFullscreen,
+    descriptionKey: 'hotkey-fullscreen-toggle',
+  });
 
   return () => {
     window.removeEventListener('keydown', keyDown);
     window.removeEventListener('keyup', keyUp);
     window.removeEventListener('focusin', focusIn);
     window.removeEventListener('focusout', focusOut);
+    removeFullscreenEventsFromRedux && removeFullscreenEventsFromRedux();
     resetHotkeys();
   };
 };

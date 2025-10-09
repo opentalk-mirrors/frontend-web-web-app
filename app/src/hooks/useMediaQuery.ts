@@ -4,7 +4,8 @@
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import { useFullscreenContext } from './useFullscreenContext';
+import { selectFullscreenActive } from '../store/slices/fullscreen/slice';
+import { useAppSelector } from './useCustomRedux';
 
 export function useIsMobile() {
   const theme = useTheme();
@@ -21,14 +22,14 @@ export function useIsDesktop() {
 // which supposed to be fullscreened.
 export function useIsMobileForFullscreenElements() {
   const isCurrentlyMobile = useIsMobile();
-  const fullscreenHandle = useFullscreenContext();
+  const isFullscreenActive = useAppSelector(selectFullscreenActive);
   const [stableIsMobile, setStableIsMobile] = useState(isCurrentlyMobile);
 
   useEffect(() => {
-    if (!fullscreenHandle.active) {
+    if (!isFullscreenActive) {
       setStableIsMobile(isCurrentlyMobile);
     }
-  }, [isCurrentlyMobile, fullscreenHandle]);
+  }, [isCurrentlyMobile, isFullscreenActive]);
 
   return stableIsMobile;
 }

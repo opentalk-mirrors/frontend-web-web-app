@@ -8,22 +8,6 @@ import { Mock } from 'vitest';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import VideoOverlay from './VideoOverlay';
 
-const mockFullscreenContext = {
-  active: true,
-  node: null,
-  exit: vi.fn(),
-  enter: vi.fn(),
-  fullscreenParticipantId: '',
-  setRootElement: vi.fn(),
-  rootElement: null,
-  setHasActiveOverlay: vi.fn(),
-  isFullScreenAvailable: vi.fn(),
-};
-
-vi.mock('../../../hooks/useFullscreenContext.ts', () => ({
-  useFullscreenContext: () => mockFullscreenContext,
-}));
-
 vi.mock('@livekit/components-react', () => ({
   useRemoteParticipant: vi.fn(),
 }));
@@ -46,24 +30,25 @@ describe('VideoOverlay general', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
   it('renders fullscreen button if overlay is active', () => {
-    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => true);
+    const { store } = configureStore({
+      initialState: { fullscreen: { supported: true, active: false } },
+    });
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
       provider: { snackbar: true, mui: true },
     });
-    expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
     const fullscreenButton = screen.getByRole('button', { name: 'indicator-fullscreen-open' });
     expect(fullscreenButton).toBeInTheDocument();
   });
   it('does not render fullscreen button if fullscreen feature is unavailable', () => {
-    mockFullscreenContext.isFullScreenAvailable = vi.fn(() => false);
-
+    const { store } = configureStore({
+      initialState: { fullscreen: { supported: false, active: false } },
+    });
     renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
       store,
       provider: { snackbar: true, mui: true },
     });
-    expect(mockFullscreenContext.isFullScreenAvailable).toHaveBeenCalled();
 
     expect(screen.queryByRole('button', { name: 'indicator-fullscreen-open' })).not.toBeInTheDocument();
   });

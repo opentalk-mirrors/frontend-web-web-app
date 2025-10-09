@@ -17,6 +17,7 @@ import chatReducer from './slices/chatSlice';
 import { initialState as initialConfig } from './slices/configSlice';
 import configReducer from './slices/configSlice';
 import eventReducer from './slices/eventSlice';
+import { fullscreenActions, fullscreenReducer } from './slices/fullscreen/slice';
 import { bindDomEventsToRedux } from './slices/hotkeys/eventBindings';
 import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from './slices/hotkeys/slice';
 import legalVoteReducer from './slices/legalVoteSlice';
@@ -85,6 +86,7 @@ export const appReducers = {
   sharedFolder: sharedFolderReducer,
   livekit: livekitReducer,
   subroomAudio: subroomAudioReducer,
+  fullscreen: fullscreenReducer,
 };
 
 // disable action sanitizer for localTrack and room object to prevent Redux toolkit for doing excesive work
@@ -144,6 +146,8 @@ const store = configureStore({
           domKeyUp.type,
           domFocusIn.type,
           domFocusOut.type,
+          fullscreenActions.request.type,
+          fullscreenActions.toggle.type,
         ],
         ignoredActionPaths: [
           'meta.arg',
@@ -152,8 +156,9 @@ const store = configureStore({
           'payload.conferenceContext',
           'payload.track',
           'payload.room',
+          'payload.element',
         ],
-        ignoredPaths: ['livekit.room', 'livekit.whisperRoom', 'livekit.lobby'],
+        ignoredPaths: ['livekit.room', 'livekit.whisperRoom', 'livekit.lobby', 'fullscreen.element'],
       },
     }).concat(middleware),
   preloadedState: {

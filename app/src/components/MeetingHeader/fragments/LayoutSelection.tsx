@@ -15,8 +15,12 @@ import {
 import { IconButton } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { GridViewOrder } from '../../../store/slices/common';
+import {
+  fullscreenActions,
+  selectFullscreenActive,
+  selectFullscreenSupported,
+} from '../../../store/slices/fullscreen/slice';
 import { selectIsMeetingNotesFeatureAvailable } from '../../../store/slices/meetingNotesSlice';
 import {
   selectCinemaLayout,
@@ -46,7 +50,6 @@ const ButtonIndicator = styled(Indicator)({ position: 'absolute', top: '0.1rem',
 
 const LayoutSelection = () => {
   const dispatch = useAppDispatch();
-  const fullscreenHandle = useFullscreenContext();
   const selectedLayout = useAppSelector(selectCinemaLayout);
   const selectedGridViewOrder = useAppSelector(selectGridViewOrder);
   const { t } = useTranslation();
@@ -55,6 +58,9 @@ const LayoutSelection = () => {
   const isWhiteboardAvailable = useAppSelector(selectIsWhiteboardAvailable);
   const isMeetingNotesFeatureAvailable = useAppSelector(selectIsMeetingNotesFeatureAvailable);
   const isCurrentMeetingNotesHighlighted = useAppSelector(selectIsCurrentMeetingNotesHighlighted);
+  const isFullscreenSupported = useAppSelector(selectFullscreenSupported);
+  const isFullscreenActive = useAppSelector(selectFullscreenActive);
+
   /**
    * Placeholder condition for all features that has to show indicator.
    */
@@ -62,8 +68,8 @@ const LayoutSelection = () => {
 
   const openFullscreenView = useCallback(() => {
     setAnchorElement(null);
-    fullscreenHandle.enter();
-  }, [fullscreenHandle]);
+    dispatch(fullscreenActions.request());
+  }, []);
 
   const handleSelectedView = (layout: LayoutOptions, order: GridViewOrder = GridViewOrder.FirstJoined) => {
     setAnchorElement(null);
@@ -159,10 +165,10 @@ const LayoutSelection = () => {
           icon={<SpeakerViewIcon />}
           content={t('conference-view-speaker')}
         />
-        {fullscreenHandle.isFullScreenAvailable() && (
+        {isFullscreenSupported && (
           <LayoutSelectionMenuItem
             role="menuitemradio"
-            showCheckIcon={fullscreenHandle.active}
+            showCheckIcon={isFullscreenActive}
             onClick={openFullscreenView}
             icon={<FullscreenViewIcon />}
             content={t('conference-view-fullscreen')}

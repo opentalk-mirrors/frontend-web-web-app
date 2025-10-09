@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ForceMuteType, ParticipantId, RoomMode } from '../../../types';
 import { configureStore } from '../../../utils/testUtils';
 import { SpeakerState } from '../automodSlice';
+import { fullscreenActions } from '../fullscreen/slice';
 import * as listener from './listener';
 import { domKeyDown } from './slice';
 
@@ -99,6 +100,12 @@ describe('hotkeys', () => {
     vi.advanceTimersByTime(100);
     expect(mockedOnPress).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'n' }));
+    vi.advanceTimersByTime(500);
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f' }));
+    vi.advanceTimersByTime(100);
+    expect(mockedOnPress).not.toHaveBeenCalled();
+    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'f' }));
     vi.advanceTimersByTime(500);
   });
 
@@ -434,5 +441,53 @@ describe('hotkeys', () => {
     expect(listener.isHotkeysDisabled()).toBe(false);
 
     document.body.removeChild(input);
+  });
+
+  it('toggle fullscreen on when its not active', async () => {
+    const { unbindDomEvents } = configureStore({
+      initialState: {
+        fullscreen: {
+          active: false,
+          supported: true,
+        },
+      },
+    });
+    const spyRequest = vi.spyOn(fullscreenActions, 'request');
+    const spyExit = vi.spyOn(fullscreenActions, 'exit');
+
+    unbind = unbindDomEvents;
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f' }));
+    vi.advanceTimersByTime(100);
+
+    expect(spyRequest).toHaveBeenCalled();
+    expect(spyExit).not.toHaveBeenCalled();
+
+    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'f' }));
+    vi.advanceTimersByTime(500);
+  });
+
+  it('toggle fullscreen off when its active', async () => {
+    const { unbindDomEvents } = configureStore({
+      initialState: {
+        fullscreen: {
+          active: true,
+          supported: true,
+        },
+      },
+    });
+    const spyRequest = vi.spyOn(fullscreenActions, 'request');
+    const spyExit = vi.spyOn(fullscreenActions, 'exit');
+
+    unbind = unbindDomEvents;
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f' }));
+    vi.advanceTimersByTime(100);
+
+    expect(spyRequest).not.toHaveBeenCalled();
+    expect(spyExit).toHaveBeenCalled();
+
+    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'f' }));
+    vi.advanceTimersByTime(500);
   });
 });

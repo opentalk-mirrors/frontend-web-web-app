@@ -7,7 +7,8 @@ import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../../utils/testUtils';
 import { LegalVoteTokenClipboard } from './LegalVoteTokenClipboard';
 
-vi.mock('../../hooks', () => ({
+vi.mock('../../hooks', async (importOriginal) => ({
+  ...(await importOriginal()),
   useDateFormat: () => (date: Date, format: string) => {
     if (format === 'date') {
       return date.toLocaleDateString();

@@ -18,7 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 import { EventId, EventStatus, EventType, RoomId } from '@opentalk/rest-api-rtk-query';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -31,9 +31,9 @@ import {
 import { CloseIcon } from '../../assets/icons';
 import { notifications } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useFullscreenContext } from '../../hooks/useFullscreenContext';
 import log from '../../logger';
 import { hangUp } from '../../store/commonActions';
+import { selectFullscreenElement } from '../../store/slices/fullscreen/slice';
 import { selectEventInfo } from '../../store/slices/roomSlice';
 import { EventDeletionType, generateInstanceId } from '../../utils/eventUtils';
 
@@ -55,6 +55,7 @@ export const CloseMeetingDialog = ({ open, onClose }: CloseMeetingDialogProps) =
   const eventInfo = useAppSelector(selectEventInfo);
   const [updateEventInstance] = useUpdateEventInstanceMutation();
   const [deleteRoom] = useDeleteRoomMutation();
+  const fullscreenElement = useAppSelector(selectFullscreenElement);
   const [deleteEvent, { isLoading: isDeleting, isSuccess: isDeleted }] = useDeleteEventMutation();
   const { data: eventData } = useGetEventQuery(
     { eventId: eventInfo?.id as EventId },
@@ -166,22 +167,12 @@ export const CloseMeetingDialog = ({ open, onClose }: CloseMeetingDialogProps) =
     }
   };
 
-  const handleFullscreen = useFullscreenContext();
-
-  useEffect(() => {
-    handleFullscreen.setHasActiveOverlay(true);
-
-    return () => {
-      handleFullscreen.setHasActiveOverlay(false);
-    };
-  }, [handleFullscreen]);
-
   return (
     <Dialog
       open={open}
       maxWidth="sm"
       fullWidth
-      container={handleFullscreen.rootElement}
+      container={fullscreenElement}
       onClose={onClose}
       aria-describedby={DIALOG_DESCRIPTION_ID}
       aria-labelledby={DIALOG_TITLE_ID}

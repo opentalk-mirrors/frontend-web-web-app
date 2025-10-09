@@ -9,6 +9,7 @@ import { changeLocalMedia, changeMedia } from '../../commonActions';
 import { selectIsUserMicDisabled } from '../../selectors';
 import { selectSpeakerState, setAsTransitioningSpeaker, SpeakerState } from '../automodSlice';
 import { selectEnabledModulesList } from '../configSlice';
+import { fullscreenActions, selectFullscreenSupported } from '../fullscreen/slice';
 import {
   selectAudioEnabled,
   selectLivekitRoom,
@@ -136,4 +137,14 @@ export const nextSpeaker = ({ state, dispatch }: HotkeyCallbackParams) => {
     dispatch(setAsTransitioningSpeaker());
     dispatch(pass.action());
   }
+};
+
+export const toggleFullscreen = ({ state, dispatch }: HotkeyCallbackParams) => {
+  const isFullscreenSupported = selectFullscreenSupported(state);
+
+  if (!isFullscreenSupported) {
+    console.warn('Fullscreen is not supported on this browser.');
+  }
+
+  dispatch(fullscreenActions.toggle());
 };

@@ -9,7 +9,8 @@ import {
 } from 'notistack';
 import React from 'react';
 
-import { useFullscreenContext } from '../../../../hooks/useFullscreenContext';
+import { useAppSelector } from '../../../../hooks/useCustomRedux';
+import { selectFullscreenActive, selectFullscreenElement } from '../../../../store/slices/fullscreen/slice';
 import { CloseButton } from '../CloseButton';
 import { notifications } from '../utils';
 import { getNotistackComponents } from '../variations';
@@ -44,7 +45,8 @@ const getSnackbarRootClass = () => ({
 });
 
 const SnackbarProvider = (props: SnackbarProviderProps) => {
-  const fullscreenHandle = useFullscreenContext();
+  const fullscreenElement = useAppSelector(selectFullscreenElement);
+  const isFullscreenActive = useAppSelector(selectFullscreenActive);
   const onClickDismiss = (key: SnackbarKey) => {
     notifications.close(key);
   };
@@ -78,7 +80,7 @@ const SnackbarProvider = (props: SnackbarProviderProps) => {
         }}
         action={(snackbarKey: SnackbarKey) => <StyledCloseButton onClick={() => onClickDismiss(snackbarKey)} />}
         Components={{ ...getNotistackComponents(Components) }}
-        domRoot={fullscreenHandle?.rootElement ? fullscreenHandle.rootElement : domRoot}
+        domRoot={isFullscreenActive && fullscreenElement ? fullscreenElement : domRoot}
       >
         {children}
       </SnackbarProviderDefault>

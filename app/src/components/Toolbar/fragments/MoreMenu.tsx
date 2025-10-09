@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, ListItemIcon, MenuList, Divider as MuiDivider, Stack, Typography, styled } from '@mui/material';
 import { BackendModules, StreamingStatus } from '@opentalk/rest-api-rtk-query';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
@@ -40,9 +40,9 @@ import {
   notifications,
 } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useFullscreenContext } from '../../../hooks/useFullscreenContext';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
 import { selectConfigFeatures, selectIsFeatureEnabled, selectIsModuleEnabled } from '../../../store/slices/configSlice';
+import { selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
 import {
   selectMicrophonesEnabled,
   selectRaiseHandsEnabled,
@@ -83,10 +83,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
   const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled('record'));
   const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled('guests_allowed'));
-  const fullscreenHandle = useFullscreenContext();
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
   const userMenuItems: Array<MenuEntry> = [];
+  const fullScreenElement = useAppSelector(selectFullscreenElement);
 
   const isTrainingParticipationReportModuleOn = useAppSelector(
     selectIsModuleEnabled(BackendModules.TrainingParticipationReport)
@@ -433,14 +433,6 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     marginTop: 0,
   });
 
-  useEffect(() => {
-    fullscreenHandle.setHasActiveOverlay(open);
-
-    return () => {
-      fullscreenHandle.setHasActiveOverlay(false);
-    };
-  }, []);
-
   return (
     <>
       <ToolbarMenu
@@ -456,7 +448,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         open={open}
         onClose={onClose}
         data-testid="moreMenu"
-        container={fullscreenHandle.rootElement}
+        container={fullScreenElement}
         slotProps={{
           paper: {
             'aria-label': t('toolbar-button-more-tooltip-title'),
