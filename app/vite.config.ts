@@ -119,22 +119,15 @@ export default defineConfig(({ command, mode }) => {
       open: true,
       port: 3000,
     },
+    optimizeDeps: {
+      include: ['@reduxjs/toolkit', 'react', 'react-dom', 'react-redux'],
+    },
     build: {
       outDir: buildPath,
       emptyOutDir: true,
       sourcemap: true,
       rollupOptions: {
         external: ['/config.js'],
-        output: {
-          manualChunks: (id) => {
-            if (id.includes('node_modules')) {
-              return 'vendor'; // Split vendor libraries
-            }
-            if (id.includes('src/components/')) {
-              return 'components'; // Split components into their own chunk
-            }
-          },
-        },
       },
       chunkSizeWarningLimit: 1200,
     },
@@ -142,6 +135,7 @@ export default defineConfig(({ command, mode }) => {
       minifyIdentifiers: false,
     },
     resolve: {
+      dedupe: ['react', 'react-dom', '@reduxjs/toolkit', 'react-redux'],
       alias: {
         ...monorepoPackageAliases,
         ...profiling,
