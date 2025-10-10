@@ -177,10 +177,11 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
   const getDeclineInviteActionButton = () => {
     const options: IMeetingCardOptionItem[] = [];
     const isAccepted = isEvent(event) && event.inviteStatus === InviteStatus.Accepted;
+    const isRecurring = isRecurringEvent(event);
 
     if (isAccepted && !isMeetingCreator) {
       options.push({
-        i18nKey: 'global-decline',
+        i18nKey: isRecurring ? 'decline-meeting-series-button' : 'global-decline',
         action: declineInvite,
       });
     }

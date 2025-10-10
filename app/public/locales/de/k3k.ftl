@@ -1274,3 +1274,5 @@ storage-error = Zu wenig Speicherplatz
 
 meeting-ended-dialog-title = Meeting beendet
 meeting-ended-dialog-button-title = Konferenz verlassen
+
+decline-meeting-series-button = Meetingserie ablehnen
