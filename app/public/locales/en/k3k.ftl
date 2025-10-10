@@ -1274,3 +1274,5 @@ storage-error = Not enough storage
 
 meeting-ended-dialog-title = Meeting Ended
 meeting-ended-dialog-button-title = Leave Conference
+
+decline-meeting-series-button = Decline Meeting Series
