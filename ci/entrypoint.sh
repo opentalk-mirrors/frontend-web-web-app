@@ -124,16 +124,21 @@ window.config = {
 }
 EOF
 
-CONTROLLER_SCHEMA="https"
-if [ "$INSECURE" = "true" ]; then
-  CONTROLLER_SCHEMA="http"
+if [[ "$CONTROLLER_HOST" =~ ^https?:// ]]; then
+  BASE_URL="$CONTROLLER_HOST"
+else
+  CONTROLLER_SCHEMA="https"
+  if [[ "$INSECURE" == "true" ]]; then
+    CONTROLLER_SCHEMA="http"
+  fi
+  BASE_URL="$CONTROLLER_SCHEMA://$CONTROLLER_HOST"
 fi
 
 mkdir -p $HTML_ROOT/.well-known/opentalk
 cat >$HTML_ROOT/.well-known/opentalk/client << EOF
 {
   "opentalk_controller": {
-    "base_url": "$CONTROLLER_SCHEMA://$CONTROLLER_HOST"
+    "base_url": "$BASE_URL"
   }
 }
 EOF
