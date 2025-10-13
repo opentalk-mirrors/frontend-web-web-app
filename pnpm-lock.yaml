@@ -222,7 +222,7 @@ importers:
         specifier: ^7.1.2
         version: 7.1.2(react@19.2.0)
       react-window:
-        specifier: ^2.2.0
+        specifier: ^2.2.1
         version: 2.2.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       snakecase-keys:
         specifier: ^9.0.2
