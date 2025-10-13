@@ -5,12 +5,13 @@ import { AuthCallbackComponent, selectAuthIsPending } from '@opentalk/redux-oidc
 import { selectIsAuthenticated, useAuthContext } from '@opentalk/redux-oidc';
 import React, { PropsWithChildren, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Outlet, To, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, To, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Error from '../../components/Error';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import log from '../../logger';
+import { selectUiMode, setUiMode, UiMode } from '../../store/slices/uiSlice';
 import { navigateTo } from '../../utils/navigation';
 
 export const InvitePage = React.lazy(() => import('../../pages/InvitePage'));
@@ -58,6 +59,26 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     });
     return null;
   }
+
+  if (children !== undefined) {
+    return <>{children}</>;
+  }
+  return <Outlet />;
+};
+
+export const RouteUiMode = ({ children }: ProtectedRouteProps) => {
+  const location = useLocation();
+  const uiMode = useAppSelector(selectUiMode);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes(UiMode.Dashboard) && uiMode !== UiMode.Dashboard) {
+      dispatch(setUiMode(UiMode.Dashboard));
+    }
+    if (path.includes(UiMode.Room) && uiMode !== UiMode.Room) {
+      dispatch(setUiMode(UiMode.Room));
+    }
+  }, [location.pathname, uiMode]);
 
   if (children !== undefined) {
     return <>{children}</>;

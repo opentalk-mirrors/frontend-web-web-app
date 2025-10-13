@@ -1,17 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, ListenerEffectAPI, PayloadAction } from '@reduxjs/toolkit';
 import { ErrorEvent } from '@sentry/react';
 
-import type { RootState } from '../';
+import type { AppDispatch, RootState } from '../';
 import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { ModerationTabKey } from '../../config/constants';
 import LayoutOptions from '../../enums/LayoutOptions';
+import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { ChatScope, LegalVoteId, ParticipantId, PollId, SortOption, TargetId, TimerStyle } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
+import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted } from './automodSlice';
 import { GridViewOrder } from './common';
 import { started as legalVoteStarted } from './legalVoteSlice';
@@ -30,6 +32,11 @@ export interface IChatConversationState {
 interface ErrorDialog {
   event: ErrorEvent | undefined;
   showErrorDialog: boolean;
+}
+
+export enum UiMode {
+  Dashboard = 'dashboard',
+  Room = 'room',
 }
 
 export const presenterVideoPositions = ['bottomLeft', 'upperRight', 'bottomRight'] as const;
@@ -66,6 +73,7 @@ export type UIState = {
   gridViewOrder: GridViewOrder;
   currentMenuTab: MenuTab;
   presenterVideoPosition: PresenterVideoPosition;
+  mode?: UiMode;
 };
 
 const initialState: UIState = {
@@ -203,6 +211,9 @@ export const uiSlice = createSlice({
     setPresenterVideoPosition: (state, { payload }: PayloadAction<PresenterVideoPosition>) => {
       state.presenterVideoPosition = payload;
     },
+    setUiMode: (state, { payload }: PayloadAction<UiMode>) => {
+      state.mode = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(leave, (state, { payload: { id } }: PayloadAction<{ id: ParticipantId }>) => {
@@ -292,6 +303,7 @@ export const {
   updatedGridViewOrder,
   setCurrentMenuTab,
   setPresenterVideoPosition,
+  setUiMode,
 } = uiSlice.actions;
 
 export const actions = uiSlice.actions;
@@ -312,6 +324,7 @@ export const selectIsCurrentWhiteboardHighlighted = (state: RootState) => state.
 export const selectIsCurrentMeetingNotesHighlighted = (state: RootState) => state.ui.isCurrentMeetingNotesHighlighted;
 export const selectShowCoffeeBreakCurtain = (state: RootState) => state.ui.showCoffeeBreakCurtain;
 export const selectActiveTab = (state: RootState) => state.ui.activeTab;
+export const selectUiMode = (state: RootState) => state.ui.mode;
 export const selectDefaultChatMessage = createSelector(
   [
     (state: RootState) => state.ui.chatAutosavedInputs,
@@ -341,3 +354,20 @@ export const selectCurrentMenuTab = (state: RootState) => state.ui.currentMenuTa
 export const selectPresenterVideoPosition = (state: RootState) => state.ui.presenterVideoPosition;
 
 export default uiSlice.reducer;
+
+const startUiChangeModeListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: setUiMode,
+    effect: (action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      if (
+        action.payload === UiMode.Dashboard &&
+        listenerApi.getState().room.connectionState === ConnectionState.Online
+      ) {
+        listenerApi.dispatch(hangUp());
+      }
+    },
+  });
+
+export const startUiListeners = (startAppListening: StartAppListening) => {
+  startUiChangeModeListener(startAppListening);
+};
