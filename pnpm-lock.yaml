@@ -27,7 +27,7 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(@vue/compiler-sfc@3.5.22)(prettier@3.6.2)
       '@types/node':
-        specifier: ^22.18.9
+        specifier: ^22.18.10
         version: 22.18.10
       '@vitest/coverage-v8':
         specifier: 3.2.4
@@ -259,7 +259,7 @@ importers:
         specifier: ^4.17.20
         version: 4.17.20
       '@types/node':
-        specifier: ^22.18.9
+        specifier: ^22.18.10
         version: 22.18.10
       '@types/react':
         specifier: ^19.2.2
