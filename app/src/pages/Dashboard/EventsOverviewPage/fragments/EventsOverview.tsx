@@ -131,15 +131,17 @@ const EventsOverview = ({
           position: 'relative',
         }}
       >
-        <ArrowDownButton
-          active={expandAccordion === 'all'}
-          onClick={() => setExpandAccordion((prev: string) => (prev === 'all' ? '' : 'all'))}
-          aria-label={t(`global-${expandAccordion === 'all' ? 'collapse' : 'expand'}`, {
-            target: t('global-meeting', { count: 2 }),
-          })}
-        >
-          <ArrowDownIcon color="inherit" />
-        </ArrowDownButton>
+        {entries.length !== 0 && (
+          <ArrowDownButton
+            active={expandAccordion === 'all'}
+            onClick={() => setExpandAccordion((prev: string) => (prev === 'all' ? '' : 'all'))}
+            aria-label={t(`global-${expandAccordion === 'all' ? 'collapse' : 'expand'}`, {
+              target: t('global-meeting', { count: 2 }),
+            })}
+          >
+            <ArrowDownIcon color="inherit" />
+          </ArrowDownButton>
+        )}
         {entries.map((entry) => {
           const isExpanded = expandAccordion === 'all' || expanded.includes(entry.title);
 
