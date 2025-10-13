@@ -93,15 +93,16 @@ export const toggleAudioToWhisperGroup = async ({ state, dispatch }: HotkeyCallb
   const isWhisperActive = selectIsWhisperActive(state);
   const audioEnabled = selectAudioEnabled(state);
 
-  if (subroomAudioEnabled) {
-    if (!isWhisperActive) {
+  if (subroomAudioEnabled && whisperRoom) {
+    if (!isWhisperActive && audioEnabled) {
       await toggleAudio({ state, dispatch }, false);
-      audioStateBeforeWhisperStarts = audioEnabled;
     } else if (audioStateBeforeWhisperStarts) {
       await toggleAudio({ state, dispatch }, true);
     }
-    await whisperRoom?.localParticipant.setMicrophoneEnabled(!isWhisperActive);
+    audioStateBeforeWhisperStarts = audioEnabled;
+
     dispatch(setIsWhisperActive(!isWhisperActive));
+    await whisperRoom?.localParticipant.setMicrophoneEnabled(!isWhisperActive);
   }
 };
 

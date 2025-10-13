@@ -107,16 +107,27 @@ const actionSanitizer = <A extends AnyAction>(action: A) => {
 // disable state sanitizer for localTrack and room object to prevent Redux toolkit for doing excesive work
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const stateSanitizer = (state: any) => {
-  if (state.livekit.lobby.videoTrackPublication || state.livekit.lobby.audioTrackPublication) {
+  if (
+    state.livekit.lobby.videoTrackPublication ||
+    state.livekit.lobby.audioTrackPublication ||
+    state.livekit.room ||
+    state.livekit.whisperRoom ||
+    state.fullscreen.element
+  ) {
     return {
       ...state,
+      fullscreen: {
+        element: '<<LONG_BLOB>>',
+      },
       livekit: {
         ...state.livekit,
         room: '<<Long_BLOB>>',
+        whisperRoom: '<<Long_BLOB>>',
         lobby: { audioTrackPublication: '<<LONG_BLOB>>', videoTrackPublication: '<<LONG_BLOB>>' },
       },
     };
   }
+
   return state;
 };
 

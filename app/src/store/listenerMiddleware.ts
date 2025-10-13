@@ -10,6 +10,7 @@ import { startHotkeyListeners } from './slices/hotkeys/listener';
 import { startLivekitListeners } from './slices/livekitSlice';
 import { startParticipantsListeners } from './slices/participantsSlice';
 import { startRoomListeners } from './slices/roomSlice';
+import { startSubroomListeners } from './slices/subroomAudioSlice';
 import { startTimerListeners } from './slices/timerSlice';
 import { startUserListeners } from './slices/userSlice';
 
@@ -28,6 +29,7 @@ export const startListening = () => {
   startUserListeners(startAppListening);
   startHotkeyListeners(startAppListening);
   startFullscreenListeners(startAppListening);
+  startSubroomListeners(startAppListening);
 };
 
 startListening();
