@@ -274,7 +274,10 @@ export const setScreenShareEnabled = createAsyncThunk<
 >('livekit/startScreenShare', async ({ enabled }, thunkApi) => {
   const room = thunkApi.getState().livekit.room;
   try {
-    await room?.localParticipant.setScreenShareEnabled(enabled);
+    await room?.localParticipant.setScreenShareEnabled(enabled, {
+      audio: true,
+      systemAudio: 'include',
+    });
     return {
       enabled,
     };
@@ -312,7 +315,7 @@ export const disconnectRoom = createAsyncThunk<
   { isWhisperRoom: boolean },
   { isWhisperRoom: boolean },
   { state: RootState; rejectValue: FetchRequestError }
->('livekit/disconectRoom', async ({ isWhisperRoom }, thunkApi) => {
+>('livekit/disconnectRoom', async ({ isWhisperRoom }, thunkApi) => {
   const room = isWhisperRoom ? thunkApi.getState().livekit.whisperRoom : thunkApi.getState().livekit.room;
   try {
     await room?.disconnect();
