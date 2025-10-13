@@ -555,6 +555,16 @@ const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
   const tryReconnect = async () => {
     const room = selectLivekitRoom(listenerApi.getState());
     while (room?.state === 'disconnected') {
+      const delay = calculateDelay(attempt);
+      log.debug(`Trying to reconnect to LiveKit room, attempt ${attempt}, delay ${delay}`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+
+      const connectionState = listenerApi.getState().room.connectionState;
+      if (connectionState === ConnectionState.Waiting) {
+        log.debug('Aborting reconnection attempts, user is in waiting room');
+        break;
+      }
+
       if (attempt === RECONNECT_INDICATOR_THRESHOLD) {
         listenerApi.dispatch(setLivekitUnavailable(true));
       }
@@ -563,10 +573,6 @@ const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
       }
 
       attempt++;
-      const delay = calculateDelay(attempt);
-
-      log.debug(`Trying to reconnect to LiveKit room, attempt ${attempt}, delay ${delay}`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
     }
 
     listenerApi.dispatch(setLivekitUnavailable(false));

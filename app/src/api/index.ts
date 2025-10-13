@@ -24,7 +24,7 @@ import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
-import { changeMedia, hangUp, joinSuccess, setScreenShareEnabled, startRoom } from '../store/commonActions';
+import { changeMedia, hangUp, joinSuccess, startRoom } from '../store/commonActions';
 import {
   remainingUpdated as automodRemainingUpdated,
   speakerUpdated as automodSpeakerUpdated,
@@ -781,9 +781,6 @@ const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message
       break;
     case 'sent_to_waiting_room': {
       dispatch(enteredWaitingRoom());
-      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
-      dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
-      dispatch(setScreenShareEnabled({ enabled: false }));
       notifications.warning(i18next.t('meeting-notification-moved-to-waiting-room'));
       break;
     }
