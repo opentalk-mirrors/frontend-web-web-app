@@ -2,12 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash';
+import i18next from 'i18next';
+import { unionBy } from 'lodash';
 
 import type { RootState } from '../';
 import { leaveWhisperGroup } from '../../api/types/outgoing/subroomAudio';
+import { notifications } from '../../commonComponents';
 import { ParticipantId, WhisperId, WhisperParticipant, WhisperParticipantState } from '../../types';
-import { hangUp } from '../commonActions';
+import { disconnectRoom, hangUp } from '../commonActions';
+import type { StartAppListening } from '../listenerMiddleware';
 
 export type SubroomAudioState = {
   token: string | undefined;
@@ -56,16 +59,10 @@ export const subroomAudioSlice = createSlice({
         participantId: p,
         state: WhisperParticipantState.Invited,
       }));
-      state.participants = _.unionBy(newParticipants, state.participants, 'participantId');
+      state.participants = unionBy(newParticipants, state.participants, 'participantId');
     },
     removeParticipant: (state, { payload: { participantId } }) => {
       state.participants = state.participants.filter((p) => p.participantId !== participantId);
-      if (state.participants.length < 2) {
-        state.participants = [];
-        state.token = undefined;
-        state.whisperId = undefined;
-        state.isWhisperActive = false;
-      }
     },
     setIsWhisperActive: (state, { payload }) => {
       state.isWhisperActive = payload;
@@ -93,3 +90,25 @@ export const selectSubroomAudioParticipants = (state: RootState) => state.subroo
 export const selectIsWhisperActive = (state: RootState) => state.subroomAudio.isWhisperActive;
 
 export default subroomAudioSlice.reducer;
+
+export const startSubroomListeners = (startAppListening: StartAppListening) => {
+  startAppListening({
+    actionCreator: disconnectRoom.fulfilled,
+    effect: async (action, listenerApi) => {
+      const { isWhisperRoom } = action.payload;
+      if (isWhisperRoom) {
+        listenerApi.dispatch(setIsWhisperActive(false));
+      }
+    },
+  });
+  startAppListening({
+    actionCreator: removeParticipant,
+    effect: async (_, listenerApi) => {
+      const state = listenerApi.getState().subroomAudio;
+      if (state.participants.length < 2) {
+        listenerApi.dispatch(resetSubroomAudioData());
+        notifications.warning(i18next.t('whisper-group-disbanded'));
+      }
+    },
+  });
+};

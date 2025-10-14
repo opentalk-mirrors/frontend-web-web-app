@@ -1262,9 +1262,6 @@ const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAudio.Mes
     case 'left_whisper_group':
       dispatch(removeParticipant({ participantId: data.participantId }));
       break;
-    case 'whisper_group_disbanded':
-      dispatch(resetSubroomAudioData());
-      break;
     case 'error': {
       const error = data.error;
       switch (error) {

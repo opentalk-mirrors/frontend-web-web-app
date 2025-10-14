@@ -1232,6 +1232,7 @@ legal-vote-stopped-invalid-results-notification = Unfortunately something went w
 display-name-change-notification = Moderator {moderatorName} changed the display name of {oldName} to {newName}
 display-name-character-limit-error = name must be at most { $limit } characters
 
+whisper-group-disbanded = Your whisper group has been disbanded.
 whisper-invite-notification = {displayName} invited you to a whisper group.
 whisper-invite-decline-notification = {displayName} declined your invitation to a whisper group.
 whisper-invite-accept-notification = {displayName} accepted your whisper group invitation. Press and hold the W key to whisper.
