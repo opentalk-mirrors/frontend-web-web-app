@@ -56,8 +56,8 @@ import {
 import {
   selectAudioEnabled,
   setLivekitPopoutStreamAccessToken,
-  setLivekitUnavailable,
   setNewAccessToken,
+  triggerLivekitReconnect,
 } from '../store/slices/livekitSlice';
 import * as mediaStore from '../store/slices/mediaSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from '../store/slices/meetingNotesSlice';
@@ -1169,7 +1169,7 @@ const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, stat
       const error = data.error;
       switch (error) {
         case 'livekit_unavailable':
-          dispatch(setLivekitUnavailable(true));
+          dispatch(triggerLivekitReconnect());
           break;
         default:
           log.error(`Livekit Error: ${data}`);
