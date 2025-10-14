@@ -29,6 +29,7 @@ import { getControllerBaseUrl } from '../utils/apiUtils';
 import { createE2Eworker } from '../utils/createE2EworkerUtils';
 import { handleMediaPermissionError } from '../utils/mediaErrorUtils';
 import type { RootState } from './index';
+import { ScreenShareResolutionValues } from './slices/mediaSlice';
 
 export type RoomCredentials = {
   roomId: RoomId;
@@ -272,12 +273,17 @@ export const setScreenShareEnabled = createAsyncThunk<
   { enabled: boolean },
   { state: RootState; rejectValue: FetchPermissionError }
 >('livekit/startScreenShare', async ({ enabled }, thunkApi) => {
-  const room = thunkApi.getState().livekit.room;
+  const state = thunkApi.getState();
+  const room = state.livekit.room;
+  const screenShareConfig = state.media.screenShareConfig;
+
   try {
     await room?.localParticipant.setScreenShareEnabled(enabled, {
       audio: true,
       systemAudio: 'include',
+      resolution: screenShareConfig?.resolution && ScreenShareResolutionValues[screenShareConfig?.resolution],
     });
+
     return {
       enabled,
     };
