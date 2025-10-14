@@ -20,40 +20,42 @@ const AuthCallbackComponent = ({ children, redirectUrl = '/' }: AuthCallbackCont
   const isAuthPending = useSelector(selectAuthIsPending);
 
   useEffect(() => {
-    // Prevents react from calling the dispatch while the component is remounting - https://react.dev/learn/synchronizing-with-effects#fetching-data
-    let ignore = false;
     const code = searchParams.get('code');
-    if (code && auth) {
-      const codeVerifier = sessionStorage.getItem('code_verifier');
-      if (isEmpty(codeVerifier)) {
-        auth.signIn(window.location.href);
-        return;
-      }
-      const clientId = auth.configuration.clientId;
-      const baseUrl = auth?.getBaseUrl();
-      /**
-       * Once user is back from sign in provider
-       * get the code from the auth provider and call codeCallback to get access tokens
-       */
-      auth.getConfigurationEndpoints().then((config) => {
-        if (!ignore) {
-          dispatch(
-            codeCallback({
-              clientId,
-              redirectUri: auth.configuration.redirectUri,
-              tokenEndpoint: config.tokenEndpoint,
-              baseUrl,
-              code,
-            })
-          );
-        }
-      });
+    const state = searchParams.get('state');
+    const codeVerifier = sessionStorage.getItem('code_verifier');
+    const savedState = sessionStorage.getItem('oidc_state_parameter');
+
+    const isOidcStateVerified = savedState && !isEmpty(savedState) && savedState === state;
+    const isCodeVerifierAvaliable = codeVerifier && !isEmpty(codeVerifier);
+
+    if (!auth || !auth.openidConfig) {
+      return;
     }
 
-    return () => {
-      ignore = true;
-    };
-  }, []);
+    if (!code || !isOidcStateVerified || !isCodeVerifierAvaliable) {
+      auth.signIn(window.location.href);
+      return;
+    }
+
+    const clientId = auth.configuration.clientId;
+    const baseUrl = auth.getBaseUrl();
+    /**
+     * Once user is back from sign in provider
+     * get the code from the auth provider and call codeCallback to get access tokens
+     */
+
+    dispatch(
+      codeCallback({
+        clientId,
+        redirectUri: auth.configuration.redirectUri,
+        tokenEndpoint: auth.openidConfig.tokenEndpoint,
+        baseUrl,
+        code,
+      })
+    );
+
+    sessionStorage.removeItem('oidc_state_parameter');
+  }, [auth]);
 
   useEffect(() => {
     if (isAuthenticated && !isAuthPending) {

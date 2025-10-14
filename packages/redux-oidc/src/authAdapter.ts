@@ -1,6 +1,6 @@
 import camelcaseKeys from 'camelcase-keys';
 
-import { clearApplicationStorage } from './utils';
+import { clearApplicationStorage, generateAndSaveOidcStateString, generatePkceChallenge } from './utils';
 
 export interface AuthAdapterConfiguration {
   authority: string;
@@ -73,7 +73,7 @@ export class AuthAdapter {
     return this._configuration.baseUrl;
   }
 
-  public async getLoginUrl(codeChallenge?: string) {
+  public async getLoginUrl() {
     const { authorizationEndpoint } = await this.getConfigurationEndpoints();
 
     const authorizationEndpointURL = new URL(authorizationEndpoint);
@@ -82,11 +82,14 @@ export class AuthAdapter {
     authorizationEndpointURL.searchParams.append('redirect_uri', this._configuration.redirectUri);
     authorizationEndpointURL.searchParams.append('scope', this._configuration.scope);
 
+    const codeChallenge = await generatePkceChallenge();
     if (codeChallenge) {
       authorizationEndpointURL.searchParams.append('code_challenge', codeChallenge);
       authorizationEndpointURL.searchParams.append('code_challenge_method', 'S256');
     }
 
+    const state = generateAndSaveOidcStateString();
+    authorizationEndpointURL.searchParams.append('state', state);
     return authorizationEndpointURL;
   }
 
@@ -96,11 +99,11 @@ export class AuthAdapter {
   /**
    * Redirect user to sign in provider
    */
-  public async startOidcSignIn(redirectUrl = window.location.pathname, codeChallenge?: string) {
+  public async startOidcSignIn(redirectUrl = window.location.pathname) {
     if (!redirectUrl.includes(this._configuration.redirectUri)) {
       this.saveLocationForRedirect(redirectUrl);
     }
-    window.location.replace(await this.getLoginUrl(codeChallenge));
+    window.location.replace(await this.getLoginUrl());
   }
 
   public getAccessToken = () => localStorage.getItem('access_token');

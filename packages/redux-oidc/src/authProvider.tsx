@@ -1,7 +1,7 @@
-import { FC, PropsWithChildren, useEffect } from 'react';
+import { FC, PropsWithChildren, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { AuthAdapter, AuthAdapterConfiguration } from './authAdapter';
+import { AuthAdapter, AuthAdapterConfiguration, AuthenticationProviderUrls } from './authAdapter';
 import { AuthContext } from './authContext';
 import { getNewToken } from './store';
 import {
@@ -13,7 +13,7 @@ import {
   startLoading,
   getAppDispatch,
 } from './store';
-import { AuthTypeError, calculateTokenRenewalTime, hasValidToken, pkceChallenge } from './utils';
+import { AuthTypeError, calculateTokenRenewalTime, hasValidToken } from './utils';
 
 export interface AuthProviderValues {
   configuration: AuthAdapterConfiguration;
@@ -27,23 +27,22 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const loginTimestamp = useSelector(selectLoginTimestamp);
   const isRefresTokenLoading = useSelector(selectIsRefreshTokenLoading);
+  const [openidConfig, setOpenidConfig] = useState<AuthenticationProviderUrls>();
 
   // default is window.location.href
   const signIn = async (redirectUrl?: string): Promise<void> => {
-    const codeChallenge = await pkceChallenge.generate();
-    return authAdapter.startOidcSignIn(redirectUrl, codeChallenge);
+    return authAdapter.startOidcSignIn(redirectUrl);
   };
 
   const signOut = (signOutRedirectUrl?: string) => {
     authAdapter.signOut(signOutRedirectUrl);
   };
 
-  const getConfigurationEndpoints = () => authAdapter.getConfigurationEndpoints();
   const getBaseUrl = () => authAdapter.getBaseUrl();
   const getSavedRedirectUrl = () => authAdapter.getSavedLocation();
 
   const getNewRefreshToken = () => {
-    getConfigurationEndpoints().then((config) => {
+    authAdapter.getConfigurationEndpoints().then((config) => {
       dispatch(
         getNewToken({
           clientId: configuration.clientId,
@@ -54,6 +53,9 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
     });
   };
 
+  useEffect(() => {
+    authAdapter.getConfigurationEndpoints().then((res) => setOpenidConfig(res));
+  }, [authAdapter]);
   /**
    * When authenticated:
    * 1. If access token is not valid get immediatly new one and put loading state to true
@@ -102,7 +104,7 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
         configuration,
         signIn,
         signOut,
-        getConfigurationEndpoints,
+        openidConfig,
         getBaseUrl,
         getSavedRedirectUrl,
         getNewRefreshToken,
