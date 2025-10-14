@@ -10,41 +10,15 @@ export interface KickParticipant {
   action: 'kick';
   target: ParticipantId;
 }
+
 export interface BanParticipant {
   action: 'ban';
   target: ParticipantId;
 }
-export interface SendParticipantToWaitingRoom {
-  action: 'send_to_waiting_room';
+
+export interface UnbanParticipant {
+  action: 'unban';
   target: ParticipantId;
-}
-export interface EnableWaitingRoom {
-  action: 'enable_waiting_room';
-}
-
-export interface DisableWaitingRoom {
-  action: 'disable_waiting_room';
-}
-
-export interface AcceptParticipantFromWaitingRoomToRoom {
-  action: 'accept';
-  target: ParticipantId;
-}
-
-export interface Debrief {
-  action: 'debrief';
-  kickScope: KickScope;
-}
-
-export interface ChangeDisplayName {
-  action: 'change_display_name';
-  target: ParticipantId;
-  newName: string;
-}
-
-export interface Mute {
-  action: 'mute';
-  participants?: Array<ParticipantId>;
 }
 
 export interface UpdateRole {
@@ -53,9 +27,53 @@ export interface UpdateRole {
   newRole: Role;
 }
 
+export interface Debrief {
+  action: 'debrief';
+  kickScope: KickScope;
+}
+
+export interface EnableWaitingRoom {
+  action: 'enable_waiting_room';
+}
+
+export interface DisableWaitingRoom {
+  action: 'disable_waiting_room';
+}
+
+export interface SendParticipantToWaitingRoom {
+  action: 'send_to_waiting_room';
+  target: ParticipantId;
+}
+
+export interface ChangeDisplayName {
+  action: 'change_display_name';
+  target: ParticipantId;
+  newName: string;
+}
+
+export interface AcceptParticipantFromWaitingRoomToRoom {
+  action: 'accept';
+  target: ParticipantId;
+}
+
+export interface Mute {
+  action: 'mute';
+  participants?: Array<ParticipantId>;
+}
+
+export interface EnableMicrophoneRestrictions {
+  action: 'enable_microphone_restrictions';
+  unrestrictedParticipants: Array<ParticipantId>;
+}
+
+export interface DisableMicrophoneRestrictions {
+  action: 'disable_microphone_restrictions';
+}
+
 export type Action =
   | KickParticipant
   | BanParticipant
+  | UnbanParticipant
   | SendParticipantToWaitingRoom
   | EnableWaitingRoom
   | DisableWaitingRoom
@@ -63,12 +81,15 @@ export type Action =
   | Debrief
   | ChangeDisplayName
   | UpdateRole
-  | Mute;
+  | Mute
+  | EnableMicrophoneRestrictions
+  | DisableMicrophoneRestrictions;
 
 export type Moderation = Namespaced<Action, 'moderation'>;
 
 export const kickParticipant = createSignalingApiCall<KickParticipant>('moderation', 'kick');
 export const banParticipant = createSignalingApiCall<BanParticipant>('moderation', 'ban');
+export const unbanParticipant = createSignalingApiCall<UnbanParticipant>('moderation', 'unban');
 export const sendParticipantToWaitingRoom = createSignalingApiCall<SendParticipantToWaitingRoom>(
   'moderation',
   'send_to_waiting_room'
@@ -83,6 +104,14 @@ export const debrief = createSignalingApiCall<Debrief>('moderation', 'debrief');
 export const changeDisplayName = createSignalingApiCall<ChangeDisplayName>('moderation', 'change_display_name');
 export const mute = createSignalingApiCall<Mute>('moderation', 'mute');
 export const updateRole = createSignalingApiCall<UpdateRole>('moderation', 'update_role');
+export const enableMicrophoneRestrictions = createSignalingApiCall<EnableMicrophoneRestrictions>(
+  'moderation',
+  'enable_microphone_restrictions'
+);
+export const disableMicrophoneRestrictions = createSignalingApiCall<DisableMicrophoneRestrictions>(
+  'moderation',
+  'disable_microphone_restrictions'
+);
 
 export const handler = createModule<RootState>((builder) => {
   builder
@@ -91,6 +120,9 @@ export const handler = createModule<RootState>((builder) => {
     })
     .addCase(banParticipant.action, (_state, action) => {
       sendMessage(banParticipant(action.payload));
+    })
+    .addCase(unbanParticipant.action, (_state, action) => {
+      sendMessage(unbanParticipant(action.payload));
     })
     .addCase(sendParticipantToWaitingRoom.action, (_state, action) => {
       sendMessage(sendParticipantToWaitingRoom(action.payload));
@@ -115,6 +147,12 @@ export const handler = createModule<RootState>((builder) => {
     })
     .addCase(updateRole.action, (_state, action) => {
       sendMessage(updateRole(action.payload));
+    })
+    .addCase(enableMicrophoneRestrictions.action, (_state, action) => {
+      sendMessage(enableMicrophoneRestrictions(action.payload));
+    })
+    .addCase(disableMicrophoneRestrictions.action, (_state, action) => {
+      sendMessage(disableMicrophoneRestrictions(action.payload));
     });
 });
 

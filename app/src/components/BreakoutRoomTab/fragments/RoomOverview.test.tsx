@@ -8,12 +8,11 @@ import userEvent from '@testing-library/user-event';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Mock } from 'vitest';
 
-import { Role } from '../../../api/types/incoming/control';
 import { stop } from '../../../api/types/outgoing/breakout';
 import * as reduxHooks from '../../../hooks/useCustomRedux';
 import * as InviteCodeModule from '../../../hooks/useInviteCode';
 import * as commonActions from '../../../store/commonActions';
-import { BreakoutRoomId, MeetingNotesAccess, Participant } from '../../../types';
+import { BreakoutRoomId, MeetingNotesAccess, Participant, Role } from '../../../types';
 import { composeRoomPath } from '../../../utils/apiUtils';
 import { renderWithProviders, configureStore, mockedParticipant } from '../../../utils/testUtils';
 import RoomOverview from './RoomOverview';

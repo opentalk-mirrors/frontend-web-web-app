@@ -1,20 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { NamespacedIncoming, ParticipantId } from '../../../types';
+import { NamespacedIncoming } from '../../../types';
 
 export interface LivekitError {
   message: 'error';
   error: 'livekit_unavailable';
-}
-
-export interface MicrophoneRestrictionsEnabled {
-  message: 'microphone_restrictions_enabled';
-  unrestrictedParticipants: Array<ParticipantId>;
-}
-
-export interface MicrophoneRestrictionsDisabled {
-  message: 'microphone_restrictions_disabled';
 }
 
 export interface PopoutStreamAccessToken {
@@ -29,12 +20,7 @@ export interface Credentials {
   publicUrl: string;
 }
 
-export type Message =
-  | MicrophoneRestrictionsEnabled
-  | MicrophoneRestrictionsDisabled
-  | PopoutStreamAccessToken
-  | Credentials
-  | LivekitError;
+export type Message = PopoutStreamAccessToken | Credentials | LivekitError;
 
 export type Livekit = NamespacedIncoming<Message, 'livekit'>;
 

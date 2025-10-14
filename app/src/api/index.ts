@@ -5,6 +5,8 @@ import { freeze, isAction, Middleware } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
 import {
+  createStackedMessages,
+  notificationAction,
   notifications,
   setLibravatarOptions,
   startTimeLimitNotification,
@@ -74,6 +76,7 @@ import {
   CorePeerState,
   ChatPeerState,
   Role,
+  AutomodSelectionStrategy,
 } from '../types';
 import {
   core,
@@ -83,6 +86,7 @@ import {
 import { RoomserverMessageKey } from './types/incoming/core';
 import * as outgoing from './types/outgoing';
 import { mapMeetingNotesToMeetingNotesAccess } from './handlers/helpers';
+import { startedId } from './handlers/automod';
 
 const mapRoomserverParticipantToUi = (
   state: RootState,
@@ -524,7 +528,7 @@ const onMessage =
         handleSharedFolderMessage(dispatch, message.payload);
         break;
       case 'livekit':
-        handleLivekitMessage(dispatch, message.payload, getState());
+        handleLivekitMessage(dispatch, message.payload);
         break;
       case 'raise_hands':
         handleRaiseHandsMessage(dispatch, message.payload, message.timestamp, getState());

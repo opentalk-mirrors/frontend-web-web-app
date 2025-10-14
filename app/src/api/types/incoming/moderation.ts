@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ErrorStruct, NamespacedIncoming, ParticipantId, Role } from '../../../types';
+import { ErrorStruct, NamespacedIncoming, ParticipantId, Role, Timestamp } from '../../../types';
 
 export interface KickedParticipant {
   message: 'kicked';
@@ -11,9 +11,31 @@ export interface BannedParticipant {
   message: 'banned';
 }
 
-export interface SentToWaitingRoom {
-  message: 'sent_to_waiting_room';
+export interface ParticipantBanned {
+  message: 'participant_banned';
+  participantId: ParticipantId;
+  display_name: string;
+  avatar_url: string;
+  bannedBy: ParticipantId;
+  bannedAt: Timestamp;
 }
+
+export interface ParticipantUnbanned {
+  message: 'participant_unbanned';
+  participantId: ParticipantId;
+}
+
+export interface RoleUpdated {
+  message: 'role_updated';
+  participantId: ParticipantId;
+  newRole: Role;
+}
+
+export interface DebriefStarted {
+  message: 'debriefing_started';
+  issuedBy: ParticipantId;
+}
+
 export interface WaitingRoomEnabled {
   message: 'waiting_room_enabled';
 }
@@ -21,6 +43,10 @@ export interface WaitingRoomEnabled {
 export interface WaitingRoomDisabled {
   message: 'waiting_room_disabled';
   id: ParticipantId;
+}
+
+export interface SentToWaitingRoom {
+  message: 'sent_to_waiting_room';
 }
 
 export interface AcceptedInMeeting {
@@ -32,17 +58,10 @@ export interface ParticipantAccepted {
   participantId: ParticipantId;
 }
 
-export interface DebriefStarted {
-  message: 'debriefing_started';
-}
-export interface DebriefSessionEnded {
-  message: 'session_ended';
-}
-
 export interface DisplayNameChanged {
   message: 'display_name_changed';
   target: ParticipantId;
-  issued_by: ParticipantId;
+  issuedBy: ParticipantId;
   oldName: string;
   newName: string;
 }
@@ -52,11 +71,18 @@ export interface Muted {
   moderator: ParticipantId;
 }
 
-export interface RoleUpdated {
-  message: 'role_updated';
-  participantId: ParticipantId;
-  newRole: Role;
+export interface MicrophoneRestrictionsEnabled {
+  message: 'microphone_restrictions_enabled';
+  unrestrictedParticipants: Array<ParticipantId>;
 }
+
+export interface MicrophoneRestrictionsDisabled {
+  message: 'microphone_restrictions_disabled';
+}
+
+// export interface DebriefSessionEnded {
+//   message: 'session_ended';
+// }
 
 export enum ModerationError {
   /// Cannot change the display name of registered users
@@ -102,16 +128,19 @@ export enum ModerationError {
 export type Message =
   | KickedParticipant
   | BannedParticipant
-  | SentToWaitingRoom
+  | ParticipantBanned
+  | ParticipantUnbanned
+  | RoleUpdated
+  | DebriefStarted
   | WaitingRoomEnabled
   | WaitingRoomDisabled
+  | SentToWaitingRoom
   | AcceptedInMeeting
   | ParticipantAccepted
-  | DebriefStarted
-  | DebriefSessionEnded
   | DisplayNameChanged
   | Muted
-  | RoleUpdated
+  | MicrophoneRestrictionsEnabled
+  | MicrophoneRestrictionsDisabled
   | ErrorStruct<ModerationError>;
 
 export type Moderation = NamespacedIncoming<Message, 'moderation'>;

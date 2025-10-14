@@ -12,6 +12,7 @@ import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter
 import { setDisplayName, updateRole } from '../../store/slices/userSlice';
 import { Role, Timestamp } from '../../types';
 import { moderation } from '../types/incoming';
+import { forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
 
 /**
  * Handles messages in the moderation namespace.
@@ -48,16 +49,16 @@ export const handleModerationMessage = (
     case 'debriefing_started':
       notifications.info(i18next.t('debriefing-started-notification'));
       break;
-    case 'session_ended':
-      dispatch(hangUp());
-      notifications.info(
-        i18next.t(
-          state.user.role === Role.Moderator
-            ? 'debriefing-session-ended-for-all-notification'
-            : 'debriefing-session-ended-notification'
-        )
-      );
-      break;
+    // case 'session_ended':
+    //   dispatch(hangUp());
+    //   notifications.info(
+    //     i18next.t(
+    //       state.user.role === Role.Moderator
+    //         ? 'debriefing-session-ended-for-all-notification'
+    //         : 'debriefing-session-ended-notification'
+    //     )
+    //   );
+    //   break;
     case 'display_name_changed':
       dispatch(participantsRename({ id: data.target, displayName: data.newName }));
       if (data.target === state.user.uuid) {
@@ -65,7 +66,7 @@ export const handleModerationMessage = (
       }
       notifications.info(
         i18next.t('display-name-change-notification', {
-          moderatorName: state.participants.entities[data.issued_by]?.displayName || '',
+          moderatorName: state.participants.entities[data.issuedBy]?.displayName || '',
           oldName: data.oldName,
           newName: data.newName,
         })
@@ -97,6 +98,18 @@ export const handleModerationMessage = (
       }
       break;
     case 'participant_accepted':
+      break;
+    case 'microphone_restrictions_enabled':
+      dispatch(forceMuteEnabled({ unrestrictedParticipants: data.unrestrictedParticipants }));
+      if (state.user.uuid !== null && !data.unrestrictedParticipants.includes(state.user.uuid)) {
+        notifications.info(i18next.t('microphones-disabled-notification'));
+      }
+      break;
+    case 'microphone_restrictions_disabled':
+      dispatch(forceMuteDisabled());
+      if (state.user.uuid && !state.moderation.forceMute.unrestrictedParticipants.includes(state.user.uuid)) {
+        notifications.info(i18next.t('microphones-enabled-notification'));
+      }
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);

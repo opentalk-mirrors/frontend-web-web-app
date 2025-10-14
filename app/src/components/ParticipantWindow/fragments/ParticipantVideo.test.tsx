@@ -7,15 +7,15 @@ import React from 'react';
 
 import { idFromDescriptor, MediaDescriptor } from '../../../modules/WebRTC';
 import { initialState as livekitInitialState } from '../../../store/slices/livekitSlice';
-import { mockStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
-import ParticipantVideo from './ParticipantVideo';
-import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import {
   presenterOverlayPinnedParticipantIdSet,
   presenterVideoPositions,
   setPresenterVideoPosition,
 } from '../../../store/slices/uiSlice';
 import { VideoSetting } from '../../../types';
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
+import { mockStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
+import ParticipantVideo from './ParticipantVideo';
 
 type ScreenPresenterVideoMockProps = {
   participantId: string;

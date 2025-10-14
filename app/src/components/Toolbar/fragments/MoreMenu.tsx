@@ -7,9 +7,14 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
-import { disableMicrophoneRestrictions, enableMicrophoneRestrictions } from '../../../api/types/outgoing/livekit';
 import { generateAttendanceReport } from '../../../api/types/outgoing/meetingReport';
-import { disableWaitingRoom, enableWaitingRoom, mute } from '../../../api/types/outgoing/moderation';
+import {
+  disableMicrophoneRestrictions,
+  disableWaitingRoom,
+  enableMicrophoneRestrictions,
+  enableWaitingRoom,
+  mute,
+} from '../../../api/types/outgoing/moderation';
 import { disableRaiseHands, enableRaiseHands } from '../../../api/types/outgoing/raiseHands';
 import { sendStartStreamSignal, sendStopStreamSignal } from '../../../api/types/outgoing/streaming';
 import { disablePresenceLogging, enablePresenceLogging } from '../../../api/types/outgoing/trainingParticipationReport';

@@ -16,15 +16,6 @@ export interface RevokeScreenSharePermission {
   participants: Array<ParticipantId>;
 }
 
-export interface EnableMicrophoneRestrictions {
-  action: 'enable_microphone_restrictions';
-  unrestrictedParticipants: Array<ParticipantId>;
-}
-
-export interface DisableMicrophoneRestrictions {
-  action: 'disable_microphone_restrictions';
-}
-
 export interface RequestPopoutStreamAccessToken {
   action: 'request_popout_stream_access_token';
 }
@@ -36,8 +27,6 @@ export interface CreateNewAccessToken {
 export type Action =
   | GrantScreenSharePermission
   | RevokeScreenSharePermission
-  | EnableMicrophoneRestrictions
-  | DisableMicrophoneRestrictions
   | RequestPopoutStreamAccessToken
   | CreateNewAccessToken;
 
@@ -50,14 +39,6 @@ export const grantScreenSharePermission = createSignalingApiCall<GrantScreenShar
 export const revokeScreenSharePermission = createSignalingApiCall<RevokeScreenSharePermission>(
   'livekit',
   'revoke_screen_share_permission'
-);
-export const enableMicrophoneRestrictions = createSignalingApiCall<EnableMicrophoneRestrictions>(
-  'livekit',
-  'enable_microphone_restrictions'
-);
-export const disableMicrophoneRestrictions = createSignalingApiCall<DisableMicrophoneRestrictions>(
-  'livekit',
-  'disable_microphone_restrictions'
 );
 
 export const requestPopoutStreamAccessToken = createSignalingApiCall<RequestPopoutStreamAccessToken>(
@@ -73,12 +54,6 @@ export const handler = createModule<RootState>((builder) => {
   });
   builder.addCase(revokeScreenSharePermission.action, (_state, action) => {
     sendMessage(revokeScreenSharePermission(action.payload));
-  });
-  builder.addCase(enableMicrophoneRestrictions.action, (_state, action) => {
-    sendMessage(enableMicrophoneRestrictions(action.payload));
-  });
-  builder.addCase(disableMicrophoneRestrictions.action, (_state, action) => {
-    sendMessage(disableMicrophoneRestrictions(action.payload));
   });
   builder.addCase(requestPopoutStreamAccessToken.action, (_state, action) => {
     sendMessage(requestPopoutStreamAccessToken(action.payload));

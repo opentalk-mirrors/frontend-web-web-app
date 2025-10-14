@@ -4,9 +4,9 @@
 import { screen } from '@testing-library/react';
 import { format } from 'date-fns';
 
-import { Role } from '../../../api/types/incoming/control';
+import { DisconnectReason } from '../../../api/types/incoming/core';
 import { RoomEvent } from '../../../store/slices/eventSlice';
-import { ChatMessage as ChatMessageType, ChatScope, ParticipantId } from '../../../types';
+import { ChatMessage as ChatMessageType, ChatScope, ParticipantId, Role } from '../../../types';
 import { MeetingNotesAccess } from '../../../types';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import ChatMessage from './ChatMessage';
@@ -62,7 +62,7 @@ describe('ChatMessage', () => {
       timestamp: '2024-02-01T08:00:00.000Z',
       target: participant.id,
       event: 'left',
-      reason: 'kicked',
+      reason: DisconnectReason.Kicked,
     };
 
     renderComponent(event, {

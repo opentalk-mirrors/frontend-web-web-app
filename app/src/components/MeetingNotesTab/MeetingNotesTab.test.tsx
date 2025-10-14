@@ -4,7 +4,7 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { deselectWriter, selectWriter, uploadPdf } from '../../api/types/outgoing/meetingNotes';
+import { revokeWriteAccess, grantWriteAccess, uploadPdf } from '../../api/types/outgoing/meetingNotes';
 import { MeetingNotesAccess, Participant } from '../../types';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import MeetingNotesTab from './MeetingNotesTab';
@@ -22,6 +22,7 @@ describe('MeetingNotesTab', () => {
     meetingNotesAccess?: MeetingNotesAccess
   ) => ({
     id: participant.id,
+    connections: participant.connections,
     breakoutRoomId: participant.breakoutRoomId,
     displayName: participant.displayName,
     avatarUrl: participant.avatarUrl,
@@ -125,9 +126,9 @@ describe('MeetingNotesTab', () => {
 
     await user.click(screen.getByRole('button', { name: /meeting-notes-invite-send-button/i }));
 
-    expect(dispatchSpy).toHaveBeenCalledWith(selectWriter.action({ participantIds: [participants[0].id] }));
+    expect(dispatchSpy).toHaveBeenCalledWith(grantWriteAccess.action({ participantIds: [participants[0].id] }));
     expect(dispatchSpy).toHaveBeenCalledWith(
-      deselectWriter.action({ participantIds: [participants[1].id, userParticipant.id] })
+      revokeWriteAccess.action({ participantIds: [participants[1].id, userParticipant.id] })
     );
   });
 

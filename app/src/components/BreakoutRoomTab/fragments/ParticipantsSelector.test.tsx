@@ -99,6 +99,7 @@ type ParticipantsSelectorProps = ComponentProps<typeof ParticipantsSelector>;
 
 const createParticipant = (id: string, displayName: string): Participant => ({
   id: id as ParticipantId,
+  connections: [],
   breakoutRoomId: null,
   displayName,
   handIsUp: false,
