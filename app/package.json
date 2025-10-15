@@ -28,7 +28,7 @@
     "@opentalk/rest-api-rtk-query": "workspace:*",
     "@reduxjs/toolkit": "^2.9.0",
     "@sentry/browser": "^10.19.0",
-    "@sentry/react": "^10.19.0",
+    "@sentry/react": "^10.20.0",
     "bowser": "^2.12.1",
     "camelcase-keys": "^10.0.0",
     "colorjs.io": "^0.5.2",
