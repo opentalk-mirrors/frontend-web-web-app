@@ -140,11 +140,6 @@ const RoomOverview = () => {
       }}
     >
       <Box>
-        <Typography variant="h6" component="h4">
-          {t('breakout-room-room-overview-title')}
-        </Typography>
-      </Box>
-      <Box>
         <Typography variant="body2" color="primary">
           <StyledClockIcon />
           {renderDurationText()}
