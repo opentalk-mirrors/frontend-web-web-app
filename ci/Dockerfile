@@ -5,6 +5,7 @@
 FROM nginxinc/nginx-unprivileged:alpine-slim
 
 USER root
+RUN apk --no-cache update && apk --no-cache upgrade
 
 ARG DIST_FOLDER=dist
 COPY /$DIST_FOLDER /usr/share/nginx/html
