@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { authReducer, setupAppDispatch } from '@opentalk/redux-oidc';
-import { Middleware, configureStore } from '@reduxjs/toolkit';
+import { Middleware, configureStore, combineReducers } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { merge } from 'lodash';
 
@@ -18,7 +18,6 @@ import { initialState as initialConfig } from './slices/configSlice';
 import configReducer from './slices/configSlice';
 import eventReducer from './slices/eventSlice';
 import { fullscreenActions, fullscreenReducer } from './slices/fullscreen/slice';
-import { bindDomEventsToRedux } from './slices/hotkeys/eventBindings';
 import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from './slices/hotkeys/slice';
 import legalVoteReducer from './slices/legalVoteSlice';
 import livekitReducer, { initialState as livekitInitialState } from './slices/livekitSlice';
@@ -61,7 +60,7 @@ if (process.env.NODE_ENV === 'development') {
   middleware.push(crashReporter);
 }
 
-export const appReducers = {
+export const rootReducer = combineReducers({
   auth: authReducer,
   automod: automodReducer,
   breakout: breakoutReducer,
@@ -87,7 +86,7 @@ export const appReducers = {
   livekit: livekitReducer,
   subroomAudio: subroomAudioReducer,
   fullscreen: fullscreenReducer,
-};
+});
 
 // disable action sanitizer for localTrack and room object to prevent Redux toolkit for doing excesive work
 
@@ -100,62 +99,57 @@ export const mediaRehydrateSlice = () => {
   return undefined;
 };
 
-const store = configureStore({
-  reducer: {
-    ...appReducers,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [
-          'livekit/setLivekitRoom',
-          'livekit/setLivekitWhisperRoom',
-          'livekit/connectRoom',
-          'media/changeLocalMedia',
-          'media/changeMedia',
-          domKeyDown.type,
-          domKeyUp.type,
-          domFocusIn.type,
-          domFocusOut.type,
-          fullscreenActions.request.type,
-          fullscreenActions.toggle.type,
-        ],
-        ignoredActionPaths: [
-          'meta.arg',
-          'meta.baseQueryMeta',
-          'meta.history',
-          'payload.conferenceContext',
-          'payload.track',
-          'payload.room',
-          'payload.element',
-        ],
-        ignoredPaths: ['livekit.room', 'livekit.whisperRoom', 'livekit.lobby', 'fullscreen.element'],
-      },
-    }).concat(middleware),
-  preloadedState: {
-    config: merge({}, initialConfig, window.config),
-    livekit: merge({}, livekitInitialState, mediaRehydrateSlice()),
-  },
-  devTools: {
-    stateSanitizer,
-    actionSanitizer,
-  },
-});
+export function setupStore(preloadedState?: Partial<RootState>) {
+  const store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: [
+            'livekit/setLivekitRoom',
+            'livekit/setLivekitWhisperRoom',
+            'livekit/connectRoom',
+            'media/changeLocalMedia',
+            'media/changeMedia',
+            domKeyDown.type,
+            domKeyUp.type,
+            domFocusIn.type,
+            domFocusOut.type,
+            fullscreenActions.request.type,
+            fullscreenActions.toggle.type,
+          ],
+          ignoredActionPaths: [
+            'meta.arg',
+            'meta.baseQueryMeta',
+            'meta.history',
+            'payload.conferenceContext',
+            'payload.track',
+            'payload.room',
+            'payload.element',
+          ],
+          ignoredPaths: ['livekit.room', 'livekit.whisperRoom', 'livekit.lobby', 'fullscreen.element'],
+        },
+      }).concat(middleware),
+    preloadedState: {
+      config: merge({}, initialConfig, window.config),
+      livekit: merge({}, livekitInitialState, mediaRehydrateSlice()),
+      ...preloadedState,
+    },
+    devTools: {
+      stateSanitizer,
+      actionSanitizer,
+    },
+  });
 
-// fixme called directly inside tests for some reason https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2746
-if (import.meta.env.VITEST === undefined || import.meta.env.VITEST === 'false') {
-  bindDomEventsToRedux(store.dispatch);
+  setupListeners(store.dispatch);
+
+  setupAppDispatch(store.dispatch);
+
+  setupLogLevel(store.getState().config.logLevel);
+
+  return store;
 }
 
-setupListeners(store.dispatch);
-
-setupAppDispatch(store.dispatch);
-
-setupLogLevel(store.getState().config.logLevel);
-
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof store.dispatch;
-
-export default store;
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppStore = ReturnType<typeof setupStore>;
+export type AppDispatch = AppStore['dispatch'];

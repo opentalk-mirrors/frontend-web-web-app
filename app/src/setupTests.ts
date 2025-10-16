@@ -6,9 +6,8 @@ import '@testing-library/jest-dom/vitest';
 import { fetch, Request, Response } from 'cross-fetch';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { beforeAll, afterEach, afterAll } from 'vitest';
 
-import { DefaultAvatarImage } from './store/slices/configSlice';
+import type { DefaultAvatarImage } from './store/slices/configSlice';
 
 /*
 This will stop the tests directly if an unhandled rejection occurs, so that is easier to debug.

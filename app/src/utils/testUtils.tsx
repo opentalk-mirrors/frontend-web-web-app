@@ -24,8 +24,7 @@ import {
   SipId,
   ThemeBasePalette,
 } from '@opentalk/rest-api-rtk-query';
-import { ConfigureStoreOptions, Store, combineReducers, configureStore as configureStoreTlk } from '@reduxjs/toolkit';
-import { Middleware } from '@reduxjs/toolkit';
+import { ConfigureStoreOptions, Store } from '@reduxjs/toolkit';
 import { RenderOptions, RenderResult, render as rtlRender } from '@testing-library/react';
 import i18n from 'i18next';
 import {
@@ -42,19 +41,13 @@ import { MemoryRouter } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { MockInstance } from 'vitest';
 
-import { restApi } from '../api/rest';
 import { createOpenTalkTheme } from '../assets/themes/opentalk';
 import { defaultDarkModeColors, defaultLightModeColors } from '../assets/themes/opentalk/palette';
 import { SnackbarProvider } from '../commonComponents';
 import { MeetingFormValues } from '../components/MeetingForms/fragments/DashboardDateTimePicker';
 import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
-import { AppDispatch, appReducers } from '../store';
-import type { RootState } from '../store';
-import { listenerMiddleware } from '../store/listenerMiddleware';
+import { AppDispatch, setupStore } from '../store';
 import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
-import { bindDomEventsToRedux } from '../store/slices/hotkeys/eventBindings';
-import { resetHotkeys } from '../store/slices/hotkeys/listener';
-import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from '../store/slices/hotkeys/slice';
 import { Poll } from '../store/slices/pollSlice';
 import {
   AutomodSelectionStrategy,
@@ -113,40 +106,16 @@ i18n.use(initReactI18next).init({
 });
 
 type MockReduxStore = {
-  store: ReturnType<typeof configureStoreTlk<RootState>>;
+  store: ReturnType<typeof setupStore>;
   dispatchSpy: MockInstance<AppDispatch>;
 };
 
-type UnbindDomEvents = {
-  unbindDomEvents: ReturnType<typeof bindDomEventsToRedux>;
-};
-
-export const middleware: Array<Middleware> = [restApi.middleware, listenerMiddleware.middleware];
-
-export const configureStore = (
-  options?: ConfigureStoreOptions['preloadedState'] | undefined
-): MockReduxStore & UnbindDomEvents => {
-  const regexIgnoredPaths = /\b(getTrackPublication|setMicrophoneEnabled|videoTrackPublications)\b/;
-
-  const store = configureStoreTlk({
-    reducer: combineReducers({ ...appReducers }),
-    preloadedState: options?.initialState && { ...options.initialState },
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActionPaths: ['meta.arg', 'meta.baseQueryMeta', 'meta.history', 'payload.conferenceContext'],
-          ignoredPaths: [regexIgnoredPaths, 'livekit.room', 'livekit.whisperRoom', 'livekit.lobby'],
-          ignoredActions: [domKeyDown.type, domKeyUp.type, domFocusIn.type, domFocusOut.type],
-        },
-      }).concat(middleware),
-  });
+export const configureStore = (options?: ConfigureStoreOptions['preloadedState'] | undefined): MockReduxStore => {
+  const store = setupStore(options?.initialState);
 
   const dispatchSpy = vi.spyOn(store, 'dispatch');
 
-  resetHotkeys();
-  const unbindDomEvents = bindDomEventsToRedux(store.dispatch);
-
-  return { store, dispatchSpy, unbindDomEvents };
+  return { store, dispatchSpy };
 };
 
 interface Render {

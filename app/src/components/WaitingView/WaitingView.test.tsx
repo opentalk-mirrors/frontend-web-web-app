@@ -23,6 +23,13 @@ vi.mock('../SelfTest', () => ({
   default: (props: PropsWithChildren) => <div data-testid="selfTest">{props.children}</div>,
 }));
 
+vi.mock('../../modules/WebRTC/ConferenceRoom', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getCurrentConferenceRoom: () => ({
+    sendMessage: vi.fn(),
+  }),
+}));
+
 describe('Waiting view', () => {
   it('Enter button is disabled if ConnectionState is Waiting', () => {
     const { store } = configureStore({

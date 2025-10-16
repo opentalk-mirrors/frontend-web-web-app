@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { vi } from 'vitest';
 
-import { bindDomEventsToRedux } from './eventBindings';
+import { ReduxDomEvents } from './eventBindings';
 import { domKeyDown, domKeyUp, domFocusIn, domFocusOut } from './slice';
 
 vi.mock('./slice', () => ({
@@ -14,40 +14,40 @@ vi.mock('./slice', () => ({
 }));
 
 vi.mock('./listener', () => ({
-  registerHotkey: vi.fn(),
+  registerHotkeys: vi.fn(),
 }));
 
-describe('bindDomEventsToRedux', () => {
+describe('ReduxDomEvents', () => {
   let dispatch: ReturnType<typeof vi.fn>;
 
-  beforeEach(() => {
+  beforeAll(() => {
     dispatch = vi.fn();
+    ReduxDomEvents.createInstance(dispatch);
+  });
+
+  beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('dispatches domKeyDown on keydown event', () => {
-    bindDomEventsToRedux(dispatch);
     const event = new KeyboardEvent('keydown');
     window.dispatchEvent(event);
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(domKeyDown(event));
   });
 
   it('dispatches domKeyUp on keyup event', () => {
-    bindDomEventsToRedux(dispatch);
     const event = new KeyboardEvent('keyup');
     window.dispatchEvent(event);
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(domKeyUp(event));
   });
 
   it('dispatches domFocusIn on focusin event', () => {
-    bindDomEventsToRedux(dispatch);
     const event = new FocusEvent('focusin');
     window.dispatchEvent(event);
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(domFocusIn(event));
   });
 
   it('dispatches domFocusOut on focusout event', () => {
-    bindDomEventsToRedux(dispatch);
     const event = new FocusEvent('focusout');
     window.dispatchEvent(event);
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(domFocusOut(event));
