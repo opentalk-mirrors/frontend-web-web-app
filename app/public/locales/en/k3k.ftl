@@ -765,6 +765,8 @@ dashboard-help-support = Support
 user-manual-dashboard-title = User manual
 user-manual-open = Open user manual
 conference-go-home = Go to dashboard
+conference-storage-full-no-plan-upgrade = Storage full. Please delete files in the dashboard.
+conference-storage-full-plan-upgrade = Storage full. Please delete files in the dashboard or upgrade your plan.
 
 dashboard-close-navbar = Close navigation
 dashboard-open-navbar = Open navigation

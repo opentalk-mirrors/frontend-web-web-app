@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { AssetId } from '@opentalk/rest-api-rtk-query';
 
-import { NamespacedIncoming } from '../../../types';
+import { ErrorStruct, NamespacedIncoming } from '../../../types';
 
 export interface SpaceUrl {
   message: 'space_url';
@@ -18,8 +18,15 @@ export interface AssetRef {
 export interface PdfUrl extends AssetRef {
   message: 'pdf_asset';
 }
+enum WhiteboardError {
+  InsufficientPermissions = 'insufficient_permissions',
+  StorageExceeded = 'storage_exceeded',
+  GenerateFailed = 'generate_failed',
+  AlreadyInitialized = 'already_initialized',
+  CurrentlyInitializing = 'currently_initializing',
+}
 
-export type Message = SpaceUrl | PdfUrl;
+export type Message = SpaceUrl | PdfUrl | ErrorStruct<WhiteboardError>;
 
 export type Whiteboard = NamespacedIncoming<Message, 'whiteboard'>;
 

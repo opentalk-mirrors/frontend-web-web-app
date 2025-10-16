@@ -23,6 +23,7 @@ import i18n from '../i18n';
 import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
+import { STORAGE_SECTION_PATH } from '../pages/Dashboard/Home/fragments/constants';
 import type { AppDispatch, RootState } from '../store';
 import { changeMedia, hangUp, joinSuccess, startRoom } from '../store/commonActions';
 import {
@@ -44,7 +45,7 @@ import {
   setChatSettings,
   setGlobalChatLastSeenTimestamp,
 } from '../store/slices/chatSlice';
-import { selectLibravatarDefaultImage } from '../store/slices/configSlice';
+import { selectAccountManagementUrl, selectLibravatarDefaultImage } from '../store/slices/configSlice';
 import {
   canceled as legalVoteCanceled,
   initialized as legalVoteInitialized,
@@ -229,6 +230,35 @@ const showErrorNotification = (message: string) => {
   notifications.error(i18next.t('internal-error'));
 };
 
+const handleStorageExceededError = (state: RootState, error: string) => {
+  if (error === 'storage_exceeded') {
+    const accountManagementUrl = selectAccountManagementUrl(state);
+    const openAccountManagement = () => {
+      window.open(accountManagementUrl, '_blank');
+    };
+    const openStorageSettings = () => {
+      window.open(STORAGE_SECTION_PATH, '_blank');
+    };
+    if (state.user.isTariffUpgradable && accountManagementUrl) {
+      notifications.binaryAction(i18next.t('conference-storage-full-plan-upgrade'), {
+        type: 'error',
+        persist: true,
+        primaryBtnText: i18next.t('global-upgrade'),
+        secondaryBtnText: i18next.t('dashboard-settings-storage'),
+        onPrimary: openAccountManagement,
+        onSecondary: openStorageSettings,
+        secondaryBtnProps: { color: 'primary' },
+      });
+    } else {
+      notifications.binaryAction(i18next.t('conference-storage-no-plan-upgrade'), {
+        type: 'error',
+        persist: true,
+        primaryBtnText: i18next.t('dashboard-settings-storage'),
+        onPrimary: openStorageSettings,
+      });
+    }
+  }
+};
 /**
  * Started talking stick notification ID, reused accross different
  * event handlers.
@@ -911,7 +941,7 @@ const handleMeetingNotesMessage = (
       dispatch(setMeetingNotesReadUrl(data.url.toString()));
       break;
     case 'error':
-      showErrorNotification(data.error);
+      handleStorageExceededError(state, data.error);
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
@@ -939,7 +969,7 @@ const handleMeetingReportMessage = (dispatch: AppDispatch, data: meetingReport.M
       showWithLinkNotification({ translationKey: 'meeting-report-pdf-asset-message', url: assetLocation });
       break;
     case 'error':
-      // Will be handled in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2165
+      handleStorageExceededError(state, data.error);
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
@@ -982,7 +1012,7 @@ const handleTimerMessage = (dispatch: AppDispatch, data: timer.Message) => {
  * @param {AppDispatch} dispatch - this is the dispatch function from the redux store.
  * @param {timer.Message} data Message content
  */
-const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message) => {
+const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message, state: RootState) => {
   switch (data.message) {
     case 'space_url':
       dispatch(setWhiteboardAvailable({ showWhiteboard: true, url: data.url }));
@@ -991,6 +1021,9 @@ const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message
       dispatch(addWhiteboardAsset({ asset: { assetId: data.assetId, filename: data.filename } }));
       notificationAction({ msg: i18next.t('whiteboard-new-pdf-message'), variant: 'info', ariaLive: 'polite' });
 
+      break;
+    case 'error':
+      handleStorageExceededError(state, data.error);
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
@@ -1340,7 +1373,8 @@ const handleTrainingParticipationReportMessage = (
       break;
     }
     case 'error':
-      showErrorNotification(data.message);
+      handleStorageExceededError(state, data.error);
+      showErrorNotification(data.error);
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);
@@ -1397,7 +1431,7 @@ const onMessage =
         handleTimerMessage(dispatch, message.payload);
         break;
       case 'whiteboard':
-        handleWhiteboardMessage(dispatch, message.payload);
+        handleWhiteboardMessage(dispatch, message.payload, getState());
         break;
       case 'recording':
         await handleStreamingMessage(dispatch, message.payload, getState());
