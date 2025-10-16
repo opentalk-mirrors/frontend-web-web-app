@@ -140,7 +140,7 @@ const PrimaryNavigation = ({ submenu, routes, setActiveNavbar }: NavigationProps
           onClick={() => auth?.signOut()}
           Icon={<SignOutIcon />}
           collapsedBar={collapsedBar}
-          label={t('dashboard-logout')}
+          label={t('global-logout')}
           disabled={isAuthPending}
           isSubmenuOpen={false}
         />

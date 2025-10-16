@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Container as MuiContainer, styled, IconButton as MuiIconButton } from '@mui/material';
+import { Container as MuiContainer, styled } from '@mui/material';
 import { ErrorInfo } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { BackIcon, WarningIcon as DefaultWarningIcon } from '../../assets/icons';
-import useNavigateToHome from '../../hooks/useNavigateToHome';
+import { WarningIcon as DefaultWarningIcon } from '../../assets/icons';
 import LobbyTemplate from '../../templates/LobbyTemplate';
 import DiagnosticDetails from './fragments/DiagnosticDetails';
+import ErrorActionButtons from './fragments/ErrorActionButtons';
 import ErrorText from './fragments/ErrorText';
 
 const Container = styled(MuiContainer)(({ theme }) => ({
@@ -28,23 +27,6 @@ const WarningIcon = styled(DefaultWarningIcon)(({ theme }) => ({
   height: '6rem',
 }));
 
-const IconButton = styled(MuiIconButton)(({ theme }) => ({
-  padding: theme.spacing(1),
-  border: 'solid',
-  borderWidth: theme.typography.pxToRem(1),
-  borderRadius: '100%',
-  width: '2rem',
-  height: '2rem',
-
-  '& .MuiSvgIcon-root': {
-    width: '1.5em',
-    height: '1.5em',
-  },
-  '&&:hover, &&:focus': {
-    background: theme.palette.secondary.light,
-  },
-}));
-
 interface ErrorProps {
   title: string;
   description?: string;
@@ -57,12 +39,13 @@ interface ErrorProps {
    * Set true for blurred background and warning icon
    */
   isCrashError?: boolean;
+  /**
+   * Changes action buttons to suit logout error page
+   */
+  logout?: boolean;
 }
 
-const Error = ({ title, description, error, errorInfo, isCrashError }: ErrorProps) => {
-  const { t } = useTranslation();
-  const navigateToHome = useNavigateToHome();
-
+const Error = ({ title, description, error, errorInfo, isCrashError, logout }: ErrorProps) => {
   return (
     //Explicitly provide theme and css baseline
     //Potentially should be hoisted up to a root level
@@ -74,9 +57,7 @@ const Error = ({ title, description, error, errorInfo, isCrashError }: ErrorProp
 
         {error && <DiagnosticDetails error={error} errorInfo={errorInfo} />}
 
-        <IconButton aria-label={t('global-back')} onClick={navigateToHome}>
-          <BackIcon />
-        </IconButton>
+        <ErrorActionButtons logout={logout} />
       </Container>
     </LobbyTemplate>
   );

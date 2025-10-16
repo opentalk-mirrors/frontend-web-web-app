@@ -639,6 +639,9 @@ error-session-expired-message = Die Anmeldesitzung ist abgelaufen. Wenn Sie dies
 error-oidc-configuration = Falsche OIDC-Konfiguration
 error-oidc-configuration-message = Fehler beim Laden einer korrekten OIDC-Konfiguration. Bitte wenden Sie sich an Ihren Administrator.
 
+server-issue-page-title = Etwas ist schiefgelaufen
+server-issue-page-description = Es gibt derzeit Probleme mit dem Server. Bitte versuchen Sie es später noch einmal oder kontaktieren Sie Ihren Administrator.
+
 asset-table-filename = Dateiname
 asset-table-created = Erstellt
 asset-table-actions = Aktionen
@@ -661,6 +664,7 @@ global-state-active = aktiv
 global-state-started = aktiv
 global-state-finished = beendet
 global-state-canceled = abgebrochen
+global-logout = Abmelden
 global-accept = Annehmen
 global-cancel = Abbrechen
 global-decline = Ablehnen
@@ -750,7 +754,6 @@ dashboard-settings-account-title = Benutzerkonto Einstellungen
 dashboard-settings-profile-title = Mein Profil Einstellungen
 dashboard-settings-storage-title = Speichereinstellungen
 
-dashboard-logout = Abmelden
 dashboard-account-management = Accountverwaltung
 dashboard-legal = Rechtliches
 dashboard-legal-imprint = Impressum
