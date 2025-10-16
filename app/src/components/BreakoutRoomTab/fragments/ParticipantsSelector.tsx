@@ -56,7 +56,7 @@ const ParticipantsSelector = ({
     let assignedRooms: number;
     switch (selectionMode) {
       case DropdownOptions.Rooms:
-        assignedRooms = Math.max(2, rooms);
+        assignedRooms = Math.max(1, rooms);
         break;
       case DropdownOptions.Participants: {
         const safeParticipantsPerRoom = Math.max(2, participantsPerRoom);

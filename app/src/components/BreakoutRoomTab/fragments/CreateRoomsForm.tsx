@@ -10,13 +10,7 @@ import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 
 import { start } from '../../../api/types/outgoing/breakout';
-import {
-  CommonFormItem,
-  CommonTextField,
-  DurationField,
-  ErrorFormMessage,
-  notifications,
-} from '../../../commonComponents';
+import { CommonFormItem, CommonTextField, DurationField, ErrorFormMessage } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectCombinedParticipantsAndUser, selectCombinedParticipantsAndUserCount } from '../../../store/selectors';
 import { Participant } from '../../../types';
@@ -49,14 +43,14 @@ const validationSchema = Yup.object({
   rooms: Yup.number().when('selectionMode', ([selectionMode], schema, context) =>
     selectionMode === DropdownOptions.Rooms
       ? schema
-          .min(2, i18next.t('breakout-room-form-error-min-rooms'))
+          .min(1, i18next.t('breakout-room-form-error-min-rooms'))
           .max(context.context.maxRooms, i18next.t('breakout-room-form-error-max-rooms'))
       : schema
   ),
   participantsPerRoom: Yup.number().when('selectionMode', ([selectionMode], schema, context) =>
     selectionMode === DropdownOptions.Participants
       ? schema
-          .min(2, i18next.t('breakout-room-form-error-min-participants'))
+          .min(1, i18next.t('breakout-room-form-error-min-participants'))
           .max(context.context.maxParticipantsPerRoom, i18next.t('breakout-room-form-error-max-participants'))
       : schema
   ),
@@ -78,7 +72,6 @@ interface CreateRoomsFormikValues {
   maxRooms: number;
 }
 
-const MINIMUM_PARTICIPANTS_PER_ROOM = 2;
 const MINIMUM_NUMBER_OF_ROOMS = 2;
 
 const CreateRoomsForm = () => {
@@ -86,7 +79,6 @@ const CreateRoomsForm = () => {
   const dispatch = useAppDispatch();
   const participants = useAppSelector(selectCombinedParticipantsAndUser);
   const participantsTotal = useAppSelector(selectCombinedParticipantsAndUserCount);
-  const insufficientParticipants = participantsTotal < 4;
   const [error, setError] = useState<string | null>(null);
 
   const generateRandomAssignments = (rooms: number) => {
@@ -106,12 +98,6 @@ const CreateRoomsForm = () => {
     }));
 
   const handleSubmit = (values: CreateRoomsFormikValues, { setSubmitting }: FormikValues) => {
-    if (insufficientParticipants) {
-      notifications.error(t('breakout-room-start-button-disabled'));
-      setSubmitting(false);
-      return;
-    }
-
     const { duration, assignments, distribution } = values;
 
     const calculatedRooms =
@@ -132,7 +118,7 @@ const CreateRoomsForm = () => {
     setSubmitting(false);
   };
 
-  const maxParticipantsPerRoom = Math.max(2, Math.floor(participantsTotal / MINIMUM_PARTICIPANTS_PER_ROOM));
+  const maxParticipantsPerRoom = Math.max(2, participantsTotal);
   const maxRooms = Math.max(2, Math.floor(participantsTotal / MINIMUM_NUMBER_OF_ROOMS));
 
   const formik = useFormik<CreateRoomsFormikValues>({
@@ -141,8 +127,8 @@ const CreateRoomsForm = () => {
       duration: undefined,
       distribution: false,
       assignments: [],
-      rooms: 2,
-      participantsPerRoom: 2,
+      rooms: participantsTotal === 1 ? 1 : 2,
+      participantsPerRoom: participantsTotal === 1 ? 1 : 2,
       maxParticipantsPerRoom,
       maxRooms,
     },
@@ -286,7 +272,7 @@ const CreateRoomsForm = () => {
             <CommonFormItem
               {...formikProps('rooms', formik)}
               label={t('breakout-room-form-field-rooms')}
-              control={<NumberInput type="number" slotProps={{ htmlInput: { min: 2, max: formik.values.maxRooms } }} />}
+              control={<NumberInput type="number" slotProps={{ htmlInput: { min: 1, max: formik.values.maxRooms } }} />}
             />
           )}
           <CommonFormItem

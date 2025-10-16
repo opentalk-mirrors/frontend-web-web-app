@@ -14,7 +14,6 @@ import { BackIcon } from '../../../assets/icons';
 import { CommonFormItem, DurationField, ErrorFormMessage, notifications } from '../../../commonComponents';
 import { CommonTextField } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectParticipantsTotal } from '../../../store/slices/participantsSlice';
 import { PollFormValues, savePollFormValues } from '../../../store/slices/pollSlice';
 import { selectCurrentRoomMode } from '../../../store/slices/roomSlice';
 import { RoomMode } from '../../../types';
@@ -67,7 +66,6 @@ const validationSchema = yup.object({
 const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollFormProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const totalParticipants = useAppSelector(selectParticipantsTotal);
   const isEditing = initialValues?.id !== undefined;
   const isCoffeeBreakActive = useAppSelector(selectCurrentRoomMode) === RoomMode.CoffeeBreak;
   const saveFormValues = useCallback(
@@ -84,9 +82,6 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
   );
 
   const onSubmit = (values: FormikValues) => {
-    if (totalParticipants < 2) {
-      return notifications.warning(t('poll-save-form-warning'));
-    }
     onClose();
     dispatch(
       start.action({
