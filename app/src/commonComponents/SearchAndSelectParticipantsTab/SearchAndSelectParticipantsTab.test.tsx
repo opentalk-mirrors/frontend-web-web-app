@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import store from '../../store';
 import { configureStore, mockedLivekitParticipant, renderWithProviders } from '../../utils/testUtils';
 import SearchAndSelectParticipantsTab from './SearchAndSelectParticipantsTab';
 import { SelectableParticipant } from './fragments/SelectParticipantsItem';
@@ -53,6 +52,8 @@ describe('Select Participants Tab', () => {
     expect(mockHandleSearchChange).toHaveBeenCalledExactlyOnceWith('a');
   });
   it('should render participants', () => {
+    const { store } = configureStore();
+
     const participants = [1, 2, 3].map((value) => ({
       ...mockedLivekitParticipant(value),
       selected: false,

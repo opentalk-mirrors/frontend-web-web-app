@@ -59,6 +59,10 @@ export const registerHotkey = ({
   });
 };
 
+export const registerHotkeys = (hotkeysToRegister: Hotkey[]) => {
+  hotkeysToRegister.forEach((hotkey) => registerHotkey(hotkey));
+};
+
 const findHotkey = (event: KeyboardEvent) =>
   hotkeys.find(
     (hotkey) =>

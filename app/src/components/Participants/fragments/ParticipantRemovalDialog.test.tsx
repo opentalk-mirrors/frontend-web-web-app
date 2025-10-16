@@ -9,6 +9,13 @@ import { notifications } from '../../../commonComponents';
 import { renderWithProviders, mockedParticipant, configureStore } from '../../../utils/testUtils';
 import ParticipantRemovalDialog from './ParticipantRemovalDialog';
 
+vi.mock('../../../modules/WebRTC/ConferenceRoom', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getCurrentConferenceRoom: () => ({
+    sendMessage: vi.fn(),
+  }),
+}));
+
 describe('ParticipantRemovalDialog', () => {
   const participant = mockedParticipant(0);
   const onClose = vi.fn();

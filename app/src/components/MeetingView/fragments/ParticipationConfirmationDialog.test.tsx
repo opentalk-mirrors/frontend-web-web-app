@@ -8,6 +8,13 @@ import { presenceConfirmationDone } from '../../../store/slices/roomSlice';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import { ParticipationConfirmationDialog } from './ParticipationConfirmationDialog';
 
+vi.mock('../../../modules/WebRTC/ConferenceRoom', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getCurrentConferenceRoom: () => ({
+    sendMessage: vi.fn(),
+  }),
+}));
+
 describe('ParticipationConfirmationDialog', () => {
   const { store: storeNotOngoing } = configureStore({
     initialState: {

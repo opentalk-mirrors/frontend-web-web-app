@@ -8,13 +8,18 @@ import { ForceMuteType, ParticipantId, RoomMode } from '../../../types';
 import { configureStore } from '../../../utils/testUtils';
 import { SpeakerState } from '../automodSlice';
 import { fullscreenActions } from '../fullscreen/slice';
+import { ReduxDomEvents } from './eventBindings';
+import * as events from './events';
 import * as listener from './listener';
 import { domKeyDown } from './slice';
 
 describe('hotkeys', () => {
-  let unbind: (() => void) | undefined;
-
+  beforeAll(() => {
+    const { store } = configureStore();
+    ReduxDomEvents.createInstance(store.dispatch);
+  });
   beforeEach(() => {
+    vi.resetModules();
     vi.useFakeTimers({
       shouldAdvanceTime: true,
     });
@@ -22,116 +27,110 @@ describe('hotkeys', () => {
     vi.spyOn(window, 'location', 'get').mockReturnValue({
       pathname: '/room/test-room',
     } as Location);
+    window.document.body.innerHTML = '';
   });
 
   afterEach(() => {
-    unbind?.();
-    vi.restoreAllMocks();
+    window.onkeydown = null;
+    window.onkeyup = null;
+    window.onfocus = null;
+    vi.useRealTimers();
   });
 
   it('should call hotkeys when they are enabled', () => {
-    const mockedOnPress = vi.fn();
-    vi.spyOn(listener, 'registerHotkey').mockImplementation((args) => {
-      listener.hotkeys.push({
-        ...args,
-        onPress: mockedOnPress,
-      });
-    });
+    const { dispatchSpy, store } = configureStore();
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
-    const { unbindDomEvents, dispatchSpy } = configureStore();
-
-    unbind = unbindDomEvents;
+    const spyToggleMicrophone = vi.spyOn(events, 'toggleMicrophone');
 
     const event = new KeyboardEvent('keydown', { key: 'm', ctrlKey: true });
     window.dispatchEvent(event);
     vi.advanceTimersByTime(100);
-    expect(mockedOnPress).toHaveBeenCalledTimes(1);
+    expect(spyToggleMicrophone).toHaveBeenCalledTimes(1);
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith({ type: domKeyDown.type, payload: event });
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'm', ctrlKey: true }));
     vi.advanceTimersByTime(500);
   });
 
   it('should not call hotkeys when they are disabled', () => {
-    const mockedOnPress = vi.fn();
-    vi.spyOn(listener, 'registerHotkey').mockImplementation((args) => {
-      listener.hotkeys.push({
-        ...args,
-        onPress: mockedOnPress,
-      });
-    });
-
-    const { unbindDomEvents } = configureStore({
+    const { store } = configureStore({
       initialState: {
         ui: {
           hotkeysEnabled: false,
         },
       },
     });
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
-    unbind = unbindDomEvents;
+    const spyToggleMicrophone = vi.spyOn(events, 'toggleMicrophone');
+    const spyToggleVideo = vi.spyOn(events, 'toggleVideo');
+    const spyToggleAudioToWhisperGroup = vi.spyOn(events, 'toggleAudioToWhisperGroup');
+    const spyNextSpeaker = vi.spyOn(events, 'nextSpeaker');
+    const spyToggleFullscreen = vi.spyOn(events, 'toggleFullscreen');
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ctrl' }));
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm' }));
     vi.advanceTimersByTime(100);
-    expect(mockedOnPress).not.toHaveBeenCalled();
+    expect(spyToggleMicrophone).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'ctrl' }));
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'm' }));
     vi.advanceTimersByTime(500);
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm' }));
     vi.advanceTimersByTime(100);
-    expect(mockedOnPress).not.toHaveBeenCalled();
+    expect(spyToggleMicrophone).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'm' }));
     vi.advanceTimersByTime(500);
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'v' }));
     vi.advanceTimersByTime(100);
-    expect(mockedOnPress).not.toHaveBeenCalled();
+    expect(spyToggleVideo).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'v' }));
     vi.advanceTimersByTime(500);
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
     vi.advanceTimersByTime(100);
-    expect(mockedOnPress).not.toHaveBeenCalled();
+    expect(spyToggleAudioToWhisperGroup).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'w' }));
     vi.advanceTimersByTime(500);
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'n' }));
     vi.advanceTimersByTime(100);
-    expect(mockedOnPress).not.toHaveBeenCalled();
+    expect(spyNextSpeaker).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'n' }));
     vi.advanceTimersByTime(500);
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f' }));
     vi.advanceTimersByTime(100);
-    expect(mockedOnPress).not.toHaveBeenCalled();
+    expect(spyToggleFullscreen).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'f' }));
     vi.advanceTimersByTime(500);
   });
 
   it('does not call hotkeys when they are not registered', () => {
-    const mockedOnPress = vi.fn();
-    vi.spyOn(listener, 'registerHotkey').mockImplementation((args) => {
-      listener.hotkeys.push({
-        ...args,
-        onPress: mockedOnPress,
-      });
-    });
+    const { store } = configureStore();
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
-    const { unbindDomEvents } = configureStore();
-
-    unbind = unbindDomEvents;
+    const spyToggleMicrophone = vi.spyOn(events, 'toggleMicrophone');
+    const spyToggleVideo = vi.spyOn(events, 'toggleVideo');
+    const spyToggleAudioToWhisperGroup = vi.spyOn(events, 'toggleAudioToWhisperGroup');
+    const spyNextSpeaker = vi.spyOn(events, 'nextSpeaker');
+    const spyToggleFullscreen = vi.spyOn(events, 'toggleFullscreen');
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'x' }));
     vi.advanceTimersByTime(100);
-    expect(mockedOnPress).not.toHaveBeenCalled();
+    expect(spyToggleMicrophone).not.toHaveBeenCalled();
+    expect(spyToggleVideo).not.toHaveBeenCalled();
+    expect(spyToggleAudioToWhisperGroup).not.toHaveBeenCalled();
+    expect(spyNextSpeaker).not.toHaveBeenCalled();
+    expect(spyToggleFullscreen).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'x' }));
     vi.advanceTimersByTime(500);
   });
 
   it('toggles on the microphone on press and release control + m', async () => {
     const mockSetMicrophoneEnabled = vi.fn();
-    const { store, unbindDomEvents } = configureStore({
+    const { store } = configureStore({
       initialState: {
         user: {
           uuid: uuidv4() as ParticipantId,
@@ -159,7 +158,7 @@ describe('hotkeys', () => {
       },
     });
 
-    unbind = unbindDomEvents;
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm', ctrlKey: true }));
     vi.advanceTimersByTime(100);
@@ -178,7 +177,7 @@ describe('hotkeys', () => {
 
   it('toggles the microphone on press m key', async () => {
     const mockSetMicrophoneEnabled = vi.fn();
-    const { store, unbindDomEvents } = configureStore({
+    const { store } = configureStore({
       initialState: {
         user: {
           uuid: uuidv4() as ParticipantId,
@@ -205,8 +204,7 @@ describe('hotkeys', () => {
         },
       },
     });
-
-    unbind = unbindDomEvents;
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm' }));
     vi.advanceTimersByTime(100);
@@ -227,7 +225,7 @@ describe('hotkeys', () => {
 
   it('toggles video on press v key', async () => {
     const mockSetCameraEnabled = vi.fn();
-    const { store, unbindDomEvents } = configureStore({
+    const { store } = configureStore({
       initialState: {
         user: {
           uuid: uuidv4() as ParticipantId,
@@ -254,8 +252,7 @@ describe('hotkeys', () => {
         },
       },
     });
-
-    unbind = unbindDomEvents;
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'v' }));
     vi.advanceTimersByTime(100);
@@ -276,7 +273,7 @@ describe('hotkeys', () => {
 
   it('toggles whisper audio on press w key', async () => {
     const mockSetMicrophoneEnabled = vi.fn();
-    const { store, unbindDomEvents } = configureStore({
+    const { store } = configureStore({
       initialState: {
         config: {
           tariff: {
@@ -310,8 +307,7 @@ describe('hotkeys', () => {
         },
       },
     });
-
-    unbind = unbindDomEvents;
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
     vi.advanceTimersByTime(100);
@@ -331,7 +327,7 @@ describe('hotkeys', () => {
 
   it('toggles whisper audio on press w key and restore conference audio', async () => {
     const mockSetMicrophoneEnabled = vi.fn();
-    const { store, unbindDomEvents } = configureStore({
+    const { store } = configureStore({
       initialState: {
         config: {
           tariff: {
@@ -365,8 +361,7 @@ describe('hotkeys', () => {
         },
       },
     });
-
-    unbind = unbindDomEvents;
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
     vi.advanceTimersByTime(100);
@@ -385,7 +380,7 @@ describe('hotkeys', () => {
   });
 
   it('steps to next speaker when clicking n when active', async () => {
-    const { store, unbindDomEvents } = configureStore({
+    const { store } = configureStore({
       initialState: {
         automod: {
           speakerState: SpeakerState.Active,
@@ -395,7 +390,7 @@ describe('hotkeys', () => {
         },
       },
     });
-    unbind = unbindDomEvents;
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'n' }));
     vi.advanceTimersByTime(100);
@@ -409,8 +404,8 @@ describe('hotkeys', () => {
   });
 
   it('diables hotkeys on focus in input', () => {
-    const { unbindDomEvents } = configureStore();
-    unbind = unbindDomEvents;
+    const { store } = configureStore();
+    ReduxDomEvents.dispatchFunction = store.dispatch;
 
     const input = document.createElement('input');
     document.body.appendChild(input);
@@ -425,8 +420,7 @@ describe('hotkeys', () => {
   });
 
   it('enables hotkeys on focus out input', () => {
-    const { unbindDomEvents } = configureStore();
-    unbind = unbindDomEvents;
+    configureStore();
 
     const input = document.createElement('input');
     document.body.appendChild(input);
@@ -444,7 +438,7 @@ describe('hotkeys', () => {
   });
 
   it('toggle fullscreen on when its not active', async () => {
-    const { unbindDomEvents } = configureStore({
+    configureStore({
       initialState: {
         fullscreen: {
           active: false,
@@ -454,8 +448,6 @@ describe('hotkeys', () => {
     });
     const spyRequest = vi.spyOn(fullscreenActions, 'request');
     const spyExit = vi.spyOn(fullscreenActions, 'exit');
-
-    unbind = unbindDomEvents;
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f' }));
     vi.advanceTimersByTime(100);
@@ -468,7 +460,7 @@ describe('hotkeys', () => {
   });
 
   it('toggle fullscreen off when its active', async () => {
-    const { unbindDomEvents } = configureStore({
+    const { store } = configureStore({
       initialState: {
         fullscreen: {
           active: true,
@@ -476,10 +468,10 @@ describe('hotkeys', () => {
         },
       },
     });
+    ReduxDomEvents.dispatchFunction = store.dispatch;
+
     const spyRequest = vi.spyOn(fullscreenActions, 'request');
     const spyExit = vi.spyOn(fullscreenActions, 'exit');
-
-    unbind = unbindDomEvents;
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f' }));
     vi.advanceTimersByTime(100);
