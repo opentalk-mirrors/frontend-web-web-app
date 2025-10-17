@@ -104,6 +104,12 @@ export type LivekitState = {
   videoBackgroundEffects: BackgroundEffect;
   mediaSettings: MediaSettings;
   lobby: Lobby;
+  reconnectLoop: {
+    active: boolean;
+    attempt: number;
+    timerId: number | null;
+    nextDelayMs: number | null;
+  };
 };
 
 export const initialState: LivekitState = {
@@ -129,6 +135,7 @@ export const initialState: LivekitState = {
     audioTrackPublication: undefined,
     videoTrackPublication: undefined,
   },
+  reconnectLoop: { active: false, attempt: 0, timerId: null, nextDelayMs: null },
 };
 
 export const livekitSlice = createSlice({
@@ -184,6 +191,44 @@ export const livekitSlice = createSlice({
     setMediaChangeFailed: (state, { payload }: PayloadAction<MediaDeviceKind>) => {
       state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, payload);
       state.permissionDenied = insertItem(state.permissionDenied, payload);
+    },
+    startReconnectLoop: (state) => {
+      if (state.reconnectLoop.active) {
+        return;
+      }
+      state.reconnectLoop.active = true;
+      state.reconnectLoop.attempt = 0;
+      state.reconnectLoop.nextDelayMs = 0;
+    },
+    scheduledReconnectAttempt: (state, { payload }: PayloadAction<{ timerId: number; delay: number }>) => {
+      if (!state.reconnectLoop.active) {
+        return;
+      }
+      if (state.reconnectLoop.timerId && state.reconnectLoop.timerId !== payload.timerId) {
+        clearTimeout(state.reconnectLoop.timerId);
+      }
+      state.reconnectLoop.timerId = payload.timerId;
+      state.reconnectLoop.nextDelayMs = payload.delay;
+    },
+    incrementReconnectAttempt: (state) => {
+      if (!state.reconnectLoop.active) {
+        return;
+      }
+      state.reconnectLoop.attempt += 1;
+    },
+    abortReconnectLoop: (state) => {
+      if (state.reconnectLoop.timerId) {
+        clearTimeout(state.reconnectLoop.timerId);
+      }
+      state.reconnectLoop = { active: false, attempt: 0, timerId: null, nextDelayMs: null };
+      state.unavailable = false;
+    },
+    finishReconnectLoop: (state) => {
+      if (state.reconnectLoop.timerId) {
+        clearTimeout(state.reconnectLoop.timerId);
+      }
+      state.reconnectLoop = { active: false, attempt: 0, timerId: null, nextDelayMs: null };
+      state.unavailable = false;
     },
   },
   extraReducers: (builder) => {
@@ -322,6 +367,11 @@ export const {
   setDisableRemoteVideos,
   setNewAccessToken,
   setLivekitRoom,
+  startReconnectLoop,
+  scheduledReconnectAttempt,
+  incrementReconnectAttempt,
+  abortReconnectLoop,
+  finishReconnectLoop,
 } = livekitSlice.actions;
 
 export const setLivekitUnavailable = createAction<boolean>('livekit/set_livekit_unavailable');
@@ -329,6 +379,7 @@ export const startBroadcastRoom = createAction<{ accessToken?: string; participa
   'livekit/start_broadcast_room'
 );
 export const cleanLocalTracks = createAction('livekit/clean_local_tracks');
+export const triggerLivekitReconnect = createAction('livekit/triggerReconnect');
 
 export const selectLivekitUnavailable = (state: RootState) => state.livekit.unavailable;
 export const selectLivekitAccessToken = (state: RootState) => state.livekit.accessToken;
@@ -470,10 +521,16 @@ const startLeaveWhisperGroupListeners = (startAppListening: StartAppListening) =
 
 const startReconnectOnLivekitTriggerListener = (startAppListening: StartAppListening) => {
   startAppListening({
-    type: 'livekit/triggerReconnect',
+    type: triggerLivekitReconnect.type,
     effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
-      if (!listenerApi.getState().room.isDeleted) {
-        reconnect(listenerApi);
+      const state = listenerApi.getState();
+      if (state.room.isDeleted) {
+        return;
+      }
+      const room = state.livekit.room;
+      if ((room?.state === 'disconnected' || room === undefined) && !state.livekit.reconnectLoop.active) {
+        listenerApi.dispatch(startReconnectLoop());
+        listenerApi.dispatch(scheduleNextReconnect());
       }
     },
   });
@@ -529,6 +586,104 @@ const startMediaChoiceListener = (startAppListening: StartAppListening) =>
     },
   });
 
+const startNewAccessTokenListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: setNewAccessToken,
+    effect: (action, listenerApi) => {
+      const state = listenerApi.getState();
+
+      if (!state.livekit.room) {
+        listenerApi.dispatch(
+          connectRoom({ eventInfo: state.room.eventInfo, isWhisperRoom: false, accessToken: action.payload.token })
+        );
+      }
+    },
+  });
+
+const BASE_RETRY_DELAY = 500; // ms
+const MAX_RETRY_DELAY = 20000; // ms
+const RECONNECT_INDICATOR_THRESHOLD = 0;
+const calculateReconnectDelay = (attempt: number) => Math.min(BASE_RETRY_DELAY * 2 ** attempt, MAX_RETRY_DELAY);
+
+const scheduleNextReconnect = () => ({ type: 'livekit/reconnect/scheduleNext' });
+const reconnectTick = () => ({ type: 'livekit/reconnect/tick' });
+
+const startReconnectLoopListeners = (startAppListening: StartAppListening) => {
+  startAppListening({
+    type: scheduleNextReconnect().type,
+    effect: (_, listenerApi) => {
+      const state = listenerApi.getState();
+      const loop = state.livekit.reconnectLoop;
+      if (!loop.active) {
+        return;
+      }
+      const room = state.livekit.room;
+      if (room && room.state !== 'disconnected') {
+        listenerApi.dispatch(finishReconnectLoop());
+        return;
+      }
+      const delay = calculateReconnectDelay(loop.attempt);
+      if (loop.attempt === RECONNECT_INDICATOR_THRESHOLD) {
+        listenerApi.dispatch(setLivekitUnavailable(true));
+      }
+      if (loop.attempt > RECONNECT_INDICATOR_THRESHOLD) {
+        listenerApi.dispatch(createNewAccessToken.action());
+      }
+      log.debug(`Scheduling LiveKit reconnect attempt #${loop.attempt} in ${delay}ms`);
+      const timerId = window.setTimeout(() => {
+        listenerApi.dispatch(reconnectTick());
+      }, delay);
+      listenerApi.dispatch(scheduledReconnectAttempt({ timerId, delay }));
+    },
+  });
+
+  // Tick handler
+  startAppListening({
+    type: reconnectTick().type,
+    effect: (_, listenerApi) => {
+      const state = listenerApi.getState();
+      const loop = state.livekit.reconnectLoop;
+      if (!loop.active) {
+        return;
+      }
+      const room = state.livekit.room;
+      if (room && room.state !== 'disconnected') {
+        listenerApi.dispatch(finishReconnectLoop());
+        return;
+      }
+      listenerApi.dispatch(incrementReconnectAttempt());
+      listenerApi.dispatch(scheduleNextReconnect());
+    },
+  });
+};
+
+const startReconnectAbortListeners = (startAppListening: StartAppListening) => {
+  startAppListening({
+    actionCreator: hangUp.fulfilled,
+    effect: (_, listenerApi) => {
+      if (listenerApi.getState().livekit.reconnectLoop.active) {
+        listenerApi.dispatch(abortReconnectLoop());
+      }
+    },
+  });
+  startAppListening({
+    actionCreator: disconnectRoom.fulfilled,
+    effect: (_, listenerApi) => {
+      if (listenerApi.getState().livekit.reconnectLoop.active) {
+        listenerApi.dispatch(abortReconnectLoop());
+      }
+    },
+  });
+  startAppListening({
+    actionCreator: enteredWaitingRoom,
+    effect: (_, listenerApi) => {
+      if (listenerApi.getState().livekit.reconnectLoop.active) {
+        listenerApi.dispatch(abortReconnectLoop());
+      }
+    },
+  });
+};
+
 export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startConnectLivekitListeners(startAppListening);
   startLeaveWhisperGroupListeners(startAppListening);
@@ -542,39 +697,9 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startMediaChoiceListener(startAppListening);
   startDisableMediaOnWaitingRoomListener(startAppListening);
   startBroadcastRoomListeners(startAppListening);
-};
-
-const BASE_RETRY_DELAY = 500;
-const MAX_RETRY_DELAY = 20000;
-const RECONNECT_INDICATOR_THRESHOLD = 0;
-
-const reconnect = (listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
-  let attempt = 0;
-  const calculateDelay = (attempt: number) => Math.min(BASE_RETRY_DELAY * 2 ** attempt, MAX_RETRY_DELAY);
-
-  const tryReconnect = async () => {
-    const room = selectLivekitRoom(listenerApi.getState());
-    while (room?.state === 'disconnected') {
-      if (attempt === RECONNECT_INDICATOR_THRESHOLD) {
-        listenerApi.dispatch(setLivekitUnavailable(true));
-      }
-      if (attempt > RECONNECT_INDICATOR_THRESHOLD) {
-        listenerApi.dispatch(createNewAccessToken.action());
-      }
-
-      attempt++;
-      const delay = calculateDelay(attempt);
-
-      log.debug(`Trying to reconnect to LiveKit room, attempt ${attempt}, delay ${delay}`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-
-    listenerApi.dispatch(setLivekitUnavailable(false));
-  };
-
-  tryReconnect().catch((error) => {
-    log.error('Failed to reconnect to LiveKit:', error);
-  });
+  startReconnectLoopListeners(startAppListening);
+  startReconnectAbortListeners(startAppListening);
+  startNewAccessTokenListener(startAppListening);
 };
 
 /************************************************/
@@ -626,6 +751,7 @@ const detachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, r
 
 const handleRoomConnected = async (room: Room, dispatch: AppDispatch, getState: () => RootState) => {
   dispatch(setLivekitUnavailable(false));
+  dispatch(finishReconnectLoop());
   const state = getState();
   const isLobbyCameraEnabled = selectLobbyVideoEnabled(state);
   const isLobbyMicrophoneEnabled = selectLobbyAudioEnabled(state);
@@ -645,7 +771,7 @@ const handleRoomConnected = async (room: Room, dispatch: AppDispatch, getState: 
 const handleRoomDisconnected = (dispatch: AppDispatch, getState: () => RootState) => {
   const connectionState = getState().room.connectionState;
   if (connectionState === ConnectionState.Online) {
-    dispatch({ type: 'livekit/triggerReconnect' });
+    dispatch(triggerLivekitReconnect());
   }
 };
 
