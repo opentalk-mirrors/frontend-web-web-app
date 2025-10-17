@@ -32,6 +32,7 @@ import {
   ExtendedTabPage,
   RouteNotFound,
   AuthRedirect,
+  RouteUiMode,
 } from './fragments/routesFragments';
 
 type RouteValue = {
@@ -49,7 +50,11 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
   {
     path: '/',
     key: 'home',
-    element: <LobbyTemplate />,
+    element: (
+      <RouteUiMode>
+        <LobbyTemplate />
+      </RouteUiMode>
+    ),
     children: [
       { index: true, element: <Redirect to="/dashboard" /> },
       {
@@ -93,7 +98,9 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
     path: '/dashboard',
     element: (
       <ProtectedRoute>
-        <DashboardTemplate />
+        <RouteUiMode>
+          <DashboardTemplate />
+        </RouteUiMode>
       </ProtectedRoute>
     ),
     children: [

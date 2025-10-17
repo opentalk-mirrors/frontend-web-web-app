@@ -12,6 +12,7 @@ import { startParticipantsListeners } from './slices/participantsSlice';
 import { startRoomListeners } from './slices/roomSlice';
 import { startSubroomListeners } from './slices/subroomAudioSlice';
 import { startTimerListeners } from './slices/timerSlice';
+import { startUiListeners } from './slices/uiSlice';
 import { startUserListeners } from './slices/userSlice';
 
 export const listenerMiddleware = createListenerMiddleware();
@@ -30,6 +31,7 @@ export const startListening = () => {
   startHotkeyListeners(startAppListening);
   startFullscreenListeners(startAppListening);
   startSubroomListeners(startAppListening);
+  startUiListeners(startAppListening);
 };
 
 startListening();
