@@ -62,8 +62,9 @@ const CommonFormItem = ({
           onKeyDown,
           onBlur,
           name,
+          id,
           checked: isChecked,
-          inputProps: { ...controlInputProps, id },
+          inputProps: { ...controlInputProps },
           value,
         })}
       </Box>
