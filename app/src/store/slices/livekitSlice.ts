@@ -122,6 +122,8 @@ export const initialState: LivekitState = {
     microphoneEnabled: false,
     cameraEnabled: false,
     screenShareEnabled: false,
+    audioDeviceId: 'default',
+    videoDeviceId: 'default',
   },
   lobby: {
     audioTrackPublication: undefined,
@@ -176,6 +178,13 @@ export const livekitSlice = createSlice({
     setDisableRemoteVideos: (state, { payload }: PayloadAction<boolean>) => {
       state.qualityCap = payload ? VideoSetting.Off : VideoSetting.High;
     },
+    setMediaChangeInProgress: (state, { payload }: PayloadAction<MediaDeviceKind>) => {
+      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, payload);
+    },
+    setMediaChangeFailed: (state, { payload }: PayloadAction<MediaDeviceKind>) => {
+      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, payload);
+      state.permissionDenied = insertItem(state.permissionDenied, payload);
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload }) => {
@@ -204,19 +213,19 @@ export const livekitSlice = createSlice({
     builder.addCase(setLivekitUnavailable, (state, { payload }) => {
       state.unavailable = payload;
     });
-    builder.addCase(changeLocalMedia.pending, (state, { meta }) => {
-      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, meta.arg.kind);
+    builder.addCase(changeLocalMedia.pending, (state, { meta: { arg } }) => {
+      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, arg.kind);
     });
-    builder.addCase(changeLocalMedia.rejected, (state, { meta }) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, meta.arg.kind);
-      state.permissionDenied = insertItem(state.permissionDenied, meta.arg.kind);
+    builder.addCase(changeLocalMedia.rejected, (state, { meta: { arg } }) => {
+      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
+      state.permissionDenied = insertItem(state.permissionDenied, arg.kind);
     });
 
-    builder.addCase(changeLocalMedia.fulfilled, (state, { payload }) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, payload.kind);
-      state.permissionDenied = removeItem(state.permissionDenied, payload.kind);
+    builder.addCase(changeLocalMedia.fulfilled, (state, { payload, meta: { arg } }) => {
+      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
+      state.permissionDenied = removeItem(state.permissionDenied, arg.kind);
       const lobby = state.lobby as Lobby;
-      if (payload.kind === 'audioinput') {
+      if (arg.kind === 'audioinput') {
         state.mediaSettings.audioDeviceId = payload.deviceId;
         lobby.audioTrackPublication?.stop();
         lobby.audioTrackPublication = undefined;
@@ -224,7 +233,7 @@ export const livekitSlice = createSlice({
           lobby.audioTrackPublication = payload.track;
         }
       }
-      if (payload.kind === 'videoinput') {
+      if (arg.kind === 'videoinput') {
         state.mediaSettings.videoDeviceId = payload.deviceId;
         lobby.videoTrackPublication?.stop();
         lobby.videoTrackPublication = undefined;
@@ -233,23 +242,22 @@ export const livekitSlice = createSlice({
         }
       }
     });
-    builder.addCase(changeMedia.pending, (state, { meta }) => {
-      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, meta.arg.kind);
+    builder.addCase(changeMedia.pending, (state, { meta: { arg } }) => {
+      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, arg.kind);
     });
-    builder.addCase(changeMedia.rejected, (state, { meta }) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, meta.arg.kind);
-      state.permissionDenied = insertItem(state.permissionDenied, meta.arg.kind);
+    builder.addCase(changeMedia.rejected, (state, { meta: { arg } }) => {
+      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
+      state.permissionDenied = insertItem(state.permissionDenied, arg.kind);
     });
-    builder.addCase(changeMedia.fulfilled, (state, { payload }) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, payload.kind);
-      state.permissionDenied = removeItem(state.permissionDenied, payload.kind);
-      if (payload.kind === 'audioinput') {
-        state.mediaSettings.microphoneEnabled = payload.enabled;
-        state.mediaSettings.audioDeviceId = payload.deviceId;
+    builder.addCase(changeMedia.fulfilled, (state, { meta: { arg } }) => {
+      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
+      state.permissionDenied = removeItem(state.permissionDenied, arg.kind);
+
+      if (arg.kind === 'audioinput') {
+        state.mediaSettings.microphoneEnabled = state.room?.localParticipant.isMicrophoneEnabled || false;
       }
-      if (payload.kind === 'videoinput') {
-        state.mediaSettings.cameraEnabled = payload.enabled;
-        state.mediaSettings.videoDeviceId = payload.deviceId;
+      if (arg.kind === 'videoinput') {
+        state.mediaSettings.cameraEnabled = state.room?.localParticipant.isCameraEnabled || false;
       }
     });
     builder.addCase(setScreenShareEnabled.pending, (state) => {
@@ -266,34 +274,34 @@ export const livekitSlice = createSlice({
       state.videoBackgroundEffects.loading = false;
       state.permissionDenied = insertItem(state.permissionDenied, 'screenshare');
     });
-    builder.addCase(setBackgroundEffects.fulfilled, (state, { payload }) => {
-      state.videoBackgroundEffects = { ...payload, loading: false };
+    builder.addCase(setBackgroundEffects.fulfilled, (state, { meta: { arg } }) => {
+      state.videoBackgroundEffects = { ...arg, loading: false };
     });
-    builder.addCase(setScreenShareEnabled.fulfilled, (state, { payload }) => {
+    builder.addCase(setScreenShareEnabled.fulfilled, (state) => {
       state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, 'screenshare');
       state.permissionDenied = removeItem(state.permissionDenied, 'screenshare');
-      state.mediaSettings.screenShareEnabled = payload.enabled;
+      state.mediaSettings.screenShareEnabled = state.room?.localParticipant.isScreenShareEnabled || false;
     });
-    builder.addCase(switchActiveDevice.fulfilled, (state, { payload }) => {
-      if (payload.kind === 'audioinput') {
-        state.mediaSettings.audioDeviceId = payload.deviceId;
+    builder.addCase(switchActiveDevice.fulfilled, (state, { meta: { arg } }) => {
+      if (arg.kind === 'audioinput') {
+        state.mediaSettings.audioDeviceId = arg.deviceId;
       }
-      if (payload.kind === 'videoinput') {
-        state.mediaSettings.videoDeviceId = payload.deviceId;
+      if (arg.kind === 'videoinput') {
+        state.mediaSettings.videoDeviceId = arg.deviceId;
       }
     });
-    builder.addCase(switchLocalDevice.fulfilled, (state, { payload }) => {
+    builder.addCase(switchLocalDevice.fulfilled, (state, { payload, meta: { arg } }) => {
       const lobby = state.lobby as Lobby;
-      if (payload.kind === 'audioinput') {
-        state.mediaSettings.audioDeviceId = payload.deviceId;
+      if (arg.kind === 'audioinput') {
+        state.mediaSettings.audioDeviceId = arg.deviceId;
         lobby.audioTrackPublication?.stop();
         lobby.audioTrackPublication = undefined;
         if (payload.track instanceof LocalAudioTrack) {
           lobby.audioTrackPublication = payload.track;
         }
       }
-      if (payload.kind === 'videoinput') {
-        state.mediaSettings.videoDeviceId = payload.deviceId;
+      if (arg.kind === 'videoinput') {
+        state.mediaSettings.videoDeviceId = arg.deviceId;
         lobby.videoTrackPublication?.stop();
         lobby.videoTrackPublication = undefined;
         if (payload.track instanceof LocalVideoTrack) {
@@ -426,7 +434,7 @@ const startDisconnectLivekitListeners = (startAppListening: StartAppListening) =
   startAppListening({
     actionCreator: disconnectRoom.fulfilled,
     effect: async (action, listenerApi) => {
-      const { isWhisperRoom } = action.payload;
+      const { isWhisperRoom } = action.meta.arg;
       const room = isWhisperRoom ? listenerApi.getState().livekit.whisperRoom : listenerApi.getState().livekit.room;
       detachRoomListeners(listenerApi.dispatch, listenerApi.getState, room);
       listenerApi.dispatch(setLivekitRoom({ room: undefined, isWhisperRoom }));
@@ -619,16 +627,15 @@ const detachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, r
 const handleRoomConnected = async (room: Room, dispatch: AppDispatch, getState: () => RootState) => {
   dispatch(setLivekitUnavailable(false));
   const state = getState();
-  const { audioDeviceId, videoDeviceId } = state.livekit.mediaSettings;
   const isLobbyCameraEnabled = selectLobbyVideoEnabled(state);
   const isLobbyMicrophoneEnabled = selectLobbyAudioEnabled(state);
 
   if (room?.state === LivekitConnectionState.Connected) {
     if (isLobbyCameraEnabled) {
-      dispatch(changeMedia({ kind: 'videoinput', enabled: isLobbyCameraEnabled, deviceId: videoDeviceId }));
+      dispatch(changeMedia({ kind: 'videoinput', enabled: isLobbyCameraEnabled }));
     }
     if (isLobbyMicrophoneEnabled) {
-      dispatch(changeMedia({ kind: 'audioinput', enabled: isLobbyMicrophoneEnabled, deviceId: audioDeviceId }));
+      dispatch(changeMedia({ kind: 'audioinput', enabled: isLobbyMicrophoneEnabled }));
     }
 
     dispatch(cleanLocalTracks());

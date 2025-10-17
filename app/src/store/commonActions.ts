@@ -37,23 +37,19 @@ export type RoomCredentials = {
   inviteCode?: InviteCode;
   breakoutRoomId: BreakoutRoomId | null;
 };
-interface ChangeLocalMedia {
-  enabled: boolean;
-  kind: MediaDeviceKind;
-  deviceId?: string;
-  preventActiveMediaAfterPermissionPrompt?: boolean;
-}
+
 export interface ChangeMediaInterface {
   enabled: boolean;
   kind: MediaDeviceKind;
-  deviceId?: string;
   preventActiveMediaAfterPermissionPrompt?: boolean;
 }
+
 interface FetchPermissionError extends FetchRequestError {
   kind: MediaDeviceKind;
 }
-export interface ChangeLocalMediaResponse extends ChangeLocalMedia {
+export interface ChangeLocalMediaResponse {
   track?: LocalAudioTrack | LocalVideoTrack;
+  deviceId: string | undefined;
 }
 
 export const login = createAsyncThunk<{ permission: Array<string> }, string, { state: RootState; rejectValue: Error }>(
@@ -101,36 +97,21 @@ export const joinSuccess = createAction<JoinSuccessInternalState>('signaling/con
 
 export const changeLocalMedia = createAsyncThunk<
   ChangeLocalMediaResponse,
-  ChangeLocalMedia,
+  ChangeMediaInterface,
   { state: RootState; rejectValue: FetchRequestError }
->('media/changeLocalMedia', async ({ enabled, deviceId, kind, preventActiveMediaAfterPermissionPrompt }, thunkApi) => {
+>('media/changeLocalMedia', async ({ enabled, kind }, thunkApi) => {
   let track: LocalAudioTrack | LocalVideoTrack | undefined;
   const state = thunkApi.getState();
-  const storedDeviceId =
+  let trackDeviceId =
     kind === 'audioinput' ? state.livekit.mediaSettings?.audioDeviceId : state.livekit.mediaSettings?.videoDeviceId;
-  let trackDeviceId = deviceId || storedDeviceId;
+
   try {
     if (enabled) {
       if (kind === 'audioinput') {
-        const permission = await navigator.permissions.query({ name: 'microphone' });
-        const isPermissionPromptShown = permission.state === 'prompt';
-
         track = await createLocalAudioTrack({ deviceId: trackDeviceId });
         trackDeviceId = await track.getDeviceId();
-
-        if (isPermissionPromptShown) {
-          window.dispatchEvent(new CustomEvent('hotkeys:clearPushedKeys'));
-
-          if (preventActiveMediaAfterPermissionPrompt) {
-            return {
-              enabled: false,
-              deviceId: trackDeviceId,
-              track: undefined,
-              kind,
-            };
-          }
-        }
       }
+
       if (kind === 'videoinput') {
         const videoBackgroundSettings = state.livekit?.videoBackgroundEffects;
         track = await createLocalVideoTrack({
@@ -141,19 +122,17 @@ export const changeLocalMedia = createAsyncThunk<
       }
     }
     return {
-      enabled,
       deviceId: trackDeviceId,
       track,
-      kind,
     };
   } catch (error) {
-    const mediaError = handleMediaPermissionError({ error, deviceId, kind });
+    const mediaError = handleMediaPermissionError({ error, kind });
     return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name });
   }
 });
 
 export const switchLocalDevice = createAsyncThunk<
-  { kind: MediaDeviceKind; deviceId: string; track?: LocalAudioTrack | LocalVideoTrack },
+  { track?: LocalAudioTrack | LocalVideoTrack },
   { kind: MediaDeviceKind; deviceId: string; exact?: boolean },
   { state: RootState; rejectValue: FetchRequestError }
 >('media/switchLocalDevice', async ({ deviceId, kind }, thunkApi) => {
@@ -175,8 +154,6 @@ export const switchLocalDevice = createAsyncThunk<
     }
 
     return {
-      kind,
-      deviceId,
       track,
     };
   } catch (error) {
@@ -186,7 +163,7 @@ export const switchLocalDevice = createAsyncThunk<
 });
 
 export const setBackgroundEffects = createAsyncThunk<
-  BackgroundConfig,
+  void,
   BackgroundConfig,
   { state: RootState; rejectValue: FetchRequestError }
 >('media/setBackgroundEffects', async (payload, thunkApi) => {
@@ -199,14 +176,12 @@ export const setBackgroundEffects = createAsyncThunk<
       const track = room?.localParticipant.getTrackPublication(Track.Source.Camera);
       // Workaround untill livekit update (solved with https://github.com/livekit/client-sdk-js/pull/1149)
       if (track?.track?.isMuted) {
-        return payload;
+        return;
       }
       await track?.videoTrack?.setProcessor(videoProcessor);
     } else {
       await livekitSlice.lobby.videoTrackPublication?.setProcessor(videoProcessor);
     }
-
-    return payload;
   } catch (error) {
     if (error instanceof Error) {
       return thunkApi.rejectWithValue({ status: 409, statusText: error.name });
@@ -216,60 +191,44 @@ export const setBackgroundEffects = createAsyncThunk<
 });
 
 export const changeMedia = createAsyncThunk<
-  ChangeMediaInterface,
+  void,
   ChangeMediaInterface,
   { state: RootState; rejectValue: FetchPermissionError }
->(
-  'livekit/changeMedia',
-  async ({ enabled, deviceId: deviceIdOption, kind, preventActiveMediaAfterPermissionPrompt }, thunkApi) => {
-    const state = thunkApi.getState();
-    const room = state.livekit.room;
-    const storedDeviceId =
-      kind === 'audioinput' ? state.livekit.mediaSettings?.audioDeviceId : state.livekit.mediaSettings?.videoDeviceId;
-    const deviceId = deviceIdOption || storedDeviceId;
-    try {
-      if (kind === 'audioinput') {
-        const permission = await navigator.permissions.query({ name: 'microphone' });
-        const isPermissionPromptShown = permission.state === 'prompt';
-        await room?.localParticipant.setMicrophoneEnabled(enabled, { deviceId: deviceId });
+>('livekit/changeMedia', async ({ enabled, kind, preventActiveMediaAfterPermissionPrompt }, thunkApi) => {
+  const state = thunkApi.getState();
+  const room = state.livekit.room;
+  const deviceId =
+    kind === 'audioinput' ? state.livekit.mediaSettings?.audioDeviceId : state.livekit.mediaSettings?.videoDeviceId;
 
-        if (isPermissionPromptShown) {
-          window.dispatchEvent(new CustomEvent('hotkeys:clearPushedKeys'));
+  try {
+    if (kind === 'audioinput') {
+      const permission = await navigator.permissions.query({ name: 'microphone' });
+      const isPermissionPromptShown = permission.state === 'prompt';
+      await room?.localParticipant.setMicrophoneEnabled(enabled, { deviceId: deviceId });
+      if (isPermissionPromptShown) {
+        window.dispatchEvent(new CustomEvent('hotkeys:clearPushedKeys'));
 
-          if (preventActiveMediaAfterPermissionPrompt) {
-            await room?.localParticipant.setMicrophoneEnabled(false, { deviceId: deviceId });
-
-            return {
-              enabled: false,
-              deviceId,
-              kind,
-            };
-          }
+        if (preventActiveMediaAfterPermissionPrompt) {
+          await room?.localParticipant.setMicrophoneEnabled(false, { deviceId: deviceId });
         }
       }
-      if (kind === 'videoinput') {
-        const videoBackgroundSettings = state.livekit?.videoBackgroundEffects;
-
-        await room?.localParticipant.setCameraEnabled(enabled, {
-          deviceId: deviceId,
-          processor: enabled ? new BackgroundBlur(videoBackgroundSettings) : undefined,
-        });
-      }
-
-      return {
-        enabled,
-        deviceId,
-        kind,
-      };
-    } catch (error) {
-      const mediaError = handleMediaPermissionError({ error, deviceId, kind });
-      return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind });
     }
+    if (kind === 'videoinput') {
+      const videoBackgroundSettings = state.livekit?.videoBackgroundEffects;
+
+      await room?.localParticipant.setCameraEnabled(enabled, {
+        deviceId: deviceId,
+        processor: enabled ? new BackgroundBlur(videoBackgroundSettings) : undefined,
+      });
+    }
+  } catch (error) {
+    const mediaError = handleMediaPermissionError({ error, deviceId, kind });
+    return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind });
   }
-);
+});
 
 export const setScreenShareEnabled = createAsyncThunk<
-  { enabled: boolean },
+  void,
   { enabled: boolean },
   { state: RootState; rejectValue: FetchPermissionError }
 >('livekit/startScreenShare', async ({ enabled }, thunkApi) => {
@@ -283,10 +242,6 @@ export const setScreenShareEnabled = createAsyncThunk<
       systemAudio: 'include',
       resolution: screenShareConfig?.resolution && ScreenShareResolutionValues[screenShareConfig?.resolution],
     });
-
-    return {
-      enabled,
-    };
   } catch (error) {
     const mediaError = handleMediaPermissionError({ error, deviceId: '', kind: 'screenshare' });
     return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind: 'videoinput' });
@@ -294,7 +249,7 @@ export const setScreenShareEnabled = createAsyncThunk<
 });
 
 export const switchActiveDevice = createAsyncThunk<
-  { kind: MediaDeviceKind; deviceId: string },
+  void,
   { kind: MediaDeviceKind; deviceId: string; exact?: boolean },
   { state: RootState; rejectValue: FetchPermissionError }
 >('livekit/switchActiveDevice', async ({ kind, deviceId, exact }, thunkApi) => {
@@ -307,10 +262,6 @@ export const switchActiveDevice = createAsyncThunk<
         .getTrackPublication(Track.Source.Camera)
         ?.videoTrack?.setProcessor(new BackgroundBlur(videoBackgroundSettings));
     }
-    return {
-      kind,
-      deviceId,
-    };
   } catch (error) {
     const mediaError = handleMediaPermissionError({ error, deviceId, kind });
     return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind });
@@ -318,16 +269,13 @@ export const switchActiveDevice = createAsyncThunk<
 });
 
 export const disconnectRoom = createAsyncThunk<
-  { isWhisperRoom: boolean },
+  void,
   { isWhisperRoom: boolean },
   { state: RootState; rejectValue: FetchRequestError }
 >('livekit/disconnectRoom', async ({ isWhisperRoom }, thunkApi) => {
   const room = isWhisperRoom ? thunkApi.getState().livekit.whisperRoom : thunkApi.getState().livekit.room;
   try {
     await room?.disconnect();
-    return {
-      isWhisperRoom,
-    };
   } catch (error) {
     if (error instanceof Error) {
       return thunkApi.rejectWithValue({ status: 409, statusText: error?.message });

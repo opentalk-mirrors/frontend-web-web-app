@@ -95,7 +95,7 @@ export const startSubroomListeners = (startAppListening: StartAppListening) => {
   startAppListening({
     actionCreator: disconnectRoom.fulfilled,
     effect: async (action, listenerApi) => {
-      const { isWhisperRoom } = action.payload;
+      const { isWhisperRoom } = action.meta.arg;
       if (isWhisperRoom) {
         listenerApi.dispatch(setIsWhisperActive(false));
       }

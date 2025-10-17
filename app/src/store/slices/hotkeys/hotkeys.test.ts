@@ -13,6 +13,10 @@ import * as events from './events';
 import * as listener from './listener';
 import { domKeyDown } from './slice';
 
+vi.mock('../../modules/Media/BackgroundBlur', () => ({
+  BackgroundBlur: vi.fn().mockImplementation(() => ({})),
+}));
+
 describe('hotkeys', () => {
   beforeAll(() => {
     const { store } = configureStore();
@@ -28,6 +32,13 @@ describe('hotkeys', () => {
       pathname: '/room/test-room',
     } as Location);
     window.document.body.innerHTML = '';
+
+    Object.defineProperty(navigator, 'permissions', {
+      value: {
+        query: vi.fn().mockResolvedValue({ state: 'granted' }),
+      },
+      writable: true,
+    });
   });
 
   afterEach(() => {
@@ -129,7 +140,10 @@ describe('hotkeys', () => {
   });
 
   it('toggles on the microphone on press and release control + m', async () => {
-    const mockSetMicrophoneEnabled = vi.fn();
+    let microphoneEnabled = false;
+    const mockSetMicrophoneEnabled = vi.fn().mockImplementation((enabled: boolean) => {
+      microphoneEnabled = enabled;
+    });
     const { store } = configureStore({
       initialState: {
         user: {
@@ -146,6 +160,9 @@ describe('hotkeys', () => {
             getActiveDevice: vi.fn().mockReturnValue('audioinput'),
             localParticipant: {
               setMicrophoneEnabled: mockSetMicrophoneEnabled,
+              get isMicrophoneEnabled() {
+                return microphoneEnabled;
+              },
             },
           },
           lobby: {
@@ -163,20 +180,36 @@ describe('hotkeys', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm', ctrlKey: true }));
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => store.getState().livekit.mediaSettings.microphoneEnabled);
+    await waitFor(
+      () => {
+        const state = store.getState();
+        return state.livekit.mediaSettings.microphoneEnabled === true;
+      },
+      { timeout: 1000 }
+    );
 
     expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(true);
 
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'm', ctrlKey: true }));
     vi.advanceTimersByTime(500);
 
-    await waitFor(() => store.getState().livekit.mediaSettings.microphoneEnabled);
+    await waitFor(
+      () => {
+        const state = store.getState();
+        return state.livekit.mediaSettings.microphoneEnabled === false;
+      },
+      { timeout: 1000 }
+    );
 
     expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(false);
   });
 
   it('toggles the microphone on press m key', async () => {
-    const mockSetMicrophoneEnabled = vi.fn();
+    let microphoneEnabled = false;
+    const mockSetMicrophoneEnabled = vi.fn().mockImplementation((enabled: boolean) => {
+      microphoneEnabled = enabled;
+    });
+
     const { store } = configureStore({
       initialState: {
         user: {
@@ -193,6 +226,9 @@ describe('hotkeys', () => {
             getActiveDevice: vi.fn().mockReturnValue('audioinput'),
             localParticipant: {
               setMicrophoneEnabled: mockSetMicrophoneEnabled,
+              get isMicrophoneEnabled() {
+                return microphoneEnabled;
+              },
             },
           },
           lobby: {
@@ -209,7 +245,13 @@ describe('hotkeys', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm' }));
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => store.getState().livekit.mediaSettings.microphoneEnabled);
+    await waitFor(
+      () => {
+        const state = store.getState();
+        return state.livekit.mediaSettings.microphoneEnabled;
+      },
+      { timeout: 1000 }
+    );
 
     expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(true);
 
@@ -218,13 +260,22 @@ describe('hotkeys', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm' }));
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => store.getState().livekit.mediaSettings.microphoneEnabled);
+    await waitFor(
+      () => {
+        const state = store.getState();
+        return state.livekit.mediaSettings.microphoneEnabled;
+      },
+      { timeout: 1000 }
+    );
 
     expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(false);
   });
 
   it('toggles video on press v key', async () => {
-    const mockSetCameraEnabled = vi.fn();
+    let cameraEnabled = false;
+    const mockSetCameraEnabled = vi.fn().mockImplementation((enabled: boolean) => {
+      cameraEnabled = enabled;
+    });
     const { store } = configureStore({
       initialState: {
         user: {
@@ -241,6 +292,9 @@ describe('hotkeys', () => {
             getActiveDevice: vi.fn().mockReturnValue('videoinput'),
             localParticipant: {
               setCameraEnabled: mockSetCameraEnabled,
+              get isCameraEnabled() {
+                return cameraEnabled;
+              },
             },
           },
           lobby: {
@@ -257,7 +311,13 @@ describe('hotkeys', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'v' }));
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => store.getState().livekit.mediaSettings.cameraEnabled);
+    await waitFor(
+      () => {
+        const state = store.getState();
+        return state.livekit.mediaSettings.cameraEnabled;
+      },
+      { timeout: 1000 }
+    );
 
     expect(store.getState().livekit.mediaSettings.cameraEnabled).toEqual(true);
 
@@ -266,7 +326,13 @@ describe('hotkeys', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'v' }));
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => store.getState().livekit.mediaSettings.cameraEnabled);
+    await waitFor(
+      () => {
+        const state = store.getState();
+        return state.livekit.mediaSettings.cameraEnabled === false;
+      },
+      { timeout: 1000 }
+    );
 
     expect(store.getState().livekit.mediaSettings.cameraEnabled).toEqual(false);
   });
@@ -326,7 +392,14 @@ describe('hotkeys', () => {
   });
 
   it('toggles whisper audio on press w key and restore conference audio', async () => {
-    const mockSetMicrophoneEnabled = vi.fn();
+    let mainRoomMicrophoneEnabled = true;
+    let whisperRoomMicrophoneEnabled = false;
+    const mockSetMainRoomMicrophoneEnabled = vi.fn().mockImplementation((enabled: boolean) => {
+      mainRoomMicrophoneEnabled = enabled;
+    });
+    const mockSetWhisperRoomMicrophoneEnabled = vi.fn().mockImplementation((enabled: boolean) => {
+      whisperRoomMicrophoneEnabled = enabled;
+    });
     const { store } = configureStore({
       initialState: {
         config: {
@@ -349,10 +422,22 @@ describe('hotkeys', () => {
           },
         },
         livekit: {
+          room: {
+            getActiveDevice: vi.fn().mockReturnValue('audioinput'),
+            localParticipant: {
+              setMicrophoneEnabled: mockSetMainRoomMicrophoneEnabled,
+              get isMicrophoneEnabled() {
+                return mainRoomMicrophoneEnabled;
+              },
+            },
+          },
           whisperRoom: {
             getActiveDevice: vi.fn().mockReturnValue('audioinput'),
             localParticipant: {
-              setMicrophoneEnabled: mockSetMicrophoneEnabled,
+              setMicrophoneEnabled: mockSetWhisperRoomMicrophoneEnabled,
+              get isMicrophoneEnabled() {
+                return whisperRoomMicrophoneEnabled;
+              },
             },
           },
           mediaSettings: {
@@ -366,14 +451,26 @@ describe('hotkeys', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
     vi.advanceTimersByTime(100);
 
-    await waitFor(() => store.getState().subroomAudio.isWhisperActive);
+    await waitFor(
+      () => {
+        const state = store.getState();
+        return state.subroomAudio.isWhisperActive && state.livekit.mediaSettings.microphoneEnabled;
+      },
+      { timeout: 1000 }
+    );
 
     expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(false);
     expect(store.getState().subroomAudio.isWhisperActive).toEqual(true);
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'w' }));
     vi.advanceTimersByTime(500);
 
-    await waitFor(() => store.getState().subroomAudio.isWhisperActive);
+    await waitFor(
+      () => {
+        const state = store.getState();
+        return state.subroomAudio.isWhisperActive && state.livekit.mediaSettings.microphoneEnabled;
+      },
+      { timeout: 1000 }
+    );
 
     expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(true);
     expect(store.getState().subroomAudio.isWhisperActive).toEqual(false);
