@@ -92,6 +92,7 @@ const InviteGuestDialog = (props: Omit<DialogProps, 'children'>) => {
     if (inviteUrl) {
       await navigator.clipboard.writeText(inviteUrl.toString());
       notifications.success(t('global-copy-link-success'));
+      onClose();
     } else {
       notifications.error(t('global-copy-permanent-guest-link-error'));
     }
