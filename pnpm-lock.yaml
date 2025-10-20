@@ -274,7 +274,7 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0(encoding@0.1.13)
       happy-dom:
-        specifier: ^20.0.5
+        specifier: ^20.0.7
         version: 20.0.7
       msw:
         specifier: ^2.11.6
