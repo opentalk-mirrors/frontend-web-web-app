@@ -97,6 +97,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     label: 'more-menu-create-invite',
     action: () => {
       setShowInviteModal(true);
+      onClose();
     },
     icon: <AddUserIcon />,
   };
