@@ -2,18 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Grid, styled } from '@mui/material';
-import { Track } from 'livekit-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BackIcon, PinIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
-import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
 import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
 import { ParticipantId } from '../../../types';
 import { OverlayIconButton } from './OverlayIconButton';
-import Statistics from './Statistics';
 
 const OverlayContainer = styled(Grid)(({ theme }) => ({
   position: 'absolute',
@@ -50,17 +47,12 @@ export interface PresenterOverlayProps {
 export const PresenterOverlay = ({
   videoPosition,
   participantId,
-  fullscreenMode,
   togglePin,
   changeVideoPosition,
   isVideoPinned,
 }: PresenterOverlayProps) => {
   const { t } = useTranslation();
 
-  const videoDescriptor = useMemo<MediaDescriptor>(
-    () => ({ participantId, mediaType: Track.Source.Camera }),
-    [participantId]
-  );
   const displayName = useAppSelector((state) => selectParticipantName(state, participantId));
 
   const arrowIconDirection = useMemo(() => {
@@ -80,7 +72,8 @@ export const PresenterOverlay = ({
         <OverlayIconButton onClick={changeVideoPosition} aria-label={t('indicator-change-position')} color="secondary">
           <ArrowIcon rotate={arrowIconDirection} />
         </OverlayIconButton>
-        <Statistics descriptor={videoDescriptor} disablePopoverPortal={fullscreenMode} />
+        {/* TODO: This section requires a redesign before it can be re-enabled. */}
+        {/* <Statistics descriptor={videoDescriptor} disablePopoverPortal={fullscreenMode} /> */}
         <OverlayIconButton
           onClick={togglePin}
           translate="no"
