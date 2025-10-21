@@ -9,6 +9,7 @@
         "app/src/components/ParticipantWindow/fragments/StatisticsContent.tsx",
         "packages/rtk-rest-api/example/**",
         "public/**",
-        "ci/modifyJUnitReportForTestRail.ts"
+        "ci/modifyJUnitReportForTestRail.ts",
+        "app/src/components/ParticipantWindow/fragments/Statistics.tsx"
     ]
 }
