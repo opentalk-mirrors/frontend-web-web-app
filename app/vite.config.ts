@@ -97,13 +97,6 @@ export default defineConfig(({ command, mode }) => {
         preventAssignment: true,
       }),
       ignoreWarningsPlugin(),
-      react(),
-      svgr({
-        svgrOptions: {
-          titleProp: true,
-        },
-      }),
-      // Put the Sentry vite plugin after all other plugins
       sentryVitePlugin({
         telemetry: false,
         authToken: process.env.SENTRY_AUTH_TOKEN || '1234567890',
@@ -112,6 +105,16 @@ export default defineConfig(({ command, mode }) => {
         reactComponentAnnotation: {
           enabled: true,
           ignoredComponents: ['ThemeProvider'],
+        },
+      }),
+      react({
+        babel: {
+          plugins: ['babel-plugin-react-compiler'],
+        },
+      }),
+      svgr({
+        svgrOptions: {
+          titleProp: true,
         },
       }),
     ].filter(Boolean),

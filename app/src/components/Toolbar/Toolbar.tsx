@@ -47,6 +47,7 @@ const MainContainer = styled('aside')(({ theme }) => ({
 }));
 
 const Toolbar = ({ layout }: { layout?: LayoutTypes }) => {
+  'use no memo';
   const { t } = useTranslation();
   const { localParticipant } = useLocalParticipant();
   const audioTrack = localParticipant.getTrackPublication(Track.Source.Microphone)?.audioTrack;
