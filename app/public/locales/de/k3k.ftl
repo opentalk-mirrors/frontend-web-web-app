@@ -765,6 +765,8 @@ dashboard-help-support = Support
 user-manual-dashboard-title = Handbuch
 user-manual-open = Handbuch öffnen
 conference-go-home = Link zum Dashboard
+conference-storage-full-no-plan-upgrade = Speicher voll. Bitte löschen Sie Dateien im Dashboard.
+conference-storage-full-plan-upgrade = Speicher voll. Bitte löschen Sie Dateien im Dashboard oder führen Sie ein Tarifupgrade durch.
 
 dashboard-close-navbar= Navigation schließen
 dashboard-open-navbar = Navigation aufklappen
@@ -788,14 +790,14 @@ dashboard-settings-profile-button-save = Änderungen speichern
 dashboard-settings-storage-usage-limited-free = {$usedStorage} von {$maxStorage} belegt
 dashboard-settings-storage-usage-limited-full = {$usedStorage} von {$maxStorage} belegt - Speicher voll.
 dashboard-settings-storage-usage-delete = Bitte löschen Sie Dateien.
-dashboard-settings-storage-usage-upgrade = Bitte löschen Sie Dateien oder führen Sie eine Tarifupgrade durch <planUpgradeLink>HIER</planUpgradeLink>.
+dashboard-settings-storage-usage-upgrade = Bitte löschen Sie Dateien oder führen Sie ein Tarifupgrade durch <planUpgradeLink>HIER</planUpgradeLink>.
 dashboard-settings-storage-usage-unlimited = {$usedStorage} belegt
 dashboard-settings-storage-usage-loading = Speicherbelegung wird geladen
 dashboard-settings-storage-assets = Meine Dateien
 
 dashboard-storage-almost-full-message = Achtung: Ihr Speicher ist fast voll. Funktionen wie das Aufzeichnen und Erstellen von PDFs funktionieren möglicherweise nicht.
 dashboard-storage-almost-full-message-delete = Bitte löschen Sie Dateien.
-dashboard-storage-almost-full-message-upgrade = Bitte löschen Sie Dateien oder führen Sie eine Tarifupgrade durch.
+dashboard-storage-almost-full-message-upgrade = Bitte löschen Sie Dateien oder führen Sie ein Tarifupgrade durch.
 
 dashboard-meeting-card-error = Fehler beim ermitteln des Meeting-Zeitraumes
 dashboard-meeting-card-all-day = ganztags

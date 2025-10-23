@@ -12,6 +12,7 @@ import { lowerHand, raiseHand } from '../../api/types/outgoing/control';
 import i18n from '../../i18n';
 import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
+import { isFeatureEnabledPredicate } from '../../utils/moduleUtils';
 import { changeMedia, joinSuccess, login, setScreenShareEnabled, startRoom } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
@@ -28,6 +29,7 @@ export type UserState = {
   joinedAt?: string;
   meetingNotesAccess: MeetingNotesAccess;
   isRoomOwner: boolean;
+  isTariffUpgradable?: boolean;
 };
 
 const initialState: UserState = {
@@ -79,15 +81,19 @@ export const userSlice = createSlice({
         }
       }
     );
-    builder.addCase(joinSuccess, (state, { payload: { avatarUrl, role, participantId, groups, isRoomOwner } }) => {
-      state.role = role;
-      state.avatarUrl = avatarUrl;
-      state.uuid = participantId;
-      state.groups = groups;
-      state.joinedAt = new Date().toISOString();
-      state.lastActive = state.joinedAt;
-      state.isRoomOwner = isRoomOwner;
-    });
+    builder.addCase(
+      joinSuccess,
+      (state, { payload: { avatarUrl, role, participantId, groups, isRoomOwner, tariff } }) => {
+        state.role = role;
+        state.avatarUrl = avatarUrl;
+        state.uuid = participantId;
+        state.groups = groups;
+        state.joinedAt = new Date().toISOString();
+        state.lastActive = state.joinedAt;
+        state.isRoomOwner = isRoomOwner;
+        state.isTariffUpgradable = isFeatureEnabledPredicate('storage_upgradable', tariff.modules);
+      }
+    );
     builder.addCase(connectionClosed, (state) => {
       state.uuid = null;
       state.joinedAt = undefined;
