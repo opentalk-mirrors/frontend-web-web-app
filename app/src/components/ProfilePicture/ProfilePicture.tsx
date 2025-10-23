@@ -6,6 +6,7 @@ import { styled } from '@mui/material';
 import { useGetMeQuery } from '../../api/rest';
 import { ParticipantAvatar, setLibravatarOptions } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
+import { useDisplayName } from '../../hooks/useDisplayName';
 import { selectLibravatarDefaultImage } from '../../store/slices/configSlice';
 
 const BigParticipantAvatar = styled(ParticipantAvatar)({
@@ -24,7 +25,7 @@ const ProfilePicture = (props: ProfilePictureProps) => {
   const { data } = useGetMeQuery();
   const avatarDefaultImage = useAppSelector(selectLibravatarDefaultImage);
 
-  const displayName = data?.displayName;
+  const displayName = useDisplayName(data);
   const avatarSrc = setLibravatarOptions(data?.avatarUrl, { defaultImage: avatarDefaultImage });
 
   if (size === 'big') {

@@ -735,6 +735,7 @@ global-meeting = { $count ->
 }
 global-open-new-tab = In neuem Tab öffnen
 global-required-field = Dies ist ein Pflichtfeld
+global-unknown = Unbekannt
 
 dashboard-logo-title = OpenTalk Logo
 dashboard-home = Startseite

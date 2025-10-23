@@ -5,6 +5,7 @@ import { Collapse, Typography, Button, styled } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 import { useGetMeQuery } from '../../../api/rest';
+import { useDisplayName } from '../../../hooks/useDisplayName';
 import ProfilePicture from '../../ProfilePicture/ProfilePicture';
 
 interface ChipProps {
@@ -30,7 +31,7 @@ const DisplayName = styled(Typography)(({ theme }) => ({
 
 const ProfileChip = ({ collapsed, withLabel }: ChipProps) => {
   const { data } = useGetMeQuery();
-  const displayName = data?.displayName;
+  const displayName = useDisplayName(data);
 
   return (
     <ProfileButton component={Link} to="settings/profile" variant="outlined" color="primary" fullWidth>
