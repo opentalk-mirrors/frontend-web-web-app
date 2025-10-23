@@ -22,7 +22,11 @@ import { PollContainer } from './fragments/PollContainer';
 import { ReportSection } from './fragments/ReportSection';
 import { LEGEND_TITLE_ID } from './fragments/constants';
 
-export default function Ballot() {
+type BallotProps = {
+  container?: Element | null;
+};
+
+export default function Ballot({ container }: BallotProps) {
   const dispatch = useAppDispatch();
   const voteIdToShow = useAppSelector(selectCurrentShownVoteId);
   const pollIdToShow = useAppSelector(selectPollIdToShow);
@@ -53,6 +57,7 @@ export default function Ballot() {
         onKeyDown={(e) => e.stopPropagation()}
         onKeyUp={(e) => e.stopPropagation()}
         slotProps={{ paper: { 'aria-modal': true, 'aria-labelledby': LEGEND_TITLE_ID } }}
+        container={container}
       >
         <DialogContent>
           <PollContainer onClose={handleClose} poll={pollToShow} />
@@ -72,6 +77,7 @@ export default function Ballot() {
         onKeyDown={(e) => e.stopPropagation()}
         onKeyUp={(e) => e.stopPropagation()}
         slotProps={{ paper: { sx: { maxWidth: 700 }, 'aria-modal': true, 'aria-labelledby': LEGEND_TITLE_ID } }}
+        container={container}
       >
         <DialogContent>
           <LegalVoteContainer onClose={handleClose} legalVote={legalVoteToShow} isAllowedToVote={isAllowedToVote} />
