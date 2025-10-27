@@ -1,7 +1,8 @@
 {
     "ignoreDependencies": [
         "licensee",
-        "fast-xml-parser"
+        "fast-xml-parser",
+        "babel-plugin-react-compiler"
     ],
     "ignore": [
         ".pa11y-local.js",
