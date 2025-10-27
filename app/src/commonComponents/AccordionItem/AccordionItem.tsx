@@ -80,6 +80,7 @@ const AccordionSummary = styled(MuiAccordionSummary)(({ theme }) => ({
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(1),
   margin: 0,
+  backgroundColor: theme.palette.background.main.primary,
 }));
 
 const SummaryText = styled(Typography)<{ component: string }>(({ theme }) => ({

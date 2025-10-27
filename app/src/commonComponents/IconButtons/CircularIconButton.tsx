@@ -14,8 +14,8 @@ export const CircularIconButtonStyles = (theme: Theme) => ({
   width: '2.5rem',
   height: '2.5rem',
   transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-  backgroundColor: theme.palette.background.highlight.primary,
-  color: theme.palette.background.highlight.contrastText,
+  backgroundColor: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
 });
 
 const CircularIconButton = styled(IconButton)(({ theme }) => ({

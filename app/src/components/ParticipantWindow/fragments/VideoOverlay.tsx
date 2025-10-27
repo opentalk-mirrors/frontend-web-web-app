@@ -148,12 +148,12 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
             {userLayout === LayoutOptions.Speaker && (
               <Tooltip title={t('video-overlay-tooltip-pin-video')}>
                 <OverlayIconButton
-                  color={pinnedParticipantId === descriptor.participantId ? 'secondary' : 'primary'}
                   onClick={togglePin}
                   translate="no"
                   aria-label={t('indicator-pinned', {
                     participantName: displayName || '',
                   })}
+                  aria-pressed={pinnedParticipantId === descriptor.participantId}
                 >
                   <PinIcon />
                 </OverlayIconButton>

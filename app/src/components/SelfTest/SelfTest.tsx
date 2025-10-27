@@ -102,7 +102,8 @@ const MonitorContainer = styled('main')(() => ({
 }));
 
 const IconButton = styled(MuiIconButton)(({ theme }) => ({
-  color: theme.palette.text.primary,
+  backgroundColor: theme.palette.background.main.primary,
+  color: theme.palette.background.main.contrastText,
   '& > .MuiSvgIcon-root': {
     height: '2rem',
     width: 'auto',
