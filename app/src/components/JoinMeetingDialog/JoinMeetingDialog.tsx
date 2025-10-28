@@ -11,10 +11,8 @@ import {
   DialogProps,
   DialogTitle,
   IconButton,
-  InputLabel,
   styled,
 } from '@mui/material';
-import { visuallyHidden } from '@mui/utils';
 import { InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
 import { ClipboardEvent, useState, ChangeEvent, FormEvent } from 'react';
@@ -186,10 +184,6 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
         </CloseIconButton>
 
         <DialogContent>
-          {/* Added visually hidden label to prevent placeholder being read when there is a value */}
-          <InputLabel htmlFor={inputFieldId} sx={visuallyHidden}>
-            {t('dashboard-join-meeting-dialog-input-field')}
-          </InputLabel>
           <CommonTextField
             {...formikProps('roomId', formik)}
             //Because the dialog will trap the focus and this input field is the expected starting point -
