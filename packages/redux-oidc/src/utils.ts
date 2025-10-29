@@ -84,6 +84,7 @@ export interface SerializedError {
   message?: unknown;
   status?: number;
   stack?: string;
+  code?: string;
 }
 
 export const getTokenExpirationDate = (token: string) => {

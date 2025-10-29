@@ -35,12 +35,12 @@ const App = () => {
   return (
     <Router basename={new URL(window.config.baseUrl).pathname}>
       <StoreProvider store={store}>
-        <AppErrorBoundary>
-          <Provider>
+        <Provider>
+          <AppErrorBoundary>
             <GlitchtipErrorDialog />
             <Routes />
-          </Provider>
-        </AppErrorBoundary>
+          </AppErrorBoundary>
+        </Provider>
       </StoreProvider>
     </Router>
   );
