@@ -29,7 +29,6 @@ export default defineConfig([
       ...reactHooks.configs.flat.recommended.rules,
     },
     ignores: [
-      'app/src/App.tsx',
       'app/src/commonComponents/AccessibleTimer/AccessibleTimer.tsx',
       'app/src/commonComponents/CommonTextField/CommonTextField.tsx',
       'app/src/commonComponents/DurationField/DurationField.tsx',

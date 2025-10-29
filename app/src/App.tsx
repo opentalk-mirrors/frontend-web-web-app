@@ -15,18 +15,22 @@ import { setupStore } from './store';
 import { ReduxDomEvents } from './store/slices/hotkeys/eventBindings';
 import { checkConfigError } from './utils/configUtils';
 
+const store = setupStore();
+
 const App = () => {
   const hasConfigError = checkConfigError();
-  const store = setupStore();
+
+  useEffect(() => {
+    if (hasConfigError) {
+      return;
+    }
+    setupGlitchtip(store.dispatch);
+    ReduxDomEvents.createInstance(store.dispatch);
+  }, [hasConfigError]);
 
   if (hasConfigError) {
     return <ErrorConfigPage />;
   }
-
-  useEffect(() => {
-    setupGlitchtip(store.dispatch);
-    ReduxDomEvents.createInstance(store.dispatch);
-  }, []);
 
   return (
     <Router basename={new URL(window.config.baseUrl).pathname}>
