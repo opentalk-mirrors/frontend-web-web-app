@@ -53,6 +53,20 @@ prettier+eslint:
     - pnpm lint
     - pnpm fmt:ci
 
+fast-typescript-analyzer:
+  stage: lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  script:
+    - npx --yes fta-cli --format json --score-cap 1000 . > ./fta-report.json
+    - npx --yes fta-cli --format table --score-cap 1000 .
+    - npx --yes fta-cli .
+  allow_failure: true
+  artifacts:
+    when: always
+    paths:
+      - fta-report.json
+
 typecheck:
   stage: lint
   rules:

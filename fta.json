@@ -1,0 +1,7 @@
+{
+  "score_cap": 80,
+  "exclude_filenames": ["*.{test, spec}.{ts,tsx}"],
+  "exclude_directories": ["app/public"],
+  "include_comments": false,
+  "exclude_under": 10
+}
