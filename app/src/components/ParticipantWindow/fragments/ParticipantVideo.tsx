@@ -94,16 +94,18 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
     return (
       <Container onMouseMove={displayPresenterVideo} data-testid="participantSreenShareVideo" ref={containerRef}>
         <RemoteVideo descriptor={screenDescriptor} />
-        <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerRef.current}>
-          <ScreenPresenterVideo
-            participantId={participantId}
-            isVideoPinned={isVideoPinned}
-            togglePin={togglePin}
-            videoPosition={presenterVideoPosition}
-            changeVideoPosition={movePresenterVideo}
-            isThumbnail={isThumbnail}
-          />
-        </Slide>
+        {showCamera && (
+          <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerRef.current}>
+            <ScreenPresenterVideo
+              participantId={participantId}
+              isVideoPinned={isVideoPinned}
+              togglePin={togglePin}
+              videoPosition={presenterVideoPosition}
+              changeVideoPosition={movePresenterVideo}
+              isThumbnail={isThumbnail}
+            />
+          </Slide>
+        )}
       </Container>
     );
   }
