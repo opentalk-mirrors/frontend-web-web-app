@@ -29,7 +29,6 @@ export default defineConfig([
       ...reactHooks.configs.flat.recommended.rules,
     },
     ignores: [
-      'app/src/commonComponents/CommonTextField/CommonTextField.tsx',
       'app/src/commonComponents/DurationField/DurationField.tsx',
       'app/src/commonComponents/NameTile/NameTile.tsx',
       'app/src/commonComponents/Notistack/fragments/variations/CustomNotification.tsx',
