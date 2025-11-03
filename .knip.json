@@ -1,7 +1,6 @@
 {
     "ignoreDependencies": [
         "licensee",
-        "fast-xml-parser",
         "babel-plugin-react-compiler"
     ],
     "ignore": [
