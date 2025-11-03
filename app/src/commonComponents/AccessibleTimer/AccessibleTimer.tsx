@@ -4,7 +4,7 @@
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { Duration } from 'date-fns';
-import { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { LAST_SECONDS_OF_A_MINUTE, LAST_SECONDS_OF_TOTAL_TIME } from './constants';
@@ -16,22 +16,19 @@ interface AccessibleTimerProps {
 
 const AccessibleTimer = ({ remainingTime, feature = '' }: AccessibleTimerProps) => {
   const { t } = useTranslation();
-  const [firstAnnouncedMinute, setFirstAnnouncedMinute] = useState<number | undefined>(undefined);
+  const firstAnnouncedMinuteRef = useRef<number | undefined>(remainingTime.minutes);
 
   useEffect(() => {
-    if (!remainingTime.minutes) {
-      return;
+    if (firstAnnouncedMinuteRef.current === undefined && remainingTime.minutes) {
+      firstAnnouncedMinuteRef.current = remainingTime.minutes;
     }
-
-    if (!firstAnnouncedMinute) {
-      setFirstAnnouncedMinute(remainingTime.minutes);
-    }
-  }, [remainingTime]);
+  }, [remainingTime.minutes]);
 
   const getAriaTitle = () => {
     const minutes = remainingTime?.minutes;
     const seconds = remainingTime?.seconds;
     const prefix = feature ? feature + '. ' : '';
+    const firstAnnouncedMinute = firstAnnouncedMinuteRef.current;
 
     if (minutes === undefined || seconds === undefined) {
       return '';
@@ -48,9 +45,6 @@ const AccessibleTimer = ({ remainingTime, feature = '' }: AccessibleTimerProps) 
       }
     }
 
-    // If user joins in the middle of a timer, screenreader shall announce, that more than ${minutes} left
-    // But if it's the last seconds of the minute (e.g. 02:03), we don't announce anything at all to prevent
-    // verbosity. On the next minute update the new time will be announced anyway
     if (minutes === firstAnnouncedMinute) {
       if (seconds < LAST_SECONDS_OF_A_MINUTE) {
         return '';
