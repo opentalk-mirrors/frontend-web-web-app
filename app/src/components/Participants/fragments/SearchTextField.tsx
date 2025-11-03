@@ -58,43 +58,45 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
       label={t('participant-search-label')}
       placeholder={t('global-name-placeholder')}
       multiline
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon />
-          </InputAdornment>
-        ),
-        endAdornment: showSort && (
-          <InputAdornment position="end">
-            <AdornmentIconButton
-              ref={anchorEl}
-              onClick={handleClick}
-              edge="end"
-              aria-label={t('sort-by')}
-              aria-expanded={isExpanded}
-              aria-controls={id}
-              aria-haspopup="menu"
-              onKeyDown={(event) => event.stopPropagation()}
-              onKeyUp={(event) => event.stopPropagation()}
-              parentHasFocus={hasFocus}
-            >
-              <SortIcon />
-            </AdornmentIconButton>
-            {anchorEl.current && isExpanded && (
-              <SortPopoverMenu
-                id={id}
-                anchorEl={anchorEl.current}
-                isOpen={true}
-                items={items}
-                selectedOptionType={sortType}
-                onChange={handleSortSelected}
-                onClose={() => setIsExpanded(false)}
-              />
-            )}
-          </InputAdornment>
-        ),
+      slotProps={{
+        input: {
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon />
+            </InputAdornment>
+          ),
+          endAdornment: showSort && (
+            <InputAdornment position="end">
+              <AdornmentIconButton
+                ref={anchorEl}
+                onClick={handleClick}
+                edge="end"
+                aria-label={t('sort-by')}
+                aria-expanded={isExpanded}
+                aria-controls={id}
+                aria-haspopup="menu"
+                onKeyDown={(event) => event.stopPropagation()}
+                onKeyUp={(event) => event.stopPropagation()}
+                parentHasFocus={hasFocus}
+              >
+                <SortIcon />
+              </AdornmentIconButton>
+              {anchorEl.current && isExpanded && (
+                <SortPopoverMenu
+                  id={id}
+                  anchorEl={anchorEl.current}
+                  isOpen={true}
+                  items={items}
+                  selectedOptionType={sortType}
+                  onChange={handleSortSelected}
+                  onClose={() => setIsExpanded(false)}
+                />
+              )}
+            </InputAdornment>
+          ),
+        },
+        inputLabel: { sx: { fontWeight: theme.typography.fontWeightRegular } },
       }}
-      InputLabelProps={{ sx: { fontWeight: theme.typography.fontWeightRegular } }}
     />
   );
 };
