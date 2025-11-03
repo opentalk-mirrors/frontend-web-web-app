@@ -66,7 +66,7 @@ importers:
         specifier: ^27.0.1
         version: 27.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       knip:
-        specifier: ^5.66.4
+        specifier: ^5.67.0
         version: 5.67.0(@types/node@24.10.0)(typescript@5.9.3)
       licensee:
         specifier: ^11.1.1
