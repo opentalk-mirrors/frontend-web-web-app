@@ -60,7 +60,7 @@ export const CustomTrainingParticipationReportDialog = ({
 
   const validationSchema = yup.object({
     initialCheckpointDelay: yup.object().shape({
-      from: yup.number().min(0).required(),
+      from: yup.number().min(1).required(),
       to: yup.number().when('from', ([from]) => {
         return yup.number().min(from, t('dashboard-custom-training-participation-report-dialog-error', { min: from }));
       }),
@@ -128,7 +128,7 @@ export const CustomTrainingParticipationReportDialog = ({
             <NumberInput
               {...formikNumberFieldProps('initialCheckpointDelay.from', formik)}
               type="number"
-              slotProps={{ htmlInput: { min: 0 } }}
+              slotProps={{ htmlInput: { min: 1 } }}
             />
             <Typography>{t('dashboard-custom-training-participation-report-dialog-to')}</Typography>
             <NumberInput
@@ -138,8 +138,10 @@ export const CustomTrainingParticipationReportDialog = ({
             />
             <Typography>{t('dashboard-custom-training-participation-report-dialog-minutes')}</Typography>
           </Stack>
-          {formik.errors.initialCheckpointDelay?.to && (
-            <ErrorFormMessage helperText={formik.errors.initialCheckpointDelay.to} />
+          {formik.errors.initialCheckpointDelay && (
+            <ErrorFormMessage
+              helperText={formik.errors.initialCheckpointDelay.from || formik.errors.initialCheckpointDelay.to}
+            />
           )}
         </Stack>
         <Stack>
@@ -158,8 +160,10 @@ export const CustomTrainingParticipationReportDialog = ({
             />
             <Typography>{t('dashboard-custom-training-participation-report-dialog-minutes')}</Typography>
           </Stack>
-          {formik.errors.checkpointInterval?.to && (
-            <ErrorFormMessage helperText={formik.errors.checkpointInterval.to} />
+          {formik.errors.checkpointInterval && (
+            <ErrorFormMessage
+              helperText={formik.errors.checkpointInterval.from || formik.errors.checkpointInterval.to}
+            />
           )}
         </Stack>
       </DialogContent>
