@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
+// SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
@@ -26,7 +27,6 @@ vi.mock('./fragments/ReportSection', () => ({
   ReportSection: () => <div data-testid="report-section"></div>,
 }));
 
-// SPDX-License-Identifier: EUPL-1.2
 describe('Ballot', () => {
   it('renders empty on missing ids', () => {
     (useAppSelector as unknown as Mock).mockReturnValue(undefined);

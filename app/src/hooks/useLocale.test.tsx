@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { de } from 'date-fns/locale/de';
 import { enUS } from 'date-fns/locale/en-US';
 import { useTranslation } from 'react-i18next';
@@ -31,12 +31,9 @@ describe('useLocale', () => {
     });
     const { result } = renderHook(() => useLocale());
 
-    // Wait for useEffect to run
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current).toBe(enUS);
     });
-
-    expect(result.current).toBe(enUS);
   });
 
   it('returns de locale for German', async () => {
@@ -53,11 +50,8 @@ describe('useLocale', () => {
 
     const { result } = renderHook(() => useLocale());
 
-    // Wait for useEffect to run
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current).toEqual(de);
     });
-
-    expect(result.current).toEqual(de);
   });
 });

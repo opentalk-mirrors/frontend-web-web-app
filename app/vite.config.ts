@@ -7,8 +7,9 @@ import react from '@vitejs/plugin-react';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { defineConfig, HmrContext, ResolvedConfig, Plugin } from 'vite';
+import { HmrContext, ResolvedConfig, Plugin } from 'vite';
 import svgr from 'vite-plugin-svgr';
+import { defineConfig } from 'vitest/config';
 
 import { cleanPackageVersion } from './utils/build';
 

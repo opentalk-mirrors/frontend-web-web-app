@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { vi } from 'vitest';
+import { vi, Mock } from 'vitest';
 
 import { ReduxDomEvents } from './eventBindings';
 import { domKeyDown, domKeyUp, domFocusIn, domFocusOut } from './slice';
@@ -18,7 +18,7 @@ vi.mock('./listener', () => ({
 }));
 
 describe('ReduxDomEvents', () => {
-  let dispatch: ReturnType<typeof vi.fn>;
+  let dispatch: Mock;
 
   beforeAll(() => {
     dispatch = vi.fn();
