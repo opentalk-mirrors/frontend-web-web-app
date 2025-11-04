@@ -64,7 +64,6 @@ export default defineConfig([
       'app/src/components/MeetingForms/fragments/CustomRecurringEventDialog/CustomEndDateOptions.tsx',
       'app/src/components/MeetingForms/fragments/DateTimeSection.tsx',
       'app/src/components/MeetingForms/fragments/RecurrenceSection.tsx',
-      'app/src/components/MeetingForms/fragments/StreamingOptions.tsx',
       'app/src/components/MeetingForms/fragments/TrainingParticipationReportSelect/TrainingParticipationReportSelect.tsx',
       'app/src/components/MeetingHeader/fragments/DesktopMeetingHeader.tsx',
       'app/src/components/MeetingHeader/fragments/LayoutSelection.tsx',

@@ -42,13 +42,19 @@ const Collapse = styled(MuiCollapse)(({ theme }) => ({
 
 const StreamingOptions = ({ formik }: StreamingOptionsProps) => {
   const { t } = useTranslation();
-  const { enabled: streamingEnabled } = formik.values.streaming;
+  const {
+    setFieldValue,
+    values: {
+      e2eEncryption,
+      streaming: { enabled: streamingEnabled },
+    },
+  } = formik;
 
   useEffect(() => {
-    if (streamingEnabled && formik.values.e2eEncryption) {
-      formik.setFieldValue('streaming.enabled', false);
+    if (streamingEnabled && e2eEncryption) {
+      setFieldValue('streaming.enabled', false);
     }
-  }, [streamingEnabled, formik.setFieldValue, formik.values.e2eEncryption]);
+  }, [streamingEnabled, setFieldValue, e2eEncryption]);
 
   return (
     <Stack
@@ -60,7 +66,7 @@ const StreamingOptions = ({ formik }: StreamingOptionsProps) => {
         checked={streamingEnabled}
         switchProps={formikSwitchProps('streaming.enabled', formik)}
         switchValueLabel={t('dashboard-meeting-livestream-switch')}
-        disabled={formik.values.e2eEncryption}
+        disabled={e2eEncryption}
       />
       <Collapse orientation="vertical" in={streamingEnabled} unmountOnExit mountOnEnter>
         <OptionsRow>
