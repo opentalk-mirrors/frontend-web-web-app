@@ -5,7 +5,6 @@ import { useParticipants } from '@livekit/components-react';
 import { Box, BoxProps, Stack, Typography, styled } from '@mui/material';
 import Color from 'colorjs.io';
 import { omit } from 'lodash';
-import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CameraOffIcon, MicOffIcon } from '../../assets/icons';
@@ -71,26 +70,27 @@ type RemoteNameTileProps = {
 type NameTileProps = LocalNameTileProps | RemoteNameTileProps;
 
 const NameTile = ({ displayName, ...props }: NameTileProps) => {
-  const isVideoActive = useRef(false);
-  const isAudioActive = useRef(false);
   const { t } = useTranslation();
+  const participants = useParticipants();
+
+  let isVideoActive = false;
+  let isAudioActive = false;
 
   if ('participantId' in props) {
     const { participantId } = props;
-    const participant = useParticipants().find((participant) => participant.identity === participantId);
-
-    isVideoActive.current = participant?.isCameraEnabled || false;
-    isAudioActive.current = participant?.isMicrophoneEnabled || false;
+    const participant = participants.find((participant) => participant.identity === participantId);
+    isVideoActive = participant?.isCameraEnabled || false;
+    isAudioActive = participant?.isMicrophoneEnabled || false;
   } else {
     const { localVideoOn, localAudioOn } = props;
-    isVideoActive.current = Boolean(localVideoOn);
-    isAudioActive.current = Boolean(localAudioOn);
+    isVideoActive = Boolean(localVideoOn);
+    isAudioActive = Boolean(localAudioOn);
   }
 
-  const renderCameraOffIcon = () => !isVideoActive.current && <CameraOffIcon data-testid="camOff" />;
-  const renderAudioOffIcon = () => !isAudioActive.current && <StyledMicOffIcon data-testid="micOff" />;
+  const renderCameraOffIcon = () => !isVideoActive && <CameraOffIcon data-testid="camOff" />;
+  const renderAudioOffIcon = () => !isAudioActive && <StyledMicOffIcon data-testid="micOff" />;
   const renderIconBox = () =>
-    !(isAudioActive.current && isVideoActive.current) && (
+    !(isAudioActive && isVideoActive) && (
       <IconBox
         data-testid="iconBox"
         direction="row"
@@ -123,4 +123,4 @@ const NameTile = ({ displayName, ...props }: NameTileProps) => {
   );
 };
 
-export default React.memo(NameTile);
+export default NameTile;

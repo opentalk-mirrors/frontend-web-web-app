@@ -30,7 +30,6 @@ export default defineConfig([
     },
     ignores: [
       'app/src/commonComponents/DurationField/DurationField.tsx',
-      'app/src/commonComponents/NameTile/NameTile.tsx',
       'app/src/commonComponents/Notistack/fragments/variations/CustomNotification.tsx',
       'app/src/commonComponents/ProgressBar/ProgressBar.tsx',
       'app/src/components/Ballot/fragments/LegalVoteContainer.tsx',
