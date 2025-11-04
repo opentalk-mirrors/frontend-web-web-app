@@ -63,7 +63,7 @@ importers:
         specifier: ^9.1.7
         version: 9.1.7
       jsdom:
-        specifier: ^27.0.1
+        specifier: ^27.1.0
         version: 27.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       knip:
         specifier: ^5.67.1
