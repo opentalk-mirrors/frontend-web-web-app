@@ -15,7 +15,7 @@ import {
   styled,
 } from '@mui/material';
 import { ListItemButtonProps } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -90,7 +90,7 @@ export const SupportList = ({
   const locale = useLocale();
   const accessibilityUrl = getAccessibilityUrl(locale);
 
-  const items = useMemo(() => {
+  const items = () => {
     const output: Item[] = [
       {
         key: ListItemKeys.Accessibility,
@@ -152,7 +152,7 @@ export const SupportList = ({
     }
 
     return output;
-  }, [isGlitchtipConfigured, isHotkeyListDialogOpen, contactSupportUrl]);
+  };
 
   const willOpenNewTab = (item: Item) => {
     return 'target' in item.componentProps && item.componentProps.target === '_blank';
@@ -175,7 +175,7 @@ export const SupportList = ({
     return (
       <>
         <MenuList {...menuListProps} className={className}>
-          {items.map((item) => (
+          {items().map((item) => (
             <MenuItem key={item.key} sx={{ width: '100%' }} disableGutters {...(item.componentProps as MenuItemProps)}>
               {icons && <ListItemIcon>{item.icon}</ListItemIcon>}
               <ListItemText primary={t(item.name)} slotProps={{ primary: { textAlign: 'left' } }} />
@@ -191,7 +191,7 @@ export const SupportList = ({
   return (
     <>
       <List className={className} {...listProps}>
-        {items.map((item) => (
+        {items().map((item) => (
           <ListItem key={item.key} sx={{ padding: '0 0.5rem' }}>
             <ListItemButton disableGutters {...(item.componentProps as ListItemButtonProps)}>
               {icons && <ListItemIcon sx={{ minWidth: '2.25rem' }}>{item.icon}</ListItemIcon>}
