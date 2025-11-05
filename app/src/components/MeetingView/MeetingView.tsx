@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { styled } from '@mui/material';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 
 import { useAppSelector } from '../../hooks';
 import {
@@ -75,12 +75,6 @@ const MeetingView = () => {
   const room = useAppSelector(selectLivekitRoom);
   const whisperRoom = useAppSelector(selectLivekitWhisperRoom);
 
-  useEffect(() => {
-    if (isRoomDeleted) {
-      setIsDialogOpen(true);
-    }
-  }, [isRoomDeleted]);
-
   return (
     <>
       {whisperToken && (
@@ -110,7 +104,7 @@ const MeetingView = () => {
             </>
           )}
         </Container>
-        {isDialogOpen && <MeetingEndedDialog setIsDialogOpen={setIsDialogOpen} />}
+        {isRoomDeleted && !isDialogOpen && <MeetingEndedDialog setIsDialogOpen={setIsDialogOpen} />}
       </RoomContainer>
     </>
   );
