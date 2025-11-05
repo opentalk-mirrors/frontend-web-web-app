@@ -55,14 +55,20 @@ const LocalVideoContainer = styled(Box)(({ theme }) => ({
   zIndex: theme.zIndex.mobileStepper,
 }));
 
-const IconButton = styled(MuiIconButton)(({ theme }) => ({
+const IconButton = styled(MuiIconButton)(({ theme, 'aria-pressed': ariaPressed }) => ({
   zIndex: theme.zIndex.mobileStepper,
   padding: theme.spacing(0.75),
-  background: theme.palette.background.highlight.primary,
-  color: theme.palette.background.highlight.contrastText,
+  background: ariaPressed ? theme.palette.secondary.main : theme.palette.background.highlight.primary,
+  color: ariaPressed ? theme.palette.secondary.contrastText : theme.palette.background.highlight.contrastText,
   border: 'solid',
   borderWidth: theme.typography.pxToRem(1),
-  borderColor: theme.palette.background.highlight.contrastText,
+  borderColor: ariaPressed ? theme.palette.secondary.main : theme.palette.background.highlight.contrastText,
+  opacity: 0.8,
+  ':hover': {
+    opacity: 1,
+    background: ariaPressed ? theme.palette.secondary.main : theme.palette.background.highlight.primary,
+    color: ariaPressed ? theme.palette.secondary.contrastText : theme.palette.background.highlight.contrastText,
+  },
 }));
 
 const FullscreenView = () => {
@@ -130,7 +136,7 @@ const FullscreenView = () => {
                 participantName: displayName || '',
               })}
               onClick={togglePin}
-              color={isPinned ? 'primary' : 'secondary'}
+              aria-pressed={isPinned}
             >
               <PinIcon />
             </IconButton>

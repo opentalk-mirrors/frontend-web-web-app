@@ -686,6 +686,10 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
             fontWeight: 400,
             padding: theme.spacing(1.5, 2),
             color: theme.palette.text.primary,
+            ':focus-visible': {
+              outline: theme.palette.focus.outline,
+              outlineOffset: '-2px',
+            },
           }),
         },
       },

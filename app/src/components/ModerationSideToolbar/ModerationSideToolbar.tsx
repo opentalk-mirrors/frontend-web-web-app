@@ -13,9 +13,7 @@ import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
 const INDICATOR_WIDTH_IN_PIXELS = 2;
 
 const Tabs = styled(MuiTabs)(({ theme }) => ({
-  //todo align a proper background color from theme (for now nothing fit)
   background: theme.palette.background.highlight.primary,
-  // backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))',
   padding: theme.spacing(4.5, 0),
   height: '100%',
   '& .MuiTabs-flexContainer': {
@@ -39,7 +37,6 @@ const Tabs = styled(MuiTabs)(({ theme }) => ({
   },
   '& .MuiTabs-scroller': {
     background: theme.palette.background.highlight.primary,
-    // backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))',
   },
 }));
 
@@ -61,7 +58,7 @@ const Tab = styled(MuiTab)<{ component?: React.ElementType }>(({ theme }) => ({
     fill: theme.palette.danger.light,
   },
   '&.MuiButtonBase-root.Mui-disabled': {
-    backgroundColor: 'transparent',
+    opacity: 0.5,
   },
   '&:hover:not(&.Mui-disabled)': {
     background: theme.palette.primary.main,
