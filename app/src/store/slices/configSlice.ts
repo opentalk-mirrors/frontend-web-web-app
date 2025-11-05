@@ -7,6 +7,7 @@ import { merge } from 'lodash';
 
 import type { RootState } from '../';
 import log from '../../logger';
+import { Seconds } from '../../utils/tsUtils';
 import { joinSuccess } from '../commonActions';
 
 // Map is not recommended by redux/immer
@@ -50,6 +51,9 @@ export interface Config {
   userSurveyApiKey?: string;
   errorReportAddress: string;
   disallowCustomDisplayName?: boolean;
+  meetingInactivityMediaDisableSeconds?: Seconds;
+  meetingInactivityWarningSeconds?: Seconds;
+  meetingInactivityTerminationSeconds?: Seconds;
   logLevel?: string;
   beta: Beta;
   livekit: {
@@ -106,6 +110,9 @@ export type ConfigState = {
   beta: Beta;
   errorReportAddress: string;
   disallowCustomDisplayName?: boolean;
+  meetingInactivityMediaDisableSeconds: Seconds;
+  meetingInactivityWarningSeconds: Seconds;
+  meetingInactivityTerminationSeconds: Seconds;
   logLevel?: string;
   oidcConfig: {
     clientId: string;
@@ -171,6 +178,9 @@ export const initialState: ConfigState = {
   userSurveyApiKey: undefined,
   errorReportAddress: 'report@opentalk.eu',
   disallowCustomDisplayName: false,
+  meetingInactivityMediaDisableSeconds: 120 as Seconds,
+  meetingInactivityWarningSeconds: 900 as Seconds,
+  meetingInactivityTerminationSeconds: 3600 as Seconds,
   logLevel: undefined,
   beta: {
     isBeta: true,
@@ -276,5 +286,10 @@ export const selectIsGlitchtipConfigured = (state: RootState) => Boolean(state.c
 export const selectWaitingRoomDefault = (state: RootState) => state.config.settings.waitingRoomDefaultValue;
 export const selectSuppressBrowserCompatibilityInfo = (state: RootState) =>
   state.config.settings.suppressBrowserCompatibilityInfo;
+export const selectMeetingInactivityMediaDisableSeconds = (state: RootState) =>
+  state.config.meetingInactivityMediaDisableSeconds;
+export const selectMeetingInactivityWarningSeconds = (state: RootState) => state.config.meetingInactivityWarningSeconds;
+export const selectMeetingInactivityTerminationSeconds = (state: RootState) =>
+  state.config.meetingInactivityTerminationSeconds;
 
 export default configSlice.reducer;

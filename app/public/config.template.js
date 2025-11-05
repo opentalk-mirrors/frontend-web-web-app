@@ -14,6 +14,9 @@ window.config = {
   userSurveyApiKey: '${USER_SURVEY_API_KEY}',
   errorReportAddress: '${ERROR_REPORT_ADDRESS}',
   disallowCustomDisplayName: '${DISALLOW_CUSTOM_DISPLAY_NAME}',
+  meetingInactivityMediaDisableSeconds: '${MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS}',
+  meetingInactivityWarningSeconds: '${MEETING_INACTIVITY_WARNING_SECONDS}',
+  meetingInactivityTerminationSeconds: '${MEETING_INACTIVITY_TERMINATION_SECONDS}',
   version: {
     product: '${PRODUCT_VERSION}',
     frontend: '$(cat /usr/share/nginx/html/FRONTEND_VERSION)',

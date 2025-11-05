@@ -39,6 +39,9 @@ The following is a comprehensive list of all environment variables usable in the
 | WAITING_ROOM_DEFAULT_VALUE          | yes      | Frontend { waitingRoomDefaultValue: true } | to enable waiting room switch by default                                                                                                                                                              |
 | SUPPRESS_BROWSER_COMPATIBILITY_INFO | no       | false                                      | Suppress the browser compatibility notification  default                                                                                                                                              |
 | LIVEKIT_E2EE_SALT                   | no       |                                            | data added to the passphrase to make end-to-end encryption a bit more secure                                                                                                                          |
+| MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS | no | 120 | Number of seconds before media automatically turns off when we are left alone in the room. |
+| MEETING_INACTIVITY_WARNING_SECONDS | no | 900 | Number of seconds before user is warned about being alone in the room. |
+| MEETING_INACTIVITY_TERMINATION_SECONDS | no | 3600 | Number of seconds before user is kicked out of the room due to the inactivity. |
 
 ## Adding new Video Background Images
 

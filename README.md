@@ -67,6 +67,13 @@ window.config = {
     "libravatarDefaultImage": 'robohash',
     // disable edditing the display name field in the dashboard profile and lobby page
     disallowCustomDisplayName: '${DISALLOW_CUSTOM_DISPLAY_NAME}',
+    // amount of seconds before media is turned off for remaining participant in the room
+    meetingInactivityMediaDisableSeconds: "${MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS}",
+    // amount of seconds before only participant in the room is warned about room inactivity
+    meetingInactivityWarningSeconds: "${MEETING_INACTIVITY_WARNING_SECONDS}",
+    // amount of seconds before only participant is forced out of the room due to the inactivity
+    meetingInactivityTerminationSeconds: "${MEETING_INACTIVITY_TERMINATION_SECONDS}",
+
     // OIDC Config
     "oidcConfig": {
         // Authority URL (used for discovery using AUTHORITY/.well-known/openid-configuration)
@@ -334,7 +341,7 @@ INFO livekit service/server.go:243 starting LiveKit server {"portHttp": 7880, "n
 
 ### Docker-compose
 
-You can checkout a docker-compose stack in the [testing-environment](https://git.opentalk.dev/opentalk/backend/tools/testing-environment) repo. And then start it using the following command. 
+You can checkout a docker-compose stack in the [testing-environment](https://git.opentalk.dev/opentalk/backend/tools/testing-environment) repo. And then start it using the following command.
 
 ```bash
 docker compose up -d

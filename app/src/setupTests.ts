@@ -7,7 +7,8 @@ import { fetch, Request, Response } from 'cross-fetch';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
-import type { DefaultAvatarImage } from './store/slices/configSlice';
+import type { ConfigState, DefaultAvatarImage } from './store/slices/configSlice';
+import { Seconds } from './utils/tsUtils';
 
 /*
 This will stop the tests directly if an unhandled rejection occurs, so that is easier to debug.
@@ -48,7 +49,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-const config = {
+const config: ConfigState = {
   controller: 'localhost:8000',
   insecure: false,
   baseUrl: location.origin,
@@ -90,20 +91,9 @@ const config = {
     ndtUploadWorkerJs: '/workers/ndt7-upload-worker.js',
   },
   features: {
-    enterpriseChat: true,
     userSearch: true,
     muteUsers: true,
-    breakoutRooms: true,
-    poll: true,
-    vote: true,
-    timer: true,
-    autoModeration: false,
-    protocol: true,
     addUser: false,
-    talkingStick: false,
-    wheelOfNames: false,
-    recorder: true,
-    recording: true,
     e2eEncryption: false,
   },
   provider: {
@@ -158,6 +148,9 @@ const config = {
     waitingRoomDefaultValue: false,
     suppressBrowserCompatibilityInfo: false,
   },
+  meetingInactivityMediaDisableSeconds: 120 as Seconds,
+  meetingInactivityWarningSeconds: 900 as Seconds,
+  meetingInactivityTerminationSeconds: 3600 as Seconds,
 };
 
 window.config = config;
