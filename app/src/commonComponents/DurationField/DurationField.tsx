@@ -59,6 +59,10 @@ const Container = styled(Stack)(({ theme }) => ({
   maxWidth: '17.875rem',
 }));
 
+const TimerButton = styled(Button)({
+  padding: 0,
+});
+
 export const DurationField = ({
   name,
   value,
@@ -184,7 +188,7 @@ export const DurationField = ({
 
   return (
     <Box>
-      <Button
+      <TimerButton
         variant="text"
         onClick={handlePopoverOpen}
         {...ButtonProps}
@@ -194,7 +198,7 @@ export const DurationField = ({
         <Typography component="span" variant="body2" color="text.secondary">
           {renderButtonText()}
         </Typography>
-      </Button>
+      </TimerButton>
       <Popover
         open={open}
         onClose={handlePopoverClose}

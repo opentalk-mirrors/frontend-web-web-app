@@ -13,6 +13,7 @@ import PollOverview from './fragments/PollOverview';
 const PollOverviewContainer = styled(Stack)({
   flex: 1,
   overflow: 'hidden',
+  padding: 1,
 });
 
 const PollTab = () => {
@@ -33,7 +34,7 @@ const PollTab = () => {
 
   const renderPollOverview = () => {
     return (
-      <PollOverviewContainer spacing={1} padding={1}>
+      <PollOverviewContainer spacing={1}>
         <PollOverview onClickItem={handleOnClickSavedPollItem} />
         <Button onClick={() => setShowPollForm(true)} color="secondary">
           {t('poll-overview-button-create-poll')}

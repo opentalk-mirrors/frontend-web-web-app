@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Stack } from '@mui/material';
+import { Button, Stack, styled } from '@mui/material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +10,12 @@ import { selectSavedLegalVotePerId } from '../../store/slices/legalVoteSlice';
 import { selectCurrentRoomMode } from '../../store/slices/roomSlice';
 import CreateLegalVoteForm from './fragments/CreateLegalVoteForm';
 import LegalVoteOverview from './fragments/LegalVoteOverview';
+
+const LegalVoteOverviewContainer = styled(Stack)({
+  flex: 1,
+  overflow: 'hidden',
+  padding: 1,
+});
 
 const LegalVoteTab = () => {
   const [showLegalVoteForm, setShowLegalVoteForm] = useState(false);
@@ -31,19 +37,12 @@ const LegalVoteTab = () => {
 
   const renderLegalVoteOverview = () => {
     return (
-      <Stack
-        spacing={1}
-        sx={{
-          flex: 1,
-          overflow: 'hidden',
-          padding: 1,
-        }}
-      >
+      <LegalVoteOverviewContainer spacing={1}>
         <LegalVoteOverview onClickItem={handleOnClickSavedLegalVoteItem} />
         <Button onClick={() => setShowLegalVoteForm(true)} color="secondary">
           {t('legal-vote-overview-button-create-vote')}
         </Button>
-      </Stack>
+      </LegalVoteOverviewContainer>
     );
   };
 

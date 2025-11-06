@@ -226,7 +226,7 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
         },
         styleOverrides: {
           root: ({ theme }) => ({
-            padding: theme.spacing(0, 0.25, 0, 0),
+            padding: 0,
             width: theme.typography.pxToRem(46),
             height: theme.typography.pxToRem(24),
             marginRight: 0,

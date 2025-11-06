@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Switch, Button, Grid, Typography, Box, Tooltip, Stack, Select, MenuItem } from '@mui/material';
+import { styled, Button, Typography, Box, Stack } from '@mui/material';
 import { Formik, Form as FormikForm } from 'formik';
 import { FormikProps, FormikValues } from 'formik/dist/types';
 import { isEmpty } from 'lodash';
@@ -12,24 +12,12 @@ import * as yup from 'yup';
 
 import { start } from '../../../api/types/outgoing/legalVote';
 import { BackIcon } from '../../../assets/icons';
-import { DurationField, CommonTextField, notifications } from '../../../commonComponents';
-import { CommonFormItem } from '../../../commonComponents';
+import { notifications } from '../../../commonComponents';
 import { savedLegalVoteForm, selectLegalVoteId } from '../../../store/slices/legalVoteSlice';
-import { LegalVoteFormValues, SavedLegalVoteForm } from '../../../types';
-import {
-  formikDurationFieldProps,
-  formikSwitchProps,
-  formikProps,
-  formikSelectProps,
-} from '../../../utils/formikUtils';
+import { LegalVoteFormValues, LegalVoteKind, SavedLegalVoteForm } from '../../../types';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
+import LegalVoteSetupForm from './LegalVoteSetupForm';
 import ParticipantSelector, { AllowedParticipant } from './ParticipantSelector';
-
-interface ICreateLegalVoteFormProps {
-  initialValues?: SavedLegalVoteForm;
-  onClose: () => void;
-  isCoffeeBreakActive: boolean;
-}
 
 const defaultInitialValues = {
   duration: 1,
@@ -45,19 +33,26 @@ const defaultInitialValues = {
 
 const Form = styled(FormikForm)({
   flex: 1,
-  display: 'flex',
   flexDirection: 'column',
-  overflow: 'auto',
-  width: '100%',
 });
 
-const legalVoteOptions = ['roll_call', 'live_roll_call', 'pseudonymous'];
+const ButtonBox = styled(Box)({
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 2,
+});
+
+interface LegalVoteFormProps {
+  initialValues?: SavedLegalVoteForm;
+  onClose: () => void;
+  isCoffeeBreakActive: boolean;
+}
 
 const CreateLegalVoteForm = ({
   initialValues = defaultInitialValues,
   onClose,
   isCoffeeBreakActive,
-}: ICreateLegalVoteFormProps) => {
+}: LegalVoteFormProps) => {
   const { t } = useTranslation();
   const legalVoteId = useRef(useSelector(selectLegalVoteId));
   const dispatch = useDispatch();
@@ -80,7 +75,7 @@ const CreateLegalVoteForm = ({
       .max(500, t('legal-vote-form-input-error-max', { maxCharacters: 500 })),
     duration: yup.number().min(0).nullable().typeError(t('legal-vote-form-input-error-number')),
     createPdf: yup.bool(),
-    kind: yup.string().oneOf(legalVoteOptions),
+    kind: yup.string().oneOf(Object.values(LegalVoteKind)),
   });
 
   const saveFormValues = useCallback(
@@ -113,91 +108,12 @@ const CreateLegalVoteForm = ({
     return currentStep === 0 ? validationSchema : participantValidationSchema;
   };
 
-  const renderStep = (formik: FormikProps<LegalVoteFormValues>) => {
-    if (currentStep === 0) {
-      return (
-        <Grid container spacing={1}>
-          <Grid size={{ xs: 12 }}>
-            <Stack
-              direction="row"
-              sx={{
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingTop: 1,
-                paddingRight: 1,
-              }}
-            >
-              <Typography variant="body2">{t('legal-vote-form-duration')}</Typography>
-              <DurationField
-                {...formikDurationFieldProps('duration', formik)}
-                durationOptions={[null, 1, 2, 5, 'custom']}
-                setFieldValue={formik.setFieldValue}
-                ButtonProps={{
-                  size: 'small',
-                }}
-              />
-            </Stack>
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <CommonFormItem
-              {...formikSwitchProps('enableAbstain', formik)}
-              control={<Switch color="primary" />}
-              label={t('legal-vote-form-allow-abstain')}
-            />
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <CommonFormItem
-              {...formikSwitchProps('autoClose', formik)}
-              control={
-                <Tooltip title={`${t('legal-vote-form-auto-stop-tooltip')}`}>
-                  <Switch color="primary" />
-                </Tooltip>
-              }
-              label={t('legal-vote-form-auto-stop')}
-            />
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <Select {...formikSelectProps('kind', formik)} defaultValue={formik.initialValues['kind']} id="vote-kind">
-              {legalVoteOptions.map((kind) => (
-                <MenuItem key={kind} value={kind}>
-                  {t(`legal-vote-${kind}`)}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <CommonTextField
-              {...formikProps('name', formik)}
-              label={t('legal-vote-title-label')}
-              placeholder={t('legal-vote-title-placeholder')}
-              fullWidth
-            />
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <CommonTextField
-              {...formikProps('subtitle', formik)}
-              label={t('legal-vote-subtitle-label')}
-              placeholder={t('legal-vote-subtitle-placeholder')}
-              fullWidth
-            />
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <CommonTextField
-              {...formikProps('topic', formik)}
-              minRows={4}
-              maxRows={6}
-              multiline
-              label={t('legal-vote-topic-label')}
-              placeholder={t('legal-vote-topic-placeholder')}
-              fullWidth
-            />
-          </Grid>
-        </Grid>
-      );
-    }
-
-    return <ParticipantSelector name="allowedParticipants" />;
-  };
+  const renderStep = (formik: FormikProps<LegalVoteFormValues>) =>
+    currentStep === 0 ? (
+      <LegalVoteSetupForm formik={formik} t={t} onSave={() => saveFormValues(formik.values)} />
+    ) : (
+      <ParticipantSelector name="allowedParticipants" />
+    );
 
   const onSubmit = (values: FormikValues) => {
     const allowedParticipants = values.allowedParticipants as AllowedParticipant[];
@@ -222,7 +138,8 @@ const CreateLegalVoteForm = ({
 
   const handleNext = async (formik: FormikProps<LegalVoteFormValues>) => {
     const errors = await formik.validateForm();
-    if (Object.keys(errors).length === 0) {
+    const formContainsErrors = Object.keys(errors).length === 0;
+    if (formContainsErrors) {
       if (currentStep === 0) {
         setCurrentStep(1);
       } else {
@@ -249,19 +166,10 @@ const CreateLegalVoteForm = ({
     const isLastStep = currentStep === 1;
 
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          gap: 2,
-          padding: 1,
-        }}
-      >
-        {!isLastStep && (
-          <Button type="button" onClick={() => saveFormValues(formik.values)} fullWidth color="secondary">
-            {t('legal-vote-form-button-save')}
-          </Button>
-        )}
+      <ButtonBox>
+        <Button type="button" onClick={handlePrev} startIcon={<BackIcon />} fullWidth color="primary">
+          {t('legal-vote-button-back')}
+        </Button>
 
         <Button
           type="button"
@@ -272,7 +180,7 @@ const CreateLegalVoteForm = ({
         >
           {isLastStep ? t('poll-participant-list-button-start') : t('legal-vote-form-button-continue')}
         </Button>
-      </Box>
+      </ButtonBox>
     );
   };
 
@@ -293,36 +201,14 @@ const CreateLegalVoteForm = ({
             overflow: 'hidden',
           }}
         >
-          <Stack
-            spacing={1}
-            sx={{
-              flex: 1,
-              overflow: 'hidden',
-            }}
-          >
-            <Stack
-              spacing={1}
-              sx={{
-                alignItems: 'flex-start',
-                paddingLeft: 0.5,
-                paddingTop: 0.5,
-              }}
-            >
-              <Button variant="text" onClick={handlePrev} startIcon={<BackIcon />} size="small" color="secondary">
-                {t('legal-vote-button-back')}
-              </Button>
-            </Stack>
-
-            <Form>
-              {' '}
-              <Typography variant="h2" component="h4">
-                {initialValues?.id !== undefined
-                  ? t('legal-vote-header-title-update')
-                  : t('legal-vote-header-title-create')}
-              </Typography>
-              {renderStep(formik)}
-            </Form>
-          </Stack>
+          <Form>
+            <Typography paddingBottom={2}>
+              {initialValues?.id !== undefined
+                ? t('legal-vote-header-title-update')
+                : t('legal-vote-header-title-create')}
+            </Typography>
+            {renderStep(formik)}
+          </Form>
           {renderButtons(formik)}
         </Stack>
       )}
