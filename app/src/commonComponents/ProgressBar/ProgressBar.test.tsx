@@ -24,8 +24,14 @@ describe('ProgressBar', () => {
   });
 
   it('renders progress bar with 100% when finished', () => {
-    render(<ProgressBar startTime={0} endTime={2000} isFinished={true} />);
+    const { rerender } = render(<ProgressBar startTime={0} endTime={2000} isFinished={false} />);
     const progressBar = screen.getByRole('progressbar');
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    rerender(<ProgressBar startTime={0} endTime={2000} isFinished={true} />);
 
     expect(progressBar).toBeInTheDocument();
     expect(progressBar).toHaveAttribute('aria-valuenow', '100');
