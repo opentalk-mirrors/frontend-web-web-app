@@ -762,11 +762,12 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
       },
       MuiListItemText: {
         styleOverrides: {
-          primary: {
+          primary: ({ theme }) => ({
             fontWeight: 400,
-          },
+            color: theme.palette.text.primary,
+          }),
           secondary: ({ theme }) => ({
-            color: theme.palette.primary.contrastText,
+            color: theme.palette.text.disabled,
           }),
         },
       },
