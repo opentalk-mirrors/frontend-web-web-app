@@ -36,9 +36,11 @@ const ErrorActionButtons = ({ logout }: ErrorActionButtonsProps) => {
 
   if (logout) {
     if (auth) {
-      <Button onClick={() => auth.signOut()}>
-        <Typography>{t('global-logout')}</Typography>
-      </Button>;
+      return (
+        <Button onClick={() => auth.signOut()}>
+          <Typography>{t('global-logout')}</Typography>
+        </Button>
+      );
     }
 
     return null;

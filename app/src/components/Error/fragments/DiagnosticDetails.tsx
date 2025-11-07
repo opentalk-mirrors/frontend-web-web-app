@@ -56,8 +56,6 @@ const DiagnosticDetails = ({ error, errorInfo }: DiagnosticDetailsProps) => {
         disableRipple
         size="large"
         startIcon={collapsed ? <ArrowDownIcon /> : <ArrowUpIcon />}
-        variant="text"
-        color="primary"
         onClick={() => {
           setCollapsed(!collapsed);
         }}

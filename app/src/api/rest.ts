@@ -59,6 +59,10 @@ export enum AuthTypeErrorMessage {
   InvalidTokenOrInvite = 'Unable to parse access token or invite code',
 }
 
+export enum ErrorCode {
+  InvalidClaims = 'invalid_claims',
+}
+
 export const addRoom = createAsyncThunk<Room, NewRoom, { state: RootState; rejectValue: FetchRequestError }>(
   'control/addRoom',
   async (newRoomRequest, thunkApi) => {
@@ -128,7 +132,7 @@ export const rtkQueryErrorLoggerMiddleware: Middleware =
     // If rtk query get rejected dispatch auth error
     if (isAction(action) && isRejectedWithValue(action)) {
       // At some point we could define a common type for rejected payload
-      const payload = action.payload as { status: number | string; data: { message: string } };
+      const payload = action.payload as { status: number | string; data: { message: string; code?: ErrorCode } };
 
       if (payload.status === 401) {
         if (payload.data.message === AuthTypeErrorMessage.InvalidTokenOrInvite) {
@@ -149,6 +153,17 @@ export const rtkQueryErrorLoggerMiddleware: Middleware =
         // what pandora's box we are openning, before hand this middleware
         // couldn't even finish up on 403 as it would come to this sopt and be
         // left unhandled as next callback was never called.
+        return next(action);
+      }
+      if (payload.data.code === ErrorCode.InvalidClaims) {
+        dispatch(
+          authError({
+            status: payload.status,
+            name: ErrorCode.InvalidClaims,
+            message: payload.data.message,
+            code: ErrorCode.InvalidClaims,
+          })
+        );
         return next(action);
       }
       const isServerError = typeof payload.status === 'number' && payload.status >= 500;

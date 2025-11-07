@@ -8,11 +8,6 @@ const Container = styled(Stack)({
   justifyContent: 'center',
   textAlign: 'center',
 });
-
-const ErrorTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.primary,
-}));
-
 interface ErrorTextProps {
   title: string;
   description?: string;
@@ -21,8 +16,8 @@ interface ErrorTextProps {
 const ErrorText = ({ title, description }: ErrorTextProps) => {
   return (
     <Container spacing={2}>
-      <ErrorTypography variant="h5">{title}</ErrorTypography>
-      {description && <ErrorTypography variant="body2">{description}</ErrorTypography>}
+      <Typography variant="h5">{title}</Typography>
+      {description && <Typography variant="body2">{description}</Typography>}
     </Container>
   );
 };
