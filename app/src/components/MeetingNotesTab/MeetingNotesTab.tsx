@@ -303,13 +303,15 @@ const MeetingNotesTab = () => {
             <CommonTextField
               size="small"
               onChange={(event) => handleSearch(event)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                autoFocus: true,
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  autoFocus: true,
+                },
               }}
               fullWidth
             />

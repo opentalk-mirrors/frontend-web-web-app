@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { InputProps, InputLabelProps, TextField, TextFieldProps, styled } from '@mui/material';
+import { InputProps, InputLabelProps, TextField, TextFieldProps, styled, SelectProps } from '@mui/material';
 import { useState, FocusEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,6 +53,7 @@ const CommonTextField = ({
   const [focused, setFocused] = useState(false);
   const initialInputLabelProps = (slotProps?.inputLabel || {}) as InputLabelProps;
   const InputProps = (slotProps?.input || {}) as InputProps;
+  const SelectProps = (slotProps?.select || {}) as SelectProps;
 
   const id = props.id || generateUniqueId();
 
@@ -132,6 +133,7 @@ const CommonTextField = ({
       hideLabel={hideLabel}
       slotProps={{
         input: InputProps,
+        select: SelectProps,
         inputLabel: computedInputLabelProps,
         htmlInput: {
           ...slotProps?.htmlInput,

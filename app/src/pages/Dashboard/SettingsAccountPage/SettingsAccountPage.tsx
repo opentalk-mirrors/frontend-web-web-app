@@ -39,8 +39,10 @@ const SettingsAccountPage = () => {
             <ReadonlyCommonTextField
               label={t('dashboard-settings-account-email-label')}
               value={data?.email}
-              InputProps={{ readOnly: true }}
-              InputLabelProps={{ shrink: true }}
+              slotProps={{
+                input: { readOnly: true },
+                inputLabel: { shrink: true },
+              }}
               placeholder="---"
               fullWidth
             />
@@ -49,8 +51,10 @@ const SettingsAccountPage = () => {
             <ReadonlyCommonTextField
               label={t('dashboard-settings-account-firstname-label')}
               value={data?.firstname}
-              InputProps={{ readOnly: true }}
-              InputLabelProps={{ shrink: true }}
+              slotProps={{
+                input: { readOnly: true },
+                inputLabel: { shrink: true },
+              }}
               placeholder="---"
               fullWidth
             />
@@ -59,8 +63,10 @@ const SettingsAccountPage = () => {
             <ReadonlyCommonTextField
               label={t('dashboard-settings-account-familyname-label')}
               value={data?.lastname}
-              InputProps={{ readOnly: true }}
-              InputLabelProps={{ shrink: true }}
+              slotProps={{
+                input: { readOnly: true },
+                inputLabel: { shrink: true },
+              }}
               placeholder="---"
               fullWidth
             />

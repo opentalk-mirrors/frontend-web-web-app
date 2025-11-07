@@ -102,17 +102,19 @@ export const MobileHome = () => {
       </HeaderContainer>
       <CommonTextField
         select
-        SelectProps={{
-          id: VIEW_SELECT_ID,
-          SelectDisplayProps: {
-            'aria-label': t('dashboard-meeting-mobile-view-select'),
+        slotProps={{
+          select: {
+            id: VIEW_SELECT_ID,
+            SelectDisplayProps: {
+              'aria-label': t('dashboard-meeting-mobile-view-select'),
+            },
+            MenuProps: {
+              MenuListProps: { 'aria-controls': MEETINGS_CONATINER_ID },
+            },
           },
-          MenuProps: {
-            MenuListProps: { 'aria-controls': MEETINGS_CONATINER_ID },
+          input: {
+            'aria-labelledby': VIEW_SELECT_ID,
           },
-        }}
-        inputProps={{
-          'aria-labelledby': VIEW_SELECT_ID,
         }}
         defaultValue={DEFAULT_VIEW}
         onChange={handleChange}

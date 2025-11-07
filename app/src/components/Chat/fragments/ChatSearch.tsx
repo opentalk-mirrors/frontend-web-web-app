@@ -97,13 +97,15 @@ const ChatSearch = (props: ChatSearchProps, ref: ForwardedRef<HTMLInputElement>)
       fullWidth={true}
       multiline
       // We have to use empty adornment in order to keep layout persistant when clear icon changes visibility.
-      InputProps={{ startAdornment: startAdornment, endAdornment: renderEndAdornment }}
+      slotProps={{
+        input: { startAdornment: startAdornment, endAdornment: renderEndAdornment },
+        inputLabel: { sx: { fontWeight: theme.typography.fontWeightRegular } },
+      }}
       value={props.value}
       onChange={onChangeMiddleware}
       onKeyUp={onKeyUp}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
-      InputLabelProps={{ sx: { fontWeight: theme.typography.fontWeightRegular } }}
     />
   );
 };
