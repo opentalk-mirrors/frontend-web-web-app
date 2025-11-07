@@ -21,12 +21,12 @@ const MeetingEndedDialog = ({ setIsDialogOpen }: MeetingEndedDialogProps) => {
   const { t } = useTranslation();
   const inviteCode = useInviteCode();
 
-  const onClose = () => {
+  const handleClose = () => {
     setIsDialogOpen(false);
   };
 
   return (
-    <Dialog open onClose={onClose} aria-labelledby="meeting-ended-title">
+    <Dialog open onClose={handleClose} aria-labelledby="meeting-ended-title">
       <DialogTitle id="meeting-ended-title">
         {t('meeting-ended-dialog-title')}
         <Box
@@ -36,13 +36,13 @@ const MeetingEndedDialog = ({ setIsDialogOpen }: MeetingEndedDialogProps) => {
             right: 7,
           }}
         >
-          <IconButton onClick={onClose} aria-label={t('global-close-dialog')}>
+          <IconButton onClick={handleClose} aria-label={t('global-close-dialog')}>
             <CloseIcon aria-hidden="true" />
           </IconButton>
         </Box>
       </DialogTitle>
       <DialogActions>
-        <Button color="secondary" onClick={onClose}>
+        <Button color="secondary" onClick={handleClose}>
           {t('global-close-dialog')}
         </Button>
         <Button

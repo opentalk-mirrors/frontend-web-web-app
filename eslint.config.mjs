@@ -70,7 +70,6 @@ export default defineConfig([
       'app/src/components/MeetingNotesTab/MeetingNotesTab.tsx',
       'app/src/components/MeetingSettingsDialog/fragments/AudioSettingsPanel.tsx',
       'app/src/components/MeetingSettingsDialog/fragments/CameraSettingsPanel.tsx',
-      'app/src/components/MeetingView/MeetingView.tsx',
       'app/src/components/MeetingView/fragments/Cinema.tsx',
       'app/src/components/ParticipantWindow/fragments/ParticipantVideo.tsx',
       'app/src/components/ParticipantWindow/fragments/VideoOverlay.tsx',
