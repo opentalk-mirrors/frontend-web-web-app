@@ -144,8 +144,8 @@ importers:
         specifier: ^10.23.0
         version: 10.23.0
       '@sentry/react':
-        specifier: ^10.22.0
-        version: 10.22.0(react@19.2.0)
+        specifier: ^10.23.0
+        version: 10.23.0(react@19.2.0)
       bowser:
         specifier: ^2.12.1
         version: 2.12.1
@@ -222,8 +222,8 @@ importers:
         specifier: ^7.1.2
         version: 7.1.2(react@19.2.0)
       react-window:
-        specifier: ^2.2.2
-        version: 2.2.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: ^2.2.3
+        version: 2.2.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       snakecase-keys:
         specifier: ^9.0.2
         version: 9.0.2
@@ -1546,32 +1546,16 @@ packages:
   '@rushstack/ts-command-line@5.1.3':
     resolution: {integrity: sha512-Kdv0k/BnnxIYFlMVC1IxrIS0oGQd4T4b7vKfx52Y2+wk2WZSDFIvedr7JrhenzSlm3ou5KwtoTGTGd5nbODRug==}
 
-  '@sentry-internal/browser-utils@10.22.0':
-    resolution: {integrity: sha512-BpJoLZEyJr7ORzkCrIjxRTnFWwO1mJNICVh3B9g5d9245niGT4OJvRozmLz89WgJkZFHWu84ls6Xfq5b/3tGFQ==}
-    engines: {node: '>=18'}
-
   '@sentry-internal/browser-utils@10.23.0':
     resolution: {integrity: sha512-FUak8FH51TnGrx2i31tgqun0VsbDCVQS7dxWnUZHdi+0hpnFoq9+wBHY+qrOQjaInZSz3crIifYv3z7SEzD0Jg==}
-    engines: {node: '>=18'}
-
-  '@sentry-internal/feedback@10.22.0':
-    resolution: {integrity: sha512-zXySOin/gGHPV+yKaHqjN9YZ7psEJwzLn8PzCLeo+4REzF1eQwbYZIgOxJFD32z8s3nZiABSWFM/n1CvVfMEsQ==}
     engines: {node: '>=18'}
 
   '@sentry-internal/feedback@10.23.0':
     resolution: {integrity: sha512-+HWC9VTPICsFX/lIPoBU9GxTaJZVXJcukP+qGxj+j/8q/Dy1w22JHDWcJbZiaW4kWWlz7VbA0KVKS3grD+e9aA==}
     engines: {node: '>=18'}
 
-  '@sentry-internal/replay-canvas@10.22.0':
-    resolution: {integrity: sha512-DE4JNUskJg+O+wFq42W5gAa/99aD5k7TfGOwABxvnzFv8vkKA7pqXwPbFFPzypdKIkln+df7RmbnDwQRNg6/lA==}
-    engines: {node: '>=18'}
-
   '@sentry-internal/replay-canvas@10.23.0':
     resolution: {integrity: sha512-GLNY8JPcMI6xhQ5FHiYO/W/3flrwZMt4CI/E3jDRNujYWbCrca60MRke6k7Zm1qi9rZ1FuhVWZ6BAFc4vwXnSg==}
-    engines: {node: '>=18'}
-
-  '@sentry-internal/replay@10.22.0':
-    resolution: {integrity: sha512-JNE4kHAQSG4/V+J+Zog3vKBWgOe9H33ol/MEU1RuLM/4I+uLf4mTetwnS9ilpnnW/Z/gQYfA+R3CiMrZtqTivw==}
     engines: {node: '>=18'}
 
   '@sentry-internal/replay@10.23.0':
@@ -1581,10 +1565,6 @@ packages:
   '@sentry/babel-plugin-component-annotate@4.6.0':
     resolution: {integrity: sha512-3soTX50JPQQ51FSbb4qvNBf4z/yP7jTdn43vMTp9E4IxvJ9HKJR7OEuKkCMszrZmWsVABXl02msqO7QisePdiQ==}
     engines: {node: '>= 14'}
-
-  '@sentry/browser@10.22.0':
-    resolution: {integrity: sha512-wD2XqN+yeBpQFfdPo6+wlKDMyyuDctVGzZWE4qTPntICKQuwMdAfeq5Ma89ad0Dw+bzG9UijGeyuJQlswF87Mw==}
-    engines: {node: '>=18'}
 
   '@sentry/browser@10.23.0':
     resolution: {integrity: sha512-9hViLfYONxRJykOhJQ3ZHQ758t1wQIsxEC7mTsydbDm+m12LgbBtXbfgcypWHlom5Yvb+wg6W+31bpdGnATglw==}
@@ -1646,16 +1626,12 @@ packages:
     engines: {node: '>= 10'}
     hasBin: true
 
-  '@sentry/core@10.22.0':
-    resolution: {integrity: sha512-V1oeHbrOKzxadsCmgtPku3v3Emo/Bpb3VSuKmlLrQefiHX98MWtjJ3XDGfduzD5/dCdh0r/OOLwjcmrO/PZ2aw==}
-    engines: {node: '>=18'}
-
   '@sentry/core@10.23.0':
     resolution: {integrity: sha512-4aZwu6VnSHWDplY5eFORcVymhfvS/P6BRfK81TPnG/ReELaeoykKjDwR+wC4lO7S0307Vib9JGpszjsEZw245g==}
     engines: {node: '>=18'}
 
-  '@sentry/react@10.22.0':
-    resolution: {integrity: sha512-XByOjtW30LMNibmCPJF5LNYFmETNOUmWByECADox8GYV4BEX18WGXl4K1fpPDTSk+y4vUCHbltHa4GkyTRwG8Q==}
+  '@sentry/react@10.23.0':
+    resolution: {integrity: sha512-WtDrhs9zF5YAf1DwsIhmS2E1EXx4cA3WeFCzty+rpS7e6XQXk+riAdHvAUZxccHkzv5sxSOCYANFy3J7oUiYcg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^16.14.0 || 17.x || 18.x || 19.x
@@ -4391,8 +4367,8 @@ packages:
     peerDependencies:
       react: '>=17.0.0'
 
-  react-window@2.2.2:
-    resolution: {integrity: sha512-kvHKwFImKBWNbx2S87NZOhQhAVkBthjmnOfHlhQI45p3A+D+V53E+CqQMsyHrxNe3ke+YtWXuKDa1eoHAaIWJg==}
+  react-window@2.2.3:
+    resolution: {integrity: sha512-gTRqQYC8ojbiXyd9duYFiSn2TJw0ROXCgYjenOvNKITWzK0m0eCvkUsEUM08xvydkMh7ncp+LE0uS3DeNGZxnQ==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -6518,36 +6494,18 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@sentry-internal/browser-utils@10.22.0':
-    dependencies:
-      '@sentry/core': 10.22.0
-
   '@sentry-internal/browser-utils@10.23.0':
     dependencies:
       '@sentry/core': 10.23.0
-
-  '@sentry-internal/feedback@10.22.0':
-    dependencies:
-      '@sentry/core': 10.22.0
 
   '@sentry-internal/feedback@10.23.0':
     dependencies:
       '@sentry/core': 10.23.0
 
-  '@sentry-internal/replay-canvas@10.22.0':
-    dependencies:
-      '@sentry-internal/replay': 10.22.0
-      '@sentry/core': 10.22.0
-
   '@sentry-internal/replay-canvas@10.23.0':
     dependencies:
       '@sentry-internal/replay': 10.23.0
       '@sentry/core': 10.23.0
-
-  '@sentry-internal/replay@10.22.0':
-    dependencies:
-      '@sentry-internal/browser-utils': 10.22.0
-      '@sentry/core': 10.22.0
 
   '@sentry-internal/replay@10.23.0':
     dependencies:
@@ -6555,14 +6513,6 @@ snapshots:
       '@sentry/core': 10.23.0
 
   '@sentry/babel-plugin-component-annotate@4.6.0': {}
-
-  '@sentry/browser@10.22.0':
-    dependencies:
-      '@sentry-internal/browser-utils': 10.22.0
-      '@sentry-internal/feedback': 10.22.0
-      '@sentry-internal/replay': 10.22.0
-      '@sentry-internal/replay-canvas': 10.22.0
-      '@sentry/core': 10.22.0
 
   '@sentry/browser@10.23.0':
     dependencies:
@@ -6630,14 +6580,12 @@ snapshots:
       - encoding
       - supports-color
 
-  '@sentry/core@10.22.0': {}
-
   '@sentry/core@10.23.0': {}
 
-  '@sentry/react@10.22.0(react@19.2.0)':
+  '@sentry/react@10.23.0(react@19.2.0)':
     dependencies:
-      '@sentry/browser': 10.22.0
-      '@sentry/core': 10.22.0
+      '@sentry/browser': 10.23.0
+      '@sentry/core': 10.23.0
       hoist-non-react-statics: 3.3.2
       react: 19.2.0
 
@@ -9741,7 +9689,7 @@ snapshots:
     dependencies:
       react: 19.2.0
 
-  react-window@2.2.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  react-window@2.2.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
