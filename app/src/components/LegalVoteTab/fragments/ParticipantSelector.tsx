@@ -148,12 +148,14 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
       <CommonTextField
         size="small"
         onChange={searchHandler}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          },
         }}
         fullWidth
       />

@@ -306,46 +306,50 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
         onKeyDown={handleSubmitOnEnter}
         onFocus={() => setFocus(true)}
         onBlur={handleFormBlur}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <SendMessageButton
-                aria-label={t('chat-submit-button')}
-                type="submit"
-                edge="end"
-                data-testid="send-message-button"
-                disabled={!isChatEnabled}
-                parentHasFocus={hasFocus}
-                parentDisabled={!isChatEnabled}
-              >
-                <SendMessageIcon />
-              </SendMessageButton>
-            </InputAdornment>
-          ),
-          startAdornment: (
-            <InputAdornment position="start">
-              <EmojiIconButton
-                ref={emojiButton}
-                onClick={() => setOpenPicker(!openPicker)}
-                onKeyDown={handleEmojiKeypress}
-                onKeyUp={handleEmojiKeypress}
-                type="button"
-                edge="start"
-                disabled={!isChatEnabled}
-                parentHasFocus={hasFocus}
-                parentDisabled={!isChatEnabled}
-              >
-                <EmojiIcon />
-                <VisuallyHiddenTitle component="span" label={`chat-${openPicker ? 'close' : 'open'}-emoji-picker`} />
-              </EmojiIconButton>
-            </InputAdornment>
-          ),
+        slotProps={{
+          input: {
+            endAdornment: (
+              <InputAdornment position="end">
+                <SendMessageButton
+                  aria-label={t('chat-submit-button')}
+                  type="submit"
+                  edge="end"
+                  data-testid="send-message-button"
+                  disabled={!isChatEnabled}
+                  parentHasFocus={hasFocus}
+                  parentDisabled={!isChatEnabled}
+                >
+                  <SendMessageIcon />
+                </SendMessageButton>
+              </InputAdornment>
+            ),
+            startAdornment: (
+              <InputAdornment position="start">
+                <EmojiIconButton
+                  ref={emojiButton}
+                  onClick={() => setOpenPicker(!openPicker)}
+                  onKeyDown={handleEmojiKeypress}
+                  onKeyUp={handleEmojiKeypress}
+                  type="button"
+                  edge="start"
+                  disabled={!isChatEnabled}
+                  parentHasFocus={hasFocus}
+                  parentDisabled={!isChatEnabled}
+                >
+                  <EmojiIcon />
+                  <VisuallyHiddenTitle component="span" label={`chat-${openPicker ? 'close' : 'open'}-emoji-picker`} />
+                </EmojiIconButton>
+              </InputAdornment>
+            ),
+          },
+          inputLabel: {
+            sx: { fontWeight: theme.typography.fontWeightRegular },
+          },
         }}
         maxRows={3}
         multiline
         fullWidth
         disabled={!isChatEnabled}
-        InputLabelProps={{ sx: { fontWeight: theme.typography.fontWeightRegular } }}
       />
     </Form>
   );

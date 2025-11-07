@@ -92,12 +92,14 @@ const MobileDialogContent = (props: MobileSettingsDialogContentProps) => {
         <MobileSettingsContainer direction="column">
           <SettingsSelect
             select
-            SelectProps={{
-              SelectDisplayProps: {
-                'aria-label': t('meeting-settings-title'),
-              },
-              MenuProps: {
-                MenuListProps: { 'aria-controls': SETTINGS_PANEL_ID },
+            slotProps={{
+              select: {
+                SelectDisplayProps: {
+                  'aria-label': t('meeting-settings-title'),
+                },
+                MenuProps: {
+                  MenuListProps: { 'aria-controls': SETTINGS_PANEL_ID },
+                },
               },
             }}
             defaultValue={setting}

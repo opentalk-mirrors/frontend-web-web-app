@@ -26,14 +26,18 @@ function SearchInput({ searchValue, onSearch }: SearchInputProps) {
       size="small"
       label={t('participant-search-label')}
       placeholder={t('global-name-placeholder')}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon />
-          </InputAdornment>
-        ),
+      slotProps={{
+        input: {
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon />
+            </InputAdornment>
+          ),
+        },
+        inputLabel: {
+          sx: { fontWeight: theme.typography.fontWeightRegular },
+        },
       }}
-      InputLabelProps={{ sx: { fontWeight: theme.typography.fontWeightRegular } }}
     />
   );
 }

@@ -52,7 +52,11 @@ describe('CommonTextField', () => {
   });
   it('shrinks the label only when user types value even with the start adornment', async () => {
     render(
-      <CommonTextField label={LABEL} placeholder={PLACEHOLDER} InputProps={{ startAdornment: START_ADORNMENT }} />
+      <CommonTextField
+        label={LABEL}
+        placeholder={PLACEHOLDER}
+        slotProps={{ input: { startAdornment: START_ADORNMENT } }}
+      />
     );
     const textField = screen.getByRole('textbox', { name: LABEL });
     const label = screen.getByText(LABEL, { selector: 'label' });
@@ -63,7 +67,7 @@ describe('CommonTextField', () => {
     });
   });
   it('shrinks the label with the start adornment, if parent component passes a value, without focusing the input', () => {
-    render(<CommonTextField label={LABEL} value={LABEL} InputProps={{ startAdornment: START_ADORNMENT }} />);
+    render(<CommonTextField label={LABEL} value={LABEL} slotProps={{ input: { startAdornment: START_ADORNMENT } }} />);
     const label = screen.getByText(LABEL, { selector: 'label' });
     expect(label).toHaveAttribute('data-shrink', 'true');
   });

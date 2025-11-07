@@ -106,8 +106,10 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
                           arrayHelpers.remove(index);
                         }
                       }}
-                      inputProps={{
-                        autoFocus: true,
+                      slotProps={{
+                        input: {
+                          autoFocus: true,
+                        },
                       }}
                     />
                   )}
