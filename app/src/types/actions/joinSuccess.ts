@@ -2,9 +2,12 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { EventInfo, SharedFolderData, StreamingState, Tariff } from '@opentalk/rest-api-rtk-query';
-import { MeetingDetails } from '@opentalk/rest-api-rtk-query/src/types/event';
+import { MeetingDetails, TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 
-import type { ParticipationLogging } from '../../api/types/outgoing/trainingParticipationReport';
+import type {
+  ParticipationLogging,
+  ParticipationLoggingState,
+} from '../../api/types/outgoing/trainingParticipationReport';
 import { InitialAutomod } from '../automod';
 import { InitialBreakout } from '../breakout';
 import { InitialChat } from '../chat';
@@ -136,6 +139,12 @@ export interface ModuleData {
   polls?: InitialPoll;
   automod?: InitialAutomod;
   sharedFolder?: SharedFolderData;
+  trainingParticipationReport?: TrainingParticipationReport;
+}
+
+export interface TrainingParticipationReport {
+  state: ParticipationLoggingState;
+  parameter?: TrainingParticipationReportParameterSet;
 }
 
 export interface WaitingRoomParticipant {

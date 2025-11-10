@@ -25,28 +25,9 @@ export const handleTrainingParticipationReportMessage = (
   state: RootState
 ) => {
   switch (data.message) {
-    case 'presence_logging_enabled':
-      if (state.room.isOwnedByCurrentUser) {
-        dispatch(trainingParticipationReportEnabled());
-        notificationAction({
-          msg: i18next.t('presence-logging-enabled-notification'),
-          variant: 'info',
-          ariaLive: 'polite',
-        });
-      }
-      break;
-    case 'presence_logging_disabled':
-      if (state.room.isOwnedByCurrentUser) {
-        dispatch(trainingParticipationReportDisabled());
-        notificationAction({
-          msg: i18next.t('presence-logging-disabled-notification'),
-          variant: 'info',
-          ariaLive: 'polite',
-        });
-      }
-      break;
     case 'presence_logging_started':
       if (state.room.isOwnedByCurrentUser) {
+        dispatch(trainingParticipationReportEnabled());
         notificationAction({
           msg: i18next.t('presence-logging-started-notification'),
           variant: 'info',
@@ -55,6 +36,7 @@ export const handleTrainingParticipationReportMessage = (
       }
       break;
     case 'presence_logging_ended':
+      dispatch(trainingParticipationReportDisabled());
       if (state.room.isOwnedByCurrentUser) {
         notificationAction({
           msg: i18next.t('presence-logging-ended-notification'),
@@ -71,7 +53,7 @@ export const handleTrainingParticipationReportMessage = (
     case 'presence_confirmation_logged':
       dispatch(presenceConfirmationDone());
       break;
-    case 'pdf_asset': {
+    case 'pdf_created': {
       if (state.room.isOwnedByCurrentUser) {
         let assetLocation: string | undefined;
         if (state.room.eventInfo?.id) {

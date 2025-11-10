@@ -8,6 +8,18 @@ import { createModule, Namespaced } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
+export interface EnablePresenceLogging extends Partial<TrainingParticipationReportParameterSet> {
+  action: 'enable_presence_logging';
+}
+
+export interface DisablePresenceLogging {
+  action: 'disable_presence_logging';
+}
+
+export interface ConfirmPresence {
+  action: 'confirm_presence';
+}
+
 export enum ParticipationLoggingState {
   /**
    * No participation logging is active.
@@ -22,25 +34,14 @@ export enum ParticipationLoggingState {
    */
   WaitingForConfirmation = 'waiting_for_confirmation',
 }
+
 export type ParticipationLogging = {
   state: ParticipationLoggingState;
 };
 
-export interface EnablePresenceLogging extends Partial<TrainingParticipationReportParameterSet> {
-  action: 'enable_presence_logging';
-}
-
-export interface DisablePresenceLogging {
-  action: 'disable_presence_logging';
-}
-
-export interface ConfirmPresence {
-  action: 'confirm_presence';
-}
-
 export type Action = EnablePresenceLogging | DisablePresenceLogging | ConfirmPresence;
 
-export type TrainingParticipationReport = Namespaced<Action, 'training_participantion_report'>;
+export type TrainingParticipationReport = Namespaced<Action, 'training_participation_report'>;
 
 export const enablePresenceLogging = createSignalingApiCall<EnablePresenceLogging>(
   'training_participation_report',
