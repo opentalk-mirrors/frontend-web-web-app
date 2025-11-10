@@ -9,12 +9,12 @@ interface MessageSent extends ChatBase {
 
 export interface ChatEnabled {
   message: 'chat_enabled';
-  id: ParticipantId;
+  issuedBy: ParticipantId;
 }
 
 interface ChatDisabled {
   message: 'chat_disabled';
-  id: ParticipantId;
+  issuedBy: ParticipantId;
 }
 
 export interface ClearGlobalChat {

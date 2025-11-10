@@ -148,19 +148,21 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
             </EventMessageTypography>
           </EventTypography>
         );
-      case 'left':
+      case 'left': {
+        const reason = message.reason === DisconnectReason.Leave ? 'left' : 'removed';
         return (
           <EventTypography variant="body2" data-testid="user-event-message">
             <EventNameTypography variant="caption" translate="no">
               {sender?.displayName}
             </EventNameTypography>
             <EventMessageTypography variant="caption">
-              {t(`participant-${message.reason === DisconnectReason.Leave ? message.event : 'removed'}-event`, {
+              {t(`participant-${reason}-event`, {
                 time: getTimeStringFromTimestamp(message),
               })}
             </EventMessageTypography>
           </EventTypography>
         );
+      }
       case 'joined':
         return (
           <EventTypography variant="body2" data-testid="user-event-message">

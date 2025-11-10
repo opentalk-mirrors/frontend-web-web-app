@@ -35,7 +35,7 @@ export const handleChatMessage = (
     case 'chat_disabled': {
       const enabled = data.message === 'chat_enabled';
       notifications.info(i18next.t(`chat-${enabled ? 'enabled' : 'disabled'}-message`));
-      dispatch(setChatSettings({ id: data.id, timestamp, enabled }));
+      dispatch(setChatSettings({ id: data.issuedBy, timestamp, enabled }));
       break;
     }
     case 'message_sent': {
