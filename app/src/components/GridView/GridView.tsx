@@ -6,10 +6,9 @@ import { CircularProgress, Grid, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
 import { useMemo, useRef } from 'react';
 
-import { MAX_GRID_TILES_DESKTOP } from '../../constants';
 import { useAppSelector } from '../../hooks';
-import { selectParticipantsTotal, selectSlicedParticipants } from '../../store/slices/participantsSlice';
-import { selectGridViewOrder, selectPaginationPageState } from '../../store/slices/uiSlice';
+import { useGridViewParticipants } from '../../hooks/useGridViewParticipants';
+import { selectPaginationPageState } from '../../store/slices/uiSlice';
 import GridCell from './fragments/GridCell';
 
 const GridContainer = styled('div', {
@@ -28,12 +27,8 @@ const GridContainer = styled('div', {
 
 const GridView = () => {
   const remoteParticipants = useRemoteParticipants();
+  const participants = useGridViewParticipants();
   const selectedPage = useAppSelector(selectPaginationPageState);
-  const gridViewOrder = useAppSelector(selectGridViewOrder);
-  const totalParticipants = useAppSelector(selectParticipantsTotal);
-  const slicedParticipants = useAppSelector((state) =>
-    selectSlicedParticipants(state, gridViewOrder, selectedPage, MAX_GRID_TILES_DESKTOP)
-  );
 
   // Create a map for quick lookups of remoteParticipants by identity
   const remoteParticipantsMap = useMemo(() => {
@@ -42,7 +37,7 @@ const GridView = () => {
 
   const lastPage = useRef<number>(0);
 
-  const videoWidth = useMemo(() => (slicedParticipants.length <= 4 ? 50 : 33.3), [slicedParticipants.length]);
+  const videoWidth = useMemo(() => (participants.length <= 4 ? 50 : 33.3), [participants.length]);
 
   const direction = useMemo(() => {
     const dir = selectedPage > lastPage.current ? 'left' : 'right';
@@ -50,26 +45,22 @@ const GridView = () => {
     return dir;
   }, [selectedPage]);
 
-  const highlight = slicedParticipants.length >= 2;
+  const highlight = participants.length >= 2;
 
-  const gridCells = useMemo(
-    () =>
-      slicedParticipants.map((participant) => {
-        // We will use participant data from the controller until we get the more preferable data from the livekit server
-        const participantData =
-          remoteParticipantsMap.get(participant.id) ||
-          new Participant(participant.id, participant.id, participant.displayName);
+  const gridCells = participants.map((participant) => {
+    // We will use participant data from the controller until we get the more preferable data from the livekit server
+    const participantData =
+      remoteParticipantsMap.get(participant.id) ||
+      new Participant(participant.id, participant.id, participant.displayName);
 
-        return (
-          <ParticipantContext.Provider value={participantData} key={participant.id}>
-            <GridCell direction={direction} highlight={highlight} />
-          </ParticipantContext.Provider>
-        );
-      }),
-    [remoteParticipantsMap, slicedParticipants, direction, highlight]
-  );
+    return (
+      <ParticipantContext.Provider value={participantData} key={participant.id}>
+        <GridCell direction={direction} highlight={highlight} />
+      </ParticipantContext.Provider>
+    );
+  });
 
-  const areGridCellsLoading = totalParticipants > 1 && gridCells.length === 0;
+  const areGridCellsLoading = participants.length > 1 && gridCells.length === 0;
 
   const loadingGrids = (
     <Grid
