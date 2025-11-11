@@ -7,7 +7,7 @@ export interface AuthContextValues {
   configuration: AuthAdapterConfiguration;
   signIn: (redirectUrl?: string, codeChallenge?: string) => Promise<void>;
   signOut: (signOutRedirectUrl?: string) => void;
-  getConfigurationEndpoints: () => Promise<AuthenticationProviderUrls>;
+  openidConfig?: AuthenticationProviderUrls;
   getBaseUrl: () => string;
   getSavedRedirectUrl: () => string | undefined;
   getNewRefreshToken: () => void;

@@ -123,34 +123,33 @@ export const generateSerilizadError = (payload: SerializedError) => {
   };
 };
 
+export const sha256HashBase64 = async (input: string) => {
+  const buffer = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+  return urlSafeBase64Encode(new Uint8Array(buffer));
+};
+
 // must be between 43 and 128 according to the PKCE extension (RFC 7636)
-const PKCE_VERIFIER_LENGTH = 43;
-export const pkceChallenge = {
-  async generate(): Promise<string> {
-    let codeVerifier = sessionStorage.getItem('code_verifier');
+const PKCE_VERIFIER_LENGTH = 128;
+export const generateSafeRandomString = (length: number = PKCE_VERIFIER_LENGTH) => {
+  const mask = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~';
+  const randomUints = window.crypto.getRandomValues(new Uint8Array(length));
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += mask[randomUints[i] % mask.length];
+  }
+  return result;
+};
 
-    if (!codeVerifier) {
-      codeVerifier = this.generateVerifier(PKCE_VERIFIER_LENGTH);
-      sessionStorage.setItem('code_verifier', codeVerifier);
-    }
+export const generatePkceChallenge = () => {
+  const codeVerifier = generateSafeRandomString();
+  sessionStorage.setItem('code_verifier', codeVerifier);
+  return sha256HashBase64(codeVerifier);
+};
 
-    return this.generateChallenge(codeVerifier);
-  },
-
-  async generateChallenge(codeVerifier: string): Promise<string> {
-    const buffer = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(codeVerifier));
-    return urlSafeBase64Encode(new Uint8Array(buffer));
-  },
-
-  generateVerifier(length: number): string {
-    const mask = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~';
-    const randomUints = window.crypto.getRandomValues(new Uint8Array(length));
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += mask[randomUints[i] % mask.length];
-    }
-    return result;
-  },
+export const generateAndSaveOidcStateString = () => {
+  const stateString = generateSafeRandomString();
+  sessionStorage.setItem('oidc_state_parameter', stateString);
+  return stateString;
 };
 
 export const urlSafeBase64Encode = (buffer: Uint8Array) => {
