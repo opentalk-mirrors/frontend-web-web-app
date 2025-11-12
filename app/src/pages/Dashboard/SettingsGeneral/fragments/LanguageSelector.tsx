@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Grid, Typography, MenuItem, Button } from '@mui/material';
 import { useFormik } from 'formik';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 
@@ -16,6 +16,7 @@ const LanguageSelector = () => {
   const { t, i18n } = useTranslation();
   const { data } = useGetMeQuery();
   const [updateMe, { isLoading }] = useUpdateMeMutation();
+
   const getDefaultLanguage = useCallback(() => {
     if (i18n.resolvedLanguage?.startsWith('en')) {
       return 'en-US';
@@ -45,6 +46,13 @@ const LanguageSelector = () => {
       }
     },
   });
+
+  const { setFieldValue } = formik;
+  useEffect(() => {
+    if (data?.language) {
+      setFieldValue('language', data.language);
+    }
+  }, [setFieldValue, data?.language]);
 
   return (
     <form onSubmit={formik.handleSubmit}>
