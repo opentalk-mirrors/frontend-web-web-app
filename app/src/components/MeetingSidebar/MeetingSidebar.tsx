@@ -26,6 +26,7 @@ const SidebarContainer = styled('aside')(({ theme }) => ({
 const UserSidebarContainer = styled(Stack)(({ theme }) => ({
   width: '21rem',
   padding: theme.spacing(2),
+  flexDirection: 'column-reverse', // this is only needed to restore previous tab order (toolbar last)
 }));
 
 const MeetingSidebar = () => {
@@ -46,9 +47,6 @@ const MeetingSidebar = () => {
         <ModerationSideToolbar displayedTabs={tabs} onSelect={handleSetActiveTab} activeTab={activeTab} />
       )}
       <UserSidebarContainer>
-        <LocalVideo />
-        <Toolbar />
-
         {displayedTab && (
           <SideTabPanel
             key={displayedTab.key}
@@ -58,6 +56,8 @@ const MeetingSidebar = () => {
             {displayedTab.component}
           </SideTabPanel>
         )}
+        <Toolbar />
+        <LocalVideo />
       </UserSidebarContainer>
     </SidebarContainer>
   );
