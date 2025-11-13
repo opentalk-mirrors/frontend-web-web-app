@@ -1,6 +1,6 @@
 {
   "name": "@opentalk/opentalk",
-  "version": "2.7.0-alpha",
+  "version": "2.7.0",
   "description": "Frontend for the OpenTalk video chat solution",
   "private": true,
   "type": "module",
