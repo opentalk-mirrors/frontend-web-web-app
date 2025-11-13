@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, Theme, styled, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { debounce } from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import SpeakerWindow from './fragments/SpeakerWindow';
 import ThumbsRow from './fragments/ThumbsRow';
@@ -27,41 +26,49 @@ const SpeakerView = () => {
   const theme: Theme = useTheme();
   const thumbWidth = useMediaQuery(theme.breakpoints.up('xl')) ? 340 : 240;
   const [thumbsPerPage, setThumbsPerPage] = useState(1);
-  const [{ width, height }, setWindowSize] = useState({ width: 0, height: 0 });
+  const [speakerWindowDimensions, setSpeakerWindowDimensions] = useState({ width: 0, height: 0 });
   const containerRef = useRef<HTMLDivElement | null>(null);
   const speakerWindowRef = useRef<HTMLDivElement | null>(null);
-  const speakerWindowWidth = speakerWindowRef?.current?.clientWidth;
-  const speakerWindowHeight = speakerWindowRef?.current?.clientHeight;
-
-  const handleResize = useCallback(() => {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-
-    if (containerRef.current) {
-      const containerWidth = containerRef.current.clientWidth;
-      const qtyParticipants = Math.max(1, Math.floor(containerWidth / thumbWidth));
-      setThumbsPerPage(qtyParticipants);
-    }
-
-    if (windowHeight !== height && windowWidth !== width) {
-      setWindowSize({ width: windowHeight, height: windowWidth });
-    }
-  }, [thumbWidth, height, width]);
 
   useEffect(() => {
-    const debouncedHandleResize = debounce(handleResize);
+    if (!containerRef.current || !speakerWindowRef.current) {
+      return;
+    }
 
-    debouncedHandleResize();
-    window.addEventListener('resize', debouncedHandleResize);
-    return () => {
-      window.removeEventListener('resize', debouncedHandleResize);
+    const updateLayout = () => {
+      const container = containerRef.current;
+      const speakerWindow = speakerWindowRef.current;
+      if (!container || !speakerWindow) {
+        return;
+      }
+
+      const containerWidth = container.clientWidth;
+      const qtyParticipants = Math.max(1, Math.floor(containerWidth / thumbWidth));
+      setThumbsPerPage(qtyParticipants);
+
+      const { clientWidth, clientHeight } = speakerWindow;
+      setSpeakerWindowDimensions({ width: clientWidth, height: clientHeight });
     };
-  }, [handleResize]);
+
+    const observer = new ResizeObserver(() => {
+      updateLayout();
+    });
+
+    observer.observe(containerRef.current);
+    observer.observe(speakerWindowRef.current);
+
+    updateLayout();
+
+    return () => observer.disconnect();
+  }, [thumbWidth]);
 
   return (
     <Container ref={containerRef} data-testid="SpeakerView-Container">
       <SpeakerWindowContainer ref={speakerWindowRef}>
-        <SpeakerWindow speakerWindowWidth={speakerWindowWidth} speakerWindowHeight={speakerWindowHeight} />
+        <SpeakerWindow
+          speakerWindowWidth={speakerWindowDimensions.width}
+          speakerWindowHeight={speakerWindowDimensions.height}
+        />
       </SpeakerWindowContainer>
       <ThumbsRow thumbsPerWindow={thumbsPerPage} thumbWidth={thumbWidth} />
     </Container>
