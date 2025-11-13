@@ -81,7 +81,6 @@ export default defineConfig([
       'app/src/components/SelfTest/SelfTest.tsx',
       'app/src/components/SelfTest/fragments/EchoPlayback.tsx',
       'app/src/components/SpeakerView/SpeakerView.tsx',
-      'app/src/components/SpeakerView/fragments/SpeakerWindow.tsx',
       'app/src/components/SpeakerView/fragments/ThumbsRow.tsx',
       'app/src/components/SpeedTestDialog/SpeedTestDialog.tsx',
       'app/src/components/TalkingStickSortButton/TalkingStickSortButton.tsx',
