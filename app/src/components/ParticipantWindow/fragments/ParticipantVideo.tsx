@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useParticipantContext } from '@livekit/components-react';
+import { useRemoteParticipant } from '@livekit/components-react';
 import { Slide, styled } from '@mui/material';
-import { RemoteParticipant, Track } from 'livekit-client';
+import { Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -35,7 +35,7 @@ interface ParticipantVideoProps {
 }
 
 const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
-  const participant = useParticipantContext() as RemoteParticipant;
+  const participant = useRemoteParticipant(participantId);
   const dispatch = useAppDispatch();
 
   const videoDescriptor = useMemo<MediaDescriptor>(
@@ -49,7 +49,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
 
   const qualityCap = useAppSelector(selectQualityCap);
   const areParticipantVideosEnabled = qualityCap !== VideoSetting.Off;
-  const showCamera = participant.isCameraEnabled && areParticipantVideosEnabled;
+  const showCamera = participant?.isCameraEnabled && areParticipantVideosEnabled;
 
   const containerRef = useRef(null);
   const [showPresenterVideo, setShowPresenterVideo] = useState<boolean>(!!presenterVideoIsActive);
@@ -67,13 +67,13 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
 
   useEffect(() => {
     // Update the track subscripton state of remote videos if the config flag changes
-    participant.videoTrackPublications.forEach((publication) => {
+    participant?.videoTrackPublications.forEach((publication) => {
       const updateSubscriptionState = publication.isSubscribed !== areParticipantVideosEnabled;
       if (updateSubscriptionState && publication.source !== Track.Source.ScreenShare) {
         publication.setSubscribed(areParticipantVideosEnabled);
       }
     });
-  }, [areParticipantVideosEnabled, participant.videoTrackPublications]);
+  }, [areParticipantVideosEnabled, participant?.videoTrackPublications]);
 
   const displayPresenterVideo = useCallback(() => {
     !presenterVideoIsActive && setShowPresenterVideo(true);
@@ -90,7 +90,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
     dispatch(setPresenterVideoPosition(presenterVideoPositions[nextIndex]));
   };
 
-  if (participant.isScreenShareEnabled) {
+  if (participant?.isScreenShareEnabled) {
     return (
       <Container onMouseMove={displayPresenterVideo} data-testid="participantSreenShareVideo" ref={containerRef}>
         <RemoteVideo descriptor={screenDescriptor} />

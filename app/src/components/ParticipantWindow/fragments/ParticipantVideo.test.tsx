@@ -14,7 +14,7 @@ import {
 import ParticipantVideo from './ParticipantVideo';
 
 vi.mock('@livekit/components-react', () => ({
-  useParticipantContext: () => mockedParticipant(0),
+  useRemoteParticipant: () => mockedParticipant(0),
   useRoomContext: () => vi.fn(),
 }));
 
