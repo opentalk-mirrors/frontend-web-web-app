@@ -93,7 +93,6 @@ export default defineConfig([
       'app/src/pages/Dashboard/CreateEventsPage/CreateEventsPage.tsx',
       'app/src/pages/Dashboard/EditEventsPage/EditEventsPage.tsx',
       'app/src/pages/Dashboard/EventsOverviewPage/EventsOverviewPage.tsx',
-      'app/src/pages/Dashboard/EventsOverviewPage/fragments/EventsOverview.tsx',
       'app/src/pages/Dashboard/Home/Home.tsx',
       'app/src/pages/Dashboard/Home/fragments/DesktopHome.tsx',
       'app/src/pages/ExtendedTabPage/fragments/Video.tsx',
