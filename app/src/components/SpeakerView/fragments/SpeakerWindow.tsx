@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { ParticipantContext, useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
 import { styled } from '@mui/material';
-import { Participant, RemoteParticipant } from 'livekit-client';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppSelector } from '../../../hooks';
 import { selectPinnedParticipantId } from '../../../store/slices/uiSlice';
@@ -30,36 +28,22 @@ const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerViewP
   const sortedParticipants = useSortedParticipants(useRemoteParticipants());
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
   const currentSpeakerId = pinnedParticipantId || sortedParticipants[0]?.identity;
-  const [{ width, height }, setDimensions] = useState({ width: 1, height: 1 });
 
-  const selectedSpeaker = useMemo(
-    () => sortedParticipants.find((participant) => participant.identity === currentSpeakerId),
-    [sortedParticipants, currentSpeakerId]
-  );
+  const selectedSpeaker = sortedParticipants.find((participant) => participant.identity === currentSpeakerId);
 
-  const [selectedParticipant, setSelectedParticipant] = useState<Participant | RemoteParticipant | undefined>(
-    selectedSpeaker
-  );
+  const selectedParticipant = selectedSpeaker || sortedParticipants[0];
 
-  useEffect(() => {
-    if (!selectedParticipant || !sortedParticipants.some((p) => p.identity === selectedParticipant.identity)) {
-      setSelectedParticipant(sortedParticipants[0]);
-    }
-  }, [sortedParticipants, selectedParticipant]);
-
-  const calculateCellDimensions = useCallback(() => {
+  const calculateDimensions = () => {
     if (speakerWindowWidth && speakerWindowHeight) {
       const aspectRatio = 16 / 9;
       const height = Math.min(speakerWindowWidth / aspectRatio, speakerWindowHeight);
       const width = height * aspectRatio;
-
-      setDimensions({ width, height });
+      return { width, height };
     }
-  }, [speakerWindowWidth, speakerWindowHeight]);
+    return { width: 1, height: 1 };
+  };
 
-  useEffect(() => {
-    calculateCellDimensions();
-  }, [calculateCellDimensions]);
+  const { width, height } = calculateDimensions();
 
   return (
     <Container width={width} height={height} data-testid="SpeakerWindow1">
