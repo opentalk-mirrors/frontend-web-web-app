@@ -5,7 +5,7 @@ import { sortParticipants } from '@livekit/components-core';
 import { ParticipantLoop, useRemoteParticipants } from '@livekit/components-react';
 import { Stack, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useAppSelector } from '../../../hooks';
 import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
@@ -33,7 +33,7 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   const remoteParticipants = useRemoteParticipants();
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
 
-  // TODO: repeting logic here in SpeakerView and in Fullscreen view - need refactoring
+  // TODO: repeating logic here in SpeakerView and in Fullscreen view - need refactoring
   const lastSpeakerId = useMemo(() => {
     const activeSpeaker = sortParticipants(remoteParticipants)?.at(0);
     return activeSpeaker?.identity as ParticipantId | undefined;
@@ -59,38 +59,33 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   );
 
   const [firstVisibleParticipantIndex, setFirstVisibleParticipantIndex] = useState(0);
-  const lastVisibleParticipantIndex = Math.min(firstVisibleParticipantIndex + thumbsPerWindow, participants.length);
-  const currentlyVisibleParticipantsNumber = lastVisibleParticipantIndex - firstVisibleParticipantIndex;
+
+  // Adjust the index if it would show fewer than thumbsPerWindow items when there are enough participants
+  const adjustedIndex = useMemo(() => {
+    const maxIndex = Math.max(0, participants.length - thumbsPerWindow);
+    return Math.min(firstVisibleParticipantIndex, maxIndex);
+  }, [firstVisibleParticipantIndex, participants.length, thumbsPerWindow]);
+
+  const lastVisibleParticipantIndex = Math.min(adjustedIndex + thumbsPerWindow, participants.length);
 
   const slideLeft = () => {
     setFirstVisibleParticipantIndex((prevIndex) => Math.max(prevIndex - thumbsPerWindow, 0));
   };
 
   const slideRight = () => {
-    // we compare number of visible participants (thumbnails) with the participants length, to detect
-    // if a participant, we were showing in the thumbnails row, has left the meeting
-    // if there is a gap -> we update the firstVisibleParticipantIndex and move the whole row to the left
     setFirstVisibleParticipantIndex((prevIndex) =>
       Math.min(prevIndex + thumbsPerWindow, participants.length - thumbsPerWindow)
     );
   };
 
   const visibleParticipants = useMemo(
-    () => participants.slice(firstVisibleParticipantIndex, lastVisibleParticipantIndex),
-    [participants, firstVisibleParticipantIndex, lastVisibleParticipantIndex]
+    () => participants.slice(adjustedIndex, lastVisibleParticipantIndex),
+    [participants, adjustedIndex, lastVisibleParticipantIndex]
   );
-
-  useEffect(() => {
-    if (currentlyVisibleParticipantsNumber < participants.length) {
-      setFirstVisibleParticipantIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-    }
-  }, [participants.length, currentlyVisibleParticipantsNumber]);
 
   return (
     <ThumbsHolder direction="row" gap={1} tracks={thumbsPerWindow} data-testid="ThumbsHolder">
-      {firstVisibleParticipantIndex > 0 && (
-        <IconSlideButton direction="left" aria-label="navigate-to-left" onClick={slideLeft} />
-      )}
+      {adjustedIndex > 0 && <IconSlideButton direction="left" aria-label="navigate-to-left" onClick={slideLeft} />}
       <ParticipantLoop participants={visibleParticipants}>
         <Thumbnail width={thumbWidth} />
       </ParticipantLoop>
