@@ -7,7 +7,11 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
-import { disableMicrophoneRestrictions, enableMicrophoneRestrictions } from '../../../api/types/outgoing/livekit';
+import {
+  disableMicrophoneRestrictions,
+  enableMicrophoneRestrictions,
+  requestMute,
+} from '../../../api/types/outgoing/livekit';
 import { generateAttendanceReport } from '../../../api/types/outgoing/meetingReport';
 import {
   disableRaiseHands,
@@ -48,6 +52,7 @@ import {
   selectRaiseHandsEnabled,
   selectTrainingParticipationReportEnabled,
 } from '../../../store/slices/moderationSlice';
+import { selectAllModeratorParticipants } from '../../../store/slices/participantsSlice';
 import { selectIsRoomOwner, selectWaitingRoomState } from '../../../store/slices/roomSlice';
 import {
   selectActiveStreamIds,
@@ -70,6 +75,8 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
   const participantId = useAppSelector(selectOurUuid);
+  const moderatorParticipants = useAppSelector(selectAllModeratorParticipants);
+  const unrestrictedParticipants = moderatorParticipants.map((p) => p.id).concat(participantId ? [participantId] : []);
   const displayName = useAppSelector(selectDisplayName);
   const avatarUrl = useAppSelector(selectAvatarUrl);
   const isRoomOwner = useAppSelector(selectIsRoomOwner);
@@ -146,8 +153,8 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         action: () => {
           if (participantId) {
             onClose();
-            //From product - only moderator that disables the microphones can unmute
-            dispatch(enableMicrophoneRestrictions.action({ unrestrictedParticipants: [participantId] }));
+            dispatch(enableMicrophoneRestrictions.action({ unrestrictedParticipants }));
+            dispatch(requestMute.action({ participants: moderatorParticipants.map((p) => p.id) }));
           }
         },
         icon: <MicOffIcon />,
