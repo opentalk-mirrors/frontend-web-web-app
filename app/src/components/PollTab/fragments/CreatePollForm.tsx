@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, styled, Switch, Typography, Tooltip, Box } from '@mui/material';
+import { Button, styled, Switch, Typography, Tooltip, Box, Grid, Stack } from '@mui/material';
 import { FormikValues, Formik } from 'formik';
 import i18next from 'i18next';
 import { isEmpty } from 'lodash';
@@ -23,7 +23,7 @@ import { Seconds } from '../../../utils/tsUtils';
 import { DurationFieldWrapper } from '../../DurationFieldWrapper';
 import AnswersFormElement from './AnswersFormElement';
 
-interface ICreatePollForm {
+interface PollFormProps {
   onClose: () => void;
   initialValues?: PollFormValues;
 }
@@ -41,7 +41,6 @@ const Form = styled('form')(({ theme }) => ({
   flexDirection: 'column',
   flex: 1,
   overflow: 'hidden',
-  width: '100%',
   gap: theme.spacing(1), // Spacing between form fields and buttons
 }));
 
@@ -65,7 +64,7 @@ const validationSchema = yup.object({
   multipleChoice: yup.boolean().optional(),
 });
 
-const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: ICreatePollForm) => {
+const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollFormProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const totalParticipants = useAppSelector(selectParticipantsTotal);
@@ -109,53 +108,26 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: ICrea
       validationSchema={validationSchema}
     >
       {(formik) => (
-        <Form onSubmit={formik.handleSubmit}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Box
-              sx={{
-                marginBottom: 1,
-                paddingLeft: 0.5,
-                paddingTop: 0.5,
-              }}
-            >
-              <Button variant="text" onClick={onClose} startIcon={<BackIcon />} color="secondary">
-                {t('poll-button-back')}
-              </Button>
-            </Box>
-            <Typography variant="h2" component="h4">
-              {isEditing ? t('poll-header-title-update') : t('poll-header-title-create')}
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              flex: 1,
-              overflow: 'auto',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <DurationFieldWrapper paddingTop={1} paddingBottom={1} paddingRight={1}>
-                <DurationField
-                  {...formikDurationFieldProps('duration', formik)}
-                  durationOptions={[1, 2, 5, 'custom']}
-                  min={1}
-                />
-              </DurationFieldWrapper>
-              <Box
-                sx={{
-                  marginBottom: 1,
-                  paddingRight: 1,
-                }}
-              >
+        <Stack
+          spacing={1}
+          sx={{
+            flex: 1,
+            overflow: 'hidden',
+          }}
+        >
+          <Form onSubmit={formik.handleSubmit}>
+            <Typography>{isEditing ? t('poll-header-title-update') : t('poll-header-title-create')}</Typography>
+            <Grid container spacing={1.5}>
+              <Grid size={{ xs: 12 }}>
+                <DurationFieldWrapper paddingTop={1}>
+                  <DurationField
+                    {...formikDurationFieldProps('duration', formik)}
+                    durationOptions={[1, 2, 5, 'custom']}
+                    min={1}
+                  />
+                </DurationFieldWrapper>
+              </Grid>
+              <Grid size={{ xs: 12 }}>
                 <CommonFormItem
                   {...formikSwitchProps('live', formik)}
                   control={
@@ -165,13 +137,8 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: ICrea
                   }
                   label={t('poll-form-switch-live')}
                 />
-              </Box>
-              <Box
-                sx={{
-                  marginBottom: 1,
-                  paddingRight: 1,
-                }}
-              >
+              </Grid>
+              <Grid size={{ xs: 12 }}>
                 <CommonFormItem
                   {...formikSwitchProps('multipleChoice', formik)}
                   control={
@@ -181,13 +148,8 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: ICrea
                   }
                   label={t('poll-form-switch-multiple-choice')}
                 />
-              </Box>
-              <Box
-                sx={{
-                  marginBottom: 1,
-                  paddingRight: 1,
-                }}
-              >
+              </Grid>
+              <Grid size={{ xs: 12 }}>
                 <CommonTextField
                   {...formikProps('topic', formik)}
                   label={t('poll-topic-label')}
@@ -197,42 +159,34 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: ICrea
                   maxRows={6}
                   multiline
                 />
-              </Box>
-              <Box
-                sx={{
-                  paddingLeft: 1,
-                  paddingRight: 1,
-                }}
-              >
+              </Grid>
+              <Grid size={{ xs: 12 }}>
                 <AnswersFormElement name="choices" />
-              </Box>
-              <Box
-                sx={{
-                  marginBottom: 1,
-                }}
-              >
+              </Grid>
+              <Grid size={{ xs: 12 }}>
                 {/* General choices error message */}
                 {typeof formik.errors.choices === 'string' && <ErrorFormMessage helperText={formik.errors.choices} />}
-              </Box>
-            </Box>
-          </Box>
-
+              </Grid>
+              <Button type="button" onClick={() => saveFormValues(formik.values)} fullWidth color="secondary">
+                {t('poll-form-button-save')}
+              </Button>
+            </Grid>
+          </Form>
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
               gap: 2,
-              padding: 1,
             }}
           >
-            <Button type="button" onClick={() => saveFormValues(formik.values)} fullWidth color="secondary">
-              {t('poll-form-button-save')}
+            <Button type="button" onClick={onClose} startIcon={<BackIcon />} fullWidth color="primary">
+              {t('poll-button-back')}
             </Button>
             <Button disabled={isCoffeeBreakActive} type="submit" fullWidth color="secondary">
               {t('poll-form-button-submit')}
             </Button>
           </Box>
-        </Form>
+        </Stack>
       )}
     </Formik>
   );

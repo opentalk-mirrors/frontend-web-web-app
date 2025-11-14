@@ -73,22 +73,22 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
 
   const votingUsers = useAppSelector(selectVotingUsers);
 
-  const pantansWithoutGuestAndSip = votingUsers || [];
+  const participantsWithoutGuestAndSip = votingUsers || [];
   const { setFieldValue, errors } = useFormikContext();
   const error = get(errors, name, '') as string;
   const hasError = Boolean(error);
-  const [allowedParticipants, setAlloedParticipants] = useState<AllowedParticipant[]>([]);
+  const [allowedParticipants, setAllowedParticipants] = useState<AllowedParticipant[]>([]);
 
   useEffect(() => {
-    setAlloedParticipants((allowedParticipants) =>
-      pantansWithoutGuestAndSip.map(({ displayName, avatarUrl, id }: AllowedParticipant) => ({
+    setAllowedParticipants((allowedParticipants) =>
+      participantsWithoutGuestAndSip.map(({ displayName, avatarUrl, id }: AllowedParticipant) => ({
         displayName,
         avatarUrl,
         id,
         isSelected: isSelectedParticipant(allowedParticipants, id),
       }))
     );
-  }, [pantansWithoutGuestAndSip]);
+  }, [participantsWithoutGuestAndSip]);
 
   const [participantsSought, setParticipantsSought] = useState<AllowedParticipant[]>([]);
 
@@ -118,23 +118,24 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
       isSelected: someIsFalse,
     }));
 
-    setAlloedParticipants(newStateParticipants);
+    setAllowedParticipants(newStateParticipants);
 
     setFieldValue(name, getSelectedParticipants(newStateParticipants));
   };
 
-  const checkParticipantHandler = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
-    const newStateParticipants = allowedParticipants;
-    const participantIndex = newStateParticipants.findIndex((participant) => participant.id === id);
+  const checkParticipantHandler = (id: string) => {
+    setAllowedParticipants((prev) => {
+      const newState = prev.map((participant) =>
+        participant.id === id ? { ...participant, isSelected: !participant.isSelected } : participant
+      );
 
-    newStateParticipants[participantIndex].isSelected = e.target.checked;
+      setFieldValue(
+        name,
+        newState.filter((participant) => participant.isSelected)
+      );
 
-    setAlloedParticipants(newStateParticipants);
-
-    setFieldValue(
-      name,
-      newStateParticipants.filter((participant) => participant.isSelected)
-    );
+      return newState;
+    });
   };
 
   const renderErrors = hasError && (
@@ -176,7 +177,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
   );
 
   const renderParticipant = (participant: AllowedParticipant) => (
-    <ListItem key={participant.id}>
+    <ListItem key={participant.id} onClick={() => checkParticipantHandler(participant.id)}>
       <Grid container spacing={2} direction="row" wrap="nowrap" sx={{ flexGrow: 1 }}>
         <Grid>
           <ListItemAvatar>
@@ -194,7 +195,6 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
           <Checkbox
             checked={isSelectedParticipant(allowedParticipants, participant.id)}
             id={participant.id}
-            onChange={(e) => checkParticipantHandler(e, participant.id)}
             color="secondary"
           />
         </Grid>
@@ -202,7 +202,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
     </ListItem>
   );
 
-  const renderPartricipants = (
+  const renderParticipants = (
     <Grid size="grow">
       <CustomList>{participantsToShow.map(renderParticipant)}</CustomList>
     </Grid>
@@ -214,7 +214,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
         {renderErrors}
         {renderSearchUser}
         {renderAllUsersButton}
-        {renderPartricipants}
+        {renderParticipants}
       </Grid>
     </Container>
   );

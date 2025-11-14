@@ -170,9 +170,6 @@ importers:
       formik:
         specifier: ^2.4.6
         version: 2.4.6(@types/react@19.2.4)(react@19.2.0)
-      formik-wizard-form:
-        specifier: ^2.1.0
-        version: 2.1.0(formik@2.4.6(@types/react@19.2.4)(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       i18next:
         specifier: ^25.6.1
         version: 25.6.1(typescript@5.9.3)
@@ -3060,13 +3057,6 @@ packages:
     resolution: {integrity: sha512-9XNj/o4wrRFyhSMJOvsuyMwy8aUfBaZ1VrqHVfohyXf0Sw0e+yfKG+xZaY3arGCOMdwFsqObtzVOc1gU9KiT9w==}
     engines: {node: '>=18.3.0'}
     hasBin: true
-
-  formik-wizard-form@2.1.0:
-    resolution: {integrity: sha512-LU8mFTkhXkvFi6BW9XwQ2Vw93EU8hclPD/cK6qBaGGkhfQlfUCajf5fRWz04J2HkUQt6qhopQTORBygk4K/nIA==}
-    peerDependencies:
-      formik: '>=2.0.1'
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
 
   formik@2.4.6:
     resolution: {integrity: sha512-A+2EI7U7aG296q2TLGvNapDNTZp1khVt5Vk0Q/fyfSROss0V/V6+txt2aJnwEos44IxTCW/LYAi/zgWzlevj+g==}
@@ -8361,12 +8351,6 @@ snapshots:
   formatly@0.3.0:
     dependencies:
       fd-package-json: 2.0.0
-
-  formik-wizard-form@2.1.0(formik@2.4.6(@types/react@19.2.4)(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
-    dependencies:
-      formik: 2.4.6(@types/react@19.2.4)(react@19.2.0)
-      react: 19.2.0
-      react-dom: 19.2.0(react@19.2.0)
 
   formik@2.4.6(@types/react@19.2.4)(react@19.2.0):
     dependencies:
