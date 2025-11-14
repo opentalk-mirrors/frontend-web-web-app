@@ -40,7 +40,7 @@ const Form = styled('form')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  overflow: 'hidden',
+  overflow: 'auto',
   gap: theme.spacing(1), // Spacing between form fields and buttons
 }));
 

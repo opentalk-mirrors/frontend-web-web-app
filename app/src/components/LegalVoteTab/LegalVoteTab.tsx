@@ -13,7 +13,7 @@ import LegalVoteOverview from './fragments/LegalVoteOverview';
 
 const LegalVoteOverviewContainer = styled(Stack)({
   flex: 1,
-  overflow: 'hidden',
+  overflow: 'auto',
   padding: 1,
 });
 
