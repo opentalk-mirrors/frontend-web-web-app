@@ -12,6 +12,9 @@ import { CommonTextField, notifications } from '../../../../commonComponents';
 import { dashboardLanguages } from '../../../../config/dashboardSettings';
 import { formikProps } from '../../../../utils/formikUtils';
 
+/**
+ * @deprecated
+ */
 const LanguageSelector = () => {
   const { t, i18n } = useTranslation();
   const { data } = useGetMeQuery();

@@ -4,3 +4,4 @@
 
 export const dashboardTheme = ['light', 'dark', 'system'];
 export const dashboardLanguages = { 'de-DE': 'Deutsch', 'en-US': 'English' };
+export type DashboardLanguage = keyof typeof dashboardLanguages;
