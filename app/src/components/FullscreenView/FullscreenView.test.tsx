@@ -17,6 +17,7 @@ vi.mock('@livekit/components-react', () => ({
   useRoomContext: () => vi.fn(),
   useRemoteParticipant: () => mockedParticipant(0),
   useRemoteParticipants: () => [mockedParticipant(0)],
+  useSortedParticipants: () => [mockedParticipant(0)],
 }));
 
 vi.mock('../LocalVideo', () => ({

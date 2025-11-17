@@ -1,10 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { sortParticipants } from '@livekit/components-core';
-import { ParticipantContext, useRemoteParticipant, useRemoteParticipants } from '@livekit/components-react';
+import {
+  ParticipantContext,
+  useRemoteParticipant,
+  useRemoteParticipants,
+  useSortedParticipants,
+} from '@livekit/components-react';
 import { Box, IconButton as MuiIconButton, Slide, styled } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, PinIcon, PollIcon } from '../../assets/icons';
@@ -76,13 +80,10 @@ const FullscreenView = () => {
   const [hasVisibleControls, setVisibleControls] = useState<boolean>(false);
   const [isLocalVideoPinned, setIsLocalVideoPinned] = useState<boolean>(false);
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
+  const sortedParticipants = useSortedParticipants(useRemoteParticipants());
+  const sortedParticipantsIdentity = sortedParticipants[0]?.identity as ParticipantId | undefined;
 
-  const remoteParticipants = useRemoteParticipants();
-  const lastSpeakerId = useMemo(() => {
-    const activeSpeaker = sortParticipants(remoteParticipants)?.at(0);
-    return activeSpeaker?.identity as ParticipantId | undefined;
-  }, [remoteParticipants]);
-  const selectedParticipantId = pinnedParticipantId || lastSpeakerId;
+  const selectedParticipantId = pinnedParticipantId || sortedParticipantsIdentity;
 
   const selectedParticipant = useRemoteParticipant({ identity: selectedParticipantId || '' });
   const displayName = useAppSelector((state) =>
@@ -109,9 +110,9 @@ const FullscreenView = () => {
   const isActive = hasVisibleControls;
   const isPinned = pinnedParticipantId ? pinnedParticipantId === selectedParticipant?.identity : false;
   const togglePin = useCallback(() => {
-    const updatePinnedId = pinnedParticipantId === lastSpeakerId ? undefined : lastSpeakerId;
+    const updatePinnedId = pinnedParticipantId === sortedParticipantsIdentity ? undefined : sortedParticipantsIdentity;
     dispatch(pinnedParticipantIdSet(updatePinnedId));
-  }, [dispatch, lastSpeakerId, pinnedParticipantId]);
+  }, [dispatch, sortedParticipantsIdentity, pinnedParticipantId]);
 
   return (
     <ParticipantContext.Provider value={selectedParticipant}>

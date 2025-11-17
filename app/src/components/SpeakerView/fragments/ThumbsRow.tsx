@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { sortParticipants } from '@livekit/components-core';
-import { ParticipantLoop, useRemoteParticipants } from '@livekit/components-react';
+import { ParticipantLoop, useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
 import { Stack, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
 import { useMemo, useState } from 'react';
@@ -10,7 +9,6 @@ import { useMemo, useState } from 'react';
 import { useAppSelector } from '../../../hooks';
 import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
 import { selectPinnedParticipantId } from '../../../store/slices/uiSlice';
-import { ParticipantId } from '../../../types';
 import IconSlideButton from './IconSlideButton';
 import { Thumbnail } from './Thumbnail';
 
@@ -30,21 +28,14 @@ export interface ThumbsProps {
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   const signalingParticipants = useAppSelector(selectAllOnlineParticipants);
-  const remoteParticipants = useRemoteParticipants();
+  const sortedParticipants = useSortedParticipants(useRemoteParticipants());
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
 
-  // TODO: repeating logic here in SpeakerView and in Fullscreen view - need refactoring
-  const lastSpeakerId = useMemo(() => {
-    const activeSpeaker = sortParticipants(remoteParticipants)?.at(0);
-    return activeSpeaker?.identity as ParticipantId | undefined;
-  }, [remoteParticipants]);
-
-  const selectedParticipantId = pinnedParticipantId || lastSpeakerId;
-
+  const selectedParticipantId = pinnedParticipantId || sortedParticipants[0]?.identity;
   // Create a map for quick lookups of remoteParticipants by identity
   const remoteParticipantsMap = useMemo(() => {
-    return new Map(remoteParticipants.map((p) => [p.identity, p]));
-  }, [remoteParticipants]);
+    return new Map(sortedParticipants.map((p) => [p.identity, p]));
+  }, [sortedParticipants]);
 
   const participants = useMemo(
     () =>
