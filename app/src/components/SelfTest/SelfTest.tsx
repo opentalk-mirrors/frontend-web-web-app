@@ -4,7 +4,7 @@
 import { Container, Stack, Typography, styled, useTheme } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import Color from 'colorjs.io';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
@@ -124,14 +124,8 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const inviteCode = useInviteCode();
   const isMobile = useIsMobile();
   const localAudioTrack = useAppSelector(selectLobbyAudioTrack);
-  const [mounted, setMounted] = useState(false);
   const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
   const videoEnabled = useAppSelector(selectLobbyVideoEnabled);
-  const audioEnabled = useAppSelector(selectLobbyAudioTrack);
-
-  useEffect(() => {
-    !mounted && setMounted(true);
-  });
 
   const { roomId } = useParams<'roomId' | 'breakoutRoomId'>() as {
     roomId: RoomId;
@@ -153,7 +147,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
         </Header>
 
         <MonitorContainer>
-          {mounted && videoEnabled ? (
+          {videoEnabled ? (
             <VideoElement />
           ) : (
             <>
@@ -178,7 +172,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
               </Typography>
             </>
           )}
-          {mounted && audioEnabled && <EchoPlayBack localAudioTrack={localAudioTrack} />}
+          {localAudioTrack && <EchoPlayBack localAudioTrack={localAudioTrack} />}
         </MonitorContainer>
 
         <ToolbarContainer localAudioTrack={localAudioTrack} actionButton={actionButton} waitingRoom={waitingRoom}>
