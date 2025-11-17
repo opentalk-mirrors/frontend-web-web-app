@@ -109,6 +109,7 @@ const LobbyView = () => {
   const disallowCustomDisplayName = useAppSelector(selectDisallowCustomDisplayName);
   const isLoggedIn = useAppSelector(selectIsAuthenticated);
   const connectionState = useAppSelector(selectRoomConnectionState);
+  const inviteStateCode = inviteState.inviteCode;
 
   const { data } = useGetMeQuery(undefined, { skip: !isLoggedIn });
   const navigateToHome = useNavigateToHome();
@@ -139,12 +140,12 @@ const LobbyView = () => {
 
   // Temporary request to figure out if we need to show a password field until it is added in getEventInfo request - https://git.opentalk.dev/opentalk/backend/services/controller/-/issues/603
   useEffect(() => {
-    if (inviteCode && !inviteState.inviteCode) {
+    if (inviteCode && !inviteStateCode) {
       dispatch(fetchRoomByInviteId(inviteCode))
         .unwrap()
         .catch((error) => setInviteCodeError(error));
     }
-  }, [inviteCode]);
+  }, [dispatch, inviteCode, inviteStateCode]);
 
   //Cleans up wrong password notification on dismount
   useEffect(() => {
@@ -225,7 +226,7 @@ const LobbyView = () => {
         }
       }
     },
-    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, changeMedia]
+    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia]
   );
 
   const formik = useFormik({

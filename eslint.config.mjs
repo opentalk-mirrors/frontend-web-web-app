@@ -56,7 +56,6 @@ export default defineConfig([
       'app/src/components/InviteToMeeting/fragments/MeetingLinksAndPasswords.tsx',
       'app/src/components/LegalVoteTab/fragments/CreateLegalVoteForm.tsx',
       'app/src/components/LegalVoteTab/fragments/ParticipantSelector.tsx',
-      'app/src/components/LobbyView/LobbyView.tsx',
       'app/src/components/MeetingCard/fragments/ConfirmDeleteDialog.tsx',
       'app/src/components/MeetingCard/fragments/MeetingActions.tsx',
       'app/src/components/MeetingForms/fragments/CustomRecurringEventDialog/CustomEndDateOptions.tsx',
