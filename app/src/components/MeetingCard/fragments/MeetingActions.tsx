@@ -4,7 +4,7 @@
 import { Button, MenuList, MenuItem as MuiMenuItem, Popover as MuiPopover, Stack, styled } from '@mui/material';
 import { Event, EventException, EventId, InviteStatus, isEvent, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/query';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate, createSearchParams } from 'react-router-dom';
 
@@ -79,9 +79,9 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
   const [unmarkEvent] = useUnmarkFavoriteEventMutation();
   const [declineEventInvitation] = useDeclineEventInviteMutation();
   const [isConfirmDialogVisible, showConfirmDialog] = useState(false);
-  const moreButtonRef = useRef<HTMLButtonElement>(null);
+  const [popoverAnchor, setPopoverAnchor] = useState<HTMLButtonElement | null>(null);
   const baseUrl = useAppSelector(selectBaseUrl);
-  const [popoverOpen, setPopoverOpen] = useState(false);
+  const popoverOpen = Boolean(popoverAnchor);
 
   const [getRoomInvites, { data: invites, isLoading: isGetInvitesLoading }] = useLazyGetRoomInvitesQuery();
 
@@ -90,52 +90,62 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
     roomTariff && isFeatureEnabledPredicate('guests_allowed', roomTariff.modules)
   );
 
-  const openPopupMenu = (mouseEvent: React.MouseEvent<HTMLButtonElement>) => {
-    stopPropagation(mouseEvent);
-    setPopoverOpen(true);
-  };
+  const stopPropagation = useCallback(
+    (mouseEvent: React.MouseEvent<HTMLDivElement | HTMLButtonElement | HTMLAnchorElement>) => {
+      mouseEvent.stopPropagation();
+    },
+    []
+  );
 
-  const stopPropagation = (mouseEvent: React.MouseEvent<HTMLDivElement | HTMLButtonElement | HTMLAnchorElement>) => {
-    mouseEvent.stopPropagation();
-  };
+  const handleOpenPopover = useCallback(
+    (mouseEvent: React.MouseEvent<HTMLButtonElement>) => {
+      stopPropagation(mouseEvent);
+      setPopoverAnchor(mouseEvent.currentTarget);
+    },
+    [stopPropagation]
+  );
+
+  const handleClose = useCallback(() => {
+    setPopoverAnchor(null);
+  }, []);
 
   const navigate = useNavigate();
-  const updateMeeting = () => {
+  const updateMeeting = useCallback(() => {
     navigate(`/dashboard/meetings/update/${eventId}/0`, { state: { ...getReferrerRouterState(window.location) } });
-  };
+  }, [eventId, navigate]);
 
   // For a recurring event we need to pass start and end dates of a particular event instance,
-  const getSearchParams = () => {
+  const searchParams = useMemo(() => {
     return isRecurringEvent(event) === true
       ? createSearchParams({ start: event.startsAt.datetime, end: event.endsAt.datetime }).toString()
       : undefined;
-  };
+  }, [event]);
 
-  const viewMeetingDetails = () => {
+  const viewMeetingDetails = useCallback(() => {
     navigate(
       {
         pathname: `/dashboard/meetings/${eventId}`,
-        search: getSearchParams(),
+        search: searchParams,
       },
       { state: { ...getReferrerRouterState(window.location) } }
     );
-  };
+  }, [eventId, navigate, searchParams]);
 
-  const copyMeetingLink = async () => {
-    setPopoverOpen(false);
+  const copyMeetingLink = useCallback(async () => {
+    handleClose();
     const link = `${baseUrl}/room/${roomId}`;
     await navigator.clipboard.writeText(link);
     notifications.success(t('global-copy-link-success'));
-  };
+  }, [baseUrl, handleClose, roomId, t]);
 
-  const getGuestLink = async () => {
+  const getGuestLink = useCallback(async () => {
     if (roomId) {
       try {
         const invitesList = invites ? invites : await getRoomInvites({ roomId }).unwrap();
         const permanentInvite = findPermanentRoomInvite(invitesList);
 
         if (permanentInvite) {
-          setPopoverOpen(false);
+          handleClose();
           const inviteURLString = composeInviteUrl(baseUrl, roomId, permanentInvite.inviteCode).toString();
           await navigator.clipboard.writeText(inviteURLString);
           notifications.success(t('global-copy-link-success'));
@@ -146,17 +156,13 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
         notifications.error(t('global-copy-permanent-guest-link-error'));
       }
     }
-  };
+  }, [baseUrl, getRoomInvites, handleClose, invites, roomId, t]);
 
-  const handleClose = () => {
-    setPopoverOpen(false);
-  };
-
-  const showDialog = () => {
+  const showDialog = useCallback(() => {
     showConfirmDialog(true);
-  };
+  }, [showConfirmDialog]);
 
-  const declineInvite = async () => {
+  const declineInvite = useCallback(async () => {
     try {
       await declineEventInvitation({ eventId }).unwrap();
       notifications.success(
@@ -171,97 +177,129 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
         })
       );
     }
-  };
+  }, [declineEventInvitation, eventId, t, title]);
 
-  //We do not show the options popover unless the meeting is accepted
-  const getDeclineInviteActionButton = () => {
-    const options: IMeetingCardOptionItem[] = [];
+  // We do not show the options popover unless the meeting is accepted
+  const declineInviteOptions = useMemo(() => {
     const isAccepted = isEvent(event) && event.inviteStatus === InviteStatus.Accepted;
     const isRecurring = isRecurringEvent(event);
 
     if (isAccepted && !isMeetingCreator) {
-      options.push({
-        i18nKey: isRecurring ? 'decline-meeting-series-button' : 'global-decline',
-        action: declineInvite,
-      });
+      return [
+        {
+          i18nKey: isRecurring ? 'decline-meeting-series-button' : 'global-decline',
+          action: declineInvite,
+        },
+      ];
     }
 
-    return options;
-  };
+    return [];
+  }, [declineInvite, event, isMeetingCreator]);
 
-  const meetingOptionItems: IMeetingCardOptionItem[] = [
-    isFavorite
+  const meetingOptionItems = useMemo<IMeetingCardOptionItem[]>(() => {
+    const toggleFavorite = isFavorite
       ? {
           i18nKey: 'dashboard-meeting-card-popover-remove',
           action: () => {
             unmarkEvent(eventId);
-            setPopoverOpen(false);
+            handleClose();
           },
         }
       : {
           i18nKey: 'dashboard-meeting-card-popover-add',
           action: () => {
             markEvent(eventId);
-            setPopoverOpen(false);
+            handleClose();
           },
-        },
-    ...getDeclineInviteActionButton(),
-    {
-      i18nKey: 'dashboard-meeting-card-popover-details',
-      action: viewMeetingDetails,
-    },
-    {
-      i18nKey: 'dashboard-meeting-card-popover-copy-link',
-      action: copyMeetingLink,
-    },
-  ];
+        };
 
-  const copyGuestLinkOption: IMeetingCardOptionItem = {
-    i18nKey: 'dashboard-meeting-card-popover-copy-guest-link',
-    action: getGuestLink,
-    //Prevents doing multiple requests while loading
-    disabled: isGetInvitesLoading,
-  };
+    return [
+      toggleFavorite,
+      ...declineInviteOptions,
+      {
+        i18nKey: 'dashboard-meeting-card-popover-details',
+        action: viewMeetingDetails,
+      },
+      {
+        i18nKey: 'dashboard-meeting-card-popover-copy-link',
+        action: copyMeetingLink,
+      },
+    ];
+  }, [
+    copyMeetingLink,
+    declineInviteOptions,
+    eventId,
+    handleClose,
+    isFavorite,
+    markEvent,
+    unmarkEvent,
+    viewMeetingDetails,
+  ]);
 
-  const deleteMeetingOption: IMeetingCardOptionItem = {
-    i18nKey: 'dashboard-meeting-card-popover-delete',
-    action: showDialog,
-  };
+  const copyGuestLinkOption = useMemo<IMeetingCardOptionItem>(
+    () => ({
+      i18nKey: 'dashboard-meeting-card-popover-copy-guest-link',
+      action: getGuestLink,
+      // Prevent doing multiple requests while loading
+      disabled: isGetInvitesLoading,
+    }),
+    [getGuestLink, isGetInvitesLoading]
+  );
 
-  const creatorMeetingOptionItems: IMeetingCardOptionItem[] = [
-    { i18nKey: 'dashboard-meeting-card-popover-update', action: updateMeeting },
-    ...meetingOptionItems,
-  ];
-  if (isGuestsAllowedFeatureEnabled) {
-    creatorMeetingOptionItems.push(copyGuestLinkOption);
-  }
-  creatorMeetingOptionItems.push(deleteMeetingOption);
+  const deleteMeetingOption = useMemo<IMeetingCardOptionItem>(
+    () => ({
+      i18nKey: 'dashboard-meeting-card-popover-delete',
+      action: showDialog,
+    }),
+    [showDialog]
+  );
 
-  const options = isMeetingCreator ? creatorMeetingOptionItems : meetingOptionItems;
-  const renderMenuOptionItems = () =>
-    options.map((option) => (
-      <MenuItem
-        disabled={option.disabled}
-        key={option.i18nKey}
-        onClick={option.action}
-        aria-label={t(`${option.i18nKey}-label`, { title })}
-      >
-        {t(option.i18nKey)}
-      </MenuItem>
-    ));
+  const creatorMeetingOptionItems = useMemo(() => {
+    const creatorOptions: IMeetingCardOptionItem[] = [
+      { i18nKey: 'dashboard-meeting-card-popover-update', action: updateMeeting },
+      ...meetingOptionItems,
+    ];
 
-  const handleCloseConfirmDeleteDialog = () => {
+    if (isGuestsAllowedFeatureEnabled) {
+      creatorOptions.push(copyGuestLinkOption);
+    }
+
+    creatorOptions.push(deleteMeetingOption);
+
+    return creatorOptions;
+  }, [copyGuestLinkOption, deleteMeetingOption, isGuestsAllowedFeatureEnabled, meetingOptionItems, updateMeeting]);
+
+  const menuOptions = useMemo(
+    () => (isMeetingCreator ? creatorMeetingOptionItems : meetingOptionItems),
+    [creatorMeetingOptionItems, isMeetingCreator, meetingOptionItems]
+  );
+
+  const renderedMenuOptionItems = useMemo(
+    () =>
+      menuOptions.map((option) => (
+        <MenuItem
+          disabled={option.disabled}
+          key={option.i18nKey}
+          onClick={option.action}
+          aria-label={t(`${option.i18nKey}-label`, { title })}
+        >
+          {t(option.i18nKey)}
+        </MenuItem>
+      )),
+    [menuOptions, t, title]
+  );
+
+  const handleCloseConfirmDeleteDialog = useCallback(() => {
     showConfirmDialog(false);
-  };
+  }, [showConfirmDialog]);
 
   return (
     <Stack direction="row">
       <MoreButton
         aria-label={t('toolbar-button-more-tooltip-title')}
         size="small"
-        onMouseDown={openPopupMenu}
-        onClick={openPopupMenu}
-        ref={moreButtonRef}
+        onMouseDown={handleOpenPopover}
+        onClick={handleOpenPopover}
         aria-expanded={popoverOpen}
         aria-haspopup="menu"
       >
@@ -269,7 +307,7 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
       </MoreButton>
       <MuiPopover
         open={popoverOpen}
-        anchorEl={moreButtonRef.current}
+        anchorEl={popoverAnchor}
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
@@ -281,7 +319,7 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
         }}
         onMouseDown={stopPropagation}
       >
-        <MenuList autoFocusItem={true}>{renderMenuOptionItems()}</MenuList>
+        <MenuList autoFocusItem={true}>{renderedMenuOptionItems}</MenuList>
       </MuiPopover>
       <ConfirmDeleteDialog open={isConfirmDialogVisible} onClose={handleCloseConfirmDeleteDialog} event={event} />
       <Button
