@@ -155,7 +155,7 @@ export const rtkQueryErrorLoggerMiddleware: Middleware =
         // left unhandled as next callback was never called.
         return next(action);
       }
-      if (payload.data.code === ErrorCode.InvalidClaims) {
+      if (payload.data?.code === ErrorCode.InvalidClaims) {
         dispatch(
           authError({
             status: payload.status,
