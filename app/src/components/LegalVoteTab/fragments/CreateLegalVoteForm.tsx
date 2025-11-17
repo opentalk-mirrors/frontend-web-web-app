@@ -34,6 +34,7 @@ const defaultInitialValues = {
 const Form = styled(FormikForm)({
   flex: 1,
   flexDirection: 'column',
+  overflow: 'auto',
 });
 
 const ButtonBox = styled(Box)({

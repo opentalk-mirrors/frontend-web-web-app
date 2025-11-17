@@ -12,7 +12,7 @@ import PollOverview from './fragments/PollOverview';
 
 const PollOverviewContainer = styled(Stack)({
   flex: 1,
-  overflow: 'hidden',
+  overflow: 'auto',
   padding: 1,
 });
 
