@@ -54,7 +54,7 @@ describe('ParticipantVideo', () => {
       provider: { mui: true },
     });
 
-    expect(screen.queryByTestId('participantSreenShareVideo')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('participantScreenShareVideo')).not.toBeInTheDocument();
   });
 
   it('render participantVideo component without any stream should only display avatar component', () => {
@@ -66,7 +66,7 @@ describe('ParticipantVideo', () => {
     });
 
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
-    expect(screen.queryByTestId('participantSreenShareVideo')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('participantScreenShareVideo')).not.toBeInTheDocument();
     expect(
       screen.queryByTestId(`remoteVideo-${idFromDescriptor(mockedVideoMediaDescriptor(0))}`)
     ).not.toBeInTheDocument();
