@@ -55,7 +55,6 @@ export type UIState = {
   localVideoMirroringEnabled: boolean;
   showVoteOrPollResult: boolean;
   voteOrPollIdToShow?: LegalVoteId | PollId;
-  debugMode: boolean;
   chatSearchValue: string;
   isCurrentWhiteboardHighlighted?: boolean;
   isCurrentMeetingNotesHighlighted?: boolean;
@@ -91,7 +90,6 @@ const initialState: UIState = {
   localVideoMirroringEnabled: true,
   showVoteOrPollResult: false,
   voteOrPollIdToShow: undefined,
-  debugMode: false,
   chatSearchValue: '',
   isCurrentWhiteboardHighlighted: undefined,
   isCurrentMeetingNotesHighlighted: undefined,
@@ -159,9 +157,6 @@ export const uiSlice = createSlice({
     },
     setVoteOrPollIdToShow(state, { payload: voteOrPollIdToShow }: PayloadAction<PollId | LegalVoteId | undefined>) {
       state.voteOrPollIdToShow = voteOrPollIdToShow;
-    },
-    toggleDebugMode(state) {
-      state.debugMode = !state.debugMode;
     },
     setChatSearchValue(state, { payload: nextSearchValue }: PayloadAction<string>) {
       state.chatSearchValue = nextSearchValue;
@@ -290,7 +285,6 @@ export const {
   mirroredVideoSet,
   setShowVoteOrPollResult,
   setVoteOrPollIdToShow,
-  toggleDebugMode,
   setChatSearchValue,
   setMeetingNotesHighlight,
   setCoffeeBreakCurtainOpenFlag,
@@ -318,7 +312,6 @@ export const selectPinnedParticipantId = (state: RootState) => state.ui.pinnedPa
 export const selectMirroredVideoEnabled = (state: RootState) => state.ui.localVideoMirroringEnabled;
 export const selectShowPollOrVoteResult = (state: RootState) => state.ui.showVoteOrPollResult;
 export const selectVoteOrPollIdToShow = (state: RootState) => state.ui.voteOrPollIdToShow;
-export const selectDebugMode = (state: RootState) => state.ui.debugMode;
 export const selectChatSearchValue = (state: RootState) => state.ui.chatSearchValue;
 export const selectIsCurrentWhiteboardHighlighted = (state: RootState) => state.ui.isCurrentWhiteboardHighlighted;
 export const selectIsCurrentMeetingNotesHighlighted = (state: RootState) => state.ui.isCurrentMeetingNotesHighlighted;

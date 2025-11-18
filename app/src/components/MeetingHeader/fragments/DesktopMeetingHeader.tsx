@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Divider, Pagination, styled } from '@mui/material';
-import React, { useEffect, useCallback, useState, useRef } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { LogoIcon, MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icons';
@@ -18,7 +18,6 @@ import {
   selectIsCurrentMeetingNotesHighlighted,
   selectPaginationPageState,
   setPaginationPage,
-  toggleDebugMode,
   updatedCinemaLayout,
   selectIsCurrentWhiteboardHighlighted,
 } from '../../../store/slices/uiSlice';
@@ -127,27 +126,6 @@ const DesktopMeetingHeader = () => {
   const { t } = useTranslation();
   const isMeetingNotesActive = selectedLayout === LayoutOptions.MeetingNotes;
   const isWhiteboardActive = selectedLayout === LayoutOptions.Whiteboard;
-  const [clickCount, setClickCount] = useState(0);
-  const clickTimer = useRef<NodeJS.Timeout | null>(null);
-
-  const showDebugDialog = () => {
-    if (clickTimer.current) {
-      clearTimeout(clickTimer.current);
-    }
-
-    clickTimer.current = setTimeout(() => {
-      setClickCount(0);
-    }, 2000);
-
-    setClickCount((clickCount) => clickCount + 1);
-  };
-
-  useEffect(() => {
-    if (clickCount === 5) {
-      dispatch(toggleDebugMode());
-      setClickCount(0);
-    }
-  }, [dispatch, clickCount]);
 
   const pageCount = Math.ceil(participants.length / MAX_GRID_TILES_DESKTOP);
 
@@ -157,22 +135,19 @@ const DesktopMeetingHeader = () => {
     }
   }, [selectedPage, pageCount, dispatch]);
 
-  const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
+  const handleChangePage = (_event: React.ChangeEvent<unknown>, page: number) => {
     dispatch(setPaginationPage(page));
   };
 
-  const handleSelectedView = useCallback(
-    (layout: LayoutOptions) => {
-      dispatch(updatedCinemaLayout({ layout, cacheLastLayout: true }));
-    },
-    [dispatch]
-  );
+  const handleSelectedView = (layout: LayoutOptions) => {
+    dispatch(updatedCinemaLayout({ layout, cacheLastLayout: true }));
+  };
 
-  const handleMeetingNotesClick = useCallback(() => {
+  const handleMeetingNotesClick = () => {
     if (selectedLayout !== LayoutOptions.MeetingNotes) {
       handleSelectedView(LayoutOptions.MeetingNotes);
     }
-  }, [selectedLayout, handleSelectedView]);
+  };
 
   const isAnyFeatureActive = Boolean(
     showWhiteboardIcon || meetingNotesUrl || showVotesAndPolls || isSharedFolderAvailable
@@ -181,40 +156,16 @@ const DesktopMeetingHeader = () => {
   const isPaginationVisible = pageCount > 1;
   const showPagination = isPaginationVisible && selectedLayout === LayoutOptions.Grid;
 
-  const renderMeetingNotesButton = () => {
-    return (
-      <MeetingHeaderButton
-        active={isCurrentMeetingNotesHighlighted}
-        onClick={handleMeetingNotesClick}
-        aria-label={t('meeting-notes-button-show')}
-        aria-pressed={isMeetingNotesActive}
-      >
-        <MeetingNotesIcon />
-      </MeetingHeaderButton>
-    );
-  };
-
-  const handleWhiteboardClick = useCallback(() => {
+  const handleWhiteboardClick = () => {
     if (selectedLayout !== LayoutOptions.Whiteboard) {
       handleSelectedView(LayoutOptions.Whiteboard);
     }
-  }, [selectedLayout, handleSelectedView]);
-
-  const renderWhiteboardButton = () => (
-    <MeetingHeaderButton
-      active={isCurrentWhiteboardHighlighted}
-      onClick={handleWhiteboardClick}
-      aria-label={t('whiteboard-start-whiteboard-button')}
-      aria-pressed={isWhiteboardActive}
-    >
-      <WhiteboardIcon />
-    </MeetingHeaderButton>
-  );
+  };
 
   return (
     <Content>
       <LogoContainer>
-        <OpenTalkLogo onClick={showDebugDialog} aria-disabled />
+        <OpenTalkLogo aria-disabled />
       </LogoContainer>
       <HeaderContainer justifyContentLgDown="flex-start" wrap flex={1}>
         <RoomTitleContainer>
@@ -239,8 +190,26 @@ const DesktopMeetingHeader = () => {
         {isAnyFeatureActive && (
           <>
             <HeaderDivider orientation="vertical" />
-            {showWhiteboardIcon && renderWhiteboardButton()}
-            {meetingNotesUrl && selectedLayout !== LayoutOptions.MeetingNotes && renderMeetingNotesButton()}
+            {showWhiteboardIcon && (
+              <MeetingHeaderButton
+                active={isCurrentWhiteboardHighlighted}
+                onClick={handleWhiteboardClick}
+                aria-label={t('whiteboard-start-whiteboard-button')}
+                aria-pressed={isWhiteboardActive}
+              >
+                <WhiteboardIcon />
+              </MeetingHeaderButton>
+            )}
+            {meetingNotesUrl && selectedLayout !== LayoutOptions.MeetingNotes && (
+              <MeetingHeaderButton
+                active={isCurrentMeetingNotesHighlighted}
+                onClick={handleMeetingNotesClick}
+                aria-label={t('meeting-notes-button-show')}
+                aria-pressed={isMeetingNotesActive}
+              >
+                <MeetingNotesIcon />
+              </MeetingHeaderButton>
+            )}
             {isSharedFolderAvailable && <SharedFolderPopover />}
             {showVotesAndPolls && <VotesAndPollsResultsPopover />}
           </>
