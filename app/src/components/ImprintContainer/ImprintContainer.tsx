@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
+import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../hooks';
@@ -19,28 +20,45 @@ const StyledLink = styled('a')(({ theme }) => ({
   textDecoration: 'none',
 }));
 
+type LinkItem = {
+  key: string;
+  href: string;
+  label: string;
+};
+
 const ImprintContainer = () => {
+  const { t } = useTranslation();
   const imprintUrl = useAppSelector(selectImprintUrl);
   const dataProtectionUrl = useAppSelector(selectDataProtectionUrl);
 
-  if (!imprintUrl && !dataProtectionUrl) {
+  const linkItems = useMemo<LinkItem[]>(() => {
+    const items: LinkItem[] = [];
+
+    if (imprintUrl) {
+      items.push({ key: 'imprint', href: imprintUrl, label: t('imprint-label') });
+    }
+
+    if (dataProtectionUrl) {
+      items.push({ key: 'data-protection', href: dataProtectionUrl, label: t('data-protection-label') });
+    }
+
+    return items;
+  }, [dataProtectionUrl, imprintUrl, t]);
+
+  if (!linkItems.length) {
     return null;
   }
 
-  const { t } = useTranslation();
   return (
-    <Container data-testid="ImprintContainer" style={{}}>
-      {imprintUrl && (
-        <StyledLink href={imprintUrl} target="_blank">
-          {t('imprint-label')}
-        </StyledLink>
-      )}
-      {dataProtectionUrl && imprintUrl && ' - '}
-      {dataProtectionUrl && (
-        <StyledLink href={dataProtectionUrl} target="_blank">
-          {t('data-protection-label')}
-        </StyledLink>
-      )}
+    <Container data-testid="ImprintContainer">
+      {linkItems.map(({ key, href, label }, index) => (
+        <Fragment key={key}>
+          {index > 0 && <span aria-hidden="true"> - </span>}
+          <StyledLink href={href} rel="noreferrer" target="_blank">
+            {label}
+          </StyledLink>
+        </Fragment>
+      ))}
     </Container>
   );
 };

@@ -52,7 +52,6 @@ export default defineConfig([
       'app/src/components/DashboardNavigation/fragments/SecondaryNavigation.tsx',
       'app/src/components/GlitchtipErrorDialog/GlitchtipErrorDialog.tsx',
       'app/src/components/GridView/GridView.tsx',
-      'app/src/components/ImprintContainer/ImprintContainer.tsx',
       'app/src/components/InviteToMeeting/fragments/MeetingLinksAndPasswords.tsx',
       'app/src/components/LegalVoteTab/fragments/CreateLegalVoteForm.tsx',
       'app/src/components/LegalVoteTab/fragments/ParticipantSelector.tsx',
