@@ -21,7 +21,7 @@ import {
   RecurringEvent,
   isRecurringEvent,
 } from '@opentalk/rest-api-rtk-query';
-import { useMemo } from 'react';
+import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDeleteEventMutation, useUpdateEventInstanceMutation } from '../../../api/rest';
@@ -59,7 +59,7 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
   const [deleteEvent, { isLoading: isSubmittingDeleteEvent }] = useDeleteEventMutation();
   const submitting = isSubmittingUpdateEventInstance || isSubmittingDeleteEvent;
 
-  const stopPropagation = (mouseEvent: React.MouseEvent<HTMLDivElement | HTMLButtonElement | HTMLAnchorElement>) => {
+  const stopPropagation = (mouseEvent: MouseEvent<HTMLDivElement | HTMLButtonElement | HTMLAnchorElement>) => {
     mouseEvent.stopPropagation();
   };
 
@@ -85,10 +85,9 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
     }
   };
 
-  const contentBasedOnEventType: ContentBasedOnEventTypeProps = useMemo(() => {
-    switch (event.type) {
-      case EventType.Recurring:
-        return {
+  const contentBasedOnEventType: ContentBasedOnEventTypeProps =
+    event.type === EventType.Recurring
+      ? {
           message: t('dashboard-recurrence-meeting-card-delete-dialog-message'),
           title: t('dashboard-meeting-card-delete-dialog-title'),
           actionButtons: [
@@ -108,9 +107,8 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
               color: 'secondary',
             },
           ],
-        };
-      default:
-        return {
+        }
+      : {
           message: t('dashboard-meeting-card-delete-dialog-message', {
             subject: title,
           }),
@@ -128,8 +126,6 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
             },
           ],
         };
-    }
-  }, [event]);
 
   const handleActionButtons = (action: EventDeletionType | null) => {
     switch (action) {
