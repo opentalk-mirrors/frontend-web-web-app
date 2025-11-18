@@ -24,6 +24,7 @@ vi.mock('@livekit/components-react', () => ({
     return <div data-testid="participantContext">{children}</div>;
   },
   useRemoteParticipants: () => [mockedParticipant(0)],
+  useSortedParticipants: () => [mockedParticipant(0)],
   useRoomContext: () => vi.fn(),
 }));
 
