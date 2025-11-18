@@ -1,17 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  CursorPaginated,
-  DateTime,
-  Event,
-  EventException,
-  InviteStatus,
-  isTimelessEvent,
-} from '@opentalk/rest-api-rtk-query';
+import { DateTime, InviteStatus, isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { formatRFC3339 } from 'date-fns';
 import { groupBy } from 'lodash';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGetEventsQuery } from '../../../api/rest';
@@ -28,12 +21,10 @@ import { filterByTimePeriod } from './fragments/utils';
 import { DashboardEventsFilters, FilterChangeCallbackType, MeetingsProp, TimeFilter } from './types';
 
 const EMPTY_MEETING_PROP_ARRAY: Array<MeetingsProp> = [];
-const CachedEventsPageHeader = memo(EventsPageHeader);
-
 const EVENTS_PER_REQUEST = 100;
 
 const EventsOverviewPage = () => {
-  const [expandAccordion, setExpandAccordion] = useState<string>('');
+  const [expandAccordionOverride, setExpandAccordionOverride] = useState<string>('');
   const [filter, setFilter] = useState<DashboardEventsFilters>({
     timePeriod: TimeFilter.Month,
     timeMin: new Date().toTimeString() as DateTime,
@@ -46,110 +37,109 @@ const EventsOverviewPage = () => {
   const pageHeading = t('dashboard-events-my-meetings');
   useUpdateDocumentTitle(pageHeading);
 
-  const formatEventsByHeaderChange = useCallback(
-    (events: Array<Event>) => {
-      if (filter.favoriteMeetings) {
-        return events.filter((event) => event.isFavorite);
-      }
-      if (filter.openInvitedMeeting) {
-        return events.filter((event) => event.inviteStatus !== InviteStatus.Accepted);
-      }
-      return events;
-    },
-    [filter.favoriteMeetings, filter.openInvitedMeeting]
-  );
+  const { favoriteMeetings, openInvitedMeeting, timePeriod, timePerspective } = filter;
 
   const timeMinFilter = useMemo(() => {
-    if (filter.timePerspective === TimePerspectiveFilter.Future) {
+    if (timePerspective === TimePerspectiveFilter.Future) {
       // setSecond to 0 to optimize the request and not ask data on every second when switching timePeriodFilter
       return formatRFC3339(new Date().setSeconds(0, 0)) as DateTime;
     }
-  }, [filter.timePerspective]);
+  }, [timePerspective]);
 
   const timeMaxFilter = useMemo(() => {
-    if (filter.timePerspective === TimePerspectiveFilter.Past) {
+    if (timePerspective === TimePerspectiveFilter.Past) {
       // setSecond to 0 to optimize the request and not ask data on every second when switching timePeriodFilter
       return formatRFC3339(new Date().setSeconds(0, 0)) as DateTime;
     }
-  }, [filter.timePerspective]);
+  }, [timePerspective]);
 
-  /**
-   * Returns memoized function to optimize the performance (acts like a memoized selector)
-   **/
-  const selectAndTransformToMeetingProps = (
-    data: CursorPaginated<Event | EventException> | undefined,
-    timePerspectiveFilter: TimePerspectiveFilter
-  ) =>
-    useMemo(() => {
-      if (!data) {
-        return [];
-      }
+  const { data, isLoading, isFetching } = useGetEventsQuery({
+    favorites: favoriteMeetings,
+    perPage: EVENTS_PER_REQUEST,
+    adhoc: false,
+    timeIndependent: timePerspective === TimePerspectiveFilter.TimeIndependent,
+    timeMin: timeMinFilter,
+    timeMax: timeMaxFilter,
+  });
 
-      const eventsWithEventInstances = appendRecurringEventInstances(data.data, true, undefined, timePerspectiveFilter);
+  const events = useMemo<Array<MeetingsProp>>(() => {
+    if (!data) {
+      return EMPTY_MEETING_PROP_ARRAY;
+    }
 
-      const orderedEventsWithRecurringInstances = orderEventsByDate(
-        formatEventsByHeaderChange(eventsWithEventInstances),
-        timePerspectiveFilter === TimePerspectiveFilter.Future ? SortDirection.ASC : SortDirection.DESC
-      );
+    const eventsWithEventInstances = appendRecurringEventInstances(data.data, true, undefined, timePerspective);
 
-      if (timePerspectiveFilter === TimePerspectiveFilter.TimeIndependent) {
-        const constructMeetingProp = {
+    let targetedEvents = eventsWithEventInstances;
+    if (favoriteMeetings || openInvitedMeeting) {
+      targetedEvents = eventsWithEventInstances.filter((event) => {
+        if (favoriteMeetings) {
+          return event.isFavorite;
+        }
+        return event.inviteStatus !== InviteStatus.Accepted;
+      });
+    }
+
+    const orderedEventsWithRecurringInstances = orderEventsByDate(
+      targetedEvents,
+      timePerspective === TimePerspectiveFilter.Future ? SortDirection.ASC : SortDirection.DESC
+    );
+
+    if (timePerspective === TimePerspectiveFilter.TimeIndependent) {
+      return [
+        {
           title: t('dashboard-meeting-details-page-timeindependent'),
           events: orderedEventsWithRecurringInstances,
-        };
-        setExpandAccordion('all');
-        return [constructMeetingProp];
-      }
-      const eventsGroupedByTimeFilter = groupBy(orderedEventsWithRecurringInstances, (event) =>
-        filterByTimePeriod(
-          filter.timePeriod,
-          isTimelessEvent(event) ? event.createdAt : (event.startsAt?.datetime as DateTime)
-        )
-      );
-      const eventsTransformedAsMeetingProp = Object.entries(eventsGroupedByTimeFilter).map(([title, events]) => ({
-        title,
-        events,
-      }));
-      if (eventsTransformedAsMeetingProp.length > 0) {
-        setExpandAccordion(eventsTransformedAsMeetingProp[0].title);
-      }
-      return [...eventsTransformedAsMeetingProp];
-    }, [timePerspectiveFilter, filter, data]);
-
-  const { events, isLoading, isFetching } = useGetEventsQuery(
-    {
-      favorites: filter.favoriteMeetings,
-      perPage: EVENTS_PER_REQUEST,
-      adhoc: false,
-      timeIndependent: filter.timePerspective === TimePerspectiveFilter.TimeIndependent,
-      timeMin: timeMinFilter,
-      timeMax: timeMaxFilter,
-    },
-    {
-      selectFromResult: ({ data, isLoading, isFetching }) => ({
-        events: selectAndTransformToMeetingProps(data, filter.timePerspective),
-        isLoading,
-        isFetching,
-      }),
+        },
+      ];
     }
-  );
+
+    const eventsGroupedByTimeFilter = groupBy(orderedEventsWithRecurringInstances, (event) =>
+      filterByTimePeriod(timePeriod, isTimelessEvent(event) ? event.createdAt : (event.startsAt?.datetime as DateTime))
+    );
+
+    return Object.entries(eventsGroupedByTimeFilter).map(([title, groupedEvents]) => ({
+      title,
+      events: groupedEvents,
+    }));
+  }, [data, favoriteMeetings, openInvitedMeeting, timePeriod, timePerspective, t]);
+
+  const defaultExpandAccordion = useMemo(() => {
+    if (!events.length) {
+      return '';
+    }
+
+    if (timePerspective === TimePerspectiveFilter.TimeIndependent) {
+      return 'all';
+    }
+
+    return events[0].title;
+  }, [events, timePerspective]);
+
+  const expandAccordion = useMemo(() => {
+    if (!expandAccordionOverride) {
+      return defaultExpandAccordion;
+    }
+
+    if (expandAccordionOverride === 'all') {
+      return 'all';
+    }
+
+    const hasMatchingEntry = events.some((entry) => entry.title === expandAccordionOverride);
+    return hasMatchingEntry ? expandAccordionOverride : defaultExpandAccordion;
+  }, [defaultExpandAccordion, events, expandAccordionOverride]);
 
   const onFilterChange: FilterChangeCallbackType = useCallback((key, value) => {
+    setExpandAccordionOverride('');
     setFilter((prevFilters) => ({ ...prevFilters, [key]: value ? value : !prevFilters[key] }));
   }, []);
 
   return (
     <>
-      <CachedEventsPageHeader
-        entries={events || EMPTY_MEETING_PROP_ARRAY}
-        filters={filter}
-        onFilterChange={onFilterChange}
-        title={pageHeading}
-      />
+      <EventsPageHeader entries={events} filters={filter} onFilterChange={onFilterChange} title={pageHeading} />
       <EventsOverview
-        entries={events || EMPTY_MEETING_PROP_ARRAY}
+        entries={events}
         expandAccordion={expandAccordion}
-        setExpandAccordion={setExpandAccordion}
+        setExpandAccordion={setExpandAccordionOverride}
         isLoading={isLoading}
         isFetching={isFetching}
       />
