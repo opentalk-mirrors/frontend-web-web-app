@@ -336,6 +336,10 @@ export const selectMapRemotePaticipanstDisplayName = createSelector(
   }
 );
 
+export const selectAllModeratorParticipants = createSelector([selectAllOnlineParticipants], (participants) =>
+  participants.filter((participant) => participant.role === Role.Moderator)
+);
+
 export default participantsSlice.reducer;
 
 /************************************************/
