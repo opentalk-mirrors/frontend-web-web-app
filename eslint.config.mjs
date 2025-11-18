@@ -77,7 +77,6 @@ export default defineConfig([
       'app/src/components/PollTab/fragments/CreatePollForm.tsx',
       'app/src/components/ReconnectionDialog/ReconnectionDialog.tsx',
       'app/src/components/SelectParticipants/SelectParticipants.tsx',
-      'app/src/components/SelfTest/SelfTest.tsx',
       'app/src/components/SelfTest/fragments/EchoPlayback.tsx',
       'app/src/components/SpeedTestDialog/SpeedTestDialog.tsx',
       'app/src/components/TalkingStickSortButton/TalkingStickSortButton.tsx',
