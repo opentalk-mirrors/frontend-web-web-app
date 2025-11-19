@@ -766,6 +766,8 @@ dashboard-help-support = Support
 user-manual-dashboard-title = Handbuch
 user-manual-open = Handbuch öffnen
 conference-go-home = Link zum Dashboard
+conference-storage-almost-full-plan-upgrade = Achtung: Sie sind dabei, das maximale Speicherkontingent Ihres aktuellen Tarifs zu erreichen. Bitte löschen Sie einige Ihrer gespeicherten Dateien oder führen Sie ein Tarifupgrade durch.
+conference-storage-almost-full-no-plan-upgrade = Achtung: Sie sind dabei, das maximale Speicherkontingent Ihres aktuellen Tarifs zu erreichen. Bitte löschen Sie einige Ihrer gespeicherten Dateien.
 conference-storage-full-no-plan-upgrade = Speicher voll. Bitte löschen Sie Dateien im Dashboard.
 conference-storage-full-plan-upgrade = Speicher voll. Bitte löschen Sie Dateien im Dashboard oder führen Sie ein Tarifupgrade durch.
 

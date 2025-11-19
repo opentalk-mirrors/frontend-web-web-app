@@ -122,7 +122,7 @@ const BinaryActionNotification = React.forwardRef<HTMLDivElement, BinaryActionNo
             {closable && (
               <Box
                 sx={{
-                  alignSelf: 'end',
+                  alignSelf: 'start',
                 }}
               >
                 <IconButton aria-label={t('global-close')} onClick={() => closeSnackbar(id)}>
