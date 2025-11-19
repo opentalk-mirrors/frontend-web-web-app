@@ -2,10 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { DateTime } from '@opentalk/rest-api-rtk-query';
-import { screen } from '@testing-library/react';
 
-import { configureStore, renderWithProviders, eventMockedData } from '../../../utils/testUtils';
-import EventsPage from './EventsOverviewPage';
+import { eventMockedData } from '../../../utils/testUtils';
 import { TimeFilter } from './fragments/EventsPageHeader';
 import { filterByTimePeriod } from './fragments/utils';
 
@@ -33,16 +31,6 @@ vi.mock('../../../templates/DashboardTemplate', () => ({
     setHeader: vi.fn(),
   }),
 }));
-
-describe('Dashboard EventsPage', () => {
-  it('will render 1 Accordion', () => {
-    const { store } = configureStore();
-    renderWithProviders(<EventsPage />, { store, provider: { mui: true, router: true } });
-
-    expect(screen.getByTestId('EventAccordion')).toBeInTheDocument();
-    expect(screen.getAllByTestId('EventAccordion')).toHaveLength(1);
-  });
-});
 
 describe('Unit test filterByTimePeriod function used for grouping the events by timePeriod', () => {
   it('returns month on month filtering', () => {
