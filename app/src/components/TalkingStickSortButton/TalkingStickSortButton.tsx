@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button } from '@mui/material';
-import { memo, useMemo, useRef, useState } from 'react';
+import { useCallback, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SortPopoverMenu } from '../../commonComponents';
@@ -37,43 +37,62 @@ interface TalkingSortButtonProps {
   closeOnSelection?: boolean;
 }
 
-const TalkingStickSortButton = ({ selectedSortType, onChange }: TalkingSortButtonProps) => {
-  const id = 'talking-stick-sort-popover';
+const TalkingStickSortButton = ({ selectedSortType, onChange, closeOnSelection = false }: TalkingSortButtonProps) => {
+  const popoverId = useId();
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const anchor = useRef<HTMLButtonElement | null>(null);
+  const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null);
 
-  const selectedItem = useMemo(() => {
-    return items.find((item) => item.type === selectedSortType) as SortItem;
-  }, [selectedSortType]);
+  const selectedItem = items.find((item) => item.type === selectedSortType) ?? items[0];
 
-  const toggleExpandedState = () => setExpanded((current) => !current);
+  const toggleExpandedState = useCallback(() => {
+    setExpanded((current) => !current);
+  }, []);
+
+  const closePopover = useCallback(() => {
+    setExpanded(false);
+  }, []);
+
+  const handleSelectionChange = useCallback(
+    (nextSortType: SortOption) => {
+      onChange(nextSortType);
+
+      if (closeOnSelection) {
+        setExpanded(false);
+      }
+    },
+    [closeOnSelection, onChange]
+  );
+
+  const handleAnchorRef = useCallback((element: HTMLButtonElement | null) => {
+    setAnchor(element);
+  }, []);
 
   return (
     <Box>
       <Button
-        ref={anchor}
+        ref={handleAnchorRef}
         type="button"
         aria-expanded={expanded}
-        aria-controls={id}
+        aria-controls={expanded ? popoverId : undefined}
         aria-haspopup="menu"
         onClick={toggleExpandedState}
       >
         {t(selectedItem.i18nKey)}
       </Button>
-      {anchor.current && expanded && (
+      {expanded && anchor && (
         <SortPopoverMenu
-          id={id}
-          anchorEl={anchor.current}
-          isOpen={true}
+          id={popoverId}
+          anchorEl={anchor}
+          isOpen={expanded}
           items={items}
-          onClose={() => setExpanded(false)}
+          onClose={closePopover}
           selectedOptionType={selectedSortType}
-          onChange={onChange}
+          onChange={handleSelectionChange}
         />
       )}
     </Box>
   );
 };
 
-export default memo(TalkingStickSortButton);
+export default TalkingStickSortButton;
