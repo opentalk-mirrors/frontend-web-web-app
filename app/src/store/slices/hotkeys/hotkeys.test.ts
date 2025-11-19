@@ -17,12 +17,20 @@ vi.mock('../../modules/Media/BackgroundBlur', () => ({
   BackgroundBlur: vi.fn().mockImplementation(() => ({})),
 }));
 
+vi.mock('../../../modules/WebRTC/ConferenceRoom', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getCurrentConferenceRoom: () => ({
+    sendMessage: vi.fn(),
+  }),
+}));
+
 describe('hotkeys', () => {
   beforeAll(() => {
     const { store } = configureStore();
     ReduxDomEvents.createInstance(store.dispatch);
   });
   beforeEach(() => {
+    vi.resetAllMocks();
     vi.resetModules();
     vi.useFakeTimers({
       shouldAdvanceTime: true,
