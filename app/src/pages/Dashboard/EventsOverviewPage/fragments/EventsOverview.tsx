@@ -7,7 +7,7 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import { isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { kebabCase } from 'lodash';
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ArrowDownIcon } from '../../../../assets/icons';
@@ -89,17 +89,40 @@ const EventsOverview = ({
   const marginTopReset = theme.spacing(2);
   const { t } = useTranslation();
 
-  const handleChange = (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
-    setExpanded(newExpanded ? [...expanded, panel] : expanded.filter((e) => e !== panel));
-  };
+  const entryTitles = useMemo(() => entries.map((event) => event.title), [entries]);
 
-  useEffect(() => {
-    if (expandAccordion === 'all') {
-      setExpanded(entries.map((event) => event.title));
-    } else {
-      setExpanded([expandAccordion]);
+  const sanitizedExpanded = useMemo(() => {
+    if (!expanded.length) {
+      return expanded;
     }
-  }, [expandAccordion, entries]);
+    const knownTitles = new Set(entryTitles);
+    return expanded.filter((title) => knownTitles.has(title));
+  }, [expanded, entryTitles]);
+
+  const resolvedExpandedPanels = useMemo(() => {
+    if (expandAccordion === 'all') {
+      return entryTitles;
+    }
+    if (expandAccordion) {
+      return [expandAccordion];
+    }
+    return sanitizedExpanded;
+  }, [entryTitles, expandAccordion, sanitizedExpanded]);
+
+  const handleChange = useCallback(
+    (panel: string) => (_event: SyntheticEvent, newExpanded: boolean) => {
+      setExpanded((prevExpanded) => {
+        if (newExpanded) {
+          if (prevExpanded.includes(panel)) {
+            return prevExpanded;
+          }
+          return [...prevExpanded, panel];
+        }
+        return prevExpanded.filter((value) => value !== panel);
+      });
+    },
+    []
+  );
 
   if (isLoading || isFetching) {
     return (
@@ -143,7 +166,7 @@ const EventsOverview = ({
           </ArrowDownButton>
         )}
         {entries.map((entry) => {
-          const isExpanded = expandAccordion === 'all' || expanded.includes(entry.title);
+          const isExpanded = resolvedExpandedPanels.includes(entry.title);
 
           return (
             <Accordion
