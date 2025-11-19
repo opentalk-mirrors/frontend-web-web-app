@@ -58,7 +58,6 @@ export default defineConfig([
       'app/src/components/MeetingForms/fragments/DateTimeSection.tsx',
       'app/src/components/MeetingForms/fragments/RecurrenceSection.tsx',
       'app/src/components/MeetingForms/fragments/TrainingParticipationReportSelect/TrainingParticipationReportSelect.tsx',
-      'app/src/components/MeetingHeader/fragments/LayoutSelection.tsx',
       'app/src/components/MeetingHeader/fragments/SharedFolderPopover.tsx',
       'app/src/components/MeetingHeader/fragments/WaitingParticipantsPopover.tsx',
       'app/src/components/MeetingNotesTab/MeetingNotesTab.tsx',
