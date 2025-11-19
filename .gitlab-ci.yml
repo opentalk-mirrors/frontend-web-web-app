@@ -191,6 +191,7 @@ trigger-changelog-preview:
 
 unit-tests:
   stage: test
+  needs: []
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -413,7 +414,7 @@ run-full-e2e-tests:
 
 deploy:
   stage: review-app
-  dependencies:
+  needs:
     - container
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
