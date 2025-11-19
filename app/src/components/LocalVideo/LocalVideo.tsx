@@ -111,11 +111,11 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
         <>
           {fullscreenMode && (
             <PinIconButton
-              onClick={togglePinVideo}
               aria-label={t('indicator-pinned', {
                 participantName: displayName || '',
               })}
-              color={isVideoPinned ? 'primary' : 'secondary'}
+              onClick={togglePinVideo}
+              aria-pressed={isVideoPinned}
             >
               <PinIcon />
             </PinIconButton>

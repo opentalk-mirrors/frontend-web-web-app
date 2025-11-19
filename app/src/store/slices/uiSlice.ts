@@ -52,6 +52,7 @@ export type UIState = {
   lastCinemaLayout: LayoutOptions;
   paginationPage: number;
   pinnedParticipantId?: ParticipantId;
+  presenterOverlayPinnedParticipantId?: ParticipantId;
   localVideoMirroringEnabled: boolean;
   showVoteOrPollResult: boolean;
   voteOrPollIdToShow?: LegalVoteId | PollId;
@@ -87,6 +88,7 @@ const initialState: UIState = {
   lastCinemaLayout: LayoutOptions.Grid,
   paginationPage: 1,
   pinnedParticipantId: undefined,
+  presenterOverlayPinnedParticipantId: undefined,
   localVideoMirroringEnabled: true,
   showVoteOrPollResult: false,
   voteOrPollIdToShow: undefined,
@@ -148,6 +150,9 @@ export const uiSlice = createSlice({
     },
     pinnedParticipantIdSet: (state, { payload }: PayloadAction<ParticipantId | undefined>) => {
       state.pinnedParticipantId = payload;
+    },
+    presenterOverlayPinnedParticipantIdSet: (state, { payload }: PayloadAction<ParticipantId | undefined>) => {
+      state.presenterOverlayPinnedParticipantId = payload;
     },
     mirroredVideoSet: (state, { payload: enabled }: PayloadAction<boolean>) => {
       state.localVideoMirroringEnabled = enabled;
@@ -282,6 +287,7 @@ export const {
   updatedCinemaLayout,
   setPaginationPage,
   pinnedParticipantIdSet,
+  presenterOverlayPinnedParticipantIdSet,
   mirroredVideoSet,
   setShowVoteOrPollResult,
   setVoteOrPollIdToShow,
@@ -309,6 +315,8 @@ export const selectCinemaLayout = (state: RootState) => state.ui.cinemaLayout;
 export const selectChatConversationState = (state: RootState) => state.ui.chatConversationState;
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;
 export const selectPinnedParticipantId = (state: RootState) => state.ui.pinnedParticipantId;
+export const selectPresenterOverlayPinnedParticipantId = (state: RootState) =>
+  state.ui.presenterOverlayPinnedParticipantId;
 export const selectMirroredVideoEnabled = (state: RootState) => state.ui.localVideoMirroringEnabled;
 export const selectShowPollOrVoteResult = (state: RootState) => state.ui.showVoteOrPollResult;
 export const selectVoteOrPollIdToShow = (state: RootState) => state.ui.voteOrPollIdToShow;

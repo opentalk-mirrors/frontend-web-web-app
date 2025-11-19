@@ -56,7 +56,7 @@ const LocalVideoContainer = styled(Box)(({ theme }) => ({
   top: theme.spacing(2),
   left: theme.spacing(2),
   width: '18%',
-  zIndex: theme.zIndex.mobileStepper,
+  zIndex: theme.zIndex.appBar,
 }));
 
 const IconButton = styled(MuiIconButton)(({ theme, 'aria-pressed': ariaPressed }) => ({

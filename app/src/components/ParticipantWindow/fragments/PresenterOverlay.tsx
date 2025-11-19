@@ -77,10 +77,10 @@ export const PresenterOverlay = ({
         <OverlayIconButton
           onClick={togglePin}
           translate="no"
-          color={isVideoPinned ? 'primary' : 'secondary'}
           aria-label={t('indicator-pinned', {
             participantName: displayName || '',
           })}
+          aria-pressed={isVideoPinned}
         >
           <PinIcon />
         </OverlayIconButton>
