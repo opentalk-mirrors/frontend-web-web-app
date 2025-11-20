@@ -90,7 +90,6 @@ export default defineConfig([
       'app/src/pages/Dashboard/EditEventsPage/EditEventsPage.tsx',
       'app/src/pages/ExtendedTabPage/fragments/Video.tsx',
       'app/src/pages/ExtendedTabPage/hooks/useBroadcastChannel.ts',
-      'app/src/provider/BreakoutRoomProvider/fragments/BreakoutRoomNotification.tsx',
       'app/src/provider/BreakoutRoomProvider/fragments/Countdown.tsx',
       'packages/redux-oidc/src/authCallbackComponent.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
