@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Divider, Menu, Stack, Typography, styled, useMediaQuery, useTheme, Button } from '@mui/material';
-import { SetStateAction, useCallback, useMemo, useState } from 'react';
+import { MouseEvent, useState, JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -48,6 +48,21 @@ const ViewPopperContainer = styled(Stack)(({ theme }) => ({
 
 const ButtonIndicator = styled(Indicator)({ position: 'absolute', top: '0.1rem', right: '0.1rem' });
 
+const getLayoutIcon = (layout: LayoutOptions): JSX.Element | null => {
+  switch (layout) {
+    case LayoutOptions.Grid:
+      return <GridViewIcon />;
+    case LayoutOptions.MeetingNotes:
+      return <MeetingNotesIcon />;
+    case LayoutOptions.Speaker:
+      return <SpeakerViewIcon />;
+    case LayoutOptions.Whiteboard:
+      return <WhiteboardIcon />;
+    default:
+      return null;
+  }
+};
+
 const LayoutSelection = () => {
   const dispatch = useAppDispatch();
   const selectedLayout = useAppSelector(selectCinemaLayout);
@@ -55,6 +70,10 @@ const LayoutSelection = () => {
   const { t } = useTranslation();
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const isViewPopoverOpen = Boolean(anchorElement);
+  const closeViewPopover = () => setAnchorElement(null);
+  const openViewPopover = ({ currentTarget }: MouseEvent<HTMLElement>) => {
+    setAnchorElement(currentTarget);
+  };
   const isWhiteboardAvailable = useAppSelector(selectIsWhiteboardAvailable);
   const isMeetingNotesFeatureAvailable = useAppSelector(selectIsMeetingNotesFeatureAvailable);
   const isCurrentMeetingNotesHighlighted = useAppSelector(selectIsCurrentMeetingNotesHighlighted);
@@ -66,13 +85,13 @@ const LayoutSelection = () => {
    */
   const showButtonIndicator = isCurrentMeetingNotesHighlighted;
 
-  const openFullscreenView = useCallback(() => {
-    setAnchorElement(null);
+  const openFullscreenView = () => {
+    closeViewPopover();
     dispatch(fullscreenActions.request());
-  }, []);
+  };
 
   const handleSelectedView = (layout: LayoutOptions, order: GridViewOrder = GridViewOrder.FirstJoined) => {
-    setAnchorElement(null);
+    closeViewPopover();
     dispatch(updatedCinemaLayout({ layout, cacheLastLayout: true }));
     dispatch(updatedGridViewOrder(order));
   };
@@ -80,18 +99,7 @@ const LayoutSelection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const ViewIcon = useMemo(() => {
-    switch (selectedLayout) {
-      case LayoutOptions.Grid:
-        return <GridViewIcon />;
-      case LayoutOptions.MeetingNotes:
-        return <MeetingNotesIcon />;
-      case LayoutOptions.Speaker:
-        return <SpeakerViewIcon />;
-      case LayoutOptions.Whiteboard:
-        return <WhiteboardIcon />;
-    }
-  }, [selectedLayout, isMobile, t]);
+  const viewIcon = getLayoutIcon(selectedLayout);
 
   const isWhiteBoard = selectedLayout === LayoutOptions.Whiteboard;
   const isMeetingNotes = selectedLayout === LayoutOptions.MeetingNotes;
@@ -130,11 +138,9 @@ const LayoutSelection = () => {
           aria-haspopup="true"
           aria-controls={isViewPopoverOpen ? 'view-popover-menu' : undefined}
           aria-label={t('conference-view-trigger-button')}
-          onClick={(event: { currentTarget: SetStateAction<HTMLElement | null> }) =>
-            setAnchorElement(event.currentTarget)
-          }
+          onClick={openViewPopover}
         >
-          {ViewIcon}
+          {viewIcon}
           {showButtonIndicator && isMobile && <ButtonIndicator />}
         </IconButton>
       )}
@@ -143,7 +149,7 @@ const LayoutSelection = () => {
         anchorEl={anchorElement}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-        onClose={() => setAnchorElement(null)}
+        onClose={closeViewPopover}
         id="view-popover-menu"
         slotProps={{
           list: {
