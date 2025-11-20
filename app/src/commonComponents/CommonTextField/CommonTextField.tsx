@@ -32,9 +32,10 @@ const StyledTextField = styled(TextField, {
   },
 
   // for some reason label position must be fine-tuned in text fields with start adornments
-  '& .MuiInputLabel-root': {
+  '& .MuiInputLabel-root:not(.MuiInputLabel-shrink)': {
     paddingTop: InputProps?.startAdornment && '1px',
     display: hideLabel ? 'none' : undefined,
+    opacity: InputProps?.readOnly ? 0.4 : undefined,
   },
 }));
 

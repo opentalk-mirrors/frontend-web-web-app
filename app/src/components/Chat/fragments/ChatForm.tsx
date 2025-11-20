@@ -306,8 +306,12 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
         onKeyDown={handleSubmitOnEnter}
         onFocus={() => setFocus(true)}
         onBlur={handleFormBlur}
+        InputProps={{
+          readOnly: !isChatEnabled,
+        }}
         slotProps={{
           input: {
+            readOnly: !isChatEnabled,
             endAdornment: (
               <InputAdornment position="end">
                 <SendMessageButton
@@ -349,7 +353,6 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
         maxRows={3}
         multiline
         fullWidth
-        disabled={!isChatEnabled}
       />
     </Form>
   );
