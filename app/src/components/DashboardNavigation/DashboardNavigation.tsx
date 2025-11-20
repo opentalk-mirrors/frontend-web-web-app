@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Collapse as CollapseMui, styled } from '@mui/material';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useIsMobile } from '../../hooks/useMediaQuery';
@@ -60,33 +60,29 @@ const Collapse = styled(CollapseMui)(({ theme }) => ({
 const DashboardNavigation = ({ routes }: DashboardProps) => {
   const { pathname } = useLocation();
   const [activeNavbar, setActiveNavbar] = useState<boolean>(false);
-  const [secondaryRoutes, setSecondaryRoutes] = useState<SecondaryRoute[] | undefined>();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const pathSegments = useMemo(() => pathname.split('/'), [pathname]);
 
   const activeMenu = useMemo(() => {
-    const path = pathname.split('/');
     // check if its home (/dashboard) which is path[1] or has other parent menu (path[2])
-    // subroutes are not important here they are handled in activerRoutes -> secondaryRoutes
-    return path[2] && path[2].length > 1 ? path[2] : path[1];
-  }, [pathname]);
+    // subroutes are not important here they are handled in activeRoutes -> secondaryRoutes
+    return pathSegments[2] && pathSegments[2].length > 1 ? pathSegments[2] : pathSegments[1];
+  }, [pathSegments]);
 
-  const containsChildrens = (routeObject: Array<PrimaryRoute>) => {
-    return routeObject[0]?.childRoutes && routeObject[0].childRoutes.length > 0;
-  };
-  const activeRoutes: Array<PrimaryRoute> = useMemo(() => {
-    const currentRoute = routes.filter((route) => route.path === activeMenu) || [];
-    if (containsChildrens(currentRoute)) {
-      setSecondaryRoutes(currentRoute[0].childRoutes);
-    }
-    return currentRoute;
+  const activeRoute = useMemo(() => {
+    return routes.find((route) => route.path === activeMenu);
   }, [routes, activeMenu]);
+  const secondaryRoutes: SecondaryRoute[] | undefined = activeRoute?.childRoutes;
+  const hasSecondaryRoutes = Boolean(secondaryRoutes?.length);
+  const primaryPath = activeRoute?.path;
+  const defaultSecondaryPath = secondaryRoutes?.[0]?.path;
 
   useEffect(() => {
-    if (activeRoutes[0]?.childRoutes && !pathname.split('/')[3]) {
-      navigate(`${activeRoutes[0].path}/${activeRoutes[0]?.childRoutes[0].path}`);
+    if (hasSecondaryRoutes && !pathSegments[3] && primaryPath && defaultSecondaryPath) {
+      navigate(`${primaryPath}/${defaultSecondaryPath}`);
     }
-  }, [navigate, activeRoutes, pathname]);
+  }, [navigate, pathSegments, hasSecondaryRoutes, primaryPath, defaultSecondaryPath]);
 
   return (
     <NavigationContainer>
@@ -101,7 +97,7 @@ const DashboardNavigation = ({ routes }: DashboardProps) => {
         <PrimaryNavigation submenu={activeMenu} setActiveNavbar={(e: boolean) => setActiveNavbar(e)} routes={routes} />
         <Collapse
           orientation="horizontal"
-          in={containsChildrens(activeRoutes)}
+          in={hasSecondaryRoutes}
           unmountOnExit
           mountOnEnter
           id="secondary-navigation-dashboard"

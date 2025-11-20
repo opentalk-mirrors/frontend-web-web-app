@@ -49,7 +49,7 @@ vi.mock('../../api/rest', async (importOriginal) => ({
   }),
 }));
 
-describe('dashboard navigation', () => {
+describe('DashboardNavigation', () => {
   const { store } = configureStore({
     initialState: {
       config: {
