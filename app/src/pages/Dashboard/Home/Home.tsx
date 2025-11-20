@@ -22,7 +22,7 @@ const Home = () => {
     return () => {
       setHeader(undefined);
     };
-  }, []);
+  }, [setHeader]);
 
   const pageHeading = t('dashboard-current-meetings');
   useUpdateDocumentTitle(pageHeading);

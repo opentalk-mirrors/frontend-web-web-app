@@ -90,7 +90,6 @@ export default defineConfig([
       'app/src/hooks/useUpdateDocumentTitle.ts',
       'app/src/pages/Dashboard/CreateEventsPage/CreateEventsPage.tsx',
       'app/src/pages/Dashboard/EditEventsPage/EditEventsPage.tsx',
-      'app/src/pages/Dashboard/Home/Home.tsx',
       'app/src/pages/ExtendedTabPage/fragments/Video.tsx',
       'app/src/pages/ExtendedTabPage/hooks/useBroadcastChannel.ts',
       'app/src/provider/BreakoutRoomProvider/fragments/BreakoutRoomNotification.tsx',
