@@ -34,11 +34,8 @@ interface DesktopHomeProps {
   pageHeading: string;
 }
 
-const DesktopHome = (props: DesktopHomeProps) => {
-  const { pageHeading } = props;
-  const [animation, setAnimation] = useState<boolean>(false);
-
-  const DesktopJoinMeetingDialog = () => (
+function DesktopJoinMeetingDialog() {
+  return (
     <DefaultJoinMeetingDialog
       openButtonProps={{
         size: 'large',
@@ -47,6 +44,10 @@ const DesktopHome = (props: DesktopHomeProps) => {
       }}
     />
   );
+}
+
+function DesktopHome({ pageHeading }: DesktopHomeProps) {
+  const [animation, setAnimation] = useState(false);
 
   return (
     <DesktopHomeContainer>
@@ -81,6 +82,6 @@ const DesktopHome = (props: DesktopHomeProps) => {
       <CurrentMeetings />
     </DesktopHomeContainer>
   );
-};
+}
 
 export default DesktopHome;
