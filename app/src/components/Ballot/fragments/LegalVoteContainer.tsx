@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, Grid, IconButton, Typography } from '@mui/material';
-import { FC, FormEvent, useEffect, useRef, useState } from 'react';
+import { FC, FormEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { vote } from '../../../api/types/outgoing/legalVote';
@@ -41,19 +41,17 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
   const numberOfVotes = Object.values(legalVote.votes || {}).reduce(function sumVotes(sum, totalVotesForCurrentOption) {
     return sum + totalVotesForCurrentOption;
   }, initialSum);
-  const [localSelectedLegalVoteOption, setLocalSelectedLegalVoteOption] = useState<LegalVoteOption | undefined>(
-    legalVote.userVote?.selectedOption
-  );
+  const [voteSelectionOverride, setVoteSelectionOverride] = useState<{
+    option?: LegalVoteOption;
+  }>();
+  const baseSelectedOption = legalVote.userVote?.selectedOption;
+  const localSelectedLegalVoteOption = !legalVote.userVote?.votedAt
+    ? voteSelectionOverride?.option
+    : baseSelectedOption;
   const isOptionDisabled = Boolean(!isLegalVoteActive || !isAllowedToVote || legalVote.userVote?.votedAt || !token);
   // you can't vote if vote is not active or you are not selected or you already voted.
   const isSubmitButtonDisabled = Boolean(
     !isLegalVoteActive || !isAllowedToVote || legalVote.userVote?.votedAt || !localSelectedLegalVoteOption || !token
-  );
-  useEffect(
-    function resetSelectedLegalVoteOptionOnLegalVoteIdChange() {
-      setLocalSelectedLegalVoteOption(legalVote.userVote?.selectedOption);
-    },
-    [legalVote.id, legalVote.userVote?.selectedOption]
   );
   const hasVotes = Object.keys(legalVote.votingRecord || {}).length > 0;
   const isTableHintVisible =
@@ -176,7 +174,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
                         }}
                         isChecked={voteKey === localSelectedLegalVoteOption}
                         onVote={() => {
-                          setLocalSelectedLegalVoteOption(voteKey as LegalVoteOption);
+                          setVoteSelectionOverride({ option: voteKey as LegalVoteOption });
                         }}
                       />
                     )
