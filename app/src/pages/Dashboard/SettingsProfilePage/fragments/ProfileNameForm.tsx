@@ -10,12 +10,14 @@ import { useGetMeQuery, useUpdateMeMutation } from '../../../../api/rest';
 import { notifications, CommonTextField } from '../../../../commonComponents';
 import { DISPLAY_NAME_MAX_CHARACTERS } from '../../../../constants';
 import { useAppSelector } from '../../../../hooks';
+import { useDisplayName } from '../../../../hooks/useDisplayName';
 import { selectDisallowCustomDisplayName } from '../../../../store/slices/configSlice';
 import { formikProps } from '../../../../utils/formikUtils';
 
 const ProfileNameForm = () => {
   const { t } = useTranslation();
   const { data } = useGetMeQuery();
+  const displayName = useDisplayName(data);
   const [updateMe, { isLoading }] = useUpdateMeMutation();
   const disallowCustomDisplayName = useAppSelector(selectDisallowCustomDisplayName);
 
@@ -29,7 +31,7 @@ const ProfileNameForm = () => {
 
   const formik = useFormik({
     initialValues: {
-      displayName: data?.displayName,
+      displayName,
     },
     enableReinitialize: true,
     validationSchema: validationSchema,

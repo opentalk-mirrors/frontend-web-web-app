@@ -20,6 +20,7 @@ import { CommonTextField as DefaultCommonTextField, notifications } from '../../
 import SuspenseLoading from '../../commonComponents/SuspenseLoading/SuspenseLoading';
 import { DISPLAY_NAME_MAX_CHARACTERS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useDisplayName } from '../../hooks/useDisplayName';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
@@ -158,7 +159,7 @@ const LobbyView = () => {
   }, []);
 
   const disableDisplayNameField = disallowCustomDisplayName && !inviteCode;
-  const initialDisplayName = data?.displayName || '';
+  const initialDisplayName = useDisplayName(data);
 
   const validationSchema = useMemo(
     () =>
