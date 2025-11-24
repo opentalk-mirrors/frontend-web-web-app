@@ -4,7 +4,7 @@
 //
 import { useMediaDeviceSelect } from '@livekit/components-react';
 import { Room } from 'livekit-client';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../commonComponents';
@@ -24,7 +24,7 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
     requestPermissions: false,
   });
 
-  const loadLocalDevices = async () => {
+  const loadLocalDevices = useCallback(async () => {
     try {
       setLocalDevices(await Room.getLocalDevices(kind, true));
       setPermissionDenied(false);
@@ -37,7 +37,7 @@ const useMediaDevice = ({ kind }: MediaPermissionsConstraints) => {
         });
       setPermissionDenied(true);
     }
-  };
+  }, [kind, t, permissionDenied]);
 
   return {
     permissionDenied,

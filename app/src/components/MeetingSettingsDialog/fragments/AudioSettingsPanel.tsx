@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Typography } from '@mui/material';
 import { ConnectionState } from 'livekit-client';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MicOnIcon } from '../../../assets/icons';
@@ -21,6 +21,7 @@ const AudioSettingsPanel = () => {
   const audioDeviceId = useAppSelector(selectAudioDeviceId);
   const dispatch = useAppDispatch();
   const room = useAppSelector(selectLivekitRoom);
+  const roomState = room?.state;
 
   // Some browsers (e.g. Firefox) duplicate devices, so we need to filter them out
   const filteredDevices = useMemo(() => {
@@ -37,19 +38,22 @@ const AudioSettingsPanel = () => {
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [devices]);
 
-  const handleSelectDevice = async (deviceId: DeviceId) => {
-    if (room?.state === ConnectionState.Connected) {
-      dispatch(switchActiveDevice({ deviceId, kind: 'audioinput' }));
-    } else {
-      dispatch(switchLocalDevice({ deviceId, kind: 'audioinput' }));
-    }
-  };
+  const handleSelectDevice = useCallback(
+    async (deviceId: DeviceId) => {
+      if (roomState === ConnectionState.Connected) {
+        dispatch(switchActiveDevice({ deviceId, kind: 'audioinput' }));
+      } else {
+        dispatch(switchLocalDevice({ deviceId, kind: 'audioinput' }));
+      }
+    },
+    [dispatch, roomState]
+  );
 
   useEffect(() => {
     loadLocalDevices();
-  }, []);
+  }, [loadLocalDevices]);
 
-  const getDevicesState = (): DevicePermissionState => {
+  const devicePermissionState = useMemo(() => {
     if (permissionDenied === true) {
       return DevicePermissionState.Denied;
     }
@@ -57,7 +61,7 @@ const AudioSettingsPanel = () => {
       return DevicePermissionState.Pending;
     }
     return DevicePermissionState.Confirmed;
-  };
+  }, [filteredDevices.length, permissionDenied]);
 
   return (
     <>
@@ -72,7 +76,7 @@ const AudioSettingsPanel = () => {
           title: t('audiomenu-choose-input'),
           titleIcon: <MicOnIcon />,
         }}
-        state={getDevicesState()}
+        state={devicePermissionState}
       />
     </>
   );
