@@ -73,7 +73,6 @@ export default defineConfig([
       'app/src/components/SelectParticipants/SelectParticipants.tsx',
       'app/src/components/SelfTest/fragments/EchoPlayback.tsx',
       'app/src/components/SpeedTestDialog/SpeedTestDialog.tsx',
-      'app/src/components/TalkingStickTabPanel/TalkingStickTabPanel.tsx',
       'app/src/components/TimerPopover/fragments/NormalTimerPopover.tsx',
       'app/src/components/Toolbar/fragments/AudioButton.tsx',
       'app/src/components/Toolbar/fragments/AudioIndicator.tsx',
