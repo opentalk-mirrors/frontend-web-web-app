@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, Stack, Typography } from '@mui/material';
-import { memo, useMemo, useState, useCallback } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { selectNext, talkingStickStart, stop as talkingStickStop } from '../../api/types/outgoing/automod';
@@ -21,30 +21,29 @@ const TalkingStickTabPanel = () => {
   const dispatch = useAppDispatch();
   const { t, i18n } = useTranslation();
   const configurationParticipants = useAppSelector(selectCombinedUserAndParticipants);
+  const userInitiatingTalkingStick = configurationParticipants[0];
   const isAutomodActive = useAppSelector(selectAutomodActiveState);
   const runningParticipantIds = useAppSelector(selectAutomoderationParticipantIds);
-  const participantsWithoutUser = configurationParticipants.slice(1);
   const [includeTalkingStickCreator, setIncludeTalkingStickCreator] = useState<boolean>(true);
-
-  const userInitiatingTalkingStick = configurationParticipants[0];
-
-  const activeParticipants = useMemo(() => {
-    const map = new Map();
-    for (const participant of configurationParticipants) {
-      map.set(participant.id, participant);
-    }
-    return runningParticipantIds.map((id) => map.get(id)).filter(Boolean);
-  }, [configurationParticipants, runningParticipantIds]);
-
   const [selectedSortType, setSelectedSortType] = useState<SortOption>(SortOption.NameASC);
 
-  const sortParticipants = useCallback(sortParticipantsWithConfig({ language: i18n.language }), [i18n.language]);
+  const participantsWithoutUser = useMemo(() => configurationParticipants.slice(1), [configurationParticipants]);
+
+  const activeParticipants = useMemo(() => {
+    const participantsById = new Map(configurationParticipants.map((participant) => [participant.id, participant]));
+
+    return runningParticipantIds.flatMap((id) => {
+      const participant = participantsById.get(id);
+      return participant ? [participant] : [];
+    });
+  }, [configurationParticipants, runningParticipantIds]);
 
   const sortedParticipants = useMemo(() => {
+    const sortParticipants = sortParticipantsWithConfig({ language: i18n.language });
     return sortParticipants(participantsWithoutUser, selectedSortType);
-  }, [participantsWithoutUser, sortParticipants, selectedSortType]);
+  }, [i18n.language, participantsWithoutUser, selectedSortType]);
 
-  const handleStart = useCallback(() => {
+  const handleStart = () => {
     const participantIdList = sortedParticipants.map((participant) => participant.id);
     const sortedPlaylist = includeTalkingStickCreator
       ? [userInitiatingTalkingStick.id, ...participantIdList]
@@ -54,7 +53,7 @@ const TalkingStickTabPanel = () => {
         playlist: sortedPlaylist,
       })
     );
-  }, [sortedParticipants, includeTalkingStickCreator]);
+  };
 
   const handleStop = () => {
     dispatch(talkingStickStop.action());
@@ -143,4 +142,4 @@ const TalkingStickTabPanel = () => {
   );
 };
 
-export default memo(TalkingStickTabPanel);
+export default TalkingStickTabPanel;
