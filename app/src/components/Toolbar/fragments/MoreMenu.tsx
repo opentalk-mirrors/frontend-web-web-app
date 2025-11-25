@@ -225,8 +225,13 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const moderatorMenuItems: Array<MenuEntry> = [];
 
   // Only room owner is allowed to create invites
-  if (isRoomOwner && isGuestsAllowedFeatureEnabled) {
-    moderatorMenuItems.push(inviteGuestItem);
+  if (isRoomOwner) {
+    if (isGuestsAllowedFeatureEnabled) {
+      moderatorMenuItems.push(inviteGuestItem);
+    }
+    if (isTrainingParticipationReportModuleOn) {
+      moderatorMenuItems.push(togglePresenceLogging);
+    }
   }
 
   moderatorMenuItems.push(toggleWaitingRoomItem);
@@ -237,10 +242,6 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
 
   if (isMeetingReportAvailable) {
     moderatorMenuItems.push(exportAttendanceReportItem);
-  }
-
-  if (isRoomOwner && isTrainingParticipationReportModuleOn) {
-    moderatorMenuItems.push(togglePresenceLogging);
   }
 
   //Exclude start/stop recording when errored/unavailable until we have designs/approach for how to handle errored and unavailable streams
