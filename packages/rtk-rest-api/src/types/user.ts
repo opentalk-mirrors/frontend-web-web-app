@@ -79,8 +79,8 @@ export type ParticipantOption = EmailUser | User;
  * Usually retrieved by calling GET /me
  */
 export type UserMe = BaseUser & {
-  conferenceTheme: string;
-  dashboardTheme: string;
+  conferenceTheme?: string;
+  dashboardTheme?: string;
   language: string;
   tariffStatus: TariffStatus;
   usedStorage: number;
