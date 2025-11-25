@@ -113,6 +113,7 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
                   countdown={{
                     action: handleLeaveBreakoutRoom,
                     duration: 60,
+                    startedAt: Date.now(),
                   }}
                 />
               );
@@ -133,6 +134,7 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
                 countdown={{
                   action: handleJoinBreakoutRoom,
                   duration: 60,
+                  startedAt: Date.now(),
                 }}
               />
             );
