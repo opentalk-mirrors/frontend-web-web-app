@@ -6,7 +6,7 @@ import { Grid, MenuItem, SelectChangeEvent, styled } from '@mui/material';
 import { Event, RecurrencePattern, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import { FormikProps } from 'formik';
 import { isEmpty } from 'lodash';
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CommonTextField } from '../../../commonComponents';
@@ -41,15 +41,32 @@ const RecurrenceSection = ({ formik, existingEvent, onRecurrencePatternChange }:
   const { t } = useTranslation();
   const [isRecurrenceDialogOpen, setIsRecurrenceDialogOpen] = useState(false);
   const [isRecurrenceSelectOpen, setIsRecurrenceSelectOpen] = useState(false);
-  const [customRecurrenceOption, setCustomRecurrenceOption] = useState<FrequencyOption>();
+  const [dialogCustomRecurrence, setDialogCustomRecurrence] = useState<FrequencyOption>();
 
+  const recurrenceFrequencyOptions: Array<FrequencyOption> = useMemo(
+    () => [
+      {
+        label: t('dashboard-meeting-recurrence-none'),
+        value: CommonFrequencies.NONE,
+      },
+      { label: t('dashboard-meeting-recurrence-daily'), value: CommonFrequencies.DAILY },
+      { label: t('dashboard-meeting-recurrence-weekly'), value: CommonFrequencies.WEEKLY },
+      { label: t('dashboard-meeting-recurrence-bi-weekly'), value: CommonFrequencies.BIWEEKLY },
+      { label: t('dashboard-meeting-recurrence-monthly'), value: CommonFrequencies.MONTHLY },
+    ],
+    [t]
+  );
   /**
    * In the current version of mui undefined is also set as a value of the select
    * To avoid that we have to explicitly filter out and open the dialog when undefined is "selected"
    */
   const handleRecurrenceChange = (event: SelectChangeEvent) => {
     if (event.target.value !== undefined) {
-      formik.setFieldValue('recurrencePattern', event.target.value);
+      const selectedValue = event.target.value;
+      formik.setFieldValue('recurrencePattern', selectedValue);
+      if (recurrenceFrequencyOptions.some((option) => option.value === selectedValue)) {
+        setDialogCustomRecurrence(undefined);
+      }
       return;
     }
     setIsRecurrenceDialogOpen(true);
@@ -57,44 +74,58 @@ const RecurrenceSection = ({ formik, existingEvent, onRecurrencePatternChange }:
   };
 
   const handleSelectCustomRRule = async ({ label, value }: FrequencyOption) => {
-    if (value === customRecurrenceOption?.value) {
+    setDialogCustomRecurrence({ label, value });
+    if (value === formik.values.recurrencePattern) {
       return;
     }
-    setCustomRecurrenceOption({ label, value });
     await formik.setFieldValue('recurrencePattern', value);
   };
 
-  const recurrenceFrequencyOptions: Array<FrequencyOption> = [
-    {
-      label: t('dashboard-meeting-recurrence-none'),
-      value: CommonFrequencies.NONE,
-    },
-    { label: t('dashboard-meeting-recurrence-daily'), value: CommonFrequencies.DAILY },
-    { label: t('dashboard-meeting-recurrence-weekly'), value: CommonFrequencies.WEEKLY },
-    { label: t('dashboard-meeting-recurrence-bi-weekly'), value: CommonFrequencies.BIWEEKLY },
-    { label: t('dashboard-meeting-recurrence-monthly'), value: CommonFrequencies.MONTHLY },
-  ];
-
-  const mapRecurrencePattern = (existingEvent?: Event): RecurrencePattern | false => {
+  const recurrenceFromEvent = useMemo<{ pattern: RecurrencePattern | false; customOption?: FrequencyOption }>(() => {
     if (!existingEvent || !isRecurringEvent(existingEvent) || isEmpty(existingEvent.recurrencePattern)) {
-      return false;
+      return { pattern: false as const, customOption: undefined };
     }
+
     const recurrencePattern = existingEvent.recurrencePattern[0];
 
     if (recurrenceFrequencyOptions.some((option) => option.value === recurrencePattern)) {
-      return recurrencePattern;
+      return { pattern: recurrencePattern, customOption: undefined };
     }
 
     const rruleOptions = RRule.parseString(recurrencePattern);
     const rrule = new RRule({ ...rruleOptions });
-    const rruleLabel = getRRuleText(rrule);
     const rruleValue = rrule.toString() as RecurrencePattern;
 
-    setCustomRecurrenceOption({ label: rruleLabel, value: rruleValue });
-    return rruleValue;
-  };
+    return { pattern: rruleValue, customOption: { label: getRRuleText(rrule), value: rruleValue } };
+  }, [existingEvent, recurrenceFrequencyOptions]);
 
-  useEffect(() => onRecurrencePatternChange(mapRecurrencePattern(existingEvent)), [existingEvent]);
+  const currentRecurrencePattern =
+    dialogCustomRecurrence?.value ?? formik.values.recurrencePattern ?? recurrenceFromEvent.pattern;
+
+  const customRecurrenceOption = useMemo(() => {
+    if (dialogCustomRecurrence) {
+      return dialogCustomRecurrence;
+    }
+
+    if (!currentRecurrencePattern) {
+      return recurrenceFromEvent.customOption;
+    }
+
+    if (recurrenceFrequencyOptions.some((option) => option.value === currentRecurrencePattern)) {
+      return recurrenceFromEvent.customOption;
+    }
+
+    try {
+      const rrule = new RRule({ ...RRule.parseString(currentRecurrencePattern) });
+      return { label: getRRuleText(rrule), value: currentRecurrencePattern as RecurrencePattern };
+    } catch {
+      return recurrenceFromEvent.customOption;
+    }
+  }, [currentRecurrencePattern, dialogCustomRecurrence, recurrenceFromEvent.customOption, recurrenceFrequencyOptions]);
+
+  useEffect(() => {
+    onRecurrencePatternChange(recurrenceFromEvent.pattern);
+  }, [onRecurrencePatternChange, recurrenceFromEvent.pattern]);
 
   return (
     <Grid
