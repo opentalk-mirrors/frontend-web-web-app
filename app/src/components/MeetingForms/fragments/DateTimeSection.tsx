@@ -4,7 +4,7 @@
 import { Collapse, Grid } from '@mui/material';
 import { Event, RecurrencePattern, isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { FormikProps } from 'formik';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import roundToUpper30 from '../../../utils/roundToUpper30';
 import { CommonFrequencies } from '../../../utils/rruleUtils';
@@ -20,58 +20,66 @@ interface RecurrenceSectionProps {
 }
 
 const DateTimeSection = ({ formik, existingEvent, onRecurrencePatternChange }: RecurrenceSectionProps) => {
-  const onChangeStartDate = async (date: Date | null) => {
-    if (!date) {
-      await formik.setFieldValue('startDate', '');
+  const onChangeStartDate = useCallback(
+    async (date: Date | null) => {
+      if (!date) {
+        await formik.setFieldValue('startDate', '');
+        await formik.validateField('startDate');
+        return;
+      }
+
+      if (isInvalidDate(date)) {
+        await formik.setFieldValue('startDate', String(date));
+        await formik.validateField('startDate');
+        return;
+      }
+
+      await formik.setFieldValue('startDate', date.toISOString());
+      await formik.setFieldValue('endDate', roundToUpper30(date).toISOString());
       await formik.validateField('startDate');
-      return;
-    }
-
-    if (isInvalidDate(date)) {
-      await formik.setFieldValue('startDate', String(date));
-      await formik.validateField('startDate');
-      return;
-    }
-
-    await formik.setFieldValue('startDate', date.toISOString());
-    await formik.setFieldValue('endDate', roundToUpper30(date).toISOString());
-    await formik.validateField('startDate');
-    await formik.validateField('endDate');
-  };
-
-  const onChangeEndDate = async (endDate: Date | null) => {
-    if (!endDate) {
-      await formik.setFieldValue('endDate', '');
       await formik.validateField('endDate');
-      return;
-    }
+    },
+    [formik]
+  );
 
-    if (isInvalidDate(endDate)) {
-      await formik.setFieldValue('endDate', String(endDate));
+  const onChangeEndDate = useCallback(
+    async (endDate: Date | null) => {
+      if (!endDate) {
+        await formik.setFieldValue('endDate', '');
+        await formik.validateField('endDate');
+        return;
+      }
+
+      if (isInvalidDate(endDate)) {
+        await formik.setFieldValue('endDate', String(endDate));
+        await formik.validateField('endDate');
+        return;
+      }
+
+      await formik.setFieldValue('endDate', endDate.toISOString());
       await formik.validateField('endDate');
-      return;
-    }
-
-    await formik.setFieldValue('endDate', endDate.toISOString());
-    await formik.validateField('endDate');
-  };
+    },
+    [formik]
+  );
 
   // We limit min start and end date to the current date, with one exception:
   // we don't want to limit the min date for exisiting events, which were created in the past
-  let minDate: Date | null;
-  if (existingEvent && !isTimelessEvent(existingEvent) && new Date(existingEvent.startsAt.datetime) < new Date()) {
-    minDate = null;
-  } else {
-    minDate = new Date();
-  }
+  const minDate = useMemo(() => {
+    if (existingEvent && !isTimelessEvent(existingEvent) && new Date(existingEvent.startsAt.datetime) < new Date()) {
+      return null;
+    }
+
+    return new Date();
+  }, [existingEvent]);
 
   // Use case: user set a recurrency pattern and than made the meeting time independent
-  const isTimeDependent = formik.values.isTimeDependent;
+  const { isTimeDependent } = formik.values;
+  const { setFieldValue } = formik;
   useEffect(() => {
     if (!isTimeDependent) {
-      formik.setFieldValue('recurrencePattern', CommonFrequencies.NONE);
+      void setFieldValue('recurrencePattern', CommonFrequencies.NONE);
     }
-  }, [isTimeDependent]);
+  }, [isTimeDependent, setFieldValue]);
 
   return (
     <>
