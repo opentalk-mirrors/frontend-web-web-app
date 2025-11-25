@@ -61,7 +61,6 @@ export default defineConfig([
       'app/src/components/MeetingHeader/fragments/SharedFolderPopover.tsx',
       'app/src/components/MeetingHeader/fragments/WaitingParticipantsPopover.tsx',
       'app/src/components/MeetingNotesTab/MeetingNotesTab.tsx',
-      'app/src/components/MeetingSettingsDialog/fragments/AudioSettingsPanel.tsx',
       'app/src/components/MeetingSettingsDialog/fragments/CameraSettingsPanel.tsx',
       'app/src/components/MeetingView/fragments/Cinema.tsx',
       'app/src/components/ParticipantWindow/fragments/ParticipantVideo.tsx',
