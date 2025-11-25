@@ -59,7 +59,7 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const avatarDefaultImage = useAppSelector(selectLibravatarDefaultImage);
   const [updateEventInvite] = useUpdateEventInviteMutation();
-  const { data: event, isLoading: isLoadingEvent } = useGetEventQuery({ eventId, inviteesMax: 0 });
+  const { data: event, isLoading: isLoadingEvent } = useGetEventQuery({ eventId });
   const { data: userMe, isLoading: isLoadingUserMe } = useGetMeQuery();
   const { t } = useTranslation();
 
