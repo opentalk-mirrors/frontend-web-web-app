@@ -8,6 +8,7 @@ import {
   useSortedParticipants,
 } from '@livekit/components-react';
 import { Box, IconButton as MuiIconButton, Slide, styled } from '@mui/material';
+import { RoomEvent } from 'livekit-client';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -80,7 +81,15 @@ const FullscreenView = () => {
   const [hasVisibleControls, setVisibleControls] = useState<boolean>(false);
   const [isLocalVideoPinned, setIsLocalVideoPinned] = useState<boolean>(false);
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
-  const sortedParticipants = useSortedParticipants(useRemoteParticipants());
+  const sortedParticipants = useSortedParticipants(
+    useRemoteParticipants({
+      updateOnlyOn: [
+        RoomEvent.ParticipantConnected,
+        RoomEvent.ParticipantDisconnected,
+        RoomEvent.ActiveSpeakersChanged,
+      ],
+    })
+  ); //TODO: Recheck for ActiveSpeakersChanged
   const sortedParticipantsIdentity = sortedParticipants[0]?.identity as ParticipantId | undefined;
 
   const selectedParticipantId = pinnedParticipantId || sortedParticipantsIdentity;

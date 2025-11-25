@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipants } from '@livekit/components-react';
+import { RoomEvent } from 'livekit-client';
 import { useMemo, useState } from 'react';
 
 import { requestMute } from '../../api/types/outgoing/livekit';
@@ -14,7 +15,14 @@ import { ParticipantId } from '../../types';
 
 const MuteParticipantsTab = () => {
   const dispatch = useAppDispatch();
-  const allParticipants = useRemoteParticipants();
+  const allParticipants = useRemoteParticipants({
+    updateOnlyOn: [
+      RoomEvent.ParticipantConnected,
+      RoomEvent.ParticipantDisconnected,
+      RoomEvent.TrackMuted,
+      RoomEvent.TrackUnmuted,
+    ],
+  });
   const unmutedParticipants = allParticipants.filter((participant) => participant.isMicrophoneEnabled);
 
   const [search, setSearch] = useState<string>('');

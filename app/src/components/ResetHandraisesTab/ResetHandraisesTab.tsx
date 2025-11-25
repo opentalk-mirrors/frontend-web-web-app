@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipants } from '@livekit/components-react';
+import { RoomEvent } from 'livekit-client';
 import { useMemo, useState } from 'react';
 
 import { resetRaisedHands } from '../../api/types/outgoing/moderation';
@@ -15,9 +16,9 @@ import { ParticipantId } from '../../types';
 const ResetHandraisesTab = () => {
   const dispatch = useAppDispatch();
   const activeParticipants = useAppSelector(selectParticipantsWithRaisedHands);
-  const remoteParticipants = useRemoteParticipants().filter((remote) =>
-    activeParticipants.some((active) => active.id === remote.identity)
-  );
+  const remoteParticipants = useRemoteParticipants({
+    updateOnlyOn: [RoomEvent.ParticipantConnected, RoomEvent.ParticipantDisconnected],
+  }).filter((remote) => activeParticipants.some((active) => active.id === remote.identity));
 
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
