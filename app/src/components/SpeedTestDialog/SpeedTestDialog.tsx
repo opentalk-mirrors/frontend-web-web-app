@@ -16,7 +16,7 @@ import {
   Box,
   Tooltip,
 } from '@mui/material';
-import { useCallback, useState, Fragment, useEffect } from 'react';
+import { useCallback, useState, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, SpeedTestIcon } from '../../assets/icons';
@@ -124,18 +124,6 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
   const testCompleted = testState === SessionState.Completed;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
-
-  const openDialog = useCallback(() => setIsDialogOpen(true), []);
-
-  useEffect(() => {
-    if (isDialogOpen) {
-      startTest();
-    }
-  }, [isDialogOpen]);
-
   const startTest = useCallback(() => {
     setTestState(SessionState.Initializing);
     dispatch(initSpeedMeter());
@@ -184,6 +172,15 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
         setTestState(SessionState.Completed);
       });
   }, [dispatch, config]);
+
+  const openDialog = useCallback(() => {
+    setIsDialogOpen(true);
+    startTest();
+  }, [startTest]);
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
 
   const getMessage = () => {
     let resultMessage;
