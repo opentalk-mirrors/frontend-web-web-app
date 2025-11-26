@@ -61,10 +61,10 @@ const EchoPlayBack = ({ localAudioTrack }: EchoPlayBackProps) => {
       echoTest.close();
       echoTest.removeEventListener('stateChanged', echoChangeHandler);
     };
-  }, [localAudioTrack?.mediaStreamTrack, t]);
+  }, [changeHandler, localAudioTrack?.mediaStream, localAudioTrack?.mediaStreamTrack, t]);
 
   return (
-    <audio ref={audioRef} autoPlay>
+    <audio ref={audioRef} autoPlay data-testid="echo-playback-audio">
       <track kind="captions" />
     </audio>
   );

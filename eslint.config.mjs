@@ -69,7 +69,6 @@ export default defineConfig([
       'app/src/components/PollTab/fragments/CreatePollForm.tsx',
       'app/src/components/ReconnectionDialog/ReconnectionDialog.tsx',
       'app/src/components/SelectParticipants/SelectParticipants.tsx',
-      'app/src/components/SelfTest/fragments/EchoPlayback.tsx',
       'app/src/components/TimerPopover/fragments/NormalTimerPopover.tsx',
       'app/src/components/Toolbar/fragments/AudioButton.tsx',
       'app/src/components/Toolbar/fragments/AudioIndicator.tsx',
