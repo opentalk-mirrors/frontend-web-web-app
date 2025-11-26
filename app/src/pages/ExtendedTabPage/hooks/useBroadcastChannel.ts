@@ -34,7 +34,7 @@ const useBroadcastChannel = (channelId: string | undefined): IUseBroadcastChanne
         }
       };
     }
-  }, [channelId, livekitData?.accessToken, livekitData?.participantId]);
+  }, [channelId, dispatch, livekitData?.accessToken, livekitData?.participantId]);
 
   return {
     accessToken: livekitData?.accessToken,
