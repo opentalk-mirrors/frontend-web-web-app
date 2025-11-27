@@ -24,6 +24,9 @@ export enum SessionStatus {
   AUTHORIZED = 'authorized',
 }
 
+export const getSavedLocation = () => sessionStorage.getItem('saved_location') || undefined;
+export const saveLocationForRedirect = (location: string) => sessionStorage.setItem('saved_location', location);
+
 export function hasActiveSession() {
   const accessToken = localStorage.getItem('access_token');
   const refreshToken = localStorage.getItem('refresh_token');

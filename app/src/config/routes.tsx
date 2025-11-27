@@ -152,7 +152,7 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
       <Error
         title={i18next.t('server-issue-page-title')}
         description={i18next.t('server-issue-page-description')}
-        logout
+        retry
       />
     ),
   },

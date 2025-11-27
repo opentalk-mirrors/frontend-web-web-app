@@ -13,7 +13,7 @@ import {
   startLoading,
   getAppDispatch,
 } from './store';
-import { AuthTypeError, calculateTokenRenewalTime, hasValidToken } from './utils';
+import { AuthTypeError, calculateTokenRenewalTime, getSavedLocation, hasValidToken } from './utils';
 
 export interface AuthProviderValues {
   configuration: AuthAdapterConfiguration;
@@ -45,7 +45,7 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
   );
 
   const getBaseUrl = () => authAdapter.getBaseUrl();
-  const getSavedRedirectUrl = () => authAdapter.getSavedLocation();
+  const getSavedRedirectUrl = () => getSavedLocation();
 
   const getNewRefreshToken = useCallback(() => {
     authAdapter.getConfigurationEndpoints().then((config) => {
