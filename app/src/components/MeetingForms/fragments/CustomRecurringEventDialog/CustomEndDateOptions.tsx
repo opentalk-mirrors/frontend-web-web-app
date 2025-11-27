@@ -33,6 +33,7 @@ const DatePicker = styled(MuiDatePicker)(({ theme }) => ({
 export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: CustomEndOptionsProps) => {
   const { t } = useTranslation();
   const [endOption, setEndOption] = useState<EndOption>(rRuleObject.until ? EndOption.OnDate : EndOption.Never);
+  const { until } = rRuleObject;
 
   const handleClick = (value: EndOption) => {
     setEndOption(value);
@@ -45,12 +46,12 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
   };
 
   useEffect(() => {
-    const isMinDateAfterSelected = rRuleObject.until ? minDate.valueOf() > rRuleObject.until.valueOf() : false;
+    const isMinDateAfterSelected = until ? minDate.valueOf() > until.valueOf() : false;
 
     if (endOption === EndOption.OnDate && isMinDateAfterSelected) {
       updateRRuleObject({ until: minDate });
     }
-  }, [minDate]);
+  }, [endOption, minDate, until, updateRRuleObject]);
 
   return (
     <RadioGroup value={endOption} name="radio-buttons-group">
