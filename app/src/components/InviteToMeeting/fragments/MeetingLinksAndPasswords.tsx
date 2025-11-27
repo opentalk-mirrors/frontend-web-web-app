@@ -28,7 +28,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
     roomTariff && isFeatureEnabledPredicate('guests_allowed', roomTariff.modules)
   );
 
-  const roomURL = useMemo(() => new URL(`/room/${roomId}`, baseURL), [baseURL, event]);
+  const roomURL = useMemo(() => new URL(`/room/${roomId}`, baseURL), [baseURL, roomId]);
   const eventTitle = event?.title || t('fallback-room-title');
 
   const roomSharedFolderURL = event.sharedFolder?.readWrite?.url;
