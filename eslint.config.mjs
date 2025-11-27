@@ -85,7 +85,6 @@ export default defineConfig([
       'app/src/pages/Dashboard/CreateEventsPage/CreateEventsPage.tsx',
       'app/src/pages/Dashboard/EditEventsPage/EditEventsPage.tsx',
       'app/src/pages/ExtendedTabPage/fragments/Video.tsx',
-      'app/src/pages/ExtendedTabPage/hooks/useBroadcastChannel.ts',
       'packages/redux-oidc/src/authCallbackComponent.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
     ],
