@@ -16,13 +16,13 @@ interface HeadbarProps {
 const HeadbarWrapper = styled('div')(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: `auto 1fr auto`,
-  background: theme.palette.primary.main,
-  color: theme.palette.primary.contrastText,
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.background.customPaper.contrastText,
   alignItems: 'center',
   padding: theme.spacing(1, 2),
 
   '& svg': {
-    fill: theme.palette.primary.contrastText,
+    fill: theme.palette.background.customPaper.contrastText,
     height: 24,
     width: 24,
   },
