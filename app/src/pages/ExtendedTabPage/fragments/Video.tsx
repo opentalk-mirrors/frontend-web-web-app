@@ -30,8 +30,8 @@ const Video = ({ mediaDescriptor, room }: { mediaDescriptor: MediaDescriptor; ro
       timeout = setTimeout(() => {
         const participant = room.remoteParticipants.get(mediaDescriptor.participantId);
         setParticipant(participant);
-        const videoTrack = participant?.getTrackPublication(mediaDescriptor.mediaType);
-        setVideoTrack(videoTrack);
+        const participantVideoTrack = participant?.getTrackPublication(mediaDescriptor.mediaType);
+        setVideoTrack(participantVideoTrack);
       }, WAIT_FOR_LIVEKIT_ROOM_UPDATE);
     }
     return () => {
@@ -39,7 +39,7 @@ const Video = ({ mediaDescriptor, room }: { mediaDescriptor: MediaDescriptor; ro
         clearTimeout(timeout);
       }
     };
-  }, [room]);
+  }, [mediaDescriptor.mediaType, mediaDescriptor.participantId, room, videoTrack]);
 
   const handleResize = useCallback(() => {
     setWindowHeight(window.innerHeight);
