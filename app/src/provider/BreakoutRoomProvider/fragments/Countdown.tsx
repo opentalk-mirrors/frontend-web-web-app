@@ -36,7 +36,7 @@ const Countdown = ({ started, duration, onCountdownEnds, ...rest }: CountdownPro
     return () => {
       intervalRef.current && clearInterval(intervalRef.current);
     };
-  }, [endTime]);
+  }, [endTime, onCountdownEnds]);
 
   return (
     <Box
