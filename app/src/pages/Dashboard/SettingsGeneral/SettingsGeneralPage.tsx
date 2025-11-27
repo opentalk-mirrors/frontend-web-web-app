@@ -1,15 +1,17 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
+import { useGetMeQuery } from '../../../api/rest';
+import { ThemeMode } from '../../../assets/themes/opentalk/types';
 import { VisuallyHiddenTitle } from '../../../commonComponents';
+import SettingsGeneralForm from '../../../components/SettingsGeneralForm';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
-import LanguageSelector from './fragments/LanguageSelector';
 
 const SettingsGeneralPage = () => {
   const { t } = useTranslation();
+  const { data, isLoading } = useGetMeQuery();
 
   const pageHeading = t('dashboard-settings-general-title');
 
@@ -18,18 +20,12 @@ const SettingsGeneralPage = () => {
   return (
     <>
       <VisuallyHiddenTitle label={pageHeading} component="h2" />
-      <Grid container direction="column" data-testid="dashboardSettingsGeneral" spacing={5}>
-        <Grid>
-          <LanguageSelector />
-        </Grid>
-        {/* TODO add action ThemeSelector, currently has only presentation function
-        <Grid item>
-          <Divider />
-        </Grid>
-        <Grid item>
-          <ThemeSelector />
-        </Grid> */}
-      </Grid>
+      {data && !isLoading && (
+        <SettingsGeneralForm
+          dashboardTheme={data.dashboardTheme as ThemeMode}
+          conferenceTheme={data.conferenceTheme as ThemeMode}
+        />
+      )}
     </>
   );
 };

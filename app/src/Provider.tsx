@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { CssBaseline, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { AuthProvider } from '@opentalk/redux-oidc';
-import { useLocation } from 'react-router-dom';
 
 import { useGetColorSchemesQuery } from './api/rest';
 import { createOpenTalkTheme } from './assets/themes/opentalk';
 import { defaultDarkModeColors, defaultLightModeColors } from './assets/themes/opentalk/palette';
 import { SnackbarProvider, SuspenseLoading } from './commonComponents';
 import { useAppSelector } from './hooks';
+import { useThemeProviderThemeMode } from './hooks/useThemeProviderThemeMode';
 import BreakoutRoomProvider from './provider/BreakoutRoomProvider';
 import { selectBaseUrl, selectControllerUrl, selectOidcConfig } from './store/slices/configSlice';
 
@@ -21,10 +21,9 @@ const Provider = ({ children }: ProviderProps) => {
   const oidcConfig = useAppSelector(selectOidcConfig);
   const baseUrl = useAppSelector(selectBaseUrl);
   const controllerBasedUrl = useAppSelector(selectControllerUrl);
-  const location = useLocation();
-  const inDashboard = location.pathname.startsWith('/dashboard');
 
   const { isLoading, data } = useGetColorSchemesQuery({});
+  const mode = useThemeProviderThemeMode();
 
   const fallBackColorScheme = {
     light: defaultLightModeColors,
@@ -43,9 +42,7 @@ const Provider = ({ children }: ProviderProps) => {
           signOutRedirectUri: new URL(oidcConfig.signOutRedirectUri, baseUrl).toString(),
         }}
       >
-        <ThemeProvider
-          theme={createOpenTalkTheme(inDashboard ? 'light' : 'dark', data?.baseColorScheme || fallBackColorScheme)}
-        >
+        <ThemeProvider theme={createOpenTalkTheme(mode, data?.baseColorScheme || fallBackColorScheme)}>
           <CssBaseline />
           <BreakoutRoomProvider>
             <SnackbarProvider>{isLoading ? <SuspenseLoading /> : children}</SnackbarProvider>
