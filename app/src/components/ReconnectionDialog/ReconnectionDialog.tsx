@@ -31,7 +31,7 @@ const ReconnectionDialog = () => {
     } finally {
       dispatch(abortedReconnection());
     }
-  }, [audioEnabled, videoEnabled]);
+  }, [audioEnabled, videoEnabled, dispatch, t]);
 
   return (
     <Dialog open fullWidth maxWidth="xs">
