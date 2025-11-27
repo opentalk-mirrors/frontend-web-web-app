@@ -340,6 +340,7 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
             color: theme.palette.primary.contrastText,
             '&.Mui-readOnly': {
               backgroundColor: 'transparent',
+              color: theme.palette.text.disabled,
             },
             '&.Mui-focused': {
               backgroundColor: theme.palette.background.highlight.primary,
