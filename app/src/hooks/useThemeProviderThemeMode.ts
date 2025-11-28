@@ -45,6 +45,14 @@ export function useThemeProviderThemeMode(): ThemeMode.Light | ThemeMode.Dark {
     return inDashboard ? ThemeMode.Light : ThemeMode.Dark;
   }
 
+  if (inDashboard && data.dashboardTheme === null) {
+    return ThemeMode.Light;
+  }
+
+  if (!inDashboard && data.conferenceTheme === null) {
+    return ThemeMode.Dark;
+  }
+
   if (inDashboard && data.dashboardTheme === 'system') {
     return systemTheme;
   }
