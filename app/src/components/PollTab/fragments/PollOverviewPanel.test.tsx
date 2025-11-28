@@ -26,7 +26,8 @@ vi.mock('../../VoteAndPollCountdown', () => ({
 describe('PollOverviewPanel', () => {
   const basePoll = {
     id: 'poll-1' as PollId,
-    topic: 'A very long poll topic that should maybe be truncated if necessary',
+    topic:
+      'A very long poll topic that should maybe be truncated if necessary, for example when displayed in a small sidebar widget on mobile devices.',
     duration: 60,
     choices: [{ id: 1 as ChoiceId, content: 'A' }],
     results: [
@@ -48,6 +49,8 @@ describe('PollOverviewPanel', () => {
     expect(screen.getByText('poll-overview-panel-status-active')).toBeInTheDocument();
     expect(screen.getByText('12:00')).toBeInTheDocument();
     expect(screen.getByText(/A very long poll topic/)).toBeInTheDocument();
+    // Ensure truncation works
+    expect(screen.queryByText(/widget on mobile devices./)).not.toBeInTheDocument();
     expect(screen.getByText('5')).toBeInTheDocument(); // total votes
     expect(screen.getByTestId('poll-countdown')).toBeInTheDocument();
     expect(screen.getByTestId('progress-bar')).toBeInTheDocument();

@@ -80,7 +80,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
         notifications.success(t('poll-save-form-success'));
       }
     },
-    [dispatch, t]
+    [dispatch, onClose, t]
   );
 
   const onSubmit = (values: FormikValues) => {
