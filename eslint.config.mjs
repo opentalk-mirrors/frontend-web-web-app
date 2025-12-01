@@ -54,7 +54,6 @@ export default defineConfig([
       'app/src/components/InviteToMeeting/fragments/MeetingLinksAndPasswords.tsx',
       'app/src/components/LegalVoteTab/fragments/CreateLegalVoteForm.tsx',
       'app/src/components/LegalVoteTab/fragments/ParticipantSelector.tsx',
-      'app/src/components/MeetingForms/fragments/RecurrenceSection.tsx',
       'app/src/components/MeetingForms/fragments/TrainingParticipationReportSelect/TrainingParticipationReportSelect.tsx',
       'app/src/components/MeetingHeader/fragments/SharedFolderPopover.tsx',
       'app/src/components/MeetingHeader/fragments/WaitingParticipantsPopover.tsx',
