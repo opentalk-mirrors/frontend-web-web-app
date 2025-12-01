@@ -35,7 +35,6 @@ export default defineConfig([
       'app/src/components/Ballot/fragments/ReportSection.tsx',
       'app/src/components/Ballot/fragments/VoteResult.tsx',
       'app/src/components/Ballot/fragments/VoteResultTable.tsx',
-      'app/src/components/BetaBadge/BetaBadge.tsx',
       'app/src/components/BreakoutRoomTab/fragments/CreateRoomsForm.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsEditor.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
