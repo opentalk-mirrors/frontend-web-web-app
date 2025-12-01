@@ -4,11 +4,11 @@
 import { ParticipantContext, useRemoteParticipants } from '@livekit/components-react';
 import { CircularProgress, Grid, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 
 import { useAppSelector } from '../../hooks';
 import { useGridViewParticipants } from '../../hooks/useGridViewParticipants';
-import { selectPaginationPageState } from '../../store/slices/uiSlice';
+import { selectPaginationDirectionState } from '../../store/slices/uiSlice';
 import GridCell from './fragments/GridCell';
 
 const GridContainer = styled('div', {
@@ -28,22 +28,14 @@ const GridContainer = styled('div', {
 const GridView = () => {
   const remoteParticipants = useRemoteParticipants();
   const participants = useGridViewParticipants();
-  const selectedPage = useAppSelector(selectPaginationPageState);
+  const direction = useAppSelector(selectPaginationDirectionState);
 
   // Create a map for quick lookups of remoteParticipants by identity
   const remoteParticipantsMap = useMemo(() => {
     return new Map(remoteParticipants.map((p) => [p.identity, p]));
   }, [remoteParticipants]);
 
-  const lastPage = useRef<number>(0);
-
   const videoWidth = useMemo(() => (participants.length <= 4 ? 50 : 33.3), [participants.length]);
-
-  const direction = useMemo(() => {
-    const dir = selectedPage > lastPage.current ? 'left' : 'right';
-    lastPage.current = selectedPage;
-    return dir;
-  }, [selectedPage]);
 
   const highlight = participants.length >= 2;
 
