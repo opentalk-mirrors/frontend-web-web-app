@@ -51,6 +51,7 @@ export type UIState = {
   cinemaLayout: LayoutOptions;
   lastCinemaLayout: LayoutOptions;
   paginationPage: number;
+  paginationDirection: 'left' | 'right';
   pinnedParticipantId?: ParticipantId;
   presenterOverlayPinnedParticipantId?: ParticipantId;
   localVideoMirroringEnabled: boolean;
@@ -87,6 +88,7 @@ const initialState: UIState = {
   cinemaLayout: LayoutOptions.Grid,
   lastCinemaLayout: LayoutOptions.Grid,
   paginationPage: 1,
+  paginationDirection: 'right',
   pinnedParticipantId: undefined,
   presenterOverlayPinnedParticipantId: undefined,
   localVideoMirroringEnabled: true,
@@ -146,6 +148,7 @@ export const uiSlice = createSlice({
       }
     },
     setPaginationPage: (state, action: PayloadAction<number>) => {
+      state.paginationDirection = action.payload > state.paginationPage ? 'left' : 'right';
       state.paginationPage = action.payload;
     },
     pinnedParticipantIdSet: (state, { payload }: PayloadAction<ParticipantId | undefined>) => {
@@ -314,6 +317,7 @@ export const selectParticipantsSearchValue = (state: RootState) => state.ui.part
 export const selectCinemaLayout = (state: RootState) => state.ui.cinemaLayout;
 export const selectChatConversationState = (state: RootState) => state.ui.chatConversationState;
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;
+export const selectPaginationDirectionState = (state: RootState) => state.ui.paginationDirection;
 export const selectPinnedParticipantId = (state: RootState) => state.ui.pinnedParticipantId;
 export const selectPresenterOverlayPinnedParticipantId = (state: RootState) =>
   state.ui.presenterOverlayPinnedParticipantId;
