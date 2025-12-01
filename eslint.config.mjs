@@ -58,7 +58,6 @@ export default defineConfig([
       'app/src/components/MeetingView/fragments/Cinema.tsx',
       'app/src/components/ParticipantWindow/fragments/ParticipantVideo.tsx',
       'app/src/components/ParticipantWindow/fragments/VideoOverlay.tsx',
-      'app/src/components/Participants/fragments/ParticipantListItem.tsx',
       'app/src/components/Participants/fragments/SearchTextField.tsx',
       'app/src/components/SelectParticipants/SelectParticipants.tsx',
       'app/src/components/TimerPopover/fragments/NormalTimerPopover.tsx',
