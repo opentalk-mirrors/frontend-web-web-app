@@ -66,7 +66,6 @@ export default defineConfig([
       'app/src/components/Toolbar/fragments/AudioIndicator.tsx',
       'app/src/components/Toolbar/fragments/MoreButton.tsx',
       'app/src/components/Toolbar/fragments/MoreMenu.tsx',
-      'app/src/components/Toolbar/fragments/VideoButton.tsx',
       'app/src/components/VoteAndPollCountdown/VoteAndPollCountdown.tsx',
       'app/src/components/WaitingParticipantsList/fragments/WaitingParticipantsItem.tsx',
       'app/src/config/fragments/routesFragments.tsx',
