@@ -181,7 +181,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
         </Stack>
         <ActionButtons
           isExistingEvent={Boolean(existingEvent)}
-          disableSaveButton={formik.isSubmitting || eventIsLoading}
+          disableSaveButton={formik.isSubmitting || eventIsLoading || formik.dirty === false}
           disableCancelButton={formik.isSubmitting || eventIsLoading}
           onForwardButtonClick={onForwardButtonClick}
         />
