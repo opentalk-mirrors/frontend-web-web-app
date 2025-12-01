@@ -80,7 +80,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
         notifications.success(t('poll-save-form-success'));
       }
     },
-    [dispatch, t]
+    [dispatch, onClose, t]
   );
 
   const onSubmit = (values: FormikValues) => {
@@ -115,7 +115,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
             overflow: 'hidden',
           }}
         >
-          <Form onSubmit={formik.handleSubmit}>
+          <Form data-testid="create-poll-form" onSubmit={formik.handleSubmit}>
             <Typography>{isEditing ? t('poll-header-title-update') : t('poll-header-title-create')}</Typography>
             <Grid container spacing={1.5}>
               <Grid size={{ xs: 12 }}>
