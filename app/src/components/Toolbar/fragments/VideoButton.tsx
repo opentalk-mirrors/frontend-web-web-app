@@ -61,12 +61,10 @@ const VideoButton = ({ isLobby = false, videoEnabled, onVideoButtonToggle }: Vid
     return t('toolbar-button-video-turn-on-tooltip-title');
   };
 
-  const ButtonIcon = () => {
-    if (videoChangeInProgress) {
-      return <SuspenseLoading size="1rem" />;
-    }
-    return cameraEnabled ? <CameraOnIcon /> : <CameraOffIcon />;
-  };
+  let buttonIcon = cameraEnabled ? <CameraOnIcon /> : <CameraOffIcon />;
+  if (videoChangeInProgress) {
+    buttonIcon = <SuspenseLoading size="1rem" />;
+  }
 
   return (
     <div ref={menuRef}>
@@ -87,7 +85,7 @@ const VideoButton = ({ isLobby = false, videoEnabled, onVideoButtonToggle }: Vid
         data-testid="toolbarVideoButton"
         id={ToolbarButtonIds.Video}
       >
-        <ButtonIcon />
+        {buttonIcon}
       </ToolbarButton>
       <MeetingSettingsDialog open={showMenu} onClose={() => setShowMenu(false)} setting="camera" />
     </div>
