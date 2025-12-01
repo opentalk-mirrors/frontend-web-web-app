@@ -3,16 +3,22 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, StepButton as MuiStepButton, Skeleton, Stack, Step, Stepper, Typography, styled } from '@mui/material';
 import { EventId } from '@opentalk/rest-api-rtk-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useLazyGetEventQuery } from '../../../api/rest';
+import { useGetEventQuery } from '../../../api/rest';
 import { EditIcon } from '../../../assets/icons';
 import InviteToMeeting from '../../../components/InviteToMeeting';
 import { UpdateMeetingForm } from '../../../components/MeetingForms';
 import { RequiredFieldsInfo } from '../../../components/RequiredFieldsInfo';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
+
+const getInitialStep = (step?: string) => {
+  const parsedStep = step ? Number.parseInt(step, 10) : NaN;
+
+  return Number.isNaN(parsedStep) ? 0 : parsedStep;
+};
 
 const steps = [
   {
@@ -64,19 +70,45 @@ const Container = styled(Box)(({ theme }) => ({
 
 const MAX_INVITEES = 10;
 
+type StepperHeaderProps = {
+  activeStep: number;
+  onStepChange: (step: number) => void;
+  translate: ReturnType<typeof useTranslation>['t'];
+};
+
+const StepperHeader = ({ activeStep, onStepChange, translate }: StepperHeaderProps) => (
+  <Stepper activeStep={activeStep}>
+    {steps.map(({ label, options }, index) => (
+      <Step key={label} disabled={activeStep === index}>
+        <StepButton icon={activeStep !== index && <EditIcon />} onClick={() => onStepChange(index)}>
+          {translate(label, options)}
+        </StepButton>
+      </Step>
+    ))}
+  </Stepper>
+);
+
+const PlaceholderSkeleton = () => (
+  <Stack spacing={2}>
+    <Stack spacing={1}>
+      <Skeleton variant="text" width={450} />
+      <Skeleton variant="rectangular" height={40} />
+    </Stack>
+    <Stack spacing={1}>
+      <Skeleton variant="text" width={250} />
+      <Skeleton variant="rectangular" height={40} />
+    </Stack>
+  </Stack>
+);
+
 const EditEventsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [activeStep, setActiveStep] = useState(1);
-  const [getEvent, { data: event, isLoading, error }] = useLazyGetEventQuery();
-  const { eventId, formStep } = useParams<'eventId' | 'formStep'>() as { eventId: EventId; formStep: string };
-  const eventQuery = useMemo(() => ({ eventId: eventId, inviteesMax: MAX_INVITEES }), [eventId]);
+  const { eventId, formStep } = useParams<'eventId' | 'formStep'>() as { eventId: EventId; formStep?: string };
+  const [activeStep, setActiveStep] = useState(() => getInitialStep(formStep));
+  const { data: event, isLoading, error, refetch } = useGetEventQuery({ eventId: eventId, inviteesMax: MAX_INVITEES });
   const pageHeading = t('dashboard-meetings-create-title');
   useUpdateDocumentTitle(pageHeading);
-
-  useEffect(() => {
-    getEvent(eventQuery);
-  }, [getEvent, eventQuery]);
 
   useEffect(() => {
     if (!isLoading && !event && error) {
@@ -84,39 +116,10 @@ const EditEventsPage = () => {
     }
   }, [event, isLoading, navigate, error]);
 
-  useEffect(() => {
-    formStep && setActiveStep(parseInt(formStep));
-  }, [formStep]);
-
-  const StepperHeader = () => (
-    <Stepper activeStep={activeStep}>
-      {steps.map(({ label, options }, index) => (
-        <Step key={label} disabled={activeStep === index}>
-          <StepButton icon={activeStep !== index && <EditIcon />} onClick={() => setActiveStep(index)}>
-            {t(label, options)}
-          </StepButton>
-        </Step>
-      ))}
-    </Stepper>
-  );
-
-  const PlaceholderSkeleton = () => (
-    <Stack spacing={2}>
-      <Stack spacing={1}>
-        <Skeleton variant="text" width={450} />
-        <Skeleton variant="rectangular" height={40} />
-      </Stack>
-      <Stack spacing={1}>
-        <Skeleton variant="text" width={250} />
-        <Skeleton variant="rectangular" height={40} />
-      </Stack>
-    </Stack>
-  );
-
   if (isLoading) {
     return (
       <Container>
-        <StepperHeader />
+        <StepperHeader activeStep={activeStep} onStepChange={setActiveStep} translate={t} />
         <PlaceholderSkeleton />
       </Container>
     );
@@ -125,7 +128,7 @@ const EditEventsPage = () => {
   return (
     <Container>
       <Typography component="h1">{pageHeading}</Typography>
-      <StepperHeader />
+      <StepperHeader activeStep={activeStep} onStepChange={setActiveStep} translate={t} />
       <RequiredFieldsInfo />
       {activeStep === 0 && event && (
         <UpdateMeetingForm existingEvent={event} onForwardButtonClick={() => setActiveStep(1)} />
@@ -135,7 +138,7 @@ const EditEventsPage = () => {
           isUpdatable={true}
           existingEvent={event}
           onBackButtonClick={() => setActiveStep(0)}
-          invitationsSent={() => getEvent(eventQuery)}
+          invitationsSent={() => refetch()}
         />
       )}
     </Container>
