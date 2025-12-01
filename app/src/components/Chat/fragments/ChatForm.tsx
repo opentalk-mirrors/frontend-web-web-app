@@ -16,7 +16,7 @@ import {
   FocusEvent,
   KeyboardEvent,
   KeyboardEventHandler,
-  useEffect,
+  MouseEvent,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -98,6 +98,7 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const [openPicker, setOpenPicker] = useState(false);
+  const [pickerAnchor, setPickerAnchor] = useState<HTMLButtonElement | null>(null);
   const [hasFocus, setFocus] = useState(false);
   const isChatEnabled = useAppSelector(selectChatEnabledState);
   const emojiButton = useRef<HTMLButtonElement | null>(null);
@@ -121,12 +122,6 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
     },
     [autoFocusMessageInput]
   );
-
-  useEffect(() => {
-    if (!isChatEnabled && openPicker) {
-      setOpenPicker(false);
-    }
-  }, [isChatEnabled]);
 
   const emojiPickerCategories = useMemo(() => {
     return Object.values(Categories).reduce(
@@ -160,6 +155,7 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
      */
     if (event.key === 'Escape' && 'tagName' in event.target && (event.target as HTMLElement).tagName === 'INPUT') {
       setOpenPicker(false);
+      setPickerAnchor(null);
       /**
        * The emoji picker state is managed within the same component as the emoji button, leading to re-renders.
        * When the state changes, it overrides the focused button, causing it to lose focus. Therefore,
@@ -175,10 +171,12 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
     }
   };
 
+  const isPickerOpen = openPicker && isChatEnabled;
+
   const renderPicker = () => (
     <Popover
-      open={openPicker}
-      anchorEl={emojiButton.current}
+      open={isPickerOpen}
+      anchorEl={isPickerOpen ? pickerAnchor : null}
       anchorOrigin={{
         vertical: 'top',
         horizontal: 'left',
@@ -187,7 +185,10 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
         vertical: 'bottom',
         horizontal: 'left',
       }}
-      onClose={() => setOpenPicker(false)}
+      onClose={() => {
+        setOpenPicker(false);
+        setPickerAnchor(null);
+      }}
       slotProps={{
         paper: {
           role: 'dialog',
@@ -287,8 +288,13 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
     if (event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
-      setOpenPicker(!openPicker);
+      setPickerAnchor(event.currentTarget);
+      setOpenPicker((prev) => (isChatEnabled ? !prev : false));
     }
+  };
+  const handleEmojiButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
+    setPickerAnchor(event.currentTarget);
+    setOpenPicker((prev) => (isChatEnabled ? !prev : false));
   };
 
   const renderForm = (
@@ -306,9 +312,6 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
         onKeyDown={handleSubmitOnEnter}
         onFocus={() => setFocus(true)}
         onBlur={handleFormBlur}
-        InputProps={{
-          readOnly: !isChatEnabled,
-        }}
         slotProps={{
           input: {
             readOnly: !isChatEnabled,
@@ -331,7 +334,7 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
               <InputAdornment position="start">
                 <EmojiIconButton
                   ref={emojiButton}
-                  onClick={() => setOpenPicker(!openPicker)}
+                  onClick={handleEmojiButtonClick}
                   onKeyDown={handleEmojiKeypress}
                   onKeyUp={handleEmojiKeypress}
                   type="button"

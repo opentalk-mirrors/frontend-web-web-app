@@ -41,7 +41,6 @@ export default defineConfig([
       'app/src/components/BreakoutRoomTab/fragments/RoomOverview.tsx',
       'app/src/components/Chat/Chat.tsx',
       'app/src/components/Chat/fragments/ChatAnnouncement.tsx',
-      'app/src/components/Chat/fragments/ChatForm.tsx',
       'app/src/components/Chat/fragments/ChatMessage.tsx',
       'app/src/components/CoffeeBreakView/fragments/CoffeeBreakTimer.tsx',
       'app/src/components/GlitchtipErrorDialog/GlitchtipErrorDialog.tsx',
