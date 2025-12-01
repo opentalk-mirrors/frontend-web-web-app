@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, styled, Switch, Typography, Tooltip, Box, Grid, Stack } from '@mui/material';
+import { Button, styled, Switch, Typography, Tooltip, Grid, Stack } from '@mui/material';
 import { FormikValues, Formik } from 'formik';
 import i18next from 'i18next';
 import { isEmpty } from 'lodash';
@@ -171,21 +171,15 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
                 {t('poll-form-button-save')}
               </Button>
             </Grid>
+            <Stack direction="row" spacing={1} mt="auto">
+              <Button type="button" onClick={onClose} startIcon={<BackIcon />} fullWidth color="primary">
+                {t('poll-button-back')}
+              </Button>
+              <Button disabled={isCoffeeBreakActive} type="submit" fullWidth color="secondary">
+                {t('poll-form-button-submit')}
+              </Button>
+            </Stack>
           </Form>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              gap: 2,
-            }}
-          >
-            <Button type="button" onClick={onClose} startIcon={<BackIcon />} fullWidth color="primary">
-              {t('poll-button-back')}
-            </Button>
-            <Button disabled={isCoffeeBreakActive} type="submit" fullWidth color="secondary">
-              {t('poll-form-button-submit')}
-            </Button>
-          </Box>
         </Stack>
       )}
     </Formik>
