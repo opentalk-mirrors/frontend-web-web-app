@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { UserId, EventId } from '@opentalk/rest-api-rtk-query';
-import { screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import SelectParticipants from './SelectParticipants';
@@ -15,6 +16,7 @@ const mockOtherUser = {
   id: 'SOME_OTHER_ID',
   firstname: 'Boba',
   lastname: 'Fett',
+  email: 'b.fett@example.com',
   avatarUrl: 'some avatarUrl',
 };
 
@@ -35,66 +37,52 @@ vi.mock('../../api/rest', async (importOriginal) => ({
   useGetEventInvitesQuery: () => ({}),
 }));
 
-// Todo UNIT TESTS SelectParticipants rendered twice and deletes the input for some reason, component and tests needs to be fixed
 describe('SelectParticipants', () => {
   const { store } = configureStore();
 
-  const setup = () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.clearAllMocks();
+  });
+
+  const setupRender = () =>
     renderWithProviders(
       <SelectParticipants label="Test" onParticipantSelect={mockOnChange} eventId={'id' as EventId} />,
       { store, provider: { mui: true } }
     );
-  };
 
   it('will render without errors', () => {
-    setup();
+    setupRender();
     expect(screen.getByTestId('SelectParticipants')).toBeInTheDocument();
   });
 
-  it.skip('sends API request after delay when typed more than 3 characters.', async () => {
-    setup();
+  it('does not send API request for less then 3 characters.', async () => {
+    setupRender();
+    const user = userEvent.setup();
     const input = screen.getByRole('combobox');
-    fireEvent.change(input, { target: { value: 'test' } });
+    await user.type(input, 'bo');
 
-    await waitFor(
-      () => {
-        expect(mockFindLazyUsersQuery).toHaveBeenCalled();
-      },
-      { timeout: 400 }
-    );
+    await waitFor(() => expect(mockFindLazyUsersQuery).not.toHaveBeenCalled());
   });
 
-  it.skip('click on suggested participant will move him to added list', async () => {
-    setup();
+  it('calls onParticipantSelect with the right values onClick search items', async () => {
+    setupRender();
+    const user = userEvent.setup();
     const autocomplete = screen.getByTestId('SelectParticipants');
     const input = within(autocomplete).getByLabelText('Test');
     expect(screen.queryByTestId('SelectedParticipant')).not.toBeInTheDocument();
 
-    fireEvent.change(input, { target: { value: 'test' } });
+    await user.type(input, 'boba');
 
+    await waitFor(() => {
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
     const listbox = screen.getByRole('listbox');
     const firstOption = within(listbox).getByRole('option');
-    fireEvent.click(firstOption);
+    await user.click(firstOption);
 
-    expect(screen.getByTestId('SelectedParticipant')).not.toBeEmptyDOMElement();
-  });
-
-  it.skip('click on delete will move the user back to the suggested list', async () => {
-    setup();
-    const autocomplete = screen.getByTestId('SelectParticipants');
-    const input = within(autocomplete).getByLabelText('Test');
-
-    fireEvent.change(input, { target: { value: 'test' } });
-
-    const listbox = screen.getByRole('listbox');
-    const firstOption = within(listbox).getByRole('option');
-    fireEvent.click(firstOption);
-
-    const selectedContainer = screen.getByTestId('SelectedParticipant');
-    const firstChipDeleteButton = within(selectedContainer).getByTestId('SelectedParticipants-deleteButton');
-
-    fireEvent.click(firstChipDeleteButton);
-
-    expect(screen.queryByTestId('SelectedParticipant')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalledExactlyOnceWith(mockOtherUser);
+    });
   });
 });
