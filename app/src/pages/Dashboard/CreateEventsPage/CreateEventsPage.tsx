@@ -43,27 +43,34 @@ const StyledStepLabel = styled(StepLabel)(({ theme }) => ({
   },
 }));
 
+type StepperHeaderProps = {
+  activeStepLabel: string;
+  nextStepLabel: string;
+};
+
+const StepperHeader = ({ activeStepLabel, nextStepLabel }: StepperHeaderProps) => (
+  <Stepper activeStep={0}>
+    <ActiveStep>
+      <CapitalizedStepLabel>{activeStepLabel}</CapitalizedStepLabel>
+    </ActiveStep>
+    <Step>
+      <StyledStepLabel>{nextStepLabel}</StyledStepLabel>
+    </Step>
+  </Stepper>
+);
+
 const CreateEventsPage = () => {
   const { t } = useTranslation();
   const pageHeading = t('dashboard-meetings-create-title');
+  const meetingLabel = t('global-meeting', { count: 1 });
+  const participantsLabel = t('global-participants');
 
   useUpdateDocumentTitle(pageHeading);
-
-  const StepperHeader = () => (
-    <Stepper activeStep={0}>
-      <ActiveStep>
-        <CapitalizedStepLabel>{t('global-meeting', { count: 1 })}</CapitalizedStepLabel>
-      </ActiveStep>
-      <Step>
-        <StyledStepLabel>{t('global-participants')}</StyledStepLabel>
-      </Step>
-    </Stepper>
-  );
 
   return (
     <Container>
       <Typography component="h1">{pageHeading}</Typography>
-      <StepperHeader />
+      <StepperHeader activeStepLabel={meetingLabel} nextStepLabel={participantsLabel} />
       <RequiredFieldsInfo />
       <CreateMeetingForm />
     </Container>
