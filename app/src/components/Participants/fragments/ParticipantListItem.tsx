@@ -361,7 +361,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
     ...moderatorRights(),
   ];
 
-  const renderIcon = useCallback(() => {
+  const renderIcon = () => {
     const isHandRaised = isParticipantSelf ? ownHandRaised : participant.handIsUp;
     const isScreenShareEnabled = isParticipantSelf ? ownScreenShareEnabled : screenShareActive;
     const isAudioEnabled = isParticipantSelf ? ownAudioEnabled : audioActive;
@@ -396,17 +396,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
     ) : (
       <MicOffIconStyled type="functional" title={t('mic-off-icon-title')} titleId={uniqueId('mic-off-icon-title-')} />
     );
-  }, [
-    participant.handIsUp,
-    participant.id,
-    isSipParticipant,
-    audioActive,
-    screenShareActive,
-    ownAudioEnabled,
-    ownScreenShareEnabled,
-    ownHandRaised,
-    ownId,
-  ]);
+  };
 
   const getMenuOptions = () => {
     if (isParticipantSelf) {
