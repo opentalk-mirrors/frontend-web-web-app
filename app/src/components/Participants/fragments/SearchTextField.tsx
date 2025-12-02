@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { InputAdornment, useTheme } from '@mui/material';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SearchIcon, SortIcon } from '../../../assets/icons';
@@ -23,7 +23,7 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
   const id = 'sort-search-participants';
   const { t } = useTranslation();
   const theme = useTheme();
-  const anchorEl = useRef(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [hasFocus, setFocus] = useState<boolean>(false);
   const sortType = useAppSelector(selectParticipantsSortOption);
@@ -33,7 +33,9 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
     onSearch(event.target.value);
   };
 
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const target = event.currentTarget;
+    setAnchorEl((currentAnchor) => (currentAnchor ? null : target));
     setIsExpanded((expanded) => !expanded);
   };
 
@@ -45,6 +47,11 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
   };
   const handleBlur = () => {
     setFocus(false);
+  };
+
+  const handleClose = () => {
+    setIsExpanded(false);
+    setAnchorEl(null);
   };
 
   return (
@@ -68,7 +75,6 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
           endAdornment: showSort && (
             <InputAdornment position="end">
               <AdornmentIconButton
-                ref={anchorEl}
                 onClick={handleClick}
                 edge="end"
                 aria-label={t('sort-by')}
@@ -81,15 +87,15 @@ const SearchTextField = ({ onSearch, fullWidth, showSort, searchValue = '' }: Se
               >
                 <SortIcon />
               </AdornmentIconButton>
-              {anchorEl.current && isExpanded && (
+              {anchorEl && isExpanded && (
                 <SortPopoverMenu
                   id={id}
-                  anchorEl={anchorEl.current}
-                  isOpen={true}
+                  anchorEl={anchorEl}
+                  isOpen={isExpanded}
                   items={items}
                   selectedOptionType={sortType}
                   onChange={handleSortSelected}
-                  onClose={() => setIsExpanded(false)}
+                  onClose={handleClose}
                 />
               )}
             </InputAdornment>
