@@ -72,7 +72,6 @@ export default defineConfig([
       'app/src/hooks/useNavigateToHome.tsx',
       'app/src/hooks/useRemainingDurationOfTimer.ts',
       'app/src/hooks/useUpdateDocumentTitle.ts',
-      'app/src/pages/Dashboard/CreateEventsPage/CreateEventsPage.tsx',
       'app/src/pages/Dashboard/EditEventsPage/EditEventsPage.tsx',
       'packages/redux-oidc/src/authCallbackComponent.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
