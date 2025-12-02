@@ -5,7 +5,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Mock } from 'vitest';
 
-import { useLazyGetEventQuery } from '../../../api/rest';
+import { useGetEventQuery } from '../../../api/rest';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import EditEventsPage from './EditEventsPage';
 
@@ -28,12 +28,11 @@ vi.mock('../../../components/InviteToMeeting', () => ({
 
 vi.mock('../../../api/rest', async () => ({
   ...(await vi.importActual('../../../api/rest')),
-  useLazyGetEventQuery: vi.fn(),
+  useGetEventQuery: vi.fn(),
 }));
 
 const mockUseParams = useParams as Mock;
-const mockUseLazyGetEventQuery = useLazyGetEventQuery as Mock;
-const mockLazyGetEvent = vi.fn();
+const mockUseGetEventQuery = useGetEventQuery as Mock;
 const mockUseNavigate = useNavigate as Mock;
 const mockNavigate = vi.fn();
 
@@ -50,7 +49,7 @@ describe('EditEventsPage', () => {
       formStep: '0',
     });
 
-    mockUseLazyGetEventQuery.mockReturnValue([mockLazyGetEvent, { data: {}, isLoading: false, error: null }]);
+    mockUseGetEventQuery.mockReturnValue({ data: {}, isLoading: false, error: null });
 
     mockUseNavigate.mockReturnValue(mockNavigate);
   });
@@ -69,7 +68,7 @@ describe('EditEventsPage', () => {
     renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
 
     await waitFor(() => {
-      expect(mockLazyGetEvent).toHaveBeenCalledExactlyOnceWith({
+      expect(mockUseGetEventQuery).toHaveBeenCalledExactlyOnceWith({
         eventId: mockEventId,
         inviteesMax: 10,
       });
@@ -96,10 +95,7 @@ describe('EditEventsPage', () => {
   });
 
   it('navigates to create page on error', () => {
-    mockUseLazyGetEventQuery.mockReturnValue([
-      mockLazyGetEvent,
-      { data: null, isLoading: false, error: new Error('') },
-    ]);
+    mockUseGetEventQuery.mockReturnValue({ data: null, isLoading: false, error: new Error('') });
 
     renderWithProviders(<EditEventsPage />, { store, provider: { mui: true } });
 
