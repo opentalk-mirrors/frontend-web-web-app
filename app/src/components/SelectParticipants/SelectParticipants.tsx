@@ -66,10 +66,13 @@ const SelectParticipants = ({
     }),
   });
 
-  const debounceFindUsers = useCallback(
-    debounce((inputValue: string) => {
-      inputValue.length > 2 && findUsers({ q: inputValue });
-    }, 250),
+  const debounceFindUsers = useMemo(
+    () =>
+      debounce((inputValue: string) => {
+        if (inputValue.length > 2) {
+          findUsers({ q: inputValue });
+        }
+      }, 250),
     [findUsers]
   );
 
@@ -84,7 +87,7 @@ const SelectParticipants = ({
       const bName = `${b.firstname} ${b.lastname}`;
       return aName.localeCompare(bName);
     });
-  }, [isLoading, foundUsers, selectedUsers, searchValue, invitees?.map]);
+  }, [isLoading, foundUsers, selectedUsers, searchValue, invitees]);
 
   const hasParticipantsSuggestion = suggestedParticipants?.length > 0;
 
@@ -129,7 +132,9 @@ const SelectParticipants = ({
       inputValue={searchValue || ''}
       value={null}
       clearOnEscape={true}
-      onChange={(_, value) => value && handleSelect(value)}
+      onChange={(_, value) => {
+        value && handleSelect(value);
+      }}
       onInputChange={(_, value) => searchEntryHandler(value || '')}
       noOptionsText={t('global-no-result')}
       loading={isLoading}
