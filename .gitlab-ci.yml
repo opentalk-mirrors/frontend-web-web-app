@@ -13,12 +13,14 @@ stages:
   - test
   - prepare-artifact
   - build
+  - push
+  - scan
   - e2e
   - review-app
   - cleanup
 
 variables:
-  KANIKO_IMAGE: git.opentalk.dev:5050/opentalk/opentalk-devops/containers/kaniko:debug-1.25.2
+  KANIKO_IMAGE: git.opentalk.dev:5050/opentalk/opentalk-devops/containers/kaniko:debug-1.25.5
 
 .setup-pnpm: &setup-pnpm
   - npm install -g corepack@latest
@@ -271,37 +273,19 @@ upload-sourcemaps:
       - dist/*
     expire_in: 1 days
 
-container:
+container-mr:
   stage: build
   dependencies:
     - upload-sourcemaps
     - build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   image:
     name: $KANIKO_IMAGE
-    pull_policy: if-not-present
     entrypoint: ['']
-  rules:
-    # set variable for push to main
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      variables:
-        IMAGE_DESTINATION_ARGS: --destination $CI_REGISTRY_IMAGE:latest
-    # set variable for release tags
-    - if: $CI_COMMIT_TAG && $CI_PROJECT_ROOT_NAMESPACE == 'opentalk'
-      variables:
-        IMAGE_DESTINATION_ARGS: >
-          --destination $CI_REGISTRY_IMAGE:latest
-          --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-    # set variable for MR event
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      variables:
-        IMAGE_DESTINATION_ARGS: >
-          --destination ${CI_REGISTRY_IMAGE}:${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
-    # set variable for forked pipeline (commented out to get rid of pipelines in forked repos)
-    # - if: $CI_PROJECT_ROOT_NAMESPACE != 'opentalk' &&
-    #      $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH &&
-    #      $CI_COMMIT_BRANCH != null
-    #  variables:
-    #    IMAGE_DESTINATION_ARGS: --no-push
+    pull_policy: if-not-present
   script:
     - mkdir -p /kaniko/.docker
     - >
@@ -309,11 +293,18 @@ container:
       "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64)\"}}}" >
       /kaniko/.docker/config.json
     - >
+      IMAGE_TAG=$(
+          echo -n "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" |
+          tr -c '[:alnum:]_.-' '_' |
+          sed 's/^[.-]/_/' |
+          cut -c -63
+      )
+    - >
       /kaniko/executor
       --registry-mirror=mirror.gcr.io
       --context $CI_PROJECT_DIR
       --dockerfile $CI_PROJECT_DIR/ci/Dockerfile
-      $IMAGE_DESTINATION_ARGS
+      --destination ${CI_REGISTRY_IMAGE}:${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
       --force
       --digest-file digest.txt
   artifacts:
@@ -321,18 +312,56 @@ container:
       - digest.txt
     expire_in: 1 days
 
-container-profiling:
+container-profiling-mr:
   stage: build
   dependencies:
     - build-profiling
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   image:
     name: $KANIKO_IMAGE
-    pull_policy: if-not-present
     entrypoint: ['']
-  # todo - check when profiling should be build
+    pull_policy: if-not-present
+  script:
+    - mkdir -p /kaniko/.docker
+    - >
+      echo
+      "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64)\"}}}" >
+      /kaniko/.docker/config.json
+    - >
+      IMAGE_TAG=$(
+          echo -n "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" |
+          tr -c '[:alnum:]_.-' '_' |
+          sed 's/^[.-]/_/' |
+          cut -c -63
+      )
+    - >
+      /kaniko/executor
+      --registry-mirror=mirror.gcr.io
+      --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/ci/Dockerfile
+      --destination ${CI_REGISTRY_IMAGE}:${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}-profiling
+      --build-arg DIST_FOLDER=dist-profiling
+      --force
+      --digest-file ./profiling-digest.txt
+  artifacts:
+    paths:
+      - profiling-digest.txt
+    expire_in: 1 days
+
+container:
+  stage: build
   rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+.*$/
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_TAG && $CI_PROJECT_ROOT_NAMESPACE == 'opentalk'
+  image:
+    name: $KANIKO_IMAGE
+    entrypoint: ['']
+    pull_policy: if-not-present
   script:
     - mkdir -p /kaniko/.docker
     - >
@@ -344,14 +373,109 @@ container-profiling:
       --registry-mirror=mirror.gcr.io
       --context $CI_PROJECT_DIR
       --dockerfile $CI_PROJECT_DIR/ci/Dockerfile
-      --destination $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG:+$CI_COMMIT_TAG-}profiling
-      --destination $CI_REGISTRY_IMAGE:profiling
-      --build-arg DIST_FOLDER=dist-profiling
+      --build-arg DIST_FOLDER=dist
+      --destination "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8}"
       --force
-      --digest-file ./profiling-digest.txt
+
+container-profiling:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+.*$/
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  image:
+    name: $KANIKO_IMAGE
+    entrypoint: ['']
+    pull_policy: if-not-present
+  script:
+    - mkdir -p /kaniko/.docker
+    - >
+      echo
+      "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64)\"}}}" >
+      /kaniko/.docker/config.json
+    - >
+      /kaniko/executor
+      --registry-mirror=mirror.gcr.io
+      --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/ci/Dockerfile
+      --build-arg DIST_FOLDER=dist-profiling
+      --destination "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8}-profiling"
+      --force
+
+read-tags:
+  stage: push
+  needs: []
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+.*$/ && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+  image:
+    name: alpine/git:v2.49.1
+    entrypoint: ['']
+    pull_policy: if-not-present
+  artifacts:
+    reports:
+      dotenv: package.env
+  script:
+    - git fetch --tags
+    - TAGS=$(git tag --list | grep "^v[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+.*$" | sort -V)
+    - TAGS=$(echo "$TAGS" | head -n -1 | tr "\n" " ")
+    - echo "TAGS=$TAGS" > package.env
+
+container-create-and-push-tags:
+  stage: push
+  needs:
+    - job: read-tags
+      optional: true
+    - job: container
+    - job: container-profiling
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+.*$/
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  image:
+    name: $SKOPEO_IMAGE
+    entrypoint: ['']
+    pull_policy: if-not-present
+  script:
+    - TAGS_TO_PUSH=$(./ci/create-container-tags.sh "${CI_COMMIT_TAG:-main}" "$TAGS")
+    - |
+      for tag in $TAGS_TO_PUSH; do
+        SRC_TAG="${CI_COMMIT_SHA:0:8}"
+        if [[ $tag == *"-profiling" ]]; then
+           SRC_TAG="${CI_COMMIT_SHA:0:8}-profiling"
+        fi
+        skopeo copy \
+        --src-creds="${CI_REGISTRY_USER}":"${CI_REGISTRY_PASSWORD}" \
+        --dest-creds="${CI_REGISTRY_USER}":"${CI_REGISTRY_PASSWORD}" \
+        "docker://${CI_REGISTRY_IMAGE}:${SRC_TAG}" "docker://${CI_REGISTRY_IMAGE}:$tag"
+      done
+    - echo "TAGS=$TAGS_TO_PUSH" > package.env
+  artifacts:
+    reports:
+      dotenv: package.env
+
+push-and-sign-images-to-harbor:
+  needs:
+    - container-create-and-push-tags
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+.*$/
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  stage: push
+  variables:
+    PIPELINE_FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE
+    PIPELINE_NAMESPACE_SUFFIX: web-frontend
+    PIPELINE_TAGS: $TAGS
+  trigger:
+    project: opentalk/opentalk-devops/push-and-sign-images-for-the-opentalk-namespace
+    strategy: depend
+    forward:
+      pipeline_variables: true
 
 read-trivy-ignore-file:
-  stage: build
+  stage: scan
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
@@ -368,9 +492,9 @@ container-scanning:
     - read-trivy-ignore-file
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
-  stage: build
+  stage: scan
   variables:
-    PIPELINE_FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:latest
+    PIPELINE_FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:dev
     PIPELINE_PROJECT_WITH_NAMESPACE: $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
     PIPELINE_ADDITIONAL_LABELS: Frontend::Web App
     PIPELINE_TRIVY_IGNORE_FILE_STR_VAR: TRIVY_IGNORE_STR
@@ -382,7 +506,7 @@ container-scanning:
 
 run-smoke-e2e-tests:
   needs:
-    - container
+    - container-mr
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   stage: e2e
@@ -399,7 +523,7 @@ run-full-e2e-tests:
   when: manual
   allow_failure: true
   needs:
-    - container
+    - container-mr
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_PIPELINE_SOURCE == 'schedule'
@@ -415,10 +539,12 @@ run-full-e2e-tests:
 deploy:
   stage: review-app
   needs:
-    - container
+    - container-mr
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  image: alpine/helm:3.19
+  image:
+    name: alpine/helm:3.19.0
+    pull_policy: if-not-present
   tags:
     - kubernetes
   before_script:
@@ -468,8 +594,9 @@ review-app:
         $CI_PIPELINE_SOURCE == 'push'
   allow_failure: true
   image:
-    name: alpine/helm:3.19
+    name: alpine/helm:3.19.0
     entrypoint: ['']
+    pull_policy: if-not-present
   tags:
     - kubernetes
   before_script:
