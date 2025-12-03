@@ -21,6 +21,7 @@ stages:
 
 variables:
   KANIKO_IMAGE: git.opentalk.dev:5050/opentalk/opentalk-devops/containers/kaniko:debug-1.25.5
+  SKOPEO_IMAGE: quay.io/skopeo/stable:v1.20
 
 .setup-pnpm: &setup-pnpm
   - npm install -g corepack@latest
