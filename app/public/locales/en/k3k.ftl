@@ -766,6 +766,8 @@ dashboard-help-support = Support
 user-manual-dashboard-title = User manual
 user-manual-open = Open user manual
 conference-go-home = Go to dashboard
+conference-storage-almost-full-plan-upgrade = Attention: You are about to reach the maximum storage limit for your current plan. Please delete some of your stored files, or upgrade your plan
+conference-storage-almost-full-no-plan-upgrade = Attention: You are about to reach the maximum storage limit for your current plan. Please delete some of your stored files.
 conference-storage-full-no-plan-upgrade = Storage full. Please delete files in the dashboard.
 conference-storage-full-plan-upgrade = Storage full. Please delete files in the dashboard or upgrade your plan.
 

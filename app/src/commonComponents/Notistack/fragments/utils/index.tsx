@@ -14,7 +14,7 @@ export interface ISnackActionsProps extends OptionsObject, SnackbarActionButtonP
 export interface ISnackbarPersistentProps extends Omit<OptionsObject, 'persist' | 'action' | 'autoHideDuration'> {
   msg: string;
 }
-
+export type NotificationType = 'info' | 'warning' | 'error' | 'success';
 export const notificationAction = ({
   msg,
   variant,
@@ -98,7 +98,7 @@ export const notifications = {
   binaryAction: (
     message: string,
     options: OptionsObject<'binaryAction'> & {
-      type?: 'info' | 'warning' | 'error' | 'success';
+      type?: NotificationType;
       primaryBtnText?: string;
       secondaryBtnText?: string;
       onPrimary?: (props: { id: SnackbarKey }) => void;

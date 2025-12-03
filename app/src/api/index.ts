@@ -15,6 +15,7 @@ import {
   showConsentNotification,
   startTimeLimitNotification,
 } from '../commonComponents';
+import { NotificationType } from '../commonComponents/Notistack/fragments/utils';
 import { MenuTab } from '../components/MenuTabs/fragments/constants';
 import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification';
 import { showWithLinkNotification } from '../components/WithLinkNotification';
@@ -230,33 +231,43 @@ const showErrorNotification = (message: string) => {
   notifications.error(i18next.t('internal-error'));
 };
 
+const showStorageNotification = (state: RootState, type: NotificationType) => {
+  const accountManagementUrl = selectAccountManagementUrl(state);
+  const isTariffUpgradable = Boolean(state.user.isTariffUpgradable);
+  const keyByType: Partial<Record<NotificationType, string>> = isTariffUpgradable
+    ? { warning: 'conference-storage-almost-full-plan-upgrade', error: 'conference-storage-full-plan-upgrade' }
+    : { warning: 'conference-storage-almost-full-no-plan-upgrade', error: 'conference-storage-full-no-plan-upgrade' };
+
+  const openAccountManagement = () => {
+    window.open(accountManagementUrl, '_blank');
+  };
+  const openStorageSettings = () => {
+    window.open(STORAGE_SECTION_PATH, '_blank');
+  };
+  const errorMessageKey = keyByType[type] || '';
+  if (isTariffUpgradable) {
+    notifications.binaryAction(i18next.t(errorMessageKey), {
+      type,
+      persist: true,
+      primaryBtnText: i18next.t('global-upgrade'),
+      secondaryBtnText: i18next.t('dashboard-settings-storage'),
+      onPrimary: openAccountManagement,
+      onSecondary: openStorageSettings,
+      secondaryBtnProps: { color: 'primary' },
+    });
+  } else {
+    notifications.binaryAction(i18next.t(errorMessageKey), {
+      type,
+      persist: true,
+      primaryBtnText: i18next.t('dashboard-settings-storage'),
+      onPrimary: openStorageSettings,
+    });
+  }
+};
+
 const handleStorageExceededError = (state: RootState, error: string) => {
   if (error === 'storage_exceeded') {
-    const accountManagementUrl = selectAccountManagementUrl(state);
-    const openAccountManagement = () => {
-      window.open(accountManagementUrl, '_blank');
-    };
-    const openStorageSettings = () => {
-      window.open(STORAGE_SECTION_PATH, '_blank');
-    };
-    if (state.user.isTariffUpgradable && accountManagementUrl) {
-      notifications.binaryAction(i18next.t('conference-storage-full-plan-upgrade'), {
-        type: 'error',
-        persist: true,
-        primaryBtnText: i18next.t('global-upgrade'),
-        secondaryBtnText: i18next.t('dashboard-settings-storage'),
-        onPrimary: openAccountManagement,
-        onSecondary: openStorageSettings,
-        secondaryBtnProps: { color: 'primary' },
-      });
-    } else {
-      notifications.binaryAction(i18next.t('conference-storage-no-plan-upgrade'), {
-        type: 'error',
-        persist: true,
-        primaryBtnText: i18next.t('dashboard-settings-storage'),
-        onPrimary: openStorageSettings,
-      });
-    }
+    showStorageNotification(state, 'error');
   }
 };
 /**
@@ -286,6 +297,17 @@ const handleControlMessage = async (
         .map((participant) => participant.id as ParticipantId);
       const groups = data.chat.groupsHistory.map((group) => group.name as GroupId);
       data.chat.groups = groups;
+
+      const maximumStorage = data.tariff.quotas?.maxStorage;
+      const usedStorage = data.assetStorage?.usedStorage;
+
+      if (usedStorage) {
+        if (usedStorage >= maximumStorage) {
+          showStorageNotification(state, 'error');
+        } else if (usedStorage >= maximumStorage * 0.95) {
+          showStorageNotification(state, 'warning');
+        }
+      }
 
       const chatEnabled = data.chat.enabled;
       if (!chatEnabled) {

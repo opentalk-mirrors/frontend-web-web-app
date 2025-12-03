@@ -62,6 +62,9 @@ export interface JoinSuccessIncoming {
   id: ParticipantId;
   role: Role;
   avatarUrl?: string;
+  assetStorage?: {
+    usedStorage: number;
+  };
   participants: Array<BackendParticipant>;
   chat: InitialChat;
   automod?: InitialAutomod;
