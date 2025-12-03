@@ -28,12 +28,17 @@ const AuthCallbackComponent = ({ children, redirectUrl = '/' }: AuthCallbackCont
     const isOidcStateVerified = savedState && !isEmpty(savedState) && savedState === state;
     const isCodeVerifierAvaliable = codeVerifier && !isEmpty(codeVerifier);
 
-    if (!auth || !auth.openidConfig) {
+    if (!auth || !auth.openidConfig || isAuthPending) {
+      return;
+    }
+
+    if (isAuthenticated) {
+      navigate(auth.getSavedRedirectUrl() || redirectUrl);
       return;
     }
 
     if (!code || !isOidcStateVerified || !isCodeVerifierAvaliable) {
-      auth.signIn(window.location.href);
+      auth.signIn(window.location.pathname);
       return;
     }
 
@@ -55,13 +60,7 @@ const AuthCallbackComponent = ({ children, redirectUrl = '/' }: AuthCallbackCont
     );
 
     sessionStorage.removeItem('oidc_state_parameter');
-  }, [auth]);
-
-  useEffect(() => {
-    if (isAuthenticated && !isAuthPending) {
-      navigate(auth?.getSavedRedirectUrl() || redirectUrl);
-    }
-  }, [isAuthenticated, isAuthPending]);
+  }, [auth, isAuthPending, isAuthenticated, redirectUrl, dispatch, navigate, searchParams]);
 
   return <>{children}</>;
 };

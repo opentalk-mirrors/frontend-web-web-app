@@ -41,7 +41,6 @@ export default defineConfig([
       'app/src/components/MeetingSettingsDialog/fragments/CameraSettingsPanel.tsx',
       'app/src/components/Toolbar/fragments/MoreButton.tsx',
       'app/src/components/Toolbar/fragments/MoreMenu.tsx',
-      'packages/redux-oidc/src/authCallbackComponent.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
     ],
   },
