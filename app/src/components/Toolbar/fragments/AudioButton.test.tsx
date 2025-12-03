@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useLocalParticipantPermissions } from '@livekit/components-react';
+import { useMaybeRoomContext } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
@@ -10,7 +10,8 @@ import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import AudioButton from './AudioButton';
 
 vi.mock('@livekit/components-react', () => ({
-  useLocalParticipantPermissions: vi.fn(),
+  useMaybeRoomContext: vi.fn(),
+  useObservableState: vi.fn().mockImplementation((_observable, startWith) => startWith),
   useMediaDeviceSelect: () => ({
     devices: [
       { deviceId: 'xxxxx', groupId: 'xxxxxx', kind: 'audioinput', label: 'audio' },
@@ -23,8 +24,12 @@ describe('Audio Button', () => {
   const { store } = configureStore();
 
   it('Button is disabled if microphones are disabled', async () => {
-    (useLocalParticipantPermissions as Mock).mockReturnValue({
-      canPublishSources: [],
+    (useMaybeRoomContext as Mock).mockReturnValue({
+      localParticipant: {
+        permissions: { canPublishSources: [] },
+        on: vi.fn(),
+        off: vi.fn(),
+      },
     });
     renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
       store,
@@ -37,8 +42,12 @@ describe('Audio Button', () => {
   });
 
   it('Button is enabled if microphones are enabled', () => {
-    (useLocalParticipantPermissions as Mock).mockReturnValue({
-      canPublishSources: [LIVEKIT_AUDIO_PERMISSION_NUMBER],
+    (useMaybeRoomContext as Mock).mockReturnValue({
+      localParticipant: {
+        permissions: { canPublishSources: [LIVEKIT_AUDIO_PERMISSION_NUMBER] },
+        on: vi.fn(),
+        off: vi.fn(),
+      },
     });
 
     renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
@@ -52,6 +61,7 @@ describe('Audio Button', () => {
   });
 
   it('Button is disabled if isLivekitUnavailable is true', async () => {
+    (useMaybeRoomContext as Mock).mockReturnValue(undefined);
     const { store } = configureStore({
       initialState: {
         livekit: {
@@ -68,8 +78,12 @@ describe('Audio Button', () => {
   });
 
   it('button is disabled and shows expected tooltip when audio is disabled by moderator', () => {
-    (useLocalParticipantPermissions as Mock).mockReturnValue({
-      canPublishSources: [],
+    (useMaybeRoomContext as Mock).mockReturnValue({
+      localParticipant: {
+        permissions: { canPublishSources: [] },
+        on: vi.fn(),
+        off: vi.fn(),
+      },
     });
     const { store } = configureStore();
     renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {

@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useLocalParticipantPermissions } from '@livekit/components-react';
+import { useMaybeRoomContext } from '@livekit/components-react';
 import { styled } from '@mui/material';
 import { LocalAudioTrack } from 'livekit-client';
-import { useState, useMemo, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MicOffIcon, MicOnIcon } from '../../../assets/icons';
@@ -40,18 +40,28 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
   const askConsent = useAppSelector(selectNeedRecordingConsent);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const dispatch = useAppDispatch();
-  const localParticipantPermissions = (!isLobby && useLocalParticipantPermissions()) || undefined;
+  const room = useMaybeRoomContext();
   const microphoneEnabled = audioEnabled && !isLivekitUnavailable;
   const permissionDenied = useAppSelector(selectAudioPermissionDenied);
   const audioChangeInProgress = useAppSelector(selectAudioChangeInProgress);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
 
   const [showMenu, setShowMenu] = useState(false);
-  const [canPublishAudio, setCanPublishAudio] = useState(true);
 
   const { devices } = useMediaDevice({
     kind: 'audioinput',
   });
+
+  const canPublishAudio = useMemo(() => {
+    if (isLobby) {
+      return true;
+    }
+
+    const hasPermission = room?.localParticipant.permissions?.canPublishSources.includes(
+      LIVEKIT_AUDIO_PERMISSION_NUMBER
+    );
+    return hasPermission ?? true;
+  }, [isLobby, room]);
 
   const onClick = async () => {
     if (askConsent && !audioEnabled) {
@@ -94,17 +104,10 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
   };
 
   useEffect(() => {
-    if (!isLobby) {
-      const canPublishAudio = localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_AUDIO_PERMISSION_NUMBER);
-
-      if (canPublishAudio !== undefined) {
-        setCanPublishAudio(canPublishAudio);
-        if (!canPublishAudio && microphoneEnabled) {
-          dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
-        }
-      }
+    if (!canPublishAudio && microphoneEnabled) {
+      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
     }
-  }, [isLobby, localParticipantPermissions, microphoneEnabled]);
+  }, [canPublishAudio, microphoneEnabled, dispatch]);
 
   return (
     <>
