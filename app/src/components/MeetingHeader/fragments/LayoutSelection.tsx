@@ -160,7 +160,7 @@ const LayoutSelection = () => {
       >
         <LayoutSelectionMenuItem
           role="menuitemradio"
-          showCheckIcon={selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.FirstJoined}
+          showCheckIcon={selectedLayout === LayoutOptions.Grid}
           onClick={() => handleSelectedView(LayoutOptions.Grid)}
           icon={<GridViewIcon />}
           content={t('conference-view-grid')}
@@ -207,17 +207,22 @@ const LayoutSelection = () => {
         </Divider>
         <LayoutSelectionMenuItem
           role="menuitemradio"
-          onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.VideoFirst)}
-          showCheckIcon={selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.VideoFirst}
+          onClick={() => handleSelectedView(selectedLayout, GridViewOrder.FirstJoined)}
+          showCheckIcon={selectedGridViewOrder === GridViewOrder.FirstJoined}
+          icon={<GridViewIcon />}
+          content={t('conference-view-grid-first-joined')}
+        />
+        <LayoutSelectionMenuItem
+          role="menuitemradio"
+          onClick={() => handleSelectedView(selectedLayout, GridViewOrder.VideoFirst)}
+          showCheckIcon={selectedGridViewOrder === GridViewOrder.VideoFirst}
           icon={<GridViewIcon />}
           content={t('conference-view-grid-camera-first')}
         />
         <LayoutSelectionMenuItem
           role="menuitemradio"
-          onClick={() => handleSelectedView(LayoutOptions.Grid, GridViewOrder.ModeratorsFirst)}
-          showCheckIcon={
-            selectedLayout === LayoutOptions.Grid && selectedGridViewOrder === GridViewOrder.ModeratorsFirst
-          }
+          onClick={() => handleSelectedView(selectedLayout, GridViewOrder.ModeratorsFirst)}
+          showCheckIcon={selectedGridViewOrder === GridViewOrder.ModeratorsFirst}
           icon={<GridViewIcon />}
           content={t('conference-view-grid-moderators-first')}
         />

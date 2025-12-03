@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantLoop, useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
+import { ParticipantLoop, useRemoteParticipants } from '@livekit/components-react';
 import { Stack, styled } from '@mui/material';
 import { Participant, RoomEvent } from 'livekit-client';
 import { useMemo, useState } from 'react';
 
 import { useAppSelector } from '../../../hooks';
+import { useGridViewParticipants } from '../../../hooks/useGridViewParticipants';
 import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
 import { selectPinnedParticipantId } from '../../../store/slices/uiSlice';
 import IconSlideButton from './IconSlideButton';
@@ -28,22 +29,15 @@ export interface ThumbsProps {
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   const signalingParticipants = useAppSelector(selectAllOnlineParticipants);
-  const sortedParticipants = useSortedParticipants(
-    useRemoteParticipants({
-      updateOnlyOn: [
-        RoomEvent.ParticipantConnected,
-        RoomEvent.ParticipantDisconnected,
-        RoomEvent.ActiveSpeakersChanged,
-      ],
-    })
-  ); //TODO: Recheck for ActiveSpeakersChanged
+  const remoteParticipants = useRemoteParticipants();
+  const sortedParticipants = useGridViewParticipants();
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
 
-  const selectedParticipantId = pinnedParticipantId || sortedParticipants[0]?.identity;
+  const selectedParticipantId = pinnedParticipantId || sortedParticipants[0]?.id;
   // Create a map for quick lookups of remoteParticipants by identity
   const remoteParticipantsMap = useMemo(() => {
-    return new Map(sortedParticipants.map((p) => [p.identity, p]));
-  }, [sortedParticipants]);
+    return new Map(remoteParticipants.map((p) => [p.identity, p]));
+  }, [remoteParticipants]);
 
   const participants = useMemo(
     () =>
