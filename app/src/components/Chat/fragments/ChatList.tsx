@@ -122,7 +122,7 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
     if (!isRoomDeleted) {
       updateLastSeenTimestamp();
     }
-  }, [isRoomDeleted]);
+  }, [isRoomDeleted, updateLastSeenTimestamp]);
 
   const lastProcessedCountRef = useRef(searchedMessages.length);
   useEffect(() => {
@@ -130,7 +130,25 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
       updateLastSeenTimestamp();
       lastProcessedCountRef.current = searchedMessages.length;
     }
+  }, [searchedMessages.length, isRoomDeleted, updateLastSeenTimestamp]);
+
+  // Scroll to bottom when search changes or new messages arrive and user is at bottom
+  const scrollToBottom = useCallback(() => {
+    if (virtualList.current) {
+      virtualList.current.scrollToIndex({
+        index: searchedMessages.length - 1,
+        alignToTop: false,
+        prerender: 10,
+      });
+    }
   }, [searchedMessages.length]);
+
+  const { viewportRef, handleChatScroll } = useChatScroll({
+    isLoading: isLoadingMoreChunks,
+    messages: searchedMessages,
+    searchValue: chatSearchValue,
+    scrollToBottom,
+  });
 
   useEffect(() => {
     const triggerElement = loadMoreTriggerRef.current;
@@ -158,29 +176,11 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
     return () => {
       observer.disconnect();
     };
-  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, scope]);
-
-  // Scroll to bottom when search changes or new messages arrive and user is at bottom
-  const scrollToBottom = useCallback(() => {
-    if (virtualList.current) {
-      virtualList.current.scrollToIndex({
-        index: searchedMessages.length - 1,
-        alignToTop: false,
-        prerender: 10,
-      });
-    }
-  }, [searchedMessages.length]);
-
-  const { viewportRef, handleChatScroll } = useChatScroll({
-    isLoading: isLoadingMoreChunks,
-    messages: searchedMessages,
-    searchValue: chatSearchValue,
-    scrollToBottom,
-  });
+  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, scope, viewportRef]);
 
   useLayoutEffect(() => {
     scrollToBottom();
-  }, [chatSearchValue]);
+  }, [chatSearchValue, scrollToBottom]);
 
   useLayoutEffect(() => {
     const viewPortNode = viewportRef.current;
@@ -191,7 +191,7 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
     return () => {
       viewPortNode.removeEventListener('scroll', handleChatScroll);
     };
-  }, [handleChatScroll]);
+  }, [handleChatScroll, viewportRef]);
 
   useEffect(() => {
     if (chatSearchValue.length >= 2 && nextIndex !== null) {
