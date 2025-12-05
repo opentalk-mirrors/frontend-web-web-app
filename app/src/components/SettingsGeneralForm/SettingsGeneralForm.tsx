@@ -51,23 +51,24 @@ export const SettingsGeneralForm = (props: SettingsGeneralFormProps) => {
     setConferenceTheme(event.target.value as ThemeMode);
   };
 
-  const submitForm = (event: FormEvent) => {
+  const submitForm = async (event: FormEvent) => {
     event.preventDefault();
-    updateMe({ language, dashboardTheme, conferenceTheme })
-      .unwrap()
-      .then((payload) => {
-        const channel = getBroadcastChannel('settings_general');
-        channel?.postMessage({
-          type: 'sync',
-          language: payload.language,
-          dashboardTheme: payload.dashboardTheme,
-          conferenceTheme: payload.conferenceTheme,
-        });
-        notifications.success(t('dashboard-settings-general-notification-save-success'));
-      })
-      .catch(() => {
-        notifications.error(t('error-general'));
+    try {
+      const me = await updateMe({ language, dashboardTheme, conferenceTheme }).unwrap();
+      const channel = getBroadcastChannel('settings_general');
+      channel?.postMessage({
+        type: 'sync',
+        language: me.language,
+        dashboardTheme: me.dashboardTheme,
+        conferenceTheme: me.conferenceTheme,
       });
+      await i18n.changeLanguage(me.language, (_err, t) =>
+        notifications.success(t('dashboard-settings-general-notification-save-success'))
+      );
+    } catch (_err) {
+      notifications.error(t('error-general'));
+      return;
+    }
   };
 
   useEffect(() => {
