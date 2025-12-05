@@ -527,7 +527,6 @@ run-full-e2e-tests:
     - container-mr
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
   stage: e2e
   variables:
     FRONTEND_TAG: ${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
