@@ -96,10 +96,10 @@ const VoteResult = ({
   optionIndex,
   multipleChoice,
 }: IVoteResult) => {
+  const currentLegalVote = useAppSelector(selectCurrentShownVote);
+  const currentPoll = useAppSelector(selectPollToShow);
   const didVote =
-    voteType === VoteType.LegalVote
-      ? Boolean(useAppSelector(selectCurrentShownVote)?.userVote?.votedAt)
-      : Boolean(useAppSelector(selectPollToShow)?.voted);
+    voteType === VoteType.LegalVote ? Boolean(currentLegalVote?.userVote?.votedAt) : Boolean(currentPoll?.voted);
   const id = voteData.voteId + '-' + optionIndex;
   const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
 

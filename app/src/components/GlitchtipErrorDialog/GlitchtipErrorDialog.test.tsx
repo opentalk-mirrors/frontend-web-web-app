@@ -86,14 +86,8 @@ describe('GlitchtipErrorDialog', () => {
   });
 
   beforeEach(() => {
+    vi.resetAllMocks();
     fetchMock = vi.spyOn(global, 'fetch').mockResolvedValue(new Response());
-    mockDispatch.mockClear();
-    (sleep as Mock).mockClear();
-  });
-
-  afterEach(() => {
-    fetchMock.mockRestore();
-    (useAppSelector as unknown as Mock).mockReset();
   });
 
   it('returns null when error reporting is disabled', () => {

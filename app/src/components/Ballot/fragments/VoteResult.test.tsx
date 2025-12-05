@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { LegalVoteId, PollId } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
@@ -45,7 +46,7 @@ describe('testing vote results', () => {
     multipleChoice: true,
   };
 
-  it('should render wothout breaking', () => {
+  it('should render without breaking', () => {
     renderWithProviders(<VoteResult {...voteResultsProps} />, { store, provider: { mui: true } });
     const yesRadioButton = screen.getByRole('radio', { name: voteResultsProps.title });
 
@@ -54,21 +55,25 @@ describe('testing vote results', () => {
     expect(screen.getByText('50.0%')).toBeInTheDocument();
   });
 
-  it('should fire onVote event on click', () => {
+  it('should fire onVote event on click', async () => {
+    const user = userEvent.setup();
     renderWithProviders(<VoteResult {...voteResultsProps} />, { store, provider: { mui: true } });
     const yesRadioButton = screen.getByRole('radio', { name: voteResultsProps.title });
     expect(yesRadioButton).toBeInTheDocument();
-    fireEvent.click(yesRadioButton);
+
+    await user.click(yesRadioButton);
+
     expect(yesRadioButton).toBeChecked();
     expect(voteResultsProps.onVote).toHaveBeenCalledTimes(1);
   });
 
-  it('should render checkbox if multiple choice is passed', () => {
+  it('should render checkbox if multiple choice is passed', async () => {
+    const user = userEvent.setup();
     renderWithProviders(<VoteResult {...pollProps} />, { store, provider: { mui: true } });
     const yesCheckbox = screen.getByRole('checkbox', { name: pollProps.title });
 
     expect(yesCheckbox).toBeInTheDocument();
-    fireEvent.click(yesCheckbox);
+    await user.click(yesCheckbox);
     expect(yesCheckbox).toBeChecked();
   });
 });
