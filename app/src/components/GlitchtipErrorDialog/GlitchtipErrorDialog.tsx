@@ -67,10 +67,6 @@ const GlitchtipErrorDialog = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  if (!activeErrorReporting) {
-    return null;
-  }
-
   const validationSchema = yup.lazy(({ email, name, comments }) => {
     if (Boolean(email) || Boolean(name) || Boolean(comments)) {
       return yup.object({
@@ -151,6 +147,10 @@ const GlitchtipErrorDialog = () => {
       }
     },
   });
+
+  if (!activeErrorReporting) {
+    return null;
+  }
 
   const handleCloseDialog = () => {
     dispatch(setShowErrorDialog({ showErrorDialog: false, event: undefined }));
