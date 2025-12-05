@@ -51,7 +51,7 @@ afterAll(() => server.close());
 const config = {
   controller: 'localhost:8000',
   insecure: false,
-  baseUrl: 'http://localhost:3000',
+  baseUrl: location.origin,
   helpdeskUrl: '',
   imprintUrl: '',
   dataProtectionUrl: '',

@@ -5,7 +5,7 @@
 window.config = {
   controller: '${CONTROLLER_HOST}',
   insecure: false,
-  baseUrl: '${BASE_URL}',
+  baseUrl: location.origin,
   helpdeskUrl: '${HELPDESK_URL}',
   imprintUrl: '${IMPRINT_URL}',
   contactSupportUrl: '${CONTACT_SUPPORT_URL}',
