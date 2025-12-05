@@ -44,7 +44,6 @@ export default defineConfig([
       'app/src/components/Chat/fragments/ChatForm.tsx',
       'app/src/components/Chat/fragments/ChatMessage.tsx',
       'app/src/components/CoffeeBreakView/fragments/CoffeeBreakTimer.tsx',
-      'app/src/components/DashboardNavigation/fragments/SecondaryNavigation.tsx',
       'app/src/components/GlitchtipErrorDialog/GlitchtipErrorDialog.tsx',
       'app/src/components/LegalVoteTab/fragments/CreateLegalVoteForm.tsx',
       'app/src/components/LegalVoteTab/fragments/ParticipantSelector.tsx',

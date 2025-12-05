@@ -146,31 +146,6 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
   const getHref = (submenu: string | undefined, path: string, target: string) =>
     target === '_blank' ? getUrl(path) : `${submenu}/${path}`;
 
-  const NavItems = () => (
-    <List>
-      {routes &&
-        routes
-          .filter((route) => showSubmenuEntry(route.path))
-          .map(({ path, name }) => {
-            const target = getTarget(path);
-
-            return (
-              <ListItem key={path}>
-                <NavItem
-                  to={getHref(submenu, path, target)}
-                  onClick={handleNavigation}
-                  data-testid="SecondaryNavItem"
-                  aria-controls={target === '_self' ? 'main-content-dashboard' : undefined}
-                  target={target}
-                >
-                  <ListItemText>{t(name)}</ListItemText>
-                </NavItem>
-              </ListItem>
-            );
-          })}
-    </List>
-  );
-
   return (
     <Container data-testid="SecondaryNavigation">
       {isDesktop && (
@@ -186,7 +161,28 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
           {t(label)}
         </Typography>
       )}
-      <NavItems />
+      <List>
+        {routes &&
+          routes
+            .filter((route) => showSubmenuEntry(route.path))
+            .map(({ path, name }) => {
+              const target = getTarget(path);
+
+              return (
+                <ListItem key={path}>
+                  <NavItem
+                    to={getHref(submenu, path, target)}
+                    onClick={handleNavigation}
+                    data-testid="SecondaryNavItem"
+                    aria-controls={target === '_self' ? 'main-content-dashboard' : undefined}
+                    target={target}
+                  >
+                    <ListItemText>{t(name)}</ListItemText>
+                  </NavItem>
+                </ListItem>
+              );
+            })}
+      </List>
     </Container>
   );
 };
