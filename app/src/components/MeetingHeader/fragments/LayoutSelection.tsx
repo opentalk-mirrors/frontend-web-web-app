@@ -7,10 +7,13 @@ import { MouseEvent, useState, JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  CameraOnIcon,
   FullscreenViewIcon,
   GridViewIcon,
   MeetingNotesIcon,
+  ModeratorIcon,
   SpeakerViewIcon,
+  TimerIcon,
   WhiteboardIcon,
 } from '../../../assets/icons';
 import { IconButton } from '../../../commonComponents';
@@ -209,21 +212,21 @@ const LayoutSelection = () => {
           role="menuitemradio"
           onClick={() => handleSelectedView(selectedLayout, GridViewOrder.FirstJoined)}
           showCheckIcon={selectedGridViewOrder === GridViewOrder.FirstJoined}
-          icon={<GridViewIcon />}
+          icon={<TimerIcon />}
           content={t('conference-view-grid-first-joined')}
         />
         <LayoutSelectionMenuItem
           role="menuitemradio"
           onClick={() => handleSelectedView(selectedLayout, GridViewOrder.VideoFirst)}
           showCheckIcon={selectedGridViewOrder === GridViewOrder.VideoFirst}
-          icon={<GridViewIcon />}
+          icon={<CameraOnIcon />}
           content={t('conference-view-grid-camera-first')}
         />
         <LayoutSelectionMenuItem
           role="menuitemradio"
           onClick={() => handleSelectedView(selectedLayout, GridViewOrder.ModeratorsFirst)}
           showCheckIcon={selectedGridViewOrder === GridViewOrder.ModeratorsFirst}
-          icon={<GridViewIcon />}
+          icon={<ModeratorIcon />}
           content={t('conference-view-grid-moderators-first')}
         />
       </Menu>
