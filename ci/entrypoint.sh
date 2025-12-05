@@ -64,12 +64,18 @@ if [[ x"${KEYCLOAK_AUTHORITY}" != "x" ]]; then
     OIDC_ISSUER=$KEYCLOAK_AUTHORITY
 fi
 
+if [[ x"${BASE_URL}" == "x" ]]; then
+  BASE_URL="location.origin"
+else
+  BASE_URL=\"${BASE_URL}\"
+fi 
+
 cat >$HTML_ROOT/config.js << EOF
 window.config = {
   logLevel: "${LOG_LEVEL:-info}",
   controller: "${CONTROLLER_HOST}",
   insecure: ${INSECURE:-false},
-  baseUrl: "${BASE_URL}",
+  baseUrl: ${BASE_URL},
   helpdeskUrl: "${HELPDESK_URL}",
   contactSupportUrl: "${CONTACT_SUPPORT_URL}",
   imprintUrl: "${IMPRINT_URL}",
