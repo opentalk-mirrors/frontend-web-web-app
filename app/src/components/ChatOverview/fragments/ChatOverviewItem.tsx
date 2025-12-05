@@ -10,7 +10,6 @@ import {
   styled,
 } from '@mui/material';
 import { isEmpty } from 'lodash';
-import { useEffect, useState } from 'react';
 
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector, useDateFormat } from '../../../hooks';
@@ -42,21 +41,14 @@ interface IScopedChatItemProps {
 
 const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
   const participant = useAppSelector(selectParticipantById(chat.id as ParticipantId));
-  const date = new Date(chat.lastMessage?.timestamp ?? Date.now());
+  const lastMessageTimestamp = chat.lastMessage?.timestamp ?? chat.messages.at(-1)?.timestamp;
+  const date = lastMessageTimestamp ? new Date(lastMessageTimestamp) : new Date(0);
   const formattedTime = useDateFormat(date, 'time');
   const getDisplayName = () => (isEmpty(participant) ? chat.id : participant?.displayName);
   const lastSeenTimestampCount = useAppSelector((state) => selectUnreadPersonalMessageCountByTarget(state, chat.id));
-  const [fontWeight, setFontWeight] = useState('normal');
-
-  useEffect(() => {
-    if (chat.scope === ChatScope.Private || chat.scope === ChatScope.Group) {
-      if (lastSeenTimestampCount > 0) {
-        setFontWeight('bold');
-      } else {
-        setFontWeight('normal');
-      }
-    }
-  }, [chat, lastSeenTimestampCount]);
+  const hasUnreadMessage =
+    (chat.scope === ChatScope.Private || chat.scope === ChatScope.Group) && lastSeenTimestampCount > 0;
+  const fontWeight = hasUnreadMessage ? 'bold' : 'normal';
 
   const renderPrimaryText = () => (
     <Grid container direction="row" spacing={1}>
