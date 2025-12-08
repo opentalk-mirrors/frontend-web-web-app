@@ -5,7 +5,7 @@ import { Collapse, MenuItem, Stack } from '@mui/material';
 import { TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { FormikProps } from 'formik';
 import { isEqual } from 'lodash';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CommonTextField } from '../../../../commonComponents';
@@ -26,75 +26,110 @@ enum TrainingParticipationReportConfigOptions {
   Custom = 'custom',
 }
 
+const DEFAULT_CUSTOM_OPTION: TrainingParticipationReportParameterSet = {
+  initialCheckpointDelay: { after: 600, within: 1200 },
+  checkpointInterval: { after: 2700, within: 900 },
+};
+
+const PRESET_OPTIONS: Record<
+  Exclude<TrainingParticipationReportConfigOptions, TrainingParticipationReportConfigOptions.Custom>,
+  TrainingParticipationReportParameterSet
+> = {
+  [TrainingParticipationReportConfigOptions.EveryThirtyMin]: {
+    initialCheckpointDelay: { after: 1800, within: 0 },
+    checkpointInterval: { after: 1800, within: 0 },
+  },
+  [TrainingParticipationReportConfigOptions.EverySixtyMin]: {
+    initialCheckpointDelay: { after: 3600, within: 0 },
+    checkpointInterval: { after: 3600, within: 0 },
+  },
+  [TrainingParticipationReportConfigOptions.ThirtyToSixtyMin]: {
+    initialCheckpointDelay: { after: 1800, within: 1800 },
+    checkpointInterval: { after: 1800, within: 1800 },
+  },
+  [TrainingParticipationReportConfigOptions.NinetyToOneHundredTwentyMin]: {
+    initialCheckpointDelay: { after: 5400, within: 1800 },
+    checkpointInterval: { after: 5400, within: 1800 },
+  },
+};
+
+const OPTION_KEYS: TrainingParticipationReportConfigOptions[] = [
+  TrainingParticipationReportConfigOptions.EveryThirtyMin,
+  TrainingParticipationReportConfigOptions.EverySixtyMin,
+  TrainingParticipationReportConfigOptions.ThirtyToSixtyMin,
+  TrainingParticipationReportConfigOptions.NinetyToOneHundredTwentyMin,
+  TrainingParticipationReportConfigOptions.Custom,
+];
+
+const findPresetOption = (
+  parameter?: TrainingParticipationReportParameterSet
+): Exclude<TrainingParticipationReportConfigOptions, TrainingParticipationReportConfigOptions.Custom> | undefined => {
+  if (!parameter) {
+    return undefined;
+  }
+
+  return (
+    Object.entries(PRESET_OPTIONS) as Array<
+      [
+        Exclude<TrainingParticipationReportConfigOptions, TrainingParticipationReportConfigOptions.Custom>,
+        TrainingParticipationReportParameterSet,
+      ]
+    >
+  ).find(([, option]) => isEqual(parameter, option))?.[0];
+};
+
+const resolveCustomOption = (parameter?: TrainingParticipationReportParameterSet) => {
+  const presetOption = findPresetOption(parameter);
+
+  if (!parameter || presetOption) {
+    return DEFAULT_CUSTOM_OPTION;
+  }
+
+  return parameter;
+};
+
 export const TrainingParticipationReportSelect = ({ formik }: TrainingParticipationReportSelectProps) => {
   const { t } = useTranslation();
   const { enabled, parameter } = formik.values.trainingParticipationReport;
   const [isCustomDialogOpen, setIsCustomDialogOpen] = useState(false);
-  const [customOption, setCustomOption] = useState({
-    initialCheckpointDelay: { after: 600, within: 1200 },
-    checkpointInterval: { after: 2700, within: 900 },
-  });
 
-  const options: Record<TrainingParticipationReportConfigOptions, TrainingParticipationReportParameterSet> = {
-    [TrainingParticipationReportConfigOptions.EveryThirtyMin]: {
-      initialCheckpointDelay: { after: 1800, within: 0 },
-      checkpointInterval: { after: 1800, within: 0 },
-    },
-    [TrainingParticipationReportConfigOptions.EverySixtyMin]: {
-      initialCheckpointDelay: { after: 3600, within: 0 },
-      checkpointInterval: { after: 3600, within: 0 },
-    },
-    [TrainingParticipationReportConfigOptions.ThirtyToSixtyMin]: {
-      initialCheckpointDelay: { after: 1800, within: 1800 },
-      checkpointInterval: { after: 1800, within: 1800 },
-    },
-    [TrainingParticipationReportConfigOptions.NinetyToOneHundredTwentyMin]: {
-      initialCheckpointDelay: { after: 5400, within: 1800 },
-      checkpointInterval: { after: 5400, within: 1800 },
-    },
-    [TrainingParticipationReportConfigOptions.Custom]: customOption,
-  };
-
-  const [selectedOption, setSelectedOption] = useState(TrainingParticipationReportConfigOptions.EveryThirtyMin);
+  const presetOption = useMemo(() => findPresetOption(parameter), [parameter]);
+  const customOption = useMemo(() => resolveCustomOption(parameter), [parameter]);
+  const selectedOption = presetOption ?? TrainingParticipationReportConfigOptions.Custom;
 
   useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-
-    if (parameter) {
-      const existingOptionKey = (Object.keys(options) as Array<TrainingParticipationReportConfigOptions>).find(
-        (option) => isEqual(parameter, options[option])
-      );
-      if (existingOptionKey) {
-        setSelectedOption(existingOptionKey);
-      } else {
-        setSelectedOption(TrainingParticipationReportConfigOptions.Custom);
-        setCustomOption(parameter);
-      }
+    if (!enabled || parameter) {
       return;
     }
 
     formik.setFieldValue(
       'trainingParticipationReport.parameter',
-      options[TrainingParticipationReportConfigOptions.EveryThirtyMin]
+      PRESET_OPTIONS[TrainingParticipationReportConfigOptions.EveryThirtyMin]
     );
-  }, [enabled]);
+  }, [enabled, formik, parameter]);
 
-  const handleSelect = (option: TrainingParticipationReportConfigOptions) => {
-    if (option === TrainingParticipationReportConfigOptions.Custom) {
-      setIsCustomDialogOpen(true);
-    }
+  const handleSelect = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const option = event.target.value as TrainingParticipationReportConfigOptions;
 
-    setSelectedOption(option);
-    formik.setFieldValue('trainingParticipationReport.parameter', options[option]);
-  };
+      if (option === TrainingParticipationReportConfigOptions.Custom) {
+        setIsCustomDialogOpen(true);
+        formik.setFieldValue('trainingParticipationReport.parameter', customOption);
+        return;
+      }
 
-  const handleSave = (value: TrainingParticipationReportParameterSet) => {
-    setCustomOption(value);
-    formik.setFieldValue('trainingParticipationReport.parameter', value);
-    setIsCustomDialogOpen(false);
-  };
+      formik.setFieldValue('trainingParticipationReport.parameter', PRESET_OPTIONS[option]);
+    },
+    [customOption, formik]
+  );
+
+  const handleSave = useCallback(
+    (value: TrainingParticipationReportParameterSet) => {
+      formik.setFieldValue('trainingParticipationReport.parameter', value);
+      setIsCustomDialogOpen(false);
+    },
+    [formik]
+  );
 
   return (
     <Stack spacing={2}>
@@ -104,13 +139,9 @@ export const TrainingParticipationReportSelect = ({ formik }: TrainingParticipat
         switchValueLabel={t('dashboard-meeting-training-participation-report-switch')}
       />
       <Collapse orientation="vertical" in={enabled} unmountOnExit mountOnEnter>
-        <CommonTextField data-testid="parameter-select" select value={selectedOption}>
-          {Object.keys(options).map((option) => (
-            <MenuItem
-              key={option}
-              value={option}
-              onClick={() => handleSelect(option as TrainingParticipationReportConfigOptions)}
-            >
+        <CommonTextField data-testid="parameter-select" select value={selectedOption} onChange={handleSelect}>
+          {OPTION_KEYS.map((option) => (
+            <MenuItem key={option} value={option}>
               {t(`dashboard-meeting-training-participation-report-option-${option}`)}
             </MenuItem>
           ))}

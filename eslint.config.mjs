@@ -47,7 +47,6 @@ export default defineConfig([
       'app/src/components/GlitchtipErrorDialog/GlitchtipErrorDialog.tsx',
       'app/src/components/LegalVoteTab/fragments/CreateLegalVoteForm.tsx',
       'app/src/components/LegalVoteTab/fragments/ParticipantSelector.tsx',
-      'app/src/components/MeetingForms/fragments/TrainingParticipationReportSelect/TrainingParticipationReportSelect.tsx',
       'app/src/components/MeetingHeader/fragments/SharedFolderPopover.tsx',
       'app/src/components/MeetingHeader/fragments/WaitingParticipantsPopover.tsx',
       'app/src/components/MeetingNotesTab/MeetingNotesTab.tsx',
