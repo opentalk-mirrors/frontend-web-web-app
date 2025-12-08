@@ -32,7 +32,7 @@ const NormalTimerPopover = () => {
     if (timerId) {
       dispatch(readyToContinue.action({ timerId, status: !isUserReady }));
     }
-  }, [timerId, isUserReady]);
+  }, [dispatch, isUserReady, timerId]);
 
   return (
     <Container open={Boolean(timerId)} role="dialog" aria-label={timerTitle || t('timer-popover-title')}>
