@@ -305,7 +305,7 @@ approve-all-participants-from-waiting = Approve all
 moderationbar-button-home-tooltip = Home
 moderationbar-button-mute-tooltip = Mute participants
 moderationbar-button-add-user-tooltip = Add User feature is under development
-moderationbar-button-breakout-tooltip = Create Breakout Rooms
+moderationbar-button-breakout-tooltip = Create breakout rooms
 moderationbar-button-poll-tooltip = Poll
 moderationbar-button-ballot-tooltip = Voting
 moderationbar-button-wollknaul-tooltip = Wollknaul feature is under development
@@ -458,7 +458,7 @@ no-votes-in-conference = There are no votes for this conference at the moment.
 
 room-title-info-button-aria-label = Share meeting details
 
-breakout-room-tab-title = Breakout Rooms
+breakout-room-tab-title = Breakout rooms
 breakout-room-form-field-based-on = By number of
 breakout-room-form-field-rooms = Number of rooms
 breakout-room-form-field-participants-per-room = Participants per room
