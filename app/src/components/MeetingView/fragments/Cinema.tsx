@@ -39,7 +39,7 @@ const Cinema = () => {
     return () => {
       dispatch(fullscreenActions.setElement({ element: undefined }));
     };
-  }, [refForFullscreen]);
+  }, [dispatch, refForFullscreen]);
 
   const renderView = () => {
     if (isFullscreenActive) {
