@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { randomUUID } from 'crypto';
 
 import { LegalVoteId } from '../../../types';
@@ -26,9 +27,10 @@ describe('ReportSection', () => {
   });
 
   it('expands on button click', async () => {
+    const user = userEvent.setup();
     render(<ReportSection legalVoteId={mockLegalVote.id} />);
 
-    fireEvent.click(screen.getByText('legal-vote-report-issue-title'));
+    await user.click(screen.getByText('legal-vote-report-issue-title'));
 
     const elements = await screen.findAllByText('legal-vote-report-issue-title');
     expect(elements.length).toBe(2);
@@ -36,21 +38,23 @@ describe('ReportSection', () => {
   });
 
   it('collapses on cancel button click', async () => {
+    const user = userEvent.setup();
     render(<ReportSection legalVoteId={mockLegalVote.id} />);
 
-    fireEvent.click(screen.getByText('legal-vote-report-issue-title'));
-    fireEvent.click(screen.getByText('global-cancel'));
+    await user.click(screen.getByText('legal-vote-report-issue-title'));
+    await user.click(screen.getByText('global-cancel'));
 
     const title = await screen.findByText('legal-vote-report-issue-title');
     expect(title.tagName).toBe('BUTTON');
   });
 
   it('can submit description', async () => {
+    const user = userEvent.setup();
     renderWithProviders(<ReportSection legalVoteId={mockLegalVote.id} />, { provider: { snackbar: true, mui: true } });
 
-    fireEvent.click(screen.getByText('legal-vote-report-issue-title'));
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'testing description' } });
-    fireEvent.click(screen.getByText('legal-vote-report-issue-inform-moderator'));
+    await user.click(screen.getByText('legal-vote-report-issue-title'));
+    await user.type(screen.getByRole('textbox'), 'testing description');
+    await user.click(screen.getByText('legal-vote-report-issue-inform-moderator'));
 
     await waitFor(() => {
       expect(mockAppDispatch.mock.calls[0][0]).toEqual({
