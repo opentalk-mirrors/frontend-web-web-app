@@ -54,7 +54,6 @@ export default defineConfig([
       'app/src/components/ParticipantWindow/fragments/ParticipantVideo.tsx',
       'app/src/components/ParticipantWindow/fragments/VideoOverlay.tsx',
       'app/src/components/Participants/fragments/SearchTextField.tsx',
-      'app/src/components/Toolbar/fragments/AudioButton.tsx',
       'app/src/components/Toolbar/fragments/AudioIndicator.tsx',
       'app/src/components/Toolbar/fragments/MoreButton.tsx',
       'app/src/components/Toolbar/fragments/MoreMenu.tsx',
