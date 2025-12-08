@@ -84,40 +84,39 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   };
   const isFullscreenSupported = useAppSelector(selectFullscreenSupported);
 
-  const openChannel = () => {
-    if (channelId && popoutStreamAccess && popoutStreamAccess.token) {
-      const url = new URL(`${window.location.origin}/room/extended/${channelId}`);
-      const channel = new BroadcastChannel(channelId);
-      channel.onmessage = (event) => {
-        if (event.data.namespace === 'extended_tab') {
-          if (event.data.payload.action === 'request_livekit_data') {
-            channel.postMessage({
-              namespace: 'extended_tab',
-              payload: {
-                action: 'livekit_data',
-                accessToken: popoutStreamAccess.token,
-                mediaType: popoutStreamAccess.mediaDescriptor.mediaType,
-                participantId: popoutStreamAccess.mediaDescriptor.participantId,
-                livekitUrl,
-                roomId,
-              },
-            });
-            if (popoutStreamAccess.token) {
-              setChannelId(undefined);
-              dispatch(deleteLivekitPopoutStreamAccessToken(popoutStreamAccess.token));
-            }
-          }
-        }
-      };
-      window.open(url.toString(), '_blank');
-    }
-  };
-
   // Opening url is known bug in react -> https://github.com/facebook/react/issues/17355
   // Using setTimeout as a workaround
   useEffect(() => {
-    setTimeout(openChannel, 0);
-  }, [popoutStreamAccess]);
+    const timeoutId = window.setTimeout(() => {
+      const token = popoutStreamAccess?.token;
+      if (!channelId || !token) {
+        return;
+      }
+
+      const url = new URL(`${window.location.origin}/room/extended/${channelId}`);
+      const channel = new BroadcastChannel(channelId);
+      channel.onmessage = (event) => {
+        if (event.data.namespace === 'extended_tab' && event.data.payload.action === 'request_livekit_data') {
+          channel.postMessage({
+            namespace: 'extended_tab',
+            payload: {
+              action: 'livekit_data',
+              accessToken: token,
+              mediaType: popoutStreamAccess.mediaDescriptor.mediaType,
+              participantId: popoutStreamAccess.mediaDescriptor.participantId,
+              livekitUrl,
+              roomId,
+            },
+          });
+          setChannelId(undefined);
+          dispatch(deleteLivekitPopoutStreamAccessToken(token));
+        }
+      };
+      window.open(url.toString(), '_blank');
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [channelId, dispatch, livekitUrl, popoutStreamAccess, roomId]);
 
   const togglePin = useCallback(() => {
     const updatePinnedId = pinnedParticipantId === participantId ? undefined : participantId;
@@ -130,7 +129,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
       dispatch(pinnedParticipantIdSet(participantId as ParticipantId));
       dispatch(fullscreenActions.request());
     },
-    [participant]
+    [dispatch, participantId]
   );
 
   const openInNewTab: MouseEventHandler = (event) => {
