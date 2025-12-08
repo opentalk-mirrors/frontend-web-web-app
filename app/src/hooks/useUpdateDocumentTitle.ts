@@ -10,5 +10,5 @@ type HookOptions = {
 export function useUpdateDocumentTitle(title: string, options: HookOptions = { extension: ' in OpenTalk' }) {
   useEffect(() => {
     document.title = title + options.extension;
-  }, [title]);
+  }, [title, options.extension]);
 }

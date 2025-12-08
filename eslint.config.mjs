@@ -58,7 +58,6 @@ export default defineConfig([
       'app/src/hooks/useMediaQuery.ts',
       'app/src/hooks/useNavigateToHome.tsx',
       'app/src/hooks/useRemainingDurationOfTimer.ts',
-      'app/src/hooks/useUpdateDocumentTitle.ts',
       'packages/redux-oidc/src/authCallbackComponent.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
     ],
