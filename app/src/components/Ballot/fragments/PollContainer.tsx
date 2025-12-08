@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, Grid, IconButton } from '@mui/material';
-import { FC, FormEvent, useEffect, useState } from 'react';
+import { FC, FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { vote as sendPollChoiceToAPI, UserChoice } from '../../../api/types/outgoing/poll';
@@ -31,24 +31,18 @@ const isChoiceIncludedPredicate = (choiceId: ChoiceId, userSelection?: UserChoic
 export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const [userSelection, setUserSelection] = useState<UserChoice>();
+  const [selectionByPollId, setSelectionByPollId] = useState<Record<string, UserChoice | undefined>>({});
 
   const isPollActive = poll.state === 'active';
 
   const submittedPollOption = poll.voted;
+  const isSelectionAllowed = isPollActive && !submittedPollOption;
+  const userSelection = isSelectionAllowed ? selectionByPollId[poll.id] : undefined;
   const isSubmitButtonDisabled = submittedPollOption || userSelection === undefined;
 
   const initialSum = 0;
   const numberOfVotes = poll.results?.reduce((sum, result) => sum + result.count, initialSum) || initialSum;
   const formattedTime = useDateFormat(new Date(poll.startTime), 'time');
-
-  useEffect(() => {
-    //For the case of live poll and user whose choice is not submit yet
-    if (isPollActive && !submittedPollOption) {
-      return;
-    }
-    setUserSelection(undefined);
-  }, [poll]);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -60,23 +54,27 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
   };
 
   const handleSingleChoiceSelect = (choiceId: ChoiceId) => {
-    setUserSelection({ choiceId });
+    setSelectionByPollId((state) => ({
+      ...state,
+      [poll.id]: { choiceId },
+    }));
   };
 
   const handleMultipleChoiceSelect = (choiceId: ChoiceId) => {
-    setUserSelection((state) => {
-      const choiceIds = state?.choiceIds || [];
+    setSelectionByPollId((state) => {
+      const currentSelection = state[poll.id];
+      const choiceIds = currentSelection?.choiceIds || [];
 
       if (choiceIds.includes(choiceId)) {
         const newChoiceList = choiceIds.filter((id) => id !== choiceId);
         //If list is empty we reset selection to undefined
         if (newChoiceList.length === 0) {
-          return undefined;
+          return { ...state, [poll.id]: undefined };
         }
-        return { choiceIds: newChoiceList };
+        return { ...state, [poll.id]: { choiceIds: newChoiceList } };
       }
 
-      return { choiceIds: [...choiceIds, choiceId] };
+      return { ...state, [poll.id]: { choiceIds: [...choiceIds, choiceId] } };
     });
   };
 
