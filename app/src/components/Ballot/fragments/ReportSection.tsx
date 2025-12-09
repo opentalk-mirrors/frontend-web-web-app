@@ -4,7 +4,7 @@
 import { Box, Button, FormControlLabel, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useFormik } from 'formik';
-import { FC, Fragment, useEffect, useRef, useState } from 'react';
+import { FC, Fragment, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ReportIssueKind, VoteReportIssue, reportIssue } from '../../../api/types/outgoing/legalVote';
@@ -44,17 +44,38 @@ const FORMIK_DEFAULTS = {
 
 export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
   const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
+  const [expandedState, setExpandedState] = useState({ legalVoteId, isExpanded: false });
   const dispatch = useAppDispatch();
   const expandButtonReference = useRef<HTMLButtonElement>(null);
 
-  const toggleExpandedState = () => setExpanded((expanded) => !expanded);
+  const expanded = expandedState.legalVoteId === legalVoteId ? expandedState.isExpanded : false;
 
-  const formik = useFormik<Omit<VoteReportIssue, 'action'>>({
-    initialValues: {
+  const updateExpanded = (value: boolean | ((prevExpanded: boolean) => boolean)) => {
+    setExpandedState((state) => {
+      const previousExpanded = state.legalVoteId === legalVoteId ? state.isExpanded : false;
+      const nextExpanded = typeof value === 'function' ? value(previousExpanded) : value;
+
+      if (previousExpanded === nextExpanded && state.legalVoteId === legalVoteId) {
+        return state;
+      }
+
+      return { legalVoteId, isExpanded: nextExpanded };
+    });
+  };
+
+  const toggleExpandedState = () => updateExpanded((expandedValue) => !expandedValue);
+
+  const initialValues = useMemo(
+    () => ({
       legal_vote_id: legalVoteId as LegalVoteId,
       ...FORMIK_DEFAULTS,
-    },
+    }),
+    [legalVoteId]
+  );
+
+  const formik = useFormik<Omit<VoteReportIssue, 'action'>>({
+    initialValues,
+    enableReinitialize: true,
     validationSchema: reportValidationScheme,
     onSubmit: (data) => {
       const payload = { ...data };
@@ -71,7 +92,7 @@ export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
   });
 
   const closeAndFocusReportButton = () => {
-    setExpanded(false);
+    updateExpanded(false);
     expandButtonReference.current?.focus();
   };
 
@@ -79,16 +100,6 @@ export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
     formik.resetForm();
     closeAndFocusReportButton();
   };
-
-  useEffect(() => {
-    formik.resetForm({
-      values: {
-        legal_vote_id: legalVoteId as LegalVoteId,
-        ...FORMIK_DEFAULTS,
-      },
-    });
-    setExpanded(false);
-  }, [legalVoteId]);
 
   return (
     <Fragment>
