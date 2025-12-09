@@ -4,7 +4,7 @@
 import { useRemoteParticipant } from '@livekit/components-react';
 import { Slide, styled } from '@mui/material';
 import { Track } from 'livekit-client';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
@@ -51,7 +51,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
   const areParticipantVideosEnabled = qualityCap !== VideoSetting.Off;
   const showCamera = participant?.isCameraEnabled && areParticipantVideosEnabled;
 
-  const containerRef = useRef(null);
+  const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
   const [showPresenterVideo, setShowPresenterVideo] = useState<boolean>(!!presenterVideoIsActive);
   const presenterOverlayPinnedParticipantId = useAppSelector(selectPresenterOverlayPinnedParticipantId);
   const isVideoPinned = presenterOverlayPinnedParticipantId === participantId;
@@ -92,12 +92,16 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
     dispatch(setPresenterVideoPosition(presenterVideoPositions[nextIndex]));
   };
 
+  const handleContainerRef = useCallback((node: HTMLDivElement | null) => {
+    setContainerElement(node);
+  }, []);
+
   if (participant?.isScreenShareEnabled) {
     return (
-      <Container onMouseMove={displayPresenterVideo} data-testid="participantScreenShareVideo" ref={containerRef}>
+      <Container onMouseMove={displayPresenterVideo} data-testid="participantScreenShareVideo" ref={handleContainerRef}>
         <RemoteVideo descriptor={screenDescriptor} />
         {showCamera && (
-          <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerRef.current}>
+          <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerElement}>
             <ScreenPresenterVideo
               participantId={participantId}
               isVideoPinned={isVideoPinned}
