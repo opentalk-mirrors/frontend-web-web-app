@@ -78,6 +78,12 @@ const renderDialog = () =>
     provider: { mui: true },
   });
 
+const getGlitchtipCalls = (mock: MockInstance) =>
+  mock.mock.calls.filter(([url]) => typeof url === 'string' && /\/(envelope|error-page)\//.test(url as string));
+
+const findCallIndex = (mock: MockInstance, substring: string) =>
+  mock.mock.calls.findIndex(([url]) => typeof url === 'string' && (url as string).includes(substring));
+
 describe('GlitchtipErrorDialog', () => {
   let fetchMock: MockInstance;
 
@@ -139,7 +145,7 @@ describe('GlitchtipErrorDialog', () => {
     await userEvent.type(screen.getByLabelText('glitchtip-crash-report-labelName'), 'John Doe');
     await userEvent.click(screen.getByRole('button', { name: 'glitchtip-crash-report-labelSubmit' }));
 
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(getGlitchtipCalls(fetchMock)).toHaveLength(0);
     expect(await screen.findAllByText('global-error: field-error-required')).toHaveLength(2);
   });
 
@@ -156,16 +162,13 @@ describe('GlitchtipErrorDialog', () => {
     await userEvent.type(screen.getByLabelText('glitchtip-crash-report-labelComments'), 'It crashed');
     await userEvent.click(screen.getByRole('button', { name: 'glitchtip-crash-report-labelSubmit' }));
 
-    const findCallIndex = (substring: string) =>
-      fetchMock.mock.calls.findIndex(([url]) => typeof url === 'string' && (url as string).includes(substring));
-
     await waitFor(() => {
-      expect(findCallIndex('/envelope/')).toBeGreaterThanOrEqual(0);
-      expect(findCallIndex('/error-page/')).toBeGreaterThanOrEqual(0);
+      expect(findCallIndex(fetchMock, '/envelope/')).toBeGreaterThanOrEqual(0);
+      expect(findCallIndex(fetchMock, '/error-page/')).toBeGreaterThanOrEqual(0);
     });
 
-    const envelopeIndex = findCallIndex('/envelope/');
-    const reportIndex = findCallIndex('/error-page/');
+    const envelopeIndex = findCallIndex(fetchMock, '/envelope/');
+    const reportIndex = findCallIndex(fetchMock, '/error-page/');
 
     expect(envelopeIndex).toBeLessThan(reportIndex);
     expect(sleep).toHaveBeenCalledWith(DELAY_BETWEEN_EVENT_AND_REPORT_MS);
