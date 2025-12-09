@@ -32,7 +32,6 @@ export default defineConfig([
       'app/src/commonComponents/DurationField/DurationField.tsx',
       'app/src/commonComponents/Notistack/fragments/variations/CustomNotification.tsx',
       'app/src/components/Ballot/fragments/ReportSection.tsx',
-      'app/src/components/Ballot/fragments/VoteResultTable.tsx',
       'app/src/components/BreakoutRoomTab/fragments/CreateRoomsForm.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsEditor.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',

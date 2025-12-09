@@ -27,16 +27,19 @@ interface VoteResultTableProps {
 }
 
 function VoteResultTable(props: VoteResultTableProps) {
+  const { voteId, scrollToResults } = props;
   const { t } = useTranslation();
-  const vote = useAppSelector(selectVoteById(props.voteId));
+  const vote = useAppSelector(selectVoteById(voteId));
+
+  useEffect(() => {
+    if (vote?.votes) {
+      scrollToResults();
+    }
+  }, [scrollToResults, vote?.votes]);
 
   if (!vote || !vote.votes) {
     return null;
   }
-
-  useEffect(() => {
-    props.scrollToResults();
-  }, [props.scrollToResults]);
 
   const participants = Object.entries(vote.votingRecord || {});
   const total = vote.votes.yes + vote.votes.no + vote.votes.abstain;
