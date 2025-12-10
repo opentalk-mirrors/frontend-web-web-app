@@ -51,7 +51,6 @@ export default defineConfig([
       'app/src/config/fragments/routesFragments.tsx',
       'app/src/hooks/useMediaQuery.ts',
       'app/src/hooks/useNavigateToHome.tsx',
-      'app/src/hooks/useRemainingDurationOfTimer.ts',
       'packages/redux-oidc/src/authCallbackComponent.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
     ],

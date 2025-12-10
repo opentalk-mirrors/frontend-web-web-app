@@ -21,7 +21,7 @@ const useRemainingDurationOfTimer = () => {
   const serverTimeOffset = useAppSelector(selectServerTimeOffset);
   const endTime = useAppSelector(selectTimerEndsAt);
   const startTime = useAppSelector(selectTimerStartedAt);
-  const endDate = endTime ? new Date(parseISO(endTime)) : undefined;
+  const endDate = useMemo(() => (endTime ? new Date(parseISO(endTime)) : undefined), [endTime]);
   const startDate = useMemo(() => (startTime ? new Date(parseISO(startTime)) : undefined), [startTime]);
 
   const [remainingTime, setRemainingTime] = useState<RemainingTime | undefined>();
@@ -49,15 +49,14 @@ const useRemainingDurationOfTimer = () => {
       end: now,
     });
     setRemainingTime(remainingTime);
-  }, [startDate, endDate]);
+  }, [startDate, endDate, serverTimeOffset, t]);
 
   useEffect(() => {
     if (!startDate) {
       return;
     }
 
-    updateRemainingTime();
-    //After we get the initial time we need to sync up the tickrate to the second in order to avoid mismatches in the different components showing time
+    //After we get the initial time we need to sync up the tick rate to the second in order to avoid mismatches in the different components showing time
     const TICK_INTERVAL = 1000;
     const now = new Date().getTime();
     const start = startDate.getTime();
@@ -65,18 +64,20 @@ const useRemainingDurationOfTimer = () => {
     const tick = Math.ceil(runtime / TICK_INTERVAL);
     const nextTick = start + tick * TICK_INTERVAL;
     let interval: ReturnType<typeof setInterval>;
+    const initialTimeout = setTimeout(() => updateRemainingTime(), 0);
     const timeout = setTimeout(() => {
       updateRemainingTime();
       interval = setInterval(() => updateRemainingTime(), TICK_INTERVAL);
     }, nextTick - now);
 
     return () => {
+      clearTimeout(initialTimeout);
       clearTimeout(timeout);
       if (interval) {
         clearInterval(interval);
       }
     };
-  }, [startDate]);
+  }, [startDate, updateRemainingTime]);
 
   return remainingTime;
 };
