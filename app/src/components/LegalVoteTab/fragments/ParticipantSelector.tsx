@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { get, find, debounce } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SearchIcon } from '../../../assets/icons';
@@ -73,68 +73,81 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
 
   const votingUsers = useAppSelector(selectVotingUsers);
 
-  const participantsWithoutGuestAndSip = votingUsers || [];
+  const participantsWithoutGuestAndSip = useMemo(() => votingUsers || [], [votingUsers]);
   const { setFieldValue, errors } = useFormikContext();
   const error = get(errors, name, '') as string;
   const hasError = Boolean(error);
-  const [allowedParticipants, setAllowedParticipants] = useState<AllowedParticipant[]>([]);
+  const [selectedIds, setSelectedIds] = useState<ParticipantId[]>([]);
+  const [searchValue, setSearchValue] = useState('');
 
-  useEffect(() => {
-    setAllowedParticipants((allowedParticipants) =>
+  const allowedParticipants: AllowedParticipant[] = useMemo(
+    () =>
       participantsWithoutGuestAndSip.map(({ displayName, avatarUrl, id }: AllowedParticipant) => ({
         displayName,
         avatarUrl,
         id,
-        isSelected: isSelectedParticipant(allowedParticipants, id),
-      }))
-    );
-  }, [participantsWithoutGuestAndSip]);
-
-  const [participantsSought, setParticipantsSought] = useState<AllowedParticipant[]>([]);
+        isSelected: selectedIds.includes(id),
+      })),
+    [participantsWithoutGuestAndSip, selectedIds]
+  );
 
   const participantsToShow: AllowedParticipant[] = useMemo(
-    () => (participantsSought.length > 0 ? participantsSought : allowedParticipants),
-    [participantsSought, allowedParticipants]
+    () =>
+      searchValue
+        ? allowedParticipants.filter((participant) => participant.displayName.toLowerCase().includes(searchValue))
+        : allowedParticipants,
+    [allowedParticipants, searchValue]
   );
 
-  const searchHandler = useCallback(
-    debounce((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setParticipantsSought(() =>
-        e.target.value
-          ? allowedParticipants.filter((participant) =>
-              participant.displayName.toLowerCase().includes(e.target.value.toLowerCase())
-            )
-          : allowedParticipants
-      );
-    }, 250),
-    [allowedParticipants]
+  const searchHandler = useMemo(
+    () =>
+      debounce((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setSearchValue(e.target.value.toLowerCase());
+      }, 250),
+    []
   );
+
+  useEffect(() => {
+    return () => {
+      searchHandler.cancel();
+    };
+  }, [searchHandler]);
 
   const checkAllHandler = () => {
-    const someIsFalse = allowedParticipants.some((participant) => participant.isSelected === false);
+    setSelectedIds((prevSelected) => {
+      const shouldSelectAll = participantsWithoutGuestAndSip.some(
+        (participant) => !prevSelected.includes(participant.id)
+      );
+      const nextSelected = shouldSelectAll ? participantsWithoutGuestAndSip.map((participant) => participant.id) : [];
+      const updatedParticipants = participantsWithoutGuestAndSip.map(
+        ({ displayName, avatarUrl, id }: AllowedParticipant) => ({
+          displayName,
+          avatarUrl,
+          id,
+          isSelected: nextSelected.includes(id),
+        })
+      );
 
-    const newStateParticipants = allowedParticipants.map((participant) => ({
-      ...participant,
-      isSelected: someIsFalse,
-    }));
-
-    setAllowedParticipants(newStateParticipants);
-
-    setFieldValue(name, getSelectedParticipants(newStateParticipants));
+      setFieldValue(name, getSelectedParticipants(updatedParticipants));
+      return nextSelected;
+    });
   };
 
-  const checkParticipantHandler = (id: string) => {
-    setAllowedParticipants((prev) => {
-      const newState = prev.map((participant) =>
-        participant.id === id ? { ...participant, isSelected: !participant.isSelected } : participant
+  const checkParticipantHandler = (id: ParticipantId) => {
+    setSelectedIds((prevSelected) => {
+      const isSelected = prevSelected.includes(id);
+      const nextSelected = isSelected ? prevSelected.filter((selectedId) => selectedId !== id) : [...prevSelected, id];
+      const updatedParticipants = participantsWithoutGuestAndSip.map(
+        ({ displayName, avatarUrl, id }: AllowedParticipant) => ({
+          displayName,
+          avatarUrl,
+          id,
+          isSelected: nextSelected.includes(id),
+        })
       );
 
-      setFieldValue(
-        name,
-        newState.filter((participant) => participant.isSelected)
-      );
-
-      return newState;
+      setFieldValue(name, getSelectedParticipants(updatedParticipants));
+      return nextSelected;
     });
   };
 

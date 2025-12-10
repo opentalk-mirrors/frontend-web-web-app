@@ -39,7 +39,6 @@ export default defineConfig([
       'app/src/components/Chat/fragments/ChatAnnouncement.tsx',
       'app/src/components/Chat/fragments/ChatMessage.tsx',
       'app/src/components/LegalVoteTab/fragments/CreateLegalVoteForm.tsx',
-      'app/src/components/LegalVoteTab/fragments/ParticipantSelector.tsx',
       'app/src/components/MeetingHeader/fragments/SharedFolderPopover.tsx',
       'app/src/components/MeetingHeader/fragments/WaitingParticipantsPopover.tsx',
       'app/src/components/MeetingNotesTab/MeetingNotesTab.tsx',
