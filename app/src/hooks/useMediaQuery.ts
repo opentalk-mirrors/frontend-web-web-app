@@ -19,16 +19,22 @@ export function useIsDesktop() {
 
 // This hooke freezes the media query state before entering fullscreen mode.
 // It should be used instead of `useIsMobile` by components that contain elements,
-// which supposed to be fullscreened.
+// which supposed to be fullscreen.
 export function useIsMobileForFullscreenElements() {
   const isCurrentlyMobile = useIsMobile();
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
   const [stableIsMobile, setStableIsMobile] = useState(isCurrentlyMobile);
 
   useEffect(() => {
-    if (!isFullscreenActive) {
-      setStableIsMobile(isCurrentlyMobile);
+    if (isFullscreenActive) {
+      return;
     }
+
+    const frameId = requestAnimationFrame(() => {
+      setStableIsMobile(isCurrentlyMobile);
+    });
+
+    return () => cancelAnimationFrame(frameId);
   }, [isCurrentlyMobile, isFullscreenActive]);
 
   return stableIsMobile;

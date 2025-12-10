@@ -49,7 +49,6 @@ export default defineConfig([
       'app/src/components/VoteAndPollCountdown/VoteAndPollCountdown.tsx',
       'app/src/components/WaitingParticipantsList/fragments/WaitingParticipantsItem.tsx',
       'app/src/config/fragments/routesFragments.tsx',
-      'app/src/hooks/useMediaQuery.ts',
       'app/src/hooks/useNavigateToHome.tsx',
       'packages/redux-oidc/src/authCallbackComponent.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
