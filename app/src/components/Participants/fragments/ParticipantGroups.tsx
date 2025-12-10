@@ -11,8 +11,8 @@ import ParticipantSimpleList from './ParticipantSimpleList';
 
 const ParticipantSimpleListContainer = styled(Box)(({ theme }) => ({
   color: theme.palette.background.highlight.contrastText,
-  overflow: 'hidden',
-  height: '30vh',
+  overflow: 'scroll',
+  maxHeight: '30vh',
 }));
 
 const ParticipantGroups = (props: StackProps) => {
