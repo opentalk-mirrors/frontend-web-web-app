@@ -218,10 +218,12 @@ const CreateRoomsForm = () => {
     }
   };
 
+  const { setFieldValue } = formik;
+
   useEffect(() => {
-    formik.setFieldValue('maxParticipantsPerRoom', maxParticipantsPerRoom);
-    formik.setFieldValue('maxRooms', maxRooms);
-  }, [maxParticipantsPerRoom, maxRooms]);
+    setFieldValue('maxParticipantsPerRoom', maxParticipantsPerRoom);
+    setFieldValue('maxRooms', maxRooms);
+  }, [maxParticipantsPerRoom, maxRooms, setFieldValue]);
 
   return (
     <Form onSubmit={formik.handleSubmit} sx={{ overflow: 'auto' }}>

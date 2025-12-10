@@ -31,7 +31,6 @@ export default defineConfig([
     ignores: [
       'app/src/commonComponents/DurationField/DurationField.tsx',
       'app/src/commonComponents/Notistack/fragments/variations/CustomNotification.tsx',
-      'app/src/components/BreakoutRoomTab/fragments/CreateRoomsForm.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsEditor.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
       'app/src/components/BreakoutRoomTab/fragments/RoomOverview.tsx',
