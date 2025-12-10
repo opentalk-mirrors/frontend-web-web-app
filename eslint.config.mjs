@@ -30,7 +30,6 @@ export default defineConfig([
     },
     ignores: [
       'app/src/commonComponents/DurationField/DurationField.tsx',
-      'app/src/components/BreakoutRoomTab/fragments/ParticipantsEditor.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
       'app/src/components/Chat/Chat.tsx',
       'app/src/components/Chat/fragments/ChatAnnouncement.tsx',
