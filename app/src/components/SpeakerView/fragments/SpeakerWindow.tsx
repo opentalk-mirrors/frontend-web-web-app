@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { ParticipantContext, useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
 import { styled } from '@mui/material';
+import { RoomEvent } from 'livekit-client';
 
 import { useAppSelector } from '../../../hooks';
 import { selectPinnedParticipantId } from '../../../store/slices/uiSlice';
@@ -25,7 +26,15 @@ const Container = styled('div', {
 }));
 
 const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerViewProps) => {
-  const sortedParticipants = useSortedParticipants(useRemoteParticipants());
+  const sortedParticipants = useSortedParticipants(
+    useRemoteParticipants({
+      updateOnlyOn: [
+        RoomEvent.ParticipantConnected,
+        RoomEvent.ParticipantDisconnected,
+        RoomEvent.ActiveSpeakersChanged,
+      ],
+    })
+  ); //TODO: Recheck for ActiveSpeakersChanged
   const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
   const currentSpeakerId = pinnedParticipantId || sortedParticipants[0]?.identity;
 

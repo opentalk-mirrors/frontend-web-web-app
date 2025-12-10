@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { ParticipantContext, useRemoteParticipants } from '@livekit/components-react';
 import { CircularProgress, Grid, styled } from '@mui/material';
-import { Participant } from 'livekit-client';
+import { Participant, RoomEvent } from 'livekit-client';
 import { useMemo } from 'react';
 
 import { useAppSelector } from '../../hooks';
@@ -26,7 +26,16 @@ const GridContainer = styled('div', {
 }));
 
 const GridView = () => {
-  const remoteParticipants = useRemoteParticipants();
+  const remoteParticipants = useRemoteParticipants({
+    updateOnlyOn: [
+      RoomEvent.ParticipantConnected,
+      RoomEvent.ParticipantDisconnected,
+      RoomEvent.TrackPublished,
+      RoomEvent.TrackUnpublished,
+      RoomEvent.TrackMuted,
+      RoomEvent.TrackUnmuted,
+    ],
+  });
   const participants = useGridViewParticipants();
   const direction = useAppSelector(selectPaginationDirectionState);
 
