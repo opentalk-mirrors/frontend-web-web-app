@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
+import { renderWithProviders } from '../../../utils/testUtils';
 import LayoutSelectionMenuItem from './LayoutSelectionMenuItem';
 
 describe('LayoutSelectionMenuItem', () => {
@@ -11,20 +13,11 @@ describe('LayoutSelectionMenuItem', () => {
     expect(screen.getByText('test content')).toBeInTheDocument();
   });
 
-  it('renders check icon when showCheckIcon is true', () => {
-    render(<LayoutSelectionMenuItem content="with check" showCheckIcon />);
-    expect(screen.getByTestId('CheckIcon')).toBeInTheDocument();
-  });
-
-  it('does not render check icon when showCheckIcon is false', () => {
-    render(<LayoutSelectionMenuItem content="without check" />);
-    expect(screen.queryByTestId('CheckIcon')).toBeNull();
-  });
-
-  it('calls onClick handler when clicked', () => {
+  it('calls onClick handler when clicked', async () => {
     const handleClick = vi.fn();
+    const user = userEvent.setup();
     render(<LayoutSelectionMenuItem content="click me" onClick={handleClick} />);
-    fireEvent.click(screen.getByRole('menuitemradio'));
+    await user.click(screen.getByRole('menuitemradio'));
     expect(handleClick).toHaveBeenCalled();
   });
 
@@ -34,13 +27,13 @@ describe('LayoutSelectionMenuItem', () => {
     expect(screen.getByTestId('CustomIcon')).toBeInTheDocument();
   });
 
-  it('sets aria-checked to true if showCheckIcon is true', () => {
-    render(<LayoutSelectionMenuItem content="aria checked" showCheckIcon />);
-    expect(screen.getByRole('menuitemradio')).toHaveAttribute('aria-checked', 'true');
+  it('sets aria-checked to true if it is selected', () => {
+    renderWithProviders(<LayoutSelectionMenuItem content="aria checked" isSelected />, { provider: { mui: true } });
+    expect(screen.getByRole('menuitemradio', { checked: true })).toBeInTheDocument();
   });
 
   it('sets aria-checked to false if showCheckIcon is false', () => {
     render(<LayoutSelectionMenuItem content="aria unchecked" />);
-    expect(screen.getByRole('menuitemradio')).toHaveAttribute('aria-checked', 'false');
+    expect(screen.queryByRole('menuitemradio', { checked: true })).not.toBeInTheDocument();
   });
 });

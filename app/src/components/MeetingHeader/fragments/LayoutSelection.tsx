@@ -34,8 +34,8 @@ import {
   updatedCinemaViewSortOrder,
 } from '../../../store/slices/uiSlice';
 import { selectIsWhiteboardAvailable } from '../../../store/slices/whiteboardSlice';
-import LayoutSelectionMenuItem from '../../SelectParticipants/fragments/LayoutSelectionMenuItem';
 import { Indicator } from './Indicator';
+import LayoutSelectionMenuItem from './LayoutSelectionMenuItem';
 
 const ViewPopperContainer = styled(Stack)(({ theme }) => ({
   position: 'relative',
@@ -167,14 +167,14 @@ const LayoutSelection = () => {
       >
         <LayoutSelectionMenuItem
           role="menuitemradio"
-          showCheckIcon={selectedLayout === LayoutOptions.Grid}
+          isSelected={selectedLayout === LayoutOptions.Grid}
           onClick={() => handleSelectedView({ layout: LayoutOptions.Grid })}
           icon={<GridViewIcon />}
           content={t('conference-view-grid')}
         />
         <LayoutSelectionMenuItem
           role="menuitemradio"
-          showCheckIcon={selectedLayout === LayoutOptions.Speaker}
+          isSelected={selectedLayout === LayoutOptions.Speaker}
           onClick={() => handleSelectedView({ layout: LayoutOptions.Speaker })}
           icon={<SpeakerViewIcon />}
           content={t('conference-view-speaker')}
@@ -182,7 +182,7 @@ const LayoutSelection = () => {
         {isFullscreenSupported && (
           <LayoutSelectionMenuItem
             role="menuitemradio"
-            showCheckIcon={isFullscreenActive}
+            isSelected={isFullscreenActive}
             onClick={openFullscreenView}
             icon={<FullscreenViewIcon />}
             content={t('conference-view-fullscreen')}
@@ -193,7 +193,7 @@ const LayoutSelection = () => {
             onClick={() => handleSelectedView({ layout: LayoutOptions.MeetingNotes })}
             hasIndicator={isCurrentMeetingNotesHighlighted}
             role="menuitemradio"
-            showCheckIcon={selectedLayout === LayoutOptions.MeetingNotes}
+            isSelected={selectedLayout === LayoutOptions.MeetingNotes}
             icon={<MeetingNotesIcon />}
             content={t('moderationbar-button-meeting-notes-tooltip')}
           />
@@ -202,7 +202,7 @@ const LayoutSelection = () => {
           <LayoutSelectionMenuItem
             onClick={() => handleSelectedView({ layout: LayoutOptions.Whiteboard })}
             role="menuitemradio"
-            showCheckIcon={selectedLayout === LayoutOptions.Whiteboard}
+            isSelected={selectedLayout === LayoutOptions.Whiteboard}
             icon={<WhiteboardIcon />}
             content={t('moderationbar-button-whiteboard-tooltip')}
           />
@@ -215,21 +215,21 @@ const LayoutSelection = () => {
         <LayoutSelectionMenuItem
           role="menuitemradio"
           onClick={() => handleSelectedView({ order: CinemaViewSortOrder.FirstJoined })}
-          showCheckIcon={selectedGridViewOrder === CinemaViewSortOrder.FirstJoined}
+          isSelected={selectedGridViewOrder === CinemaViewSortOrder.FirstJoined}
           icon={<TimerIcon />}
           content={t('conference-view-grid-first-joined')}
         />
         <LayoutSelectionMenuItem
           role="menuitemradio"
           onClick={() => handleSelectedView({ order: CinemaViewSortOrder.VideoFirst })}
-          showCheckIcon={selectedGridViewOrder === CinemaViewSortOrder.VideoFirst}
+          isSelected={selectedGridViewOrder === CinemaViewSortOrder.VideoFirst}
           icon={<CameraOnIcon />}
           content={t('conference-view-grid-camera-first')}
         />
         <LayoutSelectionMenuItem
           role="menuitemradio"
           onClick={() => handleSelectedView({ order: CinemaViewSortOrder.ModeratorsFirst })}
-          showCheckIcon={selectedGridViewOrder === CinemaViewSortOrder.ModeratorsFirst}
+          isSelected={selectedGridViewOrder === CinemaViewSortOrder.ModeratorsFirst}
           icon={<ModeratorIcon />}
           content={t('conference-view-grid-moderators-first')}
         />
