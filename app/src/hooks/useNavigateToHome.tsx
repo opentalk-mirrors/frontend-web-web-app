@@ -25,7 +25,7 @@ const useNavigateToHome = () => {
     }
     dispatch(roomReset());
     navigate('/dashboard');
-  }, [roomConnectionState]);
+  }, [dispatch, navigate, roomConnectionState]);
 
   return navigateToHome;
 };
