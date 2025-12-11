@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, styled } from '@mui/material';
 import { debounce } from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { LastSeenTimestampAddedPayload, setLastSeenTimestamp } from '../../api/types/outgoing/chat';
@@ -52,13 +52,17 @@ const Chat = ({ target, scope = ChatScope.Global, autoFocusMessageInput }: ChatP
     }
   }, []);
 
-  // Debounce has to be wrapped in a callback else it won't trigger
-  const debouncedSetLastSeenTimestamp = useCallback(
-    debounce((message: LastSeenTimestampAddedPayload) => {
-      dispatch(setLastSeenTimestamp.action(message));
-    }, 1000),
-    []
+  const debouncedSetLastSeenTimestamp = useMemo(
+    () =>
+      debounce((message: LastSeenTimestampAddedPayload) => {
+        dispatch(setLastSeenTimestamp.action(message));
+      }, 1000),
+    [dispatch]
   );
+
+  useEffect(() => {
+    return () => debouncedSetLastSeenTimestamp.cancel();
+  }, [debouncedSetLastSeenTimestamp]);
 
   // Adds a last seen timestamp when the specific scope is opened or a message in the scope is received while open
   useEffect(() => {
@@ -70,12 +74,17 @@ const Chat = ({ target, scope = ChatScope.Global, autoFocusMessageInput }: ChatP
     }
   }, [dispatch, lastMessageForScope, debouncedSetLastSeenTimestamp, constructLastSeenPayload, isRoomDeleted]);
 
-  const debouncedSetChatSearchValue = useCallback(
-    debounce((value: string) => {
-      dispatch(setChatSearchValue(value));
-    }, 150),
-    []
+  const debouncedSetChatSearchValue = useMemo(
+    () =>
+      debounce((value: string) => {
+        dispatch(setChatSearchValue(value));
+      }, 150),
+    [dispatch]
   );
+
+  useEffect(() => {
+    return () => debouncedSetChatSearchValue.cancel();
+  }, [debouncedSetChatSearchValue]);
 
   const onChangeMiddleware = (nextSearchValue: string) => {
     setSearchValue(nextSearchValue);
