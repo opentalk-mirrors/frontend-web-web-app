@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Divider, Menu, Stack, Typography, styled, useMediaQuery, useTheme, Button } from '@mui/material';
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { MouseEvent, useState, JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,12 +17,12 @@ import { IconButton } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { GridViewOrder } from '../../../store/slices/common';
+import { selectIsModuleEnabled } from '../../../store/slices/configSlice';
 import {
   fullscreenActions,
   selectFullscreenActive,
   selectFullscreenSupported,
 } from '../../../store/slices/fullscreen/slice';
-import { selectIsMeetingNotesFeatureAvailable } from '../../../store/slices/meetingNotesSlice';
 import {
   selectCinemaLayout,
   selectGridViewOrder,
@@ -75,7 +76,7 @@ const LayoutSelection = () => {
     setAnchorElement(currentTarget);
   };
   const isWhiteboardAvailable = useAppSelector(selectIsWhiteboardAvailable);
-  const isMeetingNotesFeatureAvailable = useAppSelector(selectIsMeetingNotesFeatureAvailable);
+  const isMeetingNotesFeatureAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingNotes));
   const isCurrentMeetingNotesHighlighted = useAppSelector(selectIsCurrentMeetingNotesHighlighted);
   const isFullscreenSupported = useAppSelector(selectFullscreenSupported);
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
