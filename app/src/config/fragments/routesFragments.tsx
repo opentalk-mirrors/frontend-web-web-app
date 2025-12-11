@@ -78,7 +78,7 @@ export const RouteUiMode = ({ children }: ProtectedRouteProps) => {
     if (path.includes(UiMode.Room) && uiMode !== UiMode.Room) {
       dispatch(setUiMode(UiMode.Room));
     }
-  }, [location.pathname, uiMode]);
+  }, [dispatch, location.pathname, uiMode]);
 
   if (children !== undefined) {
     return <>{children}</>;
