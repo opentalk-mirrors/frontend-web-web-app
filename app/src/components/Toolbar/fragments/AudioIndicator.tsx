@@ -163,42 +163,45 @@ const AudioIndicator = ({ shape, localAudioTrack }: AudioIndicatorProps) => {
     };
   }, []);
 
-  const render = useCallback(() => {
-    const ctx = canvasRef.current?.getContext('2d') || null;
-    if (ctx === null) {
-      return;
-    }
+  const render = useCallback(
+    function renderFrame() {
+      const ctx = canvasRef.current?.getContext('2d') || null;
+      if (ctx === null) {
+        return;
+      }
 
-    if (signalLevel === undefined) {
-      return;
-    }
-    if (needsClearCanvasHack) {
-      // clearRect is broken so we need a hack:
-      const width = ctx.canvas.width;
-      ctx.canvas.width = width;
-    }
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      if (signalLevel === undefined) {
+        return;
+      }
+      if (needsClearCanvasHack) {
+        // clearRect is broken so we need a hack:
+        const width = ctx.canvas.width;
+        ctx.canvas.width = width;
+      }
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    const { peak, level, clip } = signalLevel;
+      const { peak, level, clip } = signalLevel;
 
-    let barColor: string;
-    if (clip) {
-      barColor = theme.palette.error.main;
-    } else if (level > 0) {
-      barColor = theme.palette.secondary.main;
-    } else {
-      barColor = theme.palette.text.disabled;
-    }
-    const peakColor = theme.palette.background.customPaper.primary;
+      let barColor: string;
+      if (clip) {
+        barColor = theme.palette.error.main;
+      } else if (level > 0) {
+        barColor = theme.palette.secondary.main;
+      } else {
+        barColor = theme.palette.text.disabled;
+      }
+      const peakColor = theme.palette.background.customPaper.primary;
 
-    if (shape === 'circle') {
-      drawCircle({ peak, level, clip }, barColor, peakColor, ctx);
-    } else {
-      drawFillUp({ peak, level, clip }, barColor, peakColor, ctx);
-    }
+      if (shape === 'circle') {
+        drawCircle({ peak, level, clip }, barColor, peakColor, ctx);
+      } else {
+        drawFillUp({ peak, level, clip }, barColor, peakColor, ctx);
+      }
 
-    animationRef.current = requestAnimationFrame(render);
-  }, [theme, shape, needsClearCanvasHack, signalLevel]);
+      animationRef.current = requestAnimationFrame(renderFrame);
+    },
+    [theme, shape, needsClearCanvasHack, signalLevel]
+  );
 
   useEffect(() => {
     render();
