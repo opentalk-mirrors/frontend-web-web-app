@@ -3,37 +3,28 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Typography, styled } from '@mui/material';
 import { isNumber } from 'lodash';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AccessibleTimer from '../../../commonComponents/AccessibleTimer';
 import { useAppSelector, useRemainingDurationOfTimer } from '../../../hooks';
 import { selectTotalDuration } from '../../../store/slices/timerSlice';
 
-const TimerTypography = styled(Typography, {
-  shouldForwardProp: (prop) => prop !== 'isRed',
-})<{ isRed: string; component: 'div' }>(({ theme, isRed }) => ({
+const TimerTypography = styled(Typography)<{ component: 'div' }>({
   fontSize: '5rem',
-  color: isRed ? theme.palette.error.main : theme.palette.common.white,
-
-  [`${theme.breakpoints.down('lg')}`]: {
-    fontSize: '5rem',
-  },
-}));
+});
 
 const CoffeeBreakTimer = () => {
   const { t } = useTranslation();
   const remainingTime = useRemainingDurationOfTimer();
   const totalDuration = useAppSelector(selectTotalDuration);
-  const [isTimerRed, setIsTimerRed] = useState(false);
 
-  useEffect(() => {
+  const isTimeNearEnd = (() => {
     if (!totalDuration || !remainingTime) {
-      return;
+      return false;
     }
 
     if (!isNumber(totalDuration.minutes) || !isNumber(remainingTime.duration.minutes)) {
-      return;
+      return false;
     }
 
     const initialMinuteValue = totalDuration.minutes;
@@ -47,14 +38,17 @@ const CoffeeBreakTimer = () => {
       timerTurnsRedOnMinute = 4;
     }
 
-    if (remainingTime.duration.minutes <= timerTurnsRedOnMinute && !isTimerRed) {
-      setIsTimerRed(true);
-    }
-  }, [totalDuration, remainingTime, isTimerRed]);
+    return remainingTime.duration.minutes <= timerTurnsRedOnMinute;
+  })();
 
   return (
     <>
-      <TimerTypography isRed={isTimerRed ? 'active' : ''} component="div" aria-hidden={true}>
+      <TimerTypography
+        data-testid="timer-typography"
+        color={isTimeNearEnd ? 'error' : undefined}
+        component="div"
+        aria-hidden={true}
+      >
         {remainingTime?.durationString}
       </TimerTypography>
       {remainingTime && (
