@@ -57,8 +57,8 @@ type ParticipantRowProps = {
 const WaitingParticipantItem = ({ participant }: ParticipantRowProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const timestamp = new Date(participant?.joinedAt ?? Date.now());
-  const formattedTime = useDateFormat(timestamp, 'time');
+  const joinedTimestamp = participant.joinedAt ? new Date(participant.joinedAt) : new Date();
+  const formattedTime = useDateFormat(joinedTimestamp, 'time');
   const isMobile = useIsMobile();
 
   const handleAccept = useCallback(() => {
