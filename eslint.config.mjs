@@ -42,7 +42,6 @@ export default defineConfig([
       'app/src/components/MeetingHeader/fragments/WaitingParticipantsPopover.tsx',
       'app/src/components/MeetingNotesTab/MeetingNotesTab.tsx',
       'app/src/components/MeetingSettingsDialog/fragments/CameraSettingsPanel.tsx',
-      'app/src/components/ParticipantWindow/fragments/ParticipantVideo.tsx',
       'app/src/components/Toolbar/fragments/MoreButton.tsx',
       'app/src/components/Toolbar/fragments/MoreMenu.tsx',
       'app/src/components/VoteAndPollCountdown/VoteAndPollCountdown.tsx',
