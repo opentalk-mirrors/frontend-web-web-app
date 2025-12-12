@@ -1,54 +1,155 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent } from '@testing-library/react';
-import React from 'react';
+import { screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import { ParticipantId, MeetingNotesParticipant } from '../../types';
-import { configureStore, renderWithProviders } from '../../utils/testUtils';
+import { deselectWriter, selectWriter, uploadPdf } from '../../api/types/outgoing/meetingNotes';
+import { MeetingNotesAccess, Participant } from '../../types';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import MeetingNotesTab from './MeetingNotesTab';
 
-describe.skip('MeetingNotesTab component tests', () => {
-  const { store } = configureStore();
+vi.mock('../../modules/WebRTC/ConferenceRoom', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getCurrentConferenceRoom: () => ({
+    sendMessage: vi.fn(),
+  }),
+}));
 
-  const initialUserValue: MeetingNotesParticipant[] = [
-    {
-      id: '12345' as ParticipantId,
-      displayName: 'test name',
-      isSelected: true,
-    },
-  ];
-
-  it('MeetingNotesTab component should be rendered without breaking', () => {
-    renderWithProviders(<MeetingNotesTab />, { store });
-    const nextButton = screen.getByRole('button', { name: /meeting-notes-invite-send-button/i });
-    expect(nextButton).toBeInTheDocument();
-    expect(nextButton).toBeDisabled();
+describe('MeetingNotesTab', () => {
+  const toParticipant = (
+    participant: ReturnType<typeof mockedParticipant>,
+    meetingNotesAccess?: MeetingNotesAccess
+  ) => ({
+    id: participant.id,
+    breakoutRoomId: participant.breakoutRoomId,
+    displayName: participant.displayName,
+    avatarUrl: participant.avatarUrl,
+    handIsUp: participant.handIsUp,
+    joinedAt: participant.joinedAt,
+    leftAt: participant.leftAt,
+    handUpdatedAt: participant.handUpdatedAt,
+    groups: participant.groups,
+    participationKind: participant.participationKind,
+    lastActive: participant.lastActive,
+    role: participant.role,
+    waitingState: participant.waitingState,
+    meetingNotesAccess: meetingNotesAccess ?? participant.meetingNotesAccess,
+    isRoomOwner: participant.isRoomOwner,
   });
 
-  it('When there is a selected user send invitation button should be enable', () => {
-    const setState = vi.fn();
-    vi.spyOn(React, 'useState').mockImplementationOnce(() => [initialUserValue, setState]);
+  const userParticipant = toParticipant(mockedParticipant(0));
 
-    renderWithProviders(<MeetingNotesTab />, { store });
+  const createMeetingNotesStore = ({
+    participants = [],
+    meetingNotesUrl = null,
+    userMeetingNotesAccess = MeetingNotesAccess.None,
+  }: {
+    participants?: Participant[];
+    meetingNotesUrl?: string | null;
+    userMeetingNotesAccess?: MeetingNotesAccess;
+  }) =>
+    configureStore({
+      initialState: {
+        meetingNotes: {
+          meetingNotesUrl,
+        },
+        participants: {
+          ids: participants.map((participant) => participant.id),
+          entities: Object.fromEntries(participants.map((participant) => [participant.id, participant])),
+        },
+        user: {
+          uuid: userParticipant.id,
+          displayName: userParticipant.displayName,
+          avatarUrl: userParticipant.avatarUrl,
+          groups: userParticipant.groups,
+          role: userParticipant.role,
+          meetingNotesAccess: userMeetingNotesAccess,
+          isRoomOwner: userParticipant.isRoomOwner,
+          joinedAt: userParticipant.joinedAt,
+          lastActive: userParticipant.lastActive,
+        },
+      },
+    });
 
-    const sendInvitationButton = screen.getByLabelText(/meeting-notes-invite-send-button/i);
-    expect(sendInvitationButton).toBeInTheDocument();
-    expect(sendInvitationButton).toBeEnabled();
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it('Click on send invitation button should dispatch right action', () => {
-    const sendInvitations = vi.fn();
-    // const realUseState = React.useState;
-    // vi.spyOn(React, 'useState').mockImplementationOnce(() => realUseState(initialUserValue));
+  it('disables sending invitations when no participants are available', () => {
+    const { store } = configureStore();
+    renderWithProviders(<MeetingNotesTab />, { store, provider: { mui: true } });
 
-    renderWithProviders(<MeetingNotesTab />, { store });
+    const sendButton = screen.getByRole('button', { name: /meeting-notes-invite-send-button/i });
+    expect(sendButton).toBeDisabled();
+  });
 
-    const sendInvitationButton = screen.getByLabelText(/meeting-notes-invite-send-button/i);
-    sendInvitationButton.onclick = sendInvitations;
-    expect(sendInvitationButton).toBeInTheDocument();
-    expect(sendInvitationButton).toBeEnabled();
-    fireEvent.click(sendInvitationButton);
-    expect(sendInvitations).toHaveBeenCalledTimes(1);
+  it('shows upload action and edit labels when meeting notes already exist', async () => {
+    const user = userEvent.setup();
+    const { store, dispatchSpy } = createMeetingNotesStore({ meetingNotesUrl: '/notes' });
+    renderWithProviders(<MeetingNotesTab />, { store, provider: { mui: true } });
+
+    dispatchSpy.mockClear();
+
+    const uploadButton = await screen.findByRole('button', { name: /meeting-notes-upload-pdf-button/i });
+    expect(uploadButton).toBeInTheDocument();
+
+    await user.click(uploadButton);
+
+    expect(dispatchSpy).toHaveBeenCalledWith(uploadPdf.action());
+    expect(screen.getByRole('button', { name: /meeting-notes-edit-invite-button/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /meeting-notes-update-invite-send-button/i })).toBeInTheDocument();
+  });
+
+  it('updates selection and dispatches invite actions based on checked users', async () => {
+    const participants: Participant[] = [
+      toParticipant(mockedParticipant(1), MeetingNotesAccess.None),
+      toParticipant(mockedParticipant(2), MeetingNotesAccess.Write),
+    ];
+    const { store, dispatchSpy } = createMeetingNotesStore({ participants });
+    renderWithProviders(<MeetingNotesTab />, { store, provider: { mui: true } });
+
+    dispatchSpy.mockClear();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole('button', { name: /meeting-notes-invite-button/i }));
+
+    const popover = await screen.findByRole('dialog');
+    const firstParticipantCheckbox = within(popover).getByRole('checkbox', { name: participants[0].displayName });
+    const writerCheckbox = within(popover).getByRole('checkbox', { name: participants[1].displayName });
+
+    await user.click(firstParticipantCheckbox);
+    await user.click(writerCheckbox);
+
+    await user.click(within(popover).getByRole('button', { name: 'poll-participant-list-button-select' }));
+
+    await user.click(screen.getByRole('button', { name: /meeting-notes-invite-send-button/i }));
+
+    expect(dispatchSpy).toHaveBeenCalledWith(selectWriter.action({ participantIds: [participants[0].id] }));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      deselectWriter.action({ participantIds: [participants[1].id, userParticipant.id] })
+    );
+  });
+
+  it('filters the selectable participants by search input', async () => {
+    const participants: Participant[] = [
+      toParticipant(mockedParticipant(3), MeetingNotesAccess.None),
+      toParticipant(mockedParticipant(4), MeetingNotesAccess.None),
+    ];
+    const { store } = createMeetingNotesStore({ participants });
+    renderWithProviders(<MeetingNotesTab />, { store, provider: { mui: true } });
+
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole('button', { name: /meeting-notes-invite-button/i }));
+
+    const popover = await screen.findByRole('dialog');
+    const searchInput = within(popover).getByRole('textbox');
+
+    await user.type(searchInput, participants[0].displayName);
+
+    expect(within(popover).getAllByRole('checkbox')).toHaveLength(1);
+    expect(within(popover).getByRole('checkbox', { name: participants[0].displayName })).toBeInTheDocument();
+    expect(within(popover).queryByRole('checkbox', { name: participants[1].displayName })).not.toBeInTheDocument();
   });
 });
