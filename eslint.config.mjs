@@ -33,7 +33,6 @@ export default defineConfig([
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
       'app/src/components/Chat/Chat.tsx',
       'app/src/components/Chat/fragments/ChatAnnouncement.tsx',
-      'app/src/components/Chat/fragments/ChatMessage.tsx',
       'app/src/components/MeetingHeader/fragments/SharedFolderPopover.tsx',
       'app/src/components/MeetingHeader/fragments/WaitingParticipantsPopover.tsx',
       'app/src/components/Toolbar/fragments/MoreButton.tsx',
