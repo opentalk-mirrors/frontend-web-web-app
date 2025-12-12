@@ -33,7 +33,6 @@ export default defineConfig([
       'app/src/commonComponents/Notistack/fragments/variations/CustomNotification.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsEditor.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
-      'app/src/components/BreakoutRoomTab/fragments/RoomOverview.tsx',
       'app/src/components/Chat/Chat.tsx',
       'app/src/components/Chat/fragments/ChatAnnouncement.tsx',
       'app/src/components/Chat/fragments/ChatMessage.tsx',

@@ -66,22 +66,40 @@ const RoomOverview = () => {
   const inviteCode = useInviteCode();
 
   useEffect(() => {
-    if (expires !== undefined && expires !== null) {
-      const expiredDate = new Date(expires);
-      setTimeLeft(calculateTimeLeft(expiredDate));
-      const timer = setInterval(() => {
-        const remainingTime = calculateTimeLeft(expiredDate);
-        if (remainingTime.minutes > 0) {
-          setTimeLeft(remainingTime);
-        } else if (remainingTime.seconds > 0) {
-          setTimeLeft(remainingTime);
-        } else {
-          setTimeLeft({ minutes: 0, seconds: 0 });
-          clearInterval(timer);
-        }
-      }, 1000);
-      return () => clearInterval(timer);
+    if (expires === undefined || expires === null) {
+      const resetTimeout = setTimeout(() => setTimeLeft(null), 0);
+      return () => clearTimeout(resetTimeout);
     }
+
+    const expiredDate = new Date(expires);
+    const updateTimeLeft = () => {
+      const remainingTime = calculateTimeLeft(expiredDate);
+      if (remainingTime.minutes > 0 || remainingTime.seconds > 0) {
+        setTimeLeft(remainingTime);
+        return false;
+      }
+      setTimeLeft({ minutes: 0, seconds: 0 });
+      return true;
+    };
+
+    const timer = setInterval(() => {
+      const reachedEnd = updateTimeLeft();
+      if (reachedEnd) {
+        clearInterval(timer);
+      }
+    }, 1000);
+
+    const initialTimeout = setTimeout(() => {
+      const reachedEnd = updateTimeLeft();
+      if (reachedEnd) {
+        clearInterval(timer);
+      }
+    }, 0);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(initialTimeout);
+    };
   }, [expires]);
 
   const stopBreakoutRoom = () => {
