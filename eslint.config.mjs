@@ -36,7 +36,6 @@ export default defineConfig([
       'app/src/components/Chat/fragments/ChatMessage.tsx',
       'app/src/components/MeetingHeader/fragments/SharedFolderPopover.tsx',
       'app/src/components/MeetingHeader/fragments/WaitingParticipantsPopover.tsx',
-      'app/src/components/MeetingNotesTab/MeetingNotesTab.tsx',
       'app/src/components/Toolbar/fragments/MoreButton.tsx',
       'app/src/components/Toolbar/fragments/MoreMenu.tsx',
       'packages/redux-oidc/src/authProvider.tsx',

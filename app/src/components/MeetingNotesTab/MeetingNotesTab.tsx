@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { cloneDeep, isEmpty, some, differenceBy, uniqueId } from 'lodash';
 import { unionBy, intersectionBy } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { deselectWriter, selectWriter, uploadPdf } from '../../api/types/outgoing/meetingNotes';
@@ -67,12 +67,7 @@ const MeetingNotesTab = () => {
   const [selectedParticipants, setSelectedParticipants] = useState<MeetingNotesParticipant[]>([]);
   const allMeetingNotesParticipants = useAppSelector(selectAllMeetingNotesParticipants);
   const [searchMask, setSearchMask] = useState('');
-  const salt = Date.now();
-
-  useEffect(() => {
-    setParticipants((prevParticipants) => mergeParticipants(allMeetingNotesParticipants, prevParticipants));
-    setSelectedParticipants((prevParticipants) => mergeParticipants(allMeetingNotesParticipants, prevParticipants));
-  }, [allMeetingNotesParticipants.length]);
+  const salt = React.useId();
 
   // List of selected participants with permission writes is stored locally, untill moderator pressed `Show meeting notes to all`
   // button. Only then we send all selected participants to the controller.
@@ -96,42 +91,45 @@ const MeetingNotesTab = () => {
     return mergedParticipants;
   };
 
+  const mergedParticipants = useMemo(
+    () => mergeParticipants(allMeetingNotesParticipants, participants),
+    [allMeetingNotesParticipants, participants]
+  );
+  const mergedSelectedParticipants = useMemo(
+    () => mergeParticipants(allMeetingNotesParticipants, selectedParticipants),
+    [allMeetingNotesParticipants, selectedParticipants]
+  );
+
   const handleSearch = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setSearchMask(event.target.value);
   }, []);
 
   const getFilteredParticipants = useCallback(() => {
     if (!isEmpty(searchMask)) {
-      return selectedParticipants.filter((participant) =>
+      return mergedSelectedParticipants.filter((participant) =>
         participant.displayName.toString().toLocaleLowerCase().includes(searchMask.toString().toLocaleLowerCase())
       );
     }
-    return selectedParticipants;
-  }, [searchMask, selectedParticipants]);
+    return mergedSelectedParticipants;
+  }, [searchMask, mergedSelectedParticipants]);
 
   const checkAllHandler = useCallback(() => {
-    let allChecked = false;
-    selectedParticipants.forEach((participant) => {
-      allChecked = participant.isSelected;
-    });
-    const checkedArray = selectedParticipants.map((participant) => {
-      participant.isSelected = !allChecked;
-      return participant;
-    });
+    const allChecked = mergedSelectedParticipants.every((participant) => participant.isSelected);
+    const checkedArray = mergedSelectedParticipants.map((participant) => ({
+      ...participant,
+      isSelected: !allChecked,
+    }));
     setSelectedParticipants(checkedArray);
-  }, [selectedParticipants]);
+  }, [mergedSelectedParticipants]);
 
   const checkHandler = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newParticipantsArray = selectedParticipants.map((participant) => {
-        if (participant.id === event.target.id) {
-          participant.isSelected = event.target.checked;
-        }
-        return participant;
-      });
+      const newParticipantsArray = mergedSelectedParticipants.map((participant) =>
+        participant.id === event.target.id ? { ...participant, isSelected: event.target.checked } : participant
+      );
       setSelectedParticipants(newParticipantsArray);
     },
-    [selectedParticipants]
+    [mergedSelectedParticipants]
   );
 
   const sendInvitations = useCallback(() => {
@@ -139,8 +137,8 @@ const MeetingNotesTab = () => {
       return `${participant.id}${participant.isSelected}`;
     };
     const differentParticipants = meetingNotesUrl
-      ? differenceBy(participants, allMeetingNotesParticipants, participantComparator)
-      : participants;
+      ? differenceBy(mergedParticipants, allMeetingNotesParticipants, participantComparator)
+      : mergedParticipants;
 
     if (differentParticipants.length > 0) {
       const selectedParticipantIds = differentParticipants
@@ -164,24 +162,24 @@ const MeetingNotesTab = () => {
         );
       }
     }
-  }, [participants, dispatch]);
+  }, [mergedParticipants, allMeetingNotesParticipants, dispatch, meetingNotesUrl]);
 
   const closeParticipantsListPanel = useCallback(() => {
     setAnchorEl(null);
   }, []);
 
   const assignButtonHandler = useCallback(() => {
-    setParticipants(selectedParticipants);
+    setParticipants(mergedSelectedParticipants);
     closeParticipantsListPanel();
-  }, [selectedParticipants, closeParticipantsListPanel]);
+  }, [mergedSelectedParticipants, closeParticipantsListPanel]);
 
   const openParticipantsListPanel = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
       setSearchMask('');
-      setSelectedParticipants(cloneDeep(participants));
+      setSelectedParticipants(cloneDeep(mergedParticipants));
       setAnchorEl(event.currentTarget);
     },
-    [participants]
+    [mergedParticipants]
   );
 
   const uploadPdfAction = useCallback(() => {
@@ -190,10 +188,10 @@ const MeetingNotesTab = () => {
 
   const renderSelectedParticipantListItems = () => (
     <SelectedParticipantsList>
-      {participants
+      {mergedParticipants
         .filter((participant) => participant.isSelected)
-        .map((participant, index) => (
-          <ListItem key={index} sx={{ px: 0 }}>
+        .map((participant) => (
+          <ListItem key={participant.id} sx={{ px: 0 }}>
             <ListItemAvatar>
               <ParticipantAvatar src={participant.avatarUrl}>{participant.displayName}</ParticipantAvatar>
             </ListItemAvatar>
@@ -216,7 +214,7 @@ const MeetingNotesTab = () => {
   );
 
   const open = Boolean(anchorEl);
-  const hasSelectedParticipants = some(participants, 'isSelected');
+  const hasSelectedParticipants = some(mergedParticipants, 'isSelected');
 
   return (
     <Stack
