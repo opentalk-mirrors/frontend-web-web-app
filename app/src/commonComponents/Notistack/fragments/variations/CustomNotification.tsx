@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
 import { closeSnackbar, CustomContentProps, SnackbarContent, SnackbarKey } from 'notistack';
-import { forwardRef, isValidElement, useCallback } from 'react';
+import { forwardRef, isValidElement, useCallback, useMemo } from 'react';
 
 import { CloseButton } from '../CloseButton';
 
@@ -60,11 +60,11 @@ export const CustomNotification = forwardRef<HTMLDivElement, CustomNotificationP
 
   const handleDismiss = useCallback(() => {
     closeSnackbar(props.id);
-  }, [props.id, closeSnackbar]);
+  }, [props.id]);
 
   const Icon = props.iconVariant[props.variant];
 
-  const ActionButtons = () => {
+  const actionContent = useMemo(() => {
     if (isValidElement(action)) {
       return action;
     }
@@ -74,7 +74,7 @@ export const CustomNotification = forwardRef<HTMLDivElement, CustomNotificationP
     }
 
     return <StyledCloseButton onClick={handleDismiss} />;
-  };
+  }, [action, handleDismiss, props.id]);
 
   return (
     <StyledSnackbarContent
@@ -86,7 +86,7 @@ export const CustomNotification = forwardRef<HTMLDivElement, CustomNotificationP
     >
       {Icon}
       <span>{props.message}</span>
-      <ActionButtons />
+      {actionContent}
     </StyledSnackbarContent>
   );
 });
