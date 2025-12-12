@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 
 import { DurationIcon } from '../../assets/icons';
 
+const DEFAULT_COUNTER = '00:00' as const;
+
 interface VoteCountdownProps extends BoxProps {
   duration: number;
   startTime: string;
@@ -31,7 +33,6 @@ export default function VoteAndPollCountdown({ active, duration, startTime, ...b
 
   useEffect(() => {
     if (!active) {
-      setCounter('00:00');
       return;
     }
 
@@ -48,7 +49,7 @@ export default function VoteAndPollCountdown({ active, duration, startTime, ...b
 
       if (delta < 0) {
         // stop the timer.
-        setCounter('00:00');
+        setCounter(DEFAULT_COUNTER);
         clearInterval(interval);
         return;
       }
@@ -63,6 +64,8 @@ export default function VoteAndPollCountdown({ active, duration, startTime, ...b
       clearInterval(interval);
     };
   }, [duration, startTime, active]);
+
+  const displayValue = active ? counter : DEFAULT_COUNTER;
 
   return (
     <Box
@@ -82,7 +85,7 @@ export default function VoteAndPollCountdown({ active, duration, startTime, ...b
           fontVariantNumeric: 'tabular-nums',
         }}
       >
-        {counter}
+        {displayValue}
       </Typography>
     </Box>
   );
