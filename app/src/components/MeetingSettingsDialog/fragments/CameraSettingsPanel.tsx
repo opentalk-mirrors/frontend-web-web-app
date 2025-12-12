@@ -143,7 +143,7 @@ const CameraSettingsPanel = () => {
 
   useEffect(() => {
     loadLocalDevices();
-  }, []);
+  }, [loadLocalDevices]);
 
   const showDeviceOptions = filteredDevices.length > 0 || permissionDenied;
 
