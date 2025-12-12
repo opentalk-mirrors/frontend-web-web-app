@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, ButtonProps, Chip as MuiChip, Popover, Stack, styled, Typography } from '@mui/material';
 import { isNumber } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ClockIcon } from '../../assets/icons';
@@ -86,12 +86,6 @@ export const DurationField = ({
 
   const showCustomDurationField = selectedChip === 'custom';
 
-  useEffect(() => {
-    if (showCustomDurationField && !customDurationFieldValue) {
-      setCustomDurationFieldValue(min);
-    }
-  }, [showCustomDurationField]);
-
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
@@ -104,6 +98,9 @@ export const DurationField = ({
 
   const handleChipSelect = (duration: DurationValueOptions) => {
     setSelectedChip(duration);
+    if (duration === 'custom' && !customDurationFieldValue) {
+      setCustomDurationFieldValue(min);
+    }
     setErrorMessage('');
   };
 
