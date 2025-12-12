@@ -11,8 +11,8 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { concat, intersectionBy, without } from 'lodash';
-import React, { useEffect } from 'react';
+import { concat, intersectionBy } from 'lodash';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Participant } from '../../../types';
@@ -68,21 +68,23 @@ const ParticipantsEditor = ({
   title,
 }: IParticipantsEditorProps) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const [participantsToAssign, setParticipantsToAssign] = React.useState<Participant[]>(assignedParticipants);
+  const [selectedParticipants, setSelectedParticipants] = React.useState<Participant[]>(assignedParticipants);
   const { t } = useTranslation();
   const theme = useTheme();
 
-  useEffect(() => {
-    const availableParticipants = [...assignedParticipants, ...unAssignedParticipants];
+  const availableParticipants = useMemo(
+    () => [...assignedParticipants, ...unAssignedParticipants],
+    [assignedParticipants, unAssignedParticipants]
+  );
 
-    setParticipantsToAssign((selectedParticipants) => {
-      // Filter out participants that were selected but are no longer available.
-      return intersectionBy(availableParticipants, selectedParticipants, 'id');
-    });
-  }, [assignedParticipants, unAssignedParticipants]);
+  const participantsToAssign = useMemo(
+    () => intersectionBy(availableParticipants, selectedParticipants, 'id'),
+    [availableParticipants, selectedParticipants]
+  );
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
+    setSelectedParticipants(intersectionBy(availableParticipants, assignedParticipants, 'id'));
     setAnchorEl(event.currentTarget);
   };
 
@@ -95,9 +97,11 @@ const ParticipantsEditor = ({
     event.stopPropagation();
     const checked = event.target.checked;
     if (checked) {
-      setParticipantsToAssign(concat(participantsToAssign, participant));
+      setSelectedParticipants((prevSelected) => {
+        return prevSelected.some((p) => p.id === participant.id) ? prevSelected : concat(prevSelected, participant);
+      });
     } else {
-      setParticipantsToAssign(without(participantsToAssign, participant));
+      setSelectedParticipants((prevSelected) => prevSelected.filter((p) => p.id !== participant.id));
     }
   };
 
