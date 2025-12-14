@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import i18next from 'i18next';
+import React from 'react';
 import { RouteObject, Outlet } from 'react-router-dom';
 
 import Error from '../components/Error';
@@ -25,15 +26,10 @@ import SupportPage from '../pages/SupportPage';
 import DashboardSettingsTemplate from '../templates/DashboardSettingsTemplate';
 import DashboardTemplate from '../templates/DashboardTemplate';
 import LobbyTemplate from '../templates/LobbyTemplate';
-import {
-  ProtectedRoute,
-  Redirect,
-  InvitePage,
-  ExtendedTabPage,
-  RouteNotFound,
-  AuthRedirect,
-  RouteUiMode,
-} from './fragments/routesFragments';
+import { ProtectedRoute, Redirect, RouteNotFound, AuthRedirect, RouteUiMode } from './fragments/routesFragments';
+
+const InvitePage = React.lazy(() => import('../pages/InvitePage'));
+const ExtendedTabPage = React.lazy(() => import('../pages/ExtendedTabPage'));
 
 type RouteValue = {
   path: string;
