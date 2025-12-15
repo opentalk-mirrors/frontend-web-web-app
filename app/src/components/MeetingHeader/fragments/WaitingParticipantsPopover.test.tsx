@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import WaitingParticipantsPopover from './WaitingParticipantsPopover';
@@ -42,7 +43,8 @@ describe('WaitingParticipantsPopover rendering logic', () => {
     expect(screen.getByTestId('waiting-list-button')).toBeInTheDocument();
   });
 
-  it('should render WaitingParticipantsList when expanded', () => {
+  it('should render WaitingParticipantsList when expanded', async () => {
+    const user = userEvent.setup();
     const { store } = configureStore({
       initialState: {
         participants: {
@@ -57,11 +59,12 @@ describe('WaitingParticipantsPopover rendering logic', () => {
     });
     renderWithProviders(<WaitingParticipantsPopover />, { store, provider: { mui: true } });
     const button = screen.getByTestId('waiting-list-button');
-    fireEvent.click(button);
+    await user.click(button);
     expect(screen.getByText('WaitingParticipantsList')).toBeInTheDocument();
   });
 
-  it('should autoclose when participants count reaches 0', () => {
+  it('should autoclose when participants count reaches 0', async () => {
+    const user = userEvent.setup();
     const { store } = configureStore({
       initialState: {
         participants: {
@@ -76,7 +79,7 @@ describe('WaitingParticipantsPopover rendering logic', () => {
     });
     const { unmount } = renderWithProviders(<WaitingParticipantsPopover />, { store, provider: { mui: true } });
     const button = screen.getByTestId('waiting-list-button');
-    fireEvent.click(button);
+    await user.click(button);
     unmount();
     const { store: secondStore } = configureStore({
       initialState: {

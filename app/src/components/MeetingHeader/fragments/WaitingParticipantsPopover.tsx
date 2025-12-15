@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { styled, Badge, Popover } from '@mui/material';
 import { keyframes } from '@mui/system';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { SpeakerQueueIcon } from '../../../assets/icons';
 import { IconButton } from '../../../commonComponents';
@@ -35,18 +35,11 @@ const WaitingParticipantsPopoverRoot = styled(Popover)(({ theme }) => ({
 }));
 
 const WaitingParticipantsPopover = () => {
-  const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(null);
-
   const participantsInWaitingRoomCount = useAppSelector(selectParticipantsWaitingCount);
   const isWaitingRoomEmpty = participantsInWaitingRoomCount === 0;
+  const [anchorElementState, setAnchorElementState] = useState<HTMLElement | null>(null);
+  const anchorElement = isWaitingRoomEmpty || !anchorElementState?.isConnected ? null : anchorElementState;
   const isExpanded = Boolean(anchorElement);
-
-  //onClose is not called when participants reach 0 so we explicitly reset the anchor
-  useEffect(() => {
-    if (isWaitingRoomEmpty) {
-      setAnchorElement(null);
-    }
-  }, [participantsInWaitingRoomCount, isWaitingRoomEmpty]);
 
   if (isWaitingRoomEmpty) {
     return null;
@@ -66,7 +59,7 @@ const WaitingParticipantsPopover = () => {
         aria-controls="waiting-list-popover"
         aria-haspopup="true"
         aria-expanded={isExpanded}
-        onClick={(event) => setAnchorElement(event.currentTarget)}
+        onClick={(event) => setAnchorElementState(event.currentTarget)}
       >
         <SpeakerQueueIcon />
       </WaitingListButton>
@@ -81,7 +74,7 @@ const WaitingParticipantsPopover = () => {
           vertical: 'top',
           horizontal: 'center',
         }}
-        onClose={() => setAnchorElement(null)}
+        onClose={() => setAnchorElementState(null)}
         disablePortal
       >
         <WaitingParticipantsList id="waiting-list-popover" />
