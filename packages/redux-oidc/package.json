@@ -11,7 +11,7 @@
     "build": "vite build"
   },
   "devDependencies": {
-    "@reduxjs/toolkit": "^2.10.1",
+    "@reduxjs/toolkit": "^2.11.2",
     "react-redux": "^9.2.0",
     "react-router-dom": "7.9.5",
     "typescript": "^5.9.3",
@@ -19,7 +19,7 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "peerDependencies": {
-    "@reduxjs/toolkit": "^2.10.1",
+    "@reduxjs/toolkit": "^2.11.2",
     "react": "^19.2.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "7.9.5"
