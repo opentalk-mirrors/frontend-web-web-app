@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import { SharedFolderPopover } from './SharedFolderPopover';
@@ -43,7 +44,8 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
     expect(screen.queryByRole('menuitem', { name: 'shared-folder-open-label' })).not.toBeInTheDocument();
   });
 
-  it('should not render shared password MenuItem if its not provided.', () => {
+  it('should not render shared password MenuItem if its not provided.', async () => {
+    const user = userEvent.setup();
     const { store } = configureStore({
       initialState: {
         sharedFolder: {
@@ -57,11 +59,14 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
     });
     renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
-    fireEvent.click(button);
+
+    await user.click(button);
+
     expect(screen.queryByText('shared-folder-password-label')).not.toBeInTheDocument();
   });
 
-  it('should render shared folder MenuItem if url is provided.', () => {
+  it('should render shared folder MenuItem if url is provided.', async () => {
+    const user = userEvent.setup();
     const { store } = configureStore({
       initialState: {
         sharedFolder: {
@@ -78,11 +83,14 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
     });
     renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
-    fireEvent.click(button);
+
+    await user.click(button);
+
     expect(screen.getByText('shared-folder-open-label')).toBeInTheDocument();
   });
 
-  it('should render shared password MenuItem if its provided.', () => {
+  it('should render shared password MenuItem if its provided.', async () => {
+    const user = userEvent.setup();
     const { store } = configureStore({
       initialState: {
         sharedFolder: {
@@ -100,38 +108,28 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
     renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
 
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
-    fireEvent.click(button);
+
+    await user.click(button);
+
     expect(screen.getByRole('menuitem', { name: 'shared-folder-password-label', hidden: true })).toBeInTheDocument();
   });
 });
 
 describe('SharedFolderMenuItem callback logic', () => {
   let originalWindowOpen: typeof window.open;
-  let originalClipboard: typeof navigator.clipboard;
 
   beforeEach(() => {
     originalWindowOpen = window.open;
     window.open = vi.fn();
-    originalClipboard = navigator.clipboard;
-    Object.defineProperty(navigator, 'clipboard', {
-      value: {
-        writeText: vi.fn(),
-      },
-      writable: true, // Allow it to be restored
-      configurable: true,
-    });
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     window.open = originalWindowOpen;
-    Object.defineProperty(navigator, 'clipboard', {
-      value: originalClipboard,
-      writable: true,
-      configurable: true,
-    });
   });
 
-  it('should call sharedFolderOpened action when clicked on the shared folder menu item.', () => {
+  it('should call sharedFolderOpened action when clicked on the shared folder menu item.', async () => {
+    const user = userEvent.setup();
     const { store } = configureStore({
       initialState: {
         sharedFolder: {
@@ -151,13 +149,19 @@ describe('SharedFolderMenuItem callback logic', () => {
     });
     renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
-    fireEvent.click(button);
+
+    await user.click(button);
+
     const menuitem = screen.getByRole('menuitem', { name: 'shared-folder-open-label', hidden: true });
-    fireEvent.click(menuitem);
+
+    await user.click(menuitem);
+
     expect(window.open).toHaveBeenCalledExactlyOnceWith('https://example.com', 'sharedFolder');
   });
 
-  it('should call clipboard.writeText when clicked on the shared password menu item.', () => {
+  it('should call clipboard.writeText when clicked on the shared password menu item.', async () => {
+    const user = userEvent.setup();
+    const clipboardWriteTextSpy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
     const { store } = configureStore({
       initialState: {
         sharedFolder: {
@@ -174,10 +178,14 @@ describe('SharedFolderMenuItem callback logic', () => {
     });
     renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
-    fireEvent.click(button);
+
+    await user.click(button);
+
     const menuitem = screen.getByRole('menuitem', { name: 'shared-folder-password-label', hidden: true });
-    fireEvent.click(menuitem);
-    expect(navigator.clipboard.writeText).toHaveBeenCalledExactlyOnceWith('password');
+
+    await user.click(menuitem);
+
+    expect(clipboardWriteTextSpy).toHaveBeenCalledExactlyOnceWith('password');
     expect(window.open).not.toHaveBeenCalled();
   });
 });

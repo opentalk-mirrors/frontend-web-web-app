@@ -36,7 +36,7 @@ export const SharedFolderPopover = () => {
     } finally {
       setAnchorElement(null);
     }
-  }, [sharedFolderPassword]);
+  }, [sharedFolderPassword, t]);
 
   return (
     <>
