@@ -31,7 +31,6 @@ export default defineConfig([
     ignores: [
       'app/src/commonComponents/DurationField/DurationField.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
-      'app/src/components/Chat/fragments/ChatAnnouncement.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
     ],
   },
