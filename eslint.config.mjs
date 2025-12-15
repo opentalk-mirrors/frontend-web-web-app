@@ -22,16 +22,7 @@ export default defineConfig([
     'app/public/config.js',
     'packages/rtk-rest-api/example/**',
   ]),
-  {
-    name: 'react-hooks (with ignores)',
-    plugins: { 'react-hooks': reactHooks },
-    rules: {
-      ...reactHooks.configs.flat.recommended.rules,
-    },
-    ignores: [
-      'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
-    ],
-  },
+  reactHooks.configs.flat.recommended,
   eslint.configs.recommended,
   tseslint.configs.recommended,
   react.configs.flat.recommended,
