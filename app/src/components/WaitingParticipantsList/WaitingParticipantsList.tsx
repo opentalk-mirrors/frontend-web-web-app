@@ -53,7 +53,7 @@ const WaitingParticipantsList = ({ id }: WaitingParticipantsListProps) => {
   const handleApproveAll = () => {
     if (participantsNotApproved.length > 0) {
       participantsNotApproved.forEach((participant) => {
-        dispatch(acceptParticipantFromWaitingRoomToRoom.action({ target: participant.participantId }));
+        dispatch(acceptParticipantFromWaitingRoomToRoom.action({ target: participant.id }));
       });
       dispatch(approvedAll());
     }

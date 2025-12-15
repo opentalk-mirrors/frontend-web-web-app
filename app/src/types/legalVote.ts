@@ -64,7 +64,7 @@ export interface LegalVoteParameters extends LegalVoteFormValues {
   /**
    * List of participants that are allowed to cast a vote
    */
-  allowedParticipants: Array<string>;
+  allowedParticipants: Array<ParticipantId>;
   /**
    * Timezone used in the protocol, defaults to UTC, IANA format, e.g."CET" or "Europe/Vienna".
    */

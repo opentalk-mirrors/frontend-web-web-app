@@ -11,14 +11,25 @@ import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { ModerationTabKey } from '../../config/constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { ChatScope, LegalVoteId, ParticipantId, PollId, SortOption, TargetId, TimerStyle } from '../../types';
+import {
+  ChatScope,
+  ConnectionId,
+  ConnectionIdentifier,
+  LegalVoteId,
+  ParticipantId,
+  PollId,
+  SortOption,
+  TargetId,
+  TimerStyle,
+} from '../../types';
+import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import { hangUp, joinSuccess } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted } from './automodSlice';
 import { CinemaViewSortOrder } from './common';
 import { started as legalVoteStarted } from './legalVoteSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
-import { breakoutLeft, leave } from './participantsSlice';
+import { leave } from './participantsSlice';
 import { started as PollStarted } from './pollSlice';
 import { connectionClosed } from './roomSlice';
 import { timerStarted, timerStopped } from './timerSlice';
@@ -54,8 +65,8 @@ export type UIState = {
   lastCinemaLayout: LayoutOptions;
   paginationPage: number;
   paginationDirection: PaginationDirection;
-  pinnedParticipantId?: ParticipantId;
-  presenterOverlayPinnedParticipantId?: ParticipantId;
+  pinnedConnectionIdentifier?: ConnectionIdentifier;
+  presenterOverlayPinnedParticipantId?: ConnectionIdentifier;
   localVideoMirroringEnabled: boolean;
   showVoteOrPollResult: boolean;
   voteOrPollIdToShow?: LegalVoteId | PollId;
@@ -92,7 +103,7 @@ const initialState: UIState = {
   lastCinemaLayout: LayoutOptions.Grid,
   paginationPage: 1,
   paginationDirection: 'right',
-  pinnedParticipantId: undefined,
+  pinnedConnectionIdentifier: undefined,
   presenterOverlayPinnedParticipantId: undefined,
   localVideoMirroringEnabled: true,
   showVoteOrPollResult: false,
@@ -155,10 +166,10 @@ export const uiSlice = createSlice({
       state.paginationDirection = action.payload > state.paginationPage ? 'left' : 'right';
       state.paginationPage = action.payload;
     },
-    pinnedParticipantIdSet: (state, { payload }: PayloadAction<ParticipantId | undefined>) => {
-      state.pinnedParticipantId = payload;
+    pinnedConnectionIdentifierSet: (state, { payload }: PayloadAction<ConnectionIdentifier | undefined>) => {
+      state.pinnedConnectionIdentifier = payload;
     },
-    presenterOverlayPinnedParticipantIdSet: (state, { payload }: PayloadAction<ParticipantId | undefined>) => {
+    presenterOverlayPinnedParticipantIdSet: (state, { payload }: PayloadAction<ConnectionIdentifier | undefined>) => {
       state.presenterOverlayPinnedParticipantId = payload;
     },
     mirroredVideoSet: (state, { payload: enabled }: PayloadAction<boolean>) => {
@@ -185,8 +196,8 @@ export const uiSlice = createSlice({
         state.haveSeenMobilePollsAndVotes = true;
       }
     },
-    pinnedRemoteScreenshare(state, { payload: id }: PayloadAction<ParticipantId>) {
-      state.pinnedParticipantId = id;
+    pinnedRemoteScreenshare(state, { payload: id }: PayloadAction<ConnectionIdentifier>) {
+      state.pinnedConnectionIdentifier = id;
       state.lastCinemaLayout = state.cinemaLayout;
     },
     saveDefaultChatMessage(
@@ -223,16 +234,21 @@ export const uiSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(leave, (state, { payload: { id } }: PayloadAction<{ id: string }>) => {
-      if (state.pinnedParticipantId === id) {
-        state.pinnedParticipantId = undefined;
+    builder.addCase(
+      leave,
+      (state, { payload: { id, connection } }: PayloadAction<{ id: ParticipantId; connection: ConnectionId }>) => {
+        const identifier = constructConnectionIdentifier(id, connection);
+        if (state.pinnedConnectionIdentifier === identifier) {
+          state.pinnedConnectionIdentifier = undefined;
+        }
       }
-    });
-    builder.addCase(breakoutLeft, (state, { payload: { id } }: PayloadAction<{ id: ParticipantId }>) => {
-      if (state.pinnedParticipantId === id) {
-        state.pinnedParticipantId = undefined;
-      }
-    });
+    );
+    // TODO - fixed with breakout room implementation
+    // builder.addCase(breakoutLeft, (state, { payload: { id } }: PayloadAction<{ id: ConnectionIdentifier }>) => {
+    //   if (state.pinnedConnectionIdentifier === id) {
+    //     state.pinnedConnectionIdentifier = undefined;
+    //   }
+    // });
     builder.addCase(hangUp.pending, (state) => {
       state.voteOrPollIdToShow = undefined;
     });
@@ -243,7 +259,7 @@ export const uiSlice = createSlice({
       state.chatConversationState = initialState.chatConversationState;
       state.cinemaLayout = initialState.cinemaLayout;
       state.participantsSortOption = initialState.participantsSortOption;
-      state.pinnedParticipantId = initialState.pinnedParticipantId;
+      state.pinnedConnectionIdentifier = initialState.pinnedConnectionIdentifier;
       state.paginationPage = initialState.paginationPage;
       state.participantsSearchValue = initialState.participantsSearchValue;
     });
@@ -293,7 +309,7 @@ export const {
   chatConversationStateSet,
   updatedCinemaLayout,
   setPaginationPage,
-  pinnedParticipantIdSet,
+  pinnedConnectionIdentifierSet,
   presenterOverlayPinnedParticipantIdSet,
   mirroredVideoSet,
   setShowVoteOrPollResult,
@@ -323,8 +339,8 @@ export const selectChatConversationState = (state: RootState) => state.ui.chatCo
 export const selectChatConversationTargetId = (state: RootState) => state.ui.chatConversationState.targetId;
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;
 export const selectPaginationDirectionState = (state: RootState) => state.ui.paginationDirection;
-export const selectPinnedParticipantId = (state: RootState) => state.ui.pinnedParticipantId;
 export const selectChatConversationScope = (state: RootState) => state.ui.chatConversationState.scope;
+export const selectPinnedConnectionIdentifier = (state: RootState) => state.ui.pinnedConnectionIdentifier;
 export const selectPresenterOverlayPinnedParticipantId = (state: RootState) =>
   state.ui.presenterOverlayPinnedParticipantId;
 export const selectMirroredVideoEnabled = (state: RootState) => state.ui.localVideoMirroringEnabled;

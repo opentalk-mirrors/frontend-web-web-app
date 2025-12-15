@@ -13,7 +13,7 @@ import { ModeratorIcon } from '../../../assets/icons';
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector, useDateFormat } from '../../../hooks';
 import { RoomEvent } from '../../../store/slices/eventSlice';
-import { selectParticipantByParticipantId } from '../../../store/slices/participantsSlice';
+import { selectParticipantById } from '../../../store/slices/participantsSlice';
 import { selectAvatarUrl, selectDisplayName, selectOurUuid } from '../../../store/slices/userSlice';
 import { ChatMessage as ChatMessageType, Role } from '../../../types';
 import { isEventMessage } from '../../../utils/typeGuardUtils';
@@ -62,9 +62,7 @@ const Avatar = styled(ParticipantAvatar)({
 });
 
 const getSender = (message: ChatMessageType | RoomEvent) => {
-  return isEventMessage(message)
-    ? selectParticipantByParticipantId(message?.target)
-    : selectParticipantByParticipantId(message?.source);
+  return isEventMessage(message) ? selectParticipantById(message?.target) : selectParticipantById(message?.source);
 };
 
 interface ChatMessageProps {

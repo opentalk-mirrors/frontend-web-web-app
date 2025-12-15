@@ -44,9 +44,9 @@ const TalkingStickTabPanel = () => {
   }, [i18n.language, participantsWithoutUser, selectedSortType]);
 
   const handleStart = () => {
-    const participantIdList = sortedParticipants.map((participant) => participant.participantId);
+    const participantIdList = sortedParticipants.map((participant) => participant.id);
     const sortedPlaylist = includeTalkingStickCreator
-      ? [userInitiatingTalkingStick.participantId, ...participantIdList]
+      ? [userInitiatingTalkingStick.id, ...participantIdList]
       : [...participantIdList];
     dispatch(
       talkingStickStart.action({

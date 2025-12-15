@@ -10,6 +10,8 @@ import { DisconnectReason } from '../../api/types/incoming/core';
 import { notifications } from '../../commonComponents';
 import {
   ChatMessage,
+  ConnectionId,
+  ConnectionIdentifier,
   JoinedWaitingRoomParticipant,
   LegalVote,
   MeetingNotesAccess,
@@ -18,8 +20,10 @@ import {
   ParticipantInOtherRoom,
   ParticipationKind,
   Role,
+  Timestamp,
   WaitingState,
 } from '../../types';
+import { deconstructIdentity } from '../../utils/deconstructIdentity';
 import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
@@ -42,75 +46,79 @@ export const participantsSlice = createSlice({
   name: 'participants',
   initialState: participantAdapter.getInitialState(),
   reducers: {
-    join: (
-      state,
-      {
-        payload: {
-          participant: {
-            id,
-            participantId,
-            connectionId,
-            displayName,
-            avatarUrl,
-            handIsUp,
-            joinedAt,
-            leftAt,
-            handUpdatedAt,
-            groups,
-            breakoutRoomId,
-            participationKind,
-            role,
-            meetingNotesAccess,
-            isRoomOwner,
-          },
-        },
-      }: PayloadAction<{ participant: Participant }>
-    ) => {
-      participantAdapter.upsertOne(state, {
-        id,
-        participantId,
-        connectionId,
-        groups,
-        displayName,
-        avatarUrl,
-        handIsUp,
-        joinedAt,
-        leftAt,
-        handUpdatedAt,
-        breakoutRoomId,
-        participationKind,
-        lastActive: joinedAt,
-        role,
-        waitingState: WaitingState.Joined,
-        meetingNotesAccess,
-        isRoomOwner,
-      });
+    join: (state, { payload: { participant } }: PayloadAction<{ participant: Participant }>) => {
+      const existing = state.entities[participant.id];
+
+      if (existing) {
+        // Merge connections without duplicates
+        const mergedConnections = Array.from(new Set([...existing.connections, ...participant.connections]));
+
+        participantAdapter.upsertOne(state, {
+          ...existing,
+          ...participant,
+          connections: mergedConnections,
+          lastActive: participant.joinedAt, // update lastActive if needed
+          waitingState: WaitingState.Joined,
+        });
+      } else {
+        participantAdapter.upsertOne(state, {
+          ...participant,
+          waitingState: WaitingState.Joined,
+          lastActive: participant.joinedAt,
+        });
+      }
     },
+
     leave: (
       state,
       {
-        payload: { id, timestamp },
-      }: PayloadAction<{ id: string; timestamp: string; reason: DisconnectReason | undefined }>
+        payload: { id, connection, timestamp },
+      }: PayloadAction<{
+        id: ParticipantId;
+        connection: ConnectionId;
+        timestamp: Timestamp;
+        reason?: DisconnectReason;
+      }>
     ) => {
-      participantAdapter.updateOne(state, {
-        id,
-        changes: {
-          leftAt: timestamp,
-        },
-      });
+      const existing = state.entities[id];
+      if (!existing) {
+        return;
+      }
+
+      const remainingConnections = existing.connections.filter((c) => c !== connection);
+
+      if (remainingConnections.length === 0) {
+        // last connection → participant fully leaves
+        participantAdapter.updateOne(state, {
+          id,
+          changes: {
+            connections: [],
+            leftAt: timestamp,
+          },
+        });
+      } else {
+        // still has active connections → just update connections
+        participantAdapter.updateOne(state, {
+          id,
+          changes: {
+            connections: remainingConnections,
+          },
+        });
+      }
     },
+
     breakoutJoined: (
       state,
       {
         payload: { data, timestamp },
       }: PayloadAction<{
         data: ParticipantInOtherRoom;
-        timestamp: string;
+        timestamp: Timestamp;
       }>
     ) => {
       const participant: Participant = {
-        id: `${data.id}:${data.connectionId}`,
-        participantId: data.id as ParticipantId,
+        id: data.id as ParticipantId,
+        connections: data.connections,
         displayName: data.displayName,
         avatarUrl: data.avatarUrl,
         groups: [],
@@ -136,8 +144,7 @@ export const participantsSlice = createSlice({
     waitingRoomJoined: (state, { payload }: PayloadAction<JoinedWaitingRoomParticipant>) => {
       const participant: Participant = {
         id: payload.participantId,
-        participantId: payload.participantId,
-        connectionId: payload.connectionIds[0],
+        connections: payload.connectionIds,
         displayName: payload.displayName,
         avatarUrl: payload.avatarUrl,
         groups: [],
@@ -198,10 +205,7 @@ export const participantsSlice = createSlice({
         },
       });
     },
-    patch: (
-      state,
-      { payload }: PayloadAction<{ participantId: Participant['participantId'] } & Partial<PatchParticipant>>
-    ) => {
+    patch: (state, { payload }: PayloadAction<{ participantId: ParticipantId } & Partial<PatchParticipant>>) => {
       const { participantId, ...optionalChanges } = payload;
 
       const changes = Object.fromEntries(
@@ -213,12 +217,8 @@ export const participantsSlice = createSlice({
       }
 
       const matchingId = state.ids.find((rawId) => {
-        const entity = state.entities[rawId as string];
-        return (
-          entity?.participantId === participantId &&
-          entity.leftAt === null &&
-          entity.waitingState === WaitingState.Joined
-        );
+        const entity = state.entities[rawId as ParticipantId];
+        return entity?.id === participantId && entity.leftAt === null && entity.waitingState === WaitingState.Joined;
       });
 
       if (matchingId) {
@@ -276,11 +276,9 @@ export const actions = participantsSlice.actions;
 export const participantSelectors = participantAdapter.getSelectors<RootState>((state) => state.participants);
 
 export const selectAllParticipants = (state: RootState) => participantSelectors.selectAll(state);
-export const selectParticipantById = (participantId: string) => (state: RootState) =>
-  participantSelectors.selectAll(state).find((p) => p.id === participantId);
-// TODO - rethink combined id
-export const selectParticipantByParticipantId = (participantId: string) => (state: RootState) =>
-  participantSelectors.selectAll(state).find((p) => p.participantId === participantId.split(':', 1)[0]);
+
+export const selectParticipantById = (participantId: ParticipantId) => (state: RootState) =>
+  participantSelectors.selectById(state, participantId);
 
 export const selectAllParticipantsInWaitingRoom = createSelector([selectAllParticipants], (participants) =>
   participants.filter((participant) => participant.waitingState !== WaitingState.Joined)
@@ -363,7 +361,7 @@ export const selectParticipantAvatarUrl: (state: RootState, id: ParticipantId) =
 );
 
 export const selectParticipantName: (state: RootState, id: ParticipantId) => string | undefined = createSelector(
-  [(state: RootState, id: ParticipantId) => selectParticipantByParticipantId(id)(state)],
+  [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
   (participant) => participant?.displayName
 );
 
@@ -378,8 +376,9 @@ export const selectRemoteParticipantsDisplayNameRecord = createSelector(
   (remoteParticipants, onlineParticipants) => {
     return remoteParticipants.reduce(
       (acc, remoteParticipant) => {
+        const { participantId } = deconstructIdentity(remoteParticipant.identity as ConnectionIdentifier);
         acc[remoteParticipant.identity] = onlineParticipants.find(
-          (participant) => participant.id === remoteParticipant.identity
+          (participant) => participant.id === participantId
         )?.displayName;
         return acc;
       },
@@ -400,7 +399,7 @@ export default participantsSlice.reducer;
 /*                                              */
 /************************************************/
 
-export const shouldShowNotification = (role: Role, participantId: string, activeVoteEntry: LegalVote) => {
+export const shouldShowNotification = (role: Role, participantId: ParticipantId, activeVoteEntry: LegalVote) => {
   if (role !== Role.Moderator) {
     return false;
   }
@@ -423,7 +422,7 @@ export const handleParticipantJoinDuringVoteEffect = (
   }
 
   const activeVoteEntry = votes.entities[activeVote.id];
-  const participantId = payload.participant.participantId;
+  const participantId = payload.participant.id;
 
   if (shouldShowNotification(state.user.role, participantId, activeVoteEntry)) {
     const participantName = payload.participant.displayName;

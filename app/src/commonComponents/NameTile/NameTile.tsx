@@ -8,7 +8,7 @@ import { omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CameraOffIcon, MicOffIcon } from '../../assets/icons';
-import { ParticipantId } from '../../types';
+import { ConnectionIdentifier } from '../../types';
 
 const NameBox = styled(Box)(({ theme }) => {
   const background = new Color(theme.palette.background.customPaper.primary);
@@ -64,7 +64,7 @@ type LocalNameTileProps = {
 } & NameTileBaseProps;
 
 type RemoteNameTileProps = {
-  participantId: ParticipantId;
+  connectionIdentifier: ConnectionIdentifier;
 } & NameTileBaseProps;
 
 type NameTileProps = LocalNameTileProps | RemoteNameTileProps;
@@ -76,9 +76,9 @@ const NameTile = ({ displayName, ...props }: NameTileProps) => {
   let isVideoActive = false;
   let isAudioActive = false;
 
-  if ('participantId' in props) {
-    const { participantId } = props;
-    const participant = participants.find((participant) => participant.identity === participantId);
+  if ('connectionIdentifier' in props) {
+    const { connectionIdentifier } = props;
+    const participant = participants.find((participant) => participant.identity === connectionIdentifier);
     isVideoActive = participant?.isCameraEnabled || false;
     isAudioActive = participant?.isMicrophoneEnabled || false;
   } else {
@@ -104,7 +104,7 @@ const NameTile = ({ displayName, ...props }: NameTileProps) => {
       </IconBox>
     );
 
-  const boxProps = omit(props, 'participantId', 'localVideoOn', 'localAudioOn');
+  const boxProps = omit(props, 'connectionIdentifier', 'localVideoOn', 'localAudioOn');
 
   return (
     <NameBox data-testid="nameTile" {...boxProps}>

@@ -23,13 +23,13 @@ const { store } = configureStore({
 
 describe('HandRaisedIndicator', () => {
   it('render without crashing with flag handIsUp = false,, should have scale(0)', () => {
-    renderWithProviders(<HandRaisedIndicator participantId={participant1.participantId} />, { store });
+    renderWithProviders(<HandRaisedIndicator participantId={participant1.id} />, { store });
 
     expect(screen.queryByLabelText('indicator-has-raised-hand')).not.toBeInTheDocument();
   });
 
   it('render for handIsUp = true, should have scalse(1)', () => {
-    renderWithProviders(<HandRaisedIndicator participantId={participantHandUp.participantId} />, { store });
+    renderWithProviders(<HandRaisedIndicator participantId={participantHandUp.id} />, { store });
 
     expect(screen.getByLabelText('indicator-has-raised-hand')).toBeInTheDocument();
     expect(screen.getByLabelText('indicator-has-raised-hand')).toHaveStyle('transform: scale(1);');

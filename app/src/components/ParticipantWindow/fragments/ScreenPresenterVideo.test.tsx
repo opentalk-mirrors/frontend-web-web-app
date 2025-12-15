@@ -5,6 +5,7 @@ import { fireEvent, screen } from '@testing-library/react';
 
 import { idFromDescriptor } from '../../../modules/WebRTC';
 import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import {
   mockStore,
   mockedParticipant,
@@ -25,10 +26,10 @@ vi.mock('./RemoteVideo', () => ({
 }));
 
 const participant = mockedParticipant(0);
-const participantId = participant.participantId;
+const connectionIdentifier = constructConnectionIdentifier(participant.id, participant.connections[0]);
 
 const ScreenPresenterVideoProps = {
-  participantId: participantId,
+  connectionIdentifier,
   isFullscreenMode: false,
   isVideoPinned: false,
   videoPosition: 'bottomRight' as PresenterVideoPosition,

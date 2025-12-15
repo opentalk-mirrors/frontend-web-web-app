@@ -10,6 +10,7 @@ import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipa
 import { useCurrentSpeaker } from '../../../hooks/useCurrentSpeaker';
 import IconSlideButton from './IconSlideButton';
 import { Thumbnail } from './Thumbnail';
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 
 // ThumbsHolder: the surrounding container of the thumbnails
 const ThumbsHolder = styled(Stack, {
@@ -29,17 +30,24 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   const { cinemaViewParticipants, remoteParticipantsMap } = useCinemaViewParticipants();
   const selectedParticipantId = useCurrentSpeaker();
 
-  const participants = useMemo(
-    () =>
-      cinemaViewParticipants
-        .filter((participant) => participant.id !== selectedParticipantId)
-        .map(
-          (participant) =>
-            remoteParticipantsMap.get(participant.id) ||
-            new Participant(participant.id, participant.id, participant.displayName)
-        ),
-    [cinemaViewParticipants, remoteParticipantsMap, selectedParticipantId]
-  );
+  const participants = useMemo(() => {
+    return cinemaViewParticipants.flatMap((participant) =>
+      participant.connections
+        .filter((connection) => {
+          if (!selectedParticipantId) {
+            return true;
+          }
+          const combinedId = constructConnectionIdentifier(participant.id, connection);
+          return combinedId !== selectedParticipantId;
+        })
+        .map((connection) => {
+          const combinedId = constructConnectionIdentifier(participant.id, connection);
+          return (
+            remoteParticipantsMap.get(combinedId) ?? new Participant(combinedId, combinedId, participant.displayName)
+          );
+        })
+    );
+  }, [cinemaViewParticipants, remoteParticipantsMap, selectedParticipantId]);
 
   const [firstVisibleParticipantIndex, setFirstVisibleParticipantIndex] = useState(0);
 

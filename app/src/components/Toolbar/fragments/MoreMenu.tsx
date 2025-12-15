@@ -169,7 +169,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           if (participantId) {
             onClose();
             dispatch(enableMicrophoneRestrictions.action({ unrestrictedParticipants }));
-            dispatch(mute.action({ participants: moderatorParticipants.map((p) => p.id as ParticipantId) }));
+            dispatch(mute.action({ participants: moderatorParticipants.map((p) => p.id) }));
           }
         },
         icon: <MicOffIcon />,

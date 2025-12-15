@@ -6,7 +6,7 @@ import { PropsWithChildren } from 'react';
 
 import { DisconnectReason } from '../../../api/types/incoming/core';
 import { leave } from '../../../store/slices/participantsSlice';
-import { ParticipantId } from '../../../types';
+import { ParticipantId, Timestamp } from '../../../types';
 import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
 import ThumbsRow from './ThumbsRow';
 
@@ -152,10 +152,18 @@ describe('ThumbsRow', () => {
     expect(screen.getByLabelText('navigate-to-left')).toBeInTheDocument();
     expect(screen.queryByLabelText('navigate-to-right')).not.toBeInTheDocument();
 
+    const leavingParticipantId = ids[2] as ParticipantId;
+    const connection = store.getState().participants.entities[ids[0] as ParticipantId]?.connections[1];
+
     // one visible participant is leaving (last one in the row)
     // now the first two participants must be visible + no slider buttons
     store.dispatch(
-      leave({ id: ids[2] as ParticipantId, timestamp: Date.now().toString(), reason: DisconnectReason.Leave })
+      leave({
+        id: leavingParticipantId,
+        connection,
+        timestamp: Date.now().toString() as Timestamp,
+        reason: DisconnectReason.Leave,
+      })
     );
 
     expect(screen.getByTestId(`thumbsVideo-${ids[0]}`)).toBeInTheDocument();

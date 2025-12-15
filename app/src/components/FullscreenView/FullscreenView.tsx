@@ -16,8 +16,9 @@ import { CloseIcon, PinIcon, PollIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fullscreenActions, selectFullscreenElement } from '../../store/slices/fullscreen/slice';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
-import { pinnedParticipantIdSet, selectPinnedParticipantId } from '../../store/slices/uiSlice';
-import type { ParticipantId } from '../../types';
+import { pinnedConnectionIdentifierSet, selectPinnedConnectionIdentifier } from '../../store/slices/uiSlice';
+import type { ConnectionIdentifier } from '../../types';
+import { deconstructIdentity } from '../../utils/deconstructIdentity';
 import Ballot from '../Ballot';
 import LocalVideo from '../LocalVideo';
 import VotesAndPollsResultsPopover from '../MeetingHeader/fragments/VotesAndPollsResultsPopover';
@@ -80,7 +81,7 @@ const FullscreenView = () => {
   const { t } = useTranslation();
   const [hasVisibleControls, setVisibleControls] = useState<boolean>(false);
   const [isLocalVideoPinned, setIsLocalVideoPinned] = useState<boolean>(false);
-  const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
+  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
   const sortedParticipants = useSortedParticipants(
     useRemoteParticipants({
       updateOnlyOn: [
@@ -91,11 +92,18 @@ const FullscreenView = () => {
       ],
     })
   ); //TODO: Recheck for ActiveSpeakersChanged
-  const sortedParticipantsIdentity = sortedParticipants[0]?.identity as ParticipantId | undefined;
+  const sortedParticipantsIdentity = sortedParticipants[0]?.identity as ConnectionIdentifier | undefined;
 
-  const selectedParticipantId = pinnedParticipantId || sortedParticipantsIdentity;
+  const selectedConnectionIdentifier = pinnedConnectionIdentifier || sortedParticipantsIdentity;
+  const selectedParticipantId = (() => {
+    if (!selectedConnectionIdentifier) {
+      return undefined;
+    }
+    const { participantId } = deconstructIdentity(selectedConnectionIdentifier);
+    return participantId;
+  })();
 
-  const selectedParticipant = useRemoteParticipant({ identity: selectedParticipantId || '' });
+  const selectedParticipant = useRemoteParticipant({ identity: selectedConnectionIdentifier || '' });
   const displayName = useAppSelector((state) =>
     selectedParticipantId ? selectParticipantName(state, selectedParticipantId) : undefined
   );
@@ -118,11 +126,12 @@ const FullscreenView = () => {
   };
 
   const isActive = hasVisibleControls;
-  const isPinned = pinnedParticipantId ? pinnedParticipantId === selectedParticipant?.identity : false;
+  const isPinned = pinnedConnectionIdentifier ? pinnedConnectionIdentifier === selectedParticipant?.identity : false;
   const togglePin = useCallback(() => {
-    const updatePinnedId = pinnedParticipantId === sortedParticipantsIdentity ? undefined : sortedParticipantsIdentity;
-    dispatch(pinnedParticipantIdSet(updatePinnedId));
-  }, [dispatch, sortedParticipantsIdentity, pinnedParticipantId]);
+    const updatePinnedId =
+      pinnedConnectionIdentifier === sortedParticipantsIdentity ? undefined : sortedParticipantsIdentity;
+    dispatch(pinnedConnectionIdentifierSet(updatePinnedId));
+  }, [dispatch, sortedParticipantsIdentity, pinnedConnectionIdentifier]);
 
   return (
     <ParticipantContext.Provider value={selectedParticipant}>

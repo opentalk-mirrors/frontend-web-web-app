@@ -2,13 +2,12 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { BreakoutRoomId } from './breakout';
-import { GroupId, ParticipantId, ParticipationKind, Role, WaitingState } from './common';
+import { ConnectionId, GroupId, ParticipantId, ParticipationKind, Role, WaitingState } from './common';
 import { MeetingNotesAccess } from './meetingNotes';
 
 export interface Participant {
-  id: string;
-  participantId: ParticipantId;
-  connectionId?: string;
+  id: ParticipantId;
+  connections: ConnectionId[];
   breakoutRoomId: BreakoutRoomId | null;
   displayName: string;
   avatarUrl?: string;

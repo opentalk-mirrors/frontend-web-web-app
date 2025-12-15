@@ -152,7 +152,7 @@ export const selectUserAsPartialParticipant = createSelector(
 
     return {
       id: state.uuid,
-      participantId: state.uuid,
+      connections: [],
       displayName,
       avatarUrl,
       groups,

@@ -43,7 +43,7 @@ const RenameParticipantDialog = ({ open, onClose, participant }: RenameParticipa
     validateOnBlur: false,
     validationSchema,
     onSubmit: (values) => {
-      dispatch(changeDisplayName.action({ target: participant.participantId, newName: values.name }));
+      dispatch(changeDisplayName.action({ target: participant.id, newName: values.name }));
       handleClose();
     },
   });

@@ -16,11 +16,11 @@ import React from 'react';
 import { ParticipantAvatar } from '../../';
 import { useAppSelector } from '../../../hooks';
 import { selectParticipantAvatarUrl, selectParticipantName } from '../../../store/slices/participantsSlice';
-import type { ParticipantId } from '../../../types';
+import { ConnectionIdentifier } from '../../../types';
+import { deconstructIdentity } from '../../../utils/deconstructIdentity';
 
 export interface SelectableParticipant extends RemoteParticipant {
   selected: boolean;
-  participantId: ParticipantId;
 }
 
 type SelectParticipantsItemProps = {
@@ -50,8 +50,9 @@ const FormControlLabel = styled(MuiFormControlLabel)(() => ({
 }));
 
 const SelectParticipantsItem = ({ participant, onCheck }: SelectParticipantsItemProps) => {
-  const displayName = useAppSelector((state) => selectParticipantName(state, participant.identity as ParticipantId));
-  const avatarUrl = useAppSelector((state) => selectParticipantAvatarUrl(state, participant.identity as ParticipantId));
+  const { participantId } = deconstructIdentity(participant.identity as ConnectionIdentifier);
+  const displayName = useAppSelector((state) => selectParticipantName(state, participantId));
+  const avatarUrl = useAppSelector((state) => selectParticipantAvatarUrl(state, participantId));
 
   return (
     <ListItem alignItems="flex-start">

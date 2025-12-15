@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import type { RootState } from '..';
 import { DisconnectReason } from '../../api/types/incoming/core';
+import { ParticipantId } from '../../types';
 import { setChatSettings } from './chatSlice';
 import { join as participantJoin, leave as participantLeave } from './participantsSlice';
 import { connectionClosed } from './roomSlice';
@@ -13,7 +14,7 @@ import { connectionClosed } from './roomSlice';
 export interface RoomEvent {
   id: string;
   timestamp: string;
-  target: string;
+  target: ParticipantId;
   event: 'joined' | 'left' | 'chat_enabled' | 'chat_disabled';
   reason?: DisconnectReason;
 }
@@ -42,14 +43,14 @@ export const eventSlice = createSlice({
         state,
         {
           payload: {
-            participant: { joinedAt, participantId },
+            participant: { joinedAt, id },
           },
         }
       ) => {
         eventAdapter.addOne(state, {
           event: 'joined',
           timestamp: joinedAt,
-          target: participantId,
+          target: id,
           id: uuidv4(),
         });
       }

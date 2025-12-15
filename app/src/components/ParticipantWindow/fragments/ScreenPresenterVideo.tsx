@@ -10,7 +10,8 @@ import { useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/livekitSlice';
 import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
-import { ParticipantId, VideoSetting } from '../../../types';
+import { ConnectionIdentifier, VideoSetting } from '../../../types';
+import { deconstructIdentity } from '../../../utils/deconstructIdentity';
 import { AvatarContainer } from './AvatarContainer';
 import { PresenterOverlay } from './PresenterOverlay';
 import RemoteVideo from './RemoteVideo';
@@ -45,7 +46,7 @@ const SharedPresenterVideo = styled('div')(({ theme }) => ({
 }));
 
 interface ScreenPresenterVideoProps {
-  participantId: ParticipantId;
+  connectionIdentifier: ConnectionIdentifier;
   isVideoPinned: boolean;
   videoPosition: PresenterVideoPosition;
   togglePin: () => void;
@@ -54,10 +55,11 @@ interface ScreenPresenterVideoProps {
 }
 
 const ScreenPresenterVideo = React.forwardRef<HTMLDivElement, ScreenPresenterVideoProps>(
-  ({ participantId, isVideoPinned, togglePin, videoPosition, changeVideoPosition, isThumbnail }, ref) => {
+  ({ connectionIdentifier, isVideoPinned, togglePin, videoPosition, changeVideoPosition, isThumbnail }, ref) => {
+    const { participantId } = deconstructIdentity(connectionIdentifier);
     const videoDescriptor = useMemo<MediaDescriptor>(
-      () => ({ participantId, mediaType: Track.Source.Camera }),
-      [participantId]
+      () => ({ connectionIdentifier, mediaType: Track.Source.Camera }),
+      [connectionIdentifier]
     );
     const [mouseOver, setMouseOver] = useState<boolean>(false);
     const qualityCap = useAppSelector(selectQualityCap);
@@ -68,9 +70,9 @@ const ScreenPresenterVideo = React.forwardRef<HTMLDivElement, ScreenPresenterVid
       return showVideo ? (
         <RemoteVideo descriptor={videoDescriptor} />
       ) : (
-        <AvatarContainer participantId={videoDescriptor.participantId} />
+        <AvatarContainer participantId={participantId} />
       );
-    }, [showVideo, videoDescriptor]);
+    }, [showVideo, videoDescriptor, participantId]);
 
     return (
       <SharedPresenterVideo

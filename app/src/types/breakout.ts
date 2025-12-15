@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import type { ParticipantId, ParticipationKind, RoomKind, Timestamp } from './common';
+import type { ConnectionId, ParticipantId, ParticipationKind, RoomKind, Timestamp } from './common';
 
 export type BreakoutRoomId = string & { readonly __tag: unique symbol };
 export interface BreakoutRoom {
@@ -14,7 +14,7 @@ export interface ParticipantInOtherRoom {
   breakoutRoom: BreakoutRoomId | null;
   id: string;
   participantId: ParticipantId;
-  connectionId?: string;
+  connections: ConnectionId[];
   displayName: string;
   avatarUrl?: string;
   leftAt: string | null;

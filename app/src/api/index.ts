@@ -94,33 +94,30 @@ const mapRoomserverParticipantToUi = (
   participant: RoomserverParticipant,
   breakoutRoomId: BreakoutRoomId | null,
   waitingState: WaitingState
-): Participant[] => {
-  return participant.connections.map((connection) => {
-    return {
-      id: `${participant.id}:${connection.connectionId}`,
-      participantId: participant.id,
-      connection_id: connection.connectionId,
-      groups: [],
-      displayName: participant.moduleData.core.displayName,
-      avatarUrl: setLibravatarOptions(participant.moduleData.core.avatarUrl, {
-        defaultImage: selectLibravatarDefaultImage(state),
-      }),
-      // not sent by default, part of module if present
-      handIsUp: false,
-      joinedAt: participant.moduleData.core.joinedAt,
-      leftAt: participant.moduleData.core.leftAt ?? null,
-      // not sent by default, part of module if present
-      handUpdatedAt: undefined,
-      breakoutRoomId: breakoutRoomId,
-      participationKind: participant.moduleData.core.participationKind,
-      lastActive: new Date().toISOString(),
-      role: participant.moduleData.core.role,
-      waitingState,
-      // not sent by default, part of module if present
-      meetingNotesAccess: MeetingNotesAccess.Write,
-      isRoomOwner: participant.moduleData.core.isRoomOwner,
-    };
-  });
+): Participant => {
+  return {
+    id: participant.id,
+    connections: participant.connections.map((conn) => conn.connectionId),
+    groups: [],
+    displayName: participant.moduleData.core.displayName,
+    avatarUrl: setLibravatarOptions(participant.moduleData.core.avatarUrl, {
+      defaultImage: selectLibravatarDefaultImage(state),
+    }),
+    // not sent by default, part of module if present
+    handIsUp: false,
+    joinedAt: participant.moduleData.core.joinedAt,
+    leftAt: participant.moduleData.core.leftAt ?? null,
+    // not sent by default, part of module if present
+    handUpdatedAt: undefined,
+    breakoutRoomId: breakoutRoomId,
+    participationKind: participant.moduleData.core.participationKind,
+    lastActive: new Date().toISOString(),
+    role: participant.moduleData.core.role,
+    waitingState,
+    // not sent by default, part of module if present
+    meetingNotesAccess: MeetingNotesAccess.Write,
+    isRoomOwner: participant.moduleData.core.isRoomOwner,
+  };
 };
 
 const mapJoinedParticipantToUi = (
@@ -129,9 +126,8 @@ const mapJoinedParticipantToUi = (
   breakoutRoomId: BreakoutRoomId | null,
   waitingState: WaitingState
 ): Participant => ({
-  id: `${participant.participantId}:${participant.connectionId}`,
-  participantId: participant.participantId as ParticipantId,
-  connectionId: participant.connectionId,
+  id: participant.participantId,
+  connections: [participant.connectionId],
   groups: [],
   displayName: participant.peerData.core.displayName,
   avatarUrl: setLibravatarOptions(participant.peerData.core.avatarUrl, {
@@ -206,7 +202,7 @@ const handleRoomServerCoreMessage = async (
         });
       }
 
-      let joinedParticipants = participants.flatMap((participant) => {
+      let joinedParticipants = participants.map((participant) => {
         return mapRoomserverParticipantToUi(
           state,
           participant,
@@ -222,7 +218,7 @@ const handleRoomServerCoreMessage = async (
             // There can be a situation, that some participants are in both arrays (e.g. after Debriefing)
             // Therefore we should give priority to the waiting room, and remove them from the joined participants array
             const duplicateParticipantIndex = joinedParticipants.findIndex(
-              (participant: Participant) => participant.participantId === waitingParticipant.participantId
+              (participant: Participant) => participant.id === waitingParticipant.participantId
             );
             if (duplicateParticipantIndex > -1) {
               joinedParticipants.splice(duplicateParticipantIndex, 1);
@@ -230,8 +226,7 @@ const handleRoomServerCoreMessage = async (
 
             return {
               id: waitingParticipant.participantId,
-              participantId: waitingParticipant.participantId,
-              connectionId: undefined,
+              connections: waitingParticipant.connections,
               groups: [],
               displayName: waitingParticipant.displayName,
               avatarUrl: setLibravatarOptions(waitingParticipant.avatarUrl, {
@@ -379,7 +374,8 @@ const handleRoomServerCoreMessage = async (
     case RoomserverMessageKey.ParticipantDisconnected: {
       dispatch(
         participantsLeft({
-          id: `${data.participantId}:${data.connectionId}`,
+          id: data.participantId,
+          connection: data.connectionId,
           timestamp,
           reason: data.reason,
         })

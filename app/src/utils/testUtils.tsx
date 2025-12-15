@@ -51,6 +51,7 @@ import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
 import { Poll } from '../store/slices/pollSlice';
 import {
   AutomodSelectionStrategy,
+  ConnectionId,
   LegalVote,
   LegalVoteId,
   LegalVoteKind,
@@ -63,6 +64,7 @@ import {
   Role,
   WaitingState,
 } from '../types';
+import { constructConnectionIdentifier } from './constructConnectionIdentifier';
 import { CommonFrequencies } from './rruleUtils';
 import { getRandomTimeInThePast } from './timeUtils';
 
@@ -214,9 +216,9 @@ export const mockStore = (
 
   const initialState = {
     participants: {
-      ids: participants.map((p) => p.participantId),
+      ids: participants.map((p) => p.id),
       entities: participants.reduce((entities: Record<ParticipantId, Participant>, participant) => {
-        entities[participant.participantId] = participant;
+        entities[participant.id] = participant;
         return entities;
       }, {}),
     },
@@ -249,10 +251,9 @@ export const mockedParticipant = (
   setMicrophoneEnabled: (enabled: boolean) => LocalTrackPublication | undefined;
   videoTrackPublications: Map<string, RemoteTrackPublication>;
 } => ({
-  id: `00000000-e6b4-4759-00${index}`,
-  participantId: `00000000-e6b4-4759-00${index}` as ParticipantId,
-  connectionId: `10000000-e6b4-4759-00${index}`,
-  identity: `00000000-e6b4-4759-00${index}`, //some components while using livekit participants require identity as id -> TODO: map old participants type to Livekit Participant
+  id: `00000000-e6b4-4759-00${index}` as ParticipantId,
+  connections: [`10000000-e6b4-4759-00${index}` as ConnectionId],
+  identity: `00000000-e6b4-4759-00${index}:10000000-e6b4-4759-00${index}`, //some components while using livekit participants require identity as id -> TODO: map old participants type to Livekit Participant
   displayName: `Test User Randy Mock${index}`,
   handIsUp: false,
   handUpdatedAt: '2022-03-23T12:32:30Z',
@@ -275,21 +276,27 @@ export const mockedParticipant = (
 
 export const mockedLivekitParticipant = (index: number) => {
   return new LivekitParticipant(
-    `00000000-e6b4-4759-00${index}`,
-    `00000000-e6b4-4759-00${index}`,
+    `00000000-e6b4-4759-00${index}:10000000-e6b4-4759-00${index}`,
+    `00000000-e6b4-4759-00${index}:10000000-e6b4-4759-00${index}`,
     `Test User Randy Mock${index}`
   );
 };
 
 export const mockedVideoMediaDescriptor = (index: number) =>
   ({
-    participantId: mockedParticipant(index).id,
+    connectionIdentifier: constructConnectionIdentifier(
+      mockedParticipant(index).id,
+      mockedParticipant(index).connections[0]
+    ),
     mediaType: Track.Source.Camera,
   }) as MediaDescriptor;
 
 export const mockedScreenMediaDescriptor = (index: number) =>
   ({
-    participantId: mockedParticipant(index).id,
+    connectionIdentifier: constructConnectionIdentifier(
+      mockedParticipant(index).id,
+      mockedParticipant(index).connections[0]
+    ),
     mediaType: Track.Source.ScreenShare,
   }) as MediaDescriptor;
 

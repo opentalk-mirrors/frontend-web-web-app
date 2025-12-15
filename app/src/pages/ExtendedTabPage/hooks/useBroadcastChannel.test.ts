@@ -4,7 +4,6 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { startBroadcastRoom } from '../../../store/slices/livekitSlice';
-import type { ParticipantId } from '../../../types';
 import { useBroadcastChannel } from './useBroadcastChannel';
 
 const mockDispatch = vi.fn();
@@ -84,17 +83,19 @@ it('requests livekit data when a channelId is provided', async () => {
     namespace: 'extended_tab',
     payload: { action: 'request_livekit_data' },
   });
-  expect(mockDispatch).toHaveBeenCalledWith(startBroadcastRoom({ accessToken: undefined, participantId: undefined }));
+  expect(mockDispatch).toHaveBeenCalledWith(
+    startBroadcastRoom({ accessToken: undefined, connectionIdentifier: undefined })
+  );
 });
 
 it('stores received livekit data and dispatches the start action with credentials', async () => {
   const { result } = renderHook(() => useBroadcastChannel('channel-id'));
 
-  const participantId = 'participant-1' as ParticipantId;
+  const connectionIdentifier = 'participant-1';
   const payload = {
     action: 'livekit_data',
     accessToken: 'token-123',
-    participantId,
+    connectionIdentifier,
     mediaType: 'video' as const,
     livekitUrl: 'wss://livekit.example',
     roomId: 'room-123',
@@ -110,10 +111,10 @@ it('stores received livekit data and dispatches the start action with credential
   expect(result.current).toEqual({
     accessToken: 'token-123',
     mediaType: 'video',
-    participantId,
+    connectionIdentifier,
     livekitUrl: 'wss://livekit.example',
     roomId: 'room-123',
   });
   expect(mockDispatch).toHaveBeenCalledTimes(2);
-  expect(mockDispatch).toHaveBeenLastCalledWith(startBroadcastRoom({ accessToken: 'token-123', participantId }));
+  expect(mockDispatch).toHaveBeenLastCalledWith(startBroadcastRoom({ accessToken: 'token-123', connectionIdentifier }));
 });

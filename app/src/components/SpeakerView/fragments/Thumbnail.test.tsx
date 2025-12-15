@@ -4,7 +4,7 @@
 import { screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
-import { ParticipantId } from '../../../types';
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
 import Thumbnail from './Thumbnail';
 
@@ -27,12 +27,12 @@ describe('Thumbnail', () => {
   it('ThumbnailContainer rendered width one participant', () => {
     const { store } = mockStore(1);
 
-    const ids = store.getState().participants.ids;
-    const participantId = ids[0] as ParticipantId;
+    const participant = Object.values(store.getState().participants.entities)[0];
+    const connectionIdentifier = constructConnectionIdentifier(participant.id, participant.connections[0]);
 
     renderWithProviders(<Thumbnail width={0} />, { store, provider: { mui: true } });
 
     // Initial ThumbnailContainer appears
-    expect(screen.getByTestId(`thumbsVideo-${participantId}`)).toBeInTheDocument();
+    expect(screen.getByTestId(`thumbsVideo-${connectionIdentifier}`)).toBeInTheDocument();
   });
 });

@@ -14,6 +14,7 @@ import {
   selectSubroomAudioParticipants,
   selectSubroomAudioState,
   setSubroomAudioData,
+  setWhisperParticipants,
   updateParticipantInviteState,
 } from '../../store/slices/subroomAudioSlice';
 import { selectOurUuid } from '../../store/slices/userSlice';
@@ -48,6 +49,7 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
         persist: true,
         onAction: () => {
           dispatch(acceptWhisperInvite.action({ whisperId: data.whisperId }));
+          dispatch(setWhisperParticipants({ participants: data.participants }));
         },
         onCancel: () => {
           dispatch(declineWhisperInvite.action({ whisperId: data.whisperId }));

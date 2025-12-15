@@ -11,7 +11,8 @@ import { SelectableParticipant } from '../../commonComponents/SearchAndSelectPar
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectRemoteParticipantsDisplayNameRecord } from '../../store/slices/participantsSlice';
-import { ParticipantId } from '../../types';
+import { ConnectionIdentifier, ParticipantId } from '../../types';
+import { deconstructIdentity } from '../../utils/deconstructIdentity';
 
 const MuteParticipantsTab = () => {
   const dispatch = useAppDispatch();
@@ -39,9 +40,10 @@ const MuteParticipantsTab = () => {
         const displayName = participantNames[participant.identity];
         return displayName?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
       })
-      .map((participant) =>
-        toSelectableParticipant(participant, selectedParticipants.includes(participant.identity as ParticipantId))
-      );
+      .map((participant) => {
+        const { participantId } = deconstructIdentity(participant.identity as ConnectionIdentifier);
+        return toSelectableParticipant(participant, selectedParticipants.includes(participantId));
+      });
   }, [search, unmutedParticipants, selectedParticipants, participantNames]);
 
   const handleSelectParticipant = (checked: boolean, participantId: ParticipantId) => {
@@ -52,12 +54,11 @@ const MuteParticipantsTab = () => {
     }
   };
 
-  // TODO - rethink combined id
   const muteAll = () => {
     const unmutedParticipantIds = unmutedParticipants.reduce<ParticipantId[]>((acc, p) => {
-      const id = p.identity.split(':').at(0);
-      if (id) {
-        acc.push(id as ParticipantId);
+      const { participantId } = deconstructIdentity(p.identity as ConnectionIdentifier);
+      if (participantId) {
+        acc.push(participantId);
       }
       return acc;
     }, []);
@@ -66,10 +67,7 @@ const MuteParticipantsTab = () => {
   };
 
   const muteSelected = () => {
-    const participants = selectedParticipants
-      .map((p) => p.split(':').at(0))
-      .filter((v): v is ParticipantId => v !== undefined);
-    dispatch(mute.action({ participants }));
+    dispatch(mute.action({ participants: selectedParticipants }));
     setSelectedParticipants([]);
   };
 

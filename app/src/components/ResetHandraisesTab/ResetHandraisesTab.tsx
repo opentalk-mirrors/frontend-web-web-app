@@ -11,7 +11,8 @@ import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectP
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectParticipantsWithRaisedHands } from '../../store/selectors';
 import { selectRemoteParticipantsDisplayNameRecord } from '../../store/slices/participantsSlice';
-import { ParticipantId } from '../../types';
+import { ConnectionIdentifier, ParticipantId } from '../../types';
+import { deconstructIdentity } from '../../utils/deconstructIdentity';
 
 const ResetHandraisesTab = () => {
   const dispatch = useAppDispatch();
@@ -33,9 +34,10 @@ const ResetHandraisesTab = () => {
         const displayName = participantNamesMap[participant.identity];
         return displayName?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
       })
-      .map((participant) =>
-        toSelectableParticipant(participant, selectedParticipants.includes(participant.identity as ParticipantId))
-      );
+      .map((participant) => {
+        const { participantId } = deconstructIdentity(participant.identity as ConnectionIdentifier);
+        return toSelectableParticipant(participant, selectedParticipants.includes(participantId));
+      });
   }, [search, remoteParticipants, selectedParticipants, participantNamesMap]);
 
   const handleSelectParticipant = (checked: boolean, participantId: ParticipantId) => {
@@ -51,13 +53,8 @@ const ResetHandraisesTab = () => {
   };
 
   const resetSelectedHandraises = () => {
-    const selectedParticipantIds = selectedParticipants
-      // TODO - rethink combined id
-      .map((p) => p.split(':').at(0))
-      .filter((v): v is ParticipantId => v !== undefined);
-
-    if (selectedParticipantIds.length > 0) {
-      dispatch(resetRaisedHands.action({ target: selectedParticipantIds }));
+    if (selectedParticipants.length > 0) {
+      dispatch(resetRaisedHands.action({ target: selectedParticipants }));
       setSelectedParticipants([]);
     }
   };

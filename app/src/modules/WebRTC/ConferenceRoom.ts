@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { generatePkceChallenge } from '@opentalk/redux-oidc';
 import { isEmpty } from 'lodash';
-import convertToSnakeCase from 'snakecase-keys';
 
 import { ApiErrorWithBody, StartRoomError } from '../../api/rest';
 import type { Message as IncomingMessage } from '../../api/types/incoming';

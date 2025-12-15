@@ -6,8 +6,8 @@ import { styled } from '@mui/material';
 import { useCallback } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { pinnedParticipantIdSet, selectPinnedParticipantId } from '../../../store/slices/uiSlice';
-import { ParticipantId } from '../../../types';
+import { pinnedConnectionIdentifierSet, selectPinnedConnectionIdentifier } from '../../../store/slices/uiSlice';
+import { ConnectionIdentifier } from '../../../types';
 import ParticipantWindow from '../../ParticipantWindow';
 
 const ThumbnailContainer = styled('div')<{ width: number }>(({ width, theme }) => ({
@@ -30,14 +30,14 @@ const ThumbnailContainer = styled('div')<{ width: number }>(({ width, theme }) =
 
 export const Thumbnail = ({ width }: { width: number }) => {
   const participant = useParticipantContext();
-  const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
+  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
   const dispatch = useAppDispatch();
 
   const togglePin = useCallback(() => {
     const updatePinnedId =
-      pinnedParticipantId === participant.identity ? undefined : (participant.identity as ParticipantId);
-    dispatch(pinnedParticipantIdSet(updatePinnedId));
-  }, [dispatch, participant.identity, pinnedParticipantId]);
+      pinnedConnectionIdentifier === participant.identity ? undefined : (participant.identity as ConnectionIdentifier);
+    dispatch(pinnedConnectionIdentifierSet(updatePinnedId));
+  }, [dispatch, participant.identity, pinnedConnectionIdentifier]);
 
   return (
     <ThumbnailContainer onClick={togglePin} width={width} data-testid={`thumbsVideo-${participant.identity}`}>

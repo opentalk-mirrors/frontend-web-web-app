@@ -63,8 +63,8 @@ const WaitingParticipantItem = ({ participant }: ParticipantRowProps) => {
 
   const handleAccept = useCallback(() => {
     if (participant.waitingState === WaitingState.Waiting) {
-      dispatch(acceptParticipantFromWaitingRoomToRoom.action({ target: participant.participantId }));
-      dispatch(approveToEnter(participant.participantId));
+      dispatch(acceptParticipantFromWaitingRoomToRoom.action({ target: participant.id }));
+      dispatch(approveToEnter(participant.id));
       notifications.info(t('meeting-notification-user-was-accepted', { user: participant.displayName }));
     }
   }, [dispatch, participant, t]);

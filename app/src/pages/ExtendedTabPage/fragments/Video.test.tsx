@@ -44,7 +44,7 @@ describe('Video', () => {
       getTrackPublication: vi.fn().mockReturnValue(publication),
     } as unknown as RemoteParticipant;
     const room = {
-      remoteParticipants: new Map([[mediaDescriptor.participantId, participant]]),
+      remoteParticipants: new Map([[mediaDescriptor.connectionIdentifier, participant]]),
     } as unknown as Room;
 
     render(<Video mediaDescriptor={mediaDescriptor} room={room} />);
@@ -70,7 +70,7 @@ describe('Video', () => {
       getTrackPublication: vi.fn().mockReturnValue(publication),
     } as unknown as RemoteParticipant;
     const room = {
-      remoteParticipants: new Map([[mediaDescriptor.participantId, participant]]),
+      remoteParticipants: new Map([[mediaDescriptor.connectionIdentifier, participant]]),
     } as unknown as Room;
 
     render(<Video mediaDescriptor={mediaDescriptor} room={room} />);

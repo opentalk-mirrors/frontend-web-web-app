@@ -79,10 +79,7 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopove
             <ListItemText>{t('chat-private-scope')}</ListItemText>
           </MenuItem>,
           participants.map((participant) => (
-            <MenuItem
-              key={participant.id}
-              onClick={() => handleChatSelected(participant.participantId, ChatScope.Private)}
-            >
+            <MenuItem key={participant.id} onClick={() => handleChatSelected(participant.id, ChatScope.Private)}>
               <ListItemText translate="no">{participant.displayName}</ListItemText>
             </MenuItem>
           )),

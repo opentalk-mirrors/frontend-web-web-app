@@ -27,7 +27,7 @@ type IRemoteVideoProps = VideoHTMLAttributes<HTMLVideoElement> & {
 };
 
 const RemoteVideo = ({ descriptor }: IRemoteVideoProps) => {
-  const videoTrack = useParticipantTracks([descriptor.mediaType], descriptor.participantId)[0];
+  const videoTrack = useParticipantTracks([descriptor.mediaType], descriptor.connectionIdentifier)[0];
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   return (

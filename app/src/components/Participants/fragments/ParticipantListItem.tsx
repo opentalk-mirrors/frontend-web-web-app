@@ -158,7 +158,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).subroomAudio;
 
   const selectedParticipant = useRemoteParticipant(participant.id);
-  const participantId = participant.participantId;
+  const participantId = participant.id;
   const selectedParticipantCanPublishScreenShare =
     selectedParticipant?.permissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
   const audioActive = selectedParticipant?.isMicrophoneEnabled || false;

@@ -19,17 +19,17 @@ const RoomContainer = styled(LiveKitRoom)({
 
 const ExtendedTabPage = () => {
   const { channelId } = useParams();
-  const { accessToken, mediaType, participantId, livekitUrl } = useBroadcastChannel(channelId);
+  const { accessToken, mediaType, connectionIdentifier, livekitUrl } = useBroadcastChannel(channelId);
 
   const room = useAppSelector(selectLivekitRoom);
 
-  if (room === undefined || mediaType === undefined || participantId === undefined) {
+  if (room === undefined || mediaType === undefined || connectionIdentifier === undefined) {
     return <CircularProgress />;
   }
 
   return (
     <RoomContainer room={room} token={accessToken} serverUrl={livekitUrl} video={false} audio={false}>
-      <Video mediaDescriptor={{ mediaType, participantId }} room={room} />
+      <Video mediaDescriptor={{ mediaType, connectionIdentifier }} room={room} />
     </RoomContainer>
   );
 };

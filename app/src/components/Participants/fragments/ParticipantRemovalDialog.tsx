@@ -38,7 +38,7 @@ const ParticipantRemovalDialog = ({ open, onClose, participant }: ParticipantRem
   const dispatch = useAppDispatch();
 
   const handleConfirm = () => {
-    dispatch(kickParticipant.action({ target: participant.participantId }));
+    dispatch(kickParticipant.action({ target: participant.id }));
     dispatch(enableWaitingRoom.action());
     const formatKickedTime = format(Date.parse(new Date().toISOString()), 'HH:mm');
     notifications.info(

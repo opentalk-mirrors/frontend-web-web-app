@@ -20,13 +20,13 @@ import type {
   ParticipationKind,
   ConnectionId,
 } from '../common';
+import { DeviceId } from '../device';
 import { RoomInfo } from '../event';
 import { LegalVoteJoinSuccess, VoteSummary } from '../legalVote';
 import { Participant } from '../participant';
 import { InitialPoll } from '../poll';
 import { TimerState } from '../timer';
 import { WhiteboardState } from '../whiteboard';
-import { DeviceId } from '../device';
 
 export interface JoinSuccessInternalState {
   participantId: ParticipantId;
@@ -139,6 +139,7 @@ export interface ModuleData {
 
 export interface WaitingRoomParticipant {
   participantId: ParticipantId;
+  connections: ConnectionId[];
   accepted: boolean;
   joinedAt: Timestamp;
   displayName: string;
@@ -216,4 +217,4 @@ export type RoomserverParticipant = {
   moduleData: PeerModuleData;
 };
 
-export type ConnectionInfo = { connectionId: string; deviceId: string };
+export type ConnectionInfo = { connectionId: ConnectionId; deviceId: DeviceId };

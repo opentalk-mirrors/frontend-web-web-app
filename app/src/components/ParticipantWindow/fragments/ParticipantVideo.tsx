@@ -16,7 +16,8 @@ import {
   presenterOverlayPinnedParticipantIdSet,
   selectPresenterOverlayPinnedParticipantId,
 } from '../../../store/slices/uiSlice';
-import { ParticipantId, VideoSetting } from '../../../types';
+import { ConnectionIdentifier, VideoSetting } from '../../../types';
+import { deconstructIdentity } from '../../../utils/deconstructIdentity';
 import { AvatarContainer } from './AvatarContainer';
 import RemoteVideo from './RemoteVideo';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
@@ -32,22 +33,23 @@ const ScreenShareContainer = styled('div')({
 });
 
 interface ParticipantVideoProps {
-  participantId: ParticipantId;
+  connectionIdentifier: ConnectionIdentifier;
   presenterVideoIsActive?: boolean;
   isThumbnail?: boolean;
 }
 
-const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
-  const participant = useRemoteParticipant(participantId);
+const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
+  const participant = useRemoteParticipant(connectionIdentifier);
   const dispatch = useAppDispatch();
+  const { participantId } = deconstructIdentity(connectionIdentifier);
 
   const videoDescriptor = useMemo<MediaDescriptor>(
-    () => ({ participantId, mediaType: Track.Source.Camera }),
-    [participantId]
+    () => ({ connectionIdentifier, mediaType: Track.Source.Camera }),
+    [connectionIdentifier]
   );
   const screenDescriptor = useMemo<MediaDescriptor>(
-    () => ({ participantId, mediaType: Track.Source.ScreenShare }),
-    [participantId]
+    () => ({ connectionIdentifier, mediaType: Track.Source.ScreenShare }),
+    [connectionIdentifier]
   );
 
   const qualityCap = useAppSelector(selectQualityCap);
@@ -57,7 +59,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
   const [showPresenterVideo, setShowPresenterVideo] = useState<boolean>(!!presenterVideoIsActive);
   const presenterOverlayPinnedParticipantId = useAppSelector(selectPresenterOverlayPinnedParticipantId);
-  const isVideoPinned = presenterOverlayPinnedParticipantId === participantId;
+  const isVideoPinned = presenterOverlayPinnedParticipantId === connectionIdentifier;
   const presenterVideoPosition = useAppSelector(selectPresenterVideoPosition);
 
   const slideDirection = presenterVideoPosition === 'upperRight' ? 'down' : 'up';
@@ -86,7 +88,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
   }, [presenterVideoIsActive]);
 
   const togglePin = () => {
-    dispatch(presenterOverlayPinnedParticipantIdSet(isVideoPinned ? undefined : participantId));
+    dispatch(presenterOverlayPinnedParticipantIdSet(isVideoPinned ? undefined : connectionIdentifier));
   };
 
   const movePresenterVideo = () => {
@@ -110,7 +112,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
         {showCamera && (
           <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerElement}>
             <ScreenPresenterVideo
-              participantId={participantId}
+              connectionIdentifier={connectionIdentifier}
               isVideoPinned={isVideoPinned}
               togglePin={togglePin}
               videoPosition={presenterVideoPosition}
