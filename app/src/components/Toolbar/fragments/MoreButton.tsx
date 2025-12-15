@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MoreIcon } from '../../../assets/icons';
@@ -13,9 +13,12 @@ import ToolbarButton from './ToolbarButton';
 
 const MenuButton = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
   const { t } = useTranslation();
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
+  const handleMenuRef = useCallback((node: HTMLDivElement | null) => {
+    setAnchorEl(node);
+  }, []);
 
   const closeMenu = () => {
     setShowMenu(false);
@@ -25,7 +28,7 @@ const MenuButton = () => {
   };
 
   return (
-    <div ref={menuRef}>
+    <div ref={handleMenuRef}>
       <ToolbarButton
         tooltipTitle={t('toolbar-button-more-tooltip-title')}
         active={showMenu}
@@ -36,7 +39,7 @@ const MenuButton = () => {
       >
         <MoreIcon />
       </ToolbarButton>
-      <MoreMenu onClose={closeMenu} anchorEl={menuRef.current} open={showMenu} />
+      <MoreMenu onClose={closeMenu} anchorEl={anchorEl} open={showMenu} />
     </div>
   );
 };
