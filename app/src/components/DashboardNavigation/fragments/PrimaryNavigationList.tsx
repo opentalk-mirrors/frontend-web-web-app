@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
-import { ListItem } from './PrimaryNavigationEntry';
+import PrimaryNavigationListItem from './PrimaryNavigationListItem';
 import { SecondaryRoute } from './SecondaryNavigation';
 import { FilterMode } from './constants';
 
@@ -55,7 +55,7 @@ const PrimaryNavigationList = ({ collapsedBar, filter, submenu, routes, setActiv
     const hasSubmenu = childRoutes ? childRoutes.length > 0 : false;
     const isSubmenuOpen = path.includes(submenu) && hasSubmenu;
     return (
-      <ListItem key={path} isSubmenuOpen={isSubmenuOpen}>
+      <PrimaryNavigationListItem key={path} isSubmenuOpen={isSubmenuOpen}>
         <NavLink
           onClick={(event) => handleNavigation(event, hasSubmenu, path)}
           to={path}
@@ -69,7 +69,7 @@ const PrimaryNavigationList = ({ collapsedBar, filter, submenu, routes, setActiv
             <ListItemText>{t(name)}</ListItemText>
           </Collapse>
         </NavLink>
-      </ListItem>
+      </PrimaryNavigationListItem>
     );
   });
 

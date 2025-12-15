@@ -12,7 +12,8 @@ import {
   ScreenShareResolutionValues,
   setScreenShareConfig,
 } from '../../../store/slices/mediaSlice';
-import { DeviceListMenuItem, StyledMenuList } from './DeviceList';
+import DeviceListMenuItem from './DeviceListMenuItem';
+import StyledMenuList from './StyledMenuList';
 
 const OptionList = ({
   values,

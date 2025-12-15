@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { AuthCallbackComponent, selectAuthIsPending } from '@opentalk/redux-oidc';
 import { selectIsAuthenticated, useAuthContext } from '@opentalk/redux-oidc';
-import React, { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, To, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -13,9 +13,6 @@ import { useInviteCode } from '../../hooks/useInviteCode';
 import log from '../../logger';
 import { selectUiMode, setUiMode, UiMode } from '../../store/slices/uiSlice';
 import { navigateTo } from '../../utils/navigation';
-
-export const InvitePage = React.lazy(() => import('../../pages/InvitePage'));
-export const ExtendedTabPage = React.lazy(() => import('../../pages/ExtendedTabPage'));
 
 type ProtectedRouteProps = PropsWithChildren;
 

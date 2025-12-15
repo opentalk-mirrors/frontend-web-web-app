@@ -1,12 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ListItemIcon, ListItemText, ListSubheader, MenuItem, MenuList, Typography, styled } from '@mui/material';
+import { ListItemIcon, ListItemText, ListSubheader, Typography } from '@mui/material';
 import { ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DoneIcon } from '../../../assets/icons';
 import { DeviceId } from '../../../types/device';
+import DeviceListMenuItem from './DeviceListMenuItem';
+import StyledMenuList from './StyledMenuList';
 
 interface DeviceListSubheader {
   title: string;
@@ -19,31 +21,6 @@ export interface DeviceListProps {
   onSelectDevice: (deviceId: DeviceId) => void;
   subheader: DeviceListSubheader;
 }
-
-export const StyledMenuList = styled(MenuList)(({ theme }) => ({
-  paddingRight: theme.spacing(1.5),
-  '& .MuiSvgIcon-root': {
-    color: 'currentColor',
-    fontSize: '1.15em',
-  },
-  '& .MuiListSubheader-root': {
-    color: 'currentColor',
-    backgroundColor: 'inherit',
-    fontWeight: 'bold',
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(2),
-    padding: theme.spacing(0, 1.5, 1),
-    fontSize: '1rem',
-    font: 'inherit',
-  },
-}));
-
-export const DeviceListMenuItem = styled(MenuItem)(() => ({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  fontSize: '0.875rem',
-}));
 
 const DeviceList = (props: DeviceListProps) => {
   const {
