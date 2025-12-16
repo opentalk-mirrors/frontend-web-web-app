@@ -30,7 +30,6 @@ export default defineConfig([
     },
     ignores: [
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
-      'packages/redux-oidc/src/authProvider.tsx',
     ],
   },
   eslint.configs.recommended,
