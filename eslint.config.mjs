@@ -29,7 +29,6 @@ export default defineConfig([
       ...reactHooks.configs.flat.recommended.rules,
     },
     ignores: [
-      'app/src/commonComponents/DurationField/DurationField.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
     ],
