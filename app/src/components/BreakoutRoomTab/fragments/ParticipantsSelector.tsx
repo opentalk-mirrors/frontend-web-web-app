@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Typography, styled } from '@mui/material';
 import i18n from 'i18next';
-import { includes, isEmpty, xorBy, isEqual } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { xorBy } from 'lodash';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { AccordionItem } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
@@ -53,29 +53,22 @@ const ParticipantsSelector = ({
   );
 
   const calculatedAssignments = useMemo(() => {
-    const hasAssignments = !isEmpty(assignments);
-    let baseAssignments: BreakoutRoomWithFullParticipants[];
-
-    if (hasAssignments) {
-      baseAssignments = assignments;
-    } else {
-      let assignedRooms: number;
-      switch (selectionMode) {
-        case DropdownOptions.Rooms:
-          assignedRooms = Math.max(2, rooms);
-          break;
-        case DropdownOptions.Participants: {
-          const safeParticipantsPerRoom = Math.max(2, participantsPerRoom);
-          assignedRooms = Math.floor(participants.length / safeParticipantsPerRoom);
-          break;
-        }
+    let assignedRooms: number;
+    switch (selectionMode) {
+      case DropdownOptions.Rooms:
+        assignedRooms = Math.max(2, rooms);
+        break;
+      case DropdownOptions.Participants: {
+        const safeParticipantsPerRoom = Math.max(2, participantsPerRoom);
+        assignedRooms = Math.floor(participants.length / safeParticipantsPerRoom);
+        break;
       }
-      baseAssignments = createDefaultRooms(assignedRooms);
     }
+    const baseAssignments: BreakoutRoomWithFullParticipants[] = createDefaultRooms(assignedRooms);
 
     return baseAssignments.map((breakoutRoom) => ({
       ...breakoutRoom,
-      assignments: breakoutRoom.assignments.filter((assignment) => includes(participants, assignment)),
+      assignments: assignments.find((assignment) => assignment.name === breakoutRoom.name)?.assignments ?? [],
     }));
   }, [assignments, createDefaultRooms, participants, participantsPerRoom, rooms, selectionMode]);
 
@@ -85,12 +78,6 @@ const ParticipantsSelector = ({
     );
     return xorBy(assignedParticipantsList, participants, 'id');
   }, [calculatedAssignments, participants]);
-
-  useEffect(() => {
-    if (!isEqual(assignments, calculatedAssignments)) {
-      onChange(calculatedAssignments);
-    }
-  }, [assignments, calculatedAssignments, onChange]);
 
   const handleChange = useCallback(
     (breakoutRoomName: string, assignedParticipants: Participant[]) => {
