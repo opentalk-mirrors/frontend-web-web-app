@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-/* eslint-env browser, node, worker */
 // https://github.com/m-lab/ndt7-js
 
 // Node doesn't have WebSocket defined, so it needs this library.

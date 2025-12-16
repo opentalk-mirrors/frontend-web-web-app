@@ -4,7 +4,8 @@
 // Switch off the rule, as it doesn't recognize assertion in the utility helper function
 // Maybe it's a bug or maybe it's not a good practice to use this kind of helper function
 /* eslint-disable vitest/expect-expect */
-import { screen, fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { notifications } from '../../../commonComponents';
 import { ForceMuteType, Role } from '../../../types';
@@ -31,7 +32,7 @@ vi.mock('./InviteGuestDialog', () => ({
   },
 }));
 
-describe('<MoreMenu />', () => {
+describe('MoreMenu', () => {
   const { store } = configureStore();
 
   const checkMenuItem = (name: string, falsify?: boolean) => {
@@ -49,12 +50,13 @@ describe('<MoreMenu />', () => {
     expect(screen.queryByTestId('moreMenu')).not.toBeInTheDocument();
   });
 
-  it('renders moreMenu after clicking on MoreMenuButton', () => {
+  it('renders moreMenu after clicking on MoreMenuButton', async () => {
+    const user = userEvent.setup();
     renderWithProviders(<MenuButton />, { store, provider: { snackbar: true, mui: true } });
     const button = screen.getByTestId('toolbarMenuButton');
     expect(button).toBeInTheDocument();
 
-    fireEvent.click(button);
+    await user.click(button);
 
     expect(screen.getByTestId('moreMenu')).toBeInTheDocument();
   });
@@ -91,7 +93,9 @@ describe('<MoreMenu />', () => {
         expect(screen.getByTestId('invite-guest-dialog')).toBeInTheDocument();
         expect(screen.queryByText('Invite Guest Open')).not.toBeInTheDocument();
       });
-      it('opens invite guest dialog when user clicks on inivte guest menu option', () => {
+      it('opens invite guest dialog when user clicks on inivte guest menu option', async () => {
+        // eslint-disable-next-line testing-library/render-result-naming-convention
+        const user = userEvent.setup();
         const { store: storeWithGuestsAllowed } = configureStore({
           initialState: {
             ...moderatorState,
@@ -103,7 +107,7 @@ describe('<MoreMenu />', () => {
           provider: { snackbar: true, mui: true },
         });
         const inviteGuest = screen.getByRole('menuitem', { name: 'more-menu-create-invite' });
-        fireEvent.click(inviteGuest);
+        await user.click(inviteGuest);
         expect(screen.getByText('Invite Guest Open')).toBeInTheDocument();
       });
     });
@@ -248,26 +252,30 @@ describe('<MoreMenu />', () => {
       window.localStorage.setItem('devMode', 'true');
     });
 
-    it('shows success notification when show test info option is clicked', () => {
+    it('shows success notification when show test info option is clicked', async () => {
+      // eslint-disable-next-line testing-library/render-result-naming-convention
+      const user = userEvent.setup();
       renderWithProviders(<MoreMenu open anchorEl={document.createElement('div')} onClose={vi.fn()} />, {
         store,
         provider: { mui: true, snackbar: true },
       });
       const spyNotificationsSuccess = vi.spyOn(notifications, 'success');
 
-      fireEvent.click(screen.getByText('Show Test Info'));
+      await user.click(screen.getByText('Show Test Info'));
 
       expect(spyNotificationsSuccess).toHaveBeenCalledExactlyOnceWith('You just triggered this notification. Success!');
     });
 
-    it('shows error notification when show test error option is clicked', () => {
+    it('shows error notification when show test error option is clicked', async () => {
+      // eslint-disable-next-line testing-library/render-result-naming-convention
+      const user = userEvent.setup();
       renderWithProviders(<MoreMenu open anchorEl={document.createElement('div')} onClose={vi.fn()} />, {
         store,
         provider: { mui: true, snackbar: true },
       });
       const spyNotificationsError = vi.spyOn(notifications, 'error');
 
-      fireEvent.click(screen.getByText('Show Test Error'));
+      await user.click(screen.getByText('Show Test Error'));
 
       expect(spyNotificationsError).toHaveBeenCalledExactlyOnceWith('Test error context: Error: Test Error');
     });

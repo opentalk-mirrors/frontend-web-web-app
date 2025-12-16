@@ -70,6 +70,26 @@ interface MenuEntry {
   icon: React.ReactNode;
 }
 
+const MenuTitleContainer = styled(Stack)(({ theme }) => ({
+  alignItems: 'center',
+  padding: theme.spacing(0, 2, 0, 1),
+  justifyContent: 'space-between',
+  color: theme.palette.text.primary,
+}));
+
+const MenuTitle = styled(Typography)(({ theme }) => ({
+  fontSize: theme.typography.pxToRem(14),
+  fontWeight: 'initial',
+}));
+
+const Avatar = styled(ParticipantAvatar)({
+  transform: 'scale(0.5)',
+});
+
+const Divider = styled(MuiDivider)({
+  marginTop: 0,
+});
+
 const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const { t } = useTranslation();
@@ -421,26 +441,6 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         </Typography>
       </ToolbarMenuItem>
     ));
-
-  const MenuTitleContainer = styled(Stack)(({ theme }) => ({
-    alignItems: 'center',
-    padding: theme.spacing(0, 2, 0, 1),
-    justifyContent: 'space-between',
-    color: theme.palette.text.primary,
-  }));
-
-  const MenuTitle = styled(Typography)(({ theme }) => ({
-    fontSize: theme.typography.pxToRem(14),
-    fontWeight: 'initial',
-  }));
-
-  const Avatar = styled(ParticipantAvatar)({
-    transform: 'scale(0.5)',
-  });
-
-  const Divider = styled(MuiDivider)({
-    marginTop: 0,
-  });
 
   return (
     <>
