@@ -29,7 +29,7 @@ const ChatAnnouncement = (props: ChatAnnouncementProps) => {
     return () => {
       clearTimeout(timer);
     };
-  }, []);
+  }, [onAnnouncementEnd]);
 
   return <Typography>{announcement}</Typography>;
 };
