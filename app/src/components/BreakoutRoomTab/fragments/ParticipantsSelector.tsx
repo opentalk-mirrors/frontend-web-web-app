@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Typography, styled } from '@mui/material';
 import i18n from 'i18next';
-import { includes, isEmpty, xorBy } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { xorBy } from 'lodash';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { AccordionItem } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
@@ -39,77 +39,60 @@ const ParticipantsSelector = ({
   onChange,
 }: IParticipantsSelectorProps) => {
   const participants = useAppSelector(selectCombinedParticipantsAndUser);
-  const [unassignedParticipants, setUnassignedParticipants] = useState<Participant[]>(participants);
-  const [assignedParticipants, setAssignedParticipants] = useState<Array<BreakoutRoomWithFullParticipants>>(
-    assignments || []
-  );
   const [expandedPanels, setExpandedPanels] = useState<string[]>([]);
 
-  const handleSetUnAssignedParticipants = useCallback(
-    (breakoutRooms: Array<BreakoutRoomWithFullParticipants>, allParticipants: Participant[]) => {
-      const assignedParticipants: Participant[] = breakoutRooms.flatMap((breakoutRoom) => breakoutRoom.assignments);
-      setUnassignedParticipants(xorBy(assignedParticipants, allParticipants, 'id'));
-    },
+  const createDefaultRooms = useCallback(
+    (roomCount: number) =>
+      Array(roomCount)
+        .fill(null)
+        .map((_, index) => ({
+          name: i18n.t('room', { roomNumber: index + 1 }),
+          assignments: [],
+        })),
     []
   );
 
-  useEffect(() => {
-    setAssignedParticipants((prevAssignedParticipants) => {
-      const newAssignments = prevAssignedParticipants.map((prevAssignedParticipant) => ({
-        ...prevAssignedParticipant,
-        assignments: prevAssignedParticipant.assignments.filter((assignment) => includes(participants, assignment)),
-      }));
-      handleSetUnAssignedParticipants(newAssignments, participants);
-      return newAssignments;
-    });
-  }, [participants, handleSetUnAssignedParticipants]);
-
-  const initRooms = useCallback((roomCount: number) => {
-    const breakoutRooms: Array<{ name: string; assignments: Participant[] }> = Array(roomCount)
-      .fill(null)
-      .map((_, index) => ({
-        name: i18n.t('room', { roomNumber: index + 1 }),
-        assignments: [],
-      }));
-    setAssignedParticipants(breakoutRooms);
-  }, []);
-
-  useEffect(() => {
-    if (isEmpty(assignments)) {
-      let assigned_rooms: number;
-      switch (selectionMode) {
-        case DropdownOptions.Rooms:
-          assigned_rooms = Math.max(2, rooms);
-          break;
-        case DropdownOptions.Participants: {
-          const safeParticipantsPerRoom = Math.max(2, participantsPerRoom);
-          assigned_rooms = Math.floor(participants.length / safeParticipantsPerRoom);
-          break;
-        }
+  const calculatedAssignments = useMemo(() => {
+    let assignedRooms: number;
+    switch (selectionMode) {
+      case DropdownOptions.Rooms:
+        assignedRooms = Math.max(2, rooms);
+        break;
+      case DropdownOptions.Participants: {
+        const safeParticipantsPerRoom = Math.max(2, participantsPerRoom);
+        assignedRooms = Math.floor(participants.length / safeParticipantsPerRoom);
+        break;
       }
-
-      initRooms(assigned_rooms);
     }
-  }, [assignments, initRooms, selectionMode, participantsPerRoom, rooms, participants.length]);
+    const baseAssignments: BreakoutRoomWithFullParticipants[] = createDefaultRooms(assignedRooms);
+
+    return baseAssignments.map((breakoutRoom) => ({
+      ...breakoutRoom,
+      assignments: assignments.find((assignment) => assignment.name === breakoutRoom.name)?.assignments ?? [],
+    }));
+  }, [assignments, createDefaultRooms, participants, participantsPerRoom, rooms, selectionMode]);
+
+  const unassignedParticipants = useMemo(() => {
+    const assignedParticipantsList: Participant[] = calculatedAssignments.flatMap(
+      (breakoutRoom) => breakoutRoom.assignments
+    );
+    return xorBy(assignedParticipantsList, participants, 'id');
+  }, [calculatedAssignments, participants]);
 
   const handleChange = useCallback(
     (breakoutRoomName: string, assignedParticipants: Participant[]) => {
-      setAssignedParticipants((prevAssignedParticipants) => {
-        const newAssignments = prevAssignedParticipants.map((prevAssignedParticipant) => {
-          if (breakoutRoomName === prevAssignedParticipant.name) {
-            return {
-              ...prevAssignedParticipant,
-              assignments: assignedParticipants,
-            };
-          }
-          return prevAssignedParticipant;
-        });
-        onChange(newAssignments);
-        handleSetUnAssignedParticipants(newAssignments, participants);
-        return newAssignments;
+      const newAssignments = calculatedAssignments.map((prevAssignedParticipant) => {
+        if (breakoutRoomName === prevAssignedParticipant.name) {
+          return {
+            ...prevAssignedParticipant,
+            assignments: assignedParticipants,
+          };
+        }
+        return prevAssignedParticipant;
       });
+      onChange(newAssignments);
     },
-    [onChange, participants, handleSetUnAssignedParticipants]
+    [calculatedAssignments, onChange]
   );
 
   const RenderedRooms = useMemo(() => {
@@ -141,7 +124,7 @@ const ParticipantsSelector = ({
       });
     };
 
-    return assignedParticipants.map(({ name, assignments }) => (
+    return calculatedAssignments.map(({ name, assignments }) => (
       <Box position="relative" key={name}>
         <AccordionItem
           onChange={(event, newExpanded) => handleExpandedChange(event, newExpanded, name)}
@@ -165,7 +148,7 @@ const ParticipantsSelector = ({
         />
       </Box>
     ));
-  }, [assignedParticipants, expandedPanels, handleChange, unassignedParticipants]);
+  }, [calculatedAssignments, expandedPanels, handleChange, unassignedParticipants]);
 
   return (
     <Box

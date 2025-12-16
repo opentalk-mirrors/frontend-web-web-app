@@ -4,8 +4,8 @@
 import { Box, Button, MenuItem, Select, Stack, Switch, styled } from '@mui/material';
 import { FormikValues, useFormik } from 'formik';
 import i18next from 'i18next';
-import { reduce, shuffle } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { intersectionBy, reduce, shuffle } from 'lodash';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 
@@ -151,6 +151,23 @@ const CreateRoomsForm = () => {
     validateOnBlur: false,
     onSubmit: handleSubmit,
   });
+
+  const deleteOfflineParticipantsFromAssignments = useCallback(
+    (assignments: BreakoutRoomWithFullParticipants[]) =>
+      assignments.map((room) => {
+        return {
+          ...room,
+          assignments: intersectionBy(room.assignments, participants, 'id'),
+        };
+      }),
+    [participants]
+  );
+
+  useEffect(() => {
+    formik.setFieldValue('assignments', deleteOfflineParticipantsFromAssignments(formik.values.assignments));
+    // todo fix this eslint with a  proper refactoring of the breakout rooms form
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteOfflineParticipantsFromAssignments, participants]);
 
   const ariaId = generateUniqueId();
 
