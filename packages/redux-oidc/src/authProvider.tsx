@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useEffect, useState } from 'react';
+import { FC, PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { AuthAdapter, AuthAdapterConfiguration, AuthenticationProviderUrls } from './authAdapter';
@@ -26,22 +26,28 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
   const isAuthError = useSelector(selectError);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const loginTimestamp = useSelector(selectLoginTimestamp);
-  const isRefresTokenLoading = useSelector(selectIsRefreshTokenLoading);
+  const isRefreshTokenLoading = useSelector(selectIsRefreshTokenLoading);
   const [openidConfig, setOpenidConfig] = useState<AuthenticationProviderUrls>();
 
   // default is window.location.href
-  const signIn = async (redirectUrl?: string): Promise<void> => {
-    return authAdapter.startOidcSignIn(redirectUrl);
-  };
+  const signIn = useCallback(
+    async (redirectUrl?: string): Promise<void> => {
+      return authAdapter.startOidcSignIn(redirectUrl);
+    },
+    [authAdapter]
+  );
 
-  const signOut = (signOutRedirectUrl?: string) => {
-    authAdapter.signOut(signOutRedirectUrl);
-  };
+  const signOut = useCallback(
+    (signOutRedirectUrl?: string) => {
+      authAdapter.signOut(signOutRedirectUrl);
+    },
+    [authAdapter]
+  );
 
   const getBaseUrl = () => authAdapter.getBaseUrl();
   const getSavedRedirectUrl = () => authAdapter.getSavedLocation();
 
-  const getNewRefreshToken = () => {
+  const getNewRefreshToken = useCallback(() => {
     authAdapter.getConfigurationEndpoints().then((config) => {
       dispatch(
         getNewToken({
@@ -51,26 +57,26 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
         })
       );
     });
-  };
+  }, [authAdapter, configuration.baseUrl, configuration.clientId, dispatch]);
 
   useEffect(() => {
     authAdapter.getConfigurationEndpoints().then((res) => setOpenidConfig(res));
   }, [authAdapter]);
   /**
    * When authenticated:
-   * 1. If access token is not valid get immediatly new one and put loading state to true
+   * 1. If access token is not valid get immediately new one and put loading state to true
    * 2. If access token is valid set interval for getting new one
    */
   useEffect(() => {
     if (isAuthenticated) {
-      if (isRefresTokenLoading) {
+      if (isRefreshTokenLoading) {
         return;
       }
       const accessToken = authAdapter.getAccessToken();
       if (!hasValidToken(accessToken)) {
-        // We manualy dispatch startLoading from here, because user is already authenticated, but token is not automaticly refetched
-        // (probably because user closed the app in the meantime or connection issues occured)
-        // The UI needs to waits untill new token is requested.
+        // We manually dispatch startLoading from here, because user is already authenticated, but token is not automatically refetched
+        // (probably because user closed the app in the meantime or connection issues occurred)
+        // The UI needs to waits until new token is requested.
         dispatch(startLoading());
         getNewRefreshToken();
       } else {
@@ -83,11 +89,11 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
         };
       }
     }
-  }, [isAuthenticated, loginTimestamp]);
+  }, [authAdapter, dispatch, getNewRefreshToken, isAuthenticated, isRefreshTokenLoading, loginTimestamp]);
 
   // ERROR handling
   useEffect(() => {
-    if (isRefresTokenLoading) {
+    if (isRefreshTokenLoading) {
       return;
     }
     if (isRefreshAuthError) {
@@ -96,7 +102,7 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
     if (isAuthError && isAuthError.name === AuthTypeError.SessionExpired) {
       getNewRefreshToken();
     }
-  }, [isRefreshAuthError, isAuthError]);
+  }, [getNewRefreshToken, isAuthError, isRefreshAuthError, isRefreshTokenLoading, signOut]);
 
   return (
     <AuthContext.Provider
