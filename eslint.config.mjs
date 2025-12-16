@@ -32,7 +32,6 @@ export default defineConfig([
       'app/src/commonComponents/DurationField/DurationField.tsx',
       'app/src/components/BreakoutRoomTab/fragments/ParticipantsSelector.tsx',
       'app/src/components/Chat/fragments/ChatAnnouncement.tsx',
-      'app/src/components/MeetingHeader/fragments/SharedFolderPopover.tsx',
       'packages/redux-oidc/src/authProvider.tsx',
     ],
   },
