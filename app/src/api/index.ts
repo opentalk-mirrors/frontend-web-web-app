@@ -7,6 +7,7 @@ import i18next from 'i18next';
 import {
   notifications,
   setLibravatarOptions,
+  startTimeLimitNotification,
 } from '../commonComponents';
 import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
@@ -299,9 +300,9 @@ const handleRoomServerCoreMessage = async (
         dispatch(setWhiteboardAvailable({ showWhiteboard: true, url: moduleData.whiteboard.url }));
       }
 
-      // if (data.closesAt) {
-      //   startTimeLimitNotification(data.closesAt);
-      // }
+      if (data.closesAt) {
+        await startTimeLimitNotification(data.closesAt);
+      }
 
       // Notify moderator, in case he took the last position of the room and now it's full
       if (data.role === Role.Moderator) {

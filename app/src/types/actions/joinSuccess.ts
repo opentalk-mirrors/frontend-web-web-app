@@ -105,18 +105,19 @@ export interface JoinSuccessIncoming {
 export interface JoinSuccessRoomserver {
   id: ParticipantId;
   connectionId: ConnectionId;
-  deviceId: DeviceId;
-  avatarUrl?: string;
+  deviceId: string;
   connections: ConnectionInfo[];
   displayName: string;
+  avatarUrl?: string;
   role: Role;
+  closesAt?: Timestamp;
   tariff: Tariff;
+  moduleData: ModuleData;
   participants: RoomserverParticipant[];
-  eventInfo: EventInfo;
+  eventInfo?: EventInfo;
   meetingDetails: MeetingDetails;
   roomInfo: RoomInfo;
   isRoomOwner: boolean;
-  moduleData: ModuleData;
 }
 
 export interface ModuleData {
