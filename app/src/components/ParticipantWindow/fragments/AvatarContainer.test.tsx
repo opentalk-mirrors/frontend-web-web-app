@@ -24,7 +24,7 @@ describe('render <AvatarContainer />', () => {
   });
 
   it('render with isSipParticipant flag should not render initials', () => {
-    const { store } = mockStore(1, { participantKinds: [ParticipationKind.Sip] });
+    const { store } = mockStore(1, { participantKinds: [ParticipationKind.CallIn] });
     renderWithProviders(<AvatarContainer participantId={participant.id} />, {
       store,
       provider: { mui: true },

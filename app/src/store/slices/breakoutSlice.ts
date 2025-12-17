@@ -26,9 +26,9 @@ export interface BreakoutState {
   // Selected breakout room by user
   selectedBreakoutRoom?: BreakoutRoomId;
   //  The room id we got assigned to
-  assignment: BreakoutRoomId | null;
+  assignment?: BreakoutRoomId;
   // currentBreakoutRoomId
-  currentBreakoutRoomId: BreakoutRoomId | null;
+  currentBreakoutRoomId?: BreakoutRoomId;
   // milliseconds since 1970
   stoppedAt?: number;
   // milliseconds since 1970
@@ -46,8 +46,8 @@ const initialState: BreakoutState = {
   expired: false,
   breakoutRooms: breakoutRooms.getInitialState(),
   inParentRoom: [],
-  currentBreakoutRoomId: null,
-  assignment: null,
+  currentBreakoutRoomId: undefined,
+  assignment: undefined,
 };
 
 export const breakoutSlice = createSlice({
@@ -69,7 +69,7 @@ export const breakoutSlice = createSlice({
       const rooms: Array<Room> = payload.rooms;
       breakoutRooms.setAll(state.breakoutRooms, rooms);
       state.startedAt = Date.now();
-      state.assignment = payload.assignment === null ? null : payload.assignment;
+      state.assignment = payload.assignment === undefined ? undefined : payload.assignment;
     },
     selected: (state, action: PayloadAction<BreakoutRoomId>) => {
       state.selectedBreakoutRoom = action.payload;
@@ -101,7 +101,7 @@ export const breakoutSlice = createSlice({
       state.active = payload.breakout !== undefined;
       if (payload.breakout !== undefined && payload.breakout.room.id !== null) {
         breakoutRooms.upsertMany(state.breakoutRooms, payload.breakout.rooms);
-        state.currentBreakoutRoomId = payload.breakout.room.id ?? null;
+        state.currentBreakoutRoomId = payload.breakout.room.id ?? undefined;
         state.stopped = false;
         state.expired = false;
       }

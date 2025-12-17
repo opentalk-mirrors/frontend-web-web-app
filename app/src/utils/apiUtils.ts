@@ -29,7 +29,7 @@ export const getSignalingUrl = (roomserverAddress: string, token: string) => {
   return new URL(`${addEndingSlash(roomServer)}v1/signaling/${token}`);
 };
 
-export const composeRoomPath = (roomId: RoomId, inviteCode?: InviteCode, breakoutRoomId?: BreakoutRoomId | null) => {
+export const composeRoomPath = (roomId: RoomId, inviteCode?: InviteCode, breakoutRoomId?: BreakoutRoomId) => {
   return `/room/${roomId}${breakoutRoomId ? `/${breakoutRoomId}` : ``}${inviteCode ? `?invite=${inviteCode}` : ''}`;
 };
 
@@ -37,7 +37,7 @@ export const composeInviteUrl = (
   baseUrl: string,
   roomId: RoomId,
   inviteCode?: InviteCode,
-  breakoutRoomId?: BreakoutRoomId | null
+  breakoutRoomId?: BreakoutRoomId
 ) => {
   const roomString = composeRoomPath(roomId, inviteCode, breakoutRoomId);
   return new URL(roomString, baseUrl);

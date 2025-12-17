@@ -349,7 +349,7 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
           startRoom({
             roomId,
             password: roomPassword,
-            breakoutRoomId: null,
+            breakoutRoomId: undefined,
             displayName,
             inviteCode: isLoggedIn ? undefined : inviteCode,
           })
@@ -370,7 +370,7 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
       listenerApi.dispatch(
         startRoom({
           roomId,
-          breakoutRoomId: breakoutRoomId || null,
+          breakoutRoomId,
           displayName,
           inviteCode,
         })

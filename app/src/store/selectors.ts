@@ -16,6 +16,7 @@ import {
   Participant,
   ParticipantId,
   ParticipationKind,
+  Role,
   SortOption,
 } from '../types';
 import { moveItemToTopOfArray } from '../utils/arrayUtils';
@@ -88,7 +89,7 @@ export const selectParticipantsWithourGuestAndSip = createSelector(
       (participant) =>
         !(
           participant.participationKind.match(ParticipationKind.Guest) ||
-          participant.participationKind.match(ParticipationKind.Sip)
+          participant.participationKind.match(ParticipationKind.CallIn)
         )
     )
 );
@@ -111,7 +112,9 @@ export const selectAllMeetingNotesParticipants = createSelector(
   (participants, user) => {
     if (user) {
       const allMeetingNotesParticipants = participants.filter(
-        (participant) => participant.participationKind !== ParticipationKind.Sip
+        (participant) =>
+          participant.participationKind !== ParticipationKind.Guest &&
+          participant.participationKind !== ParticipationKind.CallIn
       );
       const newParticipants = allMeetingNotesParticipants.map((participant): MeetingNotesParticipant => {
         const isSelected = participant.meetingNotesAccess === MeetingNotesAccess.Write;
@@ -271,7 +274,10 @@ export const selectParticipantsWithRaisedHands = createSelector(
 
 export const selectVotingUsers = createSelector([selectCombinedParticipantsAndUser], (records) => {
   return records.filter((record) => {
-    return record.role === 'user' || record.participationKind === 'user';
+    return (
+      (record.role === Role.User || record.participationKind === ParticipationKind.Registered) &&
+      record.participationKind !== ParticipationKind.Guest
+    );
   });
 });
 

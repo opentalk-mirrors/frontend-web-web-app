@@ -13,15 +13,14 @@ import {
 import { isEnumErrorStruct } from '../../../utils/tsUtils';
 
 export interface AssocParticipantInOtherRoom {
-  // BreakoutRoomId or null, null means the participant was in the parent room.
-  breakoutRoom: BreakoutRoomId | null;
+  breakoutRoom?: BreakoutRoomId;
   id: ParticipantId;
 }
 
 export interface Started {
   message: 'started';
   rooms: Array<BreakoutRoom>;
-  assignment: BreakoutRoomId | null;
+  assignment?: BreakoutRoomId;
   expires?: string;
 }
 

@@ -91,8 +91,8 @@ import { startedId } from './handlers/automod';
 const mapRoomserverParticipantToUi = (
   state: RootState,
   participant: RoomserverParticipant,
-  breakoutRoomId: BreakoutRoomId | null,
-  waitingState: WaitingState
+  waitingState: WaitingState,
+  breakoutRoomId?: BreakoutRoomId
 ): Participant => {
   return {
     id: participant.id,
@@ -106,7 +106,7 @@ const mapRoomserverParticipantToUi = (
     joinedAt: participant.moduleData.core.joinedAt,
     leftAt: participant.moduleData.core.leftAt ?? null,
     handUpdatedAt: undefined,
-    breakoutRoomId: breakoutRoomId,
+    breakoutRoomId,
     participationKind: participant.moduleData.core.participationKind,
     lastActive: new Date().toISOString(),
     role: participant.moduleData.core.role,
@@ -119,8 +119,8 @@ const mapRoomserverParticipantToUi = (
 const mapJoinedParticipantToUi = (
   state: RootState,
   participant: core.ParticipantConnected,
-  breakoutRoomId: BreakoutRoomId | null,
-  waitingState: WaitingState
+  waitingState: WaitingState,
+  breakoutRoomId?: BreakoutRoomId
 ): Participant => ({
   id: participant.participantId,
   connections: [participant.connectionId],
@@ -133,7 +133,7 @@ const mapJoinedParticipantToUi = (
   joinedAt: participant.peerData.core.joinedAt,
   leftAt: null,
   handUpdatedAt: undefined,
-  breakoutRoomId: breakoutRoomId,
+  breakoutRoomId,
   participationKind: participant.peerData.core.participationKind,
   lastActive: new Date().toISOString(),
   role: participant.peerData.core.role,
@@ -181,7 +181,7 @@ const handleRoomServerCoreMessage = async (
         const coreModuleData: CorePeerState = {
           displayName: data.displayName,
           role: data.role,
-          participationKind: ParticipationKind.User,
+          participationKind: ParticipationKind.Registered,
           joinedAt: new Date().toISOString() as Timestamp,
           isRoomOwner: data.isRoomOwner,
         };
@@ -202,8 +202,8 @@ const handleRoomServerCoreMessage = async (
         return mapRoomserverParticipantToUi(
           state,
           participant,
-          moduleData.breakout?.room.id || null,
-          WaitingState.Joined
+          WaitingState.Joined,
+          moduleData.breakout?.room.id || undefined
         );
       });
 
@@ -232,8 +232,8 @@ const handleRoomServerCoreMessage = async (
               joinedAt: waitingParticipant.joinedAt,
               leftAt: null,
               handUpdatedAt: undefined,
-              breakoutRoomId: null,
-              participationKind: ParticipationKind.User,
+              breakoutRoomId: undefined,
+              participationKind: ParticipationKind.Registered,
               lastActive: new Date().toISOString(),
               role: undefined,
               waitingState: WaitingState.Waiting,
@@ -350,8 +350,8 @@ const handleRoomServerCoreMessage = async (
           participant: mapJoinedParticipantToUi(
             state,
             data,
-            conference.roomCredentials.breakoutRoomId,
-            WaitingState.Joined
+            WaitingState.Joined,
+            conference.roomCredentials.breakoutRoomId
           ),
         })
       );

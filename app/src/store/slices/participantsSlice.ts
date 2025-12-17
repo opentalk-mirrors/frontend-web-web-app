@@ -138,7 +138,7 @@ export const participantsSlice = createSlice({
     breakoutLeft: (state, { payload: { id, timestamp } }: PayloadAction<{ id: ParticipantId; timestamp: string }>) => {
       participantAdapter.updateOne(state, {
         id,
-        changes: { breakoutRoomId: null, leftAt: timestamp },
+        changes: { breakoutRoomId: undefined, leftAt: timestamp },
       });
     },
     waitingRoomJoined: (state, { payload }: PayloadAction<JoinedWaitingRoomParticipant>) => {
@@ -153,10 +153,8 @@ export const participantsSlice = createSlice({
         leftAt: null,
         // TODO - remove
         handUpdatedAt: undefined,
-        breakoutRoomId: null,
-        // TODO - missing from backend?
-        participationKind: ParticipationKind.User,
-        // participationKind: payload.control.participationKind,
+        breakoutRoomId: undefined,
+        participationKind: ParticipationKind.Registered,
         lastActive: payload.joinedAt,
         meetingNotesAccess: MeetingNotesAccess.None,
         waitingState: WaitingState.Waiting,

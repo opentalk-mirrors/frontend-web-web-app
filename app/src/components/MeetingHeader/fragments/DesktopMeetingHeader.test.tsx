@@ -39,7 +39,7 @@ const MOCK_PARTICIPANTS = {
     id: String(i),
     waitingState: 'joined',
     leftAt: null,
-    breakoutRoomId: null,
+    breakoutRoomId: undefined,
   })),
 };
 
@@ -52,7 +52,7 @@ const { store } = configureStore({
     participants: MOCK_PARTICIPANTS,
     ui: MOCK_UI,
     breakout: {
-      selectCurrentBreakoutRoomId: null,
+      selectCurrentBreakoutRoomId: undefined,
     },
     sharedFolder: {
       sharedFolderData: {
@@ -113,7 +113,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         participants: MOCK_PARTICIPANTS,
         ui: { cinemaLayout: LayoutOptions.MeetingNotes },
         breakout: {
-          selectCurrentBreakoutRoomId: null,
+          selectCurrentBreakoutRoomId: undefined,
         },
         meetingNotes: { meetingNotesUrl: undefined },
       },
@@ -125,7 +125,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         participants: MOCK_PARTICIPANTS,
         ui: { cinemaLayout: LayoutOptions.MeetingNotes },
         breakout: {
-          selectCurrentBreakoutRoomId: null,
+          selectCurrentBreakoutRoomId: undefined,
         },
         meetingNotes: { meetingNotesUrl: 'https://example.com' },
       },
@@ -138,7 +138,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         participants: MOCK_PARTICIPANTS,
         ui: { cinemaLayout: LayoutOptions.Grid },
         breakout: {
-          selectCurrentBreakoutRoomId: null,
+          selectCurrentBreakoutRoomId: undefined,
         },
         meetingNotes: { meetingNotesUrl: 'https://example.com' },
       },
@@ -157,7 +157,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         participants: MOCK_PARTICIPANTS,
         ui: { cinemaLayout: LayoutOptions.Grid },
         breakout: {
-          selectCurrentBreakoutRoomId: null,
+          selectCurrentBreakoutRoomId: undefined,
         },
         sharedFolder: {
           sharedFolderData: {

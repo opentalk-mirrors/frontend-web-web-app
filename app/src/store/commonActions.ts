@@ -37,7 +37,7 @@ export type RoomCredentials = {
   roomId: RoomId;
   password?: string;
   inviteCode?: InviteCode;
-  breakoutRoomId: BreakoutRoomId | null;
+  breakoutRoomId?: BreakoutRoomId;
 };
 
 export interface ChangeMediaInterface {

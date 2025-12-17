@@ -8,7 +8,7 @@ import { MeetingNotesAccess } from './meetingNotes';
 export interface Participant {
   id: ParticipantId;
   connections: ConnectionId[];
-  breakoutRoomId: BreakoutRoomId | null;
+  breakoutRoomId?: BreakoutRoomId;
   displayName: string;
   avatarUrl?: string;
   handIsUp?: boolean;

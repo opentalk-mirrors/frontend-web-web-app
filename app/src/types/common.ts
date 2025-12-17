@@ -36,9 +36,11 @@ export enum VideoSetting {
 }
 
 export enum ParticipationKind {
-  User = 'user',
+  Registered = 'registered',
   Guest = 'guest',
-  Sip = 'sip',
+  Recorder = 'recorder',
+  CallIn = 'call_in',
+  RegisteredCallIn = 'registered_call_in',
 }
 
 export interface MediaSessionState {
@@ -107,7 +109,6 @@ export interface Command {
 }
 
 export enum Role {
-  Guest = 'guest',
   User = 'user',
   Moderator = 'moderator',
 }

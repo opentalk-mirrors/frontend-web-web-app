@@ -241,7 +241,7 @@ export const mockStore = (
 
 export const mockedParticipant = (
   index: number,
-  kind: ParticipationKind = ParticipationKind.User,
+  kind: ParticipationKind = ParticipationKind.Registered,
   role: Role = Role.User
 ): Participant & {
   identity: string;
@@ -259,7 +259,7 @@ export const mockedParticipant = (
   handUpdatedAt: '2022-03-23T12:32:30Z',
   joinedAt: '2022-03-23T12:32:30Z',
   leftAt: null,
-  breakoutRoomId: null,
+  breakoutRoomId: undefined,
   groups: [],
   participationKind: kind,
   lastActive: '2022-03-23T12:32:30Z',

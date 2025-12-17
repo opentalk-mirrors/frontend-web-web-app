@@ -60,7 +60,7 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
       startRoom({
         roomId,
         password: roomPassword,
-        breakoutRoomId: null,
+        breakoutRoomId: undefined,
         displayName,
         inviteCode: isLoggedIn ? undefined : inviteCode,
       })

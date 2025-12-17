@@ -30,6 +30,7 @@ export type UserState = {
   uuid: ParticipantId | null;
   groups: GroupId[];
   role: Role;
+  participationKind: ParticipationKind;
   displayName: string;
   avatarUrl?: string;
   lastActive?: string;
@@ -44,6 +45,7 @@ const initialState: UserState = {
   groups: [],
   displayName: '',
   role: Role.User,
+  participationKind: ParticipationKind.Registered,
   meetingNotesAccess: 'none' as MeetingNotesAccess.None, // this will be fixed with the next version of the ts-jest
   isRoomOwner: false,
 };
@@ -64,7 +66,7 @@ export const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRoomByInviteId.fulfilled, (state) => {
-      state.role = Role.Guest;
+      state.participationKind = ParticipationKind.Guest;
     });
     builder.addCase(
       startRoom.pending,
@@ -77,7 +79,7 @@ export const userSlice = createSlice({
         }
       ) => {
         state.displayName = displayName;
-        if (state.role === Role.Guest) {
+        if (state.participationKind === ParticipationKind.Guest) {
           initSentryReportWithUser({ name: state.displayName, lang: i18next.language });
         }
       }
@@ -135,7 +137,10 @@ export const selectDisplayName = createSelector([userState], (state) => state.di
 export const selectAvatarUrl = createSelector([userState], (state) => state.avatarUrl);
 export const selectUserMeetingNotesAccess = createSelector([userState], (state) => state.meetingNotesAccess);
 export const selectIsModerator = createSelector([userState], (state) => state.role === Role.Moderator);
-export const selectIsGuest = createSelector([userState], (state) => state.role === Role.Guest);
+export const selectIsGuest = createSelector(
+  [userState],
+  (state) => state.participationKind === ParticipationKind.Guest
+);
 export const selectRole = createSelector([userState], (state) => state.role);
 
 export const selectUserAsPartialParticipant = createSelector(
@@ -148,7 +153,9 @@ export const selectUserAsPartialParticipant = createSelector(
     }
 
     const participationKind =
-      state.role === Role.User || state.role === Role.Moderator ? ParticipationKind.User : ParticipationKind.Guest;
+      state.role === Role.User || state.role === Role.Moderator
+        ? ParticipationKind.Registered
+        : ParticipationKind.Guest;
 
     return {
       id: state.uuid,

@@ -183,7 +183,7 @@ const LobbyView = () => {
         return await dispatch(
           startRoom({
             roomId,
-            breakoutRoomId: breakoutRoomId || null,
+            breakoutRoomId,
             displayName,
             password,
             inviteCode,

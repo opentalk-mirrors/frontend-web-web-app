@@ -10,8 +10,7 @@ export interface BreakoutRoom {
 }
 
 export interface ParticipantInOtherRoom {
-  // BreakoutRoomId or null, null means the participant is in the parent room.
-  breakoutRoom: BreakoutRoomId | null;
+  breakoutRoom?: BreakoutRoomId;
   id: string;
   participantId: ParticipantId;
   connections: ConnectionId[];

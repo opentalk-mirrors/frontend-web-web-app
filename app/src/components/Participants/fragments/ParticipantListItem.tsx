@@ -144,7 +144,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   const sortType = useAppSelector(selectParticipantsSortOption);
   const isCurrentUserModerator = useAppSelector(selectIsModerator);
   const { t } = useTranslation();
-  const isSipParticipant = participant.participationKind === ParticipationKind.Sip;
+  const isSipParticipant = participant.participationKind === ParticipationKind.CallIn;
   const dispatch = useAppDispatch();
   const open = Boolean(anchorEl);
   const ownId = useAppSelector(selectOurUuid);
@@ -234,32 +234,34 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
           muteOption,
         ];
         break;
-      case Role.User:
-        options = [
-          {
-            i18nKey: 'participant-menu-grant-moderator',
-            action: handleModerationRight,
-          },
-          {
-            i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
-            action: handlePresenterRoleRight,
-          },
-          muteOption,
-        ];
+      case Role.User: {
+        if (participant.participationKind === ParticipationKind.Registered) {
+          options = [
+            {
+              i18nKey: 'participant-menu-grant-moderator',
+              action: handleModerationRight,
+            },
+            {
+              i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
+              action: handlePresenterRoleRight,
+            },
+            muteOption,
+          ];
+        } else if (participant.participationKind === ParticipationKind.Guest) {
+          options = [
+            {
+              i18nKey: 'participant-menu-rename',
+              action: handleRenameParticipantDialog,
+            },
+            {
+              i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
+              action: handlePresenterRoleRight,
+            },
+            muteOption,
+          ];
+        }
         break;
-      case Role.Guest:
-        options = [
-          {
-            i18nKey: 'participant-menu-rename',
-            action: handleRenameParticipantDialog,
-          },
-          {
-            i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
-            action: handlePresenterRoleRight,
-          },
-          muteOption,
-        ];
-        break;
+      }
       default:
         options = [];
     }
@@ -445,7 +447,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   };
 
   const renderAvatar = useCallback(() => {
-    const isParticipantGuest = participant.role === Role.Guest;
+    const isParticipantGuest = participant.participationKind === ParticipationKind.Guest;
     const isParticipantModerator = participant.role === Role.Moderator;
     const renderWithBadge = isParticipantGuest || isParticipantModerator;
 
