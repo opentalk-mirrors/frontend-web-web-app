@@ -22,7 +22,7 @@ import { showErrorNotification } from './helpers';
  */
 export const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMessageType, state: RootState) => {
   switch (data.message) {
-    case 'pdf_asset':
+    case 'report_generated':
       //TODO implement pdf asset handling
       break;
     case 'started':
@@ -43,15 +43,11 @@ export const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMes
       notifications.error(i18next.t('legal-vote-canceled'));
       break;
     case 'voted':
-      if (data.response === 'success') {
-        dispatch(legalVoteVoted(data));
-      } else {
-        notifications.error(i18next.t('legal-vote-error'));
-      }
+      dispatch(legalVoteVoted(data));
       break;
     case 'reported_issue': {
       // report came from others and not us, our id is not part of participants but user slice.
-      if (data.participantId !== state.user.uuid) {
+      if (data.participantId && data.participantId !== state.user.uuid) {
         const displayName = state.participants?.entities[data.participantId]?.displayName || i18n.t('global-someone');
         if (data.kind) {
           notifications.warning(

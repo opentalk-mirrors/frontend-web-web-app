@@ -66,9 +66,9 @@ function VoteResultTable(props: VoteResultTableProps) {
           return (
             <VoteResultRow
               key={participantId}
-              participantId={vote.kind !== 'pseudonymous' ? participantId : ''}
+              participantId={!vote.pseudonymous ? participantId : ''}
               selectedVote={selectedVote}
-              token={vote.kind === 'pseudonymous' ? participantId : ''}
+              token={vote.pseudonymous ? participantId : ''}
             />
           );
         })}

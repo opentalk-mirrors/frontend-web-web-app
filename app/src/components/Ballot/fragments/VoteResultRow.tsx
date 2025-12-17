@@ -16,7 +16,7 @@ interface VoteResultRowProps {
 }
 
 function VoteResultRow(props: VoteResultRowProps) {
-  const participant = useAppSelector(selectParticipantById(props.participantId.toLowerCase() as ParticipantId));
+  const participant = useAppSelector(selectParticipantById(props.participantId as ParticipantId));
   const user = useAppSelector(selectUserAsParticipant);
   const { token } = props;
 

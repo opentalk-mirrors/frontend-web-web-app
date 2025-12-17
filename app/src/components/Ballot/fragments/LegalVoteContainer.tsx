@@ -9,8 +9,7 @@ import { vote } from '../../../api/types/outgoing/legalVote';
 import { CloseIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector, useDateFormat } from '../../../hooks';
 import { selectPersistedToken } from '../../../store/slices/legalVoteSlice';
-import { LegalVoteKind, LegalVoteState, LegalVote, LegalVoteOption } from '../../../types';
-import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
+import { LegalVoteState, LegalVote, LegalVoteOption } from '../../../types';
 import { LegalVoteTokenClipboard } from '../../LegalVoteTokenClipboard';
 import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 import { ActiveStateChip } from './ActiveStateChip';
@@ -59,10 +58,9 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
     !isLegalVoteActive || !isAllowedToVote || legalVote.userVote?.votedAt || !localSelectedLegalVoteOption || !token
   );
   const hasVotes = Object.keys(legalVote.votingRecord || {}).length > 0;
-  const isTableHintVisible =
-    legalVote.kind === LegalVoteKind.Pseudonymous && isAllowedToVote && !isLegalVoteActive && hasVotes;
+  const isTableHintVisible = legalVote.pseudonymous && isAllowedToVote && !isLegalVoteActive && hasVotes;
   const [showResults, setShowResults] = useState(false);
-  const showResultTable = (legalVote.kind !== LegalVoteKind.Pseudonymous || showResults) && isAllowedToVote && hasVotes;
+  const showResultTable = (!legalVote.pseudonymous || showResults) && isAllowedToVote && hasVotes;
   const showTokenClipboard = legalVote.state === LegalVoteState.Finished && isAllowedToVote && token;
   const resultsRef = useRef<HTMLDivElement>(null);
   const scrollToResults = () => {
@@ -82,13 +80,12 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
         legalVoteId: legalVote.id,
         option: localSelectedLegalVoteOption,
         token: token || '',
-        timezone: getCurrentTimezone(),
       })
     );
   };
 
   const calculateVotePercentage = (legalVote: LegalVote, voteKey: LegalVoteOption): number => {
-    return legalVote.votes && legalVote.votes[voteKey] != 0 ? (legalVote.votes[voteKey] / numberOfVotes) * 100 : 0;
+    return legalVote.votes && legalVote.votes[voteKey] !== 0 ? (legalVote.votes[voteKey] / numberOfVotes) * 100 : 0;
   };
 
   return (
@@ -166,7 +163,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
                   (voteKey, index) =>
                     (voteKey !== 'abstain' || (voteKey === 'abstain' && legalVote.enableAbstain)) && (
                       <VoteResult
-                        key={index}
+                        key={voteKey}
                         title={t(`legal-vote-${voteKey}-label`)}
                         optionIndex={index}
                         voteType={VoteType.LegalVote}

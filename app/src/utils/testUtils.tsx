@@ -54,7 +54,6 @@ import {
   ConnectionId,
   LegalVote,
   LegalVoteId,
-  LegalVoteKind,
   LegalVoteState,
   MeetingNotesAccess,
   Participant,
@@ -62,6 +61,7 @@ import {
   ParticipationKind,
   PollId,
   Role,
+  Timestamp,
   WaitingState,
 } from '../types';
 import { constructConnectionIdentifier } from './constructConnectionIdentifier';
@@ -577,7 +577,7 @@ export const mockPoll: Poll = {
 export const mockLegalVote: LegalVote = {
   id: 'fake-poll-id' as LegalVoteId,
   duration: 60,
-  startTime: new Date().toString(),
+  startTime: new Date().toString() as Timestamp,
   state: LegalVoteState.Started,
   topic: 'This is a legal vote fake description',
   votes: {
@@ -589,10 +589,11 @@ export const mockLegalVote: LegalVote = {
   autoClose: false,
   createPdf: false,
   enableAbstain: true,
-  kind: LegalVoteKind.RollCall,
   name: 'Fake legal vote',
   initiatorId: 'asd' as ParticipantId,
   maxVotes: 0,
+  pseudonymous: false,
+  live: false,
 };
 
 export const mockedStreamingTarget: StreamingTarget = {

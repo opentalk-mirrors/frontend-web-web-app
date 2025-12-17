@@ -10,43 +10,31 @@ import {
   NamespacedIncoming,
   ParticipantId,
   VoteInvalidReason,
+  Timestamp,
 } from '../../../types';
+import { ReportIssueKind } from '../outgoing/legalVote';
 
 export interface VoteStarted extends IncomingVote {
   message: 'started';
 }
 
-enum VotedFailedReason {
-  InvalidVoteId = 'invalid_vote_id',
-  Ineligible = 'ineligible',
-  InvalidOption = 'invalid_option',
-}
-
-interface BaseVoteResponse {
+export interface VoteResponse {
   message: 'voted';
   legalVoteId: LegalVoteId;
-}
-
-export interface VoteSuccessType extends BaseVoteResponse {
-  response: 'success';
   voteOption: LegalVoteOption;
   issuer: ParticipantId;
   consumedToken: string;
 }
 
-export interface VoteFailedType extends BaseVoteResponse {
-  response: 'failed';
-  reason: VotedFailedReason;
-}
-
-export type VotedType = VoteSuccessType | VoteFailedType;
-
 export interface VoteResultsType {
   yes: number;
   no: number;
   abstain?: number;
-  votingRecord: Record<ParticipantId, LegalVoteOption>;
+  votingRecord: UserVotingRecord | TokenVotingRecord;
 }
+
+export type UserVotingRecord = Record<ParticipantId, LegalVoteOption>;
+export type TokenVotingRecord = Record<string, LegalVoteOption>;
 
 export interface VoteUpdated extends VoteResultsType {
   message: 'updated';
@@ -64,11 +52,11 @@ export enum VoteFinalResults {
   Invalid = 'invalid',
 }
 
-interface BaseStopped {
+interface BaseStopped extends VoteResultsType {
   message: 'stopped';
   legalVoteId: LegalVoteId;
   kind: StopKind;
-  results: VoteFinalResults;
+  endTime: Timestamp;
 }
 
 export interface VoteStoppedAuto extends BaseStopped {
@@ -97,21 +85,21 @@ type VoteStoppedKind = VoteStoppedAuto | VoteStoppedExpired | VoteStoppedByParti
 type VoteStoppedFinalResults = VoteStoppedInvalid | VoteStoppedValid;
 export type VoteStopped = VoteStoppedKind & VoteStoppedFinalResults;
 
-export interface VoteCanceledInitiatorLeft {
+export interface VoteCancelBase {
   message: 'canceled';
   legalVoteId: LegalVoteId;
+  reason: VoteCancelReason;
+  endTime: Timestamp;
+}
+export interface VoteCanceledInitiatorLeft extends VoteCancelBase {
   reason: VoteCancelReason.InitiatorLeft;
 }
 
-export interface CanceledRoomDestroyed {
-  message: 'canceled';
-  legalVoteId: LegalVoteId;
+export interface CanceledRoomDestroyed extends VoteCancelBase {
   reason: VoteCancelReason.RoomDestroyed;
 }
 
-export interface VoteCanceledCustom {
-  message: 'canceled';
-  legalVoteId: LegalVoteId;
+export interface VoteCanceledCustom extends VoteCancelBase {
   reason: VoteCancelReason.Custom;
   custom: string;
 }
@@ -119,34 +107,53 @@ export interface VoteCanceledCustom {
 export type VoteCanceled = VoteCanceledInitiatorLeft | CanceledRoomDestroyed | VoteCanceledCustom;
 
 export enum LegalVoteError {
+  /// A vote is already active.
   VoteAlreadyActive = 'vote_already_active',
+  /// No vote is currently taking place.
   NoVoteActive = 'no_vote_active',
+  /// The provided vote id is invalid in the requested context.
   InvalidVoteId = 'invalid_vote_id',
-  Ineligible = 'ineligible',
-  Internal = 'internal',
+  /// The user used a token that was either already used or not valid.
+  InvalidToken = 'invalid_token',
+  /// The selected vote option is not allowed.
+  InvalidOption = 'invalid_option',
+  /// The provided parameters are invalid.
+  InvalidParameters = 'invalid_parameters',
+  /// The provided allow list contains ineligible participants.
+  /// Only registered users are allowed to vote.
+  IneligibleParticipants = 'ineligible_participants',
+  /// The requesting user has insufficient permissions.
+  InsufficientPermissions = 'insufficient_permissions',
+  /// The requesting user has exceeded their storage.
+  StorageExceeded = 'storage_exceeded',
+  /// An internal error occurred while saving the whiteboard pdf.
+  InternalStorage = 'internal_storage',
+  /// A internal server error occurred.
+  Internal = 'internal_server_error',
 }
 
-export interface IncomingPdfAsset {
-  message: 'pdf_asset';
-  legalVoteId: LegalVoteId;
+export interface ReportGenerated {
+  message: 'report_generated';
   filename: string;
+  legalVoteId: LegalVoteId;
   assetId: string;
 }
 
 export interface VoteReportedIssue {
   message: 'reported_issue';
-  participantId: ParticipantId;
-  kind?: 'video' | 'audio' | 'screenshare';
+  legalVoteId: LegalVoteId;
+  participantId?: ParticipantId;
+  kind?: ReportIssueKind;
   description?: string;
 }
 
 export type LegalVoteMessageType =
   | VoteStarted
+  | VoteResponse
   | VoteStopped
-  | VotedType
   | VoteUpdated
   | VoteCanceled
-  | IncomingPdfAsset
+  | ReportGenerated
   | VoteReportedIssue
   | ErrorStruct<LegalVoteError>;
 type LegalVoteMessage = NamespacedIncoming<LegalVoteMessageType, 'legal_vote'>;

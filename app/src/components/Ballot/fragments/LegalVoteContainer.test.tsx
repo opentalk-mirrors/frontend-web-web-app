@@ -6,7 +6,7 @@ import { Mock } from 'vitest';
 
 import { useAppSelector } from '../../../hooks';
 import { selectOurUuid } from '../../../store/slices/userSlice';
-import { LegalVoteId, LegalVoteKind, LegalVoteState, LegalVote, ParticipantId } from '../../../types';
+import { LegalVoteId, LegalVoteState, LegalVote, ParticipantId, Timestamp, LegalVoteOption } from '../../../types';
 import { renderWithProviders } from '../../../utils/testUtils';
 import { LegalVoteContainer } from './LegalVoteContainer';
 
@@ -39,7 +39,7 @@ describe('LegalVoteContainer', () => {
   const legalVote: LegalVote = {
     id: 'test-id' as LegalVoteId,
     state: LegalVoteState.Started,
-    startTime: new Date(Date.now()).toISOString(),
+    startTime: new Date(Date.now()).toISOString() as Timestamp,
     votes: {
       yes: 0,
       no: 0,
@@ -56,7 +56,8 @@ describe('LegalVoteContainer', () => {
     autoClose: false,
     duration: 60,
     createPdf: false,
-    kind: LegalVoteKind.RollCall,
+    pseudonymous: false,
+    live: false,
   };
 
   it('can render', async () => {
@@ -112,15 +113,15 @@ describe('LegalVoteContainer', () => {
     const mockedUuid = 'mocked-uuid';
     const vote: LegalVote = {
       ...legalVote,
-      kind: LegalVoteKind.Pseudonymous,
+      pseudonymous: true,
       state: LegalVoteState.Finished,
       userVote: {
         votedAt: new Date().toISOString(),
-        selectedOption: 'yes',
+        selectedOption: LegalVoteOption.Yes,
       },
       votingRecord: {
-        ['1' as ParticipantId]: 'yes',
-        ['2' as ParticipantId]: 'no',
+        ['1' as ParticipantId]: LegalVoteOption.Yes,
+        ['2' as ParticipantId]: LegalVoteOption.No,
       },
       allowedParticipants: [mockedUuid as ParticipantId],
     };

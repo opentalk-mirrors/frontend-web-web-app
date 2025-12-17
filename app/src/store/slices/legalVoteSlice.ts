@@ -4,13 +4,7 @@
 import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import type { RootState } from '..';
-import {
-  VoteCanceled,
-  VoteStarted,
-  VoteStopped,
-  VoteSuccessType,
-  VoteUpdated,
-} from '../../api/types/incoming/legalVote';
+import { VoteCanceled, VoteStarted, VoteStopped, VoteUpdated, VoteResponse } from '../../api/types/incoming/legalVote';
 import log from '../../logger';
 import {
   LegalVote,
@@ -163,7 +157,7 @@ export const legalVoteSlice = createSlice({
         });
       }
     },
-    voted: (state, { payload }: PayloadAction<VoteSuccessType>) => {
+    voted: (state, { payload }: PayloadAction<VoteResponse>) => {
       const userVote: UserVote = {
         votedAt: new Date().toISOString(),
         selectedOption: payload.voteOption,

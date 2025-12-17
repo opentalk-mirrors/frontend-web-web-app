@@ -60,7 +60,7 @@ describe('ReportSection', () => {
       expect(mockAppDispatch.mock.calls[0][0]).toEqual({
         type: 'signaling/legal_vote/report_issue',
         payload: {
-          legal_vote_id: mockLegalVote.id,
+          legalVoteId: mockLegalVote.id,
           description: 'testing description',
         },
       });
