@@ -17,9 +17,13 @@ import { deconstructIdentity } from '../../utils/deconstructIdentity';
 const ResetHandraisesTab = () => {
   const dispatch = useAppDispatch();
   const activeParticipants = useAppSelector(selectParticipantsWithRaisedHands);
+  const activeIds = new Set(activeParticipants.map((p) => p.id));
   const remoteParticipants = useRemoteParticipants({
     updateOnlyOn: [RoomEvent.ParticipantConnected, RoomEvent.ParticipantDisconnected],
-  }).filter((remote) => activeParticipants.some((active) => active.id === remote.identity));
+  }).filter((remote) => {
+    const { participantId } = deconstructIdentity(remote.identity as ConnectionIdentifier);
+    return activeIds.has(participantId);
+  });
 
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
