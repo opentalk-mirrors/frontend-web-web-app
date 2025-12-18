@@ -478,8 +478,8 @@ room-title-info-button-aria-label = Meetingdetails teilen
 breakout-room-tab-title = Breakout-Räume
 breakout-room-form-field-based-on = Nach Anzahl der
 breakout-room-form-field-rooms = Anzahl der Räume
-breakout-room-form-field-participants-per-room = Anzahl der Teilnehmer
-breakout-room-form-field-random-distribution = zufällige Zuweisung
+breakout-room-form-field-participants-per-room = Min. Teilnehmer
+breakout-room-form-field-random-distribution = Zufällige Zuweisung
 breakout-room-form-field-include-moderators = inklusive Moderatoren
 
 breakout-room-form-error-min-rooms = zu wenig Räume
@@ -493,6 +493,9 @@ breakout-room-tab-by-participants = Nach Anzahl der Teilnehmer
 breakout-room-tab-by-groups = Nach Gruppen
 breakout-room-tab-by-moderators = Nach Moderatoren
 breakout-room-start-button = Räume starten
+breakout-room-start-button-disabled = Unzureichende Anzahl an Konferenzteilnehmern
+breakout-room-insufficient-number-of-participants-warning = Mindestens {$minimumNumberOfParticipants} Teilnehmer sind erforderlich, um in der aktuellen Konfiguration Breakout-Räume zu erstellen.
+breakout-room-underpopulated-rooms-warning = Einige Räume haben weniger Teilnehmer als benötigt (mindestens {$minimumNumberOfParticipants} pro Raum).
 
 breakout-room-rooms-created-by-participants = {$rooms} Räume
 breakout-room-assignable-participants-per-rooms = Weise {$participantsPerRoom} Teilnehmer pro Raum zu

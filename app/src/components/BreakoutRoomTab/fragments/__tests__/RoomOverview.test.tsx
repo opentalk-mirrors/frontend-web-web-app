@@ -8,20 +8,20 @@ import userEvent from '@testing-library/user-event';
 import { useParams } from 'react-router-dom';
 import { Mock } from 'vitest';
 
-import { stop, switchRoom } from '../../../api/types/outgoing/breakout';
-import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../../constants';
-import * as reduxHooks from '../../../hooks/useCustomRedux';
-import * as InviteCodeModule from '../../../hooks/useInviteCode';
-import { BreakoutRoomId, MeetingNotesAccess, Participant, Role, RoomKind } from '../../../types';
-import { renderWithProviders, configureStore, mockedParticipant } from '../../../utils/testUtils';
-import RoomOverview from './RoomOverview';
+import { stop, switchRoom } from '../../../../api/types/outgoing/breakout';
+import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../../../constants';
+import * as reduxHooks from '../../../../hooks/useCustomRedux';
+import * as InviteCodeModule from '../../../../hooks/useInviteCode';
+import { BreakoutRoomId, MeetingNotesAccess, Participant, Role, RoomKind } from '../../../../types';
+import { renderWithProviders, configureStore, mockedParticipant } from '../../../../utils/testUtils';
+import RoomOverview from '../RoomOverview';
 
 vi.mock('react-router-dom', async (importActual) => ({
   ...(await importActual()),
   useParams: vi.fn(),
 }));
 
-vi.mock('./RoomOverviewListItem', () => ({
+vi.mock('../RoomOverviewListItem', () => ({
   __esModule: true,
   default: ({
     breakoutRoomId,

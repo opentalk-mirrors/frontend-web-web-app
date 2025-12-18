@@ -16,7 +16,7 @@ interface IFormikCommonPropsReturnValue {
       ? void
       : (e: string | React.ChangeEvent<HTMLInputElement>) => void;
   };
-  onBlur: {
+  onBlur?: {
     (e: React.FocusEvent<HTMLInputElement>): void;
     <T = HTMLInputElement>(fieldOrEvent: T): T extends string ? (e: HTMLInputElement) => void : void;
   };
