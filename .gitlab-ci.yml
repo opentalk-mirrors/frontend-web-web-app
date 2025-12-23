@@ -13,6 +13,7 @@ stages:
   - test
   - prepare-artifact
   - build
+  - package
   - push
   - scan
   - e2e
@@ -403,6 +404,11 @@ container-profiling:
       --build-arg DIST_FOLDER=dist-profiling
       --destination "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8}-profiling"
       --force
+
+include:
+  - project: opentalk/ci/templates/collect-commit-evidence
+    ref: v2
+    file: .gitlab-ci-template.yml
 
 read-tags:
   stage: push
