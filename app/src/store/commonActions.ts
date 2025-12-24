@@ -332,7 +332,7 @@ export const createRoom = async (e2eeSalt: string | undefined, eventInfo?: Event
     videoCaptureDefaults: {
       resolution: VideoPresets.h720.resolution,
     },
-    e2ee: e2eeEnabled
+    encryption: e2eeEnabled
       ? ({
           keyProvider,
           worker: mainWorker,
