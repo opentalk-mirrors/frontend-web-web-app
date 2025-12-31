@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Grid, Stack, Typography, useMediaQuery, useTheme, styled } from '@mui/material';
 import { EventInvite, InviteStatus } from '@opentalk/rest-api-rtk-query';
-import type { EventId } from '@opentalk/rest-api-rtk-query';
+import type { EventId, RegisteredUser } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
 
 import { useRevokeEventUserInviteMutation, useRevokeEventUserInviteByEmailMutation } from '../../../api/rest';
@@ -23,10 +23,18 @@ type ParticipantListProps = {
   invitees: Array<EventInvite>;
   isUpdatable: boolean;
   removeSelectedUser?: (invitee: EventInvite) => void;
+  onGrantRevokeModerator?: (user: RegisteredUser) => void;
   eventId: EventId;
 };
 
-const ParticipantList = ({ isUpdatable, status, invitees, removeSelectedUser, eventId }: ParticipantListProps) => {
+const ParticipantList = ({
+  isUpdatable,
+  status,
+  invitees,
+  removeSelectedUser,
+  onGrantRevokeModerator,
+  eventId,
+}: ParticipantListProps) => {
   const [revokeUserInvite] = useRevokeEventUserInviteMutation();
   const [revokeUserInviteByEmail] = useRevokeEventUserInviteByEmailMutation();
   const { t } = useTranslation();
@@ -60,6 +68,7 @@ const ParticipantList = ({ isUpdatable, status, invitees, removeSelectedUser, ev
             eventInvite={eventInvite}
             onRevokeUserInvite={revokeInvitedUser}
             onRemoveUser={eventInvite.status === InviteStatus.Added ? removeSelectedUser : undefined}
+            onGrantRevokeModerator={onGrantRevokeModerator}
           />
         ))}
       </ParticipantListBox>
