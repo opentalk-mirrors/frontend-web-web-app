@@ -144,7 +144,7 @@ importers:
         specifier: ^10.32.0
         version: 10.32.1
       '@sentry/react':
-        specifier: ^10.32.0
+        specifier: ^10.32.1
         version: 10.32.1(react@19.2.3)
       bowser:
         specifier: ^2.13.1
@@ -207,7 +207,7 @@ importers:
         specifier: ^19.2.3
         version: 19.2.3(react@19.2.3)
       react-i18next:
-        specifier: ^16.5.0
+        specifier: ^16.5.1
         version: 16.5.1(i18next@25.7.3(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       react-redux:
         specifier: ^9.2.0
@@ -219,7 +219,7 @@ importers:
         specifier: ^7.1.2
         version: 7.1.2(react@19.2.3)
       react-window:
-        specifier: ^2.2.3
+        specifier: ^2.2.4
         version: 2.2.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       snakecase-keys:
         specifier: ^9.0.2
