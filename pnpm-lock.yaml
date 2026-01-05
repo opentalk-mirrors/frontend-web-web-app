@@ -24,7 +24,7 @@ importers:
         specifier: ^6.9.1
         version: 6.9.1
       '@trivago/prettier-plugin-sort-imports':
-        specifier: ^6.0.0
+        specifier: ^6.0.1
         version: 6.0.1(@vue/compiler-sfc@3.5.26)(prettier@3.7.4)
       '@types/node':
         specifier: ^24.10.4
