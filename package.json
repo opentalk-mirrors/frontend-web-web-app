@@ -43,7 +43,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.25",
     "eslint-plugin-testing-library": "^7.15.4",
-    "globals": "^16.5.0",
+    "globals": "^17.0.0",
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
     "knip": "^5.80.0",
