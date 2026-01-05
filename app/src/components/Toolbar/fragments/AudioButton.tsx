@@ -18,6 +18,7 @@ import {
   selectAudioPermissionDenied,
   selectLivekitUnavailable,
 } from '../../../store/slices/livekitSlice';
+import { selectShouldForceMuted } from '../../../store/slices/moderationSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectNeedRecordingConsent } from '../../../store/slices/streamingSlice';
 import MeetingSettingsDialog from '../../MeetingSettingsDialog';
@@ -45,6 +46,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
   const permissionDenied = useAppSelector(selectAudioPermissionDenied);
   const audioChangeInProgress = useAppSelector(selectAudioChangeInProgress);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
+  const shouldForceMute = useAppSelector(selectShouldForceMuted);
 
   const [showMenu, setShowMenu] = useState(false);
 
@@ -57,11 +59,16 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
       return true;
     }
 
+    if (isLivekitUnavailable || shouldForceMute) {
+      return false;
+    }
+
     const hasPermission = room?.localParticipant.permissions?.canPublishSources.includes(
       LIVEKIT_AUDIO_PERMISSION_NUMBER
     );
+
     return hasPermission ?? true;
-  }, [isLobby, room]);
+  }, [isLobby, room, isLivekitUnavailable, shouldForceMute]);
 
   const onClick = async () => {
     if (askConsent && !audioEnabled) {

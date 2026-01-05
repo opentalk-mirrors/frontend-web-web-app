@@ -23,6 +23,10 @@ vi.mock('@livekit/components-react', () => ({
 describe('Audio Button', () => {
   const { store } = configureStore();
 
+  afterEach(() => {
+    (useMaybeRoomContext as Mock).mockReset();
+  });
+
   it('Button is disabled if microphones are disabled', async () => {
     (useMaybeRoomContext as Mock).mockReturnValue({
       localParticipant: {
@@ -93,5 +97,55 @@ describe('Audio Button', () => {
     const button = screen.getByRole('button', { name: 'toolbar-button-audio-disabled-tooltip', hidden: true });
     expect(button).toBeInTheDocument();
     expect(button).toBeDisabled();
+  });
+
+  it('disables button when users audio is restricted', () => {
+    const { store } = configureStore({
+      initialState: {
+        moderation: {
+          forceMute: {
+            type: 'enabled',
+            unrestrictedParticipants: [],
+          },
+        },
+        user: {
+          uuid: 'local-participant-id',
+        },
+      },
+    });
+
+    renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
+      store,
+      provider: { snackbar: true, mui: true },
+    });
+
+    const audioButton = screen.getByTestId('toolbarAudioButton');
+
+    expect(audioButton).toBeDisabled();
+  });
+
+  it('enables button when users audio is not restricted', () => {
+    const { store } = configureStore({
+      initialState: {
+        moderation: {
+          forceMute: {
+            type: 'enabled',
+            unrestrictedParticipants: ['local-participant-id'],
+          },
+        },
+        user: {
+          uuid: 'local-participant-id',
+        },
+      },
+    });
+
+    renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
+      store,
+      provider: { snackbar: true, mui: true },
+    });
+
+    const audioButton = screen.getByTestId('toolbarAudioButton');
+
+    expect(audioButton).not.toBeDisabled();
   });
 });
