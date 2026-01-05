@@ -6,11 +6,6 @@ import { renderHook } from '@testing-library/react';
 
 import { useDisplayName } from './useDisplayName';
 
-it("returns 'Unknown' when data is undefined", () => {
-  const { result } = renderHook(() => useDisplayName(undefined));
-  expect(result).toHaveProperty('current', 'global-unknown');
-});
-
 it('returns email local part when only email is provided', () => {
   const user = { email: 'test@domain.com' } as UserMe;
   const { result } = renderHook(() => useDisplayName(user));

@@ -232,14 +232,14 @@ const LobbyView = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: initialDisplayName,
+      name: initialDisplayName || '',
       password: '',
     },
     enableReinitialize: true,
     validationSchema,
     onSubmit: async (values) => {
       if (isLoggedIn || inviteCode !== undefined) {
-        const name = disableDisplayNameField ? initialDisplayName : values.name;
+        const name = disableDisplayNameField ? initialDisplayName || '' : values.name;
         await enterRoom(name, values.password);
       }
     },
