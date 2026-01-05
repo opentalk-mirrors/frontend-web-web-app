@@ -43,9 +43,13 @@ interface ErrorProps {
    * Changes action buttons to suit logout error page
    */
   logout?: boolean;
+  /**
+   * Adds option to manually retry the last action on every 3 seconds
+   */
+  retry?: boolean;
 }
 
-const Error = ({ title, description, error, errorInfo, isCrashError, logout }: ErrorProps) => {
+const Error = ({ title, description, error, errorInfo, isCrashError, logout, retry }: ErrorProps) => {
   return (
     //Explicitly provide theme and css baseline
     //Potentially should be hoisted up to a root level
@@ -57,7 +61,7 @@ const Error = ({ title, description, error, errorInfo, isCrashError, logout }: E
 
         {error && <DiagnosticDetails error={error} errorInfo={errorInfo} />}
 
-        <ErrorActionButtons logout={logout} />
+        <ErrorActionButtons logout={logout} retry={retry} />
       </Container>
     </LobbyTemplate>
   );

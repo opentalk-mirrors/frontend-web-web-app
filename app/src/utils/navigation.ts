@@ -4,9 +4,15 @@
 import { type NavigateFunction } from 'react-router-dom';
 
 let navigator: NavigateFunction | null = null;
+let pendingNavigation: Array<{ path: string; options?: { replace?: boolean; state?: unknown } }> = [];
 
 export const setNavigator = (nav: NavigateFunction) => {
   navigator = nav;
+  if (pendingNavigation.length > 0) {
+    const lastNav = pendingNavigation.at(-1);
+    lastNav && navigator(lastNav.path, { replace: true, ...lastNav.options });
+    pendingNavigation = [];
+  }
 };
 
 /**
@@ -14,7 +20,8 @@ export const setNavigator = (nav: NavigateFunction) => {
  */
 export const navigateTo = (path: string, options?: { replace?: boolean; state?: unknown }) => {
   if (!navigator) {
-    throw new Error(`Navigator not set yet, cannot navigate to ${path}`);
+    pendingNavigation.push({ path, options });
+    return;
   }
 
   navigator(path, { replace: options?.replace, state: options?.state });

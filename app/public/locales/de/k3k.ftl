@@ -678,6 +678,7 @@ global-minute = { $count ->
     [one] Minute
     *[other] Minuten
 }
+global-retry = Wiederholen
 global-participant = Teilnehmer
 global-participants = Teilnehmer
 global-rooms = Räume
@@ -736,6 +737,8 @@ global-meeting = { $count ->
 global-open-new-tab = In neuem Tab öffnen
 global-required-field = Dies ist ein Pflichtfeld
 global-unknown = Unbekannt
+
+retry-available-in = Wiederholung verfügbar in {$seconds}
 
 dashboard-logo-title = OpenTalk Logo
 dashboard-home = Startseite

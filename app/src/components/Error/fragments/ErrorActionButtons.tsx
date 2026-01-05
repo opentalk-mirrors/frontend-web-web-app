@@ -2,14 +2,17 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, IconButton as MuiIconButton, styled, Typography } from '@mui/material';
-import { useAuthContext } from '@opentalk/redux-oidc';
+import { getSavedLocation, useAuthContext } from '@opentalk/redux-oidc';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { BackIcon } from '../../../assets/icons';
 import useNavigateToHome from '../../../hooks/useNavigateToHome';
 
 interface ErrorActionButtonsProps {
   logout?: boolean;
+  retry?: boolean;
 }
 
 const IconButton = styled(MuiIconButton)(({ theme }) => ({
@@ -29,10 +32,37 @@ const IconButton = styled(MuiIconButton)(({ theme }) => ({
   },
 }));
 
-const ErrorActionButtons = ({ logout }: ErrorActionButtonsProps) => {
+const SECONDS_UNTIL_RETRY = 3;
+
+const ErrorActionButtons = ({ logout, retry }: ErrorActionButtonsProps) => {
   const { t } = useTranslation();
   const navigateToHome = useNavigateToHome();
+  const navigate = useNavigate();
   const auth = useAuthContext();
+  const [secondsLeft, setSecondsLeft] = useState<number>(SECONDS_UNTIL_RETRY);
+
+  const enableRetry = secondsLeft === 0;
+
+  useEffect(() => {
+    if (retry) {
+      if (enableRetry) {
+        return;
+      }
+      const timer = setTimeout(() => {
+        setSecondsLeft(secondsLeft - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [retry, secondsLeft, enableRetry]);
+
+  const handleRetryClick = () => {
+    const lastKnownLocation = getSavedLocation();
+    if (lastKnownLocation) {
+      navigate(lastKnownLocation);
+    } else {
+      navigateToHome();
+    }
+  };
 
   if (logout) {
     if (auth) {
@@ -42,8 +72,19 @@ const ErrorActionButtons = ({ logout }: ErrorActionButtonsProps) => {
         </Button>
       );
     }
-
     return null;
+  }
+
+  if (retry) {
+    return (
+      <Button onClick={handleRetryClick} disabled={!enableRetry}>
+        {enableRetry ? (
+          <Typography>{t('global-retry')}</Typography>
+        ) : (
+          <Typography>{t('retry-available-in', { seconds: secondsLeft })}</Typography>
+        )}
+      </Button>
+    );
   }
 
   return (

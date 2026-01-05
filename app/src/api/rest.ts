@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { AuthTypeError, authError } from '@opentalk/redux-oidc';
+import { AuthTypeError, authError, saveLocationForRedirect } from '@opentalk/redux-oidc';
 import { RoomId, createOpenTalkApiWithReactHooks, fetchQuery } from '@opentalk/rest-api-rtk-query';
 import { Middleware, createAsyncThunk, isAction, isRejectedWithValue } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
@@ -125,7 +125,7 @@ const baseQuery = fetchQuery({
 export const restApi = createOpenTalkApiWithReactHooks(baseQuery);
 
 export const rtkQueryErrorLoggerMiddleware: Middleware =
-  ({ dispatch }) =>
+  ({ dispatch, getState }) =>
   (next) =>
   (action) => {
     // Auth library is handling only auth errors with name: AuthTypeError.RefreshTokenFailed && AuthTypeError.SessionExpired
@@ -169,6 +169,13 @@ export const rtkQueryErrorLoggerMiddleware: Middleware =
       const isServerError = typeof payload.status === 'number' && payload.status >= 500;
       const isFetchError = payload.status === 'FETCH_ERROR';
       if (isServerError || isFetchError) {
+        const oidcRedirectPath = getState().config.oidcConfig.redirectPath;
+        if (
+          !window.location.pathname.includes(oidcRedirectPath) &&
+          !window.location.pathname.includes('server-issue')
+        ) {
+          saveLocationForRedirect(window.location.pathname + window.location.search);
+        }
         navigateTo('/server-issue', { replace: true });
         return next(action);
       }
