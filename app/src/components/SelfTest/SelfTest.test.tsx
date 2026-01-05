@@ -35,7 +35,16 @@ vi.mock('./fragments/ToolbarContainer', () => ({
 }));
 
 describe('SelfTest', () => {
-  const { store } = configureStore();
+  const { store } = configureStore({
+    initialState: {
+      config: {
+        features: {},
+        speedTest: {
+          ndtServer: 'ndt.testserver.com',
+        },
+      },
+    },
+  });
 
   it('renders SelfTest component without crashing', () => {
     renderWithProviders(
@@ -90,5 +99,53 @@ describe('SelfTest', () => {
     const titleElement = screen.getByText('joinform-room-title');
     expect(titleElement).toBeInTheDocument();
     expect(titleElement.tagName).toBe('H1');
+  });
+
+  it('hides SpeedTestDialog when ndtServer is not configured', () => {
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          features: {},
+          speedTest: {
+            ndtServer: '',
+            ndtDownloadWorkerJs: '/workers/ndt7-download-worker.js',
+            ndtUploadWorkerJs: '/workers/ndt7-upload-worker.js',
+          },
+        },
+      },
+    });
+
+    renderWithProviders(
+      <SelfTest>
+        <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />
+      </SelfTest>,
+      { store, provider: { router: true, mui: true } }
+    );
+
+    expect(screen.queryByRole('button', { name: 'speed-meter-button' })).not.toBeInTheDocument();
+  });
+
+  it('shows SpeedTestDialog when ndtServer is configured', () => {
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          features: {},
+          speedTest: {
+            ndtServer: 'ndt.testserver.com',
+            ndtDownloadWorkerJs: '/workers/ndt7-download-worker.js',
+            ndtUploadWorkerJs: '/workers/ndt7-upload-worker.js',
+          },
+        },
+      },
+    });
+
+    renderWithProviders(
+      <SelfTest>
+        <CommonTextField label="label" color="secondary" placeholder="global-name-placeholder" />
+      </SelfTest>,
+      { store, provider: { router: true, mui: true } }
+    );
+
+    expect(screen.getByRole('button', { name: 'speed-meter-button' })).toBeInTheDocument();
   });
 });
