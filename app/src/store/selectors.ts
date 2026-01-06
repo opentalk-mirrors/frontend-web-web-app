@@ -107,9 +107,7 @@ export const selectAllMeetingNotesParticipants = createSelector(
   (participants, user) => {
     if (user) {
       const allMeetingNotesParticipants = participants.filter(
-        (participant) =>
-          participant.participationKind !== ParticipationKind.Guest &&
-          participant.participationKind !== ParticipationKind.Sip
+        (participant) => participant.participationKind !== ParticipationKind.Sip
       );
       const hasSelectedParticipants = some(allMeetingNotesParticipants, [
         'meetingNotesAccess',
