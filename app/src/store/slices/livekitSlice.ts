@@ -54,6 +54,7 @@ import {
   setScreenShareEnabled,
   switchActiveDevice,
   switchLocalDevice,
+  switchScreenShare,
 } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
@@ -311,6 +312,18 @@ export const livekitSlice = createSlice({
     builder.addCase(setScreenShareEnabled.rejected, (state) => {
       state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, 'screenshare');
       state.permissionDenied = insertItem(state.permissionDenied, 'screenshare');
+    });
+    builder.addCase(switchScreenShare.pending, (state) => {
+      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, 'screenshare');
+    });
+    builder.addCase(switchScreenShare.rejected, (state) => {
+      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, 'screenshare');
+      state.permissionDenied = insertItem(state.permissionDenied, 'screenshare');
+    });
+    builder.addCase(switchScreenShare.fulfilled, (state) => {
+      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, 'screenshare');
+      state.permissionDenied = removeItem(state.permissionDenied, 'screenshare');
+      state.mediaSettings.screenShareEnabled = state.room?.localParticipant.isScreenShareEnabled || false;
     });
     builder.addCase(setBackgroundEffects.pending, (state) => {
       state.videoBackgroundEffects.loading = true;

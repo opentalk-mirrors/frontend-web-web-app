@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useLocalParticipantPermissions } from '@livekit/components-react';
+import { ListItemIcon, MenuList, Typography } from '@mui/material';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ShareScreenOffIcon, ShareScreenOnIcon } from '../../../assets/icons';
@@ -9,7 +11,8 @@ import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import browser from '../../../modules/BrowserSupport';
-import { setScreenShareEnabled } from '../../../store/commonActions';
+import { setScreenShareEnabled, switchScreenShare } from '../../../store/commonActions';
+import { selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
 import {
   selectLivekitUnavailable,
   selectScreenshareChangeInProgress,
@@ -19,6 +22,7 @@ import {
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import ToolbarButton from './ToolbarButton';
+import { ToolbarMenu, ToolbarMenuItem } from './ToolbarMenuUtils';
 
 const ShareScreenButton = () => {
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
@@ -31,6 +35,13 @@ const ShareScreenButton = () => {
   const permissionDenied = useAppSelector(selectScreensharePermissionDenied);
   const isScreenShareSupported = browser.isScreenShareSupported();
   const dispatch = useAppDispatch();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const fullScreenElement = useAppSelector(selectFullscreenElement);
+  const [showMenu, setShowMenu] = useState(false);
+
+  const handleMenuRef = useCallback((node: HTMLDivElement | null) => {
+    setAnchorEl(node);
+  }, []);
 
   const canPublishScreenShare =
     localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
@@ -50,6 +61,10 @@ const ShareScreenButton = () => {
   };
 
   const onClick = () => {
+    if (isScreenshareEnabled) {
+      setShowMenu(!showMenu);
+      return;
+    }
     dispatch(setScreenShareEnabled({ enabled: !isScreenshareEnabled }));
   };
 
@@ -57,17 +72,70 @@ const ShareScreenButton = () => {
     return null;
   }
 
+  const menuOptions = [
+    {
+      label: 'toolbar-button-screen-share-different-screen-title',
+      icon: <ShareScreenOnIcon />,
+      action: () => {
+        dispatch(switchScreenShare());
+        setShowMenu(false);
+      },
+    },
+    {
+      label: 'toolbar-button-screen-share-turn-off-tooltip-title',
+      icon: <ShareScreenOffIcon />,
+      action: () => {
+        dispatch(setScreenShareEnabled({ enabled: false }));
+        setShowMenu(false);
+      },
+    },
+  ];
+
   return (
-    <ToolbarButton
-      tooltipTitle={getToolTipTitle()}
-      onClick={onClick}
-      active={isScreenshareEnabled && isModeratorOrPresenter}
-      disabled={isScreenshareChangeInProgress || !isModeratorOrPresenter || isLivekitUnavailable || isRoomDeleted}
-      data-testid="toolbarShareScreenButton"
-      id={ToolbarButtonIds.ShareScreen}
-    >
-      {isScreenshareEnabled ? <ShareScreenOnIcon /> : <ShareScreenOffIcon />}
-    </ToolbarButton>
+    <div ref={handleMenuRef}>
+      <ToolbarButton
+        tooltipTitle={getToolTipTitle()}
+        onClick={onClick}
+        active={isScreenshareEnabled && isModeratorOrPresenter}
+        disabled={isScreenshareChangeInProgress || !isModeratorOrPresenter || isLivekitUnavailable || isRoomDeleted}
+        data-testid="toolbarShareScreenButton"
+        id={ToolbarButtonIds.ShareScreen}
+      >
+        <ShareScreenOnIcon />
+      </ToolbarButton>
+      <ToolbarMenu
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: -4,
+          horizontal: 'center',
+        }}
+        anchorEl={anchorEl}
+        open={showMenu && isScreenshareEnabled}
+        onClose={() => setShowMenu(false)}
+        data-testid="moreMenu"
+        container={fullScreenElement}
+        slotProps={{
+          paper: {
+            'aria-label': t('toolbar-button-more-tooltip-title'),
+          },
+        }}
+        aria-label={t('toolbar-button-more-tooltip-title')}
+      >
+        <MenuList autoFocusItem={Boolean(anchorEl)} aria-label={t('toolbar-button-more-tooltip-title')}>
+          {menuOptions.map(({ label, action, icon }) => (
+            <ToolbarMenuItem key={label} onClick={action}>
+              <ListItemIcon>{icon}</ListItemIcon>
+              <Typography variant="inherit" noWrap>
+                {t(label)}
+              </Typography>
+            </ToolbarMenuItem>
+          ))}
+        </MenuList>
+      </ToolbarMenu>
+    </div>
   );
 };
 

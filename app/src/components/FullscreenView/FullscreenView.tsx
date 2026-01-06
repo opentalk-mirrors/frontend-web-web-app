@@ -87,6 +87,7 @@ const FullscreenView = () => {
         RoomEvent.ParticipantConnected,
         RoomEvent.ParticipantDisconnected,
         RoomEvent.ActiveSpeakersChanged,
+        RoomEvent.TrackPublished,
       ],
     })
   ); //TODO: Recheck for ActiveSpeakersChanged

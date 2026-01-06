@@ -241,12 +241,39 @@ export const setScreenShareEnabled = createAsyncThunk<
       audio: true,
       systemAudio: 'include',
       resolution: screenShareConfig?.resolution && ScreenShareResolutionValues[screenShareConfig?.resolution],
+      surfaceSwitching: 'include',
     });
   } catch (error) {
     const mediaError = handleMediaPermissionError({ error, deviceId: '', kind: 'screenshare' });
     return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind: 'videoinput' });
   }
 });
+
+export const switchScreenShare = createAsyncThunk<void, void, { state: RootState; rejectValue: FetchPermissionError }>(
+  'livekit/switchScreenShare',
+  async (_, thunkApi) => {
+    const participant = thunkApi.getState().livekit.room?.localParticipant;
+
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: false,
+      });
+      const newVideoTrack = stream.getVideoTracks()[0];
+      const currentScreenShareTrack = participant?.getTrackPublication(Track.Source.ScreenShare)?.track;
+      if (currentScreenShareTrack) {
+        await participant?.unpublishTrack(currentScreenShareTrack);
+      }
+      await participant?.publishTrack(newVideoTrack, {
+        name: 'screen-share',
+        source: Track.Source.ScreenShare,
+      });
+    } catch (error) {
+      const mediaError = handleMediaPermissionError({ error, deviceId: '', kind: 'screenshare' });
+      return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind: 'videoinput' });
+    }
+  }
+);
 
 export const switchActiveDevice = createAsyncThunk<
   void,
