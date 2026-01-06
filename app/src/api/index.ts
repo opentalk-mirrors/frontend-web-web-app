@@ -50,33 +50,15 @@ import {
 import * as mediaStore from '../store/slices/mediaSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from '../store/slices/meetingNotesSlice';
 import {
-  disableRaisedHands,
-  enableRaisedHands,
-  forceLowerHand,
   forceMuteDisabled,
   forceMuteEnabled,
   trainingParticipationReportDisabled,
   trainingParticipationReportEnabled,
 } from '../store/slices/moderationSlice';
-import {
-  breakoutJoined,
-  breakoutLeft,
-  rename as participantsRename,
-  selectParticipantsTotal,
-  waitingRoomJoined,
-  waitingRoomLeft,
-} from '../store/slices/participantsSlice';
+import { breakoutJoined, breakoutLeft, selectParticipantsTotal } from '../store/slices/participantsSlice';
 import { selectParticipantById } from '../store/slices/participantsSlice';
 import * as pollStore from '../store/slices/pollSlice';
-import {
-  connectionClosed,
-  disableWaitingRoom,
-  enableWaitingRoom,
-  enteredWaitingRoom,
-  presenceConfirmationDone,
-  presenceConfirmationRequested,
-  readyToEnter,
-} from '../store/slices/roomSlice';
+import { connectionClosed, presenceConfirmationDone, presenceConfirmationRequested } from '../store/slices/roomSlice';
 import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
 import { streamUpdated } from '../store/slices/streamingSlice';
 import {
@@ -89,7 +71,7 @@ import {
 } from '../store/slices/subroomAudioSlice';
 import { timerStarted, timerStopped, updateParticipantsReady } from '../store/slices/timerSlice';
 import { updatedCinemaLayout } from '../store/slices/uiSlice';
-import { selectOurUuid, setDisplayName } from '../store/slices/userSlice';
+import { selectOurUuid } from '../store/slices/userSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import {
   AutomodSelectionStrategy,
@@ -103,6 +85,7 @@ import { composeMeetingDetailsUrl } from '../utils/apiUtils';
 import { handleChatMessage } from './handlers/chat';
 import { handleControlMessage, startedId } from './handlers/control';
 import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
+import { handleModerationMessage } from './handlers/moderation';
 import {
   Message as IncomingMessage,
   breakout,
@@ -110,7 +93,6 @@ import {
   media,
   meetingNotes,
   meetingReport,
-  moderation,
   poll,
   sharedFolder,
   streaming,
@@ -426,102 +408,6 @@ const handlePollVoteMessage = (dispatch: AppDispatch, data: poll.Message) => {
     default: {
       const dataString = JSON.stringify(data, null, 2);
       log.error(`Unknown poll message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
-    }
-  }
-};
-
-/**
- * Handles messages in the moderation namespace
- * @param {AppDispatch} dispatch function to fire an event
- * @param {moderation.Message} data Message content
- */
-const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message, state: RootState) => {
-  switch (data.message) {
-    case 'kicked':
-      dispatch(hangUp());
-      notifications.warning(i18next.t('meeting-notification-kicked'));
-      break;
-    case 'banned':
-      dispatch(hangUp());
-      notifications.warning(i18next.t('meeting-notification-banned'));
-      break;
-    case 'sent_to_waiting_room': {
-      dispatch(enteredWaitingRoom());
-      notifications.warning(i18next.t('meeting-notification-moved-to-waiting-room'));
-      break;
-    }
-    case 'waiting_room_enabled':
-      dispatch(enableWaitingRoom());
-      break;
-    case 'waiting_room_disabled':
-      dispatch(disableWaitingRoom());
-      break;
-    case 'joined_waiting_room':
-      {
-        const modifiedData = {
-          ...data,
-          control: {
-            ...data.control,
-            avatarUrl: setLibravatarOptions(data.control.avatarUrl, {
-              defaultImage: selectLibravatarDefaultImage(state),
-            }),
-          },
-        };
-        dispatch(waitingRoomJoined(modifiedData));
-      }
-      break;
-    case 'left_waiting_room':
-      dispatch(waitingRoomLeft(data.id));
-      break;
-    case 'in_waiting_room':
-      dispatch(enteredWaitingRoom());
-      break;
-    case 'accepted':
-      dispatch(readyToEnter());
-      break;
-    case 'raised_hand_reset_by_moderator':
-      notifications.info(i18next.t('reset-handraises-notification'));
-      dispatch(forceLowerHand());
-      break;
-    case 'raise_hands_disabled':
-      notifications.info(i18next.t('turn-handraises-off-notification'));
-      dispatch(forceLowerHand());
-      dispatch(disableRaisedHands());
-      break;
-    case 'raise_hands_enabled':
-      notifications.info(i18next.t('turn-handraises-on-notification'));
-      dispatch(enableRaisedHands());
-      break;
-    case 'debriefing_started':
-      notifications.info(i18next.t('debriefing-started-notification'));
-      break;
-    case 'session_ended':
-      dispatch(hangUp());
-      notifications.info(
-        i18next.t(
-          state.user.role === Role.Moderator
-            ? 'debriefing-session-ended-for-all-notification'
-            : 'debriefing-session-ended-notification'
-        )
-      );
-      break;
-    case 'display_name_changed':
-      dispatch(participantsRename({ id: data.target, displayName: data.newName }));
-      if (data.target === state.user.uuid) {
-        dispatch(setDisplayName(data.newName));
-      }
-      notifications.info(
-        i18next.t('display-name-change-notification', {
-          moderatorName: state.participants.entities[data.issued_by]?.displayName || '',
-          oldName: data.oldName,
-          newName: data.newName,
-        })
-      );
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown moderation message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
