@@ -17,7 +17,7 @@ import { useAppSelector } from '../../hooks';
 import { useInviteCode } from '../../hooks/useInviteCode';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
-import { selectConfigFeatures } from '../../store/slices/configSlice';
+import { selectConfigFeatures, selectSpeedTestConfig } from '../../store/slices/configSlice';
 import { selectLobbyAudioTrack, selectLobbyVideoEnabled } from '../../store/slices/livekitSlice';
 import { BreakoutRoomId } from '../../types';
 import MyMeetingMenu from '../MeetingHeader/fragments/MyMeetingMenu';
@@ -126,6 +126,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const localAudioTrack = useAppSelector(selectLobbyAudioTrack);
   const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
   const videoEnabled = useAppSelector(selectLobbyVideoEnabled);
+  const config = useAppSelector(selectSpeedTestConfig);
 
   const { roomId } = useParams<'roomId' | 'breakoutRoomId'>() as {
     roomId: RoomId;
@@ -141,7 +142,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
             <LogoIcon />
           </IconButton>
           <UtilitiesContainer>
-            <SpeedTestDialog />
+            {config.ndtServer && <SpeedTestDialog />}
             {!isMobile && <MyMeetingMenu />}
           </UtilitiesContainer>
         </Header>
