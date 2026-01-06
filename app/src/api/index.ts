@@ -14,7 +14,6 @@ import {
   setLibravatarOptions,
   showConsentNotification,
 } from '../commonComponents';
-import { MenuTab } from '../components/MenuTabs/fragments/constants';
 import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification';
 import { showWithLinkNotification } from '../components/WithLinkNotification';
 import LayoutOptions from '../enums/LayoutOptions';
@@ -33,16 +32,6 @@ import {
   setAsInactiveSpeaker,
 } from '../store/slices/automodSlice';
 import * as breakoutStore from '../store/slices/breakoutSlice';
-import {
-  clearGlobalChat,
-  groupChatHistoryChunkReceived,
-  privateChatHistoryChunkReceived,
-  received,
-  roomChatHistoryChunkReceived,
-  setChatSearchResults,
-  setChatSettings,
-  setGlobalChatLastSeenTimestamp,
-} from '../store/slices/chatSlice';
 import { selectLibravatarDefaultImage } from '../store/slices/configSlice';
 import {
   canceled as legalVoteCanceled,
@@ -104,23 +93,19 @@ import { selectOurUuid, setDisplayName } from '../store/slices/userSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import {
   AutomodSelectionStrategy,
-  ChatMessage,
-  ChatScope,
-  GroupId,
   MeetingNotesAccess,
-  ParticipantId,
   Role,
   Timestamp,
   WhisperParticipantState,
   matchBuilder,
 } from '../types';
 import { composeMeetingDetailsUrl } from '../utils/apiUtils';
+import { handleChatMessage } from './handlers/chat';
 import { handleControlMessage, startedId } from './handlers/control';
 import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
 import {
   Message as IncomingMessage,
   breakout,
-  chat,
   livekit,
   media,
   meetingNotes,
@@ -680,83 +665,6 @@ const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message
     default: {
       const dataString = JSON.stringify(data, null, 2);
       log.error(`Unknown timer message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
-    }
-  }
-};
-
-export const handleChatMessage = (
-  dispatch: AppDispatch,
-  data: chat.ChatMessage,
-  timestamp: Timestamp,
-  state: RootState
-) => {
-  switch (data.message) {
-    case 'chat_enabled':
-    case 'chat_disabled': {
-      const enabled = data.message === 'chat_enabled';
-      notifications.info(i18next.t(`chat-${enabled ? 'enabled' : 'disabled'}-message`));
-      dispatch(setChatSettings({ id: data.id, timestamp, enabled }));
-      break;
-    }
-    case 'message_sent': {
-      const userId = state.user.uuid as ParticipantId;
-      let chatMessage: ChatMessage;
-
-      if (data.scope === ChatScope.Group) {
-        chatMessage = {
-          ...data,
-          timestamp,
-          scope: ChatScope.Group,
-          target: data.target as GroupId,
-        };
-        if (data.source !== userId) {
-          notifications.info(i18next.t('chat-new-group-message'));
-        }
-      } else if (data.scope === ChatScope.Private) {
-        chatMessage = {
-          ...data,
-          timestamp,
-          scope: ChatScope.Private,
-          target: data.target as ParticipantId,
-        };
-        if (data.target === userId) {
-          notifications.info(i18next.t('chat-new-private-message'));
-        }
-      } else {
-        chatMessage = {
-          ...data,
-          timestamp,
-          scope: ChatScope.Global,
-          target: undefined,
-        };
-      }
-
-      dispatch(received({ chatMessage, userId }));
-      if (state.ui.currentMenuTab === MenuTab.Chat) {
-        dispatch(setGlobalChatLastSeenTimestamp({ value: timestamp }));
-      }
-      break;
-    }
-    case 'history_cleared':
-      dispatch(clearGlobalChat());
-      notifications.info(i18next.t('chat-delete-global-messages-success'));
-      break;
-    case 'room_chat_history_chunk':
-      dispatch(roomChatHistoryChunkReceived(data));
-      break;
-    case 'group_chat_history_chunk':
-      dispatch(groupChatHistoryChunkReceived(data));
-      break;
-    case 'private_chat_history_chunk':
-      dispatch(privateChatHistoryChunkReceived(data));
-      break;
-    case 'search_results':
-      dispatch(setChatSearchResults(data.matches.messages));
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown chat message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
