@@ -4,7 +4,7 @@
 import { StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import { Middleware, freeze, isAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
-import { kebabCase, unionBy } from 'lodash';
+import { kebabCase } from 'lodash';
 
 import {
   createStackedMessages,
@@ -13,7 +13,6 @@ import {
   notifications,
   setLibravatarOptions,
   showConsentNotification,
-  startTimeLimitNotification,
 } from '../commonComponents';
 import { MenuTab } from '../components/MenuTabs/fragments/constants';
 import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification';
@@ -24,7 +23,7 @@ import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
-import { changeMedia, hangUp, joinSuccess, startRoom } from '../store/commonActions';
+import { changeMedia, hangUp, startRoom } from '../store/commonActions';
 import {
   remainingUpdated as automodRemainingUpdated,
   speakerUpdated as automodSpeakerUpdated,
@@ -67,18 +66,13 @@ import {
   forceLowerHand,
   forceMuteDisabled,
   forceMuteEnabled,
-  loweredHand,
-  raisedHand,
   trainingParticipationReportDisabled,
   trainingParticipationReportEnabled,
 } from '../store/slices/moderationSlice';
 import {
   breakoutJoined,
   breakoutLeft,
-  join as participantsJoin,
-  leave as participantsLeft,
   rename as participantsRename,
-  update as participantsUpdate,
   selectParticipantsTotal,
   waitingRoomJoined,
   waitingRoomLeft,
@@ -90,12 +84,9 @@ import {
   disableWaitingRoom,
   enableWaitingRoom,
   enteredWaitingRoom,
-  joinBlocked,
   presenceConfirmationDone,
   presenceConfirmationRequested,
   readyToEnter,
-  selectParticipantLimit,
-  setIsRoomDeleted,
 } from '../store/slices/roomSlice';
 import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
 import { streamUpdated } from '../store/slices/streamingSlice';
@@ -109,7 +100,7 @@ import {
 } from '../store/slices/subroomAudioSlice';
 import { timerStarted, timerStopped, updateParticipantsReady } from '../store/slices/timerSlice';
 import { updatedCinemaLayout } from '../store/slices/uiSlice';
-import { selectIsModerator, selectOurUuid, setDisplayName, updateRole } from '../store/slices/userSlice';
+import { selectOurUuid, setDisplayName } from '../store/slices/userSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import {
   AutomodSelectionStrategy,
@@ -117,27 +108,19 @@ import {
   ChatScope,
   GroupId,
   MeetingNotesAccess,
-  Participant,
   ParticipantId,
+  Role,
   Timestamp,
-  WaitingState,
   WhisperParticipantState,
   matchBuilder,
 } from '../types';
 import { composeMeetingDetailsUrl } from '../utils/apiUtils';
-import {
-  handleStorageExceededError,
-  mapBreakoutToUiParticipant,
-  mapMeetingNotesToMeetingNotesAccess,
-  mapToUiParticipant,
-  showErrorNotification,
-  showStorageNotification,
-} from './handlers/helpers';
+import { handleControlMessage, startedId } from './handlers/control';
+import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
 import {
   Message as IncomingMessage,
   breakout,
   chat,
-  control,
   livekit,
   media,
   meetingNotes,
@@ -152,251 +135,10 @@ import {
   whiteboard,
 } from './types/incoming';
 import { AutomodEventType } from './types/incoming/automod';
-import { Role } from './types/incoming/control';
 import { LegalVoteMessageType, VoteFinalResults } from './types/incoming/legalVote';
 import { automod } from './types/outgoing';
 import * as outgoing from './types/outgoing';
 import { acceptWhisperInvite, declineWhisperInvite } from './types/outgoing/subroomAudio';
-
-/**
- * Started talking stick notification ID, reused accross different
- * event handlers.
- */
-const startedId = 'handleAutomodMessage-started-id';
-
-/**
- * Handles messages in the control namespace
- * @param {AppDispatch} dispatch  function
- * @param {ConferenceRoom} conference context of the current conference room
- * @param {control.Message} data control message content
- * @param {Timestamp} timestamp of the message
- */
-const handleControlMessage = async (
-  dispatch: AppDispatch,
-  state: RootState,
-  conference: ConferenceRoom, //TODO remove and handle stuff in the webrtc context directly
-  data: control.Message,
-  timestamp: Timestamp
-) => {
-  switch (data.message) {
-    case 'join_success': {
-      const participantsReady = data.participants
-        .filter((participant) => participant.timer && participant.timer.readyStatus === true)
-        .map((participant) => participant.id as ParticipantId);
-      const groups = data.chat.groupsHistory.map((group) => group.name as GroupId);
-      data.chat.groups = groups;
-
-      const maximumStorage = data.tariff.quotas?.maxStorage;
-      const usedStorage = data.assetStorage?.usedStorage;
-
-      if (usedStorage) {
-        if (usedStorage >= maximumStorage) {
-          showStorageNotification(state, 'error');
-        } else if (usedStorage >= maximumStorage * 0.95) {
-          showStorageNotification(state, 'warning');
-        }
-      }
-
-      const chatEnabled = data.chat.enabled;
-      if (!chatEnabled) {
-        dispatch(setChatSettings({ id: data.id, timestamp, enabled: chatEnabled }));
-      }
-
-      let joinedParticipants: Participant[];
-      joinedParticipants = data.participants.map((participant) => {
-        return mapToUiParticipant(state, participant, data.breakout?.current || null, WaitingState.Joined);
-      });
-
-      if (data.moderation?.waitingRoomEnabled && data.moderation.waitingRoomParticipants.length > 0) {
-        // There can be a situation, that some participants are in both arrays (e.g. after Debriefing)
-        // Therefore we should give priority to the waiting room, and remove them from the joined participants array
-        const waitingParticipants = data.moderation.waitingRoomParticipants.map((waitingParticipant) => {
-          const duplicateParticipantIndex = joinedParticipants.findIndex(
-            (participant: Participant) => participant.id === waitingParticipant.id
-          );
-          if (duplicateParticipantIndex > -1) {
-            joinedParticipants.splice(duplicateParticipantIndex, 1);
-          }
-          //TODO the backend should provide a waitingState: 'waiting' | 'approved', change when implemented
-          return mapToUiParticipant(state, waitingParticipant, data.breakout?.current || null, WaitingState.Waiting);
-        });
-
-        joinedParticipants = joinedParticipants.concat(waitingParticipants);
-      }
-
-      if (data.breakout !== undefined) {
-        const breakoutParticipants = data.breakout.participants.map((participant) =>
-          mapBreakoutToUiParticipant(state, participant, timestamp)
-        );
-        // We merge both arrays, removing duplications
-        // If a participant is already joined, we remove him from breakout array
-        joinedParticipants = unionBy(joinedParticipants, breakoutParticipants, 'id');
-      }
-
-      const serverTimeOffset = new Date(timestamp).getTime() - Date.now();
-      dispatch(
-        joinSuccess({
-          participantId: data.id,
-          avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
-          role: data.role,
-          chat: data.chat,
-          groups,
-          automod: data.automod,
-          breakout: data.breakout,
-          polls: data.polls,
-          votes: data.legalVote?.votes,
-          participants: joinedParticipants,
-          moderation: data.moderation,
-          forceMute: data.livekit?.microphoneRestrictionState,
-          recording: data.recording,
-          serverTimeOffset,
-          tariff: data.tariff,
-          timer: data.timer,
-          participantsReady: participantsReady,
-          sharedFolder: data.sharedFolder,
-          eventInfo: data.eventInfo,
-          roomInfo: data.roomInfo,
-          isRoomOwner: data.isRoomOwner,
-          livekit: data.livekit,
-          trainingParticipationReport: data.trainingParticipationReport,
-        })
-      );
-
-      if (data.automod) {
-        if (data.automod.config.selectionStrategy === AutomodSelectionStrategy.Playlist) {
-          notificationAction({
-            key: startedId,
-            msg: createStackedMessages([
-              i18next.t('talking-stick-started-first-line'),
-              i18next.t('talking-stick-started-second-line'),
-            ]),
-            variant: 'info',
-            ariaLive: 'polite',
-          });
-        }
-      }
-
-      if (data.whiteboard?.status === 'initialized') {
-        dispatch(setWhiteboardAvailable({ showWhiteboard: true, url: data.whiteboard.url }));
-      }
-
-      if (data.closesAt) {
-        await startTimeLimitNotification(data.closesAt);
-      }
-
-      // Notify moderator, in case he took the last position of the room and now it's full
-      if (data.role === Role.Moderator) {
-        const onlineParticipants = joinedParticipants.filter((participant) => {
-          const hasNotLeft = participant.leftAt === null;
-          const isInRoom = participant.waitingState === WaitingState.Joined;
-          const isInTheSameBreakoutRoom = data.breakout?.current
-            ? participant.breakoutRoomId === data.breakout?.current
-            : true;
-          return hasNotLeft && isInRoom && isInTheSameBreakoutRoom;
-        });
-        // Redux store has not been updated yet, therefore we have to add us manually
-        const onlineParticipantsNumberPlusMe = onlineParticipants.length + 1;
-        const participantLimit = data.tariff.quotas?.roomParticipantLimit;
-        if (onlineParticipantsNumberPlusMe >= participantLimit) {
-          notifications.error(i18next.t('meeting-notification-participant-limit-reached', { participantLimit }));
-        }
-      }
-
-      //Show notification for active streaming target
-      const activeTarget =
-        data.recording &&
-        Object.values(data.recording.targets).find((target) => target.status === StreamingStatus.Active);
-      if (activeTarget) {
-        createStreamUpdatedNotification({
-          kind: activeTarget.streamingKind,
-          status: activeTarget.status,
-          publicUrl: activeTarget.streamingKind === StreamingKind.Livestream ? activeTarget.publicUrl : undefined,
-          eventId: state.room.eventInfo?.id,
-        });
-
-        if (state.streaming.consent === undefined) {
-          await showConsentNotification(dispatch);
-        }
-      }
-
-      break;
-    }
-    case 'joined': {
-      dispatch(
-        participantsJoin({
-          participant: mapToUiParticipant(state, data, conference.roomCredentials.breakoutRoomId, WaitingState.Joined),
-        })
-      );
-
-      // Notify moderator, in case a participant took the last position of the room and now it's full
-      if (selectIsModerator(state)) {
-        const participantLimit = selectParticipantLimit(state);
-        // Redux store has not been updated yet, therefore we have to add new guest manually
-        const onlineParticipantsPlusTheNewOne = selectParticipantsTotal(state) + 1;
-        if (onlineParticipantsPlusTheNewOne >= participantLimit) {
-          notifications.error(i18next.t('meeting-notification-participant-limit-reached', { participantLimit }));
-        }
-      }
-      break;
-    }
-    case 'join_blocked':
-      dispatch(joinBlocked({ reason: data.reason }));
-      break;
-    case 'left': {
-      dispatch(participantsLeft({ id: data.id, timestamp: timestamp, reason: data.reason }));
-      break;
-    }
-    case 'update': {
-      if (data.control !== undefined) {
-        dispatch(
-          participantsUpdate({
-            id: data.id,
-            lastActive: timestamp,
-            waitingState: WaitingState.Joined,
-            meetingNotesAccess: mapMeetingNotesToMeetingNotesAccess(data.meetingNotes),
-            ...data.control,
-          })
-        );
-      }
-      break;
-    }
-    case 'role_updated':
-      dispatch(updateRole(data.newRole));
-      if (data.newRole === Role.Moderator) {
-        notifications.info(i18next.t('moderation-rights-granted'));
-      } else {
-        notifications.warning(i18next.t('moderation-rights-revoked'));
-      }
-      break;
-    case 'time_limit_quota_elapsed':
-      dispatch(hangUp());
-      break;
-    case 'hand_raised': {
-      dispatch(raisedHand({ timestamp }));
-      break;
-    }
-    case 'hand_lowered': {
-      dispatch(loweredHand());
-      break;
-    }
-    case 'room_deleted': {
-      dispatch(setIsRoomDeleted(true));
-      break;
-    }
-    case 'moderator_role_granted':
-    case 'moderator_role_revoked': {
-      const { displayName } = state.participants.entities[data.target] || {};
-      notifications[data.message === 'moderator_role_granted' ? 'info' : 'warning'](
-        i18n.t(kebabCase(data.message), { displayName })
-      );
-      break;
-    }
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown control message type: ${dataString}`);
-    }
-  }
-};
 
 /**
  * Handles messages in the media namespace
