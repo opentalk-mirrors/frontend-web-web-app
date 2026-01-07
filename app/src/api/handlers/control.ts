@@ -34,18 +34,13 @@ import { setWhiteboardAvailable } from '../../store/slices/whiteboardSlice';
 import { AutomodSelectionStrategy, GroupId, Participant, ParticipantId, Timestamp, WaitingState } from '../../types';
 import { control } from '../types/incoming';
 import { Role } from '../types/incoming/control';
+import { startedId } from './automod';
 import {
   mapBreakoutToUiParticipant,
   mapMeetingNotesToMeetingNotesAccess,
   mapToUiParticipant,
   showStorageNotification,
 } from './helpers';
-
-/**
- * Started talking stick notification ID, reused across different
- * event handlers.
- */
-export const startedId = 'handleAutomodMessage-started-id';
 
 /**
  * Handles messages in the control namespace
