@@ -36,7 +36,6 @@ import {
   trainingParticipationReportEnabled,
 } from '../store/slices/moderationSlice';
 import { selectParticipantById } from '../store/slices/participantsSlice';
-import * as pollStore from '../store/slices/pollSlice';
 import { connectionClosed, presenceConfirmationDone, presenceConfirmationRequested } from '../store/slices/roomSlice';
 import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
 import { streamUpdated } from '../store/slices/streamingSlice';
@@ -61,13 +60,13 @@ import { handleControlMessage } from './handlers/control';
 import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
 import { handleLegalVoteMessage } from './handlers/legalVote';
 import { handleModerationMessage } from './handlers/moderation';
+import { handlePollVoteMessage } from './handlers/poll';
 import {
   Message as IncomingMessage,
   livekit,
   media,
   meetingNotes,
   meetingReport,
-  poll,
   sharedFolder,
   streaming,
   subroomAudio,
@@ -117,35 +116,6 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
           log.error(`Media Error: ${data}`);
           throw new Error(`Media Error: ${error}`);
       }
-    }
-  }
-};
-
-/**
- * Handles messages in the poll namespace
- * @param {AppDispatch} dispatch function to fire an event
- * @param {poll.Message} data message content
- */
-const handlePollVoteMessage = (dispatch: AppDispatch, data: poll.Message) => {
-  switch (data.message) {
-    case 'started':
-      dispatch(pollStore.started(data));
-      break;
-    case 'live_update':
-      dispatch(pollStore.liveUpdated(data));
-      break;
-    case 'done':
-      dispatch(pollStore.done(data));
-      break;
-    case 'error':
-      // todo error handling in BE seems to be wrong
-      log.error('Poll error message', data);
-      // dispatchError(data.error.replace('_', '-'));
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown poll message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
     }
   }
 };
