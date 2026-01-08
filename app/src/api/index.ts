@@ -14,7 +14,6 @@ import {
 } from '../commonComponents';
 import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification';
 import { showWithLinkNotification } from '../components/WithLinkNotification';
-import LayoutOptions from '../enums/LayoutOptions';
 import i18n from '../i18n';
 import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
@@ -28,7 +27,6 @@ import {
   triggerLivekitReconnect,
 } from '../store/slices/livekitSlice';
 import * as mediaStore from '../store/slices/mediaSlice';
-import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from '../store/slices/meetingNotesSlice';
 import {
   forceMuteDisabled,
   forceMuteEnabled,
@@ -48,10 +46,9 @@ import {
   updateParticipantInviteState,
 } from '../store/slices/subroomAudioSlice';
 import { timerStarted, timerStopped, updateParticipantsReady } from '../store/slices/timerSlice';
-import { updatedCinemaLayout } from '../store/slices/uiSlice';
 import { selectOurUuid } from '../store/slices/userSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
-import { MeetingNotesAccess, Role, WhisperParticipantState, matchBuilder } from '../types';
+import { WhisperParticipantState, matchBuilder } from '../types';
 import { composeMeetingDetailsUrl } from '../utils/apiUtils';
 import { handleAutomodMessage } from './handlers/automod';
 import { handleBreakoutMessage } from './handlers/breakout';
@@ -59,13 +56,13 @@ import { handleChatMessage } from './handlers/chat';
 import { handleControlMessage } from './handlers/control';
 import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
 import { handleLegalVoteMessage } from './handlers/legalVote';
+import { handleMeetingNotesMessage } from './handlers/meetingNotes';
 import { handleModerationMessage } from './handlers/moderation';
 import { handlePollVoteMessage } from './handlers/poll';
 import {
   Message as IncomingMessage,
   livekit,
   media,
-  meetingNotes,
   meetingReport,
   sharedFolder,
   streaming,
@@ -116,67 +113,6 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
           log.error(`Media Error: ${data}`);
           throw new Error(`Media Error: ${error}`);
       }
-    }
-  }
-};
-
-/**
- * Handles meetingNotes messages
- *
- * It takes a dispatch function and a meetingNotes message, and dispatches an action based on the message
- * @param {AppDispatch} dispatch - this is the dispatch function from the redux store.
- * @param data - meetingNotes.IncomingMeetingNotes
- */
-const handleMeetingNotesMessage = (
-  dispatch: AppDispatch,
-  data: meetingNotes.IncomingMeetingNotes,
-  state: RootState
-) => {
-  switch (data.message) {
-    case 'pdf_asset':
-      notifications.info(i18next.t('meeting-notes-upload-pdf-message'));
-      break;
-    case 'write_url':
-      if (state.user.meetingNotesAccess === MeetingNotesAccess.None) {
-        const message = i18next.t(
-          state.user.role === Role.Moderator
-            ? 'meeting-notes-created-all-notification'
-            : 'meeting-notes-created-notification'
-        );
-        notificationAction({
-          msg: message,
-          variant: 'info',
-          ariaLive: 'polite',
-          actionBtnText: i18next.t('meeting-notes-new-meeting-notes-message-button'),
-          onAction: () => dispatch(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes, cacheLastLayout: true })),
-        });
-      }
-      dispatch(setMeetingNotesWriteUrl(data.url.toString()));
-      break;
-    case 'read_url':
-      if (state.user.meetingNotesAccess === MeetingNotesAccess.None) {
-        const message = i18next.t(
-          state.user.role === Role.Moderator
-            ? 'meeting-notes-created-all-notification'
-            : 'meeting-notes-created-notification'
-        );
-        notificationAction({
-          msg: message,
-          variant: 'info',
-          ariaLive: 'polite',
-          actionBtnText: i18next.t('meeting-notes-new-meeting-notes-message-button'),
-          onAction: () => dispatch(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes, cacheLastLayout: true })),
-        });
-      }
-      dispatch(setMeetingNotesReadUrl(data.url.toString()));
-      break;
-    case 'error':
-      handleStorageExceededError(state, data.error);
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown meeting notes message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
     }
   }
 };
