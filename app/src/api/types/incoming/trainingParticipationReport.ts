@@ -56,7 +56,7 @@ interface PdfAsset {
   assetId: AssetId;
 }
 
-enum TrainingParticipationReportError {
+export enum TrainingParticipationReportError {
   //The sending client does not have the permission to perform the requested action.
   InsufficientPermissions = 'insufficient_permissions',
   //The creator attempted to enable presence logging when it was already enabled.
