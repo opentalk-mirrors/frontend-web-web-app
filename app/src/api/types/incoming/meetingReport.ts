@@ -11,7 +11,7 @@ interface PdfAsset {
   assetId: AssetId;
 }
 
-enum MeetingReportError {
+export enum MeetingReportError {
   InsufficientPermissions = 'insufficient_permissions',
   StorageExceeded = 'storage_exceeded',
   GenerateFailed = 'generate_failed',

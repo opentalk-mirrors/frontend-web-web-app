@@ -57,13 +57,13 @@ import { handleControlMessage } from './handlers/control';
 import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
 import { handleLegalVoteMessage } from './handlers/legalVote';
 import { handleMeetingNotesMessage } from './handlers/meetingNotes';
+import { handleMeetingReportMessage } from './handlers/meetingReport';
 import { handleModerationMessage } from './handlers/moderation';
 import { handlePollVoteMessage } from './handlers/poll';
 import {
   Message as IncomingMessage,
   livekit,
   media,
-  meetingReport,
   sharedFolder,
   streaming,
   subroomAudio,
@@ -113,34 +113,6 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
           log.error(`Media Error: ${data}`);
           throw new Error(`Media Error: ${error}`);
       }
-    }
-  }
-};
-
-/**
- * Handles meetingReport messages
- *
- * It takes a dispatch function and a meetingReport message, and dispatches an action based on the message
- * @param {AppDispatch} dispatch function to fire an event
- * @param {meetingReport.Message} data Message content
- * @param {RootState} state Global state
- */
-const handleMeetingReportMessage = (dispatch: AppDispatch, data: meetingReport.Message, state: RootState) => {
-  let assetLocation;
-  switch (data.message) {
-    case 'pdf_asset':
-      if (state.room.eventInfo?.id) {
-        assetLocation = composeMeetingDetailsUrl(state.config.baseUrl, state.room.eventInfo?.id).href;
-      }
-      showWithLinkNotification({ translationKey: 'meeting-report-pdf-asset-message', url: assetLocation });
-      break;
-    case 'error':
-      handleStorageExceededError(state, data.error);
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown meeting report message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
     }
   }
 };
