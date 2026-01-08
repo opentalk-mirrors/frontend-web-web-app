@@ -31,7 +31,7 @@
     "@sentry/react": "^10.39.0",
     "bowser": "^2.14.1",
     "camelcase-keys": "^10.0.2",
-    "colorjs.io": "^0.5.2",
+    "colorjs.io": "^0.6.0",
     "context-filter-polyfill": "^0.3.23",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
