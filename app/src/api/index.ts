@@ -19,7 +19,6 @@ import {
   trainingParticipationReportEnabled,
 } from '../store/slices/moderationSlice';
 import { connectionClosed, presenceConfirmationDone, presenceConfirmationRequested } from '../store/slices/roomSlice';
-import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import { matchBuilder } from '../types';
 import { composeMeetingDetailsUrl } from '../utils/apiUtils';
@@ -34,16 +33,11 @@ import { handleMeetingNotesMessage } from './handlers/meetingNotes';
 import { handleMeetingReportMessage } from './handlers/meetingReport';
 import { handleModerationMessage } from './handlers/moderation';
 import { handlePollVoteMessage } from './handlers/poll';
+import { handleSharedFolderMessage } from './handlers/sharedFolder';
 import { handleStreamingMessage } from './handlers/streaming';
 import { handleSubroomAudioMessage } from './handlers/subroomAudio';
 import { handleTimerMessage } from './handlers/timer';
-import {
-  Message as IncomingMessage,
-  media,
-  sharedFolder,
-  trainingParticipationReport,
-  whiteboard,
-} from './types/incoming';
+import { Message as IncomingMessage, media, trainingParticipationReport, whiteboard } from './types/incoming';
 import * as outgoing from './types/outgoing';
 
 /**
@@ -112,19 +106,6 @@ const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message
     default: {
       const dataString = JSON.stringify(data, null, 2);
       log.error(`Unknown timer message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
-    }
-  }
-};
-
-const handleSharedFolderMessage = (dispatch: AppDispatch, data: sharedFolder.Message) => {
-  switch (data.message) {
-    case 'updated':
-      dispatch(sharedFolderUpdated({ read: data.read, readWrite: data.readWrite }));
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown shared_folder message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
