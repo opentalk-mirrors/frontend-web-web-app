@@ -10,7 +10,6 @@ import {
   notificationAction,
   notificationPersistent,
   notifications,
-  setLibravatarOptions,
   showConsentNotification,
 } from '../commonComponents';
 import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification';
@@ -22,8 +21,6 @@ import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
 import { changeMedia, hangUp, startRoom } from '../store/commonActions';
-import * as breakoutStore from '../store/slices/breakoutSlice';
-import { selectLibravatarDefaultImage } from '../store/slices/configSlice';
 import {
   canceled as legalVoteCanceled,
   initialized as legalVoteInitialized,
@@ -45,7 +42,6 @@ import {
   trainingParticipationReportDisabled,
   trainingParticipationReportEnabled,
 } from '../store/slices/moderationSlice';
-import { breakoutJoined, breakoutLeft } from '../store/slices/participantsSlice';
 import { selectParticipantById } from '../store/slices/participantsSlice';
 import * as pollStore from '../store/slices/pollSlice';
 import { connectionClosed, presenceConfirmationDone, presenceConfirmationRequested } from '../store/slices/roomSlice';
@@ -63,16 +59,16 @@ import { timerStarted, timerStopped, updateParticipantsReady } from '../store/sl
 import { updatedCinemaLayout } from '../store/slices/uiSlice';
 import { selectOurUuid } from '../store/slices/userSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
-import { MeetingNotesAccess, Role, Timestamp, WhisperParticipantState, matchBuilder } from '../types';
+import { MeetingNotesAccess, Role, WhisperParticipantState, matchBuilder } from '../types';
 import { composeMeetingDetailsUrl } from '../utils/apiUtils';
 import { handleAutomodMessage } from './handlers/automod';
+import { handleBreakoutMessage } from './handlers/breakout';
 import { handleChatMessage } from './handlers/chat';
 import { handleControlMessage } from './handlers/control';
 import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
 import { handleModerationMessage } from './handlers/moderation';
 import {
   Message as IncomingMessage,
-  breakout,
   livekit,
   media,
   meetingNotes,
@@ -128,51 +124,6 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
           log.error(`Media Error: ${data}`);
           throw new Error(`Media Error: ${error}`);
       }
-    }
-  }
-};
-
-/**
- * Handles messages in the breakout namespace
- * @param {AppDispatch} dispatch function send an event
- * @param {breakout.Message} data message content
- * @param {Timestamp} timestamp from backend of the current message
- */
-const handleBreakoutMessage = (
-  dispatch: AppDispatch,
-  state: RootState,
-  data: breakout.Message,
-  timestamp: Timestamp
-) => {
-  switch (data.message) {
-    case 'started':
-      dispatch(breakoutStore.started(data));
-      break;
-    case 'stopped':
-      dispatch(breakoutStore.stopped(data));
-      break;
-    case 'expired':
-      dispatch(breakoutStore.expired());
-      break;
-    case 'joined':
-      {
-        const modifiedData = {
-          ...data,
-          avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
-        };
-        dispatch(breakoutJoined({ data: modifiedData, timestamp }));
-      }
-      break;
-    case 'left':
-      dispatch(breakoutLeft({ id: data.id, timestamp }));
-      break;
-    case 'error':
-      showErrorNotification(data.error);
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown breakout message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
     }
   }
 };
