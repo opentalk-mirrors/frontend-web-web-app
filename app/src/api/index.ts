@@ -21,14 +21,7 @@ import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
 import { changeMedia, hangUp, startRoom } from '../store/commonActions';
-import {
-  canceled as legalVoteCanceled,
-  initialized as legalVoteInitialized,
-  started as legalVoteStarted,
-  stopped as legalVoteStopped,
-  updated as legalVoteUpdated,
-  voted as legalVoteVoted,
-} from '../store/slices/legalVoteSlice';
+import { initialized as legalVoteInitialized } from '../store/slices/legalVoteSlice';
 import {
   setLivekitPopoutStreamAccessToken,
   setNewAccessToken,
@@ -66,6 +59,7 @@ import { handleBreakoutMessage } from './handlers/breakout';
 import { handleChatMessage } from './handlers/chat';
 import { handleControlMessage } from './handlers/control';
 import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
+import { handleLegalVoteMessage } from './handlers/legalVote';
 import { handleModerationMessage } from './handlers/moderation';
 import {
   Message as IncomingMessage,
@@ -81,7 +75,6 @@ import {
   trainingParticipationReport,
   whiteboard,
 } from './types/incoming';
-import { LegalVoteMessageType, VoteFinalResults } from './types/incoming/legalVote';
 import * as outgoing from './types/outgoing';
 import { acceptWhisperInvite, declineWhisperInvite } from './types/outgoing/subroomAudio';
 
@@ -124,70 +117,6 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
           log.error(`Media Error: ${data}`);
           throw new Error(`Media Error: ${error}`);
       }
-    }
-  }
-};
-
-/**
- * Handles messages in the legal-vote namespace
- * @param dispatch AppDispatch function
- * @param data mediaMsgs Message content
- */
-const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMessageType, state: RootState) => {
-  switch (data.message) {
-    case 'pdf_asset':
-      //TODO implement pdf asset handling
-      break;
-    case 'started':
-      dispatch(legalVoteStarted(data));
-      break;
-    case 'stopped':
-      dispatch(legalVoteStopped(data));
-      notifications.info(i18next.t('legal-vote-stopped'));
-      if (data.results === VoteFinalResults.Invalid) {
-        notifications.warning(i18next.t('legal-vote-stopped-invalid-results-notification'));
-      }
-      break;
-    case 'updated':
-      dispatch(legalVoteUpdated(data));
-      break;
-    case 'canceled':
-      dispatch(legalVoteCanceled(data));
-      notifications.error(i18next.t('legal-vote-canceled'));
-      break;
-    case 'voted':
-      if (data.response === 'success') {
-        dispatch(legalVoteVoted(data));
-      } else {
-        notifications.error(i18next.t('legal-vote-error'));
-      }
-      break;
-    case 'reported_issue': {
-      // report came from others and not us, our id is not part of participants but user slice.
-      if (data.participantId !== state.user.uuid) {
-        const displayName = state.participants.entities[data.participantId]?.displayName || i18n.t('global-someone');
-        if (data.kind) {
-          notifications.warning(
-            i18n.t('legal-vote-report-issue-kind-notification', { displayName: displayName, kind: data.kind })
-          );
-        } else {
-          notifications.warning(
-            i18n.t('legal-vote-report-issue-description-notification', {
-              displayName: displayName,
-              description: data.description,
-            })
-          );
-        }
-      }
-      break;
-    }
-    case 'error':
-      showErrorNotification(data.error);
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown legal vote message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
     }
   }
 };
