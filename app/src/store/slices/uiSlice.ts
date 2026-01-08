@@ -15,7 +15,7 @@ import { ChatScope, LegalVoteId, ParticipantId, PollId, SortOption, TargetId, Ti
 import { hangUp, joinSuccess } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted } from './automodSlice';
-import { GridViewOrder } from './common';
+import { CinemaViewSortOrder } from './common';
 import { started as legalVoteStarted } from './legalVoteSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { breakoutLeft, leave } from './participantsSlice';
@@ -43,6 +43,8 @@ export const presenterVideoPositions = ['bottomLeft', 'upperRight', 'bottomRight
 
 export type PresenterVideoPosition = (typeof presenterVideoPositions)[number];
 
+export type PaginationDirection = 'left' | 'right';
+
 export type UIState = {
   participantsSortOption: SortOption;
   showParticipantGroups: boolean;
@@ -51,7 +53,7 @@ export type UIState = {
   cinemaLayout: LayoutOptions;
   lastCinemaLayout: LayoutOptions;
   paginationPage: number;
-  paginationDirection: 'left' | 'right';
+  paginationDirection: PaginationDirection;
   pinnedParticipantId?: ParticipantId;
   presenterOverlayPinnedParticipantId?: ParticipantId;
   localVideoMirroringEnabled: boolean;
@@ -71,7 +73,7 @@ export type UIState = {
   errorDialog: ErrorDialog;
   haveSeenMobilePollsAndVotes: boolean;
   isDrawerOpen: boolean;
-  gridViewOrder: GridViewOrder;
+  cinemaViewOrder: CinemaViewSortOrder;
   currentMenuTab: MenuTab;
   presenterVideoPosition: PresenterVideoPosition;
   mode?: UiMode;
@@ -111,7 +113,7 @@ const initialState: UIState = {
   },
   haveSeenMobilePollsAndVotes: false,
   isDrawerOpen: false,
-  gridViewOrder: GridViewOrder.FirstJoined,
+  cinemaViewOrder: CinemaViewSortOrder.FirstJoined,
   currentMenuTab: MenuTab.Chat,
   presenterVideoPosition: 'bottomRight',
 };
@@ -132,8 +134,8 @@ export const uiSlice = createSlice({
     chatConversationStateSet: (state, action: PayloadAction<IChatConversationState>) => {
       state.chatConversationState = action.payload;
     },
-    updatedGridViewOrder: (state, action: PayloadAction<GridViewOrder>) => {
-      state.gridViewOrder = action.payload;
+    updatedCinemaViewSortOrder: (state, action: PayloadAction<CinemaViewSortOrder>) => {
+      state.cinemaViewOrder = action.payload;
     },
     updatedCinemaLayout: (state, action: PayloadAction<{ layout: LayoutOptions; cacheLastLayout?: boolean }>) => {
       if (action.payload.cacheLastLayout) {
@@ -303,7 +305,7 @@ export const {
   setHotkeysEnabled,
   setShowErrorDialog,
   setIsDrawerOpen,
-  updatedGridViewOrder,
+  updatedCinemaViewSortOrder,
   setCurrentMenuTab,
   setPresenterVideoPosition,
   setUiMode,
@@ -354,7 +356,7 @@ export const selectShowErrorDialog = (state: RootState) => state.ui.errorDialog.
 export const selectErrorDialogEvent = (state: RootState) => state.ui.errorDialog.event;
 export const selectHaveSeenMobilePollsAndVotes = (state: RootState) => state.ui.haveSeenMobilePollsAndVotes;
 export const selectIsDrawerOpen = (state: RootState) => state.ui.isDrawerOpen;
-export const selectGridViewOrder = (state: RootState) => state.ui.gridViewOrder;
+export const selectCinemaViewOrder = (state: RootState) => state.ui.cinemaViewOrder;
 export const selectCurrentMenuTab = (state: RootState) => state.ui.currentMenuTab;
 export const selectPresenterVideoPosition = (state: RootState) => state.ui.presenterVideoPosition;
 

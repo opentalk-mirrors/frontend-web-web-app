@@ -10,7 +10,7 @@ import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAnd
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectParticipantsWithRaisedHands } from '../../store/selectors';
-import { selectMapRemotePaticipanstDisplayName } from '../../store/slices/participantsSlice';
+import { selectMapRemotePaticipantsDisplayName } from '../../store/slices/participantsSlice';
 import { ParticipantId } from '../../types';
 
 const ResetHandraisesTab = () => {
@@ -23,7 +23,7 @@ const ResetHandraisesTab = () => {
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
 
-  const participantNames = useAppSelector((state) => selectMapRemotePaticipanstDisplayName(state, remoteParticipants));
+  const participantNames = useAppSelector((state) => selectMapRemotePaticipantsDisplayName(state, remoteParticipants));
 
   const searchFilteredParticipantsList = useMemo(() => {
     return remoteParticipants

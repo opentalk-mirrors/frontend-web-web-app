@@ -5,8 +5,7 @@ import { ParticipantContext, useRemoteParticipants, useSortedParticipants } from
 import { styled } from '@mui/material';
 import { RoomEvent } from 'livekit-client';
 
-import { useAppSelector } from '../../../hooks';
-import { selectPinnedParticipantId } from '../../../store/slices/uiSlice';
+import { useCurrentSpeaker } from '../../../hooks/useCurrentSpeaker';
 import ParticipantWindow from '../../ParticipantWindow';
 
 interface SpeakerViewProps {
@@ -36,8 +35,8 @@ const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerViewP
       ],
     })
   ); //TODO: Recheck for ActiveSpeakersChanged
-  const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
-  const currentSpeakerId = pinnedParticipantId || sortedParticipants[0]?.identity;
+
+  const currentSpeakerId = useCurrentSpeaker();
 
   const selectedSpeaker = sortedParticipants.find((participant) => participant.identity === currentSpeakerId);
 
@@ -58,7 +57,7 @@ const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerViewP
   return (
     <Container width={width} height={height} data-testid="SpeakerWindow1">
       {selectedParticipant && (
-        <ParticipantContext.Provider value={selectedSpeaker || selectedParticipant}>
+        <ParticipantContext.Provider value={selectedParticipant}>
           <ParticipantWindow alwaysShowOverlay />
         </ParticipantContext.Provider>
       )}

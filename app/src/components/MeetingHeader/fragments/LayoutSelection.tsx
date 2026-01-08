@@ -19,7 +19,7 @@ import {
 import { IconButton } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { GridViewOrder } from '../../../store/slices/common';
+import { CinemaViewSortOrder } from '../../../store/slices/common';
 import { selectIsModuleEnabled } from '../../../store/slices/configSlice';
 import {
   fullscreenActions,
@@ -28,10 +28,10 @@ import {
 } from '../../../store/slices/fullscreen/slice';
 import {
   selectCinemaLayout,
-  selectGridViewOrder,
+  selectCinemaViewOrder,
   selectIsCurrentMeetingNotesHighlighted,
   updatedCinemaLayout,
-  updatedGridViewOrder,
+  updatedCinemaViewSortOrder,
 } from '../../../store/slices/uiSlice';
 import { selectIsWhiteboardAvailable } from '../../../store/slices/whiteboardSlice';
 import LayoutSelectionMenuItem from '../../SelectParticipants/fragments/LayoutSelectionMenuItem';
@@ -70,7 +70,7 @@ const getLayoutIcon = (layout: LayoutOptions): JSX.Element | null => {
 const LayoutSelection = () => {
   const dispatch = useAppDispatch();
   const selectedLayout = useAppSelector(selectCinemaLayout);
-  const selectedGridViewOrder = useAppSelector(selectGridViewOrder);
+  const selectedGridViewOrder = useAppSelector(selectCinemaViewOrder);
   const { t } = useTranslation();
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const isViewPopoverOpen = Boolean(anchorElement);
@@ -94,10 +94,10 @@ const LayoutSelection = () => {
     dispatch(fullscreenActions.request());
   };
 
-  const handleSelectedView = (layout: LayoutOptions, order: GridViewOrder = GridViewOrder.FirstJoined) => {
+  const handleSelectedView = (layout: LayoutOptions, order: CinemaViewSortOrder = CinemaViewSortOrder.FirstJoined) => {
     closeViewPopover();
     dispatch(updatedCinemaLayout({ layout, cacheLastLayout: true }));
-    dispatch(updatedGridViewOrder(order));
+    dispatch(updatedCinemaViewSortOrder(order));
   };
 
   const theme = useTheme();
@@ -210,22 +210,22 @@ const LayoutSelection = () => {
         </Divider>
         <LayoutSelectionMenuItem
           role="menuitemradio"
-          onClick={() => handleSelectedView(selectedLayout, GridViewOrder.FirstJoined)}
-          showCheckIcon={selectedGridViewOrder === GridViewOrder.FirstJoined}
+          onClick={() => handleSelectedView(selectedLayout, CinemaViewSortOrder.FirstJoined)}
+          showCheckIcon={selectedGridViewOrder === CinemaViewSortOrder.FirstJoined}
           icon={<TimerIcon />}
           content={t('conference-view-grid-first-joined')}
         />
         <LayoutSelectionMenuItem
           role="menuitemradio"
-          onClick={() => handleSelectedView(selectedLayout, GridViewOrder.VideoFirst)}
-          showCheckIcon={selectedGridViewOrder === GridViewOrder.VideoFirst}
+          onClick={() => handleSelectedView(selectedLayout, CinemaViewSortOrder.VideoFirst)}
+          showCheckIcon={selectedGridViewOrder === CinemaViewSortOrder.VideoFirst}
           icon={<CameraOnIcon />}
           content={t('conference-view-grid-camera-first')}
         />
         <LayoutSelectionMenuItem
           role="menuitemradio"
-          onClick={() => handleSelectedView(selectedLayout, GridViewOrder.ModeratorsFirst)}
-          showCheckIcon={selectedGridViewOrder === GridViewOrder.ModeratorsFirst}
+          onClick={() => handleSelectedView(selectedLayout, CinemaViewSortOrder.ModeratorsFirst)}
+          showCheckIcon={selectedGridViewOrder === CinemaViewSortOrder.ModeratorsFirst}
           icon={<ModeratorIcon />}
           content={t('conference-view-grid-moderators-first')}
         />
