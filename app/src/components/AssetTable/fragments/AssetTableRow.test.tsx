@@ -70,8 +70,6 @@ describe('AssetTableRow', () => {
     await userEvent.click(downloadButton);
     expect(mockHandleDownload).toHaveBeenCalledExactlyOnceWith({
       assetId: asset.id,
-      filename: asset.filename,
-      fileSize: asset.size,
     });
 
     // check delete button

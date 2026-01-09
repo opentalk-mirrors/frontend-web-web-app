@@ -11,7 +11,7 @@ import { formatBytes } from '../../../utils/numberUtils';
 
 interface AssetTableRowProps {
   asset: BaseAsset;
-  handleDownload: ({ assetId, filename, fileSize, updateDownloadProgress }: AssetDownloadBaseInfo) => void;
+  handleDownload: ({ assetId }: AssetDownloadBaseInfo) => void;
   handleDelete?: (assetId: AssetId) => void;
   progress?: number;
   disabledDownload?: boolean;
@@ -48,7 +48,7 @@ export const AssetTableRow = ({
       <TableCell>
         <Stack spacing={0.5} direction="column">
           <DownloadButton
-            onClick={() => handleDownload({ assetId, filename, fileSize: size })}
+            onClick={() => handleDownload({ assetId })}
             disabled={disabledDownload}
             progressPercentage={progress}
             fullWidth

@@ -40,7 +40,7 @@ const AssetTableContainer = styled(TableContainer, {
 
 interface AssetTableProps {
   assets: Array<BaseAsset>;
-  onDownload: ({ assetId, filename, fileSize, updateDownloadProgress }: AssetDownloadBaseInfo) => Promise<void>;
+  onDownload: ({ assetId }: AssetDownloadBaseInfo) => Promise<void>;
   onDelete?: (assetId: AssetId) => Promise<void | { data: void } | { error: FetchBaseQueryError | SerializedError }>;
   maxHeight?: string;
 }
@@ -73,16 +73,11 @@ export const AssetTable = ({ assets, onDownload, onDelete, maxHeight = 'none' }:
   };
 
   // While downloading we disable buttons in the relevant row
-  const handleDownload = async ({ assetId, filename, fileSize }: Omit<AssetDownloadBaseInfo, 'onDownloadProgress'>) => {
+  const handleDownload = async ({ assetId }: Omit<AssetDownloadBaseInfo, 'onDownloadProgress'>) => {
     try {
       updateAssetRowState(assetId, { downloading: true, progress: 0, deleting: false });
       await onDownload({
         assetId,
-        filename,
-        fileSize,
-        updateDownloadProgress: (percentage) => {
-          updateAssetRowState(assetId, { downloading: true, progress: percentage, deleting: false });
-        },
       });
       updateAssetRowState(assetId, { downloading: false, progress: 0, deleting: false });
     } catch (error) {

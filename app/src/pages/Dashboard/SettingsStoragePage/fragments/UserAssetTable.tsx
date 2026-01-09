@@ -36,10 +36,10 @@ export const UserAssetTable = () => {
     }
   };
 
-  const handleDownload = async ({ assetId, filename, fileSize, updateDownloadProgress }: AssetDownloadBaseInfo) => {
+  const handleDownload = async ({ assetId }: AssetDownloadBaseInfo) => {
     const roomId = getRoomId(assetId);
     if (roomId) {
-      return downloadRoomAsset({ roomId, assetId, filename, fileSize, updateDownloadProgress });
+      return downloadRoomAsset({ roomId, assetId });
     }
   };
 
