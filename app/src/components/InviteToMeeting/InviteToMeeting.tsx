@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Grid, styled } from '@mui/material';
-import { Event, EventInvite, isEvent, UserRole } from '@opentalk/rest-api-rtk-query';
+import { Event, EventInvite, isEvent, RegisteredUser } from '@opentalk/rest-api-rtk-query';
 import type { ParticipantOption } from '@opentalk/rest-api-rtk-query/src/types/user';
 import { merge } from 'lodash';
 import { useState } from 'react';
@@ -54,7 +54,7 @@ const InviteToMeeting = ({
   const sendInvitations = async () => {
     const allInvites = selectedUsers.map(async (selectedUser) => {
       const isUser = 'id' in selectedUser;
-      const invitee = isUser ? { invitee: selectedUser.id, role: UserRole.USER } : { email: selectedUser.email };
+      const invitee = isUser ? { invitee: selectedUser.id, role: selectedUser.role } : { email: selectedUser.email };
 
       const data = await creatEventInvitation(merge({ eventId: existingEvent.id }, invitee)).unwrap();
       return { invitee: isUser ? invitee.invitee : invitee.email, data: data };
@@ -90,6 +90,20 @@ const InviteToMeeting = ({
       deleteEvent(existingEvent.id);
     }
     navigate('/dashboard/');
+  };
+
+  const updateUserRoleInInvitees = (user: RegisteredUser) => {
+    setSelectedUsers((selectedUsers) =>
+      selectedUsers.map((selectedUser) => {
+        if ('id' in selectedUser && selectedUser.id === user.id) {
+          return {
+            ...selectedUser,
+            role: user.role,
+          };
+        }
+        return selectedUser;
+      })
+    );
   };
 
   const addSelectedUser = (selected: ParticipantOption) => {
@@ -139,6 +153,7 @@ const InviteToMeeting = ({
                 isUpdatable={isUpdatable}
                 removeSelectedUser={removeSelectedUser}
                 adhocMeeting={adhocMeeting}
+                onGrantRevokeModerator={updateUserRoleInInvitees}
               />
             </Grid>
           </>

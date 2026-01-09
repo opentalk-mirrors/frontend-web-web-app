@@ -50,11 +50,19 @@ type UserRowProps = {
   eventInvite: EventInvite;
   onRevokeUserInvite?: (invitee: EventInvite) => void;
   onRemoveUser?: (invitee: EventInvite) => void;
+  onGrantRevokeModerator?: (user: RegisteredUser) => void;
   isUpdatable: boolean;
   eventId: EventId;
 };
 
-const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, eventId }: UserRowProps) => {
+const UserRow = ({
+  isUpdatable,
+  eventInvite,
+  onRevokeUserInvite,
+  onRemoveUser,
+  onGrantRevokeModerator,
+  eventId,
+}: UserRowProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const avatarDefaultImage = useAppSelector(selectLibravatarDefaultImage);
@@ -91,6 +99,19 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
   const open = Boolean(anchorEl);
   const id = open ? 'invite-more-menu' : undefined;
 
+  const handleGrantRevokeModerator = (user: RegisteredUser) => {
+    const role = user.role === UserRole.MODERATOR ? UserRole.USER : UserRole.MODERATOR;
+    if (eventInvite.status !== InviteStatus.Added) {
+      updateEventInvite({
+        userId: user.id,
+        eventId,
+        role,
+      });
+      return;
+    }
+    onGrantRevokeModerator?.({ ...user, role });
+  };
+
   const renderMoreIcon = (user: RegisteredUser) =>
     isCreator && isUpdatable ? (
       <>
@@ -118,15 +139,7 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
             horizontal: 'center',
           }}
         >
-          <MenuItem
-            onClick={() =>
-              updateEventInvite({
-                userId: user.id,
-                eventId,
-                role: user.role === UserRole.USER ? UserRole.MODERATOR : UserRole.USER,
-              })
-            }
-          >
+          <MenuItem onClick={() => handleGrantRevokeModerator(user)}>
             {user.role === UserRole.MODERATOR
               ? t('dashboard-meeting-revoke-moderator-rights')
               : t('dashboard-meeting-grant-moderator-rights')}
@@ -155,7 +168,8 @@ const UserRow = ({ isUpdatable, eventInvite, onRevokeUserInvite, onRemoveUser, e
           <Typography variant="body2" noWrap>
             {getLabel(eventInvite.profile)}
           </Typography>
-          {isHovered && isUpdatable && isCreator && eventInvite.status !== InviteStatus.Added ? (
+
+          {isHovered && isUpdatable && isCreator ? (
             renderMoreIcon(eventInvite.profile)
           ) : (
             <ModeratorIcon color="secondary" visible={isModerator(eventInvite.profile)} />

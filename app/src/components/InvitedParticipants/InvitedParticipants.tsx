@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Grid, styled } from '@mui/material';
 import { EventInvite, InviteStatus, EventId } from '@opentalk/rest-api-rtk-query';
-import type { ParticipantOption } from '@opentalk/rest-api-rtk-query';
+import type { ParticipantOption, RegisteredUser } from '@opentalk/rest-api-rtk-query';
 import { sortBy } from 'lodash';
 
 import { useGetEventInvitesQuery } from '../../api/rest';
@@ -14,6 +14,7 @@ type InvitedParticipantsProps = {
   isUpdatable: boolean;
   selectedUsers?: Array<ParticipantOption>;
   removeSelectedUser?: (invitee: EventInvite) => void;
+  onGrantRevokeModerator?: (user: RegisteredUser) => void;
   eventId: EventId;
   adhocMeeting?: boolean;
 };
@@ -38,6 +39,7 @@ const InvitedParticipants = ({
   selectedUsers = [],
   eventId,
   adhocMeeting = false,
+  onGrantRevokeModerator,
 }: InvitedParticipantsProps) => {
   const { data: invitees = [] } = useGetEventInvitesQuery({ eventId }, { refetchOnMountOrArgChange: true });
 
@@ -103,6 +105,7 @@ const InvitedParticipants = ({
               isUpdatable={isUpdatable}
               status={inviteStatus}
               removeSelectedUser={inviteStatus !== InviteStatus.Declined ? removeSelectedUser : undefined}
+              onGrantRevokeModerator={onGrantRevokeModerator}
               invitees={
                 inviteStatus === InviteStatus.Pending
                   ? mergedEventInvites
