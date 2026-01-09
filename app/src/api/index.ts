@@ -1,18 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import { Middleware, freeze, isAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { kebabCase } from 'lodash';
 
-import {
-  notificationAction,
-  notificationPersistent,
-  notifications,
-  showConsentNotification,
-} from '../commonComponents';
-import { createStreamUpdatedNotification } from '../components/StreamUpdatedNotification';
+import { notificationAction, notificationPersistent, notifications } from '../commonComponents';
 import { showWithLinkNotification } from '../components/WithLinkNotification';
 import i18n from '../i18n';
 import log from '../logger';
@@ -27,7 +20,6 @@ import {
 } from '../store/slices/moderationSlice';
 import { connectionClosed, presenceConfirmationDone, presenceConfirmationRequested } from '../store/slices/roomSlice';
 import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
-import { streamUpdated } from '../store/slices/streamingSlice';
 import { timerStarted, timerStopped, updateParticipantsReady } from '../store/slices/timerSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import { matchBuilder } from '../types';
@@ -43,12 +35,12 @@ import { handleMeetingNotesMessage } from './handlers/meetingNotes';
 import { handleMeetingReportMessage } from './handlers/meetingReport';
 import { handleModerationMessage } from './handlers/moderation';
 import { handlePollVoteMessage } from './handlers/poll';
+import { handleStreamingMessage } from './handlers/streaming';
 import { handleSubroomAudioMessage } from './handlers/subroomAudio';
 import {
   Message as IncomingMessage,
   media,
   sharedFolder,
-  streaming,
   timer,
   trainingParticipationReport,
   whiteboard,
@@ -147,50 +139,6 @@ const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message
     default: {
       const dataString = JSON.stringify(data, null, 2);
       log.error(`Unknown timer message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
-    }
-  }
-};
-
-const handleStreamingMessage = async (dispatch: AppDispatch, data: streaming.Message, state: RootState) => {
-  switch (data.message) {
-    case 'stream_updated': {
-      dispatch(streamUpdated(data));
-
-      const streamTarget = state.streaming.streams.entities[data.targetId];
-      if (streamTarget) {
-        //Add notification handler based on status
-        const publicUrl = streamTarget.streamingKind === StreamingKind.Livestream ? streamTarget.publicUrl : undefined;
-        createStreamUpdatedNotification({
-          kind: streamTarget.streamingKind,
-          status: data.status,
-          publicUrl,
-          eventId: state.room.eventInfo?.id,
-        });
-      }
-
-      const { cameraEnabled, microphoneEnabled } = state.livekit.mediaSettings;
-      const isActiveStream = data.status === StreamingStatus.Active;
-      const isMediaActive = cameraEnabled || microphoneEnabled;
-      const isConsentRequired =
-        isActiveStream && (state.streaming.consent === undefined || (!state.streaming.consent && isMediaActive));
-
-      if (isConsentRequired) {
-        await showConsentNotification(dispatch);
-      }
-
-      break;
-    }
-    case 'recorder_error': {
-      if (data.error === 'timeout') {
-        notifications.error(i18next.t('livestream-recording-error'));
-        log.error('recording error:', data.error);
-      }
-      break;
-    }
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown recording message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
