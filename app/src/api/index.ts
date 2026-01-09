@@ -19,17 +19,9 @@ import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
-import { changeMedia, hangUp, startRoom } from '../store/commonActions';
+import { hangUp, startRoom } from '../store/commonActions';
 import { initialized as legalVoteInitialized } from '../store/slices/legalVoteSlice';
 import {
-  setLivekitPopoutStreamAccessToken,
-  setNewAccessToken,
-  triggerLivekitReconnect,
-} from '../store/slices/livekitSlice';
-import * as mediaStore from '../store/slices/mediaSlice';
-import {
-  forceMuteDisabled,
-  forceMuteEnabled,
   trainingParticipationReportDisabled,
   trainingParticipationReportEnabled,
 } from '../store/slices/moderationSlice';
@@ -46,6 +38,7 @@ import { handleChatMessage } from './handlers/chat';
 import { handleControlMessage } from './handlers/control';
 import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
 import { handleLegalVoteMessage } from './handlers/legalVote';
+import { handleLivekitMessage } from './handlers/livekit';
 import { handleMeetingNotesMessage } from './handlers/meetingNotes';
 import { handleMeetingReportMessage } from './handlers/meetingReport';
 import { handleModerationMessage } from './handlers/moderation';
@@ -53,7 +46,6 @@ import { handlePollVoteMessage } from './handlers/poll';
 import { handleSubroomAudioMessage } from './handlers/subroomAudio';
 import {
   Message as IncomingMessage,
-  livekit,
   media,
   sharedFolder,
   streaming,
@@ -212,57 +204,6 @@ const handleSharedFolderMessage = (dispatch: AppDispatch, data: sharedFolder.Mes
     default: {
       const dataString = JSON.stringify(data, null, 2);
       log.error(`Unknown shared_folder message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
-    }
-  }
-};
-
-const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Message, state: RootState) => {
-  switch (data.message) {
-    case 'microphone_restrictions_enabled':
-      dispatch(forceMuteEnabled({ unrestrictedParticipants: data.unrestrictedParticipants }));
-      if (state.user.uuid !== null && !data.unrestrictedParticipants.includes(state.user.uuid)) {
-        notifications.info(i18next.t('microphones-disabled-notification'));
-      }
-      break;
-    case 'microphone_restrictions_disabled':
-      dispatch(forceMuteDisabled());
-      if (state.user.uuid && !state.moderation.forceMute.unrestrictedParticipants.includes(state.user.uuid)) {
-        notifications.info(i18next.t('microphones-enabled-notification'));
-      }
-      break;
-    case 'force_muted': {
-      const participants = state.participants.entities;
-      notifications.warning(
-        i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
-      );
-      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
-      dispatch(mediaStore.notificationShown());
-      return;
-    }
-    case 'popout_stream_access_token': {
-      dispatch(setLivekitPopoutStreamAccessToken(data.token));
-      return;
-    }
-    case 'credentials': {
-      dispatch(setNewAccessToken(data));
-      return;
-    }
-    case 'error': {
-      const error = data.error;
-      switch (error) {
-        case 'livekit_unavailable':
-          dispatch(triggerLivekitReconnect());
-          break;
-        default:
-          log.error(`Livekit Error: ${data}`);
-          throw new Error(`Livekit Error: ${error}`);
-      }
-      break;
-    }
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown livekit message type: ${dataString}`);
       throw new Error(`Unknown message type: ${dataString}`);
     }
   }
