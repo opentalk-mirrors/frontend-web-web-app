@@ -20,7 +20,6 @@ import {
 } from '../store/slices/moderationSlice';
 import { connectionClosed, presenceConfirmationDone, presenceConfirmationRequested } from '../store/slices/roomSlice';
 import { sharedFolderUpdated } from '../store/slices/sharedFolderSlice';
-import { timerStarted, timerStopped, updateParticipantsReady } from '../store/slices/timerSlice';
 import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import { matchBuilder } from '../types';
 import { composeMeetingDetailsUrl } from '../utils/apiUtils';
@@ -37,11 +36,11 @@ import { handleModerationMessage } from './handlers/moderation';
 import { handlePollVoteMessage } from './handlers/poll';
 import { handleStreamingMessage } from './handlers/streaming';
 import { handleSubroomAudioMessage } from './handlers/subroomAudio';
+import { handleTimerMessage } from './handlers/timer';
 import {
   Message as IncomingMessage,
   media,
   sharedFolder,
-  timer,
   trainingParticipationReport,
   whiteboard,
 } from './types/incoming';
@@ -86,32 +85,6 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
           log.error(`Media Error: ${data}`);
           throw new Error(`Media Error: ${error}`);
       }
-    }
-  }
-};
-
-/**
- * Handles timer messages
- *
- * It takes a dispatch function and a protocol message, and dispatches an action based on the message
- * @param {AppDispatch} dispatch - this is the dispatch function from the redux store.
- * @param {timer.Message} data Message content
- */
-const handleTimerMessage = (dispatch: AppDispatch, data: timer.Message) => {
-  switch (data.message) {
-    case 'started':
-      dispatch(timerStarted(data));
-      break;
-    case 'stopped':
-      dispatch(timerStopped(data));
-      break;
-    case 'updated_ready_status':
-      dispatch(updateParticipantsReady(data));
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown timer message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
     }
   }
 };
