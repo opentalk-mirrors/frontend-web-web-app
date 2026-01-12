@@ -65,7 +65,6 @@ fast-typescript-analyzer:
     - npx --yes fta-cli --format json --score-cap 1000 . > ./fta-report.json
     - npx --yes fta-cli --format table --score-cap 1000 .
     - npx --yes fta-cli .
-  allow_failure: true
   artifacts:
     when: always
     paths:
