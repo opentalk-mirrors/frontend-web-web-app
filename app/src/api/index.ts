@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Middleware, freeze, isAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
-import { kebabCase } from 'lodash';
 
-import { notificationAction, notificationPersistent, notifications } from '../commonComponents';
+import { notificationAction } from '../commonComponents';
 import { showWithLinkNotification } from '../components/WithLinkNotification';
-import i18n from '../i18n';
 import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
@@ -28,6 +26,7 @@ import { handleControlMessage } from './handlers/control';
 import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
 import { handleLegalVoteMessage } from './handlers/legalVote';
 import { handleLivekitMessage } from './handlers/livekit';
+import { handleMediaMessage } from './handlers/media';
 import { handleMeetingNotesMessage } from './handlers/meetingNotes';
 import { handleMeetingReportMessage } from './handlers/meetingReport';
 import { handleModerationMessage } from './handlers/moderation';
@@ -37,51 +36,8 @@ import { handleStreamingMessage } from './handlers/streaming';
 import { handleSubroomAudioMessage } from './handlers/subroomAudio';
 import { handleTimerMessage } from './handlers/timer';
 import { handleWhiteboardMessage } from './handlers/whiteboard';
-import { Message as IncomingMessage, media, trainingParticipationReport } from './types/incoming';
+import { Message as IncomingMessage, trainingParticipationReport } from './types/incoming';
 import * as outgoing from './types/outgoing';
-
-/**
- * Handles messages in the media namespace
- * @param dispatch AppDispatch function
- * @param data mediaMsgs Message content
- */
-const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, state: RootState) => {
-  switch (data.message) {
-    case 'presenter_role_granted':
-    case 'presenter_role_revoked': {
-      const [participantId] = data.participantIds;
-      const { displayName } = state.participants.entities[participantId] || {};
-      notifications[data.message === 'presenter_role_granted' ? 'info' : 'warning'](
-        i18n.t(kebabCase(data.message), { displayName })
-      );
-      break;
-    }
-    case 'error': {
-      const error = data.error;
-      switch (error) {
-        case 'invalid_end_of_candidates':
-          notificationPersistent({
-            msg: i18next.t('media-ice-connection-not-possible'),
-            variant: 'error',
-            ariaLive: 'assertive',
-          });
-          break;
-        case 'invalid_request_offer':
-        case 'invalid_sdp_offer':
-        case 'handle_sdp_answer':
-        case 'invalid_candidate':
-        case 'invalid_configure_request':
-        case 'permission_denied':
-          log.error(`Media Error: ${data}`);
-          notifications.error(i18next.t('error-general'));
-          throw new Error(`Media Error: ${error}`);
-        default:
-          log.error(`Media Error: ${data}`);
-          throw new Error(`Media Error: ${error}`);
-      }
-    }
-  }
-};
 
 const handleTrainingParticipationReportMessage = (
   dispatch: AppDispatch,
