@@ -18,7 +18,7 @@ export interface AssetRef {
 export interface PdfUrl extends AssetRef {
   message: 'pdf_asset';
 }
-enum WhiteboardError {
+export enum WhiteboardError {
   InsufficientPermissions = 'insufficient_permissions',
   StorageExceeded = 'storage_exceeded',
   GenerateFailed = 'generate_failed',

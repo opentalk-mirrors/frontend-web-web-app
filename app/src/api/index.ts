@@ -19,7 +19,6 @@ import {
   trainingParticipationReportEnabled,
 } from '../store/slices/moderationSlice';
 import { connectionClosed, presenceConfirmationDone, presenceConfirmationRequested } from '../store/slices/roomSlice';
-import { addWhiteboardAsset, setWhiteboardAvailable } from '../store/slices/whiteboardSlice';
 import { matchBuilder } from '../types';
 import { composeMeetingDetailsUrl } from '../utils/apiUtils';
 import { handleAutomodMessage } from './handlers/automod';
@@ -37,7 +36,8 @@ import { handleSharedFolderMessage } from './handlers/sharedFolder';
 import { handleStreamingMessage } from './handlers/streaming';
 import { handleSubroomAudioMessage } from './handlers/subroomAudio';
 import { handleTimerMessage } from './handlers/timer';
-import { Message as IncomingMessage, media, trainingParticipationReport, whiteboard } from './types/incoming';
+import { handleWhiteboardMessage } from './handlers/whiteboard';
+import { Message as IncomingMessage, media, trainingParticipationReport } from './types/incoming';
 import * as outgoing from './types/outgoing';
 
 /**
@@ -79,34 +79,6 @@ const handleMediaMessage = async (dispatch: AppDispatch, data: media.Message, st
           log.error(`Media Error: ${data}`);
           throw new Error(`Media Error: ${error}`);
       }
-    }
-  }
-};
-
-/**
- * Handles timer messages
- *
- * It takes a dispatch function and a protocol message, and dispatches an action based on the message
- * @param {AppDispatch} dispatch - this is the dispatch function from the redux store.
- * @param {timer.Message} data Message content
- */
-const handleWhiteboardMessage = (dispatch: AppDispatch, data: whiteboard.Message, state: RootState) => {
-  switch (data.message) {
-    case 'space_url':
-      dispatch(setWhiteboardAvailable({ showWhiteboard: true, url: data.url }));
-      break;
-    case 'pdf_asset':
-      dispatch(addWhiteboardAsset({ asset: { assetId: data.assetId, filename: data.filename } }));
-      notificationAction({ msg: i18next.t('whiteboard-new-pdf-message'), variant: 'info', ariaLive: 'polite' });
-
-      break;
-    case 'error':
-      handleStorageExceededError(state, data.error);
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown timer message type: ${dataString}`);
-      throw new Error(`Unknown message type: ${dataString}`);
     }
   }
 };
