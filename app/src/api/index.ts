@@ -11,23 +11,25 @@ import { hangUp, startRoom } from '../store/commonActions';
 import { initialized as legalVoteInitialized } from '../store/slices/legalVoteSlice';
 import { connectionClosed } from '../store/slices/roomSlice';
 import { matchBuilder } from '../types';
-import { handleAutomodMessage } from './handlers/automod';
-import { handleBreakoutMessage } from './handlers/breakout';
-import { handleChatMessage } from './handlers/chat';
-import { handleControlMessage } from './handlers/control';
-import { handleLegalVoteMessage } from './handlers/legalVote';
-import { handleLivekitMessage } from './handlers/livekit';
-import { handleMediaMessage } from './handlers/media';
-import { handleMeetingNotesMessage } from './handlers/meetingNotes';
-import { handleMeetingReportMessage } from './handlers/meetingReport';
-import { handleModerationMessage } from './handlers/moderation';
-import { handlePollVoteMessage } from './handlers/poll';
-import { handleSharedFolderMessage } from './handlers/sharedFolder';
-import { handleStreamingMessage } from './handlers/streaming';
-import { handleSubroomAudioMessage } from './handlers/subroomAudio';
-import { handleTimerMessage } from './handlers/timer';
-import { handleTrainingParticipationReportMessage } from './handlers/trainingParticipationReport';
-import { handleWhiteboardMessage } from './handlers/whiteboard';
+import {
+  handleAutomodMessage,
+  handleBreakoutMessage,
+  handleChatMessage,
+  handleControlMessage,
+  handleLegalVoteMessage,
+  handleLivekitMessage,
+  handleMediaMessage,
+  handleMeetingNotesMessage,
+  handleMeetingReportMessage,
+  handleModerationMessage,
+  handlePollVoteMessage,
+  handleSharedFolderMessage,
+  handleStreamingMessage,
+  handleSubroomAudioMessage,
+  handleTimerMessage,
+  handleTrainingParticipationReportMessage,
+  handleWhiteboardMessage,
+} from './handlers';
 import { Message as IncomingMessage } from './types/incoming';
 import * as outgoing from './types/outgoing';
 
