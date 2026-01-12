@@ -2,28 +2,19 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Middleware, freeze, isAction } from '@reduxjs/toolkit';
-import i18next from 'i18next';
 
-import { notificationAction } from '../commonComponents';
-import { showWithLinkNotification } from '../components/WithLinkNotification';
 import log from '../logger';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
 import { hangUp, startRoom } from '../store/commonActions';
 import { initialized as legalVoteInitialized } from '../store/slices/legalVoteSlice';
-import {
-  trainingParticipationReportDisabled,
-  trainingParticipationReportEnabled,
-} from '../store/slices/moderationSlice';
-import { connectionClosed, presenceConfirmationDone, presenceConfirmationRequested } from '../store/slices/roomSlice';
+import { connectionClosed } from '../store/slices/roomSlice';
 import { matchBuilder } from '../types';
-import { composeMeetingDetailsUrl } from '../utils/apiUtils';
 import { handleAutomodMessage } from './handlers/automod';
 import { handleBreakoutMessage } from './handlers/breakout';
 import { handleChatMessage } from './handlers/chat';
 import { handleControlMessage } from './handlers/control';
-import { handleStorageExceededError, showErrorNotification } from './handlers/helpers';
 import { handleLegalVoteMessage } from './handlers/legalVote';
 import { handleLivekitMessage } from './handlers/livekit';
 import { handleMediaMessage } from './handlers/media';
@@ -35,85 +26,10 @@ import { handleSharedFolderMessage } from './handlers/sharedFolder';
 import { handleStreamingMessage } from './handlers/streaming';
 import { handleSubroomAudioMessage } from './handlers/subroomAudio';
 import { handleTimerMessage } from './handlers/timer';
+import { handleTrainingParticipationReportMessage } from './handlers/trainingParticipationReport';
 import { handleWhiteboardMessage } from './handlers/whiteboard';
-import { Message as IncomingMessage, trainingParticipationReport } from './types/incoming';
+import { Message as IncomingMessage } from './types/incoming';
 import * as outgoing from './types/outgoing';
-
-const handleTrainingParticipationReportMessage = (
-  dispatch: AppDispatch,
-  data: trainingParticipationReport.Message,
-  state: RootState
-) => {
-  switch (data.message) {
-    case 'presence_logging_enabled':
-      if (state.room.isOwnedByCurrentUser) {
-        dispatch(trainingParticipationReportEnabled());
-        notificationAction({
-          msg: i18next.t('presence-logging-enabled-notification'),
-          variant: 'info',
-          ariaLive: 'polite',
-        });
-      }
-      break;
-    case 'presence_logging_disabled':
-      if (state.room.isOwnedByCurrentUser) {
-        dispatch(trainingParticipationReportDisabled());
-        notificationAction({
-          msg: i18next.t('presence-logging-disabled-notification'),
-          variant: 'info',
-          ariaLive: 'polite',
-        });
-      }
-      break;
-    case 'presence_logging_started':
-      if (state.room.isOwnedByCurrentUser) {
-        notificationAction({
-          msg: i18next.t('presence-logging-started-notification'),
-          variant: 'info',
-          ariaLive: 'polite',
-        });
-      }
-      break;
-    case 'presence_logging_ended':
-      if (state.room.isOwnedByCurrentUser) {
-        notificationAction({
-          msg: i18next.t('presence-logging-ended-notification'),
-          variant: 'info',
-          ariaLive: 'polite',
-        });
-      } else {
-        dispatch(presenceConfirmationDone());
-      }
-      break;
-    case 'presence_confirmation_requested':
-      dispatch(presenceConfirmationRequested());
-      break;
-    case 'presence_confirmation_logged':
-      dispatch(presenceConfirmationDone());
-      break;
-    case 'pdf_asset': {
-      if (state.room.isOwnedByCurrentUser) {
-        let assetLocation;
-        if (state.room.eventInfo?.id) {
-          assetLocation = composeMeetingDetailsUrl(state.config.baseUrl, state.room.eventInfo?.id).href;
-        }
-        showWithLinkNotification({
-          translationKey: 'training-participation-report-pdf-asset-notification',
-          url: assetLocation,
-        });
-      }
-      break;
-    }
-    case 'error':
-      handleStorageExceededError(state, data.error);
-      showErrorNotification(data.error);
-      break;
-    default: {
-      const dataString = JSON.stringify(data, null, 2);
-      log.error(`Unknown training participation report message type: ${dataString}`);
-    }
-  }
-};
 
 /**
  * Handle incoming websocket messages, sent from the signaling server
