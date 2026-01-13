@@ -7,7 +7,6 @@ export { handleChatMessage } from './chat';
 export { handleControlMessage } from './control';
 export { handleLegalVoteMessage } from './legalVote';
 export { handleLivekitMessage } from './livekit';
-export { handleMediaMessage } from './media';
 export { handleMeetingNotesMessage } from './meetingNotes';
 export { handleMeetingReportMessage } from './meetingReport';
 export { handleModerationMessage } from './moderation';
