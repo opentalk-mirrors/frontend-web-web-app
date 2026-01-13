@@ -31,6 +31,12 @@ const StyledLegend = styled('legend')(() => ({
   whiteSpace: 'pre-wrap',
 }));
 
+const CloseButton = styled(IconButton)(({ theme }) => ({
+  position: 'absolute',
+  right: theme.spacing(1),
+  top: theme.spacing(1),
+}));
+
 // Table is visible for all users who can vote in role_call and live_roll_call (by name)
 // button is visible only in the hidden kind of the legal vote
 // button in the hidden mode can be seen only after finishing the vote
@@ -129,14 +135,14 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
               />
             )}
           </Box>
-          <IconButton
+          <CloseButton
             onClick={onClose}
             aria-label={t('global-close-dialog')}
             /* eslint-disable jsx-a11y/no-autofocus */
             autoFocus
           >
             <CloseIcon />
-          </IconButton>
+          </CloseButton>
         </Box>
       </Grid>
       <Grid component="form" container size={{ xs: 12 }} onSubmit={submitLegalVoteOption}>
@@ -203,7 +209,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
             </Typography>
           </Grid>
         )}
-        {isAllowedToVote && (
+        {isAllowedToVote && legalVote.state !== LegalVoteState.Finished && (
           <Grid
             size={{ xs: 12 }}
             container

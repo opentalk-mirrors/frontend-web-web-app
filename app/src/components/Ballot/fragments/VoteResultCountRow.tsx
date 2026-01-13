@@ -16,7 +16,7 @@ function VoteResultCountRow(props: VoteResultRowProps) {
           Total
         </Typography>
       </TableCell>
-      <TableCell>{props.total}</TableCell>
+      <TableCell align="right">{props.total}</TableCell>
     </TableRow>
   );
 }

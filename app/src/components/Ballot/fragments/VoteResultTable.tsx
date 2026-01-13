@@ -49,13 +49,13 @@ function VoteResultTable(props: VoteResultTableProps) {
       <TableHead>
         <TableRow>
           <TableCell>{t('global-participants')}</TableCell>
-          <TableCell>
+          <TableCell align="center">
             {t('legal-vote-yes-label')} ({vote.votes.yes || 0})
           </TableCell>
-          <TableCell>
+          <TableCell align="center">
             {t('legal-vote-no-label')} ({vote.votes.no || 0})
           </TableCell>
-          <TableCell>
+          <TableCell align="center">
             {t('legal-vote-abstain-label')} ({vote.votes.abstain || 0})
           </TableCell>
         </TableRow>
