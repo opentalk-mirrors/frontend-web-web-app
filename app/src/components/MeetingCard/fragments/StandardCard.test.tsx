@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Event } from '@opentalk/rest-api-rtk-query';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { renderWithProviders, eventMockedData, configureStore } from '../../../utils/testUtils';
 import StandardCard from './StandardCard';
@@ -78,40 +79,36 @@ describe('Standard Card', () => {
   });
 
   it('click on more menu should display popup with edit, fav and delete option for meeting creator', async () => {
+    const user = userEvent.setup();
     renderWithProviders(<StandardCard {...dummyMeetingCardData} />, { store, provider: { router: true, mui: true } });
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
 
-    expect(MoreMenu).toBeInTheDocument();
+    await user.click(MoreMenu);
 
-    fireEvent.mouseDown(MoreMenu);
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-update-label')).toBeInTheDocument();
-    });
+    expect(screen.getByLabelText('dashboard-meeting-card-popover-update-label')).toBeInTheDocument();
     expect(screen.getByLabelText('dashboard-meeting-card-popover-remove-label')).toBeInTheDocument();
     expect(screen.queryByLabelText('dashboard-meeting-card-popover-add-label')).not.toBeInTheDocument();
     expect(screen.getByLabelText('dashboard-meeting-card-popover-delete-label')).toBeInTheDocument();
   });
 
   it('when user is not creator, meeting is marked as fav, click on more menu should display popup with remove favorite option', async () => {
+    const user = userEvent.setup();
     renderWithProviders(<StandardCard {...dummyMeetingCardData} isMeetingCreator={false} />, {
       store,
       provider: { router: true, mui: true },
     });
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
-    expect(MoreMenu).toBeInTheDocument();
 
-    fireEvent.mouseDown(MoreMenu);
+    await user.click(MoreMenu);
 
-    await waitFor(() => {
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-remove-label')).toBeInTheDocument();
-    });
+    expect(screen.getByLabelText('dashboard-meeting-card-popover-remove-label')).toBeInTheDocument();
     expect(screen.queryByLabelText('dashboard-meeting-card-popover-add-label')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('dashboard-meeting-card-popover-update-label')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete-label')).not.toBeInTheDocument();
   });
 
   it('when user is not creator, meeting is not marked as fav, click on more menu should display popup with add favorite option', async () => {
+    const user = userEvent.setup();
     renderWithProviders(
       <StandardCard
         {...dummyMeetingCardData}
@@ -121,13 +118,10 @@ describe('Standard Card', () => {
       { store, provider: { router: true, mui: true } }
     );
     const MoreMenu = screen.getByRole('button', { name: 'toolbar-button-more-tooltip-title' });
-    expect(MoreMenu).toBeInTheDocument();
 
-    fireEvent.mouseDown(MoreMenu);
+    await user.click(MoreMenu);
 
-    await waitFor(() => {
-      expect(screen.getByLabelText('dashboard-meeting-card-popover-add-label')).toBeInTheDocument();
-    });
+    expect(screen.getByLabelText('dashboard-meeting-card-popover-add-label')).toBeInTheDocument();
     expect(screen.queryByLabelText('dashboard-meeting-card-popover-remove-label')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('dashboard-meeting-card-popover-update-label')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('dashboard-meeting-card-popover-delete-label')).not.toBeInTheDocument();

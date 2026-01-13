@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Collapse as MuiCollapse, Grid, Stack, styled, Tooltip, Typography } from '@mui/material';
+import { Collapse as MuiCollapse, Stack, styled, Tooltip, Typography, Box } from '@mui/material';
 import { isPendingEvent, isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { uniqueId } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -88,42 +88,35 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
       <Collapse in={isFavorite} data-testid={`favorite-icon${isFavorite ? '-visible' : ''}`}>
         <FavoriteIcon type="functional" title={t('global-favorite')} titleId={uniqueId('favorite-icon-')} />
       </Collapse>
-      <Grid
-        container
-        spacing={2}
-        sx={{
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Grid>
-          <Stack direction="row" spacing={4} alignItems="center">
-            <Stack spacing={2}>
-              {renderTimeString()}
-
-              <Tooltip translate="no" title={title || ''} describeChild placement="bottom-start">
-                <Typography
-                  variant="h1"
-                  component="h3"
-                  noWrap
-                  sx={{
-                    fontWeight: 600,
-                    whiteSpace: 'normal',
-                  }}
-                >
-                  {title}
-                </Typography>
-              </Tooltip>
-              {renderCreator()}
-            </Stack>
-
-            {isPendingEvent(event) && <PendingInviteIcon />}
-          </Stack>
-        </Grid>
-        <Grid>
-          <MeetingCardActions event={event} isMeetingCreator={isMeetingCreator} highlighted={highlighted} />
-        </Grid>
-      </Grid>
+      <Stack justifyContent="space-between" flexDirection="row">
+        <Stack justifyContent="space-between" spacing={2}>
+          {renderTimeString()}
+          <Tooltip translate="no" title={title || ''} describeChild placement="bottom-start">
+            <Typography
+              variant="h1"
+              component="h3"
+              noWrap
+              sx={{
+                fontWeight: 600,
+                whiteSpace: 'normal',
+              }}
+            >
+              {title}
+            </Typography>
+          </Tooltip>
+          {renderCreator()}
+        </Stack>
+        <Stack>
+          {isPendingEvent(event) && (
+            <Box display="flex" alignSelf="flex-end">
+              <PendingInviteIcon />
+            </Box>
+          )}
+          <Box mt="auto">
+            <MeetingCardActions event={event} isMeetingCreator={isMeetingCreator} highlighted={highlighted} />
+          </Box>
+        </Stack>
+      </Stack>
     </CardWrapper>
   );
 };
