@@ -402,6 +402,7 @@ container-profiling:
       --dockerfile $CI_PROJECT_DIR/ci/Dockerfile
       --build-arg DIST_FOLDER=dist-profiling
       --destination "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8}-profiling"
+      --destination $CI_REGISTRY_IMAGE:profiling
       --force
 
 include:
