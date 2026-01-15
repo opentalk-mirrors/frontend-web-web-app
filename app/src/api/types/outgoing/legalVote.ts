@@ -8,9 +8,9 @@ import {
   Namespaced,
   MiddlewareMapBuilder,
   createModule,
-  createSignalingApiCall,
   LegalVoteParameters,
 } from '../../../types';
+import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
 /**

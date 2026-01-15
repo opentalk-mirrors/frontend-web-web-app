@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { RootState } from '../../../store';
-import { Namespaced, ParticipantId, createModule, createSignalingApiCall } from '../../../types';
+import { Namespaced, ParticipantId, createModule } from '../../../types';
+import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
 export interface ForceMute {

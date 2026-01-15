@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { RootState } from '../../../store';
-import { Namespaced, ParticipantId, WhisperId, createModule, createSignalingApiCall } from '../../../types';
+import { Namespaced, ParticipantId, WhisperId, createModule } from '../../../types';
+import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
 export interface CreateWhisperGroup {

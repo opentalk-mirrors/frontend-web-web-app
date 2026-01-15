@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 
-export * from './api';
 export * from './automod';
 export * from './breakout';
 export * from './chat';

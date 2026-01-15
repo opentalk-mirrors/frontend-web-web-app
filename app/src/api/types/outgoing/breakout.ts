@@ -7,7 +7,8 @@ import { createAction } from '@reduxjs/toolkit';
 import type { RootState } from '../../../store';
 import { Namespaced, ParticipantId, createModule } from '../../../types';
 import { Seconds } from '../../../utils/tsUtils';
-import { Action as IAction, createSignalingApiCall } from '../../createSignalingApiCall';
+import { createSignalingApiCall } from '../../createSignalingApiCall';
+import { Action as IAction } from '../../types/signaling';
 import { sendMessage } from './common';
 
 export interface BreakoutRoom {
