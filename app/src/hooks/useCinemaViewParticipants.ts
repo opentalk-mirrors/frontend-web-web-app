@@ -37,14 +37,16 @@ export function useCinemaViewParticipants(): {
     ],
   });
 
-  const onlineParticipantsInConference = useAppSelector(selectAllOnlineParticipants);
+  const onlineParticipants = useAppSelector(selectAllOnlineParticipants);
   const remoteParticipantsMap = useMemo(
     () => new Map(remoteParticipants.map((rp) => [rp.identity, rp])),
     [remoteParticipants]
   );
+
   const viewOrder = useAppSelector(selectCinemaViewOrder);
+
   const cinemaViewParticipants = useMemo(() => {
-    const mergedParticipants = onlineParticipantsInConference.map((op) => {
+    const mergedParticipants = onlineParticipants.map((op) => {
       const remoteParticipant = remoteParticipantsMap.get(op.id);
       return {
         ...op,
@@ -54,16 +56,20 @@ export function useCinemaViewParticipants(): {
         lastSpokeAt: remoteParticipant?.lastSpokeAt,
       };
     });
-    mergedParticipants.sort((a, b) => a.joinedAt.localeCompare(b.joinedAt));
+    return mergedParticipants.sort((a, b) => {
+      if (viewOrder === CinemaViewSortOrder.ModeratorsFirst) {
+        if (a.role !== b.role) {
+          return a.role === Role.Moderator ? -1 : 1;
+        }
+      } else if (viewOrder === CinemaViewSortOrder.VideoFirst) {
+        if (a.isCameraEnabled !== b.isCameraEnabled) {
+          return a.isCameraEnabled ? -1 : 1;
+        }
+      }
 
-    if (viewOrder === CinemaViewSortOrder.ModeratorsFirst) {
-      mergedParticipants.sort((ap, bp) => Number(ap.role === Role.Moderator) - Number(bp.role === Role.Moderator));
-    }
-    if (viewOrder === CinemaViewSortOrder.VideoFirst) {
-      mergedParticipants.sort((a, b) => (a.isCameraEnabled === b.isCameraEnabled ? 0 : a.isCameraEnabled ? -1 : 1));
-    }
-    return mergedParticipants;
-  }, [onlineParticipantsInConference, remoteParticipantsMap, viewOrder]);
+      return a.joinedAt.localeCompare(b.joinedAt);
+    });
+  }, [onlineParticipants, remoteParticipantsMap, viewOrder]);
 
   return { cinemaViewParticipants, remoteParticipantsMap };
 }

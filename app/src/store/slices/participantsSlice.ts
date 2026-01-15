@@ -322,7 +322,7 @@ export const selectParticipationKind: (state: RootState, id: ParticipantId) => P
     (participant) => participant?.participationKind
   );
 
-export const selectMapRemotePaticipantsDisplayName = createSelector(
+export const selectRemoteParticipantsDisplayNameRecord = createSelector(
   [(_state: RootState, remoteParticipants: RemoteParticipant[]) => remoteParticipants, selectAllOnlineParticipants],
   (remoteParticipants, onlineParticipants) => {
     return remoteParticipants.reduce(

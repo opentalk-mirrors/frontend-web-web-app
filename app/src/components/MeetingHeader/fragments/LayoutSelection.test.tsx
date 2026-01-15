@@ -177,7 +177,7 @@ describe('Layout selection menu', () => {
 
     expect(gridViewButton).toHaveAttribute('aria-checked', 'true');
   });
-  it('resets sorting option to first joined when switching view', async () => {
+  it('does not reset sorting option to first joined when switching view', async () => {
     const user = userEvent.setup();
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
     await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
@@ -197,7 +197,7 @@ describe('Layout selection menu', () => {
     const updatedFirstJoinedButton = getButtonSelector('conference-view-grid-first-joined');
     const updatedCameraFirstButton = getButtonSelector('conference-view-grid-camera-first');
     expect(speakerViewButton).toHaveAttribute('aria-checked', 'true');
-    expect(updatedFirstJoinedButton).toHaveAttribute('aria-checked', 'true');
-    expect(updatedCameraFirstButton).toHaveAttribute('aria-checked', 'false');
+    expect(updatedFirstJoinedButton).toHaveAttribute('aria-checked', 'false');
+    expect(updatedCameraFirstButton).toHaveAttribute('aria-checked', 'true');
   });
 });

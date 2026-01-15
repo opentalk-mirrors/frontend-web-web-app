@@ -6,7 +6,12 @@ import { CircularProgress, Grid, styled } from '@mui/material';
 import { Participant, RemoteParticipant } from 'livekit-client';
 import { useMemo } from 'react';
 
-import { MAX_GRID_TILES_DESKTOP, MAX_GRID_TILES_MOBILE } from '../../constants';
+import {
+  GRID_BIG_VIDEO_WIDTH,
+  GRID_SMALL_VIDEO_WIDTH,
+  MAX_GRID_TILES_DESKTOP,
+  MAX_GRID_TILES_MOBILE,
+} from '../../constants';
 import { useAppSelector } from '../../hooks';
 import { CinemaViewParticipant, useCinemaViewParticipants } from '../../hooks/useCinemaViewParticipants';
 import { useIsMobile } from '../../hooks/useMediaQuery';
@@ -40,24 +45,18 @@ export type GridViewProps = {
 
 const GridView = () => {
   const { cinemaViewParticipants: participants, remoteParticipantsMap } = useCinemaViewParticipants();
-  const videoWidth = useMemo(() => (participants.length <= 4 ? 50 : 33.3), [participants.length]);
+  const videoWidth = participants.length <= 4 ? GRID_BIG_VIDEO_WIDTH : GRID_SMALL_VIDEO_WIDTH;
   const isMobile = useIsMobile();
   const lastSpokenParticipant = useMemo(() => {
-    let lastSpokenParticipant: CinemaViewParticipant | undefined;
-    for (const participant of participants) {
-      if (!participant.lastSpokeAt) {
-        continue;
+    return participants.reduce<CinemaViewParticipant | undefined>((latest, current) => {
+      if (!current.lastSpokeAt) {
+        return latest;
       }
-      if (
-        !lastSpokenParticipant ||
-        !lastSpokenParticipant.lastSpokeAt ||
-        participant.lastSpokeAt.getTime() > lastSpokenParticipant.lastSpokeAt.getTime()
-      ) {
-        lastSpokenParticipant = participant;
+      if (!latest?.lastSpokeAt) {
+        return current;
       }
-    }
-
-    return lastSpokenParticipant;
+      return current.lastSpokeAt > latest.lastSpokeAt ? current : latest;
+    }, undefined);
   }, [participants]);
   const pageNumber = useAppSelector(selectPaginationPageState);
   const direction = useAppSelector(selectPaginationDirectionState);
