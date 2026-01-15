@@ -21,11 +21,14 @@ import { AvatarContainer } from './AvatarContainer';
 import RemoteVideo from './RemoteVideo';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
 
-const Container = styled('div')({
+const ScreenShareContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
   height: '100%',
+  '& video': {
+    aspectRatio: '16 / 9',
+  },
 });
 
 interface ParticipantVideoProps {
@@ -98,7 +101,11 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
 
   if (participant?.isScreenShareEnabled) {
     return (
-      <Container onMouseMove={displayPresenterVideo} data-testid="participantScreenShareVideo" ref={handleContainerRef}>
+      <ScreenShareContainer
+        onMouseMove={displayPresenterVideo}
+        data-testid="participantScreenShareVideo"
+        ref={handleContainerRef}
+      >
         <RemoteVideo descriptor={screenDescriptor} />
         {showCamera && (
           <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerElement}>
@@ -112,7 +119,7 @@ const ParticipantVideo = ({ participantId, presenterVideoIsActive, isThumbnail }
             />
           </Slide>
         )}
-      </Container>
+      </ScreenShareContainer>
     );
   }
 
