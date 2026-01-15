@@ -1,16 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { useGetMeQuery } from '../api/rest';
 import { ThemeMode } from '../assets/themes/opentalk/types';
 import { getBroadcastChannel } from '../modules/BroadcastChannel';
+import { useAppSelector } from './useCustomRedux';
 
 export function useThemeProviderThemeMode(): ThemeMode.Light | ThemeMode.Dark {
   const location = useLocation();
-  const { data, isLoading, refetch } = useGetMeQuery();
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const { data, isLoading, refetch } = useGetMeQuery(undefined, { skip: !isAuthenticated });
   const inDashboard = location.pathname.startsWith('/dashboard');
 
   const [systemTheme, setSystemTheme] = useState<ThemeMode.Dark | ThemeMode.Light>(() => {
