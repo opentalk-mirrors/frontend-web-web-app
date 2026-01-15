@@ -477,7 +477,6 @@ breakout-room-tab-by-participants = Nach Anzahl der Teilnehmer
 breakout-room-tab-by-groups = Nach Gruppen
 breakout-room-tab-by-moderators = Nach Moderatoren
 breakout-room-start-button = Räume starten
-breakout-room-start-button-disabled = Unzureichende Anzahl an Konferenzteilnehmern
 
 breakout-room-rooms-created-by-participants = {$rooms} Räume
 breakout-room-assignable-participants-per-rooms = Weise {$participantsPerRoom} Teilnehmer pro Raum zu
@@ -562,7 +561,6 @@ poll-form-input-error-choices = Es müssen mindestens 2 Antworten erstellt werde
 poll-form-input-error-choice = Antworten dürfen nicht leer sein
 poll-save-form-success = Ihre Umfrage wurde erfolgreich gespeichert
 poll-save-form-error = Die zu speichernde Umfrage muss mindestens ein Thema haben
-poll-save-form-warning = Mindestens 2 Teilnehmer sind erforderlich, um eine Umfrage zu starten
 poll-overview-saved-polls = gespeicherte Umfragen
 poll-overview-created-polls = erstellte Umfragen
 poll-overview-panel-button-end = Beenden

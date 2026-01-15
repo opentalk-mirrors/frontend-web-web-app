@@ -477,7 +477,6 @@ breakout-room-tab-by-participants = By No. of Participants
 breakout-room-tab-by-groups = By Groups
 breakout-room-tab-by-moderators = By No. of Moderators
 breakout-room-start-button = Start rooms
-breakout-room-start-button-disabled = Insufficient number of participants present in the conference
 
 breakout-room-rooms-created-by-participants = Create {$rooms} Rooms
 breakout-room-assignable-participants-per-rooms = Assign {$participantsPerRoom} participants per room
@@ -562,7 +561,6 @@ poll-form-input-error-choices = Minimal created answers are 2
 poll-form-input-error-choice = Empty choices are not allowed
 poll-save-form-success = Your poll was saved successfully
 poll-save-form-error = The poll for saving must include a topic
-poll-save-form-warning = Minimum of 2 participants is required to start a poll
 poll-overview-saved-polls = saved Polls
 poll-overview-created-polls = created Polls
 poll-overview-panel-button-end = End Poll

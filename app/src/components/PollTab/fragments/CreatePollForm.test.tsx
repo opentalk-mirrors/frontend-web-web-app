@@ -82,25 +82,6 @@ describe('CreatePollForm', () => {
     expect(notifications.success).toHaveBeenCalledExactlyOnceWith('poll-save-form-success');
   });
 
-  it('warns instead of submitting when there are fewer than two participants', async () => {
-    const { store, dispatchSpy } = configureStore();
-    const onClose = vi.fn();
-
-    renderWithProviders(<CreatePollForm initialValues={validValues} onClose={onClose} />, {
-      store,
-      provider: { mui: true },
-    });
-
-    const form = screen.getByTestId('create-poll-form');
-    fireEvent.submit(form);
-
-    await waitFor(() => {
-      expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('poll-save-form-warning');
-    });
-    expect(onClose).not.toHaveBeenCalled();
-    expect(dispatchSpy).not.toHaveBeenCalledWith(expect.objectContaining({ type: start.action.type }));
-  });
-
   it('dispatches start action and closes when submitting with enough participants', async () => {
     const {
       getTrackPublication: _getTrackPublication,

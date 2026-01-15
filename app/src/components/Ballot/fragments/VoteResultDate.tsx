@@ -22,7 +22,7 @@ const TokenTypography = styled(Typography)(({ theme }) => ({
 const VoteResultDate = ({ state, date, showTableHint, showResultsHandler }: VoteResultDateProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const tokenKey = 'legal-vote-share-token-' + (state === LegalVoteState.Started ? 'active' : 'inactive');
+  const tokenKey = `legal-vote-share-token-${state === LegalVoteState.Started ? 'active' : 'inactive'}`;
 
   return (
     <>

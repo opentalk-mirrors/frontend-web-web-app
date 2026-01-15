@@ -100,7 +100,7 @@ const CreateLegalVoteForm = ({
     return yup.object({
       allowedParticipants: yup
         .array()
-        .min(2, t('legal-vote-input-assignments-required'))
+        .min(1, t('legal-vote-input-assignments-required'))
         .required(t('legal-vote-input-assignments-required')),
     });
   }, [t]);
