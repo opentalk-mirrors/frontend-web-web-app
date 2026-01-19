@@ -90,6 +90,7 @@ export const moderationSlice = createSlice({
           unrestrictedParticipants: [],
         };
       }
+      state.raiseHandsEnabled = action.payload.moderation?.raiseHandsEnabled ?? state.raiseHandsEnabled;
     });
   },
 });
