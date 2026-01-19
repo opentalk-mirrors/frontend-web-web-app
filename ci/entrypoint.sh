@@ -68,7 +68,7 @@ if [[ x"${BASE_URL}" == "x" ]]; then
   BASE_URL="location.origin"
 else
   BASE_URL=\"${BASE_URL}\"
-fi 
+fi
 
 cat >$HTML_ROOT/config.js << EOF
 window.config = {
@@ -98,6 +98,9 @@ window.config = {
   },
   libravatarDefaultImage: "${LIBRAVATAR_DEFAULT_IMAGE:-robohash}",
   disallowCustomDisplayName: ${DISALLOW_CUSTOM_DISPLAY_NAME:-false},
+  meetingInactivityMediaDisableSeconds: ${MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS:-120},
+  meetingInactivityWarningSeconds: ${MEETING_INACTIVITY_WARNING_SECONDS:-900},
+  meetingInactivityTerminationSeconds: ${MEETING_INACTIVITY_TERMINATION_SECONDS:-3600},
   oidcConfig: {
     authority: "${OIDC_ISSUER}",
     clientId: "${OIDC_CLIENT_ID:-Frontend}",

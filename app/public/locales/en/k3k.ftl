@@ -1287,3 +1287,15 @@ meeting-ended-dialog-title = Meeting Ended
 meeting-ended-dialog-button-title = Leave Conference
 
 decline-meeting-series-button = Decline Meeting Series
+
+meeting-inactivity-media-disable-notification = There has been no activity in this meeting for {$minutes ->
+    [one] one minute
+   *[other] {$minutes} minutes
+}. Your camera and microphone have been disabled.
+meeting-inactivity-warning-dialog-content = Would you like to continue the conference? You are currently the only participant in the room. You can also end the conference, as no other participant has joined.
+meeting-inactivity-warning-dialog-leave = Leave meeting
+meeting-inactivity-warning-dialog-continue = Confirm presence
+meeting-inactivity-termination-notification = This conference has been inactive for {$minutes ->
+    [one] one minute
+   *[other] {$minutes} minutes
+} and is now being ended.

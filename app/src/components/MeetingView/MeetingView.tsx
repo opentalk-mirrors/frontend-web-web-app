@@ -20,6 +20,7 @@ import { selectShowCoffeeBreakCurtain } from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import CoffeeBreakView from '../CoffeeBreakView';
 import TimerPopover from '../TimerPopover';
+import InactivityGuard from './fragments/InactivityGuard';
 import InnerLayout from './fragments/InnerLayout';
 import MeetingEndedDialog from './fragments/MeetingEndedDialog';
 import { ParticipationConfirmationDialog } from './fragments/ParticipationConfirmationDialog';
@@ -105,6 +106,7 @@ const MeetingView = () => {
           )}
         </Container>
         {isRoomDeleted && !isDialogOpen && <MeetingEndedDialog setIsDialogOpen={setIsDialogOpen} />}
+        <InactivityGuard />
       </RoomContainer>
     </>
   );

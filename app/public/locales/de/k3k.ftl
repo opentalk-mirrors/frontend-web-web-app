@@ -1287,3 +1287,15 @@ meeting-ended-dialog-title = Meeting beendet
 meeting-ended-dialog-button-title = Konferenz verlassen
 
 decline-meeting-series-button = Meetingserie ablehnen
+
+meeting-inactivity-media-disable-notification = In dieser Konferenz gab es seit {$minutes ->
+    [one] einer Minute
+   *[other] {$minutes} Minuten
+} keine Aktivität mehr. Kamera und Mikrofon wurden deaktiviert.
+meeting-inactivity-warning-dialog-content = Möchten Sie die Konferenz fortsetzen? Sie sind aktuell der einzige Teilnehmer im Raum. Sie können die Konferenz auch beenden, da sich kein weiterer Teilnehmender dazugeschaltet hat.
+meeting-inactivity-warning-dialog-leave = Konferenz beenden
+meeting-inactivity-warning-dialog-continue = Anwesenheit bestätigen
+meeting-inactivity-termination-notification = Diese Konferenz war {$minutes ->
+    [one] eine Minute
+   *[other] {$minutes} Minuten
+} inaktiv und wird jetzt beendet.
