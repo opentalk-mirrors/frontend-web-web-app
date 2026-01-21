@@ -17,7 +17,7 @@ import {
   selectChatSearchValue,
   setChatSearchValue,
 } from '../../store/slices/uiSlice';
-import { ChatMessage, ChatScope, GroupId, ParticipantId, Timestamp } from '../../types';
+import { BreakoutRoomId, ChatMessage, ChatScope, GroupId, ParticipantId, Timestamp } from '../../types';
 import ChatForm from './fragments/ChatForm';
 import ChatList from './fragments/ChatList';
 import ChatLiveRegion from './fragments/ChatLiveRegion';
@@ -55,6 +55,8 @@ const Chat = ({ autoFocusMessageInput }: ChatProps) => {
         return { scope, timestamp, target: target as ParticipantId };
       case ChatScope.Group:
         return { scope, timestamp, target: target as GroupId };
+      case ChatScope.Breakout:
+        return { scope, timestamp, target: target as BreakoutRoomId };
     }
   }, []);
 

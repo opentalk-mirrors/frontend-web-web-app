@@ -20,7 +20,7 @@ type IRemoteVideoProps = VideoHTMLAttributes<HTMLVideoElement> & {
 const BrokenSubscriberIndicator = ({ descriptor }: IRemoteVideoProps) => {
   const participant = useRemoteParticipant(descriptor.connectionIdentifier);
 
-  const isParticipantDisconnected = participant?.signalClient.isDisconnected;
+  const isParticipantDisconnected = participant?.signalClient?.isDisconnected;
   const { t } = useTranslation();
   const qualityCap = useAppSelector(selectQualityCap);
 

@@ -6,7 +6,7 @@ import LayoutOptions from '../../enums/LayoutOptions';
 import type { RootState } from '../../store';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from '../../store/slices/meetingNotesSlice';
 import { updatedCinemaLayout } from '../../store/slices/uiSlice';
-import { MeetingNotesAccess, Role } from '../../types';
+import { MeetingNotesAccess, ParticipationKind, Role } from '../../types';
 import type { IncomingMeetingNotes } from '../types/incoming/meetingNotes';
 import { MeetingNotesError } from '../types/incoming/meetingNotes';
 import { handleStorageExceededError } from './helpers';
@@ -49,6 +49,7 @@ const createUserState = (overrides: Partial<RootState['user']> = {}): RootState[
   groups: [],
   displayName: '',
   isRoomOwner: false,
+  participationKind: ParticipationKind.Registered,
   ...overrides,
 });
 
@@ -61,7 +62,7 @@ describe('handleMeetingNotesMessage', () => {
     const dispatch = vi.fn();
     const state = createState();
     const data: IncomingMeetingNotes = {
-      message: 'pdf_asset',
+      message: 'pdf_created',
       filename: 'notes.pdf',
       assetId: 'asset-1',
     };
@@ -81,7 +82,7 @@ describe('handleMeetingNotesMessage', () => {
     });
     const url = new URL('https://example.com/notes');
     const data: IncomingMeetingNotes = {
-      message: 'write_url',
+      message: 'write_access_received',
       url,
     };
 
@@ -116,7 +117,7 @@ describe('handleMeetingNotesMessage', () => {
     });
     const url = new URL('https://example.com/readonly');
     const data: IncomingMeetingNotes = {
-      message: 'read_url',
+      message: 'read_access_received',
       url,
     };
 

@@ -66,7 +66,6 @@ describe('CreateRoomForm', () => {
     expect(mockDispatch).toHaveBeenCalledExactlyOnceWith(
       start.action({
         duration,
-        strategy: 'manual',
         rooms: expect.any(Array),
       })
     );

@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import log from '../../logger';
-import type { AppDispatch, RootState } from '../../store';
+import type { AppDispatch } from '../../store';
 import * as breakoutStore from '../../store/slices/breakoutSlice';
-import { breakoutLeft } from '../../store/slices/participantsSlice';
+import { patch } from '../../store/slices/participantsSlice';
 import { Timestamp } from '../../types';
 import { breakout } from '../types/incoming';
 import { showErrorNotification } from './helpers';
@@ -12,34 +12,33 @@ import { showErrorNotification } from './helpers';
 /**
  * Handles messages in the breakout namespace.
  */
-export const handleBreakoutMessage = (
-  dispatch: AppDispatch,
-  _state: RootState,
-  data: breakout.Message,
-  timestamp: Timestamp
-) => {
+export const handleBreakoutMessage = (dispatch: AppDispatch, data: breakout.Message, timestamp: Timestamp) => {
   switch (data.message) {
     case 'started':
       dispatch(breakoutStore.started(data));
       break;
-    case 'stopped':
-      dispatch(breakoutStore.stopped(data));
+    // time to manual send switch room command (stop action + delay)
+    case 'close_notice':
       break;
-    case 'expired':
-      dispatch(breakoutStore.expired());
+    // room server is closing the breakout rooms (stop action without delay)
+    case 'closing':
+      dispatch(breakoutStore.setBreakoutLoading(true));
       break;
-    case 'joined':
-      {
-        log.error('breakout message handling not implemented yet');
-        // const modifiedData = {
-        //   ...data,
-        //   avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
-        // };
-        // dispatch(breakoutJoined({ data: modifiedData, timestamp }));
-      }
+    case 'closed':
+      dispatch(breakoutStore.closed(data));
       break;
-    case 'left':
-      dispatch(breakoutLeft({ id: data.id, timestamp }));
+    case 'participant_switched_room':
+      dispatch(
+        patch({
+          participantId: data.participantId,
+          lastActive: timestamp,
+          breakoutRoomId: data.newRoom.id,
+        })
+      );
+      break;
+    case 'switched_room':
+      dispatch(breakoutStore.switchedRoom(data));
+      // dispatch(breakoutJoined({ data, timestamp }));
       break;
     case 'error':
       showErrorNotification(data.error);

@@ -38,6 +38,13 @@ const groupMessagesAdapter = createEntityAdapter<ChatMessage & { scope: ChatScop
 
 export const groupMessagesSelectors = groupMessagesAdapter.getSelectors();
 
+const breakoutMessagesAdapter = createEntityAdapter<ChatMessage & { scope: ChatScope.Breakout }, ChatMessage['id']>({
+  selectId: (message: ChatMessage) => `${message.source}@${message.timestamp}`,
+  sortComparer: (a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp),
+});
+
+export const breakoutMessagesSelectors = breakoutMessagesAdapter.getSelectors();
+
 export interface ChatState {
   settings: {
     enabled: boolean;
@@ -64,6 +71,11 @@ export interface ChatState {
         lastSeenTimestamp: Timestamp;
       };
     };
+    breakout: {
+      messages: EntityState<ChatMessage & { scope: ChatScope.Breakout }, ChatMessage['id']>;
+      nextIndex: number | null;
+      lastSeenTimestamp: Timestamp;
+    };
   };
   isLoadingMoreChunks: boolean;
   searchResults: ChatMessage[];
@@ -83,6 +95,11 @@ const initialState: ChatState = {
     },
     group: {},
     private: {},
+    breakout: {
+      messages: breakoutMessagesAdapter.getInitialState(),
+      nextIndex: null,
+      lastSeenTimestamp: new Date().toISOString() as Timestamp,
+    },
   },
   isLoadingMoreChunks: false,
   searchResults: [],
@@ -141,6 +158,13 @@ export const chatSlice = createSlice({
             } else {
               groupMessagesAdapter.addOne(state.scope.group[groupId].messages, chatMessage);
             }
+          }
+          break;
+
+        case ChatScope.Breakout:
+          // Using != null to check for both null & undefined, while allowing 0 as a valid value
+          if (chatMessage.target != null) {
+            breakoutMessagesAdapter.addOne(state.scope.breakout.messages, chatMessage);
           }
           break;
       }
@@ -242,6 +266,12 @@ export const chatSlice = createSlice({
         };
       }
     },
+    setLastSeenTimestampForBreakoutChat: (
+      state: ChatState,
+      { payload: { timestamp } }: PayloadAction<{ timestamp: Timestamp }>
+    ) => {
+      state.scope.breakout.lastSeenTimestamp = timestamp;
+    },
     setChatSettings: (
       state: ChatState,
       {
@@ -298,6 +328,16 @@ export const chatSlice = createSlice({
             lastSeenTimestamp: new Date().toISOString() as Timestamp,
           };
         });
+
+      if (chat.breakoutRoomHistory) {
+        breakoutMessagesAdapter.setAll(
+          state.scope.breakout.messages,
+          chat.breakoutRoomHistory.messages.filter(
+            (msg): msg is ChatMessage & { scope: ChatScope.Breakout } => msg.scope === ChatScope.Breakout
+          )
+        );
+        state.scope.breakout.nextIndex = chat.breakoutRoomHistory.nextIndex;
+      }
     });
   },
 });
@@ -312,6 +352,7 @@ export const {
   setGlobalChatLastSeenTimestamp,
   setLastSeenTimestampForPrivateChat,
   setLastSeenTimestampForGroupChat,
+  setLastSeenTimestampForBreakoutChat,
   setChatSettings,
   clearGlobalChat,
   setIsLoadingMoreChunks,

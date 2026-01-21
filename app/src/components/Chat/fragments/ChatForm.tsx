@@ -36,7 +36,7 @@ import {
   selectChatConversationTargetId,
   selectDefaultChatMessage,
 } from '../../../store/slices/uiSlice';
-import { ChatScope, GroupId, ParticipantId } from '../../../types';
+import { ChatScope } from '../../../types';
 import { formikGetValue, formikProps } from '../../../utils/formikUtils';
 import yup from '../../../utils/yupUtils';
 
@@ -253,25 +253,16 @@ const ChatForm = ({ autoFocusMessageInput }: ChatFormProps) => {
     validateOnBlur: false,
     enableReinitialize: true, // It is essential to reinitialize in order to pick up new default input message.
     onSubmit: (values, { resetForm, setErrors, setTouched }) => {
-      switch (scope) {
-        case ChatScope.Group:
-          if (targetId !== undefined) {
-            dispatch(
-              sendChatMessage.action({ scope: ChatScope.Group, content: values.message, target: targetId as GroupId })
-            );
-          }
-          break;
-        case ChatScope.Private:
-          dispatch(
-            sendChatMessage.action({
-              scope: ChatScope.Private,
-              content: values.message,
-              target: targetId as ParticipantId,
-            })
-          );
-          break;
-        default:
-          dispatch(sendChatMessage.action({ scope: ChatScope.Global, content: values.message }));
+      if (scope === ChatScope.Global) {
+        dispatch(sendChatMessage.action({ scope, content: values.message }));
+      } else if (targetId !== undefined) {
+        dispatch(
+          sendChatMessage.action({
+            scope,
+            content: values.message,
+            target: targetId,
+          })
+        );
       }
       setErrors({});
       setTouched({});

@@ -17,7 +17,7 @@ import {
   setChatSettings,
   setGlobalChatLastSeenTimestamp,
 } from '../../store/slices/chatSlice';
-import type { ChatMessage, GroupId, ParticipantId, Timestamp } from '../../types';
+import type { BreakoutRoomId, ChatMessage, GroupId, ParticipantId, Timestamp } from '../../types';
 import { ChatScope } from '../../types';
 import { chat } from '../types/incoming';
 
@@ -42,31 +42,40 @@ export const handleChatMessage = (
       const userId = state.user.uuid as ParticipantId;
       let chatMessage: ChatMessage;
 
-      if (data.scope === ChatScope.Group) {
+      const { scope, target } = data;
+      const baseMessage = {
+        ...data,
+        timestamp,
+      };
+
+      if (scope === ChatScope.Group) {
         chatMessage = {
-          ...data,
-          timestamp,
-          scope: ChatScope.Group,
-          target: data.target as GroupId,
+          ...baseMessage,
+          scope,
+          target: target as GroupId,
         };
         if (data.source !== userId) {
           notifications.info(i18next.t('chat-new-group-message'));
         }
-      } else if (data.scope === ChatScope.Private) {
+      } else if (scope === ChatScope.Private) {
         chatMessage = {
-          ...data,
-          timestamp,
-          scope: ChatScope.Private,
-          target: data.target as ParticipantId,
+          ...baseMessage,
+          scope,
+          target: target as ParticipantId,
         };
-        if (data.target === userId) {
+        if (target === userId) {
           notifications.info(i18next.t('chat-new-private-message'));
         }
+      } else if (scope === ChatScope.Breakout) {
+        chatMessage = {
+          ...baseMessage,
+          scope,
+          target: target as BreakoutRoomId,
+        };
       } else {
         chatMessage = {
-          ...data,
-          timestamp,
-          scope: ChatScope.Global,
+          ...baseMessage,
+          scope,
           target: undefined,
         };
       }

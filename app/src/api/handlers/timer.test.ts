@@ -21,7 +21,6 @@ describe('handleTimerMessage', () => {
     const dispatch = vi.fn();
     const data: TimerMessage = {
       message: 'started',
-      timerId: 'timer-1',
       readyCheckEnabled: true,
       startedAt: '2024-01-01T10:00:00Z' as Timestamp,
     };
@@ -58,7 +57,7 @@ describe('handleTimerMessage', () => {
         joinedAt: '2024-01-01T10:00:00Z',
         leftAt: null,
         handUpdatedAt: '2024-01-01T10:00:00Z',
-        participationKind: ParticipationKind.User,
+        participationKind: ParticipationKind.Registered,
         isRoomOwner: false,
       },
       media: {

@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 import {
   setGlobalChatLastSeenTimestamp,
+  setLastSeenTimestampForBreakoutChat,
   setLastSeenTimestampForGroupChat,
   setLastSeenTimestampForPrivateChat,
 } from '../../../store/slices/chatSlice';
-import { ChatScope, GroupId, ParticipantId } from '../../../types';
+import { BreakoutRoomId, ChatScope, GroupId, ParticipantId } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ChatList from './ChatList';
 
@@ -113,6 +114,33 @@ describe('updateLastSeenTimestamp', () => {
       setLastSeenTimestampForGroupChat({
         timestamp: expect.any(String),
         groupId: targetId,
+      })
+    );
+  });
+  it('updates the last seen timestamp for a breakout chat', () => {
+    const targetId = 1 as BreakoutRoomId;
+    const { store, dispatchSpy } = configureStore({
+      initialState: {
+        room: { isRoomDeleted: false },
+        chat: {
+          scope: {
+            breakout: {
+              messages: {
+                ids: [],
+                entities: {},
+              },
+              nextIndex: null,
+              lastSeenTimestamp: null,
+            },
+          },
+        },
+      },
+    });
+
+    renderWithProviders(<ChatList scope={ChatScope.Breakout} targetId={targetId} />, { store });
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
+      setLastSeenTimestampForBreakoutChat({
+        timestamp: expect.any(String),
       })
     );
   });

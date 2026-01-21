@@ -7,12 +7,12 @@ import { notifications } from '../../commonComponents';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import { hangUp } from '../../store/commonActions';
+import { forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
 import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
 import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
 import { setDisplayName, updateRole } from '../../store/slices/userSlice';
 import { Role, Timestamp } from '../../types';
 import { moderation } from '../types/incoming';
-import { forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
 
 /**
  * Handles messages in the moderation namespace.

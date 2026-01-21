@@ -5,21 +5,6 @@ import { ParticipantId, Timestamp } from './common';
 
 export type LegalVoteId = string & { readonly __tag: unique symbol };
 
-export enum LegalVoteKind {
-  /**
-   * It's visible afterwards who voted what
-   */
-  RollCall = 'roll_call',
-  /**
-   * You can see in real time who voted what
-   */
-  LiveRollCall = 'live_roll_call',
-  /**
-   * You can't see who voted what
-   */
-  Pseudonymous = 'pseudonymous',
-}
-
 export enum LegalVoteState {
   Started = 'started',
   Finished = 'finished',

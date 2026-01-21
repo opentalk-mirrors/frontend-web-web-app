@@ -102,8 +102,6 @@ export const startRoom = async (credentials: RoomCredentials, config: ConfigStat
     password: password || undefined,
   });
 
-  console.warn('Starting room with body:', body);
-
   const response = await fetchWithAuth(authUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

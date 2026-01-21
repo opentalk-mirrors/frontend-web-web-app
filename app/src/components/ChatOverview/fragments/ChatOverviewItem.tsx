@@ -85,7 +85,7 @@ const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
   );
 
   return (
-    <CustomListItemButton onClick={() => onClick(chat.id)}>
+    <CustomListItemButton onClick={() => onClick(String(chat.id))}>
       <ListItemAvatar>
         <ParticipantAvatar src={participant?.avatarUrl}>{getDisplayName()}</ParticipantAvatar>
       </ListItemAvatar>

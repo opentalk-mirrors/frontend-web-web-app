@@ -1,28 +1,28 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import type { ConnectionId, ParticipantId, ParticipationKind, RoomKind, Timestamp } from './common';
+import type { RoomKind, Timestamp } from './common';
 
-export type BreakoutRoomId = string & { readonly __tag: unique symbol };
+// counting id (0,1,2,3,...)
+export type BreakoutRoomId = number & { readonly __tag: unique symbol };
 export interface BreakoutRoom {
   id: BreakoutRoomId;
   name: string;
 }
 
-export interface ParticipantInOtherRoom {
-  breakoutRoom?: BreakoutRoomId;
-  id: string;
-  participantId: ParticipantId;
-  connections: ConnectionId[];
-  displayName: string;
-  avatarUrl?: string;
-  leftAt: string | null;
-  participationKind: ParticipationKind;
-}
+export type RoomKindMain = {
+  kind: RoomKind.Main;
+  id?: never;
+};
+
+export type RoomKindBreakout = {
+  kind: RoomKind.Breakout;
+  id: BreakoutRoomId;
+};
 
 export interface InitialBreakout {
   /// The current room of the participant
-  room: RoomKind;
+  room: RoomKindMain | RoomKindBreakout;
   /// Active breakout rooms
   rooms: Array<BreakoutRoom>;
   /// The expiry for all breakout rooms

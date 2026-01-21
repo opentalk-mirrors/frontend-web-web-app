@@ -88,6 +88,19 @@ const SummaryText = styled(Typography)<{ component: string }>(({ theme }) => ({
   padding: theme.spacing(1, 0),
 }));
 
+const AccordionHeader = styled(Box)({
+  display: 'flex',
+  flexDirection: 'row',
+});
+
+const EndAdornmentButton = styled(Box)(({ theme }) => ({
+  paddingTop: 0.5,
+  whiteSpace: 'nowrap',
+  backgroundColor: theme.palette.background.highlight.primary,
+  display: 'flex',
+  alignItems: 'center',
+}));
+
 function AccordionItem({
   onChange,
   expanded,
@@ -106,17 +119,19 @@ function AccordionItem({
       onChange={onChange}
       slotProps={{ heading: { component: headingComponent } }}
     >
-      <AccordionSummary
-        aria-controls={`${id}-content`}
-        id={`${id}-header`}
-        expandIcon={<ArrowDownIcon />}
-        sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}
-      >
-        <SummaryText component="span" variant="caption" sx={{ flexGrow: 1 }}>
-          {summaryText}
-        </SummaryText>
-        {summaryEndAdornment && <Box sx={{ pt: 0.5, whiteSpace: 'nowrap' }}>{summaryEndAdornment}</Box>}
-      </AccordionSummary>
+      <AccordionHeader>
+        <AccordionSummary
+          aria-controls={`${id}-content`}
+          id={`${id}-header`}
+          expandIcon={<ArrowDownIcon />}
+          sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}
+        >
+          <SummaryText component="span" variant="caption" sx={{ flexGrow: 1 }}>
+            {summaryText}
+          </SummaryText>
+        </AccordionSummary>
+        {summaryEndAdornment && <EndAdornmentButton>{summaryEndAdornment}</EndAdornmentButton>}
+      </AccordionHeader>
       <AccordionDetails>{children}</AccordionDetails>
     </Accordion>
   );

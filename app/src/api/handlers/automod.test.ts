@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { notificationAction, notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
-import { changeMedia } from '../../store/commonActions';
 import {
   remainingUpdated as automodRemainingUpdated,
   speakerUpdated as automodSpeakerUpdated,
@@ -34,13 +33,6 @@ vi.mock('../../commonComponents', () => ({
     showTalkingStickUnmutedNotification: vi.fn(),
     showTalkingStickMutedNotification: vi.fn(),
   },
-}));
-
-vi.mock('../../store/commonActions', () => ({
-  changeMedia: vi.fn((payload: { enabled: boolean; kind: string }) => ({
-    type: 'livekit/changeMedia',
-    payload,
-  })),
 }));
 
 type DeepPartial<T> = T extends object ? { [K in keyof T]?: DeepPartial<T[K]> } : T;
@@ -96,7 +88,6 @@ describe('handleAutomodMessage', () => {
 
     expect(dispatch).toHaveBeenCalledWith(automodStarted(data));
     expect(dispatch).toHaveBeenCalledWith(automod.selectNext.action());
-    expect(changeMedia).toHaveBeenCalledWith({ kind: 'audioinput', enabled: false });
     expect(notificationAction).toHaveBeenCalledWith(
       expect.objectContaining({ key: startedId, variant: 'info', ariaLive: 'polite' })
     );
@@ -106,12 +97,11 @@ describe('handleAutomodMessage', () => {
   it('handles stopped event notification', () => {
     const dispatch = vi.fn();
     const state = createState();
-    const data: AutomodEventType = { message: 'stopped' };
+    const data: AutomodEventType = { message: 'stopped', reason: 'session_finished' };
 
     handleAutomodMessage(dispatch, data, state);
 
     expect(dispatch).toHaveBeenCalledWith(automodStopped());
-    expect(changeMedia).toHaveBeenCalledWith({ kind: 'audioinput', enabled: false });
     expect(notificationAction).toHaveBeenCalledWith(
       expect.objectContaining({
         key: 'handleAutomodMessage-stopped-id',
@@ -146,7 +136,6 @@ describe('handleAutomodMessage', () => {
 
     handleAutomodMessage(dispatch, data, state);
 
-    expect(changeMedia).toHaveBeenCalledWith({ kind: 'audioinput', enabled: false });
     expect(dispatch).toHaveBeenCalledWith(setAsInactiveSpeaker());
     expect(dispatch).toHaveBeenCalledWith(automodSpeakerUpdated(data));
     expect(notificationAction).toHaveBeenCalledWith(

@@ -5,6 +5,7 @@ import { screen } from '@testing-library/react';
 
 import { MAX_GRID_TILES_DESKTOP } from '../../../constants';
 import LayoutOptions from '../../../enums/LayoutOptions';
+import { WaitingState } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import DesktopMeetingHeader from './DesktopMeetingHeader';
 
@@ -37,7 +38,7 @@ const MOCK_PARTICIPANTS = {
   ids: Array.from({ length: 2 * MAX_GRID_TILES_DESKTOP }, (_, i) => String(i)),
   entities: Array.from({ length: 2 * MAX_GRID_TILES_DESKTOP }, (_, i) => ({
     id: String(i),
-    waitingState: 'joined',
+    waitingState: WaitingState.Joined,
     leftAt: null,
     breakoutRoomId: undefined,
   })),

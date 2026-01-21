@@ -14,7 +14,7 @@ import {
 } from '../../../../config/moderationTabs';
 import { useAppDispatch, useAppSelector } from '../../../../hooks';
 import useTabs from '../../../../hooks/useTabs';
-import { selectActivePollsAndVotingsCount, selectPollsAndVotingsCount } from '../../../../store/selectors';
+import { selectActivePollsAndVotingCount, selectPollsAndVotingCount } from '../../../../store/selectors';
 import {
   selectHasAnyUnreadGroupChatMessage,
   selectHasAnyUnreadPrivateChatMessage,
@@ -64,8 +64,8 @@ const Drawer = () => {
   const isWaitingRoomEnabled = useAppSelector(selectWaitingRoomState);
   const hasUnreadMessages =
     unreadGlobalMessageCount > 0 || hasAnyUnreadPrivateChatMessage || hasAnyUnreadGroupChatMessage;
-  const voteAndPollCount = useAppSelector(selectPollsAndVotingsCount);
-  const activeVoteAndPollCount = useAppSelector(selectActivePollsAndVotingsCount);
+  const voteAndPollCount = useAppSelector(selectPollsAndVotingCount);
+  const activeVoteAndPollCount = useAppSelector(selectActivePollsAndVotingCount);
   const haveSeenMobilePollsAndVotes = useAppSelector(selectHaveSeenMobilePollsAndVotes);
 
   const handleSetActiveTab = (tabKey: ModerationTabKey) => dispatch(setActiveTab(tabKey));

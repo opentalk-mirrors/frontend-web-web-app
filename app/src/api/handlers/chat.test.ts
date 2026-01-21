@@ -50,13 +50,13 @@ describe('handleChatMessage', () => {
     const timestamp = '2024-01-01T12:00:00Z' as Timestamp;
     const message: ChatMessage = {
       message: 'chat_enabled',
-      id: 'user-1' as ParticipantId,
+      issuedBy: 'user-1' as ParticipantId,
     };
 
     handleChatMessage(dispatch as unknown as AppDispatch, message, timestamp, state);
 
     expect(notifications.info).toHaveBeenCalledExactlyOnceWith('chat-enabled-message');
-    expect(dispatch).toHaveBeenCalledWith(setChatSettings({ id: message.id, timestamp, enabled: true }));
+    expect(dispatch).toHaveBeenCalledWith(setChatSettings({ id: message.issuedBy, timestamp, enabled: true }));
   });
 
   it('notifies on new group messages and updates last seen when chat tab is active', () => {

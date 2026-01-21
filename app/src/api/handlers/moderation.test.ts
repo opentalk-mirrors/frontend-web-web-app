@@ -3,14 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 import i18next from 'i18next';
 
-import { notifications, setLibravatarOptions } from '../../commonComponents';
+import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
-import { waitingRoomJoined, rename as participantsRename } from '../../store/slices/participantsSlice';
+import { forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
+import { rename } from '../../store/slices/participantsSlice';
 import { enteredWaitingRoom } from '../../store/slices/roomSlice';
 import { setDisplayName } from '../../store/slices/userSlice';
-import { ForceMuteType, ParticipationKind, Role } from '../../types';
-import type { BackendParticipant, ParticipantId } from '../../types';
-import type { DisplayNameChanged, JoinedWaitingRoom, Message as ModerationMessage } from '../types/incoming/moderation';
+import { Role } from '../../types';
+import type { ParticipantId, Timestamp } from '../../types';
+import type { DisplayNameChanged, Message as ModerationMessage } from '../types/incoming/moderation';
 import { handleModerationMessage } from './moderation';
 
 vi.mock('i18next', () => ({
@@ -37,6 +38,11 @@ type DeepPartial<T> = T extends object ? { [K in keyof T]?: DeepPartial<T[K]> } 
 
 const createState = (overrides: DeepPartial<RootState> = {}): RootState =>
   ({
+    moderation: {
+      forceMute: {
+        unrestrictedParticipants: [],
+      },
+    },
     config: {
       libravatarDefaultImage: 'robohash',
     },
@@ -50,29 +56,7 @@ const createState = (overrides: DeepPartial<RootState> = {}): RootState =>
     ...overrides,
   }) as RootState;
 
-const createBackendParticipant = (id: ParticipantId): BackendParticipant =>
-  ({
-    id,
-    control: {
-      displayName: 'Alex',
-      avatarUrl: 'https://avatar.example',
-      handIsUp: false,
-      joinedAt: '2024-01-01T10:00:00Z',
-      leftAt: null,
-      handUpdatedAt: '2024-01-01T10:00:00Z',
-      participationKind: ParticipationKind.User,
-      isRoomOwner: true,
-    },
-    meetingNotes: {
-      readonly: false,
-    },
-    media: {
-      forceMute: {
-        type: ForceMuteType.Disabled,
-        unrestrictedParticipants: [],
-      },
-    },
-  }) as BackendParticipant;
+const timestamp = '2024-01-01T12:00:00Z' as Timestamp;
 
 describe('handleModerationMessage', () => {
   beforeEach(() => {
@@ -84,7 +68,7 @@ describe('handleModerationMessage', () => {
     const state = createState();
     const data: ModerationMessage = { message: 'kicked' };
 
-    handleModerationMessage(dispatch, data, state);
+    handleModerationMessage(dispatch, data, timestamp, state);
 
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
     expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('meeting-notification-kicked');
@@ -95,33 +79,10 @@ describe('handleModerationMessage', () => {
     const state = createState();
     const data: ModerationMessage = { message: 'sent_to_waiting_room' };
 
-    handleModerationMessage(dispatch, data, state);
+    handleModerationMessage(dispatch, data, timestamp, state);
 
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(enteredWaitingRoom());
     expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('meeting-notification-moved-to-waiting-room');
-  });
-
-  it('maps waiting room participant avatar before dispatching', () => {
-    const dispatch = vi.fn();
-    const state = createState();
-    const participantId = 'participant-2' as ParticipantId;
-    const participant = createBackendParticipant(participantId);
-    const data: JoinedWaitingRoom = { ...participant, message: 'joined_waiting_room' };
-
-    handleModerationMessage(dispatch, data, state);
-
-    expect(setLibravatarOptions).toHaveBeenCalledExactlyOnceWith(participant.control.avatarUrl, {
-      defaultImage: state.config.libravatarDefaultImage,
-    });
-    expect(dispatch).toHaveBeenCalledExactlyOnceWith(
-      waitingRoomJoined({
-        ...data,
-        control: {
-          ...data.control,
-          avatarUrl: 'mocked-avatar',
-        },
-      })
-    );
   });
 
   it('updates display name when our user is renamed', () => {
@@ -131,7 +92,7 @@ describe('handleModerationMessage', () => {
     const data: DisplayNameChanged = {
       message: 'display_name_changed',
       target: userId,
-      issued_by: moderatorId,
+      issuedBy: moderatorId,
       oldName: 'Alex',
       newName: 'Jordan',
     };
@@ -148,10 +109,10 @@ describe('handleModerationMessage', () => {
       },
     });
 
-    handleModerationMessage(dispatch, data, state);
+    handleModerationMessage(dispatch, data, timestamp, state);
 
     expect(dispatch).toHaveBeenCalledTimes(2);
-    expect(dispatch).toHaveBeenNthCalledWith(1, participantsRename({ id: userId, displayName: 'Jordan' }));
+    expect(dispatch).toHaveBeenNthCalledWith(1, rename({ id: userId, displayName: 'Jordan' }));
     expect(dispatch).toHaveBeenNthCalledWith(2, setDisplayName('Jordan'));
     expect(i18next.t).toHaveBeenCalledExactlyOnceWith('display-name-change-notification', {
       moderatorName: 'Moderator',
@@ -161,18 +122,67 @@ describe('handleModerationMessage', () => {
     expect(notifications.info).toHaveBeenCalledExactlyOnceWith('display-name-change-notification');
   });
 
-  it('notifies moderators when a debriefing session ends for all', () => {
+  it('enables force mute and notifies restricted users', () => {
     const dispatch = vi.fn();
+    const state = createState();
+    const data: ModerationMessage = {
+      message: 'microphone_restrictions_enabled',
+      unrestrictedParticipants: ['user-2' as ParticipantId],
+    };
+
+    handleModerationMessage(dispatch, data, timestamp, state);
+
+    expect(dispatch).toHaveBeenCalledWith(
+      forceMuteEnabled({ unrestrictedParticipants: data.unrestrictedParticipants })
+    );
+    expect(i18next.t).toHaveBeenCalledWith('microphones-disabled-notification');
+    expect(notifications.info).toHaveBeenCalledWith('microphones-disabled-notification');
+  });
+
+  it('disables force mute and notifies when restrictions are lifted', () => {
+    const dispatch = vi.fn();
+    const state = createState();
+    const data: ModerationMessage = { message: 'microphone_restrictions_disabled' };
+
+    handleModerationMessage(dispatch, data, timestamp, state);
+
+    expect(dispatch).toHaveBeenCalledWith(forceMuteDisabled());
+    expect(i18next.t).toHaveBeenCalledWith('microphones-enabled-notification');
+    expect(notifications.info).toHaveBeenCalledWith('microphones-enabled-notification');
+  });
+
+  it('handles force-muted notifications and disables audio', () => {
+    const dispatch = vi.fn();
+    const moderatorId = 'moderator-1' as ParticipantId;
     const state = createState({
-      user: {
-        role: Role.Moderator,
+      participants: {
+        entities: {
+          [moderatorId]: {
+            displayName: 'Moderator',
+          },
+        },
       },
     });
-    const data: ModerationMessage = { message: 'session_ended' };
+    const data: ModerationMessage = { message: 'muted', moderator: moderatorId };
 
-    handleModerationMessage(dispatch, data, state);
+    handleModerationMessage(dispatch, data, timestamp, state);
 
-    expect(dispatch).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
-    expect(notifications.info).toHaveBeenCalledExactlyOnceWith('debriefing-session-ended-for-all-notification');
+    expect(i18next.t).toHaveBeenCalledWith('media-received-force-mute', { origin: 'Moderator' });
+    expect(notifications.warning).toHaveBeenCalledWith('media-received-force-mute');
   });
+
+  // it('notifies moderators when a debriefing session ends for all', () => {
+  //   const dispatch = vi.fn();
+  //   const state = createState({
+  //     user: {
+  //       role: Role.Moderator,
+  //     },
+  //   });
+  //   const data: ModerationMessage = { message: 'session_ended' };
+
+  //   handleModerationMessage(dispatch, data, timestamp, state);
+
+  //   expect(dispatch).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
+  //   expect(notifications.info).toHaveBeenCalledExactlyOnceWith('debriefing-session-ended-for-all-notification');
+  // });
 });

@@ -243,12 +243,6 @@ export const uiSlice = createSlice({
         }
       }
     );
-    // TODO - fixed with breakout room implementation
-    // builder.addCase(breakoutLeft, (state, { payload: { id } }: PayloadAction<{ id: ConnectionIdentifier }>) => {
-    //   if (state.pinnedConnectionIdentifier === id) {
-    //     state.pinnedConnectionIdentifier = undefined;
-    //   }
-    // });
     builder.addCase(hangUp.pending, (state) => {
       state.voteOrPollIdToShow = undefined;
     });

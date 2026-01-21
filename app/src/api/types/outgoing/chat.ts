@@ -2,7 +2,16 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { RootState } from '../../../store';
-import { ChatScope, GroupId, Namespaced, ParticipantId, TargetId, Timestamp, createModule } from '../../../types';
+import {
+  BreakoutRoomId,
+  ChatScope,
+  GroupId,
+  Namespaced,
+  ParticipantId,
+  TargetId,
+  Timestamp,
+  createModule,
+} from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { ClearGlobalMessages, sendMessage } from './common';
 
@@ -37,9 +46,19 @@ type LastSeenGroupTimestampAddedPayload = {
   target: GroupId;
 };
 
+type LastSeenBreakoutTimestampAddedPayload = {
+  scope: ChatScope.Breakout;
+  target: BreakoutRoomId;
+};
+
 export type LastSeenTimestampAddedPayload = {
   timestamp: Timestamp;
-} & (LastSeenGlobalTimestampAddedPayload | LastSeenPrivateTimestampAddedPayload | LastSeenGroupTimestampAddedPayload);
+} & (
+  | LastSeenGlobalTimestampAddedPayload
+  | LastSeenPrivateTimestampAddedPayload
+  | LastSeenGroupTimestampAddedPayload
+  | LastSeenBreakoutTimestampAddedPayload
+);
 
 interface SetLastSeenTimestamp {
   action: 'set_last_seen_timestamp';

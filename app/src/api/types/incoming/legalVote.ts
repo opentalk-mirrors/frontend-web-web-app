@@ -41,7 +41,7 @@ export interface VoteUpdated extends VoteResultsType {
   legalVoteId: LegalVoteId;
 }
 
-enum StopKind {
+export enum StopKind {
   ByParticipant = 'by_participant',
   Expired = 'expired',
   Auto = 'auto',

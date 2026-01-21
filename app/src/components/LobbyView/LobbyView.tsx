@@ -35,7 +35,7 @@ import {
   selectPasswordRequired,
   selectRoomConnectionState,
 } from '../../store/slices/roomSlice';
-import { BreakoutRoomId, FetchRequestError } from '../../types';
+import { FetchRequestError } from '../../types';
 import { composeRoomPath } from '../../utils/apiUtils';
 import { formikProps } from '../../utils/formikUtils';
 import { ConditionalToolTip } from '../ConditionalToolTip/ConditionalToolTip';
@@ -120,9 +120,8 @@ const LobbyView = () => {
   const [inviteCodeError, setInviteCodeError] = useState<FetchRequestError>();
   const [showPassword, setShowPassword] = useState(false);
 
-  const { roomId, breakoutRoomId } = useParams<'roomId' | 'breakoutRoomId'>() as {
+  const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
-    breakoutRoomId?: BreakoutRoomId;
   };
 
   const {
@@ -183,7 +182,6 @@ const LobbyView = () => {
         return await dispatch(
           startRoom({
             roomId,
-            breakoutRoomId,
             displayName,
             password,
             inviteCode,
@@ -195,7 +193,7 @@ const LobbyView = () => {
             case StartRoomError.InvalidBreakoutRoomId:
             case StartRoomError.NoBreakoutRooms:
               notifications.info(t('breakout-notification-session-ended-header'));
-              navigate(composeRoomPath(roomId, inviteCode, breakoutRoomId));
+              navigate(composeRoomPath(roomId, inviteCode));
               break;
             case StartRoomError.InvalidJson:
               log.error('invalid json request in startRoom', e);
@@ -227,7 +225,7 @@ const LobbyView = () => {
         }
       }
     },
-    [navigate, t, breakoutRoomId, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia]
+    [navigate, t, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia]
   );
 
   const formik = useFormik({

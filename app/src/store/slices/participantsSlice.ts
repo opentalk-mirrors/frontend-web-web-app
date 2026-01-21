@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
-import { createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAction, createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { Participant as RemoteParticipant } from 'livekit-client';
 
@@ -17,7 +17,6 @@ import {
   MeetingNotesAccess,
   Participant,
   ParticipantId,
-  ParticipantInOtherRoom,
   ParticipationKind,
   Role,
   Timestamp,
@@ -39,7 +38,15 @@ export const participantAdapter = createEntityAdapter<Participant>({
 
 type PatchParticipant = Pick<
   Participant,
-  'displayName' | 'handIsUp' | 'lastActive' | 'joinedAt' | 'leftAt' | 'handUpdatedAt' | 'role' | 'meetingNotesAccess'
+  | 'displayName'
+  | 'handIsUp'
+  | 'lastActive'
+  | 'joinedAt'
+  | 'leftAt'
+  | 'handUpdatedAt'
+  | 'role'
+  | 'meetingNotesAccess'
+  | 'breakoutRoomId'
 >;
 
 export const participantsSlice = createSlice({
@@ -106,41 +113,6 @@ export const participantsSlice = createSlice({
         });
       }
     },
-
-    breakoutJoined: (
-      state,
-      {
-        payload: { data, timestamp },
-      }: PayloadAction<{
-        data: ParticipantInOtherRoom;
-        timestamp: Timestamp;
-      }>
-    ) => {
-      const participant: Participant = {
-        id: data.id as ParticipantId,
-        connections: data.connections,
-        displayName: data.displayName,
-        avatarUrl: data.avatarUrl,
-        groups: [],
-        handIsUp: false,
-        joinedAt: timestamp,
-        leftAt: null,
-        handUpdatedAt: timestamp,
-        breakoutRoomId: data.breakoutRoom,
-        participationKind: data.participationKind,
-        lastActive: timestamp,
-        waitingState: WaitingState.Joined,
-        meetingNotesAccess: MeetingNotesAccess.None,
-        isRoomOwner: false,
-      };
-      participantAdapter.upsertOne(state, participant);
-    },
-    breakoutLeft: (state, { payload: { id, timestamp } }: PayloadAction<{ id: ParticipantId; timestamp: string }>) => {
-      participantAdapter.updateOne(state, {
-        id,
-        changes: { breakoutRoomId: undefined, leftAt: timestamp },
-      });
-    },
     waitingRoomJoined: (state, { payload }: PayloadAction<JoinedWaitingRoomParticipant>) => {
       const participant: Participant = {
         id: payload.participantId,
@@ -204,11 +176,11 @@ export const participantsSlice = createSlice({
       });
     },
     patch: (state, { payload }: PayloadAction<{ participantId: ParticipantId } & Partial<PatchParticipant>>) => {
-      const { participantId, ...optionalChanges } = payload;
+      const { participantId, ...changes } = payload;
 
-      const changes = Object.fromEntries(
-        Object.entries(optionalChanges).filter(([_, v]) => v !== undefined)
-      ) as Partial<PatchParticipant>;
+      // const changes = Object.fromEntries(
+      //   Object.entries(optionalChanges).filter(([_, v]) => v !== undefined)
+      // ) as Partial<Participant>;
 
       if (Object.keys(changes).length === 0) {
         return;
@@ -256,19 +228,8 @@ export const participantsSlice = createSlice({
   },
 });
 
-export const {
-  join,
-  leave,
-  update,
-  patch,
-  breakoutJoined,
-  breakoutLeft,
-  waitingRoomJoined,
-  waitingRoomLeft,
-  approveToEnter,
-  approvedAll,
-  rename,
-} = participantsSlice.actions;
+export const { join, leave, update, patch, waitingRoomJoined, waitingRoomLeft, approveToEnter, approvedAll, rename } =
+  participantsSlice.actions;
 export const actions = participantsSlice.actions;
 
 export const participantSelectors = participantAdapter.getSelectors<RootState>((state) => state.participants);
@@ -465,7 +426,70 @@ const startParticipantJoinDuringVoteListener = (startAppListening: StartAppListe
   });
 };
 
+export const participantJoined = createAction<{ participant: Participant }>('events/participantJoined');
+export const participantRejoined = createAction<{ participant: Participant }>('events/participantRejoined');
+export const participantOpenedConnection = createAction<{ participant: Participant }>(
+  'events/participantOpenedConnection'
+);
+
+const startParticipantJoinedAgainListener = (startAppListening: StartAppListening) => {
+  startAppListening({
+    actionCreator: join,
+    effect: (action, listenerApi) => {
+      const { id } = action.payload.participant;
+      const state = listenerApi.getOriginalState();
+      const ourUuid = state.user.uuid;
+      const existingParticipant = participantSelectors.selectById(state, id);
+      if (id !== ourUuid) {
+        if (existingParticipant?.leftAt) {
+          listenerApi.dispatch(participantRejoined(action.payload));
+          return;
+        } else if (existingParticipant) {
+          listenerApi.dispatch(participantOpenedConnection(action.payload));
+        } else {
+          listenerApi.dispatch(participantJoined(action.payload));
+        }
+      }
+    },
+  });
+};
+
+export const participantLeft = createAction<{ participant: Participant; reason?: DisconnectReason }>(
+  'events/participantLastLeave'
+);
+export const participantClosedConnection = createAction<{ participant: Participant; reason?: DisconnectReason }>(
+  'events/participantClosedConnection'
+);
+
+const startParticipantLeftAgainListener = (startAppListening: StartAppListening) => {
+  startAppListening({
+    actionCreator: leave,
+    effect: (action, listenerApi) => {
+      const { id, connection, timestamp, reason } = action.payload;
+      const state = listenerApi.getOriginalState();
+      const ourUuid = state.user.uuid;
+      if (id !== ourUuid) {
+        const existingParticipant = participantSelectors.selectById(state, id);
+        if (existingParticipant) {
+          const remainingConnections = existingParticipant.connections.filter((c) => c !== connection);
+          if (remainingConnections.length === 0) {
+            listenerApi.dispatch(
+              participantLeft({ participant: { ...existingParticipant, leftAt: timestamp }, reason })
+            );
+          } else {
+            listenerApi.dispatch(
+              participantClosedConnection({ participant: { ...existingParticipant, leftAt: timestamp }, reason })
+            );
+          }
+        }
+      }
+    },
+  });
+};
+
 export const startParticipantsListeners = (startAppListening: StartAppListening) => {
   startParticipantJoinDuringVoteListener(startAppListening);
   startParticipantLeaveDuringVoteListener(startAppListening);
+  startParticipantJoinedAgainListener(startAppListening);
+  startParticipantLeftAgainListener(startAppListening);
 };

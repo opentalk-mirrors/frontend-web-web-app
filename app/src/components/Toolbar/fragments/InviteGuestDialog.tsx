@@ -67,7 +67,7 @@ const InviteGuestDialog = (props: Omit<DialogProps, 'children'>) => {
   };
 
   const onClose = () => {
-    props.onClose && props.onClose({}, 'escapeKeyDown');
+    props.onClose?.({}, 'escapeKeyDown');
     resetValues();
   };
 

@@ -242,6 +242,8 @@ breakout-notification-joined-session-cta = You joined a conference, where curren
 breakout-notification-joined-session-button = Switch to Room {$roomName}
 breakout-notification-session-ended-header = Breakout Session Ended
 breakout-notification-session-ended-cta = The Breakout Session you were part of ended. Please return to the main conference. You got {$timeInSeconds} seconds before you will be moved automatically.
+breakout-switching-title = Switching rooms
+breakout-switching-description = Establishing media connection. This may take a moment.
 
 jumplink-nav-label = Skip links
 jumplink-skip-to = Skip to

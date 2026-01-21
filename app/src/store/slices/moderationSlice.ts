@@ -38,6 +38,7 @@ export const moderationSlice = createSlice({
     },
     disableRaisedHands: (state) => {
       state.raiseHandsEnabled = false;
+      state.hasHandUp = false;
     },
     forceMuteEnabled: (
       state,

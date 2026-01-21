@@ -110,7 +110,6 @@ const CreateRoomsForm = () => {
     dispatch(
       start.action({
         duration: duration && ((duration * 60) as Seconds),
-        strategy: 'manual',
         rooms: toRoomPayload(actualAssignments),
       })
     );

@@ -240,8 +240,10 @@ breakout-notification-joined-session-cta = Sie sind einer Konferenz beigetreten,
    *[other] Die folgenden {$numberOfOtherRooms} anderen Räume sind
 } betretbar:
 breakout-notification-joined-session-button = Zu Breakout-Raum {$roomName} wechseln
-breakout-notification-session-ended-header = Breakout Session beended
+breakout-notification-session-ended-header = Breakout Session beendet
 breakout-notification-session-ended-cta = Die Breakout Session wurde beendet. Bitte gehen Sie zurück in den Hauptraum. Nach {$timeInSeconds} Sekunden werden Sie automatisch zurückgeführt.
+breakout-switching-title = Raumwechsel
+breakout-switching-description = Medienverbindung wird aufgebaut. Bitte haben Sie einen kurzen Moment Geduld.
 
 jumplink-nav-label = Sprunglinks
 jumplink-skip-to = Direkt zu

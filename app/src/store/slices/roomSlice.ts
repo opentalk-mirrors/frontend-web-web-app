@@ -19,6 +19,7 @@ import {
   FetchRequestError,
   FetchRequestState,
   RoomInfo,
+  RoomKind,
   RoomMode,
   TimerStyle,
 } from '../../types';
@@ -27,6 +28,7 @@ import { disconnectRoom, hangUp, joinSuccess, startRoom } from '../commonActions
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted, stopped as automodStopped } from './automodSlice';
+import { switchedRoom } from './breakoutSlice';
 import { timerStarted, timerStopped } from './timerSlice';
 
 interface InviteState extends FetchRequestState {
@@ -53,6 +55,7 @@ export type RoomState = {
   isOwnedByCurrentUser: boolean;
   isPresenceConfirmationActive: boolean;
   isDeleted: boolean;
+  roomKind: RoomKind;
 };
 
 export interface InviteRoomVerifyResponse {
@@ -81,6 +84,7 @@ const initialState: RoomState = {
   isOwnedByCurrentUser: false,
   isPresenceConfirmationActive: false,
   isDeleted: false,
+  roomKind: RoomKind.Main,
 };
 
 export enum InviteCodeErrorEnum {
@@ -237,6 +241,10 @@ export const roomSlice = createSlice({
       state.eventInfo = payload.eventInfo;
       state.meetingDetails = payload.meetingDetails;
       state.roomInfo = payload.roomInfo;
+
+      if (payload.breakout) {
+        state.roomKind = payload.breakout.room.kind;
+      }
     });
     builder.addCase(hangUp.pending, (state) => {
       state.connectionState = ConnectionState.Leaving;
@@ -266,6 +274,9 @@ export const roomSlice = createSlice({
     });
     builder.addCase(automodStopped, (state) => {
       state.currentMode = undefined;
+    });
+    builder.addCase(switchedRoom, (state, { payload }) => {
+      state.roomKind = payload.newRoom.kind;
     });
   },
 });
@@ -302,6 +313,7 @@ export const selectIsRoomOwner = (state: RootState) => state.room.isOwnedByCurre
 export const selectIsParticipationConfirmationActive = (state: RootState) => state.room.isPresenceConfirmationActive;
 export const selectIsRoomDeleted = (state: RootState) => state.room.isDeleted;
 export const selectE2EEncryption = (state: RootState) => state.room.eventInfo?.e2eEncryption;
+export const selectRoomKind = (state: RootState) => state.room.roomKind;
 
 export default roomSlice.reducer;
 

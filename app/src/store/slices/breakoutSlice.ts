@@ -4,8 +4,8 @@
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
 import type { RootState } from '../';
-import { Started } from '../../api/types/incoming/breakout';
-import { BreakoutRoomId, ParticipantId } from '../../types';
+import { Started, SwitchedRoom } from '../../api/types/incoming/breakout';
+import { BreakoutRoomId } from '../../types';
 import { joinSuccess, startRoom } from '../commonActions';
 
 export interface Room {
@@ -16,23 +16,14 @@ export interface Room {
 export interface BreakoutState {
   loading: boolean;
   active: boolean;
-  stopped: boolean;
   expired: boolean;
-  // Waiting for use to choose one room
-  waitForUserSelection: boolean;
   // Overview
   breakoutRooms: EntityState<Room, BreakoutRoomId>;
-  inParentRoom: Array<ParticipantId>;
-  // Selected breakout room by user
-  selectedBreakoutRoom?: BreakoutRoomId;
   //  The room id we got assigned to
   assignment?: BreakoutRoomId;
   // currentBreakoutRoomId
   currentBreakoutRoomId?: BreakoutRoomId;
-  // milliseconds since 1970
-  stoppedAt?: number;
-  // milliseconds since 1970
-  startedAt?: number;
+  closedAt?: number;
   action?: string;
   expires?: string;
 }
@@ -41,13 +32,8 @@ const breakoutRooms = createEntityAdapter<Room>();
 const initialState: BreakoutState = {
   loading: false,
   active: false,
-  waitForUserSelection: false,
-  stopped: false,
   expired: false,
   breakoutRooms: breakoutRooms.getInitialState(),
-  inParentRoom: [],
-  currentBreakoutRoomId: undefined,
-  assignment: undefined,
 };
 
 export const breakoutSlice = createSlice({
@@ -56,38 +42,37 @@ export const breakoutSlice = createSlice({
   reducers: {
     started: (state, { payload, type }: PayloadAction<Omit<Started, 'message'>>) => {
       state.action = type;
-      state.expires = payload.expires;
+      state.expires = payload.expiresAt;
       state.loading = true;
-      state.stopped = false;
       state.expired = false;
       state.active = true;
-      if (payload.assignment === null) {
-        state.waitForUserSelection = true;
-      } else {
-        state.loading = true;
-      }
+
       const rooms: Array<Room> = payload.rooms;
       breakoutRooms.setAll(state.breakoutRooms, rooms);
-      state.startedAt = Date.now();
-      state.assignment = payload.assignment === undefined ? undefined : payload.assignment;
+      state.assignment = payload.assignment;
     },
-    selected: (state, action: PayloadAction<BreakoutRoomId>) => {
-      state.selectedBreakoutRoom = action.payload;
-      state.loading = true;
-    },
-    stopped: (state, { type }) => {
+    switchedRoom: (state, { payload, type }: PayloadAction<Omit<SwitchedRoom, 'message'>>) => {
       state.action = type;
-      state.loading = true;
-      state.active = false;
-      state.stopped = true;
-      state.stoppedAt = Date.now();
+      state.loading = false;
+      state.currentBreakoutRoomId = payload.newRoom.id;
+      state.assignment = payload.newRoom.id;
     },
-    expired: (state, { type }: PayloadAction<undefined>) => {
+    closed: (state, { type }) => {
       state.action = type;
-      state.loading = true;
+      state.closedAt = Date.now();
+      state.loading = false;
       state.active = false;
-      state.expired = true;
-      state.stoppedAt = Date.now();
+      state.currentBreakoutRoomId = undefined;
+      state.assignment = undefined;
+    },
+    // expired: (state, { type }: PayloadAction<undefined>) => {
+    //   state.action = type;
+    //   state.loading = true;
+    //   state.active = false;
+    //   state.expired = true;
+    // },
+    setBreakoutLoading: (state, { payload }: PayloadAction<boolean>) => {
+      state.loading = payload;
     },
   },
   extraReducers: (builder) => {
@@ -99,17 +84,16 @@ export const breakoutSlice = createSlice({
     builder.addCase(joinSuccess, (state, { payload }) => {
       state.loading = false;
       state.active = payload.breakout !== undefined;
-      if (payload.breakout !== undefined && payload.breakout.room.id !== null) {
+      if (payload.breakout) {
         breakoutRooms.upsertMany(state.breakoutRooms, payload.breakout.rooms);
-        state.currentBreakoutRoomId = payload.breakout.room.id ?? undefined;
-        state.stopped = false;
+        state.currentBreakoutRoomId = payload.breakout.room.id;
         state.expired = false;
       }
     });
   },
 });
 
-export const { started, selected, stopped, expired } = breakoutSlice.actions;
+export const { started, switchedRoom, closed, setBreakoutLoading } = breakoutSlice.actions;
 
 const breakoutRoomsSelectors = breakoutRooms.getSelectors<RootState>((state) => state.breakout.breakoutRooms);
 const rootState = (state: RootState) => state;
@@ -128,6 +112,8 @@ export const selectAllBreakoutRooms = (state: RootState) => breakoutRoomsSelecto
 export const selectAssignedBreakoutRoomId = (state: RootState) => state.breakout.assignment;
 export const selectLastDispatchedActionType = (state: RootState) => state.breakout.action;
 export const selectExpiredDate = (state: RootState) => state.breakout.expires;
+export const selectBreakoutLoading = (state: RootState) => state.breakout.loading;
+export const selectBreakoutClosedAt = (state: RootState) => state.breakout.closedAt;
 
 export const actions = breakoutSlice.actions;
 

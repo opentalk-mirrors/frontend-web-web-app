@@ -6,7 +6,7 @@ import i18next from 'i18next';
 
 import { notificationAction } from '../../commonComponents';
 import type { RootState } from '../../store';
-import { addWhiteboardAsset, setWhiteboardAvailable } from '../../store/slices/whiteboardSlice';
+import { addWhiteboardAsset } from '../../store/slices/whiteboardSlice';
 import { WhiteboardError } from '../types/incoming/whiteboard';
 import type { Message as WhiteboardMessage } from '../types/incoming/whiteboard';
 import { handleStorageExceededError } from './helpers';
@@ -42,21 +42,11 @@ describe('handleWhiteboardMessage', () => {
     vi.clearAllMocks();
   });
 
-  it('sets the whiteboard URL', () => {
-    const dispatch = vi.fn();
-    const state = createState();
-    const data: WhiteboardMessage = { message: 'space_url', url: 'https://whiteboard.example' };
-
-    handleWhiteboardMessage(dispatch, data, state);
-
-    expect(dispatch).toHaveBeenCalledExactlyOnceWith(setWhiteboardAvailable({ showWhiteboard: true, url: data.url }));
-  });
-
   it('adds pdf assets and notifies', () => {
     const dispatch = vi.fn();
     const state = createState();
     const data: WhiteboardMessage = {
-      message: 'pdf_asset',
+      message: 'pdf_created',
       assetId: 'asset-1' as AssetId,
       filename: 'board.pdf',
     };

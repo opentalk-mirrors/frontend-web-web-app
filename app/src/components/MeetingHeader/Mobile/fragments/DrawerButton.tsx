@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { BurgermenuIcon } from '../../../../assets/icons';
 import { IconButton as DefaultIconButton } from '../../../../commonComponents';
 import { useAppSelector } from '../../../../hooks';
-import { selectPollsAndVotingsCount } from '../../../../store/selectors';
+import { selectPollsAndVotingCount } from '../../../../store/selectors';
 import {
   selectHasAnyUnreadGroupChatMessage,
   selectHasAnyUnreadPrivateChatMessage,
@@ -58,7 +58,7 @@ export const DrawerButton = ({ onClick, expanded, controls }: DrawerButtonProps)
   const hasParticipantsWaiting = participantsWaitingCount > 0;
   const hasUnreadMessages =
     unreadGlobalMessageCount > 0 || hasAnyUnreadGroupChatMessage || hasAnyUnreadPrivateChatMessage;
-  const voteAndPollCount = useAppSelector(selectPollsAndVotingsCount);
+  const voteAndPollCount = useAppSelector(selectPollsAndVotingCount);
   const haveSeenMobilePollsAndVotes = useAppSelector(selectHaveSeenMobilePollsAndVotes);
   const showWaitingRoomIndicator = isModerator && hasParticipantsWaiting;
   const showPollAndVoteIndicator = !isModerator && voteAndPollCount > 0 && !haveSeenMobilePollsAndVotes;

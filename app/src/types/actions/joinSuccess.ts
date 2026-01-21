@@ -9,7 +9,7 @@ import type {
   ParticipationLoggingState,
 } from '../../api/types/outgoing/trainingParticipationReport';
 import { InitialAutomod } from '../automod';
-import { InitialBreakout } from '../breakout';
+import { InitialBreakout, RoomKindBreakout, RoomKindMain } from '../breakout';
 import { InitialChat } from '../chat';
 import type {
   BackendParticipant,
@@ -190,9 +190,7 @@ export interface CorePeerState {
 }
 
 export interface BreakoutPeerState {
-  room: {
-    kind: 'main' | 'breakout';
-  };
+  room: RoomKindMain | RoomKindBreakout;
 }
 
 export interface ChatPeerState {

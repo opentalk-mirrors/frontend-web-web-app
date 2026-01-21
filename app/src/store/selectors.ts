@@ -28,6 +28,7 @@ import {
   globalMessagesSelectors,
   groupMessagesSelectors,
   privateMessagesSelectors,
+  breakoutMessagesSelectors,
   selectAllGroupChats,
   selectAllPrivateChats,
   selectChatState,
@@ -67,7 +68,7 @@ export const selectUserAsParticipant = createSelector(
   }
 );
 
-export const selectCombinedParticipantsAndUserInCoference = createSelector(
+export const selectCombinedParticipantsAndUserInConference = createSelector(
   [selectAllOnlineParticipantsInConference, selectUserAsParticipant],
   (participants, user) => (user ? [...participants, user] : participants)
 );
@@ -82,7 +83,7 @@ export const selectCombinedParticipantsAndUser = createSelector(
   (participants, user) => (user ? [...participants, user] : participants)
 );
 
-export const selectParticipantsWithourGuestAndSip = createSelector(
+export const selectParticipantsWithoutGuestAndSip = createSelector(
   [selectCombinedParticipantsAndUser],
   (participants) =>
     participants.filter(
@@ -211,17 +212,19 @@ export const selectChatMessagesByScope = createSelector(
   (chatState, scope, targetId) => {
     if (scope === ChatScope.Global) {
       return globalMessagesSelectors.selectAll(chatState.scope.global.messages);
-    } else if (scope === ChatScope.Private && targetId) {
-      const private_messages = chatState.scope.private[targetId as ParticipantId]?.messages;
-      if (private_messages) {
-        return privateMessagesSelectors.selectAll(private_messages);
-      }
-    } else if (scope === ChatScope.Group && targetId) {
-      const group_messages = chatState.scope.group[targetId as GroupId]?.messages;
-      if (group_messages) {
-        return groupMessagesSelectors.selectAll(group_messages);
-      }
     }
+    if (scope === ChatScope.Private && targetId) {
+      const privateChat = chatState.scope.private[targetId as ParticipantId];
+      return privateChat ? privateMessagesSelectors.selectAll(privateChat.messages) : [];
+    }
+    if (scope === ChatScope.Group && targetId) {
+      const groupChat = chatState.scope.group[targetId as GroupId];
+      return groupChat ? groupMessagesSelectors.selectAll(groupChat.messages) : [];
+    }
+    if (scope === ChatScope.Breakout && targetId !== undefined) {
+      return breakoutMessagesSelectors.selectAll(chatState.scope.breakout.messages);
+    }
+
     return [];
   }
 );
@@ -282,7 +285,7 @@ export const selectVotingUsers = createSelector([selectCombinedParticipantsAndUs
 });
 
 export const selectTalkingStickParticipants = createSelector(
-  [selectCombinedParticipantsAndUserInCoference, selectAutomoderationParticipantIds],
+  [selectCombinedParticipantsAndUserInConference, selectAutomoderationParticipantIds],
   (onlineParticipants, talkingStickIds): Participant[] => {
     const participantsInTalkingStick: Participant[] = [];
 
@@ -298,13 +301,13 @@ export const selectTalkingStickParticipants = createSelector(
   }
 );
 
-export const selectPollsAndVotingsCount = createSelector([selectAllVotes, selectAllPolls], (votings, polls) => {
-  return votings.length + polls.length;
+export const selectPollsAndVotingCount = createSelector([selectAllVotes, selectAllPolls], (voting, polls) => {
+  return voting.length + polls.length;
 });
 
-export const selectActivePollsAndVotingsCount = createSelector([selectAllVotes, selectAllPolls], (votings, polls) => {
+export const selectActivePollsAndVotingCount = createSelector([selectAllVotes, selectAllPolls], (voting, polls) => {
   return (
-    votings.filter((voting) => voting.state === LegalVoteState.Started).length +
+    voting.filter((voting) => voting.state === LegalVoteState.Started).length +
     polls.filter((poll) => poll.state === 'active').length
   );
 });

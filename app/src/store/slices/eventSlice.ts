@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { RootState } from '..';
 import { DisconnectReason } from '../../api/types/incoming/core';
 import { ParticipantId } from '../../types';
 import { setChatSettings } from './chatSlice';
-import { join as participantJoin, leave as participantLeave } from './participantsSlice';
+import { participantJoined, participantLeft, participantRejoined } from './participantsSlice';
 import { connectionClosed } from './roomSlice';
 
 export interface RoomEvent {
@@ -28,30 +28,23 @@ export const eventSlice = createSlice({
   initialState: eventAdapter.getInitialState(),
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(participantLeave, (state, { payload: { id, timestamp, reason } }) => {
-      eventAdapter.addOne(state, {
-        event: 'left',
-        timestamp,
-        target: id,
-        id: uuidv4(),
-        reason,
-      });
-    });
     builder.addCase(
-      participantJoin,
+      participantLeft,
       (
         state,
         {
           payload: {
-            participant: { joinedAt, id },
+            participant: { leftAt, id },
+            reason,
           },
         }
       ) => {
         eventAdapter.addOne(state, {
-          event: 'joined',
-          timestamp: joinedAt,
+          event: 'left',
+          timestamp: leftAt || new Date().toISOString(),
           target: id,
           id: uuidv4(),
+          reason: reason || DisconnectReason.Leave,
         });
       }
     );
@@ -63,6 +56,15 @@ export const eventSlice = createSlice({
         event: enabled ? 'chat_enabled' : 'chat_disabled',
         target: id,
         timestamp,
+        id: uuidv4(),
+      });
+    });
+    builder.addMatcher(isAnyOf(participantJoined, participantRejoined), (state, action) => {
+      const { id, joinedAt } = action.payload.participant;
+      eventAdapter.addOne(state, {
+        event: 'joined',
+        timestamp: joinedAt,
+        target: id,
         id: uuidv4(),
       });
     });

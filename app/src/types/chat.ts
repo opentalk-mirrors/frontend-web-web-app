@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { BreakoutRoomId } from './breakout';
 import { GroupId, ParticipantId, TargetId, Timestamp } from './common';
 
 export enum ChatScope {
@@ -26,12 +27,17 @@ type GroupChatMessage = {
   target: GroupId;
 };
 
+type BreakoutChatMessage = {
+  scope: ChatScope.Breakout;
+  target: BreakoutRoomId;
+};
+
 export type ChatMessage = {
   id: string;
   timestamp: string;
   source: ParticipantId;
   content: string;
-} & (GlobalChatMessage | PrivateChatMessage | GroupChatMessage);
+} & (GlobalChatMessage | PrivateChatMessage | GroupChatMessage | BreakoutChatMessage);
 
 export interface ChatMessageBase {
   id: string;

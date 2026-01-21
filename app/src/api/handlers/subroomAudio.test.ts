@@ -267,8 +267,8 @@ describe('handleSubroomAudioMessage', () => {
     const state = createState();
     const data: SubroomAudioMessage = { message: 'error', error: SubroomAudioError.InvalidWhisperId };
 
-    expect(() => handleSubroomAudioMessage(dispatch, data, state)).toThrow(/Livekit Error/);
-    expect(log.error).toHaveBeenCalledWith(expect.stringContaining('Livekit Error'));
+    expect(() => handleSubroomAudioMessage(dispatch, data, state)).toThrow('Subroom Audio Error: invalid_whisper_id');
+    expect(log.error).toHaveBeenCalledWith(expect.stringContaining('Subroom Audio Error'));
   });
 
   it('logs unknown message types', () => {

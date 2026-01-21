@@ -18,6 +18,7 @@ import {
   setIsLoadingMoreChunks,
   setLastSeenTimestampForGroupChat,
   setLastSeenTimestampForPrivateChat,
+  setLastSeenTimestampForBreakoutChat,
 } from '../../../store/slices/chatSlice';
 import type { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
@@ -117,6 +118,12 @@ const ChatList = ({ onReset }: ChatListProps) => {
       dispatch(
         setLastSeenTimestampForGroupChat({
           groupId: targetId as GroupId,
+          timestamp,
+        })
+      );
+    } else if (scope === ChatScope.Breakout && targetId) {
+      dispatch(
+        setLastSeenTimestampForBreakoutChat({
           timestamp,
         })
       );
