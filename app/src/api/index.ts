@@ -18,7 +18,6 @@ import {
   handleControlMessage,
   handleLegalVoteMessage,
   handleLivekitMessage,
-  handleMediaMessage,
   handleMeetingNotesMessage,
   handleMeetingReportMessage,
   handleModerationMessage,
@@ -50,11 +49,6 @@ const onMessage =
         break;
       case 'breakout':
         handleBreakoutMessage(dispatch, getState(), message.payload, message.timestamp);
-        break;
-      case 'media':
-        handleMediaMessage(dispatch, message.payload, getState()).catch((e) => {
-          log.error('Error in handleMediaMessage:', e);
-        });
         break;
       case 'automod':
         handleAutomodMessage(dispatch, message.payload, getState());
