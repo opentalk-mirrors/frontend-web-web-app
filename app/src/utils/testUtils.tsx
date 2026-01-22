@@ -185,9 +185,6 @@ export const jwtVariables = {
 export const mockStore = (
   participantCount: number,
   options?: {
-    video?: boolean;
-
-    screen?: boolean;
     raiseHands?: number;
     automodActive?: boolean;
 
@@ -196,15 +193,18 @@ export const mockStore = (
     store?: ConfigureStoreOptions['preloadedState'];
     e2eEncryption?: boolean;
     randomizeJoinTime?: boolean;
-    shuffleParticipants?: boolean;
   }
 ) => {
   const now = new Date();
   const participantsIds = range(participantCount);
+  if (options?.participantKinds && participantCount < options.participantKinds.length) {
+    throw new Error('participant count cannot be smaller than participant kinds');
+  }
   const participants = participantsIds.map((index) => {
     const handIsUp = index < (options?.raiseHands || 0);
     const kind = options?.participantKinds?.[index];
     const role = options?.role?.[index];
+
     const joinedAt = (options?.randomizeJoinTime ? getRandomTimeInThePast(now, { minutes: 60 }) : now).toISOString();
     const participant = {
       ...mockedParticipant(index, kind, role),

@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { add, Duration, Interval, intervalToDuration } from 'date-fns';
 
+import { getRandomInteger } from './numberUtils';
+
 export const getISOStringWithoutMilliseconds = (date: Date) => date.toISOString().split('.')[0] + 'Z';
 
 export const getIntervalToDurationString = (interval: Interval) => {
@@ -38,9 +40,9 @@ export const formatCurrentTime = () => {
 
 export const getRandomTimeInThePast = (fixedTime: Date, range: Duration) => {
   const timeDifference = {
-    hours: Math.random() * (range.hours || 0) * -1,
-    minutes: Math.random() * (range.minutes || 0) * -1,
-    seconds: Math.random() * (range.seconds || 0) * -1,
+    hours: getRandomInteger(range.hours || 0) * -1,
+    minutes: getRandomInteger(range.minutes || 0) * -1,
+    seconds: getRandomInteger(range.seconds || 0) * -1,
   } as Duration;
   return add(fixedTime, timeDifference);
 };
