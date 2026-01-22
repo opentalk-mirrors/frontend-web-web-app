@@ -17,6 +17,8 @@ export type CinemaViewParticipant = Participant & {
   isSpeaking: boolean;
   lastSpokeAt?: Date;
 };
+
+const ROLE_SORT_MAP: Record<Role, number> = { moderator: 0, user: 1, guest: 2 };
 /**
  * Merges participant data from controller with livekit participant data and sorts it
  * according to the selected cinema view sort order
@@ -58,9 +60,7 @@ export function useCinemaViewParticipants(): {
     });
     return mergedParticipants.sort((a, b) => {
       if (viewOrder === CinemaViewSortOrder.ModeratorsFirst) {
-        if (a.role !== b.role) {
-          return a.role === Role.Moderator ? -1 : 1;
-        }
+        return ROLE_SORT_MAP[a.role || Role.Guest] - ROLE_SORT_MAP[b.role || Role.Guest];
       } else if (viewOrder === CinemaViewSortOrder.VideoFirst) {
         if (a.isCameraEnabled !== b.isCameraEnabled) {
           return a.isCameraEnabled ? -1 : 1;
