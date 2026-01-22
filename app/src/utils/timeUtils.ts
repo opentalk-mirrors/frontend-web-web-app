@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Interval, intervalToDuration } from 'date-fns';
+import { add, Duration, Interval, intervalToDuration } from 'date-fns';
 
 export const getISOStringWithoutMilliseconds = (date: Date) => date.toISOString().split('.')[0] + 'Z';
 
@@ -34,4 +34,13 @@ export const formatCurrentTime = () => {
   const time = now.toLocaleTimeString();
   const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
   return `${time}.${milliseconds}`;
+};
+
+export const getRandomTimeInThePast = (fixedTime: Date, range: Duration) => {
+  const timeDifference = {
+    hours: Math.random() * (range.hours || 0) * -1,
+    minutes: Math.random() * (range.minutes || 0) * -1,
+    seconds: Math.random() * (range.seconds || 0) * -1,
+  } as Duration;
+  return add(fixedTime, timeDifference);
 };

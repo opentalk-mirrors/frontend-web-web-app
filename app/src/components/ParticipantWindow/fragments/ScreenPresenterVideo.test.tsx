@@ -38,7 +38,7 @@ const ScreenPresenterVideoProps = {
 
 describe('ScreenPresenterVideo Component', () => {
   const handleClick = vi.fn();
-  const { store } = mockStore(1, { video: true, screen: true });
+  const { store } = mockStore(1);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -115,7 +115,7 @@ describe('ScreenPresenterVideo Component', () => {
   });
 
   it("render component with presenter's video off should display avatar component", () => {
-    const { store } = mockStore(1, { video: false, screen: true });
+    const { store } = mockStore(1);
     renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('sharedPresenterVideo')).toBeInTheDocument();

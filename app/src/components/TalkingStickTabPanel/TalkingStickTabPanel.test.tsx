@@ -19,7 +19,7 @@ vi.mock('../TalkingStickParticipantList/fragments/ParticipantListItem/Participan
 const NUMBER_OF_PARTICIPANTS = 2;
 describe('<TalkingStickTabPanel />', () => {
   describe('automod inactive', () => {
-    const { store } = mockStore(NUMBER_OF_PARTICIPANTS, { video: true, screen: true });
+    const { store } = mockStore(NUMBER_OF_PARTICIPANTS);
 
     it('should render start button', () => {
       renderWithProviders(<TalkingStickTabPanel />, { store, provider: { mui: true } });
@@ -85,8 +85,6 @@ describe('<TalkingStickTabPanel />', () => {
     });
 
     const { store, dispatchSpy } = mockStore(NUMBER_OF_PARTICIPANTS, {
-      video: true,
-      screen: true,
       automodActive: true,
     });
 
