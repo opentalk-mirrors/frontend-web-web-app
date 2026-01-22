@@ -4,12 +4,12 @@
 import {
   AutomodSelectionStrategy,
   createModule,
-  createSignalingApiCall,
   AutomodStartBase,
   Command,
   Namespaced,
   ParticipantId,
 } from '../../../types';
+import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
 export interface AutomodStartCommand extends Command, AutomodStartBase {
