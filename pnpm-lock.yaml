@@ -144,7 +144,7 @@ importers:
         specifier: ^10.36.0
         version: 10.36.0
       '@sentry/react':
-        specifier: ^10.35.0
+        specifier: ^10.36.0
         version: 10.36.0(react@19.2.3)
       bowser:
         specifier: ^2.13.1
