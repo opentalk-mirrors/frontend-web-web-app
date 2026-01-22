@@ -17,6 +17,7 @@ import { t } from 'i18next';
 import {
   ConnectionQuality,
   DeviceUnsupportedError,
+  DisconnectReason,
   ConnectionState as LivekitConnectionState,
   LocalAudioTrack,
   LocalParticipant,
@@ -28,7 +29,9 @@ import {
   RemoteTrackPublication,
   Room,
   RoomEvent,
+  RoomEventCallbacks,
   Track,
+  TrackPublication,
 } from 'livekit-client';
 
 import { Credentials } from '../../api/types/incoming/livekit';
@@ -39,7 +42,6 @@ import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import log from '../../logger';
 import { MediaDescriptor } from '../../modules/WebRTC';
-import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { ParticipantId, TimerStyle, VideoSetting } from '../../types';
 import { BackgroundEffect } from '../../types/livekit';
 import { insertItem, removeItem } from '../../utils/reduxUtils';
@@ -59,7 +61,7 @@ import {
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { selectAllOnlineParticipantsInConference, selectParticipantName } from './participantsSlice';
-import { enteredWaitingRoom } from './roomSlice';
+import { abortedReconnection, enteredWaitingRoom } from './roomSlice';
 import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice';
 import { timerStarted } from './timerSlice';
 import { pinnedParticipantIdSet, pinnedRemoteScreenshare, updatedCinemaLayout } from './uiSlice';
@@ -231,6 +233,20 @@ export const livekitSlice = createSlice({
       state.reconnectLoop = { active: false, attempt: 0, timerId: null, nextDelayMs: null };
       state.unavailable = false;
     },
+    cleanMediaSettingsState: (state) => {
+      state.mediaSettings.cameraEnabled = false;
+      state.mediaSettings.microphoneEnabled = false;
+      state.mediaSettings.screenShareEnabled = false;
+    },
+    setMediaSettingsAudioEnabled: (state, { payload }: PayloadAction<boolean>) => {
+      state.mediaSettings.microphoneEnabled = payload;
+    },
+    setMediaSettingVideoEnabled: (state, { payload }: PayloadAction<boolean>) => {
+      state.mediaSettings.cameraEnabled = payload;
+    },
+    setMediaSettingScreenShareEnabled: (state, { payload }: PayloadAction<boolean>) => {
+      state.mediaSettings.screenShareEnabled = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload }) => {
@@ -240,12 +256,6 @@ export const livekitSlice = createSlice({
     builder.addCase(hangUp.fulfilled, (state) => {
       state.accessToken = undefined;
       state.unavailable = false;
-    });
-    builder.addCase(disconnectRoom.fulfilled, (state, { meta }) => {
-      if (!meta.arg.isWhisperRoom) {
-        state.mediaSettings.cameraEnabled = false;
-        state.mediaSettings.microphoneEnabled = false;
-      }
     });
     builder.addCase(cleanLocalTracks, (state) => {
       state.lobby.audioTrackPublication?.stop();
@@ -266,27 +276,10 @@ export const livekitSlice = createSlice({
       state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
       state.permissionDenied = insertItem(state.permissionDenied, arg.kind);
     });
-
     builder.addCase(changeLocalMedia.fulfilled, (state, { payload, meta: { arg } }) => {
       state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
       state.permissionDenied = removeItem(state.permissionDenied, arg.kind);
-      const lobby = state.lobby as Lobby;
-      if (arg.kind === 'audioinput') {
-        state.mediaSettings.audioDeviceId = payload.deviceId;
-        lobby.audioTrackPublication?.stop();
-        lobby.audioTrackPublication = undefined;
-        if (payload.track instanceof LocalAudioTrack) {
-          lobby.audioTrackPublication = payload.track;
-        }
-      }
-      if (arg.kind === 'videoinput') {
-        state.mediaSettings.videoDeviceId = payload.deviceId;
-        lobby.videoTrackPublication?.stop();
-        lobby.videoTrackPublication = undefined;
-        if (payload.track instanceof LocalVideoTrack) {
-          lobby.videoTrackPublication = payload.track;
-        }
-      }
+      updateLobbyTrack(state.lobby as Lobby, arg.kind, payload.deviceId, payload.track, state as LivekitState);
     });
     builder.addCase(changeMedia.pending, (state, { meta: { arg } }) => {
       state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, arg.kind);
@@ -298,13 +291,6 @@ export const livekitSlice = createSlice({
     builder.addCase(changeMedia.fulfilled, (state, { meta: { arg } }) => {
       state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
       state.permissionDenied = removeItem(state.permissionDenied, arg.kind);
-
-      if (arg.kind === 'audioinput') {
-        state.mediaSettings.microphoneEnabled = state.room?.localParticipant.isMicrophoneEnabled || false;
-      }
-      if (arg.kind === 'videoinput') {
-        state.mediaSettings.cameraEnabled = state.room?.localParticipant.isCameraEnabled || false;
-      }
     });
     builder.addCase(setScreenShareEnabled.pending, (state) => {
       state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, 'screenshare');
@@ -338,7 +324,6 @@ export const livekitSlice = createSlice({
     builder.addCase(setScreenShareEnabled.fulfilled, (state) => {
       state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, 'screenshare');
       state.permissionDenied = removeItem(state.permissionDenied, 'screenshare');
-      state.mediaSettings.screenShareEnabled = state.room?.localParticipant.isScreenShareEnabled || false;
     });
     builder.addCase(switchActiveDevice.fulfilled, (state, { meta: { arg } }) => {
       if (arg.kind === 'audioinput') {
@@ -349,23 +334,7 @@ export const livekitSlice = createSlice({
       }
     });
     builder.addCase(switchLocalDevice.fulfilled, (state, { payload, meta: { arg } }) => {
-      const lobby = state.lobby as Lobby;
-      if (arg.kind === 'audioinput') {
-        state.mediaSettings.audioDeviceId = arg.deviceId;
-        lobby.audioTrackPublication?.stop();
-        lobby.audioTrackPublication = undefined;
-        if (payload.track instanceof LocalAudioTrack) {
-          lobby.audioTrackPublication = payload.track;
-        }
-      }
-      if (arg.kind === 'videoinput') {
-        state.mediaSettings.videoDeviceId = arg.deviceId;
-        lobby.videoTrackPublication?.stop();
-        lobby.videoTrackPublication = undefined;
-        if (payload.track instanceof LocalVideoTrack) {
-          lobby.videoTrackPublication = payload.track;
-        }
-      }
+      updateLobbyTrack(state.lobby as Lobby, arg.kind, arg.deviceId, payload.track, state as LivekitState);
     });
     builder.addCase(startBroadcastRoom, (state) => {
       state.isPopoutStream = true;
@@ -385,6 +354,10 @@ export const {
   incrementReconnectAttempt,
   abortReconnectLoop,
   finishReconnectLoop,
+  cleanMediaSettingsState,
+  setMediaSettingsAudioEnabled,
+  setMediaSettingVideoEnabled,
+  setMediaSettingScreenShareEnabled,
 } = livekitSlice.actions;
 
 export const setLivekitUnavailable = createAction<boolean>('livekit/set_livekit_unavailable');
@@ -443,6 +416,30 @@ export const selectIsPopoutStream = (state: RootState) => state.livekit.isPopout
 
 export default livekitSlice.reducer;
 
+function updateLobbyTrack(
+  lobby: Lobby,
+  kind: string,
+  deviceId: string | undefined,
+  track: LocalAudioTrack | LocalVideoTrack | undefined,
+  state: LivekitState
+) {
+  if (kind === 'audioinput') {
+    state.mediaSettings.audioDeviceId = deviceId;
+    lobby.audioTrackPublication?.stop();
+    lobby.audioTrackPublication = undefined;
+    if (track instanceof LocalAudioTrack) {
+      lobby.audioTrackPublication = track;
+    }
+  }
+  if (kind === 'videoinput') {
+    state.mediaSettings.videoDeviceId = deviceId;
+    lobby.videoTrackPublication?.stop();
+    lobby.videoTrackPublication = undefined;
+    if (track instanceof LocalVideoTrack) {
+      lobby.videoTrackPublication = track;
+    }
+  }
+}
 /************************************************/
 /*                                              */
 /*                  Listeners                   */
@@ -494,14 +491,11 @@ const startBroadcastRoomListeners = (startAppListening: StartAppListening) => {
   });
 };
 
-const startDisconnectLivekitListeners = (startAppListening: StartAppListening) => {
+const startAbortReconnectListeners = (startAppListening: StartAppListening) => {
   startAppListening({
-    actionCreator: disconnectRoom.fulfilled,
+    actionCreator: abortedReconnection,
     effect: async (action, listenerApi) => {
-      const { isWhisperRoom } = action.meta.arg;
-      const room = isWhisperRoom ? listenerApi.getState().livekit.whisperRoom : listenerApi.getState().livekit.room;
-      detachRoomListeners(listenerApi.dispatch, listenerApi.getState, room);
-      listenerApi.dispatch(setLivekitRoom({ room: undefined, isWhisperRoom }));
+      listenerApi.dispatch(disconnectRoom({ isWhisperRoom: false }));
     },
   });
 };
@@ -554,7 +548,6 @@ const startDisableMediaOnCoffeeBreakListener = (startAppListening: StartAppListe
     actionCreator: timerStarted,
     effect: (action, listenerApi) => {
       const state = listenerApi.getState();
-
       const isAnyMediaTrackEnabled = selectAudioEnabled(state) || selectVideoEnabled(state);
       const isShareScreenEnabled = selectScreenShareEnabled(state);
 
@@ -586,7 +579,6 @@ const startMediaChoiceListener = (startAppListening: StartAppListening) =>
     effect: (_, listenerApi) => {
       const { videoBackgroundEffects } = listenerApi.getState().livekit;
       const { videoDeviceId, audioDeviceId } = listenerApi.getState().livekit.mediaSettings;
-
       const updatedChoices = {
         videoBackgroundEffects,
         mediaSettings: {
@@ -594,7 +586,6 @@ const startMediaChoiceListener = (startAppListening: StartAppListening) =>
           audioDeviceId,
         },
       };
-
       localStorage.setItem('mediaChoices', JSON.stringify(updatedChoices));
     },
   });
@@ -604,7 +595,6 @@ const startNewAccessTokenListener = (startAppListening: StartAppListening) =>
     actionCreator: setNewAccessToken,
     effect: (action, listenerApi) => {
       const state = listenerApi.getState();
-
       if (!state.livekit.room) {
         listenerApi.dispatch(
           connectRoom({ eventInfo: state.room.eventInfo, isWhisperRoom: false, accessToken: action.payload.token })
@@ -702,7 +692,6 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startLeaveWhisperGroupListeners(startAppListening);
   startResetSubroomListeners(startAppListening);
   startHangUpListeners(startAppListening);
-  startDisconnectLivekitListeners(startAppListening);
   startSubroomAudioDataListeners(startAppListening);
   startJoinSuccessListeners(startAppListening);
   startReconnectOnLivekitTriggerListener(startAppListening);
@@ -713,6 +702,7 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startReconnectLoopListeners(startAppListening);
   startReconnectAbortListeners(startAppListening);
   startNewAccessTokenListener(startAppListening);
+  startAbortReconnectListeners(startAppListening);
 };
 
 /************************************************/
@@ -720,71 +710,149 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
 /*             Livekit room listeners           */
 /*                                              */
 /************************************************/
+const roomListeners = new WeakMap<Room, Partial<RoomEventCallbacks>>();
+
+const createRoomListeners = (
+  dispatch: AppDispatch,
+  getState: () => RootState,
+  room: Room
+): Partial<RoomEventCallbacks> => ({
+  [RoomEvent.Connected]: () => {
+    handleRoomConnected(dispatch, getState);
+    handleParticipantConnected(getState);
+  },
+  [RoomEvent.Disconnected]: (reason) => handleRoomDisconnected(dispatch, getState, room, reason),
+  [RoomEvent.TrackPublished]: (pub, participant) => {
+    if (participant instanceof RemoteParticipant && pub instanceof RemoteTrackPublication) {
+      handleTrackPublished(pub, participant, dispatch);
+    }
+  },
+  [RoomEvent.TrackUnpublished]: (pub, participant) => {
+    if (participant instanceof RemoteParticipant && pub instanceof RemoteTrackPublication) {
+      handleRemoteTrackUnpublished(pub, participant, dispatch, getState);
+    }
+  },
+  [RoomEvent.LocalTrackUnpublished]: (pub) => handleTrackToggle(pub, room, dispatch, getState, false),
+  [RoomEvent.TrackSubscribed]: (track, pub, participant) => handleTrackSubscribed(track, pub, participant),
+  [RoomEvent.ParticipantPermissionsChanged]: (previousPermissions, participant) =>
+    handlePermissionChanged(previousPermissions, participant as RemoteParticipant | LocalParticipant, dispatch),
+  [RoomEvent.TrackMuted]: (pub, participant) => handleTrackToggle(pub, room, dispatch, getState, false, participant),
+  [RoomEvent.TrackUnmuted]: (pub, participant) => handleTrackToggle(pub, room, dispatch, getState, true, participant),
+  [RoomEvent.LocalTrackPublished]: (pub) => handleTrackToggle(pub, room, dispatch, getState, true),
+  [RoomEvent.ConnectionStateChanged]: () => handleConnectionStateChanged(dispatch, getState),
+  [RoomEvent.EncryptionError]: (error) => handleEncryptionError(error),
+  [RoomEvent.ParticipantConnected]: (participant) => handleParticipantConnected(getState, participant),
+});
 
 const attachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
-  room
-    .on(RoomEvent.Connected, () => {
-      handleRoomConnected(room, dispatch, getState);
-      handleParticipantConnected(getState);
-    })
-    .on(RoomEvent.Disconnected, () => handleRoomDisconnected(dispatch, getState))
-    .on(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, dispatch))
-    .on(RoomEvent.TrackUnpublished, (pub, participant) =>
-      handleRemoteTrackUnpublished(pub, participant, dispatch, getState)
-    )
-    .on(RoomEvent.LocalTrackUnpublished, (pub) => handleLocalTrackUnpublished(pub, dispatch, getState))
-    .on(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
-    .on(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
-      handlePermissionChanged(previousPermissions, participant, dispatch)
-    )
-    .on(RoomEvent.ConnectionStateChanged, () => handleConnectionStateChanged(dispatch, getState))
-    .on(RoomEvent.EncryptionError, (error) => handleEncryptionError(error))
-    .on(RoomEvent.ParticipantConnected, (participant) => handleParticipantConnected(getState, participant));
-};
-const detachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, room?: Room) => {
-  room
-    ?.off(RoomEvent.Connected, () => {
-      handleRoomConnected(room, dispatch, getState);
-      handleParticipantConnected(getState);
-    })
-    .off(RoomEvent.Disconnected, () => handleRoomDisconnected(dispatch, getState))
-    .off(RoomEvent.TrackPublished, (pub, participant) => handleTrackPublished(pub, participant, dispatch))
-    .off(RoomEvent.TrackUnpublished, (pub, participant) =>
-      handleRemoteTrackUnpublished(pub, participant, dispatch, getState)
-    )
-    .off(RoomEvent.LocalTrackUnpublished, (pub) => handleLocalTrackUnpublished(pub, dispatch, getState))
-    .off(RoomEvent.TrackSubscribed, (_, pub, participant) => handleTrackSubscribed(_, pub, participant))
-    .off(RoomEvent.ParticipantPermissionsChanged, (previousPermissions, participant) =>
-      handlePermissionChanged(previousPermissions, participant, dispatch)
-    )
-    .off(RoomEvent.ConnectionStateChanged, () => handleConnectionStateChanged(dispatch, getState))
-    .off(RoomEvent.EncryptionError, (error) => handleEncryptionError(error))
-    .off(RoomEvent.ParticipantConnected, (participant) => handleParticipantConnected(getState, participant));
+  const listeners = createRoomListeners(dispatch, getState, room);
+  roomListeners.set(room, listeners);
+
+  Object.entries(listeners).forEach(([eventName, callback]) => {
+    room.on(eventName as RoomEvent, callback);
+  });
 };
 
-const handleRoomConnected = async (room: Room, dispatch: AppDispatch, getState: () => RootState) => {
+const detachRoomListeners = (room: Room) => {
+  const listeners = roomListeners.get(room);
+  if (!listeners) {
+    return;
+  }
+  Object.entries(listeners).forEach(([eventName, callback]) => {
+    room.off(eventName as RoomEvent, callback);
+  });
+  roomListeners.delete(room);
+};
+
+const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootState) => {
   dispatch(setLivekitUnavailable(false));
   dispatch(finishReconnectLoop());
   const state = getState();
   const isLobbyCameraEnabled = selectLobbyVideoEnabled(state);
   const isLobbyMicrophoneEnabled = selectLobbyAudioEnabled(state);
 
-  if (room?.state === LivekitConnectionState.Connected) {
-    if (isLobbyCameraEnabled) {
-      dispatch(changeMedia({ kind: 'videoinput', enabled: isLobbyCameraEnabled }));
-    }
-    if (isLobbyMicrophoneEnabled) {
-      dispatch(changeMedia({ kind: 'audioinput', enabled: isLobbyMicrophoneEnabled }));
-    }
+  if (isLobbyCameraEnabled) {
+    dispatch(changeMedia({ kind: 'videoinput', enabled: isLobbyCameraEnabled }));
+  }
+  if (isLobbyMicrophoneEnabled) {
+    dispatch(changeMedia({ kind: 'audioinput', enabled: isLobbyMicrophoneEnabled }));
+  }
+  dispatch(cleanLocalTracks());
+};
 
-    dispatch(cleanLocalTracks());
+const handleClientOrUserDisconnect = (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
+  const isWhisperRoom = getState().livekit.whisperRoom?.name === room.name;
+  if (!isWhisperRoom) {
+    dispatch(cleanMediaSettingsState());
+  }
+  detachRoomListeners(room);
+  dispatch(setLivekitRoom({ room: undefined, isWhisperRoom }));
+};
+
+function handleServerOrSignalDisconnect(dispatch: AppDispatch) {
+  dispatch(triggerLivekitReconnect());
+}
+
+const handleRoomDisconnected = (
+  dispatch: AppDispatch,
+  getState: () => RootState,
+  room: Room,
+  reason?: DisconnectReason
+) => {
+  switch (reason) {
+    case DisconnectReason.CLIENT_INITIATED:
+    case DisconnectReason.DUPLICATE_IDENTITY:
+    case DisconnectReason.PARTICIPANT_REMOVED:
+    case DisconnectReason.ROOM_DELETED:
+    case DisconnectReason.ROOM_CLOSED:
+    case DisconnectReason.USER_REJECTED:
+    case DisconnectReason.USER_UNAVAILABLE:
+      handleClientOrUserDisconnect(dispatch, getState, room);
+      break;
+    case DisconnectReason.SERVER_SHUTDOWN:
+    case DisconnectReason.SIGNAL_CLOSE:
+    case DisconnectReason.MIGRATION:
+    case DisconnectReason.CONNECTION_TIMEOUT:
+    case DisconnectReason.MEDIA_FAILURE:
+    case DisconnectReason.STATE_MISMATCH:
+      handleServerOrSignalDisconnect(dispatch);
+      break;
+    default:
+      handleServerOrSignalDisconnect(dispatch);
+      log.warn('Unknown LiveKit disconnect reason:', reason);
   }
 };
 
-const handleRoomDisconnected = (dispatch: AppDispatch, getState: () => RootState) => {
-  const connectionState = getState().room.connectionState;
-  if (connectionState === ConnectionState.Online) {
-    dispatch(triggerLivekitReconnect());
+const handleTrackToggle = (
+  pub: TrackPublication | LocalTrackPublication,
+  room: Room,
+  dispatch: AppDispatch,
+  getState: () => RootState,
+  enabled: boolean,
+  participant?: Participant
+) => {
+  const state = getState();
+  const isTrackFromLocalParticipant = participant?.identity === state.user.uuid;
+  const isLocalTrackPublication = pub instanceof LocalTrackPublication;
+  const isWhisperRoom = state.livekit.whisperRoom?.name === room.name;
+  if (isWhisperRoom) {
+    return;
+  }
+  if (isTrackFromLocalParticipant || isLocalTrackPublication) {
+    if (pub.kind === Track.Kind.Audio) {
+      if (pub.source === Track.Source.ScreenShareAudio) {
+        // we don't manage screen share audio state here
+        return;
+      }
+      dispatch(setMediaSettingsAudioEnabled(enabled));
+    }
+    if (pub.kind === Track.Kind.Video) {
+      if (pub.source === Track.Source.ScreenShare) {
+        dispatch(setMediaSettingScreenShareEnabled(enabled));
+        return;
+      }
+      dispatch(setMediaSettingVideoEnabled(enabled));
+    }
   }
 };
 
@@ -811,13 +879,6 @@ const handleRemoteTrackUnpublished = (
   if (pub.source === Track.Source.ScreenShare && participant.identity === state.ui.pinnedParticipantId) {
     dispatch(pinnedParticipantIdSet(undefined));
     dispatch(updatedCinemaLayout({ layout: state.ui.lastCinemaLayout }));
-  }
-};
-
-const handleLocalTrackUnpublished = (pub: LocalTrackPublication, dispatch: AppDispatch, getState: () => RootState) => {
-  const state = getState();
-  if (pub.source === Track.Source.ScreenShare && state.livekit.mediaSettings.screenShareEnabled) {
-    dispatch(setScreenShareEnabled({ enabled: false }));
   }
 };
 

@@ -6,8 +6,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { ForceMuteType, ParticipantId, RoomMode } from '../../../types';
 import { configureStore } from '../../../utils/testUtils';
+import * as commonActions from '../../commonActions';
 import { SpeakerState } from '../automodSlice';
 import { fullscreenActions } from '../fullscreen/slice';
+import * as livekitSlice from '../livekitSlice';
 import { ReduxDomEvents } from './eventBindings';
 import * as events from './events';
 import * as listener from './listener';
@@ -148,10 +150,6 @@ describe('hotkeys', () => {
   });
 
   it('toggles on the microphone on press and release control + m', async () => {
-    let microphoneEnabled = false;
-    const mockSetMicrophoneEnabled = vi.fn().mockImplementation((enabled: boolean) => {
-      microphoneEnabled = enabled;
-    });
     const { store } = configureStore({
       initialState: {
         user: {
@@ -166,12 +164,6 @@ describe('hotkeys', () => {
         livekit: {
           room: {
             getActiveDevice: vi.fn().mockReturnValue('audioinput'),
-            localParticipant: {
-              setMicrophoneEnabled: mockSetMicrophoneEnabled,
-              get isMicrophoneEnabled() {
-                return microphoneEnabled;
-              },
-            },
           },
           lobby: {
             audioTrackPublication: false,
@@ -184,32 +176,34 @@ describe('hotkeys', () => {
     });
 
     ReduxDomEvents.dispatchFunction = store.dispatch;
+    const changeMediaSpy = vi.spyOn(commonActions, 'changeMedia');
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm', ctrlKey: true }));
     vi.advanceTimersByTime(100);
 
     await waitFor(
       () => {
-        const state = store.getState();
-        return state.livekit.mediaSettings.microphoneEnabled === true;
+        expect(changeMediaSpy).toHaveBeenCalledWith({
+          kind: 'audioinput',
+          enabled: true,
+          preventActiveMediaAfterPermissionPrompt: true,
+        });
       },
       { timeout: 1000 }
     );
 
-    expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(true);
-
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'm', ctrlKey: true }));
-    vi.advanceTimersByTime(500);
+    vi.advanceTimersByTime(100);
 
     await waitFor(
       () => {
-        const state = store.getState();
-        return state.livekit.mediaSettings.microphoneEnabled === false;
+        expect(changeMediaSpy).toHaveBeenCalledWith({
+          kind: 'audioinput',
+          enabled: false,
+        });
       },
       { timeout: 1000 }
     );
-
-    expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(false);
   });
 
   it('toggles the microphone on press m key', async () => {
@@ -248,35 +242,36 @@ describe('hotkeys', () => {
         },
       },
     });
+
     ReduxDomEvents.dispatchFunction = store.dispatch;
-
+    const changeMediaSpy = vi.spyOn(commonActions, 'changeMedia');
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm' }));
-    vi.advanceTimersByTime(100);
-
-    await waitFor(
-      () => {
-        const state = store.getState();
-        return state.livekit.mediaSettings.microphoneEnabled;
-      },
-      { timeout: 1000 }
-    );
-
-    expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(true);
-
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'm' }));
-    vi.advanceTimersByTime(500);
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm' }));
     vi.advanceTimersByTime(100);
 
     await waitFor(
       () => {
-        const state = store.getState();
-        return state.livekit.mediaSettings.microphoneEnabled;
+        expect(changeMediaSpy).toHaveBeenCalledWith({
+          kind: 'audioinput',
+          enabled: true,
+        });
       },
       { timeout: 1000 }
     );
 
-    expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(false);
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm' }));
+    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'm' }));
+    vi.advanceTimersByTime(100);
+
+    await waitFor(
+      () => {
+        expect(changeMediaSpy).toHaveBeenCalledWith({
+          kind: 'audioinput',
+          enabled: false,
+        });
+      },
+      { timeout: 1000 }
+    );
   });
 
   it('toggles video on press v key', async () => {
@@ -284,6 +279,7 @@ describe('hotkeys', () => {
     const mockSetCameraEnabled = vi.fn().mockImplementation((enabled: boolean) => {
       cameraEnabled = enabled;
     });
+
     const { store } = configureStore({
       initialState: {
         user: {
@@ -314,35 +310,38 @@ describe('hotkeys', () => {
         },
       },
     });
+
     ReduxDomEvents.dispatchFunction = store.dispatch;
-
+    const changeMediaSpy = vi.spyOn(commonActions, 'changeMedia');
+    const selectVideoEnabledSpy = vi.spyOn(livekitSlice, 'selectVideoEnabled').mockImplementation(() => cameraEnabled);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'v' }));
-    vi.advanceTimersByTime(100);
-
-    await waitFor(
-      () => {
-        const state = store.getState();
-        return state.livekit.mediaSettings.cameraEnabled;
-      },
-      { timeout: 1000 }
-    );
-
-    expect(store.getState().livekit.mediaSettings.cameraEnabled).toEqual(true);
-
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'v' }));
-    vi.advanceTimersByTime(500);
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'v' }));
     vi.advanceTimersByTime(100);
 
     await waitFor(
       () => {
-        const state = store.getState();
-        return state.livekit.mediaSettings.cameraEnabled === false;
+        expect(changeMediaSpy).toHaveBeenCalledWith({
+          kind: 'videoinput',
+          enabled: true,
+        });
       },
       { timeout: 1000 }
     );
 
-    expect(store.getState().livekit.mediaSettings.cameraEnabled).toEqual(false);
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'v' }));
+    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'v' }));
+    vi.advanceTimersByTime(100);
+
+    await waitFor(
+      () => {
+        expect(changeMediaSpy).toHaveBeenCalledWith({
+          kind: 'videoinput',
+          enabled: false,
+        });
+      },
+      { timeout: 1000 }
+    );
+    selectVideoEnabledSpy.mockRestore();
   });
 
   it('toggles whisper audio on press w key', async () => {
@@ -455,33 +454,34 @@ describe('hotkeys', () => {
       },
     });
     ReduxDomEvents.dispatchFunction = store.dispatch;
-
+    const changeMediaSpy = vi.spyOn(commonActions, 'changeMedia');
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
+    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'w' }));
     vi.advanceTimersByTime(100);
 
     await waitFor(
       () => {
-        const state = store.getState();
-        return state.subroomAudio.isWhisperActive && state.livekit.mediaSettings.microphoneEnabled;
+        expect(changeMediaSpy).toHaveBeenCalledWith({
+          kind: 'audioinput',
+          enabled: false,
+        });
       },
       { timeout: 1000 }
     );
 
-    expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(false);
-    expect(store.getState().subroomAudio.isWhisperActive).toEqual(true);
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'w' }));
     vi.advanceTimersByTime(500);
 
     await waitFor(
       () => {
-        const state = store.getState();
-        return state.subroomAudio.isWhisperActive && state.livekit.mediaSettings.microphoneEnabled;
+        expect(changeMediaSpy).toHaveBeenCalledWith({
+          kind: 'audioinput',
+          enabled: true,
+        });
       },
       { timeout: 1000 }
     );
-
-    expect(store.getState().livekit.mediaSettings.microphoneEnabled).toEqual(true);
-    expect(store.getState().subroomAudio.isWhisperActive).toEqual(false);
   });
 
   it('steps to next speaker when clicking n when active', async () => {

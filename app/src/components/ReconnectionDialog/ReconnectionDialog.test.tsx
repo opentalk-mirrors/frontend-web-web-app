@@ -4,7 +4,8 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
+import * as commonActions from '../../store/commonActions';
+import { abortedReconnection } from '../../store/slices/roomSlice';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import ReconnectionDialog from './ReconnectionDialog';
 
@@ -22,43 +23,38 @@ describe('ReconnectionDialog', () => {
   });
 
   it('dispatches actions to disable media and abort reconnection when abort button is clicked', async () => {
-    const { store } = configureStore({
+    const { store, dispatchSpy } = configureStore({
       initialState: {
         livekit: {
-          mediaSettings: {
-            microphoneEnabled: true,
-            cameraEnabled: true,
-          },
+          mediaSettings: { microphoneEnabled: true, cameraEnabled: true },
         },
       },
     });
-    renderWithProviders(<ReconnectionDialog />, { store });
-
+    const changeMediaSpy = vi.spyOn(commonActions, 'changeMedia');
+    renderWithProviders(<ReconnectionDialog />, { store, provider: { mui: true, snackbar: true } });
     await userEvent.click(screen.getByText('reconnection-loop-abort-button'));
 
-    expect(store.getState().livekit.mediaSettings.microphoneEnabled).toBe(false);
-    expect(store.getState().livekit.mediaSettings.cameraEnabled).toBe(false);
-
-    expect(store.getState().room.reconnectTimerId).toBe(null);
-    expect(store.getState().room.connectionState).toBe(ConnectionState.Left);
+    expect(dispatchSpy).toHaveBeenCalledTimes(3);
+    expect(changeMediaSpy).toHaveBeenNthCalledWith(1, { kind: 'audioinput', enabled: false });
+    expect(changeMediaSpy).toHaveBeenNthCalledWith(2, { kind: 'videoinput', enabled: false });
+    expect(dispatchSpy).toHaveBeenNthCalledWith(3, abortedReconnection());
   });
 
   it('does not dispatch media disable actions if audio and video are already disabled', async () => {
-    const { store } = configureStore({
+    const { store, dispatchSpy } = configureStore({
       initialState: {
         livekit: {
-          mediaSettings: {
-            microphoneEnabled: false,
-            cameraEnabled: false,
-          },
+          mediaSettings: { microphoneEnabled: false, cameraEnabled: false },
         },
       },
     });
-    renderWithProviders(<ReconnectionDialog />, { store });
+    const changeMediaSpy = vi.spyOn(commonActions, 'changeMedia');
+    renderWithProviders(<ReconnectionDialog />, { store, provider: { mui: true, snackbar: true } });
 
     await userEvent.click(screen.getByText('reconnection-loop-abort-button'));
 
-    expect(store.getState().room.reconnectTimerId).toBe(null);
-    expect(store.getState().room.connectionState).toBe(ConnectionState.Left);
+    expect(dispatchSpy).toHaveBeenCalledTimes(1);
+    expect(changeMediaSpy).not.toHaveBeenCalled();
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(abortedReconnection());
   });
 });
