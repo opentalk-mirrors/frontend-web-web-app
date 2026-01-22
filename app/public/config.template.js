@@ -44,6 +44,7 @@ window.config = {
   },
   livekit: {
     e2eeSalt: '${LIVEKIT_E2EE_SALT}',
+    preferredVideoCodec: '${LIVEKIT_PREFERRED_VIDEO_CODEC}',
   },
   features: {
     userSearch: true,

@@ -105,6 +105,9 @@ window.config = {
     },
     "livekit": {
       "e2eeSalt": "e2e_salt_key",
+      // Preferred video codec. Use 'vp9' or 'av1' to enable instant quality switching (SVC). 
+      // Automatically configures 'vp8' as a fallback for compatibility with older hardware 
+      "preferredVideoCodec": "vp9",
     },
     // To enable user feedback collection configure a collection URL. (optional) & API KEY
     "userSurveyUrl":"https://your-survey.collection/endpoint",

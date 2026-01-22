@@ -6,6 +6,7 @@ import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
 import {
+  BackupCodecPolicy,
   ConnectionState,
   createLocalAudioTrack,
   createLocalVideoTrack,
@@ -15,6 +16,7 @@ import {
   LocalAudioTrack,
   LocalVideoTrack,
   Room,
+  RoomOptions,
   Track,
   VideoPresets,
 } from 'livekit-client';
@@ -25,6 +27,7 @@ import { stopTimeLimitNotification } from '../commonComponents/Notistack/fragmen
 import { BackgroundBlur, BackgroundConfig } from '../modules/Media/BackgroundBlur';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { BreakoutRoomId, FetchRequestError, JoinSuccessInternalState } from '../types';
+import { VideoCodec } from '../types/livekit';
 import { getControllerBaseUrl } from '../utils/apiUtils';
 import { createE2Eworker } from '../utils/createE2EworkerUtils';
 import { handleMediaPermissionError } from '../utils/mediaErrorUtils';
@@ -323,7 +326,8 @@ export const connectRoom = createAsyncThunk<
       throw Error('No access token available for LiveKit connection');
     }
     const e2eeSalt = thunkApi.getState().config.livekit?.e2eeSalt;
-    const room = await createRoom(e2eeSalt, eventInfo || thunkApi.getState().room.eventInfo);
+    const preferredVideoCodec = thunkApi.getState().config.livekit?.preferredVideoCodec;
+    const room = await createRoom(e2eeSalt, eventInfo || thunkApi.getState().room.eventInfo, preferredVideoCodec);
 
     return { room };
   } catch (error) {
@@ -334,14 +338,18 @@ export const connectRoom = createAsyncThunk<
   }
 });
 
-export const createRoom = async (e2eeSalt: string | undefined, eventInfo?: EventInfo) => {
+export const createRoom = async (
+  e2eeSalt: string | undefined,
+  eventInfo?: EventInfo,
+  preferredVideoCodec?: VideoCodec.VP9 | VideoCodec.AV1
+) => {
   const e2eePassphrase = XORCipher.handle(`${eventInfo?.id}${eventInfo?.roomId}${e2eeSalt || ''}`);
 
   const mainWorker = createE2Eworker(e2eePassphrase, eventInfo?.e2eEncryption);
   const e2eeEnabled = (eventInfo?.e2eEncryption || false) && !!(e2eePassphrase && mainWorker) && isE2EESupported();
   const keyProvider = new ExternalE2EEKeyProvider();
 
-  const roomOptions = {
+  const roomOptions: RoomOptions = {
     publishDefaults: {
       /*
        * Up to two additional simulcast layers to publish in addition to the original
@@ -352,6 +360,15 @@ export const createRoom = async (e2eeSalt: string | undefined, eventInfo?: Event
        * */
       red: !e2eeEnabled,
       simulcast: true,
+      ...(preferredVideoCodec && {
+        videoCodec: preferredVideoCodec,
+        backupCodec: { codec: VideoCodec.VP8 },
+        /* codec regression: publisher stops sending primary codec and all subscribers
+         *. will receive backup codec even if the primary codec is supported on their browser. It is the default
+         *. behavior and provides maximum compatibility. It also reduces CPU and bandwidth consumption for publisher.
+         */
+        backupCodecPolicy: BackupCodecPolicy.REGRESSION,
+      }),
     },
     dynacast: true,
     disconnectOnPageLeave: false,

@@ -10,3 +10,9 @@ export interface BackgroundConfig {
 export interface BackgroundEffect extends BackgroundConfig {
   loading?: boolean;
 }
+
+export enum VideoCodec {
+  VP8 = 'vp8',
+  VP9 = 'vp9',
+  AV1 = 'av1',
+}
