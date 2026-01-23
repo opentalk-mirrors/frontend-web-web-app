@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-export enum GridViewOrder {
+export enum CinemaViewSortOrder {
   FirstJoined = 'firstJoined',
   VideoFirst = 'videoFirst',
   ModeratorsFirst = 'moderatorsFirst',

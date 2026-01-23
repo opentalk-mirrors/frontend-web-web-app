@@ -1,13 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { useRemoteParticipants } from '@livekit/components-react';
 import { screen, waitFor } from '@testing-library/react';
+import { Mock } from 'vitest';
 
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { fullscreenActions } from '../../../store/slices/fullscreen/slice';
 import { setLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { actions as uiActions } from '../../../store/slices/uiSlice';
-import { configureStore, renderWithProviders } from '../../../utils/testUtils';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import Cinema from './Cinema';
 
 vi.mock('../../FullscreenView', () => ({
@@ -39,8 +41,18 @@ vi.mock('./MediaReconnectionDialog', () => ({
   __esModule: true,
   default: () => <div data-testid="media-reconnection-dialog" />,
 }));
+vi.mock('@livekit/components-react', () => ({
+  useRemoteParticipants: vi.fn(),
+}));
 
 describe('Cinema', () => {
+  beforeEach(() => {
+    (useRemoteParticipants as Mock).mockReturnValue(
+      Array.from({ length: 6 }, (_, index) => ({
+        ...mockedParticipant(index),
+      }))
+    );
+  });
   afterEach(() => {
     vi.clearAllMocks();
   });

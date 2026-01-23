@@ -21,3 +21,6 @@ export const MAX_GRID_TILES_DESKTOP = 9;
 export const MAX_GRID_TILES_MOBILE = 9;
 
 export const DISPLAY_NAME_MAX_CHARACTERS = 100;
+
+export const GRID_BIG_VIDEO_WIDTH = 50;
+export const GRID_SMALL_VIDEO_WIDTH = 33.3;

@@ -10,7 +10,7 @@ import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAnd
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectParticipantsWithRaisedHands } from '../../store/selectors';
-import { selectMapRemotePaticipanstDisplayName } from '../../store/slices/participantsSlice';
+import { selectRemoteParticipantsDisplayNameRecord } from '../../store/slices/participantsSlice';
 import { ParticipantId } from '../../types';
 
 const ResetHandraisesTab = () => {
@@ -23,18 +23,20 @@ const ResetHandraisesTab = () => {
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
 
-  const participantNames = useAppSelector((state) => selectMapRemotePaticipanstDisplayName(state, remoteParticipants));
+  const participantNamesMap = useAppSelector((state) =>
+    selectRemoteParticipantsDisplayNameRecord(state, remoteParticipants)
+  );
 
   const searchFilteredParticipantsList = useMemo(() => {
     return remoteParticipants
       .filter((participant) => {
-        const displayName = participantNames[participant.identity];
+        const displayName = participantNamesMap[participant.identity];
         return displayName?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
       })
       .map((participant) =>
         toSelectableParticipant(participant, selectedParticipants.includes(participant.identity as ParticipantId))
       );
-  }, [search, remoteParticipants, selectedParticipants, participantNames]);
+  }, [search, remoteParticipants, selectedParticipants, participantNamesMap]);
 
   const handleSelectParticipant = (checked: boolean, participantId: ParticipantId) => {
     if (checked) {

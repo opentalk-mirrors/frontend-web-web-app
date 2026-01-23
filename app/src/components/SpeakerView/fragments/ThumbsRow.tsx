@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantLoop, useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
+import { ParticipantLoop } from '@livekit/components-react';
 import { Stack, styled } from '@mui/material';
-import { Participant, RoomEvent } from 'livekit-client';
+import { Participant } from 'livekit-client';
 import { useMemo, useState } from 'react';
 
-import { useAppSelector } from '../../../hooks';
-import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
-import { selectPinnedParticipantId } from '../../../store/slices/uiSlice';
+import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
+import { useCurrentSpeaker } from '../../../hooks/useCurrentSpeaker';
 import IconSlideButton from './IconSlideButton';
 import { Thumbnail } from './Thumbnail';
 
@@ -27,34 +26,19 @@ export interface ThumbsProps {
 }
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
-  const signalingParticipants = useAppSelector(selectAllOnlineParticipants);
-  const sortedParticipants = useSortedParticipants(
-    useRemoteParticipants({
-      updateOnlyOn: [
-        RoomEvent.ParticipantConnected,
-        RoomEvent.ParticipantDisconnected,
-        RoomEvent.ActiveSpeakersChanged,
-      ],
-    })
-  ); //TODO: Recheck for ActiveSpeakersChanged
-  const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
-
-  const selectedParticipantId = pinnedParticipantId || sortedParticipants[0]?.identity;
-  // Create a map for quick lookups of remoteParticipants by identity
-  const remoteParticipantsMap = useMemo(() => {
-    return new Map(sortedParticipants.map((p) => [p.identity, p]));
-  }, [sortedParticipants]);
+  const { cinemaViewParticipants, remoteParticipantsMap } = useCinemaViewParticipants();
+  const selectedParticipantId = useCurrentSpeaker();
 
   const participants = useMemo(
     () =>
-      signalingParticipants
+      cinemaViewParticipants
         .filter((participant) => participant.id !== selectedParticipantId)
         .map(
           (participant) =>
             remoteParticipantsMap.get(participant.id) ||
             new Participant(participant.id, participant.id, participant.displayName)
         ),
-    [signalingParticipants, remoteParticipantsMap, selectedParticipantId]
+    [cinemaViewParticipants, remoteParticipantsMap, selectedParticipantId]
   );
 
   const [firstVisibleParticipantIndex, setFirstVisibleParticipantIndex] = useState(0);

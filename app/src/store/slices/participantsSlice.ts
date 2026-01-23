@@ -25,7 +25,7 @@ import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { selectCurrentBreakoutRoomId } from './breakoutSlice';
 import { received } from './chatSlice';
-import { GridViewOrder } from './common';
+import { CinemaViewSortOrder } from './common';
 import { connectionClosed } from './roomSlice';
 import { removeParticipant } from './subroomAudioSlice';
 
@@ -256,20 +256,20 @@ export const selectAllOnlineParticipants = createSelector(
 
 export const selectSortedParticipants = createSelector(
   [
-    (_state: RootState, gridViewOrder: GridViewOrder) => gridViewOrder,
+    (_state: RootState, cinemaViewOrder: CinemaViewSortOrder) => cinemaViewOrder,
     selectAllOnlineParticipantsInConference,
     selectCurrentBreakoutRoomId,
     (state: RootState) => state.livekit.room,
   ],
-  (gridViewOrder, participants, currentBreakoutRoomId, room) => {
+  (cinemaViewOrder, participants, currentBreakoutRoomId, room) => {
     let filteredParticipants = participants
       .filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
       .sort((a, b) => a.joinedAt.localeCompare(b.joinedAt)); // always sort by firstJoined;
 
-    if (gridViewOrder === GridViewOrder.ModeratorsFirst) {
+    if (cinemaViewOrder === CinemaViewSortOrder.ModeratorsFirst) {
       filteredParticipants = filteredParticipants.sort((participant) => (participant.role === Role.Moderator ? -1 : 1));
     }
-    if (gridViewOrder === GridViewOrder.VideoFirst) {
+    if (cinemaViewOrder === CinemaViewSortOrder.VideoFirst) {
       const videoSubscribers = Array.from(room?.remoteParticipants.values() || []).filter(
         (participant) => participant.isCameraEnabled
       );
@@ -286,9 +286,10 @@ export const selectSortedParticipants = createSelector(
 
 export const selectSlicedParticipants = createSelector(
   [
-    (state: RootState, gridViewOrder: GridViewOrder) => selectSortedParticipants(state, gridViewOrder),
-    (_state: RootState, _gridViewOrder: GridViewOrder, page: number) => page,
-    (_state: RootState, _gridViewOrder: GridViewOrder, _page: number, maxParticipants: number) => maxParticipants,
+    (state: RootState, cinemaViewOrder: CinemaViewSortOrder) => selectSortedParticipants(state, cinemaViewOrder),
+    (_state: RootState, _cinemaViewOrder: CinemaViewSortOrder, page: number) => page,
+    (_state: RootState, _cinemaViewOrder: CinemaViewSortOrder, _page: number, maxParticipants: number) =>
+      maxParticipants,
   ],
   (participants, page, maxParticipants) => {
     const maxPage = Math.ceil(participants.length / maxParticipants);
@@ -321,7 +322,7 @@ export const selectParticipationKind: (state: RootState, id: ParticipantId) => P
     (participant) => participant?.participationKind
   );
 
-export const selectMapRemotePaticipanstDisplayName = createSelector(
+export const selectRemoteParticipantsDisplayNameRecord = createSelector(
   [(_state: RootState, remoteParticipants: RemoteParticipant[]) => remoteParticipants, selectAllOnlineParticipants],
   (remoteParticipants, onlineParticipants) => {
     return remoteParticipants.reduce(
