@@ -7,6 +7,7 @@ import { merge } from 'lodash';
 
 import type { RootState } from '../';
 import log from '../../logger';
+import type { VideoCodec } from '../../types/livekit';
 import { Seconds } from '../../utils/tsUtils';
 import { joinSuccess } from '../commonActions';
 
@@ -58,6 +59,7 @@ export interface Config {
   beta: Beta;
   livekit: {
     e2eeSalt?: string;
+    preferredVideoCodec?: VideoCodec.VP9 | VideoCodec.AV1;
   };
   oidcConfig?: {
     clientId?: string;
@@ -124,6 +126,7 @@ export type ConfigState = {
   };
   livekit?: {
     e2eeSalt?: string;
+    preferredVideoCodec?: VideoCodec.VP9 | VideoCodec.AV1;
   };
   changePassword: {
     active: boolean;
@@ -268,6 +271,7 @@ export const selectUserSurveyUrl = (state: RootState) => state.config.userSurvey
 export const selectIsBetaRelease = (state: RootState) => state.config.beta.isBeta;
 export const selectBetaBadgeUrl = (state: RootState) => state.config.beta.badgeUrl;
 export const selectLivekitE2EESalt = (state: RootState) => state.config.livekit?.e2eeSalt;
+export const selectLivekitPreferredVideoCodec = (state: RootState) => state.config.livekit?.preferredVideoCodec;
 export const selectErrorReportEmail = (state: RootState) => state.config.errorReportAddress;
 export const selectDisallowCustomDisplayName = (state: RootState) => state.config.disallowCustomDisplayName;
 export const selectLogLevel = (state: RootState) => state.config.logLevel;

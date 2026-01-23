@@ -95,6 +95,7 @@ window.config = {
   },
   livekit: {
     e2eeSalt: "${LIVEKIT_E2EE_SALT}",
+    preferredVideoCodec: "${LIVEKIT_PREFERRED_VIDEO_CODEC}",
   },
   libravatarDefaultImage: "${LIBRAVATAR_DEFAULT_IMAGE:-robohash}",
   disallowCustomDisplayName: ${DISALLOW_CUSTOM_DISPLAY_NAME:-false},
