@@ -97,8 +97,6 @@ describe('ParticipantVideo', () => {
 
   it('shows only the avatar when no streams are available', () => {
     const { store } = mockStore(1, {
-      video: false,
-      screen: false,
       store: { initialState: { participants: serializableParticipantsState } },
     });
     useRemoteParticipantMock.mockReturnValue({
@@ -115,8 +113,6 @@ describe('ParticipantVideo', () => {
 
   it('renders the camera feed when the participant only shares video', () => {
     const { store } = mockStore(1, {
-      video: true,
-      screen: false,
       store: { initialState: { participants: serializableParticipantsState } },
     });
     useRemoteParticipantMock.mockReturnValue({
@@ -139,8 +135,6 @@ describe('ParticipantVideo', () => {
   it('shows and hides the presenter tile when screen sharing based on mouse movement', async () => {
     vi.useFakeTimers();
     const { store } = mockStore(1, {
-      video: true,
-      screen: true,
       store: { initialState: { participants: serializableParticipantsState } },
     });
     useRemoteParticipantMock.mockReturnValue({
@@ -173,8 +167,6 @@ describe('ParticipantVideo', () => {
 
   it('dispatches presenter controls when toggling pin or position', () => {
     const { store, dispatchSpy } = mockStore(1, {
-      video: true,
-      screen: true,
       store: { initialState: { participants: serializableParticipantsState } },
     });
     useRemoteParticipantMock.mockReturnValue({
@@ -204,8 +196,6 @@ describe('ParticipantVideo', () => {
     const cameraPublication = { isSubscribed: true, source: Track.Source.Camera, setSubscribed: vi.fn() };
     const screenPublication = { isSubscribed: true, source: Track.Source.ScreenShare, setSubscribed: vi.fn() };
     const { store } = mockStore(1, {
-      video: true,
-      screen: false,
       store: { initialState: { livekit: { ...livekitInitialState, qualityCap: VideoSetting.Off } } },
     });
 

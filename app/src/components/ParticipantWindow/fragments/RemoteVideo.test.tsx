@@ -14,7 +14,7 @@ vi.mock('@livekit/components-react', () => ({
 }));
 
 describe('RemoteVideo', () => {
-  const { store } = mockStore(1, { video: true });
+  const { store } = mockStore(1);
   it('render without crashing', () => {
     renderWithProviders(<RemoteVideo descriptor={mockedVideoMediaDescriptor(0)} />, { store });
 

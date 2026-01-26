@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 
-export const getRandomNumber = (max = 1) => {
+export const getRandomInteger = (max = 1) => {
   return Math.round(Math.random() * max);
 };
 

@@ -25,7 +25,7 @@ import {
   ThemeBasePalette,
 } from '@opentalk/rest-api-rtk-query';
 import { ConfigureStoreOptions, Store } from '@reduxjs/toolkit';
-import { RenderOptions, RenderResult, render as rtlRender } from '@testing-library/react';
+import { RenderOptions, RenderResult, render as rtlRender, renderHook as rtlRenderHook } from '@testing-library/react';
 import i18n from 'i18next';
 import {
   Participant as LivekitParticipant,
@@ -34,7 +34,7 @@ import {
   Track,
 } from 'livekit-client';
 import { range } from 'lodash';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { initReactI18next } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
@@ -45,7 +45,7 @@ import { createOpenTalkTheme } from '../assets/themes/opentalk';
 import { defaultDarkModeColors, defaultLightModeColors } from '../assets/themes/opentalk/palette';
 import { SnackbarProvider } from '../commonComponents';
 import { MeetingFormValues } from '../components/MeetingForms/fragments/DashboardDateTimePicker';
-import { MediaDescriptor, SubscriberConfig } from '../modules/WebRTC';
+import { MediaDescriptor } from '../modules/WebRTC';
 import { AppDispatch, setupStore } from '../store';
 import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
 import { Poll } from '../store/slices/pollSlice';
@@ -61,10 +61,10 @@ import {
   ParticipationKind,
   PollId,
   Role,
-  VideoSetting,
   WaitingState,
 } from '../types';
 import { CommonFrequencies } from './rruleUtils';
+import { getRandomTimeInThePast } from './timeUtils';
 
 const automodState: AutomodState = {
   active: false,
@@ -157,6 +157,15 @@ export const renderWithProviders = (
 
   return rtlRender(<WrappedComponent>{component}</WrappedComponent>, options);
 };
+export const renderHookWithProviders = <Props, Result>(
+  render: (initialProps: Props) => Result,
+  { options, store }: Render
+) => {
+  const WrappedComponent = ({ children }: PropsWithChildren<object>) =>
+    store ? <Provider store={store}>{children}</Provider> : <>{children}</>;
+
+  return rtlRenderHook(render, { wrapper: WrappedComponent, ...options });
+};
 
 export const jwtVariables = {
   NAME: 'Jürgen Tests',
@@ -176,54 +185,34 @@ export const jwtVariables = {
 export const mockStore = (
   participantCount: number,
   options?: {
-    video?: boolean;
-    screen?: boolean;
     raiseHands?: number;
     automodActive?: boolean;
-    audio?: number;
+
     role?: Role[];
     participantKinds?: ParticipationKind[];
     store?: ConfigureStoreOptions['preloadedState'];
     e2eEncryption?: boolean;
+    randomizeJoinTime?: boolean;
   }
 ) => {
+  const now = new Date();
   const participantsIds = range(participantCount);
+  if (options?.participantKinds && participantCount < options.participantKinds.length) {
+    throw new Error('participant count cannot be smaller than participant kinds');
+  }
   const participants = participantsIds.map((index) => {
     const handIsUp = index < (options?.raiseHands || 0);
     const kind = options?.participantKinds?.[index];
     const role = options?.role?.[index];
+
+    const joinedAt = (options?.randomizeJoinTime ? getRandomTimeInThePast(now, { minutes: 60 }) : now).toISOString();
     const participant = {
       ...mockedParticipant(index, kind, role),
       handIsUp,
+      joinedAt,
     };
     return participant;
   });
-
-  const subscribers: Array<SubscriberConfig> = [];
-  if (options?.video) {
-    participants.forEach(({ id }, index) => {
-      const audio = index < (options?.audio || 0);
-      subscribers.push({
-        participantId: id,
-        mediaType: Track.Source.Camera,
-        video: true,
-        audio,
-        videoSettings: VideoSetting.High,
-      });
-    });
-  }
-
-  if (options?.screen) {
-    participants.forEach(({ id }) =>
-      subscribers.push({
-        participantId: id,
-        mediaType: Track.Source.ScreenShare,
-        video: true,
-        audio: false,
-        videoSettings: VideoSetting.High,
-      })
-    );
-  }
 
   const initialState = {
     participants: {
