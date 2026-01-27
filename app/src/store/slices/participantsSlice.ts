@@ -119,7 +119,6 @@ export const participantsSlice = createSlice({
         connections: payload.connectionIds,
         displayName: payload.displayName,
         avatarUrl: payload.avatarUrl,
-        groups: [],
         handIsUp: false,
         joinedAt: payload.joinedAt,
         leftAt: null,
@@ -159,7 +158,7 @@ export const participantsSlice = createSlice({
       state,
       {
         payload: { id, displayName, handIsUp, lastActive, joinedAt, leftAt, handUpdatedAt, role, meetingNotesAccess },
-      }: PayloadAction<Omit<Participant, 'breakoutRoomId' | 'groups'>>
+      }: PayloadAction<Omit<Participant, 'breakoutRoomId'>>
     ) => {
       participantAdapter.updateOne(state, {
         id,

@@ -260,7 +260,6 @@ export const mockedParticipant = (
   joinedAt: '2022-03-23T12:32:30Z',
   leftAt: null,
   breakoutRoomId: undefined,
-  groups: [],
   participationKind: kind,
   lastActive: '2022-03-23T12:32:30Z',
   waitingState: WaitingState.Joined,

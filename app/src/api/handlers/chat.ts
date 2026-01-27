@@ -9,7 +9,6 @@ import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import {
   clearGlobalChat,
-  groupChatHistoryChunkReceived,
   privateChatHistoryChunkReceived,
   received,
   roomChatHistoryChunkReceived,
@@ -17,7 +16,7 @@ import {
   setChatSettings,
   setGlobalChatLastSeenTimestamp,
 } from '../../store/slices/chatSlice';
-import type { BreakoutRoomId, ChatMessage, GroupId, ParticipantId, Timestamp } from '../../types';
+import type { BreakoutRoomId, ChatMessage, ParticipantId, Timestamp } from '../../types';
 import { ChatScope } from '../../types';
 import { chat } from '../types/incoming';
 
@@ -48,16 +47,7 @@ export const handleChatMessage = (
         timestamp,
       };
 
-      if (scope === ChatScope.Group) {
-        chatMessage = {
-          ...baseMessage,
-          scope,
-          target: target as GroupId,
-        };
-        if (data.source !== userId) {
-          notifications.info(i18next.t('chat-new-group-message'));
-        }
-      } else if (scope === ChatScope.Private) {
+      if (scope === ChatScope.Private) {
         chatMessage = {
           ...baseMessage,
           scope,
@@ -92,9 +82,6 @@ export const handleChatMessage = (
       break;
     case 'room_chat_history_chunk':
       dispatch(roomChatHistoryChunkReceived(data));
-      break;
-    case 'group_chat_history_chunk':
-      dispatch(groupChatHistoryChunkReceived(data));
       break;
     case 'private_chat_history_chunk':
       dispatch(privateChatHistoryChunkReceived(data));

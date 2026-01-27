@@ -46,8 +46,7 @@ const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
   const formattedTime = useDateFormat(date, 'time');
   const getDisplayName = () => (isEmpty(participant) ? chat.id : participant?.displayName);
   const lastSeenTimestampCount = useAppSelector((state) => selectUnreadPersonalMessageCountByTarget(state, chat.id));
-  const hasUnreadMessage =
-    (chat.scope === ChatScope.Private || chat.scope === ChatScope.Group) && lastSeenTimestampCount > 0;
+  const hasUnreadMessage = chat.scope === ChatScope.Private && lastSeenTimestampCount > 0;
   const fontWeight = hasUnreadMessage ? 'bold' : 'normal';
 
   const renderPrimaryText = () => (

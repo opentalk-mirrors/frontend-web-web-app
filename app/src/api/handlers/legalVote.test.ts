@@ -91,7 +91,6 @@ const createParticipant = (id: ParticipantId, displayName: string): Participant 
   handIsUp: false,
   joinedAt: '2024-01-01T10:00:00Z' as Timestamp,
   leftAt: null,
-  groups: [],
   participationKind: ParticipationKind.Registered,
   lastActive: '2024-01-01T10:00:00Z',
   waitingState: WaitingState.Joined,

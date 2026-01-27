@@ -26,9 +26,7 @@ import { selectIsModerator } from '../../store/slices/userSlice';
 import { setWhiteboardAvailable } from '../../store/slices/whiteboardSlice';
 import {
   AutomodSelectionStrategy,
-  ChatPeerState,
   CorePeerState,
-  GroupId,
   JoinSuccessRoomserver,
   MeetingNotesAccess,
   Participant,
@@ -54,7 +52,6 @@ const mapRoomserverParticipantToUi = (
   return {
     id: participant.id,
     connections: participant.connections.map((conn) => conn.connectionId),
-    groups: [],
     displayName: participant.moduleData.core.displayName,
     avatarUrl: setLibravatarOptions(participant.moduleData.core.avatarUrl, {
       defaultImage: selectLibravatarDefaultImage(state),
@@ -80,7 +77,6 @@ const mapJoinedParticipantToUi = (
 ): Participant => ({
   id: participant.participantId,
   connections: [participant.connectionId],
-  groups: [],
   displayName: participant.peerData.core.displayName,
   avatarUrl: setLibravatarOptions(participant.peerData.core.avatarUrl, {
     defaultImage: selectLibravatarDefaultImage(state),
@@ -133,7 +129,6 @@ export const handleRoomServerCoreMessage = async (
         .filter((participant) => participant.moduleData.timer && participant.moduleData.timer.readyStatus === true)
         .map((participant) => participant.id as ParticipantId);
 
-      const groups = moduleData.chat.groupsHistory.map((group) => group.name as GroupId);
       const chatEnabled = moduleData.chat.enabled;
       if (!chatEnabled) {
         dispatch(setChatSettings({ id: data.id, timestamp, enabled: chatEnabled }));
@@ -161,15 +156,10 @@ export const handleRoomServerCoreMessage = async (
           isRoomOwner: data.isRoomOwner,
         };
 
-        const chatPeerState: ChatPeerState = {
-          ...moduleData.chat,
-          groups: groups,
-        };
-
         participants.push({
           id: data.id,
           connections: data.connections,
-          moduleData: { ...moduleData, core: coreModuleData, chat: chatPeerState },
+          moduleData: { ...moduleData, core: coreModuleData },
         });
       }
 
@@ -193,7 +183,6 @@ export const handleRoomServerCoreMessage = async (
             return {
               id: waitingParticipant.participantId,
               connections: waitingParticipant.connections,
-              groups: [],
               displayName: waitingParticipant.displayName,
               avatarUrl: setLibravatarOptions(waitingParticipant.avatarUrl, {
                 defaultImage: selectLibravatarDefaultImage(state),
@@ -233,7 +222,6 @@ export const handleRoomServerCoreMessage = async (
           avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
           role: data.role,
           chat: moduleData.chat,
-          groups,
           automod: moduleData.automod,
           breakout: moduleData.breakout,
           polls: moduleData.polls,

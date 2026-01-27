@@ -195,8 +195,6 @@ presenter-role-revoked = You have revoked the presenter role from { $displayName
 
 sort-label = Order
 sort-by = Sort by
-sort-groups-on = Group filter on
-sort-groups-off = Group filter off
 sort-name-asc = Name (A - Z)
 sort-name-dsc = Name (Z - A)
 sort-first-join = First Join Time

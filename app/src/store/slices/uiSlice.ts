@@ -77,7 +77,6 @@ export type UIState = {
   activeTab: ModerationTabKey;
   chatAutosavedInputs: {
     [ChatScope.Global]: string;
-    [ChatScope.Group]: Record<TargetId, string>;
     [ChatScope.Private]: Record<TargetId, string>;
     [ChatScope.Breakout]: Record<TargetId, string>;
   };
@@ -115,7 +114,6 @@ const initialState: UIState = {
   activeTab: ModerationTabKey.Home,
   chatAutosavedInputs: {
     [ChatScope.Global]: '',
-    [ChatScope.Group]: {},
     [ChatScope.Private]: {},
     [ChatScope.Breakout]: {},
   },

@@ -89,7 +89,6 @@ const buildBaseState = () => {
     user: {
       uuid: userParticipant.id,
       displayName: userParticipant.displayName,
-      groups: [],
       role: Role.User,
       meetingNotesAccess: MeetingNotesAccess.None,
       isRoomOwner: false,

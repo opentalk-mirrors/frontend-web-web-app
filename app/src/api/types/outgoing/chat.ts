@@ -5,7 +5,6 @@ import type { RootState } from '../../../store';
 import {
   BreakoutRoomId,
   ChatScope,
-  GroupId,
   Namespaced,
   ParticipantId,
   TargetId,
@@ -41,11 +40,6 @@ type LastSeenPrivateTimestampAddedPayload = {
   target: ParticipantId;
 };
 
-type LastSeenGroupTimestampAddedPayload = {
-  scope: ChatScope.Group;
-  target: GroupId;
-};
-
 type LastSeenBreakoutTimestampAddedPayload = {
   scope: ChatScope.Breakout;
   target: BreakoutRoomId;
@@ -56,7 +50,6 @@ export type LastSeenTimestampAddedPayload = {
 } & (
   | LastSeenGlobalTimestampAddedPayload
   | LastSeenPrivateTimestampAddedPayload
-  | LastSeenGroupTimestampAddedPayload
   | LastSeenBreakoutTimestampAddedPayload
 );
 

@@ -16,7 +16,6 @@ import { useAppDispatch, useAppSelector } from '../../../../hooks';
 import useTabs from '../../../../hooks/useTabs';
 import { selectActivePollsAndVotingCount, selectPollsAndVotingCount } from '../../../../store/selectors';
 import {
-  selectHasAnyUnreadGroupChatMessage,
   selectHasAnyUnreadPrivateChatMessage,
   selectUnreadGlobalMessageCount,
 } from '../../../../store/slices/chatSlice';
@@ -58,12 +57,10 @@ const Drawer = () => {
   const tabs = useTabs();
   const unreadGlobalMessageCount = useAppSelector(selectUnreadGlobalMessageCount);
   const hasAnyUnreadPrivateChatMessage = useAppSelector(selectHasAnyUnreadPrivateChatMessage);
-  const hasAnyUnreadGroupChatMessage = useAppSelector(selectHasAnyUnreadGroupChatMessage);
   const isModerator = useAppSelector(selectIsModerator);
   const participantsWaitingCount = useAppSelector(selectParticipantsWaitingCount);
   const isWaitingRoomEnabled = useAppSelector(selectWaitingRoomState);
-  const hasUnreadMessages =
-    unreadGlobalMessageCount > 0 || hasAnyUnreadPrivateChatMessage || hasAnyUnreadGroupChatMessage;
+  const hasUnreadMessages = unreadGlobalMessageCount > 0 || hasAnyUnreadPrivateChatMessage;
   const voteAndPollCount = useAppSelector(selectPollsAndVotingCount);
   const activeVoteAndPollCount = useAppSelector(selectActivePollsAndVotingCount);
   const haveSeenMobilePollsAndVotes = useAppSelector(selectHaveSeenMobilePollsAndVotes);
@@ -148,7 +145,7 @@ const Drawer = () => {
             disabled={tab.disabled}
             active={activeTab === tab.key}
             handleClick={() => handleSetActiveTab(tab.key)}
-            showIndicator={showIndicator}
+            showIndicator={Boolean(showIndicator)}
           >
             {tab.component}
           </DrawerTab>

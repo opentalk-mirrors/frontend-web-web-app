@@ -4,10 +4,9 @@
 import {
   setGlobalChatLastSeenTimestamp,
   setLastSeenTimestampForBreakoutChat,
-  setLastSeenTimestampForGroupChat,
   setLastSeenTimestampForPrivateChat,
 } from '../../../store/slices/chatSlice';
-import { BreakoutRoomId, ChatScope, GroupId, ParticipantId } from '../../../types';
+import { ChatScope, ParticipantId } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ChatList from './ChatList';
 
@@ -80,45 +79,7 @@ describe('updateLastSeenTimestamp', () => {
       })
     );
   });
-  it('updates the last seen timestamp for a group chat', () => {
-    const targetId = 'group-123' as GroupId;
-    const { store, dispatchSpy } = configureStore({
-      initialState: {
-        room: { isRoomDeleted: false },
-        chat: {
-          scope: {
-            group: {
-              [targetId]: {
-                messages: {
-                  ids: [],
-                  entities: {},
-                },
-                nextIndex: null,
-                lastSeenTimestamp: null,
-              },
-            },
-          },
-        },
-        ui: {
-          chatConversationState: {
-            scope: ChatScope.Group,
-            targetId,
-          },
-          chatSearchValue: '',
-        },
-      },
-    });
-
-    renderWithProviders(<ChatList />, { store });
-    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
-      setLastSeenTimestampForGroupChat({
-        timestamp: expect.any(String),
-        groupId: targetId,
-      })
-    );
-  });
   it('updates the last seen timestamp for a breakout chat', () => {
-    const targetId = 1 as BreakoutRoomId;
     const { store, dispatchSpy } = configureStore({
       initialState: {
         room: { isRoomDeleted: false },
@@ -137,7 +98,7 @@ describe('updateLastSeenTimestamp', () => {
       },
     });
 
-    renderWithProviders(<ChatList scope={ChatScope.Breakout} targetId={targetId} />, { store });
+    renderWithProviders(<ChatList />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
       setLastSeenTimestampForBreakoutChat({
         timestamp: expect.any(String),

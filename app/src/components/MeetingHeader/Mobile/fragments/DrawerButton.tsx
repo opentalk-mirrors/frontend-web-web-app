@@ -9,7 +9,6 @@ import { IconButton as DefaultIconButton } from '../../../../commonComponents';
 import { useAppSelector } from '../../../../hooks';
 import { selectPollsAndVotingCount } from '../../../../store/selectors';
 import {
-  selectHasAnyUnreadGroupChatMessage,
   selectHasAnyUnreadPrivateChatMessage,
   selectUnreadGlobalMessageCount,
 } from '../../../../store/slices/chatSlice';
@@ -50,14 +49,12 @@ type DrawerButtonProps = {
 export const DrawerButton = ({ onClick, expanded, controls }: DrawerButtonProps) => {
   const isModerator = useAppSelector(selectIsModerator);
   const unreadGlobalMessageCount = useAppSelector(selectUnreadGlobalMessageCount);
-  const hasAnyUnreadGroupChatMessage = useAppSelector(selectHasAnyUnreadGroupChatMessage);
   const hasAnyUnreadPrivateChatMessage = useAppSelector(selectHasAnyUnreadPrivateChatMessage);
   const isCurrentWhiteboardHighlighted = useAppSelector(selectIsCurrentWhiteboardHighlighted);
   const isSharedFolderAvailableIndicatorVisible = useAppSelector(selectIsSharedFolderAvailableIndicatorVisible);
   const participantsWaitingCount = useAppSelector(selectParticipantsWaitingCount);
   const hasParticipantsWaiting = participantsWaitingCount > 0;
-  const hasUnreadMessages =
-    unreadGlobalMessageCount > 0 || hasAnyUnreadGroupChatMessage || hasAnyUnreadPrivateChatMessage;
+  const hasUnreadMessages = unreadGlobalMessageCount > 0 || hasAnyUnreadPrivateChatMessage;
   const voteAndPollCount = useAppSelector(selectPollsAndVotingCount);
   const haveSeenMobilePollsAndVotes = useAppSelector(selectHaveSeenMobilePollsAndVotes);
   const showWaitingRoomIndicator = isModerator && hasParticipantsWaiting;

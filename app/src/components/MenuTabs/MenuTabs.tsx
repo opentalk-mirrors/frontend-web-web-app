@@ -10,11 +10,7 @@ import { getContrastText } from '../../assets/themes/opentalk/colorUtils';
 import { VisuallyHiddenTitle } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectMenuTabPeopleCount } from '../../store/selectors';
-import {
-  selectHasAnyUnreadGroupChatMessage,
-  selectHasAnyUnreadPrivateChatMessage,
-  selectHasUnreadGlobalChatMessages,
-} from '../../store/slices/chatSlice';
+import { selectHasAnyUnreadPrivateChatMessage, selectHasUnreadGlobalChatMessages } from '../../store/slices/chatSlice';
 import { selectCurrentMenuTab, setCurrentMenuTab } from '../../store/slices/uiSlice';
 import Chat from '../Chat';
 import ChatOverview from '../ChatOverview';
@@ -84,7 +80,6 @@ const Tab = styled(MuiTab)(({ theme }) => ({
 const MenuTabs = () => {
   const { t } = useTranslation();
   const hasUnreadGlobalChatMessages = useAppSelector(selectHasUnreadGlobalChatMessages);
-  const hasUnreadGroupChatMessages = useAppSelector(selectHasAnyUnreadGroupChatMessage);
   const hasUnreadPrivateChatMessages = useAppSelector(selectHasAnyUnreadPrivateChatMessage);
   const totalParticipants = useAppSelector(selectMenuTabPeopleCount);
   const currentMenuTab = useAppSelector(selectCurrentMenuTab);
@@ -125,11 +120,7 @@ const MenuTabs = () => {
         <Tab
           id={`tab-${MenuTab.Messages}`}
           label={t('menutabs-messages')}
-          icon={
-            hasUnreadPrivateChatMessages || hasUnreadGroupChatMessages ? (
-              <MessagesBadge variant="dot" role="presentation" />
-            ) : undefined
-          }
+          icon={hasUnreadPrivateChatMessages ? <MessagesBadge variant="dot" role="presentation" /> : undefined}
           iconPosition="end"
           value={MenuTab.Messages}
           aria-controls={`tabpanel-${MenuTab.Messages}`}

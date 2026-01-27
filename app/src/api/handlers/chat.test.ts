@@ -6,12 +6,11 @@ import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import type { AppDispatch, RootState } from '../../store';
 import {
   clearGlobalChat,
-  received,
   setChatSearchResults,
   setChatSettings,
   setGlobalChatLastSeenTimestamp,
 } from '../../store/slices/chatSlice';
-import type { GroupId, ParticipantId, Timestamp } from '../../types';
+import type { ParticipantId, Timestamp } from '../../types';
 import { ChatScope } from '../../types';
 import type { ChatMessage } from '../types/incoming/chat';
 import { handleChatMessage } from './chat';
@@ -57,38 +56,6 @@ describe('handleChatMessage', () => {
 
     expect(notifications.info).toHaveBeenCalledExactlyOnceWith('chat-enabled-message');
     expect(dispatch).toHaveBeenCalledWith(setChatSettings({ id: message.issuedBy, timestamp, enabled: true }));
-  });
-
-  it('notifies on new group messages and updates last seen when chat tab is active', () => {
-    const dispatch = vi.fn();
-    const state = createState();
-    const timestamp = '2024-01-01T12:00:00Z' as Timestamp;
-    const message: ChatMessage = {
-      message: 'message_sent',
-      id: 'message-1',
-      source: 'user-2' as ParticipantId,
-      content: 'Hello',
-      scope: ChatScope.Group,
-      target: 'group-1' as GroupId,
-    };
-
-    handleChatMessage(dispatch as unknown as AppDispatch, message, timestamp, state);
-
-    expect(notifications.info).toHaveBeenCalledExactlyOnceWith('chat-new-group-message');
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: received.type,
-        payload: expect.objectContaining({
-          userId: 'user-1',
-          chatMessage: expect.objectContaining({
-            scope: ChatScope.Group,
-            target: message.target,
-            timestamp,
-          }),
-        }),
-      })
-    );
-    expect(dispatch).toHaveBeenCalledWith(setGlobalChatLastSeenTimestamp({ value: timestamp }));
   });
 
   it('notifies on private messages to the current user', () => {

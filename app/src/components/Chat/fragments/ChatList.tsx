@@ -16,7 +16,6 @@ import {
   selectIsLoadingMoreChunks,
   setGlobalChatLastSeenTimestamp,
   setIsLoadingMoreChunks,
-  setLastSeenTimestampForGroupChat,
   setLastSeenTimestampForPrivateChat,
   setLastSeenTimestampForBreakoutChat,
 } from '../../../store/slices/chatSlice';
@@ -28,7 +27,7 @@ import {
   selectChatSearchValue,
 } from '../../../store/slices/uiSlice';
 import { selectOurUuid } from '../../../store/slices/userSlice';
-import { ChatMessage as ChatMessageType, ChatScope, GroupId, ParticipantId, Timestamp } from '../../../types';
+import { ChatMessage as ChatMessageType, ChatScope, ParticipantId, Timestamp } from '../../../types';
 import ChatMessage from './ChatMessage';
 import NoSearchResult from './NoSearchResult';
 
@@ -111,13 +110,6 @@ const ChatList = ({ onReset }: ChatListProps) => {
       dispatch(
         setLastSeenTimestampForPrivateChat({
           participantId: targetId as ParticipantId,
-          timestamp,
-        })
-      );
-    } else if (scope === ChatScope.Group && targetId) {
-      dispatch(
-        setLastSeenTimestampForGroupChat({
-          groupId: targetId as GroupId,
           timestamp,
         })
       );

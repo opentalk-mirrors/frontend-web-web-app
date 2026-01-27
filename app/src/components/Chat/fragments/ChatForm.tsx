@@ -255,10 +255,10 @@ const ChatForm = ({ autoFocusMessageInput }: ChatFormProps) => {
     onSubmit: (values, { resetForm, setErrors, setTouched }) => {
       if (scope === ChatScope.Global) {
         dispatch(sendChatMessage.action({ scope, content: values.message }));
-      } else if (targetId !== undefined) {
+      } else {
         dispatch(
           sendChatMessage.action({
-            scope,
+            scope: scope,
             content: values.message,
             target: targetId,
           })

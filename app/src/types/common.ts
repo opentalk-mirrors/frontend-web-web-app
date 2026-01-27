@@ -11,8 +11,7 @@ import type { TimerIsReady } from './timer';
 export type ParticipantId = string & { readonly __tag: unique symbol };
 export type ConnectionId = string & { readonly __tag: unique symbol };
 export type ConnectionIdentifier = string & { readonly __tag: unique symbol };
-export type GroupId = string & { readonly __tag: unique symbol };
-export type TargetId = GroupId | ParticipantId | BreakoutRoomId;
+export type TargetId = ParticipantId | BreakoutRoomId;
 
 export type Timestamp = string & { readonly __tag: unique symbol };
 

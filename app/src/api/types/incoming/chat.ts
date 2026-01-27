@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ChatBase, ChatChunk, ChatScope, GroupId, NamespacedIncoming, ParticipantId, Timestamp } from '../../../types';
+import { ChatBase, ChatChunk, ChatScope, NamespacedIncoming, ParticipantId, Timestamp } from '../../../types';
 
 interface MessageSent extends ChatBase {
   message: 'message_sent';
@@ -31,13 +31,6 @@ export interface RoomChatHistoryChunk {
   history: ChatChunk;
 }
 
-export interface GroupChatHistoryChunk {
-  message: 'group_chat_history_chunk';
-  id: GroupId;
-  name: string;
-  history: ChatChunk;
-}
-
 export interface PrivateChatHistoryChunk {
   message: 'private_chat_history_chunk';
   correspondent: ParticipantId;
@@ -56,7 +49,6 @@ export type ChatMessage =
   | ChatDisabled
   | ClearGlobalChat
   | RoomChatHistoryChunk
-  | GroupChatHistoryChunk
   | PrivateChatHistoryChunk
   | SearchResults
   | SetLastSeenTimestamp;

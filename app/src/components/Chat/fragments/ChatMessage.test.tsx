@@ -97,7 +97,6 @@ describe('ChatMessage', () => {
         uuid: participant.id,
         displayName: 'Current User',
         avatarUrl: 'avatar.png',
-        groups: [],
         role: Role.User,
         meetingNotesAccess: MeetingNotesAccess.None,
         isRoomOwner: false,
@@ -126,7 +125,6 @@ describe('ChatMessage', () => {
       user: {
         uuid: 'current-user' as ParticipantId,
         displayName: 'Current User',
-        groups: [],
         role: Role.User,
         meetingNotesAccess: MeetingNotesAccess.None,
         isRoomOwner: false,

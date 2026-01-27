@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { setLastSeenTimestamp } from '../../api/types/outgoing/chat';
 import { lastSeenTimestampAdded, received } from '../../store/slices/chatSlice';
 import { setChatSearchValue } from '../../store/slices/uiSlice';
-import { ChatMessage, ChatScope, GroupId, ParticipantId, Timestamp } from '../../types';
+import { ChatMessage, ChatScope, ParticipantId, Timestamp } from '../../types';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import Chat from './Chat';
 
@@ -76,7 +76,7 @@ vi.mock('./fragments/ChatLiveRegion', () => ({
 
 function createChatMessage(scope?: ChatScope.Global): ChatMessage;
 function createChatMessage(scope: ChatScope.Private, target: ParticipantId): ChatMessage;
-function createChatMessage(scope: ChatScope = ChatScope.Global, target?: ParticipantId | GroupId): ChatMessage {
+function createChatMessage(scope: ChatScope = ChatScope.Global, target?: ParticipantId): ChatMessage {
   const baseMessage = {
     id: 'chat-message-id',
     timestamp: '2024-05-05T10:00:00.000Z' as Timestamp,
@@ -86,10 +86,6 @@ function createChatMessage(scope: ChatScope = ChatScope.Global, target?: Partici
 
   if (scope === ChatScope.Private && target) {
     return { ...baseMessage, scope, target: target as ParticipantId };
-  }
-
-  if (scope === ChatScope.Group && target) {
-    return { ...baseMessage, scope, target: target as GroupId };
   }
 
   return { ...baseMessage, scope: ChatScope.Global };

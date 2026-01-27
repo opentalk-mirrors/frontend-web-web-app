@@ -2,29 +2,22 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { BreakoutRoomId } from './breakout';
-import { GroupId, ParticipantId, TargetId, Timestamp } from './common';
+import { ParticipantId, TargetId, Timestamp } from './common';
 
 export enum ChatScope {
   Global = 'global',
   Private = 'private',
-  Group = 'group',
   Breakout = 'breakout',
 }
 
 type GlobalChatMessage = {
   scope: ChatScope.Global;
   target?: never;
-  group?: never;
 };
 
 type PrivateChatMessage = {
   scope: ChatScope.Private;
   target: ParticipantId;
-};
-
-type GroupChatMessage = {
-  scope: ChatScope.Group;
-  target: GroupId;
 };
 
 type BreakoutChatMessage = {
@@ -37,7 +30,7 @@ export type ChatMessage = {
   timestamp: string;
   source: ParticipantId;
   content: string;
-} & (GlobalChatMessage | PrivateChatMessage | GroupChatMessage | BreakoutChatMessage);
+} & (GlobalChatMessage | PrivateChatMessage | BreakoutChatMessage);
 
 export interface ChatMessageBase {
   id: string;
@@ -60,18 +53,11 @@ export interface InitialChat {
   enabled: boolean;
   globalHistory: ChatChunk;
   breakoutRoomHistory?: ChatChunk;
-  groupsHistory: Array<GroupsHistory>;
   privateHistory: Array<PrivateHistory>;
   lastSeenTimestampGlobal?: Timestamp;
   lastSeenTimestampBreakout?: Timestamp;
-  lastSeenTimestampsGroup: Record<string, string>;
   lastSeenTimestampsPrivate: Record<string, string>;
 }
-
-export type GroupsHistory = {
-  name: GroupId;
-  history: ChatChunk;
-};
 
 export interface PrivateHistory {
   correspondent: ParticipantId;

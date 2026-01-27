@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { sendChatMessage } from '../../../api/types/outgoing/chat';
 import { setChatSettings } from '../../../store/slices/chatSlice';
 import { saveDefaultChatMessage } from '../../../store/slices/uiSlice';
-import { ChatScope, GroupId, ParticipantId, Timestamp } from '../../../types';
+import { ChatScope, ParticipantId, Timestamp } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ChatForm from './ChatForm';
 
@@ -116,40 +116,6 @@ describe('ChatForm', () => {
     expect(input).toHaveValue('Hello😀');
     expect(dispatchSpy).toHaveBeenCalledWith(
       saveDefaultChatMessage({ scope: ChatScope.Global, targetId: undefined, input: 'Hello😀' })
-    );
-  });
-
-  it('stores the current draft when the input loses focus', async () => {
-    const user = userEvent.setup();
-    const targetId = 'group-123' as GroupId;
-    const { store, dispatchSpy } = configureStore({
-      initialState: {
-        ui: {
-          chatConversationState: {
-            scope: ChatScope.Group,
-            targetId,
-          },
-          chatAutosavedInputs: {
-            [ChatScope.Group]: {
-              [targetId]: '',
-            },
-          },
-        },
-      },
-    });
-
-    renderWithProviders(<ChatForm />, {
-      store,
-      provider: { mui: true },
-    });
-
-    const input = screen.getByLabelText('chat-input-label');
-    await user.type(input, 'Draft message');
-
-    fireEvent.blur(input);
-
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      saveDefaultChatMessage({ scope: ChatScope.Group, targetId: 'group-123' as GroupId, input: 'Draft message' })
     );
   });
 

@@ -106,7 +106,6 @@ const createParticipant = (id: string, displayName: string): Participant => ({
   joinedAt: '2024-01-01T00:00:00.000Z',
   leftAt: null,
   handUpdatedAt: undefined,
-  groups: [],
   participationKind: ParticipationKind.Registered,
   lastActive: '2024-01-01T00:00:00.000Z',
   waitingState: WaitingState.Joined,

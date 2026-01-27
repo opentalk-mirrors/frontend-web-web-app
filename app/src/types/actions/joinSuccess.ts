@@ -15,7 +15,6 @@ import type {
   BackendParticipant,
   ForceMute,
   ForceMuteType,
-  GroupId,
   ParticipantId,
   ParticipantMediaState,
   Role,
@@ -37,7 +36,6 @@ export interface JoinSuccessInternalState {
   role: Role;
   avatarUrl?: string;
   chat: InitialChat;
-  groups: GroupId[];
   automod?: InitialAutomod;
   breakout?: InitialBreakout;
   polls?: InitialPoll;
@@ -166,7 +164,6 @@ export interface JoinedWaitingRoomParticipant {
 
 export interface PeerModuleData {
   breakout?: BreakoutPeerState;
-  chat?: ChatPeerState;
   core: CorePeerState;
   meetingNotes?: MeetingNotesPeerState;
   timer?: TimerPeerState;
@@ -191,10 +188,6 @@ export interface CorePeerState {
 
 export interface BreakoutPeerState {
   room: RoomKindMain | RoomKindBreakout;
-}
-
-export interface ChatPeerState {
-  groups: string[];
 }
 
 export interface MeetingNotesPeerState {

@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectOtherOnlineParticipantsInBreakoutRoom } from '../../../store/selectors';
 import { chatConversationStateSet } from '../../../store/slices/uiSlice';
-import { selectGroups } from '../../../store/slices/userSlice';
 import { ChatScope, TargetId } from '../../../types';
 
 interface INewMessagePopoverProps<T> {
@@ -41,7 +40,6 @@ const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
 function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopoverProps<T>) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const groups = useAppSelector(selectGroups);
   const participants = useAppSelector(selectOtherOnlineParticipantsInBreakoutRoom);
 
   const handleClose = () => {
@@ -57,20 +55,6 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopove
     );
     setAnchorEl(undefined);
   };
-
-  const renderGroupItems = () =>
-    groups.length > 0
-      ? [
-          <MenuItem disabled={true} key="chat-group-scope">
-            <ListItemText>{t('chat-group-scope')}</ListItemText>
-          </MenuItem>,
-          groups.map((group) => (
-            <MenuItem key={group} onClick={() => handleChatSelected(group, ChatScope.Group)}>
-              <ListItemText>{group}</ListItemText>
-            </MenuItem>
-          )),
-        ]
-      : null;
 
   const renderParticipantItems = () =>
     participants.length > 0
@@ -101,7 +85,6 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopove
       }}
       keepMounted
     >
-      {renderGroupItems()}
       {renderParticipantItems()}
     </Menu>
   );

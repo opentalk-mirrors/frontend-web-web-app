@@ -195,8 +195,6 @@ presenter-role-revoked = Sie haben { $displayName } die Rolle des Präsentators 
 
 sort-label = Reihenfolge
 sort-by = Sortierung nach
-sort-groups-on = Gruppenfilter an
-sort-groups-off = Gruppenfilter aus
 sort-name-asc = Name (A - Z)
 sort-name-dsc = Name (Z - A)
 sort-first-join = Zuerst beigetreten
