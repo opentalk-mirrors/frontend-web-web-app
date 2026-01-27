@@ -5,19 +5,21 @@ import { MenuItem as MuiMenuItem, ListItemIcon, styled } from '@mui/material';
 import type { MenuItemProps } from '@mui/material';
 import { forwardRef } from 'react';
 
-import { CheckIcon } from '../../../assets/icons';
-
 type LayoutSelectionMenuItemProps = MenuItemProps & {
-  showCheckIcon?: boolean;
+  isSelected?: boolean;
   content: string;
   icon?: React.JSX.Element;
   hasIndicator?: boolean;
 };
 
-const MenuItem = styled(MuiMenuItem, { shouldForwardProp: (prop) => prop !== 'hasIndicator' })<{
+const MenuItem = styled(MuiMenuItem, {
+  shouldForwardProp: (prop) => prop !== 'hasIndicator',
+})<{
   hasIndicator?: boolean;
 }>(({ theme, hasIndicator }) => ({
+  width: '16rem',
   padding: theme.spacing(1),
+  paddingLeft: theme.spacing(2),
   '& .MuiListItemIcon-root .MuiSvgIcon-root': {
     position: 'relative',
     fontSize: theme.typography.pxToRem(16),
@@ -35,16 +37,16 @@ const MenuItem = styled(MuiMenuItem, { shouldForwardProp: (prop) => prop !== 'ha
 }));
 
 const LayoutSelectionMenuItem = forwardRef<HTMLLIElement, LayoutSelectionMenuItemProps>(
-  ({ showCheckIcon = false, hasIndicator = false, onClick, icon, content, ...props }, ref) => (
+  ({ isSelected = false, hasIndicator = false, onClick, icon, content, ...props }, ref) => (
     <MenuItem
       ref={ref}
       onClick={onClick}
       hasIndicator={hasIndicator}
       role="menuitemradio"
-      aria-checked={showCheckIcon}
+      aria-checked={isSelected}
+      selected={isSelected}
       {...props}
     >
-      <ListItemIcon>{showCheckIcon && <CheckIcon data-testid="CheckIcon" />}</ListItemIcon>
       <ListItemIcon aria-hidden={true}>{icon}</ListItemIcon>
       {content}
     </MenuItem>
