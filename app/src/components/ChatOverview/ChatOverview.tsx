@@ -7,8 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { BackIcon, NewMessageIcon, NoMessagesIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { selectAllPersonalChats } from '../../store/selectors';
-import { selectAllOnlineParticipants } from '../../store/slices/participantsSlice';
+import { selectOtherOnlineParticipantsInBreakoutRoom, selectAllPersonalChats } from '../../store/selectors';
 import { chatConversationStateSet, selectChatConversationState } from '../../store/slices/uiSlice';
 import { ChatScope, TargetId } from '../../types';
 import Chat from '../Chat';
@@ -52,7 +51,7 @@ const ChatOverview = () => {
   const chats = useAppSelector(selectAllPersonalChats);
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement>();
-  const participants = useAppSelector(selectAllOnlineParticipants);
+  const participants = useAppSelector(selectOtherOnlineParticipantsInBreakoutRoom);
 
   const setSelectedChat = (scope: ChatScope, targetId: TargetId) => {
     dispatch(

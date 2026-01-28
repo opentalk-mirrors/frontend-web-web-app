@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useAppSelector } from '../../../hooks';
-import { selectAllParticipantsSortedAndFiltered } from '../../../store/selectors';
+import { selectPeopleTabParticipants } from '../../../store/selectors';
 import ParticipantSimpleList from './ParticipantSimpleList';
 
 const ParticipantNoGroups = () => {
-  const participants = useAppSelector(selectAllParticipantsSortedAndFiltered);
+  const participants = useAppSelector(selectPeopleTabParticipants);
 
   return <ParticipantSimpleList participants={participants} />;
 };

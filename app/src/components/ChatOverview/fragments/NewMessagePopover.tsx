@@ -6,7 +6,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
+import { selectOtherOnlineParticipantsInBreakoutRoom } from '../../../store/selectors';
 import { chatConversationStateSet } from '../../../store/slices/uiSlice';
 import { selectGroups } from '../../../store/slices/userSlice';
 import { ChatScope, TargetId } from '../../../types';
@@ -42,7 +42,7 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopove
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const groups = useAppSelector(selectGroups);
-  const participants = useAppSelector(selectAllOnlineParticipants);
+  const participants = useAppSelector(selectOtherOnlineParticipantsInBreakoutRoom);
 
   const handleClose = () => {
     setAnchorEl(undefined);

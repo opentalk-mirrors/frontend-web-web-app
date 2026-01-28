@@ -9,12 +9,12 @@ import { useTranslation } from 'react-i18next';
 import { getContrastText } from '../../assets/themes/opentalk/colorUtils';
 import { VisuallyHiddenTitle } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import { selectMenuTabPeopleCount } from '../../store/selectors';
 import {
   selectHasAnyUnreadGroupChatMessage,
   selectHasAnyUnreadPrivateChatMessage,
   selectHasUnreadGlobalChatMessages,
 } from '../../store/slices/chatSlice';
-import { selectParticipantsTotal } from '../../store/slices/participantsSlice';
 import { selectCurrentMenuTab, setCurrentMenuTab } from '../../store/slices/uiSlice';
 import Chat from '../Chat';
 import ChatOverview from '../ChatOverview';
@@ -86,7 +86,7 @@ const MenuTabs = () => {
   const hasUnreadGlobalChatMessages = useAppSelector(selectHasUnreadGlobalChatMessages);
   const hasUnreadGroupChatMessages = useAppSelector(selectHasAnyUnreadGroupChatMessage);
   const hasUnreadPrivateChatMessages = useAppSelector(selectHasAnyUnreadPrivateChatMessage);
-  const totalParticipants = useAppSelector(selectParticipantsTotal);
+  const totalParticipants = useAppSelector(selectMenuTabPeopleCount);
   const currentMenuTab = useAppSelector(selectCurrentMenuTab);
   const dispatch = useAppDispatch();
 

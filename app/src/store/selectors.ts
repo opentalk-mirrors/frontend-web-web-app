@@ -18,6 +18,7 @@ import {
   ParticipationKind,
   Role,
   SortOption,
+  WaitingState,
 } from '../types';
 import { moveItemToTopOfArray } from '../utils/arrayUtils';
 import { mergeAndSortMessagesEndEvents } from '../utils/eventUtils';
@@ -337,5 +338,41 @@ export const selectRoomTitle = createSelector(
       return eventInfo.title;
     }
     return i18next.t('fallback-room-title') || '';
+  }
+);
+
+export const selectOtherParticipants = createSelector([selectAllParticipants, selectOurUuid], (participants, ourUuid) =>
+  participants.filter((participant) => participant.id !== ourUuid)
+);
+
+export const selectOtherOnlineParticipants = createSelector([selectOtherParticipants], (participants) =>
+  participants.filter((participant) => participant.leftAt === null && participant.waitingState === WaitingState.Joined)
+);
+
+export const selectOtherOnlineParticipantsInBreakoutRoom = createSelector(
+  [selectOtherOnlineParticipants, selectCurrentBreakoutRoomId],
+  (participants, breakoutRoomId) => participants.filter((participant) => participant.breakoutRoomId === breakoutRoomId)
+);
+
+export const selectOtherOnlineParticipantsInBreakoutRoomCount = createSelector(
+  [selectOtherOnlineParticipantsInBreakoutRoom],
+  (participants) => participants.length
+);
+
+export const selectMenuTabPeopleCount = createSelector(
+  [selectOtherOnlineParticipantsInBreakoutRoomCount],
+  (count) => count + 1 // +1 for the user themselves
+);
+
+export const selectPeopleTabParticipants = createSelector(
+  [
+    selectOtherOnlineParticipantsInBreakoutRoom,
+    selectUserAsParticipant,
+    selectParticipantsSortOption,
+    selectParticipantsSearchValue,
+  ],
+  (participants, user, sortOption, searchValue) => {
+    const allParticipants = user ? [user, ...participants] : participants;
+    return sortAndFilterParticipants(allParticipants, sortOption, searchValue);
   }
 );
