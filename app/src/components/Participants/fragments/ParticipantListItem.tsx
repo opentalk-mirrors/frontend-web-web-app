@@ -85,7 +85,7 @@ const ListItem = styled(MuiListItem, {
   '& .more-icon': {
     color: isMoreMenuOpen ? theme.palette.text.primary : 'transparent',
   },
-  border: '1px solid',
+  border: `1px solid`,
   borderColor: isWhispering ? theme.palette.secondary.main : 'transparent',
   borderRadius: theme.spacing(1),
 }));
@@ -506,6 +506,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
               }}
             >
               {participant?.displayName}
+              {isParticipantSelf && ` (${t('participant-list-self-description')})`}
             </Typography>
           }
           secondary={

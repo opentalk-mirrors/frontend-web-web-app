@@ -22,6 +22,7 @@ import {
   SortOption,
   TargetId,
 } from '../types';
+import { moveItemToTopOfArray } from '../utils/arrayUtils';
 import { sortParticipantsWithConfig } from '../utils/sortParticipants';
 import { selectAutomoderationParticipantIds } from './slices/automodSlice';
 import { selectCurrentBreakoutRoom, selectCurrentBreakoutRoomId } from './slices/breakoutSlice';
@@ -185,8 +186,23 @@ export const selectParticipantGroupsSortedAndFiltered = createSelector(
 );
 
 export const selectAllParticipantsSortedAndFiltered = createSelector(
-  [selectCombinedParticipantsAndUser, selectParticipantsSortOption, selectParticipantsSearchValue],
-  (participants, sortOption, searchValue) => sortAndFilterParticipants(participants, sortOption, searchValue)
+  [
+    selectCombinedParticipantsAndUser,
+    selectParticipantsSortOption,
+    selectParticipantsSearchValue,
+    selectUserAsParticipant,
+  ],
+  (participants, sortOption, searchValue, self) => {
+    let sortedAndFilteredParticipants = sortAndFilterParticipants(participants, sortOption, searchValue);
+    if (self && sortedAndFilteredParticipants.includes(self)) {
+      sortedAndFilteredParticipants = moveItemToTopOfArray(
+        self,
+        sortedAndFilteredParticipants,
+        (participant) => participant.id === self.id
+      );
+    }
+    return sortedAndFilteredParticipants;
+  }
 );
 
 export const selectCombinedMessageAndEvents = createSelector(

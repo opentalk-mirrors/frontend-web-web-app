@@ -27,3 +27,25 @@ export function shuffleArrayItems<T>(array: Array<T>): Array<T> {
   }
   return shuffled;
 }
+/**
+ * Moves the given item to the top of the array, if the item is a primitive, no identifier is needed
+ * @param item the array item to be moved to the top of the array
+ * @param array the array to rearrage
+ * @param predicate a function to identify the correct item within the array
+ * @returns a new instance of the given array with the given item at position 0 (does not mutate the original)
+ */
+export function moveItemToTopOfArray<T>(
+  item: T,
+  array: Array<T>,
+  predicate?: (value: T, index?: number, obj?: T[]) => boolean
+): Array<T> {
+  const defaultPredicate = (arrayItem: T) => arrayItem === item;
+  const selectedPredicate = predicate || defaultPredicate;
+  const itemIndex = array.findIndex(selectedPredicate);
+  if (itemIndex === 0) {
+    return array;
+  }
+  const copy = [...array];
+  copy.unshift(copy.splice(itemIndex, 1)[0]);
+  return copy;
+}
