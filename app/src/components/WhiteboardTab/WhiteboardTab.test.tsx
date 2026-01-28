@@ -86,6 +86,6 @@ describe('WhiteboardTab', () => {
 
     renderComponent();
     fireEvent.click(screen.getByRole('button', { name: pdfFile }));
-    expect(mockDownload).toHaveBeenCalledExactlyOnceWith({ roomId, assetId: '1', filename: pdfFile });
+    expect(mockDownload).toHaveBeenCalledExactlyOnceWith({ roomId, assetId: '1' });
   });
 });

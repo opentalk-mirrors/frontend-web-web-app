@@ -39,8 +39,8 @@ const RoomAssetTable = ({ roomId, isMeetingCreator, recurrenceInstance }: RoomAs
     return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [assets, recurrenceInstance]);
 
-  const handleDownload = async ({ assetId, filename, fileSize, updateDownloadProgress }: AssetDownloadBaseInfo) => {
-    return downloadRoomAsset({ roomId, assetId, filename, fileSize, updateDownloadProgress });
+  const handleDownload = async ({ assetId }: AssetDownloadBaseInfo) => {
+    return downloadRoomAsset({ roomId, assetId });
   };
 
   const handleDelete = async (assetId: AssetId) => {

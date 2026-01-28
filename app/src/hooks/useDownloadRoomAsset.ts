@@ -12,9 +12,6 @@ import { fetchWithAuth } from '../utils/apiUtils';
 
 export interface AssetDownloadBaseInfo {
   assetId: AssetId;
-  filename: string;
-  fileSize?: number;
-  updateDownloadProgress?: (progressPercentage: number) => void;
 }
 
 interface AssetDownloadInfo extends AssetDownloadBaseInfo {
@@ -22,84 +19,35 @@ interface AssetDownloadInfo extends AssetDownloadBaseInfo {
   roomId: RoomId;
 }
 
-const downloadRoomAsset = async ({
-  baseURL,
-  roomId,
-  assetId,
-  filename,
-  fileSize,
-  updateDownloadProgress: onDownloadProgress,
-}: AssetDownloadInfo) => {
-  const downloadURL = new URL(`v1/rooms/${roomId}/assets/${assetId}`, baseURL);
+interface DownloadPathResponse {
+  url: string;
+}
 
-  const response = await fetchWithAuth(downloadURL);
-  if (response.status !== 200) {
-    throw Error(`Something went wrong when trying to download asset. Request returned status: ${response.status}`);
-  }
+const downloadRoomAsset = async ({ baseURL, roomId, assetId }: AssetDownloadInfo) => {
+  const downloadUrlEndpoint = new URL(`v1/rooms/${roomId}/assets/${assetId}/download?redirect=false`, baseURL);
 
-  let blob: Blob;
-  if (fileSize && onDownloadProgress) {
-    // Reading the response body as a stream so we can calculate download progress.
-    const reader = response.body?.getReader();
-    const chunks: Uint8Array<ArrayBuffer>[] = [];
-    let loadedBytes = 0;
-    const done = false;
-
-    if (!reader) {
-      return;
+  try {
+    const response = await fetchWithAuth(downloadUrlEndpoint);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch download path. Status: ${response.status}`);
     }
 
-    while (!done) {
-      const { done: streamDone, value } = await reader.read();
-      if (streamDone) {
-        break;
-      }
-
-      loadedBytes += value.length;
-      onDownloadProgress?.((loadedBytes / fileSize) * 100);
-
-      chunks.push(value);
-    }
-
-    blob = new Blob(chunks);
-  } else {
-    blob = await response.blob();
+    const { url } = (await response.json()) as DownloadPathResponse;
+    const downloadUrl = new URL(url, downloadUrlEndpoint).toString();
+    window.location.assign(downloadUrl);
+  } catch (e) {
+    log.error('Signed URL download failed', e);
+    throw e;
   }
-
-  const hiddenElement = document.createElement('a');
-  const url = window.URL || window.webkitURL;
-  const blobURL = url.createObjectURL(blob);
-
-  hiddenElement.href = blobURL;
-  hiddenElement.target = '_blank';
-  hiddenElement.download = filename;
-  hiddenElement.click();
-
-  hiddenElement.parentNode?.removeChild(hiddenElement);
-  url.revokeObjectURL(blobURL);
 };
 
 export const useDownloadRoomAsset = () => {
   const { t } = useTranslation();
   const controllerUrl = useAppSelector(selectControllerUrl);
 
-  return function ({
-    roomId,
-    assetId,
-    filename,
-    fileSize,
-    updateDownloadProgress: onDownloadProgress,
-  }: Omit<AssetDownloadInfo, 'baseURL'>) {
-    return downloadRoomAsset({
-      baseURL: controllerUrl,
-      roomId,
-      assetId,
-      filename,
-      fileSize,
-      updateDownloadProgress: onDownloadProgress,
-    }).catch((error) => {
+  return ({ roomId, assetId }: Omit<AssetDownloadInfo, 'baseURL'>) =>
+    downloadRoomAsset({ baseURL: controllerUrl, roomId, assetId }).catch((error) => {
       log.error(`Error downloading asset ${assetId}: `, error);
       notifications.error(t('asset-download-error'));
     });
-  };
 };

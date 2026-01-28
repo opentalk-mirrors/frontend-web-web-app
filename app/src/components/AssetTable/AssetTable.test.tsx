@@ -82,9 +82,6 @@ describe('Asset Table', () => {
     await waitFor(() => {
       expect(onDownload).toHaveBeenCalledExactlyOnceWith({
         assetId: mockedRoomAssets[0].id,
-        filename: mockedRoomAssets[0].filename,
-        fileSize: mockedRoomAssets[0].size,
-        updateDownloadProgress: expect.any(Function),
       });
     });
   });
