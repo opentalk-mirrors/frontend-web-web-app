@@ -4,7 +4,6 @@
 import { XORCipher } from '@opentalk/redux-oidc';
 import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
-import camelcaseKeys from 'camelcase-keys';
 import {
   BackupCodecPolicy,
   ConnectionState,
@@ -21,14 +20,12 @@ import {
   VideoPresets,
 } from 'livekit-client';
 import { closeSnackbar } from 'notistack';
-import convertToSnakeCase from 'snakecase-keys';
 
 import { stopTimeLimitNotification } from '../commonComponents/Notistack/fragments/variations/TimeLimitNotification/utils';
 import { BackgroundBlur, BackgroundConfig } from '../modules/Media/BackgroundBlur';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { BreakoutRoomId, FetchRequestError, JoinSuccessInternalState } from '../types';
 import { VideoCodec } from '../types/livekit';
-import { getControllerBaseUrl } from '../utils/apiUtils';
 import { createE2Eworker } from '../utils/createE2EworkerUtils';
 import { handleMediaPermissionError } from '../utils/mediaErrorUtils';
 import type { RootState } from './index';
@@ -54,23 +51,6 @@ export interface ChangeLocalMediaResponse {
   track?: LocalAudioTrack | LocalVideoTrack;
   deviceId: string | undefined;
 }
-
-export const login = createAsyncThunk<{ permission: Array<string> }, string, { state: RootState; rejectValue: Error }>(
-  'user/login',
-  async (idToken: string, thunkApi) => {
-    const { getState } = thunkApi;
-    const baseUrl = getControllerBaseUrl(getState().config);
-    const response = await fetch(new URL('v1/auth/login', baseUrl).toString(), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(convertToSnakeCase({ idToken })),
-    });
-
-    return camelcaseKeys(await response.json(), { deep: true });
-  }
-);
 
 export const startRoom = createAsyncThunk<
   { conferenceContext: ConferenceRoom; resumption: string },

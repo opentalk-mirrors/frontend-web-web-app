@@ -3,7 +3,7 @@ import { createAction, createSlice, ThunkDispatch } from '@reduxjs/toolkit';
 import type { Action, UnknownAction } from '@reduxjs/toolkit';
 
 import { AuthTypeError, SerializedError, SessionStatus, getSessionStatus } from '../utils';
-import { login, codeCallback, getNewToken } from './authActions';
+import { codeCallback, getNewToken } from './authActions';
 
 export let appDispatch: ThunkDispatch<unknown, unknown, Action | UnknownAction> | undefined;
 
@@ -71,22 +71,14 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(codeCallback.pending, (state) => {
-        state.state = SessionStatus.PENDING;
-      })
-      .addCase(codeCallback.rejected, (state, { payload }) => {
-        state.state = SessionStatus.ANONYMOUS;
-        state.error = payload as SerializedError;
-        state.loading = false;
-      })
-      .addCase(login.pending, (state) => {
         state.error = undefined;
       })
-      .addCase(login.fulfilled, (state) => {
+      .addCase(codeCallback.fulfilled, (state) => {
         state.state = SessionStatus.AUTHORIZED;
         state.error = undefined;
         state.loginTimestamp = new Date().toISOString();
       })
-      .addCase(login.rejected, (state, { payload }) => {
+      .addCase(codeCallback.rejected, (state, { payload }) => {
         state.state = SessionStatus.ANONYMOUS;
         state.error = payload as SerializedError;
       })

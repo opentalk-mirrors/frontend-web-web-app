@@ -5,7 +5,6 @@ import convertToSnakeCase from 'snakecase-keys';
 import { AuthTypeError, generateSerilizadError, storeToken } from '../utils';
 
 export interface LoginProps {
-  idToken: string;
   baseUrl: string;
 }
 
@@ -17,44 +16,9 @@ export interface CodeCallBackProps {
   baseUrl?: string;
 }
 
-/**
- * Final Auth steps
- * Once we have all tokens we need to login the user to the controller
- */
-export const login = createAsyncThunk('user/login', async (payload: LoginProps, { rejectWithValue }) => {
-  try {
-    const response = await fetch(new URL('v1/auth/login', payload.baseUrl).toString(), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(convertToSnakeCase({ idToken: payload.idToken })),
-    });
-    if (!response.ok) {
-      return rejectWithValue(
-        generateSerilizadError({
-          name: AuthTypeError.LoginUserFailed,
-          message: response.statusText,
-          status: response.status,
-        })
-      );
-    }
-    return camelcaseKeys(await response.json(), { deep: true });
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      // Unexpected token < in JSON
-      console.debug('There was a SyntaxError', error);
-      throw new Error(String(error));
-    }
-    return rejectWithValue(
-      generateSerilizadError({ name: AuthTypeError.LoginUserFailed, message: error, status: 503 })
-    );
-  }
-});
-
 export const codeCallback = createAsyncThunk(
   'auth/code_callback',
-  async (payload: CodeCallBackProps, { rejectWithValue, dispatch }) => {
+  async (payload: CodeCallBackProps, { rejectWithValue }) => {
     try {
       const codeVerifier = sessionStorage.getItem('code_verifier');
       const urlSearchParams = {
@@ -82,9 +46,7 @@ export const codeCallback = createAsyncThunk(
 
       const data = camelcaseKeys(await response.json(), { deep: true });
       storeToken(data);
-      if (payload.baseUrl) {
-        await dispatch(login({ idToken: data.idToken, baseUrl: payload.baseUrl }));
-      }
+
       return data;
     } catch (error) {
       if (error instanceof SyntaxError) {
@@ -110,7 +72,7 @@ interface RefreshTokenInterface {
 }
 export const getNewToken = createAsyncThunk(
   'auth/get_new_token',
-  async (payload: RefreshTokenInterface, { rejectWithValue, dispatch }) => {
+  async (payload: RefreshTokenInterface, { rejectWithValue }) => {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) {
       console.debug('No refresh token found');
@@ -144,9 +106,7 @@ export const getNewToken = createAsyncThunk(
       }
       const data = camelcaseKeys(await response.json(), { deep: true });
       storeToken(data);
-      if (payload.baseUrl) {
-        dispatch(login({ idToken: data.idToken, baseUrl: payload.baseUrl }));
-      }
+
       return data;
     } catch (error) {
       if (error instanceof SyntaxError) {

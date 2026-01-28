@@ -5,7 +5,6 @@ interface CodeResponse {
   expiresIn: number;
   refreshToken: string;
   refreshExpiresIn: number;
-  idToken: string;
   scope: string;
 }
 
@@ -14,7 +13,6 @@ interface RefreshTokenResponse {
   expiresIn: number;
   refreshToken: string;
   refreshExpiresIn: number;
-  idToken: string;
   scope: string;
 }
 
@@ -55,10 +53,9 @@ export function hasValidToken(token: string | null) {
 }
 
 export const storeToken = (payload: CodeResponse | RefreshTokenResponse) => {
-  const { idToken, accessToken, refreshToken } = payload;
-  const serverTimeOffset = getTokenIssuedDateInMs(accessToken) - new Date().getTime();
+  const { accessToken, refreshToken } = payload;
+  const serverTimeOffset = getTokenIssuedDateInMs(accessToken) - Date.now();
   localStorage.setItem('server_time_offset', String(serverTimeOffset));
-  localStorage.setItem('id_token', idToken);
   localStorage.setItem('access_token', accessToken);
   localStorage.setItem('refresh_token', refreshToken);
 };
