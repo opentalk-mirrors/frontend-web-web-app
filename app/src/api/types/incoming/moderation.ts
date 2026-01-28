@@ -66,6 +66,14 @@ export interface DisplayNameChanged {
   newName: string;
 }
 
+export interface DisplayNameChangeRestrictionsDisabled {
+  message: 'display_name_change_restrictions_disabled';
+}
+
+export interface DisplayNameChangeRestrictionsEnabled {
+  message: 'display_name_change_restrictions_enabled';
+}
+
 export interface Muted {
   message: 'muted';
   moderator: ParticipantId;
@@ -138,6 +146,8 @@ export type Message =
   | AcceptedInMeeting
   | ParticipantAccepted
   | DisplayNameChanged
+  | DisplayNameChangeRestrictionsDisabled
+  | DisplayNameChangeRestrictionsEnabled
   | Muted
   | MicrophoneRestrictionsEnabled
   | MicrophoneRestrictionsDisabled

@@ -25,6 +25,7 @@ import type {
 import { DeviceId } from '../device';
 import { RoomInfo } from '../event';
 import { LegalVoteJoinSuccess, VoteSummary } from '../legalVote';
+import { InitialDisplayNameChangeRestrictions } from '../moderation';
 import { Participant } from '../participant';
 import { InitialPoll } from '../poll';
 import { TimerState } from '../timer';
@@ -45,6 +46,7 @@ export interface JoinSuccessInternalState {
     raiseHandsEnabled: boolean;
     waitingRoomEnabled: boolean;
     waitingRoomParticipants: WaitingRoomParticipant[];
+    displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
   };
   forceMute?: ForceMute;
   recording?: StreamingState;
@@ -129,6 +131,7 @@ export interface ModuleData {
     raiseHandsEnabled: boolean;
     waitingRoomParticipants: WaitingRoomParticipant[];
     waitingRoomEnabled: boolean;
+    displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
   };
   recording?: StreamingState;
   timer?: TimerState;

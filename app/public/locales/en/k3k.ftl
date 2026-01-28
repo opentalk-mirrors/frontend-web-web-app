@@ -283,6 +283,8 @@ waiting-room-enabled-message = Waiting room is enabled
 waiting-room-disabled-message = Waiting room is disabled
 more-menu-enable-microphones = Enable microphones
 more-menu-disable-microphones = Disable microphones
+more-menu-disable-display-name-change-restrictions = Enable renaming
+more-menu-enable-display-name-change-restrictions = Disable renaming
 more-menu-enable-chat = Enable chat
 more-menu-disable-chat = Disable chat
 more-menu-moderator-aria-label = Open menu for more options
@@ -298,6 +300,8 @@ microphones-enabled-notification = Microphones were enabled by the moderator
 microphones-disabled-notification = Microphones were disabled by the moderator
 turn-handraises-off-notification = Handraises were disabled by the moderator
 turn-handraises-on-notification = Handraises were enabled by the moderator
+renaming-enabled-notification = Renaming was enabled by the moderator
+renaming-disabled-notification = Renaming was disabled by the moderator
 
 in-waiting-room = You are currently in the waiting room
 in-waiting-room-ready = You are enabled to join the room
@@ -752,6 +756,7 @@ global-meeting = { $count ->
 global-open-new-tab = Open in new tab
 global-required-field = This is a mandatory field
 global-unknown = Unknown
+global-rename = Rename
 
 retry-available-in = Retry available in {$seconds}
 

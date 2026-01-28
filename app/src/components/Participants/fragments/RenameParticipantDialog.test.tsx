@@ -40,7 +40,10 @@ describe('RenameParticipantDialog', () => {
   it('shows validation error if name is empty and submit is pressed', async () => {
     const { store, dispatchSpy } = configureStore();
 
-    renderWithProviders(<RenameParticipantDialog open={true} onClose={onClose} participant={participant} />, { store });
+    renderWithProviders(
+      <RenameParticipantDialog open={true} onClose={onClose} participant={{ ...participant, displayName: '' }} />,
+      { store }
+    );
     await userEvent.click(screen.getByRole('button', { name: 'global-save' }));
 
     expect(await screen.findByText(/field-error-required/)).toBeInTheDocument();

@@ -7,7 +7,12 @@ import { notifications } from '../../commonComponents';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import { hangUp } from '../../store/commonActions';
-import { forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
+import {
+  disabledSelfRename,
+  enabledSelfRename,
+  forceMuteDisabled,
+  forceMuteEnabled,
+} from '../../store/slices/moderationSlice';
 import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
 import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
 import { setDisplayName, updateRole } from '../../store/slices/userSlice';
@@ -110,6 +115,14 @@ export const handleModerationMessage = (
       if (state.user.uuid && !state.moderation.forceMute.unrestrictedParticipants.includes(state.user.uuid)) {
         notifications.info(i18next.t('microphones-enabled-notification'));
       }
+      break;
+    case 'display_name_change_restrictions_enabled':
+      dispatch(disabledSelfRename());
+      notifications.info(i18next.t('renaming-enabled-notification'));
+      break;
+    case 'display_name_change_restrictions_disabled':
+      dispatch(enabledSelfRename());
+      notifications.info(i18next.t('renaming-disabled-notification'));
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);

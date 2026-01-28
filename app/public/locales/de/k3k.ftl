@@ -283,6 +283,8 @@ waiting-room-enabled-message = Warteraum ist aktiviert
 waiting-room-disabled-message = Warteraum ist deaktiviert
 more-menu-enable-microphones = Mikrofone einschalten
 more-menu-disable-microphones = Mikrofone ausschalten
+more-menu-disable-display-name-change-restrictions = Umbenennung aktivieren
+more-menu-enable-display-name-change-restrictions = Umbenennung deaktivieren
 more-menu-enable-chat = Chat aktivieren
 more-menu-disable-chat = Chat deaktivieren
 more-menu-moderator-aria-label = Öffne Menu für mehr Optionen
@@ -298,6 +300,8 @@ microphones-enabled-notification = Der Moderator hat die Mikrofone wieder aktivi
 microphones-disabled-notification = Der Moderator hat die Mikrofone deaktiviert
 turn-handraises-off-notification = Der Moderator hat das Handheben deaktiviert
 turn-handraises-on-notification = Der Moderator hat das Handheben aktiviert
+renaming-enabled-notification = Der Moderator hat das Umbenennen aktiviert
+renaming-disabled-notification = Der Moderator hat das Umbenennen deaktiviert
 
 in-waiting-room = Sie befinden sich gerade im Warteraum
 in-waiting-room-ready = Sie sind freigeschaltet

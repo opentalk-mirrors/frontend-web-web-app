@@ -5,7 +5,7 @@ import i18next from 'i18next';
 
 import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
-import { forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
+import { disabledSelfRename, forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
 import { rename } from '../../store/slices/participantsSlice';
 import { enteredWaitingRoom } from '../../store/slices/roomSlice';
 import { setDisplayName } from '../../store/slices/userSlice';
@@ -185,4 +185,27 @@ describe('handleModerationMessage', () => {
   //   expect(dispatch).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
   //   expect(notifications.info).toHaveBeenCalledExactlyOnceWith('debriefing-session-ended-for-all-notification');
   // });
+
+  it('notifies users when moderator enabled renaming', () => {
+    const dispatch = vi.fn();
+    const state = createState();
+    const message: ModerationMessage = {
+      message: 'display_name_change_restrictions_enabled',
+    };
+    handleModerationMessage(dispatch, message, timestamp, state);
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(disabledSelfRename());
+    expect(i18next.t).toHaveBeenCalledExactlyOnceWith('renaming-enabled-notification');
+    expect(notifications.info).toHaveBeenCalledExactlyOnceWith('renaming-enabled-notification');
+  });
+
+  it('notifies users when moderator disabled renaming', () => {
+    const dispatch = vi.fn();
+    const state = createState();
+    const message: ModerationMessage = {
+      message: 'display_name_change_restrictions_disabled',
+    };
+    handleModerationMessage(dispatch, message, timestamp, state);
+    expect(i18next.t).toHaveBeenCalledExactlyOnceWith('renaming-disabled-notification');
+    expect(notifications.info).toHaveBeenCalledExactlyOnceWith('renaming-disabled-notification');
+  });
 });

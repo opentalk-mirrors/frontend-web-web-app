@@ -51,6 +51,15 @@ export interface ChangeDisplayName {
   newName: string;
 }
 
+export interface DisableDisplayNameChangeRestrictions {
+  action: 'disable_display_name_change_restrictions';
+}
+
+export interface EnableDisplayNameChangeRestrictions {
+  action: 'enable_display_name_change_restrictions';
+  unrestrictedParticipants: Array<ParticipantId>;
+}
+
 export interface AcceptParticipantFromWaitingRoomToRoom {
   action: 'accept';
   target: ParticipantId;
@@ -80,6 +89,8 @@ export type Action =
   | AcceptParticipantFromWaitingRoomToRoom
   | Debrief
   | ChangeDisplayName
+  | DisableDisplayNameChangeRestrictions
+  | EnableDisplayNameChangeRestrictions
   | UpdateRole
   | Mute
   | EnableMicrophoneRestrictions
@@ -112,6 +123,14 @@ export const disableMicrophoneRestrictions = createSignalingApiCall<DisableMicro
   'moderation',
   'disable_microphone_restrictions'
 );
+export const disableDisplayNameChangeRestrictions = createSignalingApiCall<DisableDisplayNameChangeRestrictions>(
+  'moderation',
+  'disable_display_name_change_restrictions'
+);
+export const enableDisplayNameChangeRestrictions = createSignalingApiCall<EnableDisplayNameChangeRestrictions>(
+  'moderation',
+  'enable_display_name_change_restrictions'
+);
 
 export const handler = createModule<RootState>((builder) => {
   builder
@@ -141,6 +160,12 @@ export const handler = createModule<RootState>((builder) => {
     })
     .addCase(changeDisplayName.action, (_state, action) => {
       sendMessage(changeDisplayName(action.payload));
+    })
+    .addCase(disableDisplayNameChangeRestrictions.action, () => {
+      sendMessage(disableDisplayNameChangeRestrictions());
+    })
+    .addCase(enableDisplayNameChangeRestrictions.action, (_state, action) => {
+      sendMessage(enableDisplayNameChangeRestrictions(action.payload));
     })
     .addCase(mute.action, (_state, action) => {
       sendMessage(mute(action.payload));

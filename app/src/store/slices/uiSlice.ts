@@ -88,6 +88,7 @@ export type UIState = {
   currentMenuTab: MenuTab;
   presenterVideoPosition: PresenterVideoPosition;
   mode?: UiMode;
+  showSelfRenameDialog: boolean;
 };
 
 const initialState: UIState = {
@@ -127,6 +128,7 @@ const initialState: UIState = {
   cinemaViewOrder: CinemaViewSortOrder.FirstJoined,
   currentMenuTab: MenuTab.Chat,
   presenterVideoPosition: 'bottomRight',
+  showSelfRenameDialog: false,
 };
 
 export const uiSlice = createSlice({
@@ -230,6 +232,9 @@ export const uiSlice = createSlice({
     setUiMode: (state, { payload }: PayloadAction<UiMode>) => {
       state.mode = payload;
     },
+    setSelfRenameDialogVisible: (state, { payload }: PayloadAction<boolean>) => {
+      state.showSelfRenameDialog = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(
@@ -319,6 +324,7 @@ export const {
   setCurrentMenuTab,
   setPresenterVideoPosition,
   setUiMode,
+  setSelfRenameDialogVisible,
 } = uiSlice.actions;
 
 export const actions = uiSlice.actions;
@@ -390,3 +396,5 @@ const startUiChangeModeListener = (startAppListening: StartAppListening) =>
 export const startUiListeners = (startAppListening: StartAppListening) => {
   startUiChangeModeListener(startAppListening);
 };
+
+export const selectSelfRenameDialogVisible = (state: RootState) => state.ui.showSelfRenameDialog;
