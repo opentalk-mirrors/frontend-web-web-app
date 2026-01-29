@@ -144,8 +144,8 @@ importers:
         specifier: ^10.37.0
         version: 10.37.0
       '@sentry/react':
-        specifier: ^10.37.0
-        version: 10.37.0(react@19.2.4)
+        specifier: ^10.38.0
+        version: 10.38.0(react@19.2.4)
       bowser:
         specifier: ^2.13.1
         version: 2.13.1
@@ -165,8 +165,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0(date-fns@4.1.0)
       emoji-picker-react:
-        specifier: ^4.17.2
-        version: 4.17.2(react@19.2.4)
+        specifier: ^4.17.3
+        version: 4.17.3(react@19.2.4)
       formik:
         specifier: ^2.4.9
         version: 2.4.9(@types/react@19.2.10)(react@19.2.4)
@@ -1595,16 +1595,32 @@ packages:
     resolution: {integrity: sha512-rqdESYaVio9Ktz55lhUhtBsBUCF3wvvJuWia5YqoHDd+egyIfwWxITTAa0TSEyZl7283A4WNHNl0hyeEMblmfA==}
     engines: {node: '>=18'}
 
+  '@sentry-internal/browser-utils@10.38.0':
+    resolution: {integrity: sha512-UOJtYmdcxHCcV0NPfXFff/a95iXl/E0EhuQ1y0uE0BuZDMupWSF5t2BgC4HaE5Aw3RTjDF3XkSHWoIF6ohy7eA==}
+    engines: {node: '>=18'}
+
   '@sentry-internal/feedback@10.37.0':
     resolution: {integrity: sha512-P0PVlfrDvfvCYg2KPIS7YUG/4i6ZPf8z1MicXx09C9Cz9W9UhSBh/nii13eBdDtLav2BFMKhvaFMcghXHX03Hw==}
+    engines: {node: '>=18'}
+
+  '@sentry-internal/feedback@10.38.0':
+    resolution: {integrity: sha512-JXneg9zRftyfy1Fyfc39bBlF/Qd8g4UDublFFkVvdc1S6JQPlK+P6q22DKz3Pc8w3ySby+xlIq/eTu9Pzqi4KA==}
     engines: {node: '>=18'}
 
   '@sentry-internal/replay-canvas@10.37.0':
     resolution: {integrity: sha512-PyIYSbjLs+L5essYV0MyIsh4n5xfv2eV7l0nhUoPJv9Bak3kattQY3tholOj0EP3SgKgb+8HSZnmazgF++Hbog==}
     engines: {node: '>=18'}
 
+  '@sentry-internal/replay-canvas@10.38.0':
+    resolution: {integrity: sha512-OXWM9jEqNYh4VTvrMu7v+z1anz+QKQ/fZXIZdsO7JTT2lGNZe58UUMeoq386M+Saxen8F9SUH7yTORy/8KI5qw==}
+    engines: {node: '>=18'}
+
   '@sentry-internal/replay@10.37.0':
     resolution: {integrity: sha512-snuk12ZaDerxesSnetNIwKoth/51R0y/h3eXD/bGtXp+hnSkeXN5HanI/RJl297llRjn4zJYRShW9Nx86Ay0Dw==}
+    engines: {node: '>=18'}
+
+  '@sentry-internal/replay@10.38.0':
+    resolution: {integrity: sha512-YWIkL6/dnaiQyFiZXJ/nN+NXGv/15z45ia86bE/TMq01CubX/DUOilgsFz0pk2v/pg3tp/U2MskLO9Hz0cnqeg==}
     engines: {node: '>=18'}
 
   '@sentry/babel-plugin-component-annotate@4.8.0':
@@ -1613,6 +1629,10 @@ packages:
 
   '@sentry/browser@10.37.0':
     resolution: {integrity: sha512-kheqJNqGZP5TSBCPv4Vienv1sfZwXKHQDYR+xrdHHYdZqwWuZMJJW/cLO9XjYAe+B9NnJ4UwJOoY4fPvU+HQ1Q==}
+    engines: {node: '>=18'}
+
+  '@sentry/browser@10.38.0':
+    resolution: {integrity: sha512-3phzp1YX4wcQr9mocGWKbjv0jwtuoDBv7+Y6Yfrys/kwyaL84mDLjjQhRf4gL5SX7JdYkhBp4WaiNlR0UC4kTA==}
     engines: {node: '>=18'}
 
   '@sentry/bundler-plugin-core@4.8.0':
@@ -1675,8 +1695,12 @@ packages:
     resolution: {integrity: sha512-hkRz7S4gkKLgPf+p3XgVjVm7tAfvcEPZxeACCC6jmoeKhGkzN44nXwLiqqshJ25RMcSrhfFvJa/FlBg6zupz7g==}
     engines: {node: '>=18'}
 
-  '@sentry/react@10.37.0':
-    resolution: {integrity: sha512-XLnXJOHgsCeVAVBbO+9AuGlZWnCxLQHLOmKxpIr8wjE3g7dHibtug6cv8JLx78O4dd7aoCqv2TTyyKY9FLJ2EQ==}
+  '@sentry/core@10.38.0':
+    resolution: {integrity: sha512-1pubWDZE5y5HZEPMAZERP4fVl2NH3Ihp1A+vMoVkb3Qc66Diqj1WierAnStlZP7tCx0TBa0dK85GTW/ZFYyB9g==}
+    engines: {node: '>=18'}
+
+  '@sentry/react@10.38.0':
+    resolution: {integrity: sha512-3UiKo6QsqTyPGUt0XWRY9KLaxc/cs6Kz4vlldBSOXEL6qPDL/EfpwNJT61osRo81VFWu8pKu7ZY2bvLPryrnBQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^16.14.0 || 17.x || 18.x || 19.x
@@ -2756,8 +2780,8 @@ packages:
   electron-to-chromium@1.5.278:
     resolution: {integrity: sha512-dQ0tM1svDRQOwxnXxm+twlGTjr9Upvt8UFWAgmLsxEzFQxhbti4VwxmMjsDxVC51Zo84swW7FVCXEV+VAkhuPw==}
 
-  emoji-picker-react@4.17.2:
-    resolution: {integrity: sha512-d70sXdqaorBsvYwNAjRUkV8VQUQTafN/XTjucl6lH2O/B+aFUiIZy5hpRJ0FxuzgVnkeJaydnRCrYpuGd0zhgQ==}
+  emoji-picker-react@4.17.3:
+    resolution: {integrity: sha512-qeKBtdtTwI11DMP5FwVoNeZC5bPvQPTU3UVbA5BkYOdy03HNLX2OpaZ4Q4fthLaSsmjDs17c8uTC2AIEu2PCoA==}
     engines: {node: '>=10'}
     peerDependencies:
       react: '>=16'
@@ -6452,19 +6476,37 @@ snapshots:
     dependencies:
       '@sentry/core': 10.37.0
 
+  '@sentry-internal/browser-utils@10.38.0':
+    dependencies:
+      '@sentry/core': 10.38.0
+
   '@sentry-internal/feedback@10.37.0':
     dependencies:
       '@sentry/core': 10.37.0
+
+  '@sentry-internal/feedback@10.38.0':
+    dependencies:
+      '@sentry/core': 10.38.0
 
   '@sentry-internal/replay-canvas@10.37.0':
     dependencies:
       '@sentry-internal/replay': 10.37.0
       '@sentry/core': 10.37.0
 
+  '@sentry-internal/replay-canvas@10.38.0':
+    dependencies:
+      '@sentry-internal/replay': 10.38.0
+      '@sentry/core': 10.38.0
+
   '@sentry-internal/replay@10.37.0':
     dependencies:
       '@sentry-internal/browser-utils': 10.37.0
       '@sentry/core': 10.37.0
+
+  '@sentry-internal/replay@10.38.0':
+    dependencies:
+      '@sentry-internal/browser-utils': 10.38.0
+      '@sentry/core': 10.38.0
 
   '@sentry/babel-plugin-component-annotate@4.8.0': {}
 
@@ -6475,6 +6517,14 @@ snapshots:
       '@sentry-internal/replay': 10.37.0
       '@sentry-internal/replay-canvas': 10.37.0
       '@sentry/core': 10.37.0
+
+  '@sentry/browser@10.38.0':
+    dependencies:
+      '@sentry-internal/browser-utils': 10.38.0
+      '@sentry-internal/feedback': 10.38.0
+      '@sentry-internal/replay': 10.38.0
+      '@sentry-internal/replay-canvas': 10.38.0
+      '@sentry/core': 10.38.0
 
   '@sentry/bundler-plugin-core@4.8.0(encoding@0.1.13)':
     dependencies:
@@ -6536,10 +6586,12 @@ snapshots:
 
   '@sentry/core@10.37.0': {}
 
-  '@sentry/react@10.37.0(react@19.2.4)':
+  '@sentry/core@10.38.0': {}
+
+  '@sentry/react@10.38.0(react@19.2.4)':
     dependencies:
-      '@sentry/browser': 10.37.0
-      '@sentry/core': 10.37.0
+      '@sentry/browser': 10.38.0
+      '@sentry/core': 10.38.0
       react: 19.2.4
 
   '@sentry/vite-plugin@4.8.0(encoding@0.1.13)':
@@ -7755,7 +7807,7 @@ snapshots:
 
   electron-to-chromium@1.5.278: {}
 
-  emoji-picker-react@4.17.2(react@19.2.4):
+  emoji-picker-react@4.17.3(react@19.2.4):
     dependencies:
       flairup: 1.0.0
       react: 19.2.4
