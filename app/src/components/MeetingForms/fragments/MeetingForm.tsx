@@ -166,8 +166,6 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
             tooltipTitle={t('dashboard-meeting-details-tooltip')}
           />
 
-          {isStreamingEnabled && <StreamingOptions formik={formik} />}
-
           {isTrainingParticipationReportEnabled && <TrainingParticipationReportSelect formik={formik} />}
 
           {features.e2eEncryption && (
@@ -178,6 +176,8 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
               tooltipTitle={t('dashboard-meeting-e2ee-tooltip')}
             />
           )}
+
+          {isStreamingEnabled && !formik.values.e2eEncryption && <StreamingOptions formik={formik} />}
         </Stack>
         <ActionButtons
           isExistingEvent={Boolean(existingEvent)}
