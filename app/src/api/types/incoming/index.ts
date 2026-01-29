@@ -6,6 +6,7 @@ import BreakoutMessage from './breakout';
 import ChatMessage from './chat';
 import RoomserverCoreMessage from './core';
 import E2eeMessage from './e2ee';
+import RoomServerErrorMessage from './error';
 import LegalVoteMessage from './legalVote';
 import LivekitMessage from './livekit';
 import MediaMessage from './media';
@@ -60,4 +61,5 @@ export type Message =
   | TrainingParticipationReport
   | RoomserverCoreMessage
   | RaiseHandsMessage
-  | E2eeMessage;
+  | E2eeMessage
+  | RoomServerErrorMessage;

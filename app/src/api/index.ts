@@ -98,6 +98,9 @@ const onMessage = (dispatch: AppDispatch, getState: () => RootState) => async (m
     case 'training_participation_report':
       handleTrainingParticipationReportMessage(dispatch, message.payload, getState());
       break;
+    case 'error':
+      log.error('Received error message from RoomServer:', message.payload);
+      break;
     default: {
       const dataString = JSON.stringify(message, null, 2);
       throw new Error(`Unknown message type: ${dataString}`);
