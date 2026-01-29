@@ -49,7 +49,7 @@ const StartAdornmentTypography = styled(Typography)<{ component?: string; htmlFo
   whiteSpace: 'nowrap',
 
   '& .MuiFormLabel-asterisk': {
-    color: theme.palette.error.main,
+    color: theme.palette.text.error,
   },
 }));
 
@@ -57,6 +57,9 @@ const StyledDateTimePicker = styled(MuiDateTimePicker)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
   '& .MuiFormHelperText-root': {
     marginTop: theme.spacing(1),
+  },
+  '& .Mui-focused .MuiFormLabel-asterisk': {
+    color: theme.palette.text.error,
   },
 }));
 

@@ -28,7 +28,11 @@ const StyledTextField = styled(TextField, {
   },
 
   '& .MuiFormLabel-asterisk': {
-    color: theme.palette.error.main,
+    color: theme.palette.text.error,
+  },
+
+  '& .MuiFormLabel-root.Mui-focused .MuiFormLabel-asterisk': {
+    color: theme.palette.text.error,
   },
 
   // for some reason label position must be fine-tuned in text fields with start adornments
