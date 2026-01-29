@@ -535,7 +535,7 @@ participant-hand-raise-text = Hand gehoben {$handUpdated}
 participant-last-active-text = Letzte Aktivität {$lastActive}
 participant-joined-event = ist dem Meeting um {$time} beigetreten
 participant-left-event = hat das Meeting um {$time} verlassen
-participant-removed-event = wurde aus dem Meeting entfernt
+participant-removed-event = wurde um {$time} aus dem Meeting entfernt
 
 poll-overview-button-create-poll = Umfrage erstellen
 poll-tab-title = Umfragen
