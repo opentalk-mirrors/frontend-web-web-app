@@ -69,8 +69,8 @@ importers:
         specifier: ^5.82.1
         version: 5.82.1(@types/node@24.10.9)(typescript@5.9.3)
       licensee:
-        specifier: ^12.0.0
-        version: 12.0.0
+        specifier: ^12.0.1
+        version: 12.0.1
       lint-staged:
         specifier: ^16.2.7
         version: 16.2.7
@@ -3651,9 +3651,9 @@ packages:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
 
-  licensee@12.0.0:
-    resolution: {integrity: sha512-3K3zNGHtSTvG+acyg5Eme9EnLB3XpA96ne6wWopBfh5O2fxRhotSACICJ3kEWyaAV3bynCyWjUtQh8WBxYAozw==}
-    engines: {node: ^20.20 || ^22.22 || ^24.14 || >= 25.4}
+  licensee@12.0.1:
+    resolution: {integrity: sha512-LMSs1+p7Gnqw4efSFaJPJJphn6QwugzXP0hD1VupIlGamkSvdxYm0asP3BVpM+DGJ5Bs3Cv1uwYhZokSNOwyPA==}
+    engines: {node: ^20.20 || ^22.22 || ^24.13 || >= 25.4}
     hasBin: true
 
   lines-and-columns@1.2.4:
@@ -6162,7 +6162,7 @@ snapshots:
       hosted-git-info: 9.0.2
       json-stringify-nice: 1.1.4
       lru-cache: 11.2.4
-      minimatch: 10.0.3
+      minimatch: 10.1.1
       nopt: 9.0.0
       npm-install-checks: 8.0.0
       npm-package-arg: 13.0.2
@@ -6206,7 +6206,7 @@ snapshots:
       '@npmcli/name-from-folder': 4.0.0
       '@npmcli/package-json': 7.0.4
       glob: 13.0.0
-      minimatch: 10.0.3
+      minimatch: 10.1.1
 
   '@npmcli/metavuln-calculator@9.0.3':
     dependencies:
@@ -8493,7 +8493,7 @@ snapshots:
 
   ignore-walk@8.0.0:
     dependencies:
-      minimatch: 10.0.3
+      minimatch: 10.1.1
 
   ignore@5.3.2: {}
 
@@ -8832,7 +8832,7 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
-  licensee@12.0.0:
+  licensee@12.0.1:
     dependencies:
       '@blueoak/list': 15.0.0
       '@npmcli/arborist': 9.1.10
