@@ -383,7 +383,7 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0(@types/react@19.2.10)(react@19.2.4)(redux@5.0.1)
       type-fest:
-        specifier: ^5.4.2
+        specifier: ^5.4.3
         version: 5.4.3
       typescript:
         specifier: ^5.9.3
