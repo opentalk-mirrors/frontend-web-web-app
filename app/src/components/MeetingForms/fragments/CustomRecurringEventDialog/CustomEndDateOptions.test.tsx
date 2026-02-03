@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { RRule } from '@heinlein-video/rrule';
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { renderWithProviders } from '../../../../utils/testUtils';
@@ -86,33 +86,5 @@ describe('CustomEndOptions', () => {
     expect(dayInput).toHaveAttribute('aria-disabled', 'true');
     expect(monthInput).toHaveAttribute('aria-disabled', 'true');
     expect(yearInput).toHaveAttribute('aria-disabled', 'true');
-  });
-
-  it('updates the end date when minDate moves past the selected date while "On" is active', async () => {
-    const updateRRuleObject = vi.fn();
-    const until = new Date('2025-05-10');
-    const minDate = new Date('2025-05-01');
-
-    const { rerender } = renderWithProviders(
-      <CustomEndOptions
-        rRuleObject={{ freq: RRule.DAILY, until }}
-        updateRRuleObject={updateRRuleObject}
-        minDate={minDate}
-      />,
-      { provider: { mui: true } }
-    );
-
-    const newMinDate = new Date('2025-05-20');
-
-    rerender(
-      <CustomEndOptions
-        rRuleObject={{ freq: RRule.DAILY, until }}
-        updateRRuleObject={updateRRuleObject}
-        minDate={newMinDate}
-      />
-    );
-
-    await waitFor(() => expect(updateRRuleObject).toHaveBeenCalledWith({ until: newMinDate }));
-    expect(updateRRuleObject).toHaveBeenCalledTimes(1);
   });
 });

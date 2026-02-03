@@ -82,7 +82,7 @@ describe('Custom Recurrence Dialog', () => {
     expect(screen.getByTestId('weekly-options')).toBeInTheDocument();
   });
 
-  it('enables date selection after selecting option "On"', async () => {
+  it('marks aria-disabled "true" for day, month and year when end date option is "OFF"', async () => {
     render(<CustomRecurringEventDialog {...mockDialogProps} />);
 
     const dayInput = screen.getByRole('spinbutton', { name: 'Day' });
@@ -92,10 +92,18 @@ describe('Custom Recurrence Dialog', () => {
     expect(dayInput).toHaveAttribute('aria-disabled', 'true');
     expect(monthInput).toHaveAttribute('aria-disabled', 'true');
     expect(yearInput).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('marks aria-disabled "false" for day, month and year when end date option is "ON"', async () => {
+    render(<CustomRecurringEventDialog {...mockDialogProps} />);
 
     const optionOn = screen.getByRole('radio', { name: 'dashboard-recurrence-dialog-end-option-on' });
 
     await userEvent.click(optionOn);
+
+    const dayInput = screen.getByRole('spinbutton', { name: 'Day' });
+    const monthInput = screen.getByRole('spinbutton', { name: 'Month' });
+    const yearInput = screen.getByRole('spinbutton', { name: 'Year' });
 
     expect(dayInput).toHaveAttribute('aria-disabled', 'false');
     expect(monthInput).toHaveAttribute('aria-disabled', 'false');

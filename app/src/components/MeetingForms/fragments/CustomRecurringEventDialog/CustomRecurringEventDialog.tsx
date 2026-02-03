@@ -108,6 +108,12 @@ export const CustomRecurringEventDialog = ({
         }
       : { freq: RRule.DAILY, interval: DEFAULT_INTERVAL }
   );
+  const [isEndDateValid, setIsEndDateValid] = useState(() => {
+    if (!rruleObject.until) {
+      return true;
+    }
+    return rruleObject.until >= recurrenceStartDate;
+  });
 
   /**
    * Helper function for updating that keeps rest of options as they were, but prevents from updating frequency.
@@ -257,6 +263,7 @@ export const CustomRecurringEventDialog = ({
                 rRuleObject={rruleObject}
                 updateRRuleObject={updateRRuleObject}
                 minDate={recurrenceStartDate}
+                onValidationChange={setIsEndDateValid}
               />
             </Grid>
           </Grid>
@@ -266,7 +273,12 @@ export const CustomRecurringEventDialog = ({
         <Button variant="contained" color="primary" onClick={closeDialog}>
           {t('dashboard-recurrence-dialog-close-button')}
         </Button>
-        <Button variant="contained" onClick={handleSelectRRule} disabled={isInvalidUntil()} color="secondary">
+        <Button
+          variant="contained"
+          onClick={handleSelectRRule}
+          disabled={isInvalidUntil() || !isEndDateValid}
+          color="secondary"
+        >
           {t('dashboard-recurrence-dialog-save-button')}
         </Button>
       </DialogActions>
