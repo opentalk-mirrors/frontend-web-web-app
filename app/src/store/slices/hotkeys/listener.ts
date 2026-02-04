@@ -86,6 +86,7 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
       if (
         (browser.isSafari() || browser.isFirefox()) &&
         event.key === 'Enter' &&
+        !event.shiftKey &&
         isTargetInputTypeAndContentEditable(event.target)
       ) {
         window.dispatchEvent(new CustomEvent('focusout', { detail: { target: event.target } }));
