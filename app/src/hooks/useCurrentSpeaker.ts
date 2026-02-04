@@ -4,7 +4,7 @@
 import { useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
 import { RoomEvent } from 'livekit-client';
 
-import { selectPinnedParticipantId } from '../store/slices/uiSlice';
+import { selectPinnedConnectionIdentifier } from '../store/slices/uiSlice';
 import { useAppSelector } from './useCustomRedux';
 
 export function useCurrentSpeaker() {
@@ -17,7 +17,7 @@ export function useCurrentSpeaker() {
       ],
     })
   );
-  const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
+  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
 
-  return pinnedParticipantId || sortedParticipants[0]?.identity;
+  return pinnedConnectionIdentifier || sortedParticipants[0]?.identity;
 }

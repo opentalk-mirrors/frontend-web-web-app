@@ -20,8 +20,8 @@ import {
   selectPaginationDirectionState,
   selectPaginationPageState,
 } from '../../store/slices/uiSlice';
-import GridCell from './fragments/GridCell';
 import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
+import GridCell from './fragments/GridCell';
 
 const GridContainer = styled('div', {
   shouldForwardProp: (prop) => prop !== 'videoWidth',

@@ -8,9 +8,9 @@ import { useMemo, useState } from 'react';
 
 import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
 import { useCurrentSpeaker } from '../../../hooks/useCurrentSpeaker';
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import IconSlideButton from './IconSlideButton';
 import { Thumbnail } from './Thumbnail';
-import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 
 // ThumbsHolder: the surrounding container of the thumbnails
 const ThumbsHolder = styled(Stack, {
