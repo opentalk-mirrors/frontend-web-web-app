@@ -24,8 +24,8 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
 
   const roomId = event.room.id;
   const { data: roomTariff } = useGetRoomTariffQuery(roomId);
-  const isGuestsAllowedFeatureEnabled = Boolean(
-    roomTariff && isFeatureEnabledPredicate('guests_allowed', roomTariff.modules)
+  const isInviteAllowed = Boolean(
+    roomTariff && isFeatureEnabledPredicate('guests_allowed', roomTariff.modules) && !event.room.e2eEncryption
   );
 
   const roomURL = useMemo(() => new URL(`/room/${roomId}`, baseURL), [baseURL, roomId]);
@@ -74,7 +74,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
           eventTitle={eventTitle}
         />
       )}
-      {isGuestsAllowedFeatureEnabled && (
+      {isInviteAllowed && (
         <GuestLinkField
           fieldKey={FieldKeys.GuestLink}
           checked={highlightedField === FieldKeys.GuestLink}

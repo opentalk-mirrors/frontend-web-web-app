@@ -86,8 +86,8 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
   const [getRoomInvites, { data: invites, isLoading: isGetInvitesLoading }] = useLazyGetRoomInvitesQuery();
 
   const { data: roomTariff } = useGetRoomTariffQuery(roomId ?? skipToken);
-  const isGuestsAllowedFeatureEnabled = Boolean(
-    roomTariff && isFeatureEnabledPredicate('guests_allowed', roomTariff.modules)
+  const isInviteAllowed = Boolean(
+    roomTariff && isFeatureEnabledPredicate('guests_allowed', roomTariff.modules) && !event.room?.e2eEncryption
   );
 
   const stopPropagation = useCallback(
@@ -260,14 +260,14 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
       ...meetingOptionItems,
     ];
 
-    if (isGuestsAllowedFeatureEnabled) {
+    if (isInviteAllowed) {
       creatorOptions.push(copyGuestLinkOption);
     }
 
     creatorOptions.push(deleteMeetingOption);
 
     return creatorOptions;
-  }, [copyGuestLinkOption, deleteMeetingOption, isGuestsAllowedFeatureEnabled, meetingOptionItems, updateMeeting]);
+  }, [copyGuestLinkOption, deleteMeetingOption, isInviteAllowed, meetingOptionItems, updateMeeting]);
 
   const menuOptions = useMemo(
     () => (isMeetingCreator ? creatorMeetingOptionItems : meetingOptionItems),
