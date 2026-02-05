@@ -70,6 +70,17 @@ describe('MeetingLinksAndPasswords component tests', () => {
       renderWithProviders(<MeetingLinksAndPasswords event={mockedSingleEvent} />, { store });
       expect(screen.queryByTestId('guest-link-field')).not.toBeInTheDocument();
     });
+    it('does not render guest link field if e2e encryption is activated', () => {
+      const eventWithE2EE = {
+        ...mockedSingleEvent,
+        room: {
+          ...mockedSingleEvent.room,
+          e2eEncryption: true,
+        },
+      };
+      renderWithProviders(<MeetingLinksAndPasswords event={eventWithE2EE} />, { store });
+      expect(screen.queryByTestId('guest-link-field')).not.toBeInTheDocument();
+    });
     it('renders guest link field if guests allowed core feature is present', () => {
       renderWithProviders(<MeetingLinksAndPasswords event={mockedSingleEvent} />, { store });
       expect(screen.getByTestId('guest-link-field')).toBeInTheDocument();
