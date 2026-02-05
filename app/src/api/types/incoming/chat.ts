@@ -22,7 +22,8 @@ export interface ClearGlobalChat {
 }
 export interface SetLastSeenTimestamp {
   message: 'set_last_seen_timestamp';
-  scope: 'global' | 'private';
+  scope: 'global' | 'private' | 'breakout';
+  target?: ParticipantId;
   timestamp: Timestamp;
 }
 
