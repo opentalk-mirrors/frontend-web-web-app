@@ -8,15 +8,8 @@ import { Mock, vi } from 'vitest';
 import { AuthAdapter, type AuthAdapterConfiguration, type AuthenticationProviderUrls } from './authAdapter';
 import { AuthContext, type AuthContextValues } from './authContext';
 import AuthProvider from './authProvider';
-import { getAppDispatch, getNewToken, startLoading, type AuthState } from './store';
-import {
-  AuthTypeError,
-  SessionStatus,
-  calculateTokenRenewalTime,
-  hasValidToken,
-  saveLocationForRedirect,
-  type SerializedError,
-} from './utils';
+import { getAppDispatch, getNewToken, saveLocationRedirect, startLoading, type AuthState } from './store';
+import { AuthTypeError, SessionStatus, calculateTokenRenewalTime, hasValidToken, type SerializedError } from './utils';
 
 const DEFAULT_LOGIN_TIMESTAMP = '2024-01-01T00:00:00.000Z';
 
@@ -156,13 +149,18 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(context.openidConfig).toEqual(oidcConfiguration));
 
     await context.signIn('/dashboard');
-    expect(adapter.startOidcSignIn).toHaveBeenCalledWith('/dashboard');
-
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'auth/saveLocationRedirect',
+      payload: '/dashboard',
+    });
     context.signOut('/bye');
-    saveLocationForRedirect('/saved');
+    dispatch(saveLocationRedirect('/saved'));
     expect(adapter.signOut).toHaveBeenCalledWith('/bye');
     expect(context.getBaseUrl()).toBe(configuration.baseUrl);
-    expect(context.getSavedRedirectUrl()).toBe('/saved');
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'auth/saveLocationRedirect',
+      payload: '/saved',
+    });
 
     context.getNewRefreshToken();
     await waitFor(() =>

@@ -1,5 +1,5 @@
 // move this to common
-import { createSlice, ThunkDispatch } from '@reduxjs/toolkit';
+import { createAction, createSlice, ThunkDispatch } from '@reduxjs/toolkit';
 import type { Action, UnknownAction } from '@reduxjs/toolkit';
 
 import { AuthTypeError, SerializedError, SessionStatus, getSessionStatus } from '../utils';
@@ -104,8 +104,10 @@ export const authSlice = createSlice({
   },
 });
 
+export const saveLocationRedirect = createAction('auth/saveLocationRedirect', (payload: string) => ({ payload }));
 export const { authorize, logout, startLoading, authError } = authSlice.actions;
 
+export const getSavedLocation = () => sessionStorage.getItem('saved_location') || undefined;
 export const selectIsRefreshTokenLoading = (state: { auth: AuthState }): boolean => state.auth.refreshTokenLoading;
 export const selectLoginTimestamp = (state: { auth: AuthState }): string | undefined => state.auth.loginTimestamp;
 export const selectIsUserInitialLogin = (state: { auth: AuthState }): boolean =>
