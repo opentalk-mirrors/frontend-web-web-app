@@ -11,6 +11,7 @@ import { cancel, stop } from '../../../api/types/outgoing/legalVote';
 import { LegalBallotIcon } from '../../../assets/icons';
 import { ProgressBar } from '../../../commonComponents';
 import { useDateFormat } from '../../../hooks';
+import { setVoteOrPollIdToShow } from '../../../store/slices/uiSlice';
 import { LegalVoteState, LegalVote } from '../../../types';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
 import VoteAndPollCountdown from '../../VoteAndPollCountdown';
@@ -50,7 +51,6 @@ const LegalVoteOverviewPanel = ({
 }: LegalVoteOverviewPanelProps) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-
   const [dispatchTriggered, setDispatchTriggered] = useState(false);
 
   const handleCancel = () => {
@@ -89,6 +89,28 @@ const LegalVoteOverviewPanel = ({
   const formattedStartTime = useDateFormat(localStartTimeAsDate, 'time');
   const getVotedNumber = () => (votingRecord !== undefined ? Object.keys(votingRecord).length : 0);
   const MAX_TOPIC_LENGTH = 120;
+
+  const renderButtons = () => {
+    if (state === LegalVoteState.Started) {
+      return (
+        <ButtonContainer>
+          <Button size="small" variant="text" onClick={handleCancel} disabled={dispatchTriggered} color="secondary">
+            {t('legal-vote-overview-panel-button-cancel')}
+          </Button>
+          <Button size="small" variant="contained" onClick={handleEnd} disabled={dispatchTriggered} color="secondary">
+            {t('legal-vote-overview-panel-button-end')}
+          </Button>
+        </ButtonContainer>
+      );
+    }
+    if (state === LegalVoteState.Finished) {
+      return (
+        <Button size="small" variant="contained" onClick={() => dispatch(setVoteOrPollIdToShow(id))} color="secondary">
+          {t('legal-vote-popover-results-button')}
+        </Button>
+      );
+    }
+  };
 
   return (
     <MainContainer spacing={2}>
@@ -153,25 +175,8 @@ const LegalVoteOverviewPanel = ({
             {getVotedNumber()}/{allowedParticipants.length || 0}
           </Typography>
         </Box>
-        {state === LegalVoteState.Started && (
-          <>
-            <Divider />
-            <ButtonContainer>
-              <Button size="small" variant="text" onClick={handleCancel} disabled={dispatchTriggered} color="secondary">
-                {t('legal-vote-overview-panel-button-cancel')}
-              </Button>
-              <Button
-                size="small"
-                variant="contained"
-                onClick={handleEnd}
-                disabled={dispatchTriggered}
-                color="secondary"
-              >
-                {t('legal-vote-overview-panel-button-end')}
-              </Button>
-            </ButtonContainer>
-          </>
-        )}
+        <Divider />
+        {renderButtons()}
       </Stack>
     </MainContainer>
   );
