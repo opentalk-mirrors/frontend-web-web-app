@@ -119,7 +119,7 @@ describe('DateTimeSection', () => {
       expect(formikInstance?.values.startDate).toBe('2025-10-05T14:48:00.000Z');
       expect(startValidateSpy).toHaveBeenCalledExactlyOnceWith('startDate');
 
-      expect(formikInstance?.values.endDate).toBe('2025-10-05T15:00:00.000Z');
+      expect(formikInstance?.values.endDate).toBe('2025-10-05T15:48:00.000Z');
       expect(endValidateSpy).toHaveBeenCalledExactlyOnceWith('endDate');
     });
   });
