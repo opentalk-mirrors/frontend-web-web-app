@@ -16,7 +16,7 @@ import { useAppSelector } from './useCustomRedux';
 const useTabs = () => {
   const features = useAppSelector(selectConfigFeatures);
   const enabledModulesList = useAppSelector(selectEnabledModulesList);
-  const enabledModules = useMemo(() => Object.keys(enabledModulesList).map((module) => module), [enabledModulesList]);
+  const enabledModules = useMemo(() => enabledModulesList ?? [], [enabledModulesList]);
   const timerStyle = useAppSelector(selectTimerStyle);
   const currentRoomMode = useAppSelector(selectCurrentRoomMode);
   const isTimerCoffee = timerStyle === TimerStyle.CoffeeBreak;

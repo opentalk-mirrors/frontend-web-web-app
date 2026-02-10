@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Stack, Typography } from '@mui/material';
+import { CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -39,7 +40,7 @@ export const StorageAlmostFullBanner = () => {
   const { data: userData, isLoading: isUserDataLoading } = useGetMeQuery();
   const { data: tariffData, isLoading: isTariffDataLoading } = useGetMeTariffQuery();
   const isStorageUpgradable = Boolean(
-    tariffData && isFeatureEnabledPredicate('storage_upgradable', tariffData.modules)
+    tariffData && isFeatureEnabledPredicate(CoreFeatures.StorageUpgradable, tariffData.modules)
   );
   const usedStorage = userData?.usedStorage;
   const maxStorage = tariffData?.quotas.maxStorage;

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { EventId, EventInfo, InviteCode, MeetingDetails, RoomId } from '@opentalk/rest-api-rtk-query';
+import { CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 
 import type { RoomInfo } from '../../../types';
@@ -46,11 +47,7 @@ describe('MeetingDetailsDialog', () => {
       config: {
         baseUrl: 'http://localhost:3000',
         tariff: {
-          modules: {
-            core: {
-              features: ['guests_allowed'],
-            },
-          },
+          disabledFeatures: [],
         },
       },
     },
@@ -121,11 +118,7 @@ describe('MeetingDetailsDialog', () => {
         config: {
           baseUrl: 'http://localhost:3000',
           tariff: {
-            modules: {
-              core: {
-                features: [],
-              },
-            },
+            disabledFeatures: [CoreFeatures.GuestsAllowed],
           },
         },
       },

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Event, PlatformKind } from '@opentalk/rest-api-rtk-query';
+import { Event, PlatformKind, CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,7 +25,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
   const roomId = event.room.id;
   const { data: roomTariff } = useGetRoomTariffQuery(roomId);
   const isInviteAllowed = Boolean(
-    roomTariff && isFeatureEnabledPredicate('guests_allowed', roomTariff.modules) && !event.room.e2eEncryption
+    roomTariff && isFeatureEnabledPredicate(CoreFeatures.GuestsAllowed, roomTariff.modules) && !event.room.e2eEncryption
   );
 
   const roomURL = useMemo(() => new URL(`/room/${roomId}`, baseURL), [baseURL, roomId]);

@@ -63,8 +63,9 @@ const config: ConfigState = {
     id: '' as TariffId,
     name: '',
     quotas: {},
-    modules: {},
+    disabledFeatures: [],
   },
+  enabledModules: [],
   beta: {
     isBeta: false,
     badgeUrl: '',

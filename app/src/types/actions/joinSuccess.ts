@@ -1,7 +1,14 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { EventInfo, SharedFolderData, StreamingState, Tariff } from '@opentalk/rest-api-rtk-query';
+import {
+  BackendModules,
+  BackendFeatures,
+  EventInfo,
+  SharedFolderData,
+  StreamingState,
+  TariffId,
+} from '@opentalk/rest-api-rtk-query';
 import { MeetingDetails, TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 
 import type {
@@ -51,7 +58,7 @@ export interface JoinSuccessInternalState {
   forceMute?: ForceMute;
   recording?: StreamingState;
   serverTimeOffset: number;
-  tariff: Tariff;
+  tariff: SignalingTariff;
   timer?: TimerState;
   sharedFolder?: SharedFolderData;
   eventInfo?: EventInfo;
@@ -65,6 +72,7 @@ export interface JoinSuccessInternalState {
     publicUrl: string;
   };
   trainingParticipationReport?: ParticipationLogging;
+  enabledModules: BackendModules[];
 }
 
 export interface JoinSuccessIncoming {
@@ -90,7 +98,7 @@ export interface JoinSuccessIncoming {
   media?: ParticipantMediaState;
   recording?: StreamingState;
   timer?: TimerState;
-  tariff: Tariff;
+  tariff: SignalingTariff;
   closesAt: Timestamp;
   sharedFolder: SharedFolderData;
   eventInfo?: EventInfo;
@@ -114,7 +122,8 @@ export interface JoinSuccessRoomserver {
   avatarUrl?: string;
   role: Role;
   closesAt?: Timestamp;
-  tariff: Tariff;
+  tariff: SignalingTariff;
+  enabledModules: BackendModules[];
   moduleData: ModuleData;
   participants: RoomserverParticipant[];
   eventInfo?: EventInfo;
@@ -220,5 +229,12 @@ export type RoomserverParticipant = {
   connections: ConnectionInfo[];
   moduleData: PeerModuleData;
 };
+
+export interface SignalingTariff {
+  id: TariffId;
+  name: string;
+  quotas: Record<string, number>;
+  disabledFeatures: BackendFeatures[];
+}
 
 export type ConnectionInfo = { connectionId: ConnectionId; deviceId: DeviceId };

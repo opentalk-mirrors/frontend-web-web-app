@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { codeCallback } from '@opentalk/redux-oidc';
+import { CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
@@ -12,7 +13,6 @@ import { lowerHand, raiseHand } from '../../api/types/outgoing/raiseHands';
 import i18n from '../../i18n';
 import { MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, Role, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
-import { isFeatureEnabledPredicate } from '../../utils/moduleUtils';
 import { changeMedia, joinSuccess, setScreenShareEnabled, startRoom } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
@@ -81,7 +81,7 @@ export const userSlice = createSlice({
       state.joinedAt = new Date().toISOString();
       state.lastActive = state.joinedAt;
       state.isRoomOwner = isRoomOwner;
-      state.isTariffUpgradable = isFeatureEnabledPredicate('storage_upgradable', tariff.modules);
+      state.isTariffUpgradable = !tariff.disabledFeatures.includes(CoreFeatures.StorageUpgradable);
     });
     builder.addCase(connectionClosed, (state) => {
       state.uuid = null;

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { Store } from '@reduxjs/toolkit';
 import { screen, within, fireEvent } from '@testing-library/react';
 import { List } from 'react-window';
@@ -35,11 +36,7 @@ const USER_IS_MODERATOR_STORE = {
 const WHISPER_MODULE_ENABLED_STORE = {
   initialState: {
     config: {
-      tariff: {
-        modules: {
-          subroomAudio: [],
-        },
-      },
+      enabledModules: [BackendModules.SubroomAudio],
     },
   },
 };

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, ListItemIcon, MenuList, Divider as MuiDivider, Stack, Typography, styled } from '@mui/material';
-import { BackendModules, StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import { BackendModules, CoreFeatures, RecordingFeatures, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -122,8 +122,8 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const recording = useAppSelector(selectRecordingTarget);
   const activeStreamIds = useAppSelector(selectActiveStreamIds);
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
-  const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled('record'));
-  const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled('guests_allowed'));
+  const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled(RecordingFeatures.Record));
+  const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled(CoreFeatures.GuestsAllowed));
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
   const userMenuItems: Array<MenuEntry> = [];

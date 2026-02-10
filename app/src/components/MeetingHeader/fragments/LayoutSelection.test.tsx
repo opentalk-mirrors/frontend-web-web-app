@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useMediaQuery } from '@mui/material';
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Mock } from 'vitest';
@@ -95,7 +96,7 @@ describe('Layout selection menu', () => {
     const user = userEvent.setup();
     mockUseMediaQuery.mockReturnValue(true);
     const { store } = configureStore({
-      initialState: { config: { tariff: { modules: { meetingNotes: [] } } } },
+      initialState: { config: { enabledModules: [BackendModules.MeetingNotes] } },
     });
 
     renderWithProviders(<LayoutSelection />, { store, provider: { snackbar: true, mui: true } });

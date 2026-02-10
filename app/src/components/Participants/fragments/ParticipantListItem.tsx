@@ -11,6 +11,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { format } from 'date-fns';
 import { isEmpty, uniqueId } from 'lodash';
 import React, { useCallback, useState } from 'react';
@@ -155,7 +156,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
   const [openRemovalDialog, setOpenRemovalDialog] = useState(false);
 
-  const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).subroomAudio;
+  const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).includes(BackendModules.SubroomAudio);
 
   const selectedParticipant = useRemoteParticipant(participant.id);
   const participantId = participant.id;
