@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { AuthAdapter, AuthAdapterConfiguration, AuthenticationProviderUrls } from './authAdapter';
 import { AuthContext } from './authContext';
-import { getNewToken } from './store';
+import { getNewToken, getSavedLocation, saveLocationRedirect } from './store';
 import {
   selectError,
   selectIsAuthenticated,
@@ -13,7 +13,7 @@ import {
   startLoading,
   getAppDispatch,
 } from './store';
-import { AuthTypeError, calculateTokenRenewalTime, getSavedLocation, hasValidToken } from './utils';
+import { AuthTypeError, calculateTokenRenewalTime, hasValidToken } from './utils';
 
 export interface AuthProviderValues {
   configuration: AuthAdapterConfiguration;
@@ -32,9 +32,10 @@ const AuthProvider: FC<PropsWithChildren<AuthProviderValues>> = ({ children, con
   // default is window.location.href
   const signIn = useCallback(
     async (redirectUrl?: string): Promise<void> => {
-      return authAdapter.startOidcSignIn(redirectUrl);
+      dispatch(saveLocationRedirect(redirectUrl || window.location.pathname + window.location.search));
+      return authAdapter.startOidcSignIn();
     },
-    [authAdapter]
+    [authAdapter, dispatch]
   );
 
   const signOut = useCallback(

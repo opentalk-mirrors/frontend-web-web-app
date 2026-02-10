@@ -1,11 +1,6 @@
 import camelcaseKeys from 'camelcase-keys';
 
-import {
-  clearApplicationStorage,
-  generateAndSaveOidcStateString,
-  generatePkceChallenge,
-  saveLocationForRedirect,
-} from './utils';
+import { clearApplicationStorage, generateAndSaveOidcStateString, generatePkceChallenge } from './utils';
 
 export interface AuthAdapterConfiguration {
   authority: string;
@@ -101,10 +96,7 @@ export class AuthAdapter {
   /**
    * Redirect user to sign in provider
    */
-  public async startOidcSignIn(redirectUrl = window.location.pathname) {
-    if (!redirectUrl.includes(this._configuration.redirectUri)) {
-      saveLocationForRedirect(redirectUrl);
-    }
+  public async startOidcSignIn() {
     window.location.replace(await this.getLoginUrl());
   }
 
