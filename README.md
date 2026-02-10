@@ -111,7 +111,7 @@ window.config = {
     },
     // To enable user feedback collection configure a collection URL. (optional) & API KEY
     "userSurveyUrl":"https://your-survey.collection/endpoint",
-    "userSurveyApiKey: 'api_key',
+    "userSurveyApiKey": 'api_key',
     "videoBackgrounds": [
       {
         altText: 'Elevate',
