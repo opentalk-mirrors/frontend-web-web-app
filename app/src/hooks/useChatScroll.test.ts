@@ -35,6 +35,8 @@ describe('useChatScroll', () => {
 
   beforeEach(() => {
     scrollToBottom.mockClear();
+    mockElement.addEventListener = vi.fn();
+    mockElement.removeEventListener = vi.fn();
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
       cb(0);
       return 0;
@@ -47,10 +49,11 @@ describe('useChatScroll', () => {
     });
 
     act(() => {
-      result.current.viewportRef.current = mockElement;
+      result.current.viewportRef(mockElement);
     });
+    scrollToBottom.mockClear();
 
-    mockElement.scrollTop = 497;
+    mockElement.scrollTop = 500;
     act(() => {
       result.current.handleChatScroll();
     });
@@ -71,6 +74,11 @@ describe('useChatScroll', () => {
     const { result, rerender } = renderHook((props) => useChatScroll(props), {
       initialProps: { isLoading: false, messages: mockMessages, searchValue: '', scrollToBottom },
     });
+
+    act(() => {
+      result.current.viewportRef(mockElement);
+    });
+    scrollToBottom.mockClear();
 
     // Set user not at bottom
     mockElement.scrollTop = 400;
@@ -96,8 +104,9 @@ describe('useChatScroll', () => {
     });
 
     act(() => {
-      result.current.viewportRef.current = mockElement;
+      result.current.viewportRef(mockElement);
     });
+    scrollToBottom.mockClear();
 
     // Set user not at bottom
     mockElement.scrollTop = 400;
@@ -107,5 +116,19 @@ describe('useChatScroll', () => {
 
     rerender({ isLoading: false, messages: mockMessages, searchValue: 'test', scrollToBottom });
     expect(scrollToBottom).toHaveBeenCalled();
+  });
+
+  it('should attach scroll listener when DOM node appears', () => {
+    const { result } = renderHook((props) => useChatScroll(props), {
+      initialProps: { isLoading: false, messages: mockMessages, searchValue: '', scrollToBottom },
+    });
+
+    expect(mockElement.addEventListener).not.toHaveBeenCalled();
+
+    act(() => {
+      result.current.viewportRef(mockElement);
+    });
+
+    expect(mockElement.addEventListener).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
   });
 });

@@ -23,6 +23,7 @@ import {
 import type { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
 import { selectChatSearchValue } from '../../../store/slices/uiSlice';
+import { selectOurUuid } from '../../../store/slices/userSlice';
 import { ChatMessage as ChatMessageType, ChatScope, GroupId, ParticipantId, TargetId, Timestamp } from '../../../types';
 import ChatMessage from './ChatMessage';
 import NoSearchResult from './NoSearchResult';
@@ -43,6 +44,7 @@ const ChatOrderedList = styled(List, {
   textAlign: 'left',
   width: '100%',
   paddingRight: theme.spacing(1),
+  paddingBottom: theme.spacing(0),
   display: empty ? 'none' : 'block',
   willChange: 'transform', // Performance has been tested with and without this property and observed significant smoothness when used.
 }));
@@ -90,6 +92,7 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
   const dispatch = useAppDispatch();
   const virtualList = useRef<ViewportListRef | null>(null);
   const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
+  const ourUuid = useAppSelector(selectOurUuid);
 
   const searchedMessages = useMemo(
     () => filterMessages(combinedMessageAndEvents, chatSearchValue, chatSearchResults),
@@ -143,12 +146,13 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
     }
   }, [searchedMessages.length]);
 
-  const { viewportRef, handleChatScroll } = useChatScroll({
+  const { viewportRef, viewportNode } = useChatScroll({
     isLoading: isLoadingMoreChunks,
     messages: searchedMessages,
     searchValue: chatSearchValue,
     scrollToBottom,
   });
+  const viewportRefObject = useMemo(() => ({ current: viewportNode }), [viewportNode]);
 
   useEffect(() => {
     const triggerElement = loadMoreTriggerRef.current;
@@ -165,7 +169,7 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
         }
       },
       {
-        root: viewportRef.current,
+        root: viewportNode,
         rootMargin: '50px 0px 0px 0px',
         threshold: 0.1,
       }
@@ -176,22 +180,18 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
     return () => {
       observer.disconnect();
     };
-  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, scope, viewportRef]);
+  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, scope, viewportNode]);
 
   useLayoutEffect(() => {
-    scrollToBottom();
-  }, [chatSearchValue, scrollToBottom]);
-
-  useLayoutEffect(() => {
-    const viewPortNode = viewportRef.current;
-    if (!viewPortNode) {
+    if (searchedMessages.length === 0) {
       return;
     }
-    viewPortNode.addEventListener('scroll', handleChatScroll);
-    return () => {
-      viewPortNode.removeEventListener('scroll', handleChatScroll);
-    };
-  }, [handleChatScroll, viewportRef]);
+
+    const lastMessage = searchedMessages[searchedMessages.length - 1];
+    if (lastMessage && !('event' in lastMessage) && lastMessage.source === ourUuid) {
+      scrollToBottom();
+    }
+  }, [searchedMessages, scrollToBottom, ourUuid]);
 
   useEffect(() => {
     if (chatSearchValue.length >= 2 && nextIndex !== null) {
@@ -226,7 +226,7 @@ const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps
         )}
         <ViewportList
           ref={virtualList}
-          viewportRef={viewportRef}
+          viewportRef={viewportRefObject}
           items={searchedMessages}
           overscan={8}
           itemMargin={0}
