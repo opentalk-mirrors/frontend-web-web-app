@@ -102,17 +102,11 @@ export class AuthAdapter {
 
   public getAccessToken = () => localStorage.getItem('access_token');
 
-  public getIdToken = () => localStorage.getItem('id_token');
-
   public async signOut(signOutUrl?: string): Promise<void> {
     const { endSessionEndpoint } = await this.getConfigurationEndpoints();
     const logoutUrl = new URL(endSessionEndpoint);
     logoutUrl.searchParams.append('client_id', this._configuration.clientId);
 
-    const idToken = localStorage.getItem('id_token');
-    if (idToken) {
-      logoutUrl.searchParams.append('id_token_hint', idToken);
-    }
     logoutUrl.searchParams.append(
       'post_logout_redirect_uri',
       signOutUrl ? signOutUrl : this._configuration.signOutRedirectUri

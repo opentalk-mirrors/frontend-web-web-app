@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { codeCallback } from '@opentalk/redux-oidc';
 import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
@@ -13,7 +14,7 @@ import i18n from '../../i18n';
 import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
 import { isFeatureEnabledPredicate } from '../../utils/moduleUtils';
-import { changeMedia, joinSuccess, login, setScreenShareEnabled, startRoom } from '../commonActions';
+import { changeMedia, joinSuccess, setScreenShareEnabled, startRoom } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { connectionClosed, fetchRoomByInviteId } from './roomSlice';
@@ -24,7 +25,6 @@ export type UserState = {
   role: Role;
   displayName: string;
   avatarUrl?: string;
-  loggedIdToken?: string;
   lastActive?: string;
   joinedAt?: string;
   meetingNotesAccess: MeetingNotesAccess;
@@ -58,12 +58,6 @@ export const userSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchRoomByInviteId.fulfilled, (state) => {
       state.role = Role.Guest;
-    });
-    builder.addCase(login.fulfilled, (state, { meta }) => {
-      state.loggedIdToken = meta.arg;
-    });
-    builder.addCase(login.rejected, (state) => {
-      state.loggedIdToken = undefined;
     });
     builder.addCase(
       startRoom.pending,
@@ -176,7 +170,7 @@ export default userSlice.reducer;
 
 const startAuthListener = (startAppListening: StartAppListening) =>
   startAppListening({
-    actionCreator: login.fulfilled,
+    actionCreator: codeCallback.fulfilled,
     effect: async (_, { dispatch }) => {
       const result = await dispatch(restApi.endpoints.getMe.initiate());
 
