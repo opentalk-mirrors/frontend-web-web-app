@@ -6,7 +6,6 @@ import { Event, RecurrencePattern, isTimelessEvent } from '@opentalk/rest-api-rt
 import { FormikProps } from 'formik';
 import { useCallback, useEffect, useMemo } from 'react';
 
-import roundToUpper30 from '../../../utils/roundToUpper30';
 import { CommonFrequencies } from '../../../utils/rruleUtils';
 import { isInvalidDate } from '../../../utils/typeGuardUtils';
 import { DashboardDateTimePicker } from './DashboardDateTimePicker';
@@ -21,21 +20,31 @@ interface RecurrenceSectionProps {
 
 const DateTimeSection = ({ formik, existingEvent, onRecurrencePatternChange }: RecurrenceSectionProps) => {
   const onChangeStartDate = useCallback(
-    async (date: Date | null) => {
-      if (!date) {
+    async (startDate: Date | null) => {
+      if (!startDate) {
         await formik.setFieldValue('startDate', '');
         await formik.validateField('startDate');
         return;
       }
 
-      if (isInvalidDate(date)) {
-        await formik.setFieldValue('startDate', String(date));
+      if (isInvalidDate(startDate)) {
+        await formik.setFieldValue('startDate', String(startDate));
         await formik.validateField('startDate');
         return;
       }
 
-      await formik.setFieldValue('startDate', date.toISOString());
-      await formik.setFieldValue('endDate', roundToUpper30(date).toISOString());
+      const calculateEndDate = () => {
+        const oldStart = new Date(formik.values.startDate);
+        const oldEnd = new Date(formik.values.endDate);
+        const duration = oldEnd.getTime() - oldStart.getTime();
+        return new Date(startDate.getTime() + duration);
+      };
+
+      const endDate = calculateEndDate();
+
+      await formik.setFieldValue('startDate', startDate.toISOString());
+      await formik.setFieldValue('endDate', endDate.toISOString());
+
       await formik.validateField('startDate');
       await formik.validateField('endDate');
     },
