@@ -215,6 +215,7 @@ menutabs-people-complementary = { $count ->
 }
 menutabs-messages = Nachrichten
 participant-list-hidden-heading = Teilnehmerliste
+participant-list-self-description = Ich
 chatroom-hidden-heading = Chatraum
 
 guest-label = Gast
