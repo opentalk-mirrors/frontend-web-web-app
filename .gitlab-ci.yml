@@ -456,6 +456,7 @@ container-create-and-push-tags:
       optional: true
     - job: container
     - job: container-profiling
+      optional: true
   rules:
     - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+.*$/
     - if: $CI_PIPELINE_SOURCE == "pipeline"
