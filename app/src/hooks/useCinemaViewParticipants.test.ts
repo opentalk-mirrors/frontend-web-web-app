@@ -53,8 +53,8 @@ const mockedRemoteParticipants = (
     const base = mockedParticipant(id, kind, role);
     return {
       ...base,
-      // Align identity with id for remote participant mapping in hook
-      identity: base.id,
+      // Align identity with connection identifier for remote participant mapping in hook
+      identity: base.identity,
       isCameraEnabled,
     };
   });

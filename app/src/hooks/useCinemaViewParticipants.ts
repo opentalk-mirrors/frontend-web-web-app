@@ -9,6 +9,7 @@ import { CinemaViewSortOrder } from '../store/slices/common';
 import { selectAllOnlineParticipants } from '../store/slices/participantsSlice';
 import { selectCinemaViewOrder } from '../store/slices/uiSlice';
 import { Participant, ParticipationKind, Role } from '../types';
+import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
 import { useAppSelector } from './useCustomRedux';
 
 export type CinemaViewParticipant = Participant & {
@@ -52,16 +53,22 @@ export function useCinemaViewParticipants(): {
   const viewOrder = useAppSelector(selectCinemaViewOrder);
 
   const cinemaViewParticipants = useMemo(() => {
-    const mergedParticipants = onlineParticipants.map((op) => {
-      const remoteParticipant = remoteParticipantsMap.get(op.id);
-      return {
-        ...op,
-        audioLevel: remoteParticipant?.audioLevel ?? 0,
-        isCameraEnabled: remoteParticipant?.isCameraEnabled ?? false,
-        isSpeaking: remoteParticipant?.isSpeaking ?? false,
-        lastSpokeAt: remoteParticipant?.lastSpokeAt,
-      };
+    const mergedParticipants = onlineParticipants.flatMap((op) => {
+      return op.connections.map((connectionId) => {
+        const combinedId = constructConnectionIdentifier(op.id, connectionId);
+        const remoteParticipant = remoteParticipantsMap.get(combinedId);
+
+        return {
+          ...op,
+          connections: [connectionId],
+          audioLevel: remoteParticipant?.audioLevel ?? 0,
+          isCameraEnabled: remoteParticipant?.isCameraEnabled ?? false,
+          isSpeaking: remoteParticipant?.isSpeaking ?? false,
+          lastSpokeAt: remoteParticipant?.lastSpokeAt,
+        };
+      });
     });
+
     return mergedParticipants.sort((a, b) => {
       if (viewOrder === CinemaViewSortOrder.ModeratorsFirst) {
         const aRole = a.role ?? Role.User;
