@@ -31,8 +31,13 @@ set-version VERSION:
 
 # Update the changelog
 update-changelog VERSION: _check_git_cliff
+    #!/usr/bin/env bash
+
+    if [ -z "$GITLAB_TOKEN" ] && [ -f "$HOME/.gitlab_token" ]; then
+        GITLAB_TOKEN=$(cat $HOME/.gitlab_token)
+    fi
+
     # Update Changelog
-    GITLAB_TOKEN=$(cat ~/.gitlab_token) \
     GITLAB_API_URL=https://git.opentalk.dev/api/v4 \
     GITLAB_REPO=opentalk/frontend/web/web-app \
     git-cliff -vv \
