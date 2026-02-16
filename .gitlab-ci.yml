@@ -21,7 +21,7 @@ spec:
       default: ''
 ---
 default:
-  image: node:24.13.0-alpine
+  image: node:24.13.1-alpine
 
 stages:
   - analyze
