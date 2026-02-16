@@ -21,6 +21,7 @@ const MuteParticipantsTab = () => {
       RoomEvent.ParticipantDisconnected,
       RoomEvent.TrackMuted,
       RoomEvent.TrackUnmuted,
+      RoomEvent.TrackPublished,
     ],
   });
   const unmutedParticipants = allParticipants.filter((participant) => participant.isMicrophoneEnabled);
