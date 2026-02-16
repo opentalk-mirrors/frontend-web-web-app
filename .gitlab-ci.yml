@@ -584,7 +584,7 @@ deploy:
     - DIGEST=$(cat "./digest.txt")
     - helm uninstall frontend-$CI_MERGE_REQUEST_IID -n review-latest || true
     - >
-      helm upgrade --install --force frontend-$CI_MERGE_REQUEST_IID opentalk/opentalk-helm
+      helm upgrade --version 4.4.1 --install --force frontend-$CI_MERGE_REQUEST_IID opentalk/opentalk-helm
       --set tags.standard=false
       --set tags.webapp=true
       --set webapp.image.pullPolicy=IfNotPresent
@@ -599,6 +599,7 @@ deploy:
       --set webapp.ingress.tls[0].secretNameOverride=review-latest-tls
       --set global.defaultWebServiceProtocol=https
       --set global.webapp.domain=$CI_MERGE_REQUEST_IID.review-latest.kube.opentalk.run
+      --set global.livekit.domain=livekit.review-latest.kube.opentalk.run
       --set global.oidc.baseUrl=https://accounts.review-latest.kube.opentalk.run/auth
       --set global.oidc.realm=opentalk
       --set global.oidc.webapp.clientId=Webapp
