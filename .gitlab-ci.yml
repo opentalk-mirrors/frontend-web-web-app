@@ -34,7 +34,7 @@ stages:
   - push
   - scan
   # - e2e
-  - review-app
+  # - review-app
   - cleanup
   - release
 
@@ -562,56 +562,56 @@ container-scanning:
 #     forward:
 #       pipeline_variables: true
 
-deploy:
-  stage: review-app
-  needs:
-    - container-mr
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  image:
-    name: alpine/helm:4.1.1
-    pull_policy: if-not-present
-  tags:
-    - kubernetes
-  before_script:
-    - helm repo add --username gitlab-ci-token --password ${CI_JOB_TOKEN}
-      opentalk https://git.opentalk.dev/api/v4/projects/649/packages/helm/testing
-  script:
-    - DIGEST=$(cat "./digest.txt")
-    - helm uninstall frontend-$CI_MERGE_REQUEST_IID -n review-latest || true
-    - >
-      helm upgrade --version 4.4.1 --install --force frontend-$CI_MERGE_REQUEST_IID opentalk/opentalk-helm
-      --set tags.standard=false
-      --set tags.webapp=true
-      --set webapp.image.pullPolicy=IfNotPresent
-      --set webapp.image.registry=$CI_REGISTRY
-      --set webapp.image.repository=$CI_PROJECT_PATH
-      --set webapp.image.tag="@$DIGEST"
-      --set webapp.imagePullSecrets[0].name=git
-      --set 'webapp.ingress.annotations.kubernetes\.io/tls-acme=null'
-      --set 'webapp.ingress.annotations.cert-manager\.io/cluster-issuer=null'
-      --set webapp.ingress.enabled=true
-      --set webapp.ingress.className=traefik
-      --set webapp.ingress.tls[0].secretNameOverride=review-latest-tls
-      --set global.defaultWebServiceProtocol=https
-      --set global.webapp.domain=$CI_MERGE_REQUEST_IID.review-latest.kube.opentalk.run
-      --set global.livekit.domain=livekit.review-latest.kube.opentalk.run
-      --set global.oidc.baseUrl=https://accounts.review-latest.kube.opentalk.run/auth
-      --set global.oidc.realm=opentalk
-      --set global.oidc.webapp.clientId=Webapp
-      --set global.backend.domain=controller.review-latest.kube.opentalk.run
-      --set webapp.ndtDomain=ndt.mailbox.org
-      --set webapp.errorReportDomain=opentalk.eu
-      --set webapp.imprintUrl=https://opentalk.eu/en/terms-of-use
-      --set webapp.dataProtectionUrl=https://opentalk.eu/en/data-protection
-      --set webapp.helpdeskUrl=https://opentalk.eu/docs/user/
-      --set webapp.contactSupportUrl=https://opentalk.eu/en/contact-our-support-team
-      --set webapp.sentryDsn=$SENTRY_DSN_TESTING
-      --set webapp.livekit.domain=livekit.review-latest.kube.opentalk.run
-      --set-string
-      'webapp.ingress.annotations.traefik\.ingress\.kubernetes\.io/router\.middlewares=review-latest-auth@kubernetescrd'
-      -n review-latest --wait
-    - echo "https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run"
+# deploy:
+#   stage: review-app
+#   needs:
+#     - container-mr
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+#   image:
+#     name: alpine/helm:4.1.1
+#     pull_policy: if-not-present
+#   tags:
+#     - kubernetes
+#   before_script:
+#     - helm repo add --username gitlab-ci-token --password ${CI_JOB_TOKEN}
+#       opentalk https://git.opentalk.dev/api/v4/projects/649/packages/helm/testing
+#   script:
+#     - DIGEST=$(cat "./digest.txt")
+#     - helm uninstall frontend-$CI_MERGE_REQUEST_IID -n review-latest || true
+#     - >
+#       helm upgrade --version 4.4.1 --install --force frontend-$CI_MERGE_REQUEST_IID opentalk/opentalk-helm
+#       --set tags.standard=false
+#       --set tags.webapp=true
+#       --set webapp.image.pullPolicy=IfNotPresent
+#       --set webapp.image.registry=$CI_REGISTRY
+#       --set webapp.image.repository=$CI_PROJECT_PATH
+#       --set webapp.image.tag="@$DIGEST"
+#       --set webapp.imagePullSecrets[0].name=git
+#       --set 'webapp.ingress.annotations.kubernetes\.io/tls-acme=null'
+#       --set 'webapp.ingress.annotations.cert-manager\.io/cluster-issuer=null'
+#       --set webapp.ingress.enabled=true
+#       --set webapp.ingress.className=traefik
+#       --set webapp.ingress.tls[0].secretNameOverride=review-latest-tls
+#       --set global.defaultWebServiceProtocol=https
+#       --set global.webapp.domain=$CI_MERGE_REQUEST_IID.review-latest.kube.opentalk.run
+#       --set global.livekit.domain=livekit.review-latest.kube.opentalk.run
+#       --set global.oidc.baseUrl=https://accounts.review-latest.kube.opentalk.run/auth
+#       --set global.oidc.realm=opentalk
+#       --set global.oidc.webapp.clientId=Webapp
+#       --set global.backend.domain=controller.review-latest.kube.opentalk.run
+#       --set webapp.ndtDomain=ndt.mailbox.org
+#       --set webapp.errorReportDomain=opentalk.eu
+#       --set webapp.imprintUrl=https://opentalk.eu/en/terms-of-use
+#       --set webapp.dataProtectionUrl=https://opentalk.eu/en/data-protection
+#       --set webapp.helpdeskUrl=https://opentalk.eu/docs/user/
+#       --set webapp.contactSupportUrl=https://opentalk.eu/en/contact-our-support-team
+#       --set webapp.sentryDsn=$SENTRY_DSN_TESTING
+#       --set webapp.livekit.domain=livekit.review-latest.kube.opentalk.run
+#       --set-string
+#     'webapp.ingress.annotations.traefik\.ingress\.kubernetes\.io/router\.middlewares=review-latest-auth@kubernetescrd'
+#       -n review-latest --wait
+#     - echo "https://${BASIC_AUTH_USER}:${BASIC_AUTH_PASS}@${CI_MERGE_REQUEST_IID}.review-latest.kube.opentalk.run"
 
 review-app:
   stage: cleanup
