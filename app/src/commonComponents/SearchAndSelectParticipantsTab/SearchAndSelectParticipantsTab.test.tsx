@@ -4,7 +4,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { ConnectionIdentifier } from '../../types';
-import { deconstructIdentity } from '../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 import { configureStore, mockedLivekitParticipant, renderWithProviders } from '../../utils/testUtils';
 import SearchAndSelectParticipantsTab from './SearchAndSelectParticipantsTab';
 import { SelectableParticipant } from './fragments/SelectParticipantsItem';
@@ -87,12 +87,12 @@ describe('Select Participants Tab', () => {
       initialState: {
         participants: {
           ids: participants.map((p) => {
-            const { participantId } = deconstructIdentity(p.identity as ConnectionIdentifier);
+            const { participantId } = deconstructConnectionIdentifier(p.identity as ConnectionIdentifier);
             return participantId;
           }),
           entities: Object.fromEntries(
             participants.map((participant) => {
-              const { participantId } = deconstructIdentity(participant.identity as ConnectionIdentifier);
+              const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
 
               return [participantId, { ...participant, displayName: participant.name }];
             })
@@ -114,7 +114,7 @@ describe('Select Participants Tab', () => {
     );
     const checkbox1 = screen.getByRole('checkbox', { name: participants[1].name });
 
-    const { participantId } = deconstructIdentity(participants[1].identity as ConnectionIdentifier);
+    const { participantId } = deconstructConnectionIdentifier(participants[1].identity as ConnectionIdentifier);
     fireEvent.click(checkbox1);
     expect(mockHandleSelectParticipant).toHaveBeenCalledExactlyOnceWith(true, participantId);
   });

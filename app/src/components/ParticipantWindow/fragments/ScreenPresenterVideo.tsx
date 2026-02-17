@@ -11,7 +11,7 @@ import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/livekitSlice';
 import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
 import { ConnectionIdentifier, VideoSetting } from '../../../types';
-import { deconstructIdentity } from '../../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
 import { AvatarContainer } from './AvatarContainer';
 import { PresenterOverlay } from './PresenterOverlay';
 import RemoteVideo from './RemoteVideo';
@@ -56,7 +56,7 @@ interface ScreenPresenterVideoProps {
 
 const ScreenPresenterVideo = React.forwardRef<HTMLDivElement, ScreenPresenterVideoProps>(
   ({ connectionIdentifier, isVideoPinned, togglePin, videoPosition, changeVideoPosition, isThumbnail }, ref) => {
-    const { participantId } = deconstructIdentity(connectionIdentifier);
+    const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
     const videoDescriptor = useMemo<MediaDescriptor>(
       () => ({ connectionIdentifier, mediaType: Track.Source.Camera }),
       [connectionIdentifier]

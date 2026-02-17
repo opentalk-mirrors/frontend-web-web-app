@@ -18,7 +18,7 @@ import { fullscreenActions, selectFullscreenElement } from '../../store/slices/f
 import { selectParticipantName } from '../../store/slices/participantsSlice';
 import { pinnedConnectionIdentifierSet, selectPinnedConnectionIdentifier } from '../../store/slices/uiSlice';
 import type { ConnectionIdentifier } from '../../types';
-import { deconstructIdentity } from '../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 import Ballot from '../Ballot';
 import LocalVideo from '../LocalVideo';
 import VotesAndPollsResultsPopover from '../MeetingHeader/fragments/VotesAndPollsResultsPopover';
@@ -99,7 +99,7 @@ const FullscreenView = () => {
     if (!selectedConnectionIdentifier) {
       return undefined;
     }
-    const { participantId } = deconstructIdentity(selectedConnectionIdentifier);
+    const { participantId } = deconstructConnectionIdentifier(selectedConnectionIdentifier);
     return participantId;
   })();
 

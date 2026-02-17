@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectParticipantsWithRaisedHands } from '../../store/selectors';
 import { selectRemoteParticipantsDisplayNameRecord } from '../../store/slices/participantsSlice';
 import { ConnectionIdentifier, ParticipantId } from '../../types';
-import { deconstructIdentity } from '../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 
 const ResetHandraisesTab = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +21,7 @@ const ResetHandraisesTab = () => {
   const remoteParticipants = useRemoteParticipants({
     updateOnlyOn: [RoomEvent.ParticipantConnected, RoomEvent.ParticipantDisconnected],
   }).filter((remote) => {
-    const { participantId } = deconstructIdentity(remote.identity as ConnectionIdentifier);
+    const { participantId } = deconstructConnectionIdentifier(remote.identity as ConnectionIdentifier);
     return activeIds.has(participantId);
   });
 
@@ -39,7 +39,7 @@ const ResetHandraisesTab = () => {
         return displayName?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
       })
       .map((participant) => {
-        const { participantId } = deconstructIdentity(participant.identity as ConnectionIdentifier);
+        const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
         return toSelectableParticipant(participant, selectedParticipants.includes(participantId));
       });
   }, [search, remoteParticipants, selectedParticipants, participantNamesMap]);

@@ -30,7 +30,7 @@ import {
   selectPinnedConnectionIdentifier,
 } from '../../../store/slices/uiSlice';
 import { ConnectionIdentifier } from '../../../types';
-import { deconstructIdentity } from '../../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
 import BrokenSubscriberIndicator from './BrokenSubscriberIndicator';
 import { OverlayIconButton } from './OverlayIconButton';
 
@@ -58,7 +58,7 @@ interface VideoOverlayProps {
 }
 
 const VideoOverlay = ({ connectionIdentifier, active }: VideoOverlayProps) => {
-  const { participantId } = deconstructIdentity(connectionIdentifier);
+  const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
   const userLayout = useAppSelector(selectCinemaLayout);
   const [channelId, setChannelId] = useState<string | undefined>();
   const dispatch = useAppDispatch();

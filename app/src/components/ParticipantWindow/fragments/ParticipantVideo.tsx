@@ -17,7 +17,7 @@ import {
   selectPresenterOverlayPinnedParticipantId,
 } from '../../../store/slices/uiSlice';
 import { ConnectionIdentifier, VideoSetting } from '../../../types';
-import { deconstructIdentity } from '../../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
 import { AvatarContainer } from './AvatarContainer';
 import RemoteVideo from './RemoteVideo';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
@@ -41,7 +41,7 @@ interface ParticipantVideoProps {
 const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
   const participant = useRemoteParticipant(connectionIdentifier);
   const dispatch = useAppDispatch();
-  const { participantId } = deconstructIdentity(connectionIdentifier);
+  const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
 
   const videoDescriptor = useMemo<MediaDescriptor>(
     () => ({ connectionIdentifier, mediaType: Track.Source.Camera }),

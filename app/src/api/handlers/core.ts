@@ -147,7 +147,6 @@ export const handleRoomServerCoreMessage = async (
       //   }
       // }
 
-      // TODO
       // handles different connections(tabs) of your own user
       if (data.connections.length > 0) {
         const coreModuleData: CorePeerState = {
@@ -207,15 +206,6 @@ export const handleRoomServerCoreMessage = async (
         joinedParticipants = joinedParticipants.concat(waitingParticipants);
       }
 
-      // if (data.breakout !== undefined) {
-      //   const breakoutParticipants = data.breakout.participants.map((participant) =>
-      //     mapBreakoutToUiParticipant(state, participant, timestamp)
-      //   );
-      //   // We merge both arrays, removing duplications
-      //   // If a participant is already joined, we remove him from breakout array
-      //   joinedParticipants = unionBy(joinedParticipants, breakoutParticipants, 'id');
-      // }
-
       const serverTimeOffset = new Date(timestamp).getTime() - Date.now();
       const enabledModules = data.enabledModules.map(camelCase) as BackendModules[];
       dispatch(
@@ -244,22 +234,20 @@ export const handleRoomServerCoreMessage = async (
           isRoomOwner: data.isRoomOwner,
           livekit: moduleData.livekit,
           enabledModules,
-          // trainingParticipationReport: data.trainingParticipationReport,
+          trainingParticipationReport: moduleData.trainingParticipationReport,
         })
       );
 
-      if (moduleData.automod) {
-        if (moduleData.automod.config.selectionStrategy === AutomodSelectionStrategy.Playlist) {
-          notificationAction({
-            key: startedId,
-            msg: createStackedMessages([
-              i18next.t('talking-stick-started-first-line'),
-              i18next.t('talking-stick-started-second-line'),
-            ]),
-            variant: 'info',
-            ariaLive: 'polite',
-          });
-        }
+      if (moduleData.automod && moduleData.automod.config.selectionStrategy === AutomodSelectionStrategy.Playlist) {
+        notificationAction({
+          key: startedId,
+          msg: createStackedMessages([
+            i18next.t('talking-stick-started-first-line'),
+            i18next.t('talking-stick-started-second-line'),
+          ]),
+          variant: 'info',
+          ariaLive: 'polite',
+        });
       }
 
       if (moduleData.whiteboard?.status === 'initialized') {
@@ -288,6 +276,7 @@ export const handleRoomServerCoreMessage = async (
         }
       }
 
+      // TODO: Recording Module - https://git.opentalk.dev/opentalk/frontend/web/web-app/-/work_items/3149
       //Show notification for active streaming target
       // const activeTarget =
       //   moduleData.recording &&

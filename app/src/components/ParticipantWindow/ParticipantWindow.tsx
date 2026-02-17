@@ -10,7 +10,7 @@ import { useAppSelector } from '../../hooks';
 import { selectFullscreenActive } from '../../store/slices/fullscreen/slice';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
 import type { ConnectionIdentifier } from '../../types';
-import { deconstructIdentity } from '../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 import HandRaisedIndicator from './fragments/HandRaisedIndicator';
 import ParticipantVideo from './fragments/ParticipantVideo';
 import VideoOverlay from './fragments/VideoOverlay';
@@ -37,7 +37,7 @@ interface ParticipantWindowProps {
 const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: ParticipantWindowProps) => {
   const participant = useParticipantContext();
   const connectionIdentifier = participant.identity as ConnectionIdentifier;
-  const { participantId } = deconstructIdentity(connectionIdentifier);
+  const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
 
   const displayName = useAppSelector((state) => selectParticipantName(state, participantId));

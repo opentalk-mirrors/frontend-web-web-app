@@ -17,7 +17,7 @@ import { ParticipantAvatar } from '../../';
 import { useAppSelector } from '../../../hooks';
 import { selectParticipantAvatarUrl, selectParticipantName } from '../../../store/slices/participantsSlice';
 import { ConnectionIdentifier } from '../../../types';
-import { deconstructIdentity } from '../../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
 
 export interface SelectableParticipant extends RemoteParticipant {
   selected: boolean;
@@ -50,7 +50,7 @@ const FormControlLabel = styled(MuiFormControlLabel)(() => ({
 }));
 
 const SelectParticipantsItem = ({ participant, onCheck }: SelectParticipantsItemProps) => {
-  const { participantId } = deconstructIdentity(participant.identity as ConnectionIdentifier);
+  const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
   const displayName = useAppSelector((state) => selectParticipantName(state, participantId));
   const avatarUrl = useAppSelector((state) => selectParticipantAvatarUrl(state, participantId));
 

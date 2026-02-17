@@ -4,7 +4,7 @@
 import { List } from '@mui/material';
 
 import { ConnectionIdentifier, ParticipantId } from '../../../types';
-import { deconstructIdentity } from '../../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
 import SelectParticipantsItem, { SelectableParticipant } from './SelectParticipantsItem';
 
 type SelectParticipantsListProps = {
@@ -18,7 +18,7 @@ const SelectParticipantsList = ({ participantsList, onCheck }: SelectParticipant
       <SelectParticipantsItem
         participant={participant}
         onCheck={(checked) => {
-          const { participantId } = deconstructIdentity(participant.identity as ConnectionIdentifier);
+          const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
           onCheck(checked, participantId);
         }}
         key={participant.identity}

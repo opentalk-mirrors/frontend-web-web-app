@@ -12,7 +12,7 @@ import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectP
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectRemoteParticipantsDisplayNameRecord } from '../../store/slices/participantsSlice';
 import { ConnectionIdentifier, ParticipantId } from '../../types';
-import { deconstructIdentity } from '../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 
 const MuteParticipantsTab = () => {
   const dispatch = useAppDispatch();
@@ -41,7 +41,7 @@ const MuteParticipantsTab = () => {
         return displayName?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
       })
       .map((participant) => {
-        const { participantId } = deconstructIdentity(participant.identity as ConnectionIdentifier);
+        const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
         return toSelectableParticipant(participant, selectedParticipants.includes(participantId));
       });
   }, [search, unmutedParticipants, selectedParticipants, participantNames]);
@@ -56,7 +56,7 @@ const MuteParticipantsTab = () => {
 
   const muteAll = () => {
     const unmutedParticipantIds = unmutedParticipants.reduce<ParticipantId[]>((acc, p) => {
-      const { participantId } = deconstructIdentity(p.identity as ConnectionIdentifier);
+      const { participantId } = deconstructConnectionIdentifier(p.identity as ConnectionIdentifier);
       if (participantId) {
         acc.push(participantId);
       }

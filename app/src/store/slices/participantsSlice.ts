@@ -22,7 +22,7 @@ import {
   Timestamp,
   WaitingState,
 } from '../../types';
-import { deconstructIdentity } from '../../utils/deconstructIdentity';
+import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
@@ -122,9 +122,6 @@ export const participantsSlice = createSlice({
         handIsUp: false,
         joinedAt: payload.joinedAt,
         leftAt: null,
-        // TODO - remove
-        handUpdatedAt: undefined,
-        breakoutRoomId: undefined,
         participationKind: ParticipationKind.Registered,
         lastActive: payload.joinedAt,
         meetingNotesAccess: MeetingNotesAccess.None,
@@ -334,7 +331,7 @@ export const selectRemoteParticipantsDisplayNameRecord = createSelector(
   (remoteParticipants, onlineParticipants) => {
     return remoteParticipants.reduce(
       (acc, remoteParticipant) => {
-        const { participantId } = deconstructIdentity(remoteParticipant.identity as ConnectionIdentifier);
+        const { participantId } = deconstructConnectionIdentifier(remoteParticipant.identity as ConnectionIdentifier);
         acc[remoteParticipant.identity] = onlineParticipants.find(
           (participant) => participant.id === participantId
         )?.displayName;
