@@ -377,7 +377,7 @@ font-awesome-license = Font Awesome Lizenz
 legal-vote-tab-title = Abstimmungen
 legal-vote-header-title-create = Abstimmung erstellen
 legal-vote-header-title-update = Abstimmung bearbeiten
-legal-vote-button-back = zurück
+legal-vote-button-back = Zurück
 legal-vote-overview-saved-legal-votes = Gespeicherte Abstimmungen
 legal-vote-overview-created-legal-votes = Erstellte Abstimmungen
 legal-vote-canceled = Abstimmung wurde abgebrochen
@@ -447,7 +447,7 @@ legal-vote-participant-joined-the-meeting = {{participantName}} hat das Meeting 
 poll-participant-list-button-select = Auswählen
 poll-participant-list-button-close = Schließen
 poll-participant-list-button-save = Speichern
-poll-participant-list-button-start = Umfrage starten
+poll-participant-list-button-start = Starten
 poll-participant-list-button-select-all = Alle auswählen
 
 legal-vote-success = Ihre Stimme wurde um {{atVoteTime}} Uhr am {{onVoteDate}} erfolgreich gezählt mit dem folgenden Verifikation-Code.
@@ -457,6 +457,8 @@ legal-vote-save-form-success = Ihre Abstimmung wurde erfolgreich gespeichert
 legal-vote-save-form-error = Fehler beim Speichern, es müssen Thema und Name gesetzt werden
 
 no-votes-in-conference = Es gibt keine Abstimmungen in dieser Konferenz im Moment.
+
+save-as-template-button = Als Vorlage speichern
 
 room-title-info-button-aria-label = Meetingdetails teilen
 
@@ -541,12 +543,12 @@ participant-removed-event = wurde um {$time} aus dem Meeting entfernt
 poll-overview-button-create-poll = Umfrage erstellen
 poll-tab-title = Umfragen
 no-polls-in-conference = Es gibt keine Umfragen in dieser Konferenz im Moment.
-poll-form-button-submit = Umfrage starten
+poll-form-button-submit = Starten
 poll-form-button-save = Speichern
 poll-header-title-update = Umfrage bearbeiten
 poll-header-title-create = Umfrage erstellen
 poll-save-form-success = Umfrage erfolgreich gespeichert
-poll-button-back = zurück
+poll-button-back = Zurück
 poll-form-switch-live = Live
 poll-form-switch-live-tooltip = Die Umfrage Live verfolgen oder das Ergebnis erst nach Beendigung bekanntgeben
 poll-form-switch-multiple-choice = Mehrfachauswahl
@@ -567,6 +569,7 @@ poll-overview-created-polls = erstellte Umfragen
 poll-overview-panel-button-end = Beenden
 poll-overview-panel-status-active = Aktiv
 poll-overview-panel-status-finished = Beendet
+poll-form-popover-results-button = Umfrageergebnisse
 
 timer-tab-title = Stoppuhr
 timer-form-button-submit = Stoppuhr starten

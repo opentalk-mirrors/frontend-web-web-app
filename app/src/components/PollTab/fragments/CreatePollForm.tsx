@@ -20,6 +20,7 @@ import { RoomMode } from '../../../types';
 import { formikDurationFieldProps, formikSwitchProps, formikProps } from '../../../utils/formikUtils';
 import { Seconds } from '../../../utils/tsUtils';
 import { DurationFieldWrapper } from '../../DurationFieldWrapper';
+import SaveAsTemplateButton from '../../SaveAsTemplateButton';
 import AnswersFormElement from './AnswersFormElement';
 
 interface PollFormProps {
@@ -73,12 +74,11 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
       if (isEmpty(values.topic)) {
         notifications.error(t('poll-save-form-error'));
       } else {
-        onClose();
         dispatch(savePollFormValues(values));
         notifications.success(t('poll-save-form-success'));
       }
     },
-    [dispatch, onClose, t]
+    [dispatch, t]
   );
 
   const onSubmit = (values: FormikValues) => {
@@ -112,7 +112,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
         >
           <Form data-testid="create-poll-form" onSubmit={formik.handleSubmit}>
             <Typography>{isEditing ? t('poll-header-title-update') : t('poll-header-title-create')}</Typography>
-            <Grid container spacing={1.5}>
+            <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
                 <DurationFieldWrapper paddingTop={1}>
                   <DurationField
@@ -155,24 +155,26 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
                   multiline
                 />
               </Grid>
+
               <Grid size={{ xs: 12 }}>
                 <AnswersFormElement name="choices" />
               </Grid>
+
               <Grid size={{ xs: 12 }}>
                 {/* General choices error message */}
                 {typeof formik.errors.choices === 'string' && <ErrorFormMessage helperText={formik.errors.choices} />}
               </Grid>
-              <Button type="button" onClick={() => saveFormValues(formik.values)} fullWidth color="secondary">
-                {t('poll-form-button-save')}
-              </Button>
             </Grid>
-            <Stack direction="row" spacing={1} mt="auto">
-              <Button type="button" onClick={onClose} startIcon={<BackIcon />} fullWidth color="primary">
-                {t('poll-button-back')}
-              </Button>
-              <Button disabled={isCoffeeBreakActive} type="submit" fullWidth color="secondary">
-                {t('poll-form-button-submit')}
-              </Button>
+            <Stack direction="column" spacing={2} mt="auto">
+              <SaveAsTemplateButton onClick={() => saveFormValues(formik.values)} />
+              <Stack direction="row" spacing={1} mt="auto">
+                <Button type="button" onClick={onClose} startIcon={<BackIcon />} fullWidth color="primary">
+                  {t('poll-button-back')}
+                </Button>
+                <Button disabled={isCoffeeBreakActive} type="submit" fullWidth color="secondary">
+                  {t('poll-form-button-submit')}
+                </Button>
+              </Stack>
             </Stack>
           </Form>
         </Stack>

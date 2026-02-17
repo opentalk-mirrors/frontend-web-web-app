@@ -421,7 +421,6 @@ legal-vote-form-allow-abstain = Allow Abstaining
 legal-vote-form-auto-stop = Auto Close
 legal-vote-form-hidden-voting = Secret Voting
 legal-vote-form-auto-stop-tooltip = Activate or deactivate automatic exit once all votes have been cast
-
 legal-vote-yes-label = Approval
 legal-vote-no-label = Disapproval
 legal-vote-abstain-label = Abstention
@@ -457,6 +456,8 @@ legal-vote-save-form-success = Your vote form was saved successfully
 legal-vote-save-form-error = Saving failed, you need to specify a topic and a name
 
 no-votes-in-conference = There are no votes for this conference at the moment.
+
+save-as-template-button = Save As Template
 
 room-title-info-button-aria-label = Share meeting details
 
@@ -541,7 +542,7 @@ participant-removed-event = was removed from the meeting at {$time}
 poll-overview-button-create-poll = Create new poll
 poll-tab-title = Polls
 no-polls-in-conference = There are no polls for this conference at the moment.
-poll-form-button-submit = Start poll
+poll-form-button-submit = Start
 poll-form-button-save = Save
 poll-header-title-update = Update poll
 poll-header-title-create = Create poll
@@ -562,11 +563,13 @@ poll-form-input-error-choices = Minimal created answers are 2
 poll-form-input-error-choice = Empty choices are not allowed
 poll-save-form-success = Your poll was saved successfully
 poll-save-form-error = The poll for saving must include a topic
-poll-overview-saved-polls = saved Polls
-poll-overview-created-polls = created Polls
+poll-overview-saved-polls = Saved Polls
+poll-overview-created-polls = Created Polls
 poll-overview-panel-button-end = End Poll
 poll-overview-panel-status-active = Active
 poll-overview-panel-status-finished = Finished
+poll-form-save-as-template = Save As Tamplate
+poll-form-popover-results-button = Show poll results
 
 timer-tab-title = Timer
 timer-form-button-submit = Start Timer

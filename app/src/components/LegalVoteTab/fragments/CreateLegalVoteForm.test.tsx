@@ -78,7 +78,7 @@ describe('CreateLegalVoteForm', () => {
       { store, provider: { mui: true } }
     );
 
-    await user.click(screen.getByRole('button', { name: 'legal-vote-form-button-save' }));
+    await user.click(screen.getByRole('button', { name: 'save-as-template-button' }));
 
     expect(notifications.error).toHaveBeenCalledExactlyOnceWith('legal-vote-save-form-error');
     expect(dispatchSpy).not.toHaveBeenCalledWith(expect.objectContaining({ type: savedLegalVoteForm.type }));
@@ -95,7 +95,7 @@ describe('CreateLegalVoteForm', () => {
 
     await user.type(screen.getByPlaceholderText('legal-vote-title-placeholder'), 'Annual vote');
     await user.type(screen.getByPlaceholderText('legal-vote-topic-placeholder'), 'Approve budget');
-    await user.click(screen.getByRole('button', { name: 'legal-vote-form-button-save' }));
+    await user.click(screen.getByRole('button', { name: 'save-as-template-button' }));
 
     expect(dispatchSpy).toHaveBeenCalledWith(
       savedLegalVoteForm(

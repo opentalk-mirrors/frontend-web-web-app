@@ -58,7 +58,7 @@ describe('CreatePollForm', () => {
 
     renderWithProviders(<CreatePollForm onClose={onClose} />, { store, provider: { mui: true } });
 
-    await user.click(screen.getByRole('button', { name: 'poll-form-button-save' }));
+    await user.click(screen.getByRole('button', { name: 'save-as-template-button' }));
 
     expect(notifications.error).toHaveBeenCalledExactlyOnceWith('poll-save-form-error');
     expect(onClose).not.toHaveBeenCalled();
@@ -75,10 +75,9 @@ describe('CreatePollForm', () => {
       provider: { mui: true },
     });
 
-    await user.click(screen.getByRole('button', { name: 'poll-form-button-save' }));
+    await user.click(screen.getByRole('button', { name: 'save-as-template-button' }));
 
     expect(dispatchSpy).toHaveBeenCalledWith(savePollFormValues(validValues));
-    expect(onClose).toHaveBeenCalledTimes(1);
     expect(notifications.success).toHaveBeenCalledExactlyOnceWith('poll-save-form-success');
   });
 

@@ -20,12 +20,12 @@ const MainContainer = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.palette.background.customPaper.primary,
   width: '100%',
   padding: theme.spacing(1.5),
-  borderRadius: '0.4rem',
+  borderRadius: theme.borderRadius.medium,
 }));
 
-const Divider = styled('div')({
-  borderTop: '3px solid #193a47',
-});
+const Divider = styled('div')(({ theme }) => ({
+  borderTop: `3px solid ${theme.palette.divider}`,
+}));
 
 const VoteState = styled('div')<{ state: LegalVoteState }>(({ theme, state }) => ({
   backgroundColor: state === LegalVoteState.Started ? theme.palette.success.main : theme.palette.error.main,

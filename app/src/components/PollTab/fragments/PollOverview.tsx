@@ -33,19 +33,14 @@ interface IPollOverview {
 
 const List = styled(MuiList)({
   width: '100%',
+  paddingLeft: 0,
+  paddingRight: 0,
   overflow: 'auto',
-});
-
-const EmptyPollContainer = styled(Stack)({
-  justifyContent: 'center',
-  alignItems: 'center',
-  flex: 1,
 });
 
 const ListItemButton = styled(MuiListItemButton)(({ theme }) => ({
   borderRadius: theme.borderRadius.medium,
   backgroundColor: theme.palette.background.customPaper.primary,
-  color: theme.palette.primary.contrastText,
   '&:hover': {
     backgroundColor: theme.palette.background.highlight.primary,
   },
@@ -65,18 +60,22 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
 
   if (polls.length === 0 && savedPolls.length === 0) {
     return (
-      <EmptyPollContainer>
-        <Box
-          sx={{
-            marginBottom: 2,
-          }}
-        >
+      <Stack
+        spacing={2}
+        sx={{
+          flex: 1,
+          overflow: 'auto',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Box>
           <StyledNoPollsIcon type="decorative" />
         </Box>
         <Typography align="center" variant="body2">
           {t('no-polls-in-conference')}
         </Typography>
-      </EmptyPollContainer>
+      </Stack>
     );
   }
 
@@ -116,7 +115,7 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
     >
       <List>
         {polls.map((poll, index) => (
-          <ListItem key={index}>
+          <ListItem key={index} sx={{ px: 0 }}>
             <PollOverviewPanel poll={poll} />
           </ListItem>
         ))}
@@ -125,25 +124,15 @@ const PollOverview = ({ onClickItem }: IPollOverview) => {
   );
 
   return (
-    <Box
+    <Stack
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
         flex: 1,
-        marginBottom: 1,
-        overflow: 'hidden',
+        overflow: 'auto',
       }}
     >
-      <Box
-        sx={{
-          height: '100%',
-          overflow: 'auto',
-        }}
-      >
-        {savedPolls.length > 0 && renderSavedPolls()}
-        {polls.length > 0 && renderPolls()}
-      </Box>
-    </Box>
+      {savedPolls.length > 0 && renderSavedPolls()}
+      {polls.length > 0 && renderPolls()}
+    </Stack>
   );
 };
 

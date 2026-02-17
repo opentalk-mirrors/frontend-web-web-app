@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Button, Typography, Box, Stack } from '@mui/material';
+import { styled, Button, Typography, Stack } from '@mui/material';
 import { Formik, Form as FormikForm } from 'formik';
 import { FormikProps, FormikValues } from 'formik/dist/types';
 import { isEmpty } from 'lodash';
@@ -16,6 +16,7 @@ import { notifications } from '../../../commonComponents';
 import { savedLegalVoteForm, selectLegalVoteId } from '../../../store/slices/legalVoteSlice';
 import { LegalVoteFormValues, LegalVoteKind, SavedLegalVoteForm } from '../../../types';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
+import SaveAsTemplateButton from '../../SaveAsTemplateButton';
 import LegalVoteSetupForm from './LegalVoteSetupForm';
 import ParticipantSelector, { AllowedParticipant } from './ParticipantSelector';
 
@@ -35,12 +36,6 @@ const Form = styled(FormikForm)({
   flex: 1,
   flexDirection: 'column',
   overflow: 'auto',
-});
-
-const ButtonBox = styled(Box)({
-  display: 'flex',
-  justifyContent: 'space-between',
-  gap: 2,
 });
 
 interface LegalVoteFormProps {
@@ -111,7 +106,7 @@ const CreateLegalVoteForm = ({
 
   const renderStep = (formik: FormikProps<LegalVoteFormValues>) =>
     currentStep === 0 ? (
-      <LegalVoteSetupForm formik={formik} t={t} onSave={() => saveFormValues(formik.values)} />
+      <LegalVoteSetupForm formik={formik} t={t} />
     ) : (
       <ParticipantSelector name="allowedParticipants" />
     );
@@ -167,21 +162,23 @@ const CreateLegalVoteForm = ({
     const isLastStep = currentStep === 1;
 
     return (
-      <ButtonBox>
-        <Button type="button" onClick={handlePrev} startIcon={<BackIcon />} fullWidth color="primary">
-          {t('legal-vote-button-back')}
-        </Button>
-
-        <Button
-          type="button"
-          disabled={isCoffeeBreakActive}
-          onClick={() => handleNext(formik)}
-          fullWidth
-          color="secondary"
-        >
-          {isLastStep ? t('poll-participant-list-button-start') : t('legal-vote-form-button-continue')}
-        </Button>
-      </ButtonBox>
+      <>
+        {!isLastStep && <SaveAsTemplateButton onClick={() => saveFormValues(formik.values)} />}
+        <Stack direction="row" spacing={1} mt="auto">
+          <Button type="button" onClick={handlePrev} startIcon={<BackIcon />} fullWidth color="primary">
+            {t('legal-vote-button-back')}
+          </Button>
+          <Button
+            type="button"
+            disabled={isCoffeeBreakActive}
+            onClick={() => handleNext(formik)}
+            fullWidth
+            color="secondary"
+          >
+            {isLastStep ? t('poll-participant-list-button-start') : t('legal-vote-form-button-continue')}
+          </Button>
+        </Stack>
+      </>
     );
   };
 
