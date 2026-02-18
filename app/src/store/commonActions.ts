@@ -16,7 +16,9 @@ import {
   LocalVideoTrack,
   Room,
   RoomOptions,
+  ScreenShareCaptureOptions,
   Track,
+  TrackPublishOptions,
   VideoPresets,
 } from 'livekit-client';
 import { closeSnackbar } from 'notistack';
@@ -210,6 +212,38 @@ export const changeMedia = createAsyncThunk<
   }
 });
 
+const getScreenShareBaseOptions = (
+  screenShareConfig: RootState['media']['screenShareConfig']
+): ScreenShareCaptureOptions => ({
+  video: true,
+  resolution: screenShareConfig?.resolution && ScreenShareResolutionValues[screenShareConfig?.resolution],
+  surfaceSwitching: 'include',
+  systemAudio: 'include',
+  audio: {
+    echoCancellation: false,
+    noiseSuppression: false,
+    voiceIsolation: false,
+    channelCount: { ideal: 2 },
+  },
+});
+
+const getScreenShareDisplayMediaOptions = (screenShareConfig: RootState['media']['screenShareConfig']) => {
+  const { resolution, ...baseOptions } = getScreenShareBaseOptions(screenShareConfig);
+  return {
+    ...baseOptions,
+    video: resolution || true,
+  };
+};
+
+const screenShareAudioPublishDefaults: TrackPublishOptions = {
+  audioPreset: {
+    maxBitrate: 128_000,
+    priority: 'high',
+  },
+  dtx: false,
+  red: true, // Add redundancy to protect perfect 0.00 loss
+};
+
 export const setScreenShareEnabled = createAsyncThunk<
   void,
   { enabled: boolean },
@@ -218,14 +252,11 @@ export const setScreenShareEnabled = createAsyncThunk<
   const state = thunkApi.getState();
   const room = state.livekit.room;
   const screenShareConfig = state.media.screenShareConfig;
+  const mediaOptions = getScreenShareBaseOptions(screenShareConfig);
 
   try {
-    await room?.localParticipant.setScreenShareEnabled(enabled, {
-      audio: true,
-      systemAudio: 'include',
-      resolution: screenShareConfig?.resolution && ScreenShareResolutionValues[screenShareConfig?.resolution],
-      surfaceSwitching: 'include',
-    });
+    await room?.localParticipant.setScreenShareEnabled(enabled, mediaOptions, screenShareAudioPublishDefaults);
+    return;
   } catch (error) {
     const mediaError = handleMediaPermissionError({ error, deviceId: '', kind: 'screenshare' });
     return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind: 'videoinput' });
@@ -235,22 +266,43 @@ export const setScreenShareEnabled = createAsyncThunk<
 export const switchScreenShare = createAsyncThunk<void, void, { state: RootState; rejectValue: FetchPermissionError }>(
   'livekit/switchScreenShare',
   async (_, thunkApi) => {
+    /*
+     * LiveKit’s setScreenShare doesn't support stream switching on non-Chromium browsers;
+     * This workaround ensures cross-browser compatibility.
+     */
     const participant = thunkApi.getState().livekit.room?.localParticipant;
-
+    const screenShareConfig = thunkApi.getState().media.screenShareConfig;
     try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-        audio: false,
-      });
-      const newVideoTrack = stream.getVideoTracks()[0];
-      const currentScreenShareTrack = participant?.getTrackPublication(Track.Source.ScreenShare)?.track;
-      if (currentScreenShareTrack) {
-        await participant?.unpublishTrack(currentScreenShareTrack);
+      const displayMediaOptions = getScreenShareDisplayMediaOptions(screenShareConfig);
+      const stream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+
+      const videoTrack = stream.getVideoTracks()[0];
+      const audioTrack = stream.getAudioTracks()[0];
+
+      const existingTracks = [
+        participant?.getTrackPublication(Track.Source.ScreenShare)?.track,
+        participant?.getTrackPublication(Track.Source.ScreenShareAudio)?.track,
+      ];
+
+      for (const track of existingTracks) {
+        if (track) {
+          await participant?.unpublishTrack(track);
+          track.stop();
+        }
       }
-      await participant?.publishTrack(newVideoTrack, {
-        name: 'screen-share',
+
+      await participant?.publishTrack(videoTrack, {
+        name: 'screen-share-video',
         source: Track.Source.ScreenShare,
       });
+
+      if (audioTrack) {
+        await participant?.publishTrack(audioTrack, {
+          name: 'screen-share-audio',
+          source: Track.Source.ScreenShareAudio,
+          ...screenShareAudioPublishDefaults,
+        });
+      }
     } catch (error) {
       const mediaError = handleMediaPermissionError({ error, deviceId: '', kind: 'screenshare' });
       return thunkApi.rejectWithValue({ status: 409, statusText: mediaError.name, kind: 'videoinput' });
