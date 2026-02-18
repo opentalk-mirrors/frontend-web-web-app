@@ -573,7 +573,7 @@ deploy:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   image:
-    name: alpine/helm:4.1.0
+    name: alpine/helm:4.1.1
     pull_policy: if-not-present
   tags:
     - kubernetes
@@ -625,7 +625,7 @@ review-app:
         $CI_PIPELINE_SOURCE == 'push'
   allow_failure: true
   image:
-    name: alpine/helm:4.1.0
+    name: alpine/helm:4.1.1
     entrypoint: ['']
     pull_policy: if-not-present
   tags:
