@@ -20,7 +20,7 @@
     "@livekit/protocol": "^1.44.0",
     "@m-lab/ndt7": "^0.1.4",
     "@mui/lab": "7.0.0",
-    "@mui/material": "^7.3.7",
+    "@mui/material": "^7.3.8",
     "@mui/x-date-pickers": "^8.27.0",
     "@opentalk/fluent_conv": "workspace:*",
     "@opentalk/i18next-fluent": "workspace:*",
