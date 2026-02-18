@@ -27,7 +27,7 @@
     "@opentalk/redux-oidc": "workspace:*",
     "@opentalk/rest-api-rtk-query": "workspace:*",
     "@reduxjs/toolkit": "^2.11.2",
-    "@sentry/browser": "^10.38.0",
+    "@sentry/browser": "^10.39.0",
     "@sentry/react": "^10.38.0",
     "bowser": "^2.14.1",
     "camelcase-keys": "^10.0.2",
