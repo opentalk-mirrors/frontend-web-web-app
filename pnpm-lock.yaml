@@ -31,10 +31,10 @@ importers:
         version: 24.10.13
       '@vitest/coverage-v8':
         specifier: ^4.0.18
-        version: 4.0.18(vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2))
+        version: 4.0.18(vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2))
       '@vitest/eslint-plugin':
         specifier: ^1.6.9
-        version: 1.6.9(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2))
+        version: 1.6.9(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2))
       del-cli:
         specifier: ^7.0.0
         version: 7.0.0
@@ -88,7 +88,7 @@ importers:
         version: 8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       vitest:
         specifier: ^4.0.18
-        version: 4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2)
+        version: 4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2)
 
   app:
     dependencies:
@@ -277,8 +277,8 @@ importers:
         specifier: ^20.5.0
         version: 20.5.0
       msw:
-        specifier: ^2.12.8
-        version: 2.12.8(@types/node@24.10.13)(typescript@5.9.3)
+        specifier: ^2.12.10
+        version: 2.12.10(@types/node@24.10.13)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -371,8 +371,8 @@ importers:
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       msw:
-        specifier: ^2.12.8
-        version: 2.12.8(@types/node@24.10.13)(typescript@5.9.3)
+        specifier: ^2.12.10
+        version: 2.12.10(@types/node@24.10.13)(typescript@5.9.3)
       react:
         specifier: ^19.2.4
         version: 19.2.4
@@ -1046,8 +1046,8 @@ packages:
   '@microsoft/tsdoc@0.16.0':
     resolution: {integrity: sha512-xgAyonlVVS+q7Vc7qLW0UrJU7rSFcETRWsqdXZtjzRU8dF+6CkozTK4V4y1LwOX7j8r/vHphjDeMeGI4tNGeGA==}
 
-  '@mswjs/interceptors@0.41.0':
-    resolution: {integrity: sha512-edAo9bW53BLYeSK+UPRr2Iz1Fj9DeGMjytvVM0HXRoo750ElWUgPsZPAOTQa12EUiwgDErH2PsFNTLvk1jBxjQ==}
+  '@mswjs/interceptors@0.41.3':
+    resolution: {integrity: sha512-cXu86tF4VQVfwz8W1SPbhoRyHJkti6mjH/XJIxp40jhO4j2k1m4KYrEykxqWPkFF3vrK4rgQppBh//AwyGSXPA==}
     engines: {node: '>=18'}
 
   '@mui/core-downloads-tracker@7.3.7':
@@ -3896,8 +3896,8 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
-  msw@2.12.8:
-    resolution: {integrity: sha512-KOriJUhjefCO+liF7Ie1KlSXcBAQEzuLhPZ4EKuEUSEmAR4YhuuzT9YuGxTipjqDrg6eWQ6oMoGVhvEnqukFGg==}
+  msw@2.12.10:
+    resolution: {integrity: sha512-G3VUymSE0/iegFnuipujpwyTM2GuZAKXNeerUSrG2+Eg391wW63xFs5ixWsK9MWzr1AGoSkYGmyAzNgbR3+urw==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -5938,7 +5938,7 @@ snapshots:
 
   '@microsoft/tsdoc@0.16.0': {}
 
-  '@mswjs/interceptors@0.41.0':
+  '@mswjs/interceptors@0.41.3':
     dependencies:
       '@open-draft/deferred-promise': 2.2.0
       '@open-draft/logger': 0.3.0
@@ -6976,7 +6976,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@4.0.18(vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2))':
+  '@vitest/coverage-v8@4.0.18(vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/utils': 4.0.18
@@ -6988,16 +6988,16 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2)
+      vitest: 4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2)
 
-  '@vitest/eslint-plugin@1.6.9(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2))':
+  '@vitest/eslint-plugin@1.6.9(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2))':
     dependencies:
       '@typescript-eslint/scope-manager': 8.55.0
       '@typescript-eslint/utils': 8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       eslint: 9.39.2(jiti@2.6.1)
     optionalDependencies:
       typescript: 5.9.3
-      vitest: 4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2)
+      vitest: 4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -7010,13 +7010,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.0.18(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(yaml@2.8.2))':
+  '@vitest/mocker@4.0.18(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(yaml@2.8.2))':
     dependencies:
       '@vitest/spy': 4.0.18
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      msw: 2.12.8(@types/node@24.10.13)(typescript@5.9.3)
+      msw: 2.12.10(@types/node@24.10.13)(typescript@5.9.3)
       vite: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(yaml@2.8.2)
 
   '@vitest/pretty-format@4.0.18':
@@ -9053,10 +9053,10 @@ snapshots:
 
   ms@2.1.3: {}
 
-  msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3):
+  msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3):
     dependencies:
       '@inquirer/confirm': 5.1.21(@types/node@24.10.13)
-      '@mswjs/interceptors': 0.41.0
+      '@mswjs/interceptors': 0.41.3
       '@open-draft/deferred-promise': 2.2.0
       '@types/statuses': 2.0.6
       cookie: 1.1.1
@@ -9070,7 +9070,7 @@ snapshots:
       statuses: 2.0.2
       strict-event-emitter: 0.5.1
       tough-cookie: 6.0.0
-      type-fest: 5.4.3
+      type-fest: 5.4.4
       until-async: 3.0.2
       yargs: 17.7.2
     optionalDependencies:
@@ -10301,10 +10301,10 @@ snapshots:
       jiti: 2.6.1
       yaml: 2.8.2
 
-  vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2):
+  vitest@4.0.18(@types/node@24.10.13)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@28.1.0)(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.18
-      '@vitest/mocker': 4.0.18(msw@2.12.8(@types/node@24.10.13)(typescript@5.9.3))(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(yaml@2.8.2))
+      '@vitest/mocker': 4.0.18(msw@2.12.10(@types/node@24.10.13)(typescript@5.9.3))(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(yaml@2.8.2))
       '@vitest/pretty-format': 4.0.18
       '@vitest/runner': 4.0.18
       '@vitest/snapshot': 4.0.18
