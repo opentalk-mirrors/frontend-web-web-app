@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Stack, Typography } from '@mui/material';
 import type { ParticipantOption } from '@opentalk/rest-api-rtk-query';
+import { Key } from 'react';
 import * as Yup from 'yup';
 
 import { ParticipantAvatar } from '../../../commonComponents';
@@ -15,7 +16,7 @@ export const EmailStrategy = {
     return option.email;
   },
   renderOption:
-    (noOptionsText: string) => (props: HTMLLIElementWithSxProps & { key: string }, option: ParticipantOption) => {
+    (noOptionsText: string) => (props: HTMLLIElementWithSxProps & { key: Key }, option: ParticipantOption) => {
       if (!schema.isValidSync(option.email)) {
         return (
           <Box

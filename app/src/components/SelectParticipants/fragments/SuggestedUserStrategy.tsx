@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Stack, Typography } from '@mui/material';
 import type { ParticipantOption } from '@opentalk/rest-api-rtk-query';
+import { Key } from 'react';
 
 import { ParticipantAvatar, setLibravatarOptions } from '../../../commonComponents';
 import { LibravatarDefaultImage } from '../../../types';
@@ -18,7 +19,7 @@ export const SuggestedUserStrategy = {
   },
   renderOption:
     (defaultImage: LibravatarDefaultImage) =>
-    (props: HTMLLIElementWithSxProps & { key: string }, option: ParticipantOption) => {
+    (props: HTMLLIElementWithSxProps & { key: Key }, option: ParticipantOption) => {
       if ('firstname' in option) {
         const { key, ...propsWithoutKey } = props;
         return (
