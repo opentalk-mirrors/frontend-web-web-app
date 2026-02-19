@@ -936,6 +936,7 @@ dashboard-meeting-date-start = from
 dashboard-meeting-date-end = to
 dashboard-meeting-date-field-error-invalid-value = The start date and the end date need to be valid values
 dashboard-meeting-date-field-error-duration = The meeting can't end before it starts
+dashboard-meeting-recurrence-date-field-error-duration = The end date must not be in the past
 dashboard-meeting-date-field-error-future = The start date must begin in the future
 dashboard-meeting-date-and-time-switch = Set date & time
 dashboard-meeting-time-independent-tooltip = You can create a meeting with or without a precise time limit.

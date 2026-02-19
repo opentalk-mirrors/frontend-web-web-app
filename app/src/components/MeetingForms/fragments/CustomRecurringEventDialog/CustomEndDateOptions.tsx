@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { FormControlLabel, Grid, Radio, RadioGroup, styled } from '@mui/material';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers';
+import { isValid as isValidDate, isBefore, startOfDay } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,6 +14,7 @@ interface CustomEndOptionsProps {
   rRuleObject: RRuleObject;
   updateRRuleObject: (rule: PartialRRuleOptions) => void;
   minDate: Date;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
 enum EndOption {
@@ -30,28 +32,44 @@ const DatePicker = styled(MuiDatePicker)(({ theme }) => ({
   },
 })) as typeof MuiDatePicker;
 
-export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: CustomEndOptionsProps) => {
+export const CustomEndOptions = ({
+  rRuleObject,
+  updateRRuleObject,
+  minDate,
+  onValidationChange,
+}: CustomEndOptionsProps) => {
   const { t } = useTranslation();
+  const [isTouched, setIsTouched] = useState(false);
   const [endOption, setEndOption] = useState<EndOption>(rRuleObject.until ? EndOption.OnDate : EndOption.Never);
-  const { until } = rRuleObject;
+
+  const validationErrorKey = (() => {
+    if (endOption === EndOption.Never) {
+      return null;
+    }
+    if (!rRuleObject.until || !isValidDate(rRuleObject.until)) {
+      return 'meeting-invalid-end-date';
+    }
+    if (isBefore(startOfDay(rRuleObject.until), startOfDay(minDate))) {
+      return 'dashboard-meeting-recurrence-date-field-error-duration';
+    }
+    return null;
+  })();
+
+  const isValid = validationErrorKey === null;
+
+  useEffect(() => {
+    onValidationChange?.(isValid);
+  }, [isValid, onValidationChange]);
 
   const handleClick = (value: EndOption) => {
+    setIsTouched(false);
     setEndOption(value);
     if (value === EndOption.Never) {
       updateRRuleObject({ until: undefined });
-      return;
-    }
-    //If no date is already set we use minDate
-    !rRuleObject.until && updateRRuleObject({ until: minDate });
-  };
-
-  useEffect(() => {
-    const isMinDateAfterSelected = until ? minDate.valueOf() > until.valueOf() : false;
-
-    if (endOption === EndOption.OnDate && isMinDateAfterSelected) {
+    } else if (!rRuleObject.until) {
       updateRRuleObject({ until: minDate });
     }
-  }, [endOption, minDate, until, updateRRuleObject]);
+  };
 
   return (
     <RadioGroup value={endOption} name="radio-buttons-group">
@@ -79,18 +97,21 @@ export const CustomEndOptions = ({ rRuleObject, updateRRuleObject, minDate }: Cu
             onClick={() => handleClick(EndOption.OnDate)}
           />
         </Grid>
-        <Grid
-          sx={{
-            flexShrink: 1,
-          }}
-        >
+        <Grid sx={{ flexShrink: 1 }}>
           <PickerLocalizationProvider>
             <DatePicker
-              value={rRuleObject.until ?? minDate}
-              onChange={(value) => updateRRuleObject({ until: value })}
+              value={rRuleObject.until ?? null}
+              onChange={(newValue) => updateRRuleObject({ until: newValue ?? undefined })}
               disabled={endOption === EndOption.Never}
-              minDate={minDate}
-              slotProps={{ textField: { InputProps: { color: 'primary' } } }}
+              slotProps={{
+                textField: {
+                  error: isTouched && !isValid,
+                  helperText: isTouched && validationErrorKey ? t(validationErrorKey) : undefined,
+                  onBlur: () => setIsTouched(true),
+                  onFocus: () => setIsTouched(false),
+                  InputProps: { color: 'primary' },
+                },
+              }}
             />
           </PickerLocalizationProvider>
         </Grid>
