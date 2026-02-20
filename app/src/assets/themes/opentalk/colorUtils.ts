@@ -71,7 +71,7 @@ export function getContrastText(
     textColor,
     backgroundColor,
     threshold,
-    backgroundColor.oklch.l <= 0.5 ? 0.01 : -0.01 // Adjust luminance based on contrast direction
+    (backgroundColor.oklch.l || 0) <= 0.5 ? 0.01 : -0.01 // Adjust luminance based on contrast direction
   );
 
   contrastCache.set(cacheKey, result);
@@ -79,7 +79,7 @@ export function getContrastText(
 }
 
 function adjustLightness(color: Color, amount: number): Color {
-  color.oklch.l = Math.min(Math.max(color.oklch.l + amount, 0), 1); // Ensure lightness stays within [0, 1];
+  color.oklch.l = Math.min(Math.max((color.oklch.l || 0) + amount, 0), 1); // Ensure lightness stays within [0, 1];
   return color;
 }
 
