@@ -12,7 +12,7 @@ import { joinSuccess } from '../commonActions';
 export interface Poll {
   id: PollId;
   topic: string;
-  duration: number | null;
+  duration: number;
   choices: Array<Choice>;
   results: Array<ChoiceResult>;
   startTime: string;

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Container, Typography, Button, Grid, Divider } from '@mui/material';
+import { styled, Typography, Button, Grid, Stack, Box } from '@mui/material';
 import { truncate } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -10,27 +10,22 @@ import { LegalBallotIcon } from '../../../assets/icons';
 import { ProgressBar } from '../../../commonComponents';
 import { useAppDispatch, useDateFormat } from '../../../hooks';
 import { Poll } from '../../../store/slices/pollSlice';
+import { setVoteOrPollIdToShow } from '../../../store/slices/uiSlice';
 import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 
-const MainContainer = styled(Container)(({ theme }) => ({
+const MainContainer = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.palette.background.customPaper.primary,
-  color: theme.palette.text.primary,
   width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: theme.spacing(1),
-  borderRadius: '0.4rem',
-  gap: theme.spacing(1),
+  padding: theme.spacing(1.5),
+  borderRadius: theme.borderRadius.medium,
 }));
 
-const VoteCountContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  gap: theme.spacing(1),
+const Divider = styled('div')(({ theme }) => ({
+  borderTop: `3px solid ${theme.palette.divider}`,
 }));
 
 const VoteState = styled('div')<{ state?: 'active' | 'finished' }>(({ theme, state }) => ({
   backgroundColor: state === 'active' ? theme.palette.success.main : theme.palette.error.main,
-  color: state === 'active' ? theme.palette.success.contrastText : theme.palette.error.contrastText,
   padding: theme.spacing(0.5),
   fontWeight: 'bold',
 }));
@@ -60,78 +55,69 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
   const getVotedNumber = () => poll.results.reduce((acc, result) => acc + result.count, 0);
 
   return (
-    <MainContainer>
-      <Grid
-        container
-        spacing={1}
+    <MainContainer spacing={2}>
+      <Box
         sx={{
-          justifyContent: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        <Grid size="grow">
-          <Grid
-            container
-            spacing={1}
-            sx={{
-              alignItems: 'end',
-            }}
-          >
-            <Grid>
-              <VoteState state={poll.state}>{t(`poll-overview-panel-status-${poll.state}`)}</VoteState>
-            </Grid>
-            <Grid>
-              <Typography>{formattedTime}</Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid sx={{ display: 'flex' }}>
-          <Grid
-            container
-            spacing={1}
-            sx={{
-              alignItems: 'flex-end',
-            }}
-          >
-            {poll.duration && poll.duration > 0 && (
-              <VoteAndPollCountdown
-                duration={poll.duration}
-                startTime={poll.startTime}
-                active={poll.state === 'active'}
-                flex={1}
-                justifyContent="flex-end"
-              />
-            )}
-          </Grid>
-        </Grid>
-        <Grid
-          size={{ xs: 12 }}
+        <Box
           sx={{
-            display: 'block',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          <ProgressBar
-            endTime={startTime.getTime() + (poll.duration ? poll.duration : 0) * 1000}
-            startTime={startTime.getTime()}
-            isFinished={Boolean(poll.state !== 'active')}
+          <VoteState state={poll.state}>{t(`poll-overview-panel-status-${poll.state}`)}</VoteState>
+          <Typography
+            sx={{
+              ml: 1,
+            }}
+          >
+            {formattedTime}
+          </Typography>
+        </Box>
+        {poll.duration > 0 && (
+          <VoteAndPollCountdown
+            duration={poll.duration}
+            startTime={poll.startTime}
+            active={poll.state === 'active'}
+            flex={1}
+            justifyContent="flex-end"
           />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <Divider />
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <TopicTypography variant="body2" align="center">
-            {truncate(poll.topic, { length: 120 })}
-          </TopicTypography>
-        </Grid>
-        <Grid>
-          <VoteCountContainer>
-            <LegalBallotIcon />
+        )}
+      </Box>
+      <Stack spacing={1}>
+        <ProgressBar
+          endTime={startTime.getTime() + (poll.duration ? poll.duration : 0) * 1000}
+          startTime={startTime.getTime()}
+          isFinished={Boolean(poll.state !== 'active')}
+        />
+        <Divider />
+        <TopicTypography variant="body2" align="center">
+          {truncate(poll.topic, { length: 120 })}
+        </TopicTypography>
+
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <LegalBallotIcon />
+          <Typography
+            sx={{
+              ml: 0.5,
+            }}
+          >
             {getVotedNumber()}
-          </VoteCountContainer>
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <Divider />
-        </Grid>
+          </Typography>
+        </Box>
+
+        <Divider />
+
         {poll.state === 'active' && (
           <Grid sx={{ marginLeft: 'auto' }}>
             <Button size="small" variant="contained" onClick={handleEnd} color="secondary">
@@ -139,7 +125,17 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
             </Button>
           </Grid>
         )}
-      </Grid>
+        {poll.state === 'finished' && (
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => dispatch(setVoteOrPollIdToShow(poll.id))}
+            color="secondary"
+          >
+            {t('poll-form-popover-results-button')}
+          </Button>
+        )}
+      </Stack>
     </MainContainer>
   );
 };

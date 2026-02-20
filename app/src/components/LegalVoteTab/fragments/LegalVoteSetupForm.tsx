@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Switch, Button, Grid, Tooltip, Select, MenuItem } from '@mui/material';
+import { Switch, Grid, Tooltip, Select, MenuItem } from '@mui/material';
 import { FormikProps } from 'formik/dist/types';
 
 import { DurationField, CommonTextField } from '../../../commonComponents';
@@ -18,14 +18,12 @@ import { DurationFieldWrapper } from '../../DurationFieldWrapper';
 export const LegalVoteSetupForm = ({
   formik,
   t,
-  onSave,
 }: {
   formik: FormikProps<LegalVoteFormValues>;
   t: (key: string) => string;
-  onSave: () => void;
 }) => {
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={2}>
       <Grid size={{ xs: 12 }} sx={{ position: 'relative' }}>
         <DurationFieldWrapper paddingTop={1}>
           <DurationField
@@ -92,9 +90,6 @@ export const LegalVoteSetupForm = ({
           fullWidth
         />
       </Grid>
-      <Button type="button" onClick={onSave} fullWidth color="secondary">
-        {t('legal-vote-form-button-save')}
-      </Button>
     </Grid>
   );
 };

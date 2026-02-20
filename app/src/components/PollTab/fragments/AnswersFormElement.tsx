@@ -44,8 +44,12 @@ const StyledCommonTextField = styled(CommonTextField)(({ theme }) => ({
 }));
 
 const StyledAddButton = styled(Button)(({ theme }) => ({
+  paddingLeft: 0,
   '&.Mui-disabled': {
     color: theme.palette.text.disabled,
+  },
+  '& .MuiButton-startIcon': {
+    marginLeft: 0,
   },
 }));
 
