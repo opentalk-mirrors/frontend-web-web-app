@@ -43,9 +43,7 @@ export default function InactivityGuard() {
   const MEETING_INACTIVITY_WARNING_SECONDS = useAppSelector(selectMeetingInactivityWarningSeconds);
   const MEETING_INACTIVITY_TERMINATION_SECONDS = useAppSelector(selectMeetingInactivityTerminationSeconds);
 
-  const shouldStartMediaActiveInterval = useCallback(() => {
-    return (isAudioEnabled || isVideoEnabled) && isUserAloneInConference && mediaActiveInterval.current === null;
-  }, [isAudioEnabled, isVideoEnabled, isUserAloneInConference]);
+  const shouldStartInactivityGuard = (isAudioEnabled || isVideoEnabled) && isUserAloneInConference;
 
   const haltActiveMediaActiveInterval = useCallback(() => {
     if (mediaActiveInterval.current) {
@@ -56,7 +54,7 @@ export default function InactivityGuard() {
   }, []);
 
   useEffect(() => {
-    if (shouldStartMediaActiveInterval()) {
+    if (shouldStartInactivityGuard) {
       mediaActiveInterval.current = setInterval(() => {
         numberOfMediaActiveSeconds.current += 1;
         if (numberOfMediaActiveSeconds.current >= MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS) {
@@ -69,20 +67,20 @@ export default function InactivityGuard() {
           );
         }
       }, INACTIVITY_INTERVAL_DELAY);
-    } else {
-      haltActiveMediaActiveInterval();
     }
+
+    return function () {
+      haltActiveMediaActiveInterval();
+    };
   }, [
-    shouldStartMediaActiveInterval,
+    shouldStartInactivityGuard,
     haltActiveMediaActiveInterval,
     dispatch,
     MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS,
     t,
   ]);
 
-  const shouldStartInactivityInterval = useCallback((): boolean => {
-    return isUserAloneInConference && inactivityInterval.current === null;
-  }, [isUserAloneInConference]);
+  const shouldStartInactivityInterval = isUserAloneInConference;
 
   const haltActiveInactivityInterval = useCallback(() => {
     if (inactivityInterval.current) {
@@ -93,7 +91,7 @@ export default function InactivityGuard() {
   }, []);
 
   useEffect(() => {
-    if (shouldStartInactivityInterval()) {
+    if (shouldStartInactivityInterval) {
       inactivityInterval.current = setInterval(() => {
         numberOfInactiveSeconds.current += 1;
         if (numberOfInactiveSeconds.current === MEETING_INACTIVITY_WARNING_SECONDS) {
@@ -109,7 +107,8 @@ export default function InactivityGuard() {
         }
       }, INACTIVITY_INTERVAL_DELAY);
     }
-    return () => {
+
+    return function () {
       haltActiveInactivityInterval();
     };
   }, [
