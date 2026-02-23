@@ -53,35 +53,59 @@ type ProviderTargetInfo = ProviderPlatform & BaseStreamingTargetInfo;
 export type StreamingTargetInfo = CustomTargetInfo | BuiltInTargetInfo | ProviderTargetInfo;
 
 //Shared types for streaming signaling
-export enum StreamingStatus {
+
+export enum RecordingStatus {
+  Requested = 'requested',
   Active = 'active',
   Inactive = 'inactive',
   Paused = 'paused',
-  Unavailable = 'unavailable',
   Error = 'error',
 }
 
-interface TargetStatus {
-  status: StreamingStatus;
-  targetId: StreamingTargetId;
+export enum StreamStatus {
+  InUse = 'in_use',
+  Requested = 'requested',
+  Inactive = 'inactive',
+  Active = 'active',
+  Paused = 'paused',
+  Error = 'error',
 }
 
-interface StreamingTargetNonErrorStatus extends TargetStatus {
-  status: Exclude<StreamingStatus, StreamingStatus.Error>;
-}
-
-interface ErrorReason {
+export interface StreamErrorReason {
   code: string;
   message: string;
 }
-interface StreamingTargetErrorStatus extends TargetStatus {
-  status: StreamingStatus.Error;
-  reason: ErrorReason;
-}
 
-export type StreamingTargetStatusInfo = StreamingTargetNonErrorStatus | StreamingTargetErrorStatus;
+// Tagged union for RecordingStatus (matches backend #[serde(tag = "status")])
+type RecordingStatusNonError = {
+  status: Exclude<RecordingStatus, RecordingStatus.Error>;
+};
 
-//Type used for the update message
+type RecordingStatusError = {
+  status: RecordingStatus.Error;
+  reason: StreamErrorReason;
+};
+
+export type RecordingStatusInfo = RecordingStatusNonError | RecordingStatusError;
+
+// Tagged union for StreamStatus (matches backend #[serde(tag = "status")])
+type StreamStatusNonError = {
+  status: Exclude<StreamStatus, StreamStatus.Error>;
+};
+
+type StreamStatusError = {
+  status: StreamStatus.Error;
+  reason: StreamErrorReason;
+};
+
+export type StreamStatusInfo = StreamStatusNonError | StreamStatusError;
+
+// Status update for a streaming target (used in stream_updated event and slice actions)
+export type StreamingTargetStatusInfo = {
+  targetId: StreamingTargetId;
+} & StreamStatusInfo;
+
+// The stream_updated message type
 export type StreamUpdatedMessage = StreamingTargetStatusInfo & {
   message: 'stream_updated';
 };
@@ -90,32 +114,13 @@ export enum StreamingKind {
   Recording = 'recording',
   Livestream = 'livestream',
 }
-interface StreamingTargetKindBase {
-  name: string;
-  streamingKind: StreamingKind;
-}
-interface RecordingTargetKind extends StreamingTargetKindBase {
-  streamingKind: StreamingKind.Recording;
-}
-
-interface StreamingTargetKind extends StreamingTargetKindBase {
-  streamingKind: StreamingKind.Livestream;
-  publicUrl: string;
-}
-
-type StreamingTargetKindInfo = RecordingTargetKind | StreamingTargetKind;
 
 /**
- * Type of entity that is stored in streaming slice
+ * Type of entity stored in the streaming slice.
+ * Represents a streaming target from stream_states with an added targetId.
  */
-export type StreamingTargetEntity = StreamingTargetStatusInfo & StreamingTargetKindInfo;
-
-//In the response Target ID is used as key and not in the object itself
-type ReducedEntity = Exclude<StreamingTargetEntity, 'targetId'>;
-type StreamingTargetHashMap = Record<StreamingTargetId, ReducedEntity>;
-
-//Response from JoinSuccess
-export interface StreamingState {
-  clientType: 'participant';
-  targets: StreamingTargetHashMap;
-}
+export type StreamingTargetEntity = {
+  targetId: StreamingTargetId;
+  name: string;
+  publicUrl: string;
+} & StreamStatusInfo;

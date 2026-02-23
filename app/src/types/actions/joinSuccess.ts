@@ -5,11 +5,14 @@ import {
   BackendFeatures,
   BackendModules,
   EventInfo,
+  MeetingDetails,
   SharedFolderData,
-  StreamingState,
   TariffId,
+  StreamingTargetId,
+  TrainingParticipationReportParameterSet,
+  StreamStatusInfo,
+  RecordingStatusInfo,
 } from '@opentalk/rest-api-rtk-query';
-import { MeetingDetails, TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 
 import type {
   ParticipationLogging,
@@ -56,7 +59,7 @@ export interface JoinSuccessInternalState {
     displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
   };
   forceMute?: ForceMute;
-  recording?: StreamingState;
+  recording?: RecordingState;
   serverTimeOffset: number;
   tariff: SignalingTariff;
   timer?: TimerState;
@@ -96,7 +99,7 @@ export interface JoinSuccessIncoming {
     waitingRoomEnabled: boolean;
   };
   media?: ParticipantMediaState;
-  recording?: StreamingState;
+  recording?: RecordingState;
   timer?: TimerState;
   tariff: SignalingTariff;
   closesAt: Timestamp;
@@ -144,7 +147,7 @@ export interface ModuleData {
     waitingRoomEnabled: boolean;
     displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
   };
-  recording?: StreamingState;
+  recording?: RecordingState;
   timer?: TimerState;
   legalVote?: LegalVoteJoinSuccess;
   whiteboard?: WhiteboardState;
@@ -240,3 +243,22 @@ export interface SignalingTariff {
 }
 
 export type ConnectionInfo = { connectionId: ConnectionId; deviceId: DeviceId };
+
+export interface ServiceStreamingTarget {
+  location: URL;
+}
+
+export interface RecordingServiceState {
+  streamingTargets: Record<StreamingTargetId, ServiceStreamingTarget>;
+}
+
+export type StreamingTarget = {
+  name: string;
+  publicUrl: string;
+} & StreamStatusInfo;
+
+export interface RecordingState {
+  recordingState: RecordingStatusInfo;
+  streamStates: Record<StreamingTargetId, StreamingTarget>;
+  service?: RecordingServiceState;
+}

@@ -28,9 +28,17 @@ export type {
   StreamingTargetStatusInfo,
   StreamUpdatedMessage,
   StreamingTargetEntity,
-  StreamingState,
+  StreamErrorReason,
+  StreamStatusInfo,
+  RecordingStatusInfo,
 } from './types/streaming';
-export { StreamingKind, PlatformKind, StreamingStatus } from './types/streaming';
+export {
+  StreamingKind,
+  PlatformKind,
+  RecordingStatus,
+  StreamStatus,
+  RecordingStatus as StreamingStatus,
+} from './types/streaming';
 export type { ThemeBasePalette, BasePalette } from './types/config';
 export type {
   User,
@@ -76,6 +84,7 @@ export type {
   EventInfo,
   MeetingDetails,
   StreamingLink,
+  TrainingParticipationReportParameterSet,
 } from './types/event';
 export {
   isTimelessEvent,

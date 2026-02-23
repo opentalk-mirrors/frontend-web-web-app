@@ -18,7 +18,12 @@ import {
   mute,
 } from '../../../api/types/outgoing/moderation';
 import { disableRaiseHands, enableRaiseHands } from '../../../api/types/outgoing/raiseHands';
-import { sendStartStreamSignal, sendStopStreamSignal } from '../../../api/types/outgoing/streaming';
+import {
+  sendStartRecordingSignal,
+  sendStartStreamSignal,
+  sendStopRecordingSignal,
+  sendStopStreamSignal,
+} from '../../../api/types/outgoing/streaming';
 import { disablePresenceLogging, enablePresenceLogging } from '../../../api/types/outgoing/trainingParticipationReport';
 import {
   AddUserIcon,
@@ -58,7 +63,7 @@ import { selectE2EEncryption, selectIsRoomOwner, selectWaitingRoomState } from '
 import {
   selectActiveStreamIds,
   selectInactiveStreamIds,
-  selectRecordingTarget,
+  selectRecordingTargetStatus,
 } from '../../../store/slices/streamingSlice';
 import { setSelfRenameDialogVisible } from '../../../store/slices/uiSlice';
 import {
@@ -119,11 +124,11 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const isChatEnabled = useAppSelector(selectChatEnabledState);
   const hasSelfRenameEnabled = useAppSelector(selectSelfRenameEnabled);
   const dispatch = useAppDispatch();
-  const recording = useAppSelector(selectRecordingTarget);
+  const recordingStatus = useAppSelector(selectRecordingTargetStatus);
   const activeStreamIds = useAppSelector(selectActiveStreamIds);
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
   const hasRecordingFeatureOn = useAppSelector(
-    selectIsFeatureEnabled(BackendModules.RecordingService, RecordingFeatures.Record)
+    selectIsFeatureEnabled(BackendModules.Recording, RecordingFeatures.Record)
   );
   const isGuestsAllowedFeatureEnabled = useAppSelector(
     selectIsFeatureEnabled(BackendModules.Core, CoreFeatures.GuestsAllowed)
@@ -302,17 +307,13 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     moderatorMenuItems.push(exportAttendanceReportItem);
   }
 
-  //Exclude start/stop recording when errored/unavailable until we have designs/approach for how to handle errored and unavailable streams
-  const isValidRecordingTarget =
-    recording && recording.status !== StreamingStatus.Error && recording.status !== StreamingStatus.Unavailable;
-
-  if (hasRecordingFeatureOn && isValidRecordingTarget) {
-    switch (recording.status) {
+  if (hasRecordingFeatureOn) {
+    switch (recordingStatus) {
       case StreamingStatus.Active:
         moderatorMenuItems.push({
           label: 'more-menu-stop-recording',
           action: () => {
-            dispatch(sendStopStreamSignal.action({ targetIds: [recording.targetId] }));
+            dispatch(sendStopRecordingSignal.action());
             onClose();
           },
           icon: <RecordingsIcon />,
@@ -322,10 +323,19 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         moderatorMenuItems.push({
           label: 'more-menu-start-recording',
           action: () => {
-            dispatch(sendStartStreamSignal.action({ targetIds: [recording.targetId] }));
+            dispatch(sendStartRecordingSignal.action());
             onClose();
           },
           icon: <RecordingsIcon />,
+        });
+        break;
+      case StreamingStatus.Requested:
+        moderatorMenuItems.push({
+          label: 'more-menu-start-recording',
+          action: () => {
+            onClose();
+          },
+          icon: <RecordingsIcon disabled />,
         });
         break;
     }
