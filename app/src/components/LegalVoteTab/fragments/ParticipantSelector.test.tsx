@@ -63,7 +63,7 @@ describe('ParticipantSelector', () => {
     setFieldValue = vi.fn();
     mockUseFormikContext.mockReturnValue({
       setFieldValue,
-      errors: {},
+      validateField: vi.fn(),
     });
     mockUseAppSelector.mockImplementation(() => participants);
     vi.useRealTimers();
@@ -122,14 +122,8 @@ describe('ParticipantSelector', () => {
     expect(screen.queryByText('Alice Example')).not.toBeInTheDocument();
   });
 
-  it('renders an error message from formik', async () => {
-    mockUseFormikContext.mockReturnValue({
-      setFieldValue,
-      errors: { allowedParticipants: 'Select at least one participant' },
-    });
-
+  it('renders info text about minimum participants', async () => {
     renderComponent();
-
-    expect(await screen.findByText('Select at least one participant')).toBeInTheDocument();
+    expect(await screen.findByText('legal-vote-input-assignments-required')).toBeInTheDocument();
   });
 });

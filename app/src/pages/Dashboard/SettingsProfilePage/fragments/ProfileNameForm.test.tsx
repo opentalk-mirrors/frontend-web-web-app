@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { waitFor, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { configureStore, renderWithProviders } from '../../../../utils/testUtils';
 import ProfileNameForm from './ProfileNameForm';
@@ -53,12 +54,14 @@ describe('ProfileNameForm', () => {
 
   it('shows error on empty display name', async () => {
     const { store } = configureStore();
+    userEvent.setup();
     renderWithProviders(<ProfileNameForm />, { store });
 
     expect(screen.queryByText(/field-error-required/i)).not.toBeInTheDocument();
 
     const input = screen.getByDisplayValue(MOCK_DISPLAY_NAME);
-    fireEvent.change(input, { target: { value: '' } });
+    await userEvent.clear(input);
+    await userEvent.tab();
 
     await waitFor(() => {
       expect(screen.getByText(/field-error-required/i)).toBeInTheDocument();

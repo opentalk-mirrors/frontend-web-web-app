@@ -99,9 +99,10 @@ export function formikProps<Values>(
   fieldName: FormikPaths<Values>,
   formik: FormikProps<Values>
 ): IFormikPropsReturnValue {
-  const { values, handleBlur, handleChange, errors } = formik;
+  const { values, handleBlur, handleChange, errors, touched } = formik;
   const errorMessage = get(errors, fieldName);
-  const hasError = Boolean(errorMessage);
+  const isTouched = Boolean(get(touched, fieldName));
+  const hasError = isTouched && Boolean(errorMessage);
 
   const getValue = () => {
     const raw = get(values, fieldName);
