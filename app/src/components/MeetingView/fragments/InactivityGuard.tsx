@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText } from '@mui/material';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../../../commonComponents';
@@ -43,20 +43,18 @@ export default function InactivityGuard() {
   const MEETING_INACTIVITY_WARNING_SECONDS = useAppSelector(selectMeetingInactivityWarningSeconds);
   const MEETING_INACTIVITY_TERMINATION_SECONDS = useAppSelector(selectMeetingInactivityTerminationSeconds);
 
-  const shouldStartMediaActiveInterval = useCallback(() => {
-    return (isAudioEnabled || isVideoEnabled) && isUserAloneInConference && mediaActiveInterval.current === null;
-  }, [isAudioEnabled, isVideoEnabled, isUserAloneInConference]);
+  const shouldStartInactivityGuard = (isAudioEnabled || isVideoEnabled) && isUserAloneInConference;
 
-  const haltActiveMediaActiveInterval = useCallback(() => {
-    if (mediaActiveInterval.current) {
-      clearInterval(mediaActiveInterval.current);
-      mediaActiveInterval.current = null;
-      numberOfMediaActiveSeconds.current = 0;
+  const haltInterval = useCallback((intervalRef: RefObject<NodeJS.Timeout | null>, counterRef: RefObject<number>) => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      counterRef.current = 0;
     }
   }, []);
 
   useEffect(() => {
-    if (shouldStartMediaActiveInterval()) {
+    if (shouldStartInactivityGuard) {
       mediaActiveInterval.current = setInterval(() => {
         numberOfMediaActiveSeconds.current += 1;
         if (numberOfMediaActiveSeconds.current >= MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS) {
@@ -69,31 +67,17 @@ export default function InactivityGuard() {
           );
         }
       }, INACTIVITY_INTERVAL_DELAY);
-    } else {
-      haltActiveMediaActiveInterval();
     }
-  }, [
-    shouldStartMediaActiveInterval,
-    haltActiveMediaActiveInterval,
-    dispatch,
-    MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS,
-    t,
-  ]);
 
-  const shouldStartInactivityInterval = useCallback((): boolean => {
-    return isUserAloneInConference && inactivityInterval.current === null;
-  }, [isUserAloneInConference]);
+    return () => {
+      haltInterval(mediaActiveInterval, numberOfMediaActiveSeconds);
+    };
+  }, [shouldStartInactivityGuard, haltInterval, dispatch, MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS, t]);
 
-  const haltActiveInactivityInterval = useCallback(() => {
-    if (inactivityInterval.current) {
-      clearInterval(inactivityInterval.current);
-      inactivityInterval.current = null;
-      numberOfInactiveSeconds.current = 0;
-    }
-  }, []);
+  const shouldStartInactivityInterval = isUserAloneInConference;
 
   useEffect(() => {
-    if (shouldStartInactivityInterval()) {
+    if (shouldStartInactivityInterval) {
       inactivityInterval.current = setInterval(() => {
         numberOfInactiveSeconds.current += 1;
         if (numberOfInactiveSeconds.current === MEETING_INACTIVITY_WARNING_SECONDS) {
@@ -109,12 +93,13 @@ export default function InactivityGuard() {
         }
       }, INACTIVITY_INTERVAL_DELAY);
     }
+
     return () => {
-      haltActiveInactivityInterval();
+      haltInterval(inactivityInterval, numberOfInactiveSeconds);
     };
   }, [
     shouldStartInactivityInterval,
-    haltActiveInactivityInterval,
+    haltInterval,
     dispatch,
     isUserAloneInConference,
     MEETING_INACTIVITY_WARNING_SECONDS,
