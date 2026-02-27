@@ -10,9 +10,15 @@ const Container = styled(Box)(() => ({
   alignItems: 'center',
 }));
 
-const SuspenseLoading = ({ size }: { size?: string }) => (
+const SuspenseLoading = ({
+  size,
+  color = 'secondary',
+}: {
+  size?: string;
+  color?: 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
+}) => (
   <Container>
-    <CircularProgress color="secondary" size={size} />
+    <CircularProgress color={color} size={size} />
   </Container>
 );
 
