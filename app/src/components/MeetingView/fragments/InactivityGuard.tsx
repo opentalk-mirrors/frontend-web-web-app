@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText } from '@mui/material';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { notifications } from '../../../commonComponents';
@@ -45,11 +45,11 @@ export default function InactivityGuard() {
 
   const shouldStartInactivityGuard = (isAudioEnabled || isVideoEnabled) && isUserAloneInConference;
 
-  const haltActiveMediaActiveInterval = useCallback(() => {
-    if (mediaActiveInterval.current) {
-      clearInterval(mediaActiveInterval.current);
-      mediaActiveInterval.current = null;
-      numberOfMediaActiveSeconds.current = 0;
+  const haltInterval = useCallback((intervalRef: RefObject<NodeJS.Timeout | null>, counterRef: RefObject<number>) => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      counterRef.current = 0;
     }
   }, []);
 
@@ -69,26 +69,12 @@ export default function InactivityGuard() {
       }, INACTIVITY_INTERVAL_DELAY);
     }
 
-    return function () {
-      haltActiveMediaActiveInterval();
+    return () => {
+      haltInterval(mediaActiveInterval, numberOfMediaActiveSeconds);
     };
-  }, [
-    shouldStartInactivityGuard,
-    haltActiveMediaActiveInterval,
-    dispatch,
-    MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS,
-    t,
-  ]);
+  }, [shouldStartInactivityGuard, haltInterval, dispatch, MEETING_INACTIVITY_MEDIA_DISABLE_SECONDS, t]);
 
   const shouldStartInactivityInterval = isUserAloneInConference;
-
-  const haltActiveInactivityInterval = useCallback(() => {
-    if (inactivityInterval.current) {
-      clearInterval(inactivityInterval.current);
-      inactivityInterval.current = null;
-      numberOfInactiveSeconds.current = 0;
-    }
-  }, []);
 
   useEffect(() => {
     if (shouldStartInactivityInterval) {
@@ -108,12 +94,12 @@ export default function InactivityGuard() {
       }, INACTIVITY_INTERVAL_DELAY);
     }
 
-    return function () {
-      haltActiveInactivityInterval();
+    return () => {
+      haltInterval(inactivityInterval, numberOfInactiveSeconds);
     };
   }, [
     shouldStartInactivityInterval,
-    haltActiveInactivityInterval,
+    haltInterval,
     dispatch,
     isUserAloneInConference,
     MEETING_INACTIVITY_WARNING_SECONDS,
