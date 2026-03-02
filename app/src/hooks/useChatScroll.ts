@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { RoomEvent } from '../store/slices/eventSlice';
 import { ChatMessage } from '../types';
@@ -13,40 +13,63 @@ interface ChatScrollProps {
   scrollToBottom: () => void;
 }
 
+const AT_BOTTOM_THRESHOLD = 3;
+
 export function useChatScroll({ isLoading, messages, searchValue, scrollToBottom }: ChatScrollProps) {
-  const viewportRef = useRef<HTMLUListElement | null>(null);
+  const [viewportNode, setViewportNode] = useState<HTMLUListElement | null>(null);
+  const viewportNodeRef = useRef<HTMLUListElement | null>(null);
+  const viewportRef = useCallback((node: HTMLUListElement | null) => {
+    viewportNodeRef.current = node;
+    setViewportNode(node);
+  }, []);
+
   const isAtBottom = useRef(true);
   const prevScrollHeight = useRef(0);
   const prevLoading = useRef(isLoading);
+  const requestAnimationFrameId = useRef<number | null>(null);
 
   // Simplified scroll handler that only tracks if user is at bottom
   const handleChatScroll = useCallback(() => {
-    requestAnimationFrame(() => {
-      const node = viewportRef.current;
-      if (!node) {
-        return;
-      }
-
-      const { scrollHeight, clientHeight, scrollTop } = node;
-      isAtBottom.current = scrollHeight - clientHeight - scrollTop <= 3;
-    });
-  }, []);
-
-  useLayoutEffect(() => {
-    if (!viewportRef.current) {
+    if (requestAnimationFrameId.current !== null || !viewportNode) {
       return;
     }
 
-    if (prevLoading.current && !isLoading) {
+    requestAnimationFrameId.current = requestAnimationFrame(() => {
+      const { scrollHeight, clientHeight, scrollTop } = viewportNode;
+      isAtBottom.current = scrollHeight - clientHeight - scrollTop <= AT_BOTTOM_THRESHOLD;
+
+      requestAnimationFrameId.current = null;
+    });
+  }, [viewportNode]);
+
+  useLayoutEffect(() => {
+    if (!viewportNode) {
+      return;
+    }
+    viewportNode.addEventListener('scroll', handleChatScroll, { passive: true });
+    return () => {
+      viewportNode.removeEventListener('scroll', handleChatScroll);
+      if (requestAnimationFrameId.current !== null) {
+        cancelAnimationFrame(requestAnimationFrameId.current);
+      }
+    };
+  }, [viewportNode, handleChatScroll]);
+
+  useLayoutEffect(() => {
+    if (!viewportNode) {
+      return;
+    }
+
+    if (prevLoading.current && !isLoading && viewportNodeRef.current) {
       // Maintain position after loading
-      viewportRef.current.scrollTop = viewportRef.current.scrollHeight - prevScrollHeight.current;
+      viewportNodeRef.current.scrollTop = viewportNodeRef.current.scrollHeight - prevScrollHeight.current;
     } else if (isAtBottom.current || searchValue) {
       scrollToBottom();
     }
 
     prevLoading.current = isLoading;
-    prevScrollHeight.current = viewportRef.current?.scrollHeight || 0;
-  }, [isLoading, searchValue, messages.length, scrollToBottom]);
+    prevScrollHeight.current = viewportNode.scrollHeight;
+  }, [isLoading, searchValue, messages.length, scrollToBottom, viewportNode]);
 
-  return { viewportRef, handleChatScroll };
+  return { viewportRef, viewportNode, handleChatScroll };
 }
