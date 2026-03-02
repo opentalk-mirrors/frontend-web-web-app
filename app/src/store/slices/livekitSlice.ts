@@ -15,7 +15,6 @@ import {
 } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import {
-  ConnectionQuality,
   DeviceUnsupportedError,
   DisconnectReason,
   ConnectionState as LivekitConnectionState,
@@ -60,7 +59,6 @@ import {
 } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
-import { selectAllOnlineParticipantsInConference, selectParticipantName } from './participantsSlice';
 import { abortedReconnection, enteredWaitingRoom } from './roomSlice';
 import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice';
 import { timerStarted } from './timerSlice';
@@ -77,7 +75,6 @@ type PopoutStreamAccess = {
 
 type PopoutStreamAccesses = Array<PopoutStreamAccess>;
 
-const EAVESDROP_CHECK_TIMEOUT = 5000;
 export type MediaDeviceKindExtended = MediaDeviceKind | 'screenshare';
 
 export type MediaSettings = {
@@ -717,10 +714,7 @@ const createRoomListeners = (
   getState: () => RootState,
   room: Room
 ): Partial<RoomEventCallbacks> => ({
-  [RoomEvent.Connected]: () => {
-    handleRoomConnected(dispatch, getState);
-    handleParticipantConnected(getState);
-  },
+  [RoomEvent.Connected]: () => handleRoomConnected(dispatch, getState),
   [RoomEvent.Disconnected]: (reason) => handleRoomDisconnected(dispatch, getState, room, reason),
   [RoomEvent.TrackPublished]: (pub, participant) => {
     if (participant instanceof RemoteParticipant && pub instanceof RemoteTrackPublication) {
@@ -741,7 +735,6 @@ const createRoomListeners = (
   [RoomEvent.LocalTrackPublished]: (pub) => handleTrackToggle(pub, room, dispatch, getState, true),
   [RoomEvent.ConnectionStateChanged]: () => handleConnectionStateChanged(dispatch, getState),
   [RoomEvent.EncryptionError]: (error) => handleEncryptionError(error),
-  [RoomEvent.ParticipantConnected]: (participant) => handleParticipantConnected(getState, participant),
 });
 
 const attachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
@@ -927,39 +920,4 @@ const handleConnectionStateChanged = (dispatch: AppDispatch, getState: () => Roo
   } else if (livekitState === LivekitConnectionState.Connected && isLivekitUnavailable) {
     dispatch(setLivekitUnavailable(false));
   }
-};
-
-const handleParticipantConnected = (getState: () => RootState, remoteParticipant?: Participant) => {
-  setTimeout(() => {
-    const state = getState();
-
-    // If the user is in a popout stream, we don't check for unauthorized participants
-    if (selectIsPopoutStream(state)) {
-      return;
-    }
-
-    const disconnectedStates = [ConnectionQuality.Lost, ConnectionQuality.Unknown];
-    const connectedParticipantIds = new Set(selectAllOnlineParticipantsInConference(state).map((p) => p.id));
-
-    const isActiveAndUnauthorized = (p: Participant) =>
-      !disconnectedStates.includes(p.connectionQuality) && !connectedParticipantIds.has(p.identity as ParticipantId);
-
-    if (remoteParticipant) {
-      if (isActiveAndUnauthorized(remoteParticipant)) {
-        const displayName =
-          selectParticipantName(state, remoteParticipant.identity as ParticipantId) || remoteParticipant.identity;
-        notifications.error(t('security-breach-eavesdrop', { participants: displayName }));
-      }
-      return;
-    }
-
-    const remoteParticipants = Array.from(state.livekit.room?.remoteParticipants.values() || []);
-    const unauthorizedParticipantNames = remoteParticipants
-      .filter(isActiveAndUnauthorized)
-      .map((p) => selectParticipantName(state, p.identity as ParticipantId) || p.identity);
-
-    if (unauthorizedParticipantNames.length > 0) {
-      notifications.error(t('security-breach-eavesdrop', { participants: unauthorizedParticipantNames.join(', ') }));
-    }
-  }, EAVESDROP_CHECK_TIMEOUT);
 };

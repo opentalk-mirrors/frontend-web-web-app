@@ -531,8 +531,6 @@ secure-connection-contaminated = Bitte beachten Sie, dass Gäste, darunter auch 
 secure-connection-sip = Bitte beachten Sie, dass auch Telefon-Teilnehmer anwesend sind.
 secure-connection-high-security = Sehr hohes Schutzniveau aktiv.
 
-security-breach-eavesdrop = Folgende unbekannte Teilnehmer sind weiterhin verbunden und könnten Ihre Unterhaltung mithören: {participants}. Bitte verlassen Sie den Raum und erstellen Sie einen neuen, um Ihre Privatsphäre zu gewährleisten.
-
 participant-joined-text = Beigetreten {$joinedTime}
 participant-hand-raise-text = Hand gehoben {$handUpdated}
 participant-last-active-text = Letzte Aktivität {$lastActive}
