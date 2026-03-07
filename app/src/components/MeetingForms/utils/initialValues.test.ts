@@ -84,13 +84,14 @@ describe('MeetingForms initialValues utils', () => {
 
       const values = getInitialValuesForExisting(memoizedRecurrencePattern, {
         ...mockedSingleEvent,
+        room: { ...mockedSingleEvent.room, password: null },
         streamingTargets: [mockedStreamingTarget],
       });
 
       expect(values.title).toBe(mockedSingleEvent.title);
       expect(values.description).toBe(mockedSingleEvent.description);
       expect(values.waitingRoom).toBe(mockedSingleEvent.room.waitingRoom);
-      expect(values.password).toBe(mockedSingleEvent.room.password);
+      expect(values.password).toBeUndefined();
       expect(values.isTimeDependent).toBe(mockedSingleEvent.isTimeIndependent === false);
       expect(values.startDate).toBe(mockedSingleEvent.startsAt.datetime);
       expect(values.endDate).toBe(mockedSingleEvent.endsAt.datetime);

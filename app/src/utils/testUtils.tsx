@@ -347,6 +347,7 @@ export const eventMockedData: TimelessEvent = {
     id: uuidv4() as RoomId,
     waitingRoom: false,
     e2eEncryption: false,
+    password: null,
   },
   type: EventType.Single,
   updatedBy: {
@@ -427,6 +428,7 @@ export const mockedRecurringEvent: RecurringEvent = {
       id: '4082652646' as SipId,
       password: '0513013745',
     },
+    password: null,
   },
   inviteesTruncated: true,
   invitees: [],
@@ -479,6 +481,7 @@ export const mockedSingleEvent: SingleEvent = {
       id: '0940955973' as SipId,
       password: '2320845822',
     },
+    password: null,
   },
   inviteesTruncated: true,
   invitees: [],

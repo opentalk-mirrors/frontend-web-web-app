@@ -54,9 +54,14 @@ describe('createPayload', () => {
     expect(payload.password).toBe(mockedMeetingFormValues.password?.trim());
   });
 
-  it('should set password to undefined if empty', () => {
+  it('should set password to null if empty', () => {
     const payload = createPayload({ ...mockedMeetingFormValues, password: '   ' });
-    expect(payload.password).toBeUndefined();
+    expect(payload.password).toBeNull();
+  });
+
+  it('should set password to null if undefined', () => {
+    const payload = createPayload({ ...mockedMeetingFormValues, password: undefined });
+    expect(payload.password).toBeNull();
   });
 
   it('should set time dependant state correctly', () => {

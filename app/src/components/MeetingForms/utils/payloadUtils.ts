@@ -16,7 +16,7 @@ export const createPayload = (
     description: values.description?.trim() || '',
     waitingRoom: values.waitingRoom,
     showMeetingDetails: values.showMeetingDetails,
-    password: values.password?.trim() !== '' ? values.password?.trim() : undefined,
+    password: createPasswordPayload(values.password),
     isTimeIndependent: !values.isTimeDependent,
     recurrencePattern: values.isTimeDependent ? createRecurrencePatternPayload(values.recurrencePattern) : undefined,
     isAdhoc: values.isAdhoc || false,
@@ -45,6 +45,14 @@ export const createPayload = (
   }
 
   return payload;
+};
+
+const createPasswordPayload = (password?: string) => {
+  if (password && password.trim() !== '') {
+    return password.trim();
+  } else {
+    return null;
+  }
 };
 
 const createRecurrencePatternPayload = (recurrencePattern: RecurrencePattern) => {
