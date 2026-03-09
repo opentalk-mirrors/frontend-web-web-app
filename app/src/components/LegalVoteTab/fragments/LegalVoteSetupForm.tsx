@@ -73,6 +73,7 @@ export const LegalVoteSetupForm = () => {
           label={t('legal-vote-title-label')}
           placeholder={t('legal-vote-title-placeholder')}
           fullWidth
+          required
         />
       </Grid>
       <Grid size={{ xs: 12 }}>
@@ -92,6 +93,7 @@ export const LegalVoteSetupForm = () => {
           label={t('legal-vote-topic-label')}
           placeholder={t('legal-vote-topic-placeholder')}
           fullWidth
+          required
         />
       </Grid>
     </Grid>
