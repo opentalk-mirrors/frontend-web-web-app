@@ -60,7 +60,7 @@ export interface TrainingParticipationReportParameterSet {
  */
 type EventRoomInfo = {
   id: RoomId;
-  password?: string;
+  password: string | null;
   waitingRoom: boolean;
   e2eEncryption: boolean;
   callIn?: CallIn;
@@ -98,7 +98,7 @@ export interface CreateBaseEventPayload {
   description: string;
   waitingRoom: boolean;
   e2eEncryption: boolean;
-  password?: string;
+  password: string | null;
   isAdhoc?: boolean;
   showMeetingDetails?: boolean;
   hasSharedFolder?: boolean;
@@ -172,7 +172,7 @@ export interface UpdateEventPayload {
   recurrencePattern?: Array<RecurrencePattern>;
   waitingRoom?: boolean;
   e2eEncryption: boolean;
-  password?: string;
+  password: string | null;
   isAdhoc?: boolean;
   showMeetingDetails?: boolean;
   hasSharedFolder?: boolean;
