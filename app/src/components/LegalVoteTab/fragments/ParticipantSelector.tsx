@@ -12,11 +12,11 @@ import {
   ListItem as MuiListItem,
   List,
   ListItemText,
-  FormHelperText,
   ListItemAvatar as MuiListItemAvatar,
+  FormHelperText,
 } from '@mui/material';
 import { useFormikContext } from 'formik';
-import { get, find, debounce } from 'lodash';
+import { find, debounce } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -74,9 +74,7 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
   const votingUsers = useAppSelector(selectVotingUsers);
 
   const participantsWithoutGuestAndSip = useMemo(() => votingUsers || [], [votingUsers]);
-  const { setFieldValue, errors } = useFormikContext();
-  const error = get(errors, name, '') as string;
-  const hasError = Boolean(error);
+  const { setFieldValue, validateField } = useFormikContext();
   const [selectedIds, setSelectedIds] = useState<ParticipantId[]>([]);
   const [searchValue, setSearchValue] = useState('');
 
@@ -106,6 +104,10 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
       }, 250),
     []
   );
+
+  useEffect(() => {
+    validateField(name);
+  }, [name, validateField]);
 
   useEffect(() => {
     return () => {
@@ -150,12 +152,6 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
       return nextSelected;
     });
   };
-
-  const renderErrors = hasError && (
-    <Grid>
-      <FormHelperText error={hasError}>{error}</FormHelperText>
-    </Grid>
-  );
 
   const renderSearchUser = (
     <Grid size={{ xs: 12 }}>
@@ -223,10 +219,10 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
 
   return (
     <Container disableGutters>
-      <Grid container spacing={2} padding={1}>
-        {renderErrors}
+      <Grid container spacing={2} direction="column">
         {renderSearchUser}
         {renderAllUsersButton}
+        <FormHelperText>{t('legal-vote-input-assignments-required')}</FormHelperText>
         {renderParticipants}
       </Grid>
     </Container>

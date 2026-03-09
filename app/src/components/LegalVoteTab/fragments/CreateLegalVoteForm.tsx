@@ -52,7 +52,6 @@ const CreateLegalVoteForm = ({
   const { t } = useTranslation();
   const legalVoteId = useRef(useSelector(selectLegalVoteId));
   const dispatch = useDispatch();
-
   const [currentStep, setCurrentStep] = useState(0);
 
   const validationSchema = yup.object({
@@ -68,7 +67,8 @@ const CreateLegalVoteForm = ({
     topic: yup
       .string()
       .trim()
-      .max(500, t('legal-vote-form-input-error-max', { maxCharacters: 500 })),
+      .max(500, t('legal-vote-form-input-error-max', { maxCharacters: 500 }))
+      .required(t('legal-vote-input-topic-required')),
     duration: yup.number().min(0).nullable().typeError(t('legal-vote-form-input-error-number')),
     createPdf: yup.bool(),
     kind: yup.string().oneOf(Object.values(LegalVoteKind)),
@@ -93,23 +93,14 @@ const CreateLegalVoteForm = ({
 
   const participantValidationSchema = useMemo(() => {
     return yup.object({
-      allowedParticipants: yup
-        .array()
-        .min(1, t('legal-vote-input-assignments-required'))
-        .required(t('legal-vote-input-assignments-required')),
+      allowedParticipants: yup.array().min(1, t('legal-vote-input-assignments-required')),
     });
   }, [t]);
 
-  const getCurrentValidationSchema = () => {
-    return currentStep === 0 ? validationSchema : participantValidationSchema;
-  };
+  const currentValidationSchema = [validationSchema, participantValidationSchema][currentStep];
 
-  const renderStep = (formik: FormikProps<LegalVoteFormValues>) =>
-    currentStep === 0 ? (
-      <LegalVoteSetupForm formik={formik} t={t} />
-    ) : (
-      <ParticipantSelector name="allowedParticipants" />
-    );
+  const renderStep = () =>
+    currentStep === 0 ? <LegalVoteSetupForm /> : <ParticipantSelector name="allowedParticipants" />;
 
   const onSubmit = (values: FormikValues) => {
     const allowedParticipants = values.allowedParticipants as AllowedParticipant[];
@@ -160,17 +151,18 @@ const CreateLegalVoteForm = ({
 
   const renderButtons = (formik: FormikProps<LegalVoteFormValues>) => {
     const isLastStep = currentStep === 1;
-
     return (
       <>
-        {!isLastStep && <SaveAsTemplateButton onClick={() => saveFormValues(formik.values)} />}
+        {!isLastStep && (
+          <SaveAsTemplateButton onClick={() => saveFormValues(formik.values)} disabled={!formik.isValid} />
+        )}
         <Stack direction="row" spacing={1} mt="auto">
           <Button type="button" onClick={handlePrev} startIcon={<BackIcon />} fullWidth color="primary">
             {t('legal-vote-button-back')}
           </Button>
           <Button
             type="button"
-            disabled={isCoffeeBreakActive}
+            disabled={isCoffeeBreakActive || !formik.isValid}
             onClick={() => handleNext(formik)}
             fullWidth
             color="secondary"
@@ -186,10 +178,11 @@ const CreateLegalVoteForm = ({
     <Formik
       enableReinitialize={true}
       initialValues={initialValues}
-      validationSchema={getCurrentValidationSchema()}
+      validationSchema={currentValidationSchema}
       onSubmit={onSubmit}
       validateOnBlur={false}
-      validateOnChange={false}
+      validateOnChange={true}
+      validateOnMount={true}
     >
       {(formik) => (
         <Stack
@@ -205,7 +198,7 @@ const CreateLegalVoteForm = ({
                 ? t('legal-vote-header-title-update')
                 : t('legal-vote-header-title-create')}
             </Typography>
-            {renderStep(formik)}
+            {renderStep()}
           </Form>
           {renderButtons(formik)}
         </Stack>

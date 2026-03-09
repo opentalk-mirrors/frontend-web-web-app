@@ -105,7 +105,7 @@ const LegalVoteOverviewPanel = ({
     }
     if (state === LegalVoteState.Finished) {
       return (
-        <Button size="small" variant="contained" onClick={() => dispatch(setVoteOrPollIdToShow(id))} color="secondary">
+        <Button size="small" variant="text" onClick={() => dispatch(setVoteOrPollIdToShow(id))} color="secondary">
           {t('legal-vote-popover-results-button')}
         </Button>
       );

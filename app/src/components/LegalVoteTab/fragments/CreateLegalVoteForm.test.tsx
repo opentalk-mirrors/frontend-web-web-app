@@ -7,8 +7,8 @@ import userEvent from '@testing-library/user-event';
 import { start } from '../../../api/types/outgoing/legalVote';
 import { notifications } from '../../../commonComponents';
 import { savedLegalVoteForm } from '../../../store/slices/legalVoteSlice';
-import { LegalVoteFormValues, LegalVoteKind, ParticipantId, SavedLegalVoteForm } from '../../../types';
-import { configureStore, renderWithProviders } from '../../../utils/testUtils';
+import { LegalVoteFormValues, LegalVoteKind, SavedLegalVoteForm } from '../../../types';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import CreateLegalVoteForm from './CreateLegalVoteForm';
 import { AllowedParticipant } from './ParticipantSelector';
 
@@ -69,19 +69,28 @@ describe('CreateLegalVoteForm', () => {
     expect(screen.getByText('legal-vote-header-title-update')).toBeInTheDocument();
   });
 
-  it('shows an error notification when saving without name or topic', async () => {
-    const { store, dispatchSpy } = configureStore();
-    const user = userEvent.setup();
-
+  it('disables the save as template button when saving without name or topic', async () => {
+    const { store } = configureStore();
     renderWithProviders(
       <CreateLegalVoteForm initialValues={buildInitialValues()} onClose={vi.fn()} isCoffeeBreakActive={false} />,
       { store, provider: { mui: true } }
     );
 
-    await user.click(screen.getByRole('button', { name: 'save-as-template-button' }));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'save-as-template-button' })).toBeDisabled();
+    });
+  });
 
-    expect(notifications.error).toHaveBeenCalledExactlyOnceWith('legal-vote-save-form-error');
-    expect(dispatchSpy).not.toHaveBeenCalledWith(expect.objectContaining({ type: savedLegalVoteForm.type }));
+  it('disables the next button when name or topic is missing', async () => {
+    const { store } = configureStore();
+
+    renderWithProviders(
+      <CreateLegalVoteForm initialValues={buildInitialValues()} onClose={vi.fn()} isCoffeeBreakActive={false} />,
+      { store, provider: { mui: true } }
+    );
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'legal-vote-form-button-continue' })).toBeDisabled();
+    });
   });
 
   it('saves form values and notifies when save is clicked with valid inputs', async () => {
@@ -110,20 +119,21 @@ describe('CreateLegalVoteForm', () => {
   });
 
   it('submits the start action and closes after completing both steps', async () => {
-    const allowedParticipants: AllowedParticipant[] = [
-      { id: 'participant-1' as ParticipantId, displayName: 'One' },
-      { id: 'participant-2' as ParticipantId, displayName: 'Two' },
-    ];
     const initialValues = buildInitialValues({
-      name: 'Board Vote',
-      topic: 'Approve minutes',
-      allowedParticipants,
       duration: 2,
       enableAbstain: false,
       autoClose: true,
       createPdf: false,
     });
-    const { store, dispatchSpy } = configureStore();
+    const participant = mockedParticipant(0);
+    const { store, dispatchSpy } = configureStore({
+      initialState: {
+        participants: {
+          ids: [participant.id],
+          entities: { [participant.id]: participant },
+        },
+      },
+    });
     const user = userEvent.setup();
     const onClose = vi.fn();
 
@@ -132,7 +142,16 @@ describe('CreateLegalVoteForm', () => {
       { store, provider: { mui: true } }
     );
 
+    await user.type(screen.getByPlaceholderText('legal-vote-title-placeholder'), 'Board Vote');
+    await user.type(screen.getByPlaceholderText('legal-vote-topic-placeholder'), 'Approve minutes');
+
+    expect(screen.getByRole('button', { name: 'legal-vote-form-button-continue' })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: 'legal-vote-form-button-continue' }));
+    const selectAllButton = await screen.findByRole('button', {
+      name: 'poll-participant-list-button-select-all',
+    });
+
+    await user.click(selectAllButton);
     await screen.findByRole('button', { name: 'poll-participant-list-button-start' });
     await user.click(screen.getByRole('button', { name: 'poll-participant-list-button-start' }));
 
@@ -143,7 +162,7 @@ describe('CreateLegalVoteForm', () => {
       enableAbstain: false,
       autoClose: true,
       duration: 120,
-      allowedParticipants: allowedParticipants.map((participant) => participant.id),
+      allowedParticipants: [participant.id],
       createPdf: false,
       kind: LegalVoteKind.RollCall,
       timezone: 'Mock/Zone',

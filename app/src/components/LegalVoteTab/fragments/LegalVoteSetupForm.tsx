@@ -2,7 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Switch, Grid, Tooltip, Select, MenuItem } from '@mui/material';
-import { FormikProps } from 'formik/dist/types';
+import { useFormikContext } from 'formik';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { DurationField, CommonTextField } from '../../../commonComponents';
 import { CommonFormItem } from '../../../commonComponents';
@@ -15,13 +17,15 @@ import {
 } from '../../../utils/formikUtils';
 import { DurationFieldWrapper } from '../../DurationFieldWrapper';
 
-export const LegalVoteSetupForm = ({
-  formik,
-  t,
-}: {
-  formik: FormikProps<LegalVoteFormValues>;
-  t: (key: string) => string;
-}) => {
+export const LegalVoteSetupForm = () => {
+  const { validateForm, ...restFormik } = useFormikContext<LegalVoteFormValues>();
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    validateForm();
+  }, [validateForm]);
+
+  const formik = { validateForm, ...restFormik };
   return (
     <Grid container spacing={2}>
       <Grid size={{ xs: 12 }} sx={{ position: 'relative' }}>

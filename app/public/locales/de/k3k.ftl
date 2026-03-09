@@ -400,7 +400,7 @@ legal-vote-topic-placeholder = Worum geht es in der Abstimmung?
 legal-vote-input-title-required = Titel erforderlich
 legal-vote-input-subtitle-required = Untertitel erforderlich
 legal-vote-input-topic-required = Thema erforderlich
-legal-vote-input-assignments-required = Mindestens zwei Teilnehmer müssen ausgewählt werden
+legal-vote-input-assignments-required = Mindestens ein Teilnehmer muss zugewiesen werden
 
 legal-vote-popover-results-button = Votingergebnisse anzeigen
 
