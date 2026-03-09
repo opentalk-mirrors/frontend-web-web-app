@@ -13,11 +13,12 @@ import {
   MeetingNotesAccess,
   MeetingNotesParticipant,
   Participant,
-  ParticipantId,
   ParticipationKind,
   Role,
   SortOption,
   WaitingState,
+  ParticipantId,
+  BreakoutRoomId,
 } from '../types';
 import { moveItemToTopOfArray } from '../utils/arrayUtils';
 import { mergeAndSortMessagesEndEvents } from '../utils/eventUtils';
@@ -44,7 +45,7 @@ import { selectEventInfo } from './slices/roomSlice';
 import { selectParticipantsReady } from './slices/timerSlice';
 import {
   selectChatConversationScope,
-  selectChatConversationTargetId,
+  selectChatConversationTarget,
   selectParticipantsSearchValue,
   selectParticipantsSortOption,
 } from './slices/uiSlice';
@@ -171,8 +172,8 @@ const selectScopedEvents = createSelector([selectChatConversationScope, selectAl
 );
 
 export const selectChatMessagesByScope = createSelector(
-  [selectChatState, selectScopedEvents, selectChatConversationScope, selectChatConversationTargetId],
-  (chatState, events, scope, targetId) => {
+  [selectChatState, selectScopedEvents, selectChatConversationScope, selectChatConversationTarget],
+  (chatState, events, scope, target) => {
     if (scope === ChatScope.Global) {
       const globalChatMessages = globalMessagesSelectors.selectAll(chatState.scope.global.messages);
 
@@ -182,12 +183,12 @@ export const selectChatMessagesByScope = createSelector(
 
       return globalChatMessages.length > 0 ? globalChatMessages : [];
     }
-    if (scope === ChatScope.Private && targetId) {
-      const privateChat = chatState.scope.private[targetId as ParticipantId];
+    if (scope === ChatScope.Private && target) {
+      const privateChat = chatState.scope.private[target as ParticipantId];
       return privateChat ? privateMessagesSelectors.selectAll(privateChat.messages) : [];
     }
-    if (scope === ChatScope.Breakout && targetId !== undefined) {
-      return breakoutMessagesSelectors.selectAll(chatState.scope.breakout.messages);
+    if (scope === ChatScope.Breakout && target !== undefined) {
+      return breakoutMessagesSelectors.selectAll(chatState.scope.breakout[target as BreakoutRoomId].messages);
     }
 
     return [];
@@ -201,19 +202,6 @@ export const selectCombinedMessageAndEvents = createSelector(
       return mergeAndSortMessagesEndEvents(messages, events);
     }
     return messages;
-  }
-);
-
-export const selectNextIndex = createSelector(
-  [selectChatState, selectChatConversationScope, selectChatConversationTargetId],
-  (chatState, chatScope, conversationTargetId) => {
-    if (chatScope === ChatScope.Global) {
-      return chatState.scope.global.nextIndex;
-    }
-    if (chatScope === ChatScope.Private && conversationTargetId) {
-      return chatState.scope.private[conversationTargetId as ParticipantId]?.nextIndex;
-    }
-    return null;
   }
 );
 

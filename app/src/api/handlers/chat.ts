@@ -9,17 +9,14 @@ import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import {
   clearGlobalChat,
+  lastSeenTimestampAdded,
   privateChatHistoryChunkReceived,
   received,
   roomChatHistoryChunkReceived,
   setChatSearchResults,
   setChatSettings,
-  setGlobalChatLastSeenTimestamp,
-  setLastSeenTimestampForBreakoutChat,
-  setLastSeenTimestampForPrivateChat,
 } from '../../store/slices/chatSlice';
-import type { BreakoutRoomId, ChatMessage, ParticipantId, Timestamp } from '../../types';
-import { ChatScope } from '../../types';
+import { BreakoutRoomId, ChatMessage, ChatScope, ParticipantId, Timestamp } from '../../types';
 import { chat } from '../types/incoming';
 
 /**
@@ -74,7 +71,7 @@ export const handleChatMessage = (
 
       dispatch(received({ chatMessage, userId }));
       if (state.ui.currentMenuTab === MenuTab.Chat) {
-        dispatch(setGlobalChatLastSeenTimestamp({ value: timestamp }));
+        dispatch(lastSeenTimestampAdded({ scope: ChatScope.Global, timestamp }));
       }
       break;
     }
@@ -91,26 +88,11 @@ export const handleChatMessage = (
     case 'search_results':
       dispatch(setChatSearchResults(data.matches.messages));
       break;
-    case 'set_last_seen_timestamp':
-      if (data.scope === ChatScope.Global) {
-        dispatch(setGlobalChatLastSeenTimestamp({ value: data.timestamp }));
-      } else if (data.scope === ChatScope.Private && data.target) {
-        dispatch(
-          setLastSeenTimestampForPrivateChat({
-            participantId: data.target as ParticipantId,
-            timestamp: data.timestamp,
-          })
-        );
-      } else if (data.scope === ChatScope.Breakout) {
-        dispatch(
-          setLastSeenTimestampForBreakoutChat({
-            timestamp: data.timestamp,
-          })
-        );
-      } else {
-        log.error(`Invalid scope or missing target for set_last_seen_timestamp: ${JSON.stringify(data)}`);
-      }
+    case 'set_last_seen_timestamp': {
+      const { message: _, ...payload } = data;
+      dispatch(lastSeenTimestampAdded(payload));
       break;
+    }
     default: {
       const dataString = JSON.stringify(data, null, 2);
       log.error(`Unknown chat message type: ${dataString}`);

@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { setLastSeenTimestamp } from '../../api/types/outgoing/chat';
 import { lastSeenTimestampAdded, received } from '../../store/slices/chatSlice';
 import { setChatSearchValue } from '../../store/slices/uiSlice';
-import { ChatMessage, ChatScope, ParticipantId, Timestamp } from '../../types';
+import { ChatIdentifier, ChatMessage, ChatScope, ParticipantId, Timestamp } from '../../types';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import Chat from './Chat';
 
@@ -36,16 +36,8 @@ vi.mock('./fragments/ChatSearch', async () => {
 });
 
 vi.mock('./fragments/ChatList', () => {
-  const ChatListMock = ({
-    onReset,
-    scope,
-    targetId,
-  }: {
-    onReset?: () => void;
-    scope?: ChatScope;
-    targetId?: string;
-  }) => {
-    chatListPropsSpy({ onReset, scope, targetId });
+  const ChatListMock = ({ onReset, scope, target }: { onReset?: () => void; scope?: ChatScope; target?: string }) => {
+    chatListPropsSpy({ onReset, scope, target });
     return (
       <div data-testid="chat-list">
         {onReset && (
@@ -102,6 +94,8 @@ describe('Chat', () => {
     vi.useRealTimers();
   });
 
+  const globalChatIdentifier: ChatIdentifier = { scope: ChatScope.Global };
+
   it('dispatches last seen updates for global messages', async () => {
     const { store, dispatchSpy } = configureStore();
     const lastMessage = createChatMessage();
@@ -110,7 +104,7 @@ describe('Chat', () => {
     store.dispatch(received({ chatMessage: lastMessage, userId: lastMessage.source }));
     dispatchSpy.mockClear();
 
-    renderWithProviders(<Chat />, { store });
+    renderWithProviders(<Chat chatIdentifier={globalChatIdentifier} />, { store });
 
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(lastSeenTimestampAdded({ scope: ChatScope.Global, timestamp }));
 
@@ -123,32 +117,20 @@ describe('Chat', () => {
   });
 
   it('dispatches last seen updates for private messages with target', () => {
-    const targetId = 'participant-2' as ParticipantId;
-    const { store, dispatchSpy } = configureStore({
-      initialState: {
-        ui: {
-          chatConversationState: {
-            scope: ChatScope.Private,
-            targetId,
-          },
-          chatAutosavedInputs: {
-            [ChatScope.Private]: {
-              [targetId]: '',
-            },
-          },
-        },
-      },
-    });
-    const lastMessage = createChatMessage(ChatScope.Private, targetId);
+    const target = 'participant-2' as ParticipantId;
+    const { store, dispatchSpy } = configureStore();
+    const lastMessage = createChatMessage(ChatScope.Private, target);
     const timestamp = lastMessage.timestamp as Timestamp;
+
+    const privateChatIdentifier: ChatIdentifier = { scope: ChatScope.Private, target };
 
     store.dispatch(received({ chatMessage: lastMessage, userId: lastMessage.source }));
     dispatchSpy.mockClear();
 
-    renderWithProviders(<Chat />, { store });
+    renderWithProviders(<Chat chatIdentifier={privateChatIdentifier} />, { store });
 
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
-      lastSeenTimestampAdded({ scope: ChatScope.Private, target: targetId, timestamp })
+      lastSeenTimestampAdded({ ...privateChatIdentifier, timestamp })
     );
 
     dispatchSpy.mockClear();
@@ -158,7 +140,7 @@ describe('Chat', () => {
     });
 
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
-      setLastSeenTimestamp.action({ scope: ChatScope.Private, target: targetId, timestamp })
+      setLastSeenTimestamp.action({ ...privateChatIdentifier, timestamp })
     );
   });
 
@@ -169,7 +151,7 @@ describe('Chat', () => {
     store.dispatch(setChatSearchValue('prefilled'));
     dispatchSpy.mockClear();
 
-    renderWithProviders(<Chat />, { store });
+    renderWithProviders(<Chat chatIdentifier={globalChatIdentifier} />, { store });
 
     const searchInput = screen.getByTestId('chat-search') as HTMLInputElement;
     expect(searchInput.value).toBe('prefilled');
@@ -190,7 +172,7 @@ describe('Chat', () => {
     store.dispatch(setChatSearchValue('keep-me'));
     dispatchSpy.mockClear();
 
-    renderWithProviders(<Chat />, { store });
+    renderWithProviders(<Chat chatIdentifier={globalChatIdentifier} />, { store });
 
     const searchInput = screen.getByTestId('chat-search') as HTMLInputElement;
     expect(searchInput.value).toBe('keep-me');
@@ -204,31 +186,15 @@ describe('Chat', () => {
   });
 
   it('renders the live region only for the global scope', () => {
-    const storeWithGlobalScope = configureStore({
-      initialState: {
-        ui: {
-          chatConversationState: {
-            scope: ChatScope.Global,
-          },
-        },
-      },
-    });
-    const { unmount } = renderWithProviders(<Chat />, { store: storeWithGlobalScope.store });
+    const { store } = configureStore();
+    const { unmount } = renderWithProviders(<Chat chatIdentifier={globalChatIdentifier} />, { store });
+    const target = 'participant-2' as ParticipantId;
+    const privateChatIdentifier: ChatIdentifier = { scope: ChatScope.Private, target };
 
     expect(screen.getByTestId('chat-live-region')).toBeInTheDocument();
 
     unmount();
-    const storeWithPrivateScope = configureStore({
-      initialState: {
-        ui: {
-          chatConversationState: {
-            scope: ChatScope.Private,
-            targetId: 'participant-2' as ParticipantId,
-          },
-        },
-      },
-    });
-    renderWithProviders(<Chat />, { store: storeWithPrivateScope.store });
+    renderWithProviders(<Chat chatIdentifier={privateChatIdentifier} />, { store });
 
     expect(screen.queryByTestId('chat-live-region')).not.toBeInTheDocument();
   });

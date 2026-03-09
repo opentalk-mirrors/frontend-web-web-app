@@ -322,7 +322,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
         dispatch(
           chatConversationStateSet({
             scope: ChatScope.Private,
-            targetId: participantId,
+            target: participantId,
           })
         );
         dispatch(setCurrentMenuTab(MenuTab.Messages));

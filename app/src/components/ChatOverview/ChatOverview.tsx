@@ -9,7 +9,7 @@ import { BackIcon, NewMessageIcon, NoMessagesIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectOtherOnlineParticipants, selectAllPersonalChats } from '../../store/selectors';
 import { chatConversationStateSet, selectChatConversationState } from '../../store/slices/uiSlice';
-import { ChatScope, TargetId } from '../../types';
+import { ChatScope, ParticipantId } from '../../types';
 import Chat from '../Chat';
 import ChatOverviewItem from './fragments/ChatOverviewItem';
 import NewMessagePopover from './fragments/NewMessagePopover';
@@ -53,13 +53,8 @@ const ChatOverview = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement>();
   const participants = useAppSelector(selectOtherOnlineParticipants);
 
-  const setSelectedChat = (scope: ChatScope, targetId: TargetId) => {
-    dispatch(
-      chatConversationStateSet({
-        scope: scope,
-        targetId: targetId,
-      })
-    );
+  const setSelectedChat = (target: ParticipantId) => {
+    dispatch(chatConversationStateSet({ scope: ChatScope.Private, target }));
   };
 
   const newMessageClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -70,7 +65,6 @@ const ChatOverview = () => {
     dispatch(
       chatConversationStateSet({
         scope: ChatScope.Global,
-        targetId: undefined,
       })
     );
   }, [dispatch]);
@@ -84,9 +78,16 @@ const ChatOverview = () => {
   const renderChats = () =>
     chats.length > 0 ? (
       <List>
-        {chats.map((chat) => (
-          <ChatOverviewItem key={chat.id} onClick={() => setSelectedChat(chat.scope, chat.id)} chat={chat} />
-        ))}
+        {chats.map(
+          (chat) =>
+            chat.chatIdentifier.scope === ChatScope.Private && (
+              <ChatOverviewItem
+                key={chat.chatIdentifier.target}
+                onClick={() => setSelectedChat(chat.chatIdentifier.target)}
+                chat={chat}
+              />
+            )
+        )}
       </List>
     ) : (
       <Stack
@@ -104,7 +105,7 @@ const ChatOverview = () => {
       </Stack>
     );
 
-  if (chatConversationState.scope !== undefined && chatConversationState.targetId !== undefined) {
+  if (chatConversationState.scope === ChatScope.Private && chatConversationState.target !== '') {
     return (
       <Container alignItems="flex-start" spacing={1}>
         <AdjustedButton
@@ -117,9 +118,10 @@ const ChatOverview = () => {
           {t('button-back-messages')}
         </AdjustedButton>
         <Chat
-          // We want to focus chat input for the private and group messages
-          // which are the ones containing `targetId`.
-          autoFocusMessageInput={Boolean(chatConversationState.targetId)}
+          chatIdentifier={{ scope: ChatScope.Private, target: chatConversationState.target }}
+          // We want to focus chat input for the private
+          // which are the ones containing `target`.
+          autoFocusMessageInput={Boolean(chatConversationState.target)}
         />
       </Container>
     );

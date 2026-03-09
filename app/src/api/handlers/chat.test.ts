@@ -6,9 +6,9 @@ import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import type { AppDispatch, RootState } from '../../store';
 import {
   clearGlobalChat,
+  lastSeenTimestampAdded,
   setChatSearchResults,
   setChatSettings,
-  setGlobalChatLastSeenTimestamp,
 } from '../../store/slices/chatSlice';
 import type { ParticipantId, Timestamp } from '../../types';
 import { ChatScope } from '../../types';
@@ -69,6 +69,7 @@ describe('handleChatMessage', () => {
       content: 'Private',
       scope: ChatScope.Private,
       target: 'user-1' as ParticipantId,
+      timestamp,
     };
 
     handleChatMessage(dispatch as unknown as AppDispatch, message, timestamp, state);
@@ -76,7 +77,7 @@ describe('handleChatMessage', () => {
     expect(notifications.info).toHaveBeenCalledExactlyOnceWith('chat-new-private-message');
 
     const getCallType = (call: Array<{ type?: string }>) => call[0].type;
-    expect(dispatch.mock.calls.some((call) => getCallType(call) === setGlobalChatLastSeenTimestamp.type)).toBe(false);
+    expect(dispatch.mock.calls.some((call) => getCallType(call) === lastSeenTimestampAdded.type)).toBe(false);
   });
 
   it('clears chat history and notifies', () => {

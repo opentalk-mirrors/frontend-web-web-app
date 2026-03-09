@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from '../../../hooks';
 import { chatConversationStateSet } from '../../../store/slices/uiSlice';
-import { ChatScope, Participant, TargetId } from '../../../types';
+import { ChatScope, Participant, ParticipantId } from '../../../types';
 
 interface INewMessagePopoverProps<T> {
   open: boolean;
@@ -45,11 +45,11 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open, participants }: INe
     setAnchorEl(undefined);
   };
 
-  const handleChatSelected = (targetId: TargetId, scope: ChatScope) => {
+  const handleChatSelected = (target: ParticipantId) => {
     dispatch(
       chatConversationStateSet({
-        scope,
-        targetId,
+        scope: ChatScope.Private,
+        target,
       })
     );
     setAnchorEl(undefined);
@@ -62,7 +62,7 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open, participants }: INe
             <ListItemText>{t('chat-private-scope')}</ListItemText>
           </MenuItem>,
           participants.map((participant) => (
-            <MenuItem key={participant.id} onClick={() => handleChatSelected(participant.id, ChatScope.Private)}>
+            <MenuItem key={participant.id} onClick={() => handleChatSelected(participant.id)}>
               <ListItemText translate="no">{participant.displayName}</ListItemText>
             </MenuItem>
           )),

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { BreakoutRoomId } from './breakout';
-import { ParticipantId, TargetId, Timestamp } from './common';
+import { ParticipantId, Timestamp } from './common';
 
 export enum ChatScope {
   Global = 'global',
@@ -10,49 +10,34 @@ export enum ChatScope {
   Breakout = 'breakout',
 }
 
-type GlobalChatMessage = {
+export type GlobalChatIdentifier = {
   scope: ChatScope.Global;
   target?: never;
 };
 
-type PrivateChatMessage = {
+export type PrivateChatIdentifier = {
   scope: ChatScope.Private;
   target: ParticipantId;
 };
 
-type BreakoutChatMessage = {
+export type BreakoutChatIdentifier = {
   scope: ChatScope.Breakout;
   target: BreakoutRoomId;
 };
+
+export type ChatIdentifier = GlobalChatIdentifier | PrivateChatIdentifier | BreakoutChatIdentifier;
 
 export type ChatMessage = {
   id: string;
   timestamp: string;
   source: ParticipantId;
   content: string;
-} & (GlobalChatMessage | PrivateChatMessage | BreakoutChatMessage);
-
-export interface ChatMessageBase {
-  id: string;
-  source: ParticipantId;
-  content: string;
-}
-
-export interface BaseMessageWithTimestamp extends ChatMessageBase {
-  timestamp: Timestamp;
-}
-
-export interface ChatBase extends ChatMessageBase {
-  scope: ChatScope;
-  target?: TargetId;
-}
-
-export type ChatMessageWithTimestamp = ChatBase & BaseMessageWithTimestamp;
+} & ChatIdentifier;
 
 export interface InitialChat {
   enabled: boolean;
   globalHistory: ChatChunk;
-  breakoutRoomHistory?: ChatChunk;
+  breakoutRoomHistory?: Array<BreakoutHistory>;
   privateHistory: Array<PrivateHistory>;
   lastSeenTimestampGlobal?: Timestamp;
   lastSeenTimestampBreakout?: Timestamp;
@@ -61,6 +46,11 @@ export interface InitialChat {
 
 export interface PrivateHistory {
   correspondent: ParticipantId;
+  history: ChatChunk;
+}
+
+export interface BreakoutHistory {
+  room: BreakoutRoomId;
   history: ChatChunk;
 }
 

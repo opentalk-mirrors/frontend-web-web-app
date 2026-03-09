@@ -1,11 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ChatBase, ChatChunk, ChatScope, NamespacedIncoming, ParticipantId, Timestamp } from '../../../types';
+import {
+  BreakoutRoomId,
+  ChatChunk,
+  ChatScope,
+  NamespacedIncoming,
+  ParticipantId,
+  Timestamp,
+  ChatMessage as ChatMessageBase,
+} from '../../../types';
 
-interface MessageSent extends ChatBase {
+export type MessageSent = ChatMessageBase & {
   message: 'message_sent';
-}
+};
 
 export interface ChatEnabled {
   message: 'chat_enabled';
@@ -20,12 +28,30 @@ interface ChatDisabled {
 export interface ClearGlobalChat {
   message: 'history_cleared';
 }
-export interface SetLastSeenTimestamp {
+
+type SetLastSeenTimestampBase = {
   message: 'set_last_seen_timestamp';
-  scope: 'global' | 'private' | 'breakout';
-  target?: ParticipantId;
   timestamp: Timestamp;
-}
+};
+
+type SetGlobalLastSeenTimestamp = {
+  scope: ChatScope.Global;
+} & SetLastSeenTimestampBase;
+
+type SetPrivateLastSeenTimestamp = {
+  scope: ChatScope.Private;
+  target: ParticipantId;
+} & SetLastSeenTimestampBase;
+
+type SetBreakoutLastSeenTimestamp = {
+  scope: ChatScope.Breakout;
+  target: BreakoutRoomId;
+} & SetLastSeenTimestampBase;
+
+export type SetLastSeenTimestamp =
+  | SetGlobalLastSeenTimestamp
+  | SetPrivateLastSeenTimestamp
+  | SetBreakoutLastSeenTimestamp;
 
 export interface RoomChatHistoryChunk {
   message: 'room_chat_history_chunk';

@@ -5,8 +5,8 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import * as Hooks from '../../../hooks';
-import { ChatProps, received } from '../../../store/slices/chatSlice';
-import { ChatMessage, ChatScope, ParticipantId, TargetId } from '../../../types';
+import { PrivateChatProps, received } from '../../../store/slices/chatSlice';
+import { ChatMessage, ChatScope, ParticipantId } from '../../../types';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import ChatOverviewItem from './ChatOverviewItem';
 
@@ -19,7 +19,7 @@ const {
 } = participant;
 const currentUserId = 'current-user' as ParticipantId;
 
-const createChat = (overrides?: Partial<ChatProps>): ChatProps => {
+const createChat = (overrides?: Partial<PrivateChatProps>): PrivateChatProps => {
   const lastMessage: ChatMessage =
     overrides?.lastMessage ??
     ({
@@ -34,8 +34,10 @@ const createChat = (overrides?: Partial<ChatProps>): ChatProps => {
   const messages = overrides?.messages ?? [lastMessage];
 
   return {
-    id: overrides?.id ?? participant.id,
-    scope: overrides?.scope ?? ChatScope.Private,
+    chatIdentifier: {
+      scope: ChatScope.Private,
+      target: overrides?.chatIdentifier?.target ?? participant.id,
+    },
     lastMessage,
     messages,
   };
@@ -73,7 +75,7 @@ describe('ChatOverviewItem', () => {
   });
 
   it('falls back to chat id when participant is missing', () => {
-    const chatId = 'ghost-participant' as TargetId;
+    const chatId = 'ghost-participant' as ParticipantId;
     const { store } = configureStore({
       initialState: {
         participants: {
@@ -83,7 +85,7 @@ describe('ChatOverviewItem', () => {
       },
     });
 
-    const chat = createChat({ id: chatId });
+    const chat = createChat({ chatIdentifier: { scope: ChatScope.Private, target: chatId } });
 
     renderWithProviders(<ChatOverviewItem chat={chat} onClick={vi.fn()} />, {
       store,
@@ -114,9 +116,11 @@ describe('ChatOverviewItem', () => {
 
     store.dispatch(received({ chatMessage: unreadMessage, userId: currentUserId }));
 
-    const chat: ChatProps = {
-      id: participant.id,
-      scope: ChatScope.Private,
+    const chat: PrivateChatProps = {
+      chatIdentifier: {
+        scope: ChatScope.Private,
+        target: participant.id,
+      },
       lastMessage: unreadMessage,
       messages: [unreadMessage],
     };
@@ -152,6 +156,6 @@ describe('ChatOverviewItem', () => {
 
     await user.click(screen.getByRole('button'));
 
-    expect(handleClick).toHaveBeenCalledWith(chat.id);
+    expect(handleClick).toHaveBeenCalledWith(chat.chatIdentifier.target);
   });
 });

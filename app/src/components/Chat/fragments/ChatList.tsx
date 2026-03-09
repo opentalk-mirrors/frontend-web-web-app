@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, CircularProgress, List, ListItem, Stack, Typography, styled } from '@mui/material';
+import { Box, CircularProgress, List, ListItem, Stack, styled, Typography } from '@mui/material';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ViewportList, ViewportListRef } from 'react-viewport-list';
@@ -10,24 +10,19 @@ import { getHistoryChunk, searchHistory } from '../../../api/types/outgoing/chat
 import { EncryptedMessagesIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useChatScroll } from '../../../hooks/useChatScroll';
-import { selectCombinedMessageAndEvents, selectNextIndex } from '../../../store/selectors';
+import { selectCombinedMessageAndEvents } from '../../../store/selectors';
 import {
+  lastSeenTimestampAdded,
   selectChatSearchResults,
   selectIsLoadingMoreChunks,
-  setGlobalChatLastSeenTimestamp,
+  selectNextIndex,
   setIsLoadingMoreChunks,
-  setLastSeenTimestampForPrivateChat,
-  setLastSeenTimestampForBreakoutChat,
 } from '../../../store/slices/chatSlice';
 import type { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
-import {
-  selectChatConversationScope,
-  selectChatConversationTargetId,
-  selectChatSearchValue,
-} from '../../../store/slices/uiSlice';
+import { selectChatSearchValue } from '../../../store/slices/uiSlice';
 import { selectOurUuid } from '../../../store/slices/userSlice';
-import { ChatMessage as ChatMessageType, ChatScope, ParticipantId, Timestamp } from '../../../types';
+import { ChatIdentifier, ChatMessage as ChatMessageType, ParticipantId, Timestamp } from '../../../types';
 import ChatMessage from './ChatMessage';
 import NoSearchResult from './NoSearchResult';
 
@@ -53,6 +48,8 @@ const ChatOrderedList = styled(List, {
 }));
 
 type ChatListProps = {
+  chatIdentifier: ChatIdentifier;
+  participant?: ParticipantId;
   onReset?: () => void;
 };
 
@@ -81,12 +78,10 @@ function filterMessages(
   return Array.from(resultsMap.values());
 }
 
-const ChatList = ({ onReset }: ChatListProps) => {
+const ChatList = ({ onReset, chatIdentifier }: ChatListProps) => {
   const { t } = useTranslation();
-  const combinedMessageAndEvents = useAppSelector(selectCombinedMessageAndEvents);
-  const scope = useAppSelector(selectChatConversationScope);
-  const targetId = useAppSelector(selectChatConversationTargetId);
-  const nextIndex = useAppSelector(selectNextIndex);
+  const combinedMessageAndEvents = useAppSelector((state) => selectCombinedMessageAndEvents(state));
+  const nextIndex = useAppSelector((state) => selectNextIndex(state, chatIdentifier));
   const isLoadingMoreChunks = useAppSelector(selectIsLoadingMoreChunks);
   const chatSearchResults = useAppSelector(selectChatSearchResults);
   const chatSearchValue = useAppSelector(selectChatSearchValue);
@@ -103,24 +98,8 @@ const ChatList = ({ onReset }: ChatListProps) => {
 
   const updateLastSeenTimestamp = useCallback(() => {
     const timestamp = new Date().toISOString() as Timestamp;
-
-    if (scope === ChatScope.Global) {
-      dispatch(setGlobalChatLastSeenTimestamp({ value: timestamp }));
-    } else if (scope === ChatScope.Private && targetId) {
-      dispatch(
-        setLastSeenTimestampForPrivateChat({
-          participantId: targetId as ParticipantId,
-          timestamp,
-        })
-      );
-    } else if (scope === ChatScope.Breakout && targetId) {
-      dispatch(
-        setLastSeenTimestampForBreakoutChat({
-          timestamp,
-        })
-      );
-    }
-  }, [dispatch, scope, targetId]);
+    dispatch(lastSeenTimestampAdded({ ...chatIdentifier, timestamp }));
+  }, [dispatch, chatIdentifier]);
 
   useEffect(() => {
     if (!isRoomDeleted) {
@@ -166,7 +145,7 @@ const ChatList = ({ onReset }: ChatListProps) => {
         const [entry] = entries;
         if (entry.isIntersecting) {
           dispatch(setIsLoadingMoreChunks(true));
-          dispatch(getHistoryChunk.action({ scope, messageIndex: nextIndex, target: targetId }));
+          dispatch(getHistoryChunk.action({ scope: chatIdentifier.scope, messageIndex: nextIndex }));
         }
       },
       {
@@ -181,7 +160,7 @@ const ChatList = ({ onReset }: ChatListProps) => {
     return () => {
       observer.disconnect();
     };
-  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, scope, viewportNode, targetId]);
+  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, chatIdentifier.scope, viewportNode]);
 
   useLayoutEffect(() => {
     if (searchedMessages.length === 0) {
@@ -198,12 +177,12 @@ const ChatList = ({ onReset }: ChatListProps) => {
     if (chatSearchValue.length >= 2 && nextIndex !== null) {
       dispatch(
         searchHistory.action({
-          scope,
+          scope: chatIdentifier.scope,
           term: chatSearchValue,
         })
       );
     }
-  }, [chatSearchValue, nextIndex, scope, dispatch]);
+  }, [chatSearchValue, nextIndex, chatIdentifier.scope, dispatch]);
 
   if (chatSearchValue && searchedMessages.length === 0) {
     return <NoSearchResult onReset={onReset} />;

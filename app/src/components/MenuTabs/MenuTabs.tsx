@@ -10,8 +10,11 @@ import { getContrastText } from '../../assets/themes/opentalk/colorUtils';
 import { VisuallyHiddenTitle } from '../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectMenuTabPeopleCount } from '../../store/selectors';
+import { selectCurrentBreakoutRoomId } from '../../store/slices/breakoutSlice';
 import { selectHasAnyUnreadPrivateChatMessage, selectHasUnreadGlobalChatMessages } from '../../store/slices/chatSlice';
+import { selectRoomKind } from '../../store/slices/roomSlice';
 import { selectCurrentMenuTab, setCurrentMenuTab } from '../../store/slices/uiSlice';
+import { ChatScope, RoomKind, ChatIdentifier } from '../../types';
 import Chat from '../Chat';
 import ChatOverview from '../ChatOverview';
 import Participants from '../Participants';
@@ -84,6 +87,13 @@ const MenuTabs = () => {
   const totalParticipants = useAppSelector(selectMenuTabPeopleCount);
   const currentMenuTab = useAppSelector(selectCurrentMenuTab);
   const dispatch = useAppDispatch();
+  const roomKind = useAppSelector(selectRoomKind);
+  const breakoutRoomId = useAppSelector(selectCurrentBreakoutRoomId);
+
+  const chatIdentifier: ChatIdentifier =
+    roomKind === RoomKind.Breakout && breakoutRoomId
+      ? { scope: ChatScope.Breakout, target: breakoutRoomId }
+      : { scope: ChatScope.Global };
 
   const handleChange = (_event: React.SyntheticEvent<Element, Event>, newValue: MenuTab) => {
     dispatch(setCurrentMenuTab(newValue));
@@ -129,7 +139,7 @@ const MenuTabs = () => {
 
       <TabPanel value={MenuTab.Chat} hidden={currentMenuTab !== MenuTab.Chat}>
         <VisuallyHiddenTitle component="h3" label="chatroom-hidden-heading" />
-        <Chat />
+        <Chat chatIdentifier={chatIdentifier} />
       </TabPanel>
       <TabPanel value={MenuTab.People} hidden={currentMenuTab !== MenuTab.People}>
         <VisuallyHiddenTitle component="h3" label="participant-list-hidden-heading" />
