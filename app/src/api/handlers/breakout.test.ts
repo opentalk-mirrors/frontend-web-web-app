@@ -101,7 +101,7 @@ describe('handleBreakoutMessage', () => {
 
     handleBreakoutMessage(dispatch, data, timestamp);
 
-    expect(dispatch).toHaveBeenCalledExactlyOnceWith(breakoutStore.setBreakoutLoading(true));
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(breakoutStore.closing(data));
   });
 
   it('dispatches closed events', () => {

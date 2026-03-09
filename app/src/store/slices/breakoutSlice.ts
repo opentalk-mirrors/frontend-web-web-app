@@ -4,8 +4,8 @@
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
 import type { RootState } from '../';
-import { Started, SwitchedRoom } from '../../api/types/incoming/breakout';
-import { BreakoutRoomId } from '../../types';
+import { CloseNotice, Closing, Started, SwitchedRoom } from '../../api/types/incoming/breakout';
+import { BreakoutRoomId, Timestamp } from '../../types';
 import { joinSuccess, startRoom } from '../commonActions';
 
 export interface Room {
@@ -23,6 +23,7 @@ export interface BreakoutState {
   assignment?: BreakoutRoomId;
   // currentBreakoutRoomId
   currentBreakoutRoomId?: BreakoutRoomId;
+  stopsAt?: Timestamp;
   closedAt?: number;
   action?: string;
   expires?: string;
@@ -57,6 +58,14 @@ export const breakoutSlice = createSlice({
       state.currentBreakoutRoomId = payload.newRoom.id;
       state.assignment = payload.newRoom.id;
     },
+    closeNotice: (state, { payload, type }: PayloadAction<Omit<CloseNotice, 'message'>>) => {
+      state.action = type;
+      state.stopsAt = payload.stopsAt;
+    },
+    closing: (state, { type }: PayloadAction<Omit<Closing, 'message'>>) => {
+      state.action = type;
+      state.loading = true;
+    },
     closed: (state, { type }) => {
       state.action = type;
       state.closedAt = Date.now();
@@ -64,13 +73,9 @@ export const breakoutSlice = createSlice({
       state.active = false;
       state.currentBreakoutRoomId = undefined;
       state.assignment = undefined;
+      state.stopsAt = undefined;
+      state.expires = undefined;
     },
-    // expired: (state, { type }: PayloadAction<undefined>) => {
-    //   state.action = type;
-    //   state.loading = true;
-    //   state.active = false;
-    //   state.expired = true;
-    // },
     setBreakoutLoading: (state, { payload }: PayloadAction<boolean>) => {
       state.loading = payload;
     },
@@ -93,7 +98,7 @@ export const breakoutSlice = createSlice({
   },
 });
 
-export const { started, switchedRoom, closed, setBreakoutLoading } = breakoutSlice.actions;
+export const { started, closing, closeNotice, switchedRoom, closed, setBreakoutLoading } = breakoutSlice.actions;
 
 const breakoutRoomsSelectors = breakoutRooms.getSelectors<RootState>((state) => state.breakout.breakoutRooms);
 const rootState = (state: RootState) => state;
@@ -113,6 +118,7 @@ export const selectAssignedBreakoutRoomId = (state: RootState) => state.breakout
 export const selectLastDispatchedActionType = (state: RootState) => state.breakout.action;
 export const selectExpiredDate = (state: RootState) => state.breakout.expires;
 export const selectBreakoutLoading = (state: RootState) => state.breakout.loading;
+export const selectBreakoutStopsAt = (state: RootState) => state.breakout.stopsAt;
 export const selectBreakoutClosedAt = (state: RootState) => state.breakout.closedAt;
 
 export const actions = breakoutSlice.actions;

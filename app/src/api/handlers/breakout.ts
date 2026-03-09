@@ -19,10 +19,11 @@ export const handleBreakoutMessage = (dispatch: AppDispatch, data: breakout.Mess
       break;
     // time to manual send switch room command (stop action + delay)
     case 'close_notice':
+      dispatch(breakoutStore.closeNotice(data));
       break;
     // room server is closing the breakout rooms (stop action without delay)
     case 'closing':
-      dispatch(breakoutStore.setBreakoutLoading(true));
+      dispatch(breakoutStore.closing(data));
       break;
     case 'closed':
       dispatch(breakoutStore.closed(data));
@@ -38,7 +39,6 @@ export const handleBreakoutMessage = (dispatch: AppDispatch, data: breakout.Mess
       break;
     case 'switched_room':
       dispatch(breakoutStore.switchedRoom(data));
-      // dispatch(breakoutJoined({ data, timestamp }));
       break;
     case 'error':
       showErrorNotification(data.error);

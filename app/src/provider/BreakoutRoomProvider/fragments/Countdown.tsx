@@ -4,7 +4,7 @@
 import { Box, BoxProps, CircularProgress, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 
-const DURATION = 120;
+import { BREAKOUT_ROOM_DEFAULT_COUNTDOWN_DURATION } from '../../../constants';
 
 interface CountdownProps extends BoxProps {
   started: number;
@@ -16,10 +16,23 @@ const calculateRemainingTime = (endTime: number) => {
   return Math.max(0, (endTime - Date.now()) / 1000);
 };
 
+const calculateEndTime = (started: number, duration: number) => {
+  return started + duration * 1000;
+};
+
+const calculateProgress = (remainingTime: number, duration: number) => {
+  if (duration <= 0) {
+    return 0;
+  }
+
+  return Math.min(100, (remainingTime / duration) * 100);
+};
+
 const Countdown = ({ started, duration, onCountdownEnds, ...rest }: CountdownProps) => {
-  const endTime = started + (duration ? duration : DURATION) * 1000;
+  const effectiveDuration = duration ?? BREAKOUT_ROOM_DEFAULT_COUNTDOWN_DURATION;
+  const endTime = calculateEndTime(started, effectiveDuration);
   const [remainingTime, setRemainingTime] = useState(calculateRemainingTime(endTime));
-  const progress = Math.min(100, (remainingTime / (duration ? duration : DURATION)) * 100);
+  const progress = calculateProgress(remainingTime, effectiveDuration);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -28,7 +41,7 @@ const Countdown = ({ started, duration, onCountdownEnds, ...rest }: CountdownPro
       setRemainingTime(timeLeft);
 
       if (timeLeft <= 0) {
-        onCountdownEnds && onCountdownEnds();
+        onCountdownEnds?.();
         intervalRef.current && clearInterval(intervalRef.current);
       }
     }, 1000);

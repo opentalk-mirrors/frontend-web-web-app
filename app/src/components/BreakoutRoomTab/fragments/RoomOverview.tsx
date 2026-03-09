@@ -7,9 +7,10 @@ import { useTranslation } from 'react-i18next';
 
 import { stop, switchRoom } from '../../../api/types/outgoing/breakout';
 import { ClockIcon } from '../../../assets/icons';
+import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectCombinedParticipantsAndUserInConference } from '../../../store/selectors';
-import { selectAllBreakoutRooms, selectExpiredDate } from '../../../store/slices/breakoutSlice';
+import { selectAllBreakoutRooms, selectBreakoutStopsAt, selectExpiredDate } from '../../../store/slices/breakoutSlice';
 import { selectLivekitRoom } from '../../../store/slices/livekitSlice';
 import { selectOurUuid } from '../../../store/slices/userSlice';
 import { BreakoutRoomId, RoomKind } from '../../../types';
@@ -43,6 +44,7 @@ const RoomOverview = () => {
   const expires = useAppSelector(selectExpiredDate);
   const ourUuid = useAppSelector(selectOurUuid);
   const room = useAppSelector(selectLivekitRoom);
+  const breakoutStopsAt = useAppSelector(selectBreakoutStopsAt);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const breakoutRooms = useAppSelector(selectAllBreakoutRooms);
@@ -92,7 +94,11 @@ const RoomOverview = () => {
   }, [expires]);
 
   const stopBreakoutRoom = () => {
-    dispatch(stop.action({}));
+    dispatch(
+      stop.action({
+        delay: BREAKOUT_ROOM_CLOSE_DELAY,
+      })
+    );
   };
 
   const renderDurationText = () => {
@@ -172,7 +178,7 @@ const RoomOverview = () => {
         <ListContainer>{renderAccordions()}</ListContainer>
       </Box>
       <Box>
-        <Button variant="contained" onClick={stopBreakoutRoom}>
+        <Button disabled={!!breakoutStopsAt} variant="contained" onClick={stopBreakoutRoom}>
           {t('breakout-room-room-overview-button-close')}
         </Button>
       </Box>

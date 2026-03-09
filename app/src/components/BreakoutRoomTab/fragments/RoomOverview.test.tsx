@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import { Mock } from 'vitest';
 
 import { stop, switchRoom } from '../../../api/types/outgoing/breakout';
+import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../../constants';
 import * as reduxHooks from '../../../hooks/useCustomRedux';
 import * as InviteCodeModule from '../../../hooks/useInviteCode';
 import { BreakoutRoomId, MeetingNotesAccess, Participant, Role, RoomKind } from '../../../types';
@@ -178,7 +179,7 @@ describe('RoomOverview', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'breakout-room-room-overview-button-close' }));
 
-    expect(mockDispatch).toHaveBeenCalledWith(stop.action({}));
+    expect(mockDispatch).toHaveBeenCalledWith(stop.action({ delay: BREAKOUT_ROOM_CLOSE_DELAY }));
     dispatchSpy.mockRestore();
   });
 

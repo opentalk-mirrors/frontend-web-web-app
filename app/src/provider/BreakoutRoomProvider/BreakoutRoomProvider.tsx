@@ -8,15 +8,21 @@ import { useTranslation } from 'react-i18next';
 import { switchRoom } from '../../api/types/outgoing/breakout';
 import BreakoutRoomIcon from '../../assets/images/subroom-illustration.svg?react';
 import { notifications } from '../../commonComponents';
+import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import {
   breakoutSlice,
   selectAssignedBreakoutRoomId,
+  selectBreakoutStopsAt,
   selectCurrentBreakoutRoomId,
   selectLastDispatchedActionType,
 } from '../../store/slices/breakoutSlice';
 import { RoomKind } from '../../types';
 import BreakoutRoomNotification, { Action } from './fragments/BreakoutRoomNotification';
+
+const getBreakoutCloseDuration = (breakoutStopsAt?: string) => {
+  return breakoutStopsAt ? Math.max(0, (new Date(breakoutStopsAt).getTime() - Date.now()) / 1000) : 0;
+};
 
 const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation();
@@ -25,6 +31,7 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
   const currentBreakoutRoomId = useAppSelector(selectCurrentBreakoutRoomId);
   const visibleNotifications = useRef<SnackbarKey[]>([]);
   const lastDispatchedActionType = useAppSelector(selectLastDispatchedActionType);
+  const breakoutStopsAt = useAppSelector(selectBreakoutStopsAt);
 
   const handleJoinBreakoutRoom = useCallback(() => {
     if (assignedBreakoutRoomId === undefined) {
@@ -67,18 +74,20 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
     [t, handleLeaveBreakoutRoom]
   );
 
-  const clearVisibleNotifications = () => {
+  const clearVisibleNotifications = useCallback(() => {
     visibleNotifications.current.forEach((key) => {
       notifications.close(key);
     });
     visibleNotifications.current = [];
-  };
+  }, []);
 
   useEffect(() => {
     clearVisibleNotifications();
+    const closeDuration = getBreakoutCloseDuration(breakoutStopsAt);
+
     switch (lastDispatchedActionType) {
-      case breakoutSlice.actions.closed.type:
-        currentBreakoutRoomId &&
+      case breakoutSlice.actions.closeNotice.type:
+        if (currentBreakoutRoomId !== undefined) {
           notifications.info(t('breakout-room-notification-stopped'), {
             persist: true,
             content: (key, message) => {
@@ -91,13 +100,14 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
                   actions={leaveActions}
                   countdown={{
                     action: handleLeaveBreakoutRoom,
-                    duration: 60,
+                    duration: closeDuration,
                     startedAt: Date.now(),
                   }}
                 />
               );
             },
           });
+        }
         break;
       case breakoutSlice.actions.started.type:
         notifications.info(t('breakout-room-notification-started'), {
@@ -112,7 +122,7 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
                 actions={joinActions}
                 countdown={{
                   action: handleJoinBreakoutRoom,
-                  duration: 60,
+                  duration: BREAKOUT_ROOM_CLOSE_DELAY,
                   startedAt: Date.now(),
                 }}
               />
@@ -129,6 +139,8 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
     handleLeaveBreakoutRoom,
     handleJoinBreakoutRoom,
     currentBreakoutRoomId,
+    breakoutStopsAt,
+    clearVisibleNotifications,
   ]);
 
   return <>{children}</>;
