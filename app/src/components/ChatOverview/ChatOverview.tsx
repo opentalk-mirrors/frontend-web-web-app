@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { BackIcon, NewMessageIcon, NoMessagesIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { selectOtherOnlineParticipantsInBreakoutRoom, selectAllPersonalChats } from '../../store/selectors';
+import { selectOtherOnlineParticipants, selectAllPersonalChats } from '../../store/selectors';
 import { chatConversationStateSet, selectChatConversationState } from '../../store/slices/uiSlice';
 import { ChatScope, TargetId } from '../../types';
 import Chat from '../Chat';
@@ -51,7 +51,7 @@ const ChatOverview = () => {
   const chats = useAppSelector(selectAllPersonalChats);
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement>();
-  const participants = useAppSelector(selectOtherOnlineParticipantsInBreakoutRoom);
+  const participants = useAppSelector(selectOtherOnlineParticipants);
 
   const setSelectedChat = (scope: ChatScope, targetId: TargetId) => {
     dispatch(
@@ -142,7 +142,7 @@ const ChatOverview = () => {
           {t('button-new-message')}
         </AdjustedButton>
       </Box>
-      <NewMessagePopover open={open} setAnchorEl={setAnchorEl} anchorEl={anchorEl} />
+      <NewMessagePopover open={open} setAnchorEl={setAnchorEl} anchorEl={anchorEl} participants={participants} />
       {renderChats()}
     </Container>
   );

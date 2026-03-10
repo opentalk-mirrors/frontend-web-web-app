@@ -5,15 +5,15 @@ import { ListItemText, Menu as MuiMenu, MenuItem as MuiMenuItem, styled } from '
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectOtherOnlineParticipantsInBreakoutRoom } from '../../../store/selectors';
+import { useAppDispatch } from '../../../hooks';
 import { chatConversationStateSet } from '../../../store/slices/uiSlice';
-import { ChatScope, TargetId } from '../../../types';
+import { ChatScope, Participant, TargetId } from '../../../types';
 
 interface INewMessagePopoverProps<T> {
   open: boolean;
   setAnchorEl: Dispatch<SetStateAction<T | undefined>>;
   anchorEl: (T & Element) | undefined;
+  participants: Participant[];
 }
 
 const Menu = styled(MuiMenu)(({ theme }) => ({
@@ -37,10 +37,9 @@ const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
   },
 }));
 
-function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopoverProps<T>) {
+function NewMessagePopover<T>({ setAnchorEl, anchorEl, open, participants }: INewMessagePopoverProps<T>) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const participants = useAppSelector(selectOtherOnlineParticipantsInBreakoutRoom);
 
   const handleClose = () => {
     setAnchorEl(undefined);
