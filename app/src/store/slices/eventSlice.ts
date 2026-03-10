@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createEntityAdapter, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSelector, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { RootState } from '..';
 import { DisconnectReason } from '../../api/types/incoming/core';
-import { ParticipantId } from '../../types';
+import { ParticipantId, ParticipationKind } from '../../types';
 import { setChatSettings } from './chatSlice';
 import { participantJoined, participantLeft, participantRejoined } from './participantsSlice';
 import { connectionClosed } from './roomSlice';
@@ -15,6 +15,7 @@ export interface RoomEvent {
   id: string;
   timestamp: string;
   target: ParticipantId;
+  participationKind?: ParticipationKind;
   event: 'joined' | 'left' | 'chat_enabled' | 'chat_disabled';
   reason?: DisconnectReason;
 }
@@ -34,7 +35,7 @@ export const eventSlice = createSlice({
         state,
         {
           payload: {
-            participant: { leftAt, id },
+            participant: { leftAt, id, participationKind },
             reason,
           },
         }
@@ -45,6 +46,7 @@ export const eventSlice = createSlice({
           target: id,
           id: uuidv4(),
           reason: reason || DisconnectReason.Leave,
+          participationKind,
         });
       }
     );
@@ -60,12 +62,13 @@ export const eventSlice = createSlice({
       });
     });
     builder.addMatcher(isAnyOf(participantJoined, participantRejoined), (state, action) => {
-      const { id, joinedAt } = action.payload.participant;
+      const { id, joinedAt, participationKind } = action.payload.participant;
       eventAdapter.addOne(state, {
         event: 'joined',
         timestamp: joinedAt,
         target: id,
         id: uuidv4(),
+        participationKind,
       });
     });
   },
@@ -73,6 +76,10 @@ export const eventSlice = createSlice({
 
 const eventSelector = eventAdapter.getSelectors<RootState>((state) => state.events);
 export const selectAllEvents = (state: RootState) => eventSelector.selectAll(state);
+
+export const selectVisibleEvents = createSelector([selectAllEvents], (events) =>
+  events.filter((event) => event.participationKind !== ParticipationKind.Recorder)
+);
 
 export const actions = eventSlice.actions;
 
