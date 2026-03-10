@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { NamespacedIncoming } from '../../../types';
+import { NamespacedIncoming, ParticipantId } from '../../../types';
 
 export interface LivekitError {
   message: 'error';
@@ -20,7 +20,13 @@ export interface Credentials {
   publicUrl: string;
 }
 
-export type Message = PopoutStreamAccessToken | Credentials | LivekitError;
+export interface ScreenSharePermissionsUpdated {
+  message: 'screen_share_permissions_updated';
+  grant: boolean;
+  participants: ParticipantId[];
+}
+
+export type Message = PopoutStreamAccessToken | Credentials | ScreenSharePermissionsUpdated | LivekitError;
 
 export type Livekit = NamespacedIncoming<Message, 'livekit'>;
 

@@ -23,6 +23,10 @@ export const handleLivekitMessage = (dispatch: AppDispatch, data: livekit.Messag
       dispatch(setNewAccessToken(data));
       return;
     }
+    case 'screen_share_permissions_updated': {
+      // Permission management is handled by livekit, so we don't need to do anything here
+      return;
+    }
     case 'error': {
       const error = data.error;
       switch (error) {

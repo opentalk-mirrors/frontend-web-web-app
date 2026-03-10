@@ -58,6 +58,7 @@ import {
   SortOption,
   WhisperParticipantState,
 } from '../../../types';
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import { MenuTab } from '../../MenuTabs/fragments/constants';
 import ParticipantMenu, { ParticipantMenuOption } from './ParticipantMenu';
 import ParticipantRemovalDialog from './ParticipantRemovalDialog';
@@ -158,7 +159,9 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
 
   const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).includes(BackendModules.SubroomAudio);
 
-  const selectedParticipant = useRemoteParticipant(participant.id);
+  const selectedParticipant = useRemoteParticipant(
+    constructConnectionIdentifier(participant.id, participant.connections[0])
+  );
   const participantId = participant.id;
   const selectedParticipantCanPublishScreenShare =
     selectedParticipant?.permissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
