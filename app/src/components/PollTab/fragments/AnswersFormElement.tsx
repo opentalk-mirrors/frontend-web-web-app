@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Chip as MuiChip, Grid, styled } from '@mui/material';
+import { Button, Chip as MuiChip, Grid, styled, Typography } from '@mui/material';
 import { FieldArray, Field, FieldProps, useFormikContext } from 'formik';
 import { get, isEmpty } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
@@ -12,6 +12,10 @@ import { CommonTextField } from '../../../commonComponents';
 
 interface IAnswersFormElementProps {
   name: string;
+  answersRange: {
+    min: number;
+    max: number;
+  };
 }
 
 //Backend says the limit is 100 but we get an error at 100 characters. So this number is still WIP
@@ -21,8 +25,10 @@ const Chip = styled(MuiChip)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   height: 'unset',
+  minHeight: theme.typography.pxToRem(32),
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(1),
+  borderRadius: theme.borderRadius.small,
   '& .MuiChip-label': {
     textOverflow: 'unset',
     whiteSpace: 'pre-wrap',
@@ -56,22 +62,38 @@ const StyledAddButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
+const ChipLabelTypography = styled(Typography)(({ theme }) => ({
+  paddingRight: theme.spacing(2),
+  fontSize: theme.typography.pxToRem(13),
+  fontWeight: theme.typography.fontWeightRegular,
+  '& .MuiFormLabel-asterisk': {
+    color: theme.palette.text.error,
+  },
+}));
+
+const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAnswers } }: IAnswersFormElementProps) => {
   const [editingIndex, setEditingIndex] = useState<number>();
   const inputRef = useRef<HTMLInputElement>(null);
-  const { values, errors } = useFormikContext();
+  const { values, errors, touched } = useFormikContext();
   const { t } = useTranslation();
 
   const choices = get(values, name, []);
   const answerErrors = get(errors, name, []);
 
+  const isTouched = (name: string) => {
+    const error = get(errors, name);
+    const touchedField = get(touched, name);
+    return Boolean(error) && Boolean(touchedField);
+  };
+
   useEffect(() => {
-    choices.forEach((item: string, index: number) => {
-      if (isEmpty(item)) {
-        setEditingIndex(index);
-      }
-    });
-  }, [name, choices]);
+    choices.length > minAnswers &&
+      choices.forEach((item: string, index: number) => {
+        if (isEmpty(item)) {
+          setEditingIndex(index);
+        }
+      });
+  }, [name, choices, minAnswers]);
 
   return (
     <FieldArray
@@ -90,8 +112,8 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
                       size="small"
                       fullWidth
                       defaultValue={value}
-                      error={Array.isArray(answerErrors) && Boolean(answerErrors[index])}
-                      helperText={Array.isArray(answerErrors) && answerErrors[index]}
+                      error={isTouched(name) && Array.isArray(answerErrors) && Boolean(answerErrors[index])}
+                      helperText={isTouched(name) && Array.isArray(answerErrors) && answerErrors[index]}
                       maxCharacters={MAX_ANSWER_LENGTH}
                       showLimitAt={0}
                       value={value}
@@ -101,7 +123,7 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
                           setEditingIndex(undefined);
                           onBlur && onBlur(e);
                           onChange && onChange(e);
-                          if (isEmpty(inputRef.current?.value)) {
+                          if (isEmpty(inputRef.current?.value) && index >= minAnswers) {
                             arrayHelpers.remove(index);
                           }
                         }
@@ -113,9 +135,6 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
                         setEditingIndex(undefined);
                         onBlur && onBlur(e);
                         onChange && onChange(e);
-                        if (isEmpty(e.target.value)) {
-                          arrayHelpers.remove(index);
-                        }
                       }}
                       slotProps={{
                         input: {
@@ -127,9 +146,20 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
                 />
               ) : (
                 <Chip
-                  label={answer}
+                  label={
+                    answer || (
+                      <ChipLabelTypography>
+                        {t('poll-input-option', { number: index + 1 })}
+                        {index < minAnswers && (
+                          <span aria-hidden="true" className="MuiFormLabel-asterisk MuiInputLabel-asterisk">
+                            &nbsp;*
+                          </span>
+                        )}
+                      </ChipLabelTypography>
+                    )
+                  }
                   onClick={() => setEditingIndex(index)}
-                  onDelete={() => arrayHelpers.remove(index)}
+                  onDelete={index < minAnswers ? undefined : () => arrayHelpers.remove(index)}
                 />
               )}
             </Grid>
@@ -141,10 +171,12 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
               variant="text"
               onClick={() => arrayHelpers.push('')}
               startIcon={<Add />}
-              disabled={editingIndex !== undefined}
               color="secondary"
+              disabled={choices.length >= maxAnswers}
             >
-              {t('poll-input-choices')}
+              {choices.length >= maxAnswers
+                ? t('poll-input-option-max', { max: maxAnswers })
+                : t('poll-input-option-button')}
             </StyledAddButton>
           </Grid>
         </Grid>

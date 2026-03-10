@@ -51,18 +51,15 @@ describe('CreatePollForm', () => {
     expect(screen.getByText('poll-header-title-update')).toBeInTheDocument();
   });
 
-  it('shows an error notification when saving without a topic', async () => {
-    const { store, dispatchSpy } = configureStore();
+  it('Save as template and start should be disabled when no topic is provided', async () => {
+    const { store } = configureStore();
     const onClose = vi.fn();
-    const user = userEvent.setup();
 
     renderWithProviders(<CreatePollForm onClose={onClose} />, { store, provider: { mui: true } });
-
-    await user.click(screen.getByRole('button', { name: 'save-as-template-button' }));
-
-    expect(notifications.error).toHaveBeenCalledExactlyOnceWith('poll-save-form-error');
-    expect(onClose).not.toHaveBeenCalled();
-    expect(dispatchSpy).not.toHaveBeenCalledWith(expect.objectContaining({ type: savePollFormValues.type }));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'save-as-template-button' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'poll-form-button-submit' })).toBeDisabled();
+    });
   });
 
   it('saves poll values and closes the form when save is clicked with valid data', async () => {

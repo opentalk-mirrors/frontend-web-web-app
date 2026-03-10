@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 import { Mock } from 'vitest';
 
+import { renderWithProviders } from '../../../utils/testUtils';
 import AnswersFormElement from './AnswersFormElement';
 
 vi.mock('formik', () => {
@@ -16,6 +17,9 @@ vi.mock('formik', () => {
   };
 });
 
+const MIN_ANSWERS_LENGTH = 2;
+const MAX_ANSWERS_LENGTH = 4;
+
 vi.mock('../../../commonComponents', () => ({
   CommonTextField: () => <div />,
 }));
@@ -24,28 +28,44 @@ describe('AnswersFormElement', () => {
   const mockUseFormikContext = useFormikContext as Mock;
 
   beforeEach(() => {
-    mockUseFormikContext.mockReturnValue({
-      errors: [],
-      values: {},
-    });
+    mockUseFormikContext.mockReset();
   });
 
   it('renders without errors', () => {
-    render(<AnswersFormElement name="test-name" />);
-    expect(screen.getByText('poll-input-choices')).toHaveProperty('tagName', 'BUTTON');
+    mockUseFormikContext.mockReturnValue({ values: { 'test-name': Array(MIN_ANSWERS_LENGTH).fill('') } });
+    renderWithProviders(
+      <AnswersFormElement name="test-name" answersRange={{ min: MIN_ANSWERS_LENGTH, max: MAX_ANSWERS_LENGTH }} />,
+      {
+        provider: { mui: true },
+      }
+    );
+    expect(screen.getByText('poll-input-option-button')).toHaveProperty('tagName', 'BUTTON');
   });
 
-  it('is disabled in edit mode', async () => {
-    mockUseFormikContext.mockReturnValue({
-      errors: [],
-      values: {
-        'test-name': [''],
-      },
-    });
+  it('on initial render default option fields should be visible', async () => {
+    const mockContext = { values: { 'test-name': Array(MIN_ANSWERS_LENGTH).fill('') } };
+    mockUseFormikContext.mockReturnValue(mockContext);
+    renderWithProviders(
+      <AnswersFormElement name="test-name" answersRange={{ min: MIN_ANSWERS_LENGTH, max: MAX_ANSWERS_LENGTH }} />,
+      {
+        provider: { mui: true },
+      }
+    );
+    const options = screen.getAllByText('poll-input-option');
+    expect(options).toHaveLength(MIN_ANSWERS_LENGTH);
+  });
 
-    render(<AnswersFormElement name="test-name" />);
-    await waitFor(() => {
-      expect(screen.getByText('poll-input-choices')).toBeDisabled();
-    });
+  it('add more option button is disabled and limit of Max options reached is shown when user exceeds allowed max options', async () => {
+    const mockContext = { values: { 'test-name': Array(MAX_ANSWERS_LENGTH).fill('') } };
+    mockUseFormikContext.mockReturnValue(mockContext);
+    renderWithProviders(
+      <AnswersFormElement name="test-name" answersRange={{ min: MIN_ANSWERS_LENGTH, max: MAX_ANSWERS_LENGTH }} />,
+      {
+        provider: { mui: true },
+      }
+    );
+    expect(screen.queryByText('poll-input-option-button')).not.toBeInTheDocument();
+    expect(screen.getByText('poll-input-option-max')).toBeInTheDocument();
+    expect(screen.getByText('poll-input-option-max')).toBeDisabled();
   });
 });

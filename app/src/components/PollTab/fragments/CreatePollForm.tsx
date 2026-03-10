@@ -11,7 +11,7 @@ import * as yup from 'yup';
 
 import { start } from '../../../api/types/outgoing/poll';
 import { BackIcon } from '../../../assets/icons';
-import { CommonFormItem, DurationField, ErrorFormMessage, notifications } from '../../../commonComponents';
+import { CommonFormItem, DurationField, notifications } from '../../../commonComponents';
 import { CommonTextField } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { PollFormValues, savePollFormValues } from '../../../store/slices/pollSlice';
@@ -28,14 +28,6 @@ interface PollFormProps {
   initialValues?: PollFormValues;
 }
 
-const defaultInitialValues: PollFormValues = {
-  choices: [],
-  topic: '',
-  duration: 1,
-  live: false,
-  multipleChoice: false,
-};
-
 const Form = styled('form')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -47,6 +39,16 @@ const Form = styled('form')(({ theme }) => ({
 const TOPIC_MIN_LENGTH = 3;
 const TOPIC_MAX_LENGTH = 100;
 const MAX_DURATION_IN_MINUTES = 60;
+const CHOICE_MIN_LENGTH = 2;
+const CHOICE_MAX_LENGTH = 64;
+
+const defaultInitialValues: PollFormValues = {
+  choices: Array(CHOICE_MIN_LENGTH).fill(''),
+  topic: '',
+  duration: 1,
+  live: false,
+  multipleChoice: false,
+};
 
 const validationSchema = yup.object({
   topic: yup
@@ -59,8 +61,8 @@ const validationSchema = yup.object({
   choices: yup
     .array()
     .of(yup.string().trim().required(i18next.t('poll-form-input-error-choice')))
-    .min(2, i18next.t('poll-form-input-error-choices'))
-    .required(i18next.t('poll-form-input-error-choices')),
+    .min(CHOICE_MIN_LENGTH, i18next.t('poll-form-input-error-choices', { min: CHOICE_MIN_LENGTH }))
+    .required(i18next.t('poll-form-input-error-choices', { min: CHOICE_MIN_LENGTH })),
   live: yup.boolean().optional(),
   multipleChoice: yup.boolean().optional(),
 });
@@ -70,9 +72,12 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
   const dispatch = useAppDispatch();
   const isEditing = initialValues?.id !== undefined;
   const isCoffeeBreakActive = useAppSelector(selectCurrentRoomMode) === RoomMode.CoffeeBreak;
+
+  const isSaveAsTemplateInvalid = (values: PollFormValues) => isEmpty(values.topic);
+
   const saveFormValues = useCallback(
     (values: PollFormValues) => {
-      if (isEmpty(values.topic)) {
+      if (isSaveAsTemplateInvalid(values)) {
         notifications.error(t('poll-save-form-error'));
       } else {
         dispatch(savePollFormValues(values));
@@ -100,7 +105,8 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
       initialValues={initialValues}
       onSubmit={onSubmit}
       validateOnBlur={false}
-      validateOnChange={false}
+      validateOnChange={true}
+      validateOnMount={true}
       validationSchema={validationSchema}
     >
       {(formik) => (
@@ -157,25 +163,23 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
                   multiline
                   maxCharacters={TOPIC_MAX_LENGTH}
                   showLimitAt={0}
+                  required
                 />
               </Grid>
-
               <Grid size={{ xs: 12 }}>
-                <AnswersFormElement name="choices" />
-              </Grid>
-
-              <Grid size={{ xs: 12 }}>
-                {/* General choices error message */}
-                {typeof formik.errors.choices === 'string' && <ErrorFormMessage helperText={formik.errors.choices} />}
+                <AnswersFormElement name="choices" answersRange={{ min: CHOICE_MIN_LENGTH, max: CHOICE_MAX_LENGTH }} />
               </Grid>
             </Grid>
             <Stack direction="column" spacing={2} mt="auto">
-              <SaveAsTemplateButton onClick={() => saveFormValues(formik.values)} />
+              <SaveAsTemplateButton
+                onClick={() => saveFormValues(formik.values)}
+                disabled={isSaveAsTemplateInvalid(formik.values)}
+              />
               <Stack direction="row" spacing={1} mt="auto">
                 <Button type="button" onClick={onClose} startIcon={<BackIcon />} fullWidth color="primary">
                   {t('poll-button-back')}
                 </Button>
-                <Button disabled={isCoffeeBreakActive} type="submit" fullWidth color="secondary">
+                <Button disabled={isCoffeeBreakActive || !formik.isValid} type="submit" fullWidth color="secondary">
                   {t('poll-form-button-submit')}
                 </Button>
               </Stack>
