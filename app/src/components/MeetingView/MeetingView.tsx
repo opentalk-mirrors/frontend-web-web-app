@@ -85,7 +85,7 @@ const MeetingView = () => {
       )}
       <RoomContainer
         room={room}
-        token={room ? livekitAccessToken : undefined}
+        token={livekitAccessToken}
         serverUrl={publicUrl}
         video={isVideoEnabled}
         audio={isAudioEnabled}

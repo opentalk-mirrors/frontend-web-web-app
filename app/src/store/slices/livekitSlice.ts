@@ -64,19 +64,6 @@ import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice'
 import { timerStarted } from './timerSlice';
 import { pinnedParticipantIdSet, pinnedRemoteScreenshare, updatedCinemaLayout } from './uiSlice';
 
-// Firefox closes the LiveKit WebSocket during page reload, which LiveKit
-// interprets as an unexpected network drop and immediately starts its internal
-// signal reconnect loop. To prevent this, we call room.disconnect() in
-// `beforeunload` so a proper close frame is sent first.
-let isPageUnloading = false;
-const activeRooms = new Set<Room>();
-window.addEventListener('beforeunload', () => {
-  isPageUnloading = true;
-  activeRooms.forEach((room) => {
-    room.disconnect();
-  });
-});
-
 type WritableDraft<T> = {
   -readonly [K in keyof T]: Draft<T[K]>;
 };
@@ -697,6 +684,49 @@ const startReconnectAbortListeners = (startAppListening: StartAppListening) => {
   });
 };
 
+// Handles cleanup after a client-initiated disconnect (hang up, leave whisper, ...)
+const startDisconnectRoomCleanupListener = (startAppListening: StartAppListening) => {
+  startAppListening({
+    actionCreator: disconnectRoom.fulfilled,
+    effect: (action, listenerApi) => {
+      const { isWhisperRoom } = action.meta.arg;
+      const state = listenerApi.getState();
+      const room = isWhisperRoom ? state.livekit.whisperRoom : state.livekit.room;
+      if (room) {
+        if (!isWhisperRoom) {
+          listenerApi.dispatch(cleanMediaSettingsState());
+        }
+        detachRoomListeners(room);
+      }
+      listenerApi.dispatch(setLivekitRoom({ room: undefined, isWhisperRoom }));
+    },
+  });
+};
+
+// Firefox closes the LiveKit WebSocket during page reload, which LiveKit
+// interprets as an unexpected network drop and immediately starts its internal
+// signal reconnect loop. Calling room.disconnect() first ensures a clean close.
+const startPageUnloadCleanupListener = (startAppListening: StartAppListening) => {
+  let registered = false;
+
+  startAppListening({
+    actionCreator: setLivekitRoom,
+    effect: (_, listenerApi) => {
+      if (registered) {
+        return;
+      }
+      registered = true;
+      const { getState } = listenerApi;
+
+      window.addEventListener('beforeunload', () => {
+        const state = getState();
+        state.livekit.room?.disconnect();
+        state.livekit.whisperRoom?.disconnect();
+      });
+    },
+  });
+};
+
 export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startConnectLivekitListeners(startAppListening);
   startLeaveWhisperGroupListeners(startAppListening);
@@ -713,6 +743,8 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startReconnectAbortListeners(startAppListening);
   startNewAccessTokenListener(startAppListening);
   startAbortReconnectListeners(startAppListening);
+  startDisconnectRoomCleanupListener(startAppListening);
+  startPageUnloadCleanupListener(startAppListening);
 };
 
 /************************************************/
@@ -753,7 +785,6 @@ const createRoomListeners = (
 const attachRoomListeners = (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
   const listeners = createRoomListeners(dispatch, getState, room);
   roomListeners.set(room, listeners);
-  activeRooms.add(room);
 
   Object.entries(listeners).forEach(([eventName, callback]) => {
     room.on(eventName as RoomEvent, callback);
@@ -769,7 +800,6 @@ const detachRoomListeners = (room: Room) => {
     room.off(eventName as RoomEvent, callback);
   });
   roomListeners.delete(room);
-  activeRooms.delete(room);
 };
 
 const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -789,10 +819,6 @@ const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootSt
 };
 
 const handleClientOrUserDisconnect = (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
-  if (isPageUnloading) {
-    detachRoomListeners(room);
-    return;
-  }
   const isWhisperRoom = getState().livekit.whisperRoom?.name === room.name;
   if (!isWhisperRoom) {
     dispatch(cleanMediaSettingsState());
@@ -802,9 +828,6 @@ const handleClientOrUserDisconnect = (dispatch: AppDispatch, getState: () => Roo
 };
 
 function handleServerOrSignalDisconnect(dispatch: AppDispatch) {
-  if (isPageUnloading) {
-    return;
-  }
   dispatch(triggerLivekitReconnect());
 }
 
@@ -815,7 +838,9 @@ const handleRoomDisconnected = (
   reason?: DisconnectReason
 ) => {
   switch (reason) {
+    // Ignored to avoid triggering disconnect logic on page unload, which Firefox handles by closing the LiveKit WebSocket connection
     case DisconnectReason.CLIENT_INITIATED:
+      return;
     case DisconnectReason.DUPLICATE_IDENTITY:
     case DisconnectReason.PARTICIPANT_REMOVED:
     case DisconnectReason.ROOM_DELETED:
