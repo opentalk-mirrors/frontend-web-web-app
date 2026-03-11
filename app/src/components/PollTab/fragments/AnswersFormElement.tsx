@@ -14,6 +14,9 @@ interface IAnswersFormElementProps {
   name: string;
 }
 
+//Backend says the limit is 100 but we get an error at 100 characters. So this number is still WIP
+const MAX_ANSWER_LENGTH = 70;
+
 const Chip = styled(MuiChip)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
@@ -89,6 +92,10 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
                       defaultValue={value}
                       error={Array.isArray(answerErrors) && Boolean(answerErrors[index])}
                       helperText={Array.isArray(answerErrors) && answerErrors[index]}
+                      maxCharacters={MAX_ANSWER_LENGTH}
+                      showLimitAt={0}
+                      value={value}
+                      onChange={onChange}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           setEditingIndex(undefined);
@@ -120,7 +127,7 @@ const AnswersFormElement = ({ name }: IAnswersFormElementProps) => {
                 />
               ) : (
                 <Chip
-                  label={choices[index]}
+                  label={answer}
                   onClick={() => setEditingIndex(index)}
                   onDelete={() => arrayHelpers.remove(index)}
                 />

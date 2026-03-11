@@ -566,7 +566,7 @@ poll-overview-created-polls = Created Polls
 poll-overview-panel-button-end = End Poll
 poll-overview-panel-status-active = Active
 poll-overview-panel-status-finished = Finished
-poll-form-save-as-template = Save As Tamplate
+poll-form-save-as-template = Save As Template
 poll-form-popover-results-button = Show poll results
 
 timer-tab-title = Timer

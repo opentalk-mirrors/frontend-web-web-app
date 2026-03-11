@@ -45,7 +45,8 @@ const Form = styled('form')(({ theme }) => ({
 }));
 
 const TOPIC_MIN_LENGTH = 3;
-const TOPIC_MAX_LENGTH = 500;
+const TOPIC_MAX_LENGTH = 100;
+const MAX_DURATION_IN_MINUTES = 60;
 
 const validationSchema = yup.object({
   topic: yup
@@ -119,6 +120,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
                     {...formikDurationFieldProps('duration', formik)}
                     durationOptions={[1, 2, 5, 'custom']}
                     min={1}
+                    max={MAX_DURATION_IN_MINUTES}
                   />
                 </DurationFieldWrapper>
               </Grid>
@@ -153,6 +155,8 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
                   minRows={4}
                   maxRows={6}
                   multiline
+                  maxCharacters={TOPIC_MAX_LENGTH}
+                  showLimitAt={0}
                 />
               </Grid>
 

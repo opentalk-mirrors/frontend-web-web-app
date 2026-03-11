@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, Grid, IconButton, Typography } from '@mui/material';
+import { Box, Button, Grid, IconButton, styled, Typography } from '@mui/material';
 import { FC, FormEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,6 +26,11 @@ type LegalVoteContainerProps = {
   onClose(): void;
   isAllowedToVote: boolean;
 };
+
+const StyledLegend = styled('legend')(() => ({
+  wordBreak: 'break-word',
+  whiteSpace: 'pre-wrap',
+}));
 
 // Table is visible for all users who can vote in role_call and live_roll_call (by name)
 // button is visible only in the hidden kind of the legal vote
@@ -140,7 +145,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
       <Grid component="form" container size={{ xs: 12 }} onSubmit={submitLegalVoteOption}>
         <Grid size={{ xs: 12 }}>
           <Fieldset>
-            <legend>
+            <StyledLegend>
               <LegendTitle variant="h2" component="h3">
                 {legalVote.name}
               </LegendTitle>
@@ -154,7 +159,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
                   {legalVote.topic}
                 </Typography>
               )}
-            </legend>
+            </StyledLegend>
             <Grid size={{ xs: 12 }}>
               {legalVote.votes &&
                 Object.keys(legalVote.votes).map(
