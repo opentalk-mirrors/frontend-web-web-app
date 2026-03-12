@@ -14,11 +14,12 @@ _check_jq:
     fi
 
 [no-exit-message]
-_check_git_cliff:
+_check_opentalk_git_cliff:
     #!/usr/bin/env bash
     set -euo pipefail
-    if ! git-cliff --help &>/dev/null; then
-        echo 'git-cliff is not available, you can install it with `cargo install --git ssh://git@git.opentalk.dev:222/opentalk/tools/git-cliff.git`' >&2
+    if ! opentalk-git-cliff --help &>/dev/null; then
+        echo 'opentalk-git-cliff is not available, you can install it with:' >&2
+        echo '    cargo install --git https://git.opentalk.dev/opentalk/tools/check-changelog.git opentalk-git-cliff' >&2
         exit 1
     fi
 
@@ -30,7 +31,7 @@ set-version VERSION:
     echo "$(jq '.version= "{{ VERSION }}"' package.json)" > package.json
 
 # Update the changelog
-update-changelog VERSION: _check_git_cliff
+update-changelog VERSION: _check_opentalk_git_cliff
     #!/usr/bin/env bash
 
     if [ -z "$GITLAB_TOKEN" ] && [ -f "$HOME/.gitlab_token" ]; then
@@ -41,8 +42,7 @@ update-changelog VERSION: _check_git_cliff
     GITLAB_TOKEN=$GITLAB_TOKEN \
     GITLAB_API_URL=https://git.opentalk.dev/api/v4 \
     GITLAB_REPO=opentalk/frontend/web/web-app \
-    git-cliff -vv \
-        --config opentalk \
+    opentalk-git-cliff \
         --unreleased \
         --tag "v{{ VERSION }}" \
         --prepend CHANGELOG.md
