@@ -4,7 +4,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import i18next, { t } from 'i18next';
 import _, { intersection } from 'lodash';
-import { some } from 'lodash';
 
 import type { RootState } from '.';
 import {
@@ -110,14 +109,9 @@ export const selectAllMeetingNotesParticipants = createSelector(
       const allMeetingNotesParticipants = participants.filter(
         (participant) => participant.participationKind !== ParticipationKind.Sip
       );
-      const hasSelectedParticipants = some(allMeetingNotesParticipants, [
-        'meetingNotesAccess',
-        MeetingNotesAccess.Write,
-      ]);
       const newParticipants = allMeetingNotesParticipants.map((participant): MeetingNotesParticipant => {
-        const isSelected = hasSelectedParticipants
-          ? participant.meetingNotesAccess === MeetingNotesAccess.Write
-          : participant.id === user.id;
+        const isSelected = participant.meetingNotesAccess === MeetingNotesAccess.Write;
+
         return {
           id: participant.id,
           displayName: participant.displayName,
