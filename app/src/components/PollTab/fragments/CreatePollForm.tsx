@@ -39,11 +39,11 @@ const Form = styled('form')(({ theme }) => ({
 const TOPIC_MIN_LENGTH = 3;
 const TOPIC_MAX_LENGTH = 100;
 const MAX_DURATION_IN_MINUTES = 60;
-const CHOICE_MIN_LENGTH = 2;
-const CHOICE_MAX_LENGTH = 64;
+const CHOICE_MIN_AMOUNT = 2;
+const CHOICE_MAX_AMOUNT = 64;
 
 const defaultInitialValues: PollFormValues = {
-  choices: Array(CHOICE_MIN_LENGTH).fill(''),
+  choices: Array(CHOICE_MIN_AMOUNT).fill(''),
   topic: '',
   duration: 1,
   live: false,
@@ -61,8 +61,8 @@ const validationSchema = yup.object({
   choices: yup
     .array()
     .of(yup.string().trim().required(i18next.t('poll-form-input-error-choice')))
-    .min(CHOICE_MIN_LENGTH, i18next.t('poll-form-input-error-choices', { min: CHOICE_MIN_LENGTH }))
-    .required(i18next.t('poll-form-input-error-choices', { min: CHOICE_MIN_LENGTH })),
+    .min(CHOICE_MIN_AMOUNT, i18next.t('poll-form-input-error-choices', { min: CHOICE_MIN_AMOUNT }))
+    .required(i18next.t('poll-form-input-error-choices', { min: CHOICE_MIN_AMOUNT })),
   live: yup.boolean().optional(),
   multipleChoice: yup.boolean().optional(),
 });
@@ -167,7 +167,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
                 />
               </Grid>
               <Grid size={{ xs: 12 }}>
-                <AnswersFormElement name="choices" answersRange={{ min: CHOICE_MIN_LENGTH, max: CHOICE_MAX_LENGTH }} />
+                <AnswersFormElement name="choices" answersRange={{ min: CHOICE_MIN_AMOUNT, max: CHOICE_MAX_AMOUNT }} />
               </Grid>
             </Grid>
             <Stack direction="column" spacing={2} mt="auto">

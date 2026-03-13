@@ -17,6 +17,10 @@ import {
 } from '../../../utils/formikUtils';
 import { DurationFieldWrapper } from '../../DurationFieldWrapper';
 
+const MAX_TITLE_CHARACTERS = 150;
+const MAX_SUBTITLE_CHARACTERS = 255;
+const MAX_TOPIC_CHARACTERS = 500;
+
 export const LegalVoteSetupForm = () => {
   const { validateForm, ...restFormik } = useFormikContext<LegalVoteFormValues>();
   const { t } = useTranslation();
@@ -72,6 +76,8 @@ export const LegalVoteSetupForm = () => {
           {...formikProps('name', formik)}
           label={t('legal-vote-title-label')}
           placeholder={t('legal-vote-title-placeholder')}
+          maxCharacters={MAX_TITLE_CHARACTERS}
+          showLimitAt={0}
           fullWidth
           required
         />
@@ -81,6 +87,8 @@ export const LegalVoteSetupForm = () => {
           {...formikProps('subtitle', formik)}
           label={t('legal-vote-subtitle-label')}
           placeholder={t('legal-vote-subtitle-placeholder')}
+          maxCharacters={MAX_SUBTITLE_CHARACTERS}
+          showLimitAt={0}
           fullWidth
         />
       </Grid>
@@ -92,6 +100,8 @@ export const LegalVoteSetupForm = () => {
           multiline
           label={t('legal-vote-topic-label')}
           placeholder={t('legal-vote-topic-placeholder')}
+          maxCharacters={MAX_TOPIC_CHARACTERS}
+          showLimitAt={0}
           fullWidth
           required
         />
