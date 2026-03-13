@@ -29,6 +29,12 @@ export interface IVoteResult {
   multipleChoice?: boolean;
 }
 
+const ResultLabel = styled(InputLabel)(({ theme }) => ({
+  wordBreak: 'break-word',
+  whiteSpace: 'pre-wrap',
+  paddingRight: theme.spacing(2),
+}));
+
 const ProgressContainer = styled('div')(({ theme }) => ({
   position: 'relative',
   height: '3em',
@@ -77,13 +83,10 @@ const Checkbox = styled(MuiCheckbox)(({ theme }) => ({
 }));
 
 const ProgressLabel = styled('span')(({ theme }) => ({
-  position: 'absolute',
   color: theme.palette.primary.contrastText,
-  right: '1em',
-  bottom: '0.7em',
-  zIndex: 1,
   display: 'flex',
   gap: '1em',
+  marginRight: theme.spacing(2),
 }));
 
 const VoteResult = ({
@@ -119,7 +122,7 @@ const VoteResult = ({
           onChange={onVote}
         />
       )}
-      <InputLabel htmlFor={id}>{title}</InputLabel>
+      <ResultLabel htmlFor={id}>{title}</ResultLabel>
       {showResult && (
         <ProgressLabel>
           {`${voteData.votePercentage ? voteData.votePercentage.toFixed(1) : 0}% ${

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, Grid, IconButton } from '@mui/material';
+import { Box, Button, Grid, IconButton, styled } from '@mui/material';
 import { FC, FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +27,11 @@ const isChoiceIncludedPredicate = (choiceId: ChoiceId, userSelection?: UserChoic
   const choice = userSelection && (userSelection.choiceId === choiceId || userSelection.choiceIds?.includes(choiceId));
   return Boolean(choice);
 };
+
+const StyledLegend = styled('legend')(() => ({
+  wordBreak: 'break-word',
+  whiteSpace: 'pre-wrap',
+}));
 
 export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
   const { t } = useTranslation();
@@ -133,11 +138,11 @@ export const PollContainer: FC<PollContainerProps> = ({ poll, onClose }) => {
       <Grid component="form" container size={{ xs: 12 }} onSubmit={handleSubmit}>
         <Grid size={{ xs: 12 }}>
           <Fieldset>
-            <legend>
+            <StyledLegend>
               <LegendTitle variant="body1" component="h4">
                 {poll.topic}
               </LegendTitle>
-            </legend>
+            </StyledLegend>
             <LiveIndicator isLive={poll.live} />
             {poll.choices.map((choice, index) => {
               const result = poll.results.find((result) => result.id === choice.id);

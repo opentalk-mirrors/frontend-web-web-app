@@ -6,7 +6,7 @@ import {
   List as MuiList,
   ListItem,
   ListItemButton as MuiListItemButton,
-  ListItemText,
+  ListItemText as MuiListItemText,
   styled,
   Typography,
   Stack,
@@ -47,6 +47,11 @@ const ListItemButton = styled(MuiListItemButton)(({ theme }) => ({
   '&:not(:last-child) ': {
     marginBottom: theme.spacing(1),
   },
+}));
+
+const ListItemText = styled(MuiListItemText)(() => ({
+  wordBreak: 'break-word',
+  whiteSpace: 'pre-wrap',
 }));
 
 const PollOverview = ({ onClickItem }: IPollOverview) => {

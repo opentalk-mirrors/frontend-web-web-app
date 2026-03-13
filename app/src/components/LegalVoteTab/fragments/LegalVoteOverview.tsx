@@ -6,7 +6,7 @@ import {
   Box,
   List as MuiList,
   ListItem,
-  ListItemText,
+  ListItemText as MuiListItemText,
   styled,
   ListItemButton as MuiListItemButton,
   Stack,
@@ -43,6 +43,11 @@ const StyledNoVotesIcon = styled(NoVotesIcon)({
   width: '7.5rem',
   height: '7.5rem',
 });
+
+const ListItemText = styled(MuiListItemText)(() => ({
+  wordBreak: 'break-word',
+  whiteSpace: 'pre-wrap',
+}));
 
 const LegalVoteOverview = ({ onClickItem }: ILegalVoteOverviewProps) => {
   const { t } = useTranslation();
