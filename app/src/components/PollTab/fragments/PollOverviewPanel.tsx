@@ -128,7 +128,7 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
         {poll.state === 'finished' && (
           <Button
             size="small"
-            variant="contained"
+            variant="text"
             onClick={() => dispatch(setVoteOrPollIdToShow(poll.id))}
             color="secondary"
           >
