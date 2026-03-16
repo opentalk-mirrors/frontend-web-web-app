@@ -55,20 +55,9 @@ const CreateLegalVoteForm = ({
   const [currentStep, setCurrentStep] = useState(0);
 
   const validationSchema = yup.object({
-    name: yup
-      .string()
-      .trim()
-      .max(150, t('legal-vote-form-input-error-max', { maxCharacters: 150 }))
-      .required(t('legal-vote-input-title-required')),
-    subtitle: yup
-      .string()
-      .trim()
-      .max(255, t('legal-vote-form-input-error-max', { maxCharacters: 255 })),
-    topic: yup
-      .string()
-      .trim()
-      .max(500, t('legal-vote-form-input-error-max', { maxCharacters: 500 }))
-      .required(t('legal-vote-input-topic-required')),
+    name: yup.string().trim().required(t('legal-vote-input-title-required')),
+    subtitle: yup.string().trim(),
+    topic: yup.string().trim().required(t('legal-vote-input-topic-required')),
     duration: yup.number().min(0).nullable().typeError(t('legal-vote-form-input-error-number')),
     createPdf: yup.bool(),
     kind: yup.string().oneOf(Object.values(LegalVoteKind)),
