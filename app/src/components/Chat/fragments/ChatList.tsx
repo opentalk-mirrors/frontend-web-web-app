@@ -167,7 +167,7 @@ const ChatList = ({ onReset }: ChatListProps) => {
         const [entry] = entries;
         if (entry.isIntersecting) {
           dispatch(setIsLoadingMoreChunks(true));
-          dispatch(getHistoryChunk.action({ scope, messageIndex: nextIndex }));
+          dispatch(getHistoryChunk.action({ scope, messageIndex: nextIndex, target: targetId }));
         }
       },
       {
@@ -182,7 +182,7 @@ const ChatList = ({ onReset }: ChatListProps) => {
     return () => {
       observer.disconnect();
     };
-  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, scope, viewportNode]);
+  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, scope, viewportNode, targetId]);
 
   useLayoutEffect(() => {
     if (searchedMessages.length === 0) {
