@@ -20,7 +20,7 @@ export default defineConfig({
         return 'main.js';
       },
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: ['react', 'react-dom', 'react-redux', '@reduxjs/toolkit'],
       output: {
         exports: 'named',

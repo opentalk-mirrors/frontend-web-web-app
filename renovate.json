@@ -1,38 +1,58 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "rangeStrategy": "bump",
-  "reviewers": ["@opentalk/tools/renovate-reviewers/frontend"],
-  "extends": ["config:recommended"],
+  "reviewers": [
+    "@opentalk/tools/renovate-reviewers/frontend"
+  ],
+  "extends": [
+    "config:recommended"
+  ],
   "packageRules": [
     {
       "groupName": "fluent",
       "groupSlug": "fluent",
-      "matchPackageNames": ["/@fluent/*/"]
+      "matchPackageNames": [
+        "/@fluent/*/"
+      ]
     },
     {
       "groupName": "eslint-plugins",
       "groupSlug": "eslint-plugins",
-      "matchPackageNames": ["/eslint*/"]
+      "matchPackageNames": [
+        "/eslint*/"
+      ]
     },
     {
-      "groupName": "rollup",
-      "groupSlug": "rollup",
-      "matchPackageNames": ["/@rollup*/", "/rollup/"]
+      "groupName": "rolldown",
+      "groupSlug": "rolldown",
+      "matchPackageNames": [
+        "/@rolldown*/",
+        "/rolldown/"
+      ]
     },
     {
       "groupName": "uuid",
       "groupSlug": "uuid",
-      "matchPackageNames": ["/uuid/", "/@types/uuid/"]
+      "matchPackageNames": [
+        "/uuid/",
+        "/@types/uuid/"
+      ]
     },
     {
       "groupName": "react-window",
       "groupSlug": "react-window",
-      "matchPackageNames": ["/react-window/", "/@types/react-window/"]
+      "matchPackageNames": [
+        "/react-window/",
+        "/@types/react-window/"
+      ]
     },
     {
       "groupName": "fscreen",
       "groupSlug": "fscreen",
-      "matchPackageNames": ["/fscreen/", "/@types/fscreen/"]
+      "matchPackageNames": [
+        "/fscreen/",
+        "/@types/fscreen/"
+      ]
     },
     {
       "groupName": "react",
@@ -47,22 +67,32 @@
     {
       "groupName": "lodash",
       "groupSlug": "lodash",
-      "matchPackageNames": ["/lodash/", "/@types/lodash/"]
+      "matchPackageNames": [
+        "/lodash/",
+        "/@types/lodash/"
+      ]
     },
     {
       "groupName": "@types",
       "groupSlug": "@types",
-      "matchPackageNames": ["/@types/*/"]
+      "matchPackageNames": [
+        "/@types/*/"
+      ]
     },
     {
       "groupName": "i18next",
       "groupSlug": "i18next",
-      "matchPackageNames": ["/^i18next/"]
+      "matchPackageNames": [
+        "/^i18next/"
+      ]
     },
     {
       "groupName": "livekit",
       "groupSlug": "livekit",
-      "matchPackageNames": ["/^livekit/", "/^@livekit/"]
+      "matchPackageNames": [
+        "/^livekit/",
+        "/^@livekit/"
+      ]
     }
   ]
 }

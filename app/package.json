@@ -64,7 +64,7 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@rollup/plugin-replace": "^6.0.3",
+    "@rolldown/plugin-babel": "^0.2.3",
     "@sentry/vite-plugin": "^5.4.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "catalog:",
@@ -75,14 +75,15 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "19.2.5",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "@vitejs/plugin-react": "^5.2.0",
+    "@vitejs/plugin-react": "^6.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "cross-fetch": "^4.1.0",
-    "happy-dom": "^20.11.2",
+    "happy-dom": "^20.6.3",
     "msw": "catalog:",
+    "rolldown": "1.2.6",
     "typescript": "catalog:",
-    "vite": "catalog:",
-    "vite-plugin-svgr": "^5.2.0"
+    "vite-plugin-svgr": "^5.2.0",
+    "vite": "catalog:"
   },
   "browserslist": {
     "production": [

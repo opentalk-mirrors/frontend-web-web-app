@@ -17,7 +17,7 @@ export default defineConfig({
         return 'main.js';
       },
     },
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         exports: 'named',
       },
