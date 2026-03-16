@@ -106,6 +106,7 @@ export default defineConfig(({ command, mode }) => {
         reactComponentAnnotation: {
           enabled: true,
           ignoredComponents: ['ThemeProvider'],
+          _experimentalInjectIntoHtml: true,
         },
       }),
       react({
