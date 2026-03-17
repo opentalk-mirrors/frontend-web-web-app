@@ -23,7 +23,7 @@ import {
   waitingRoomJoined,
   waitingRoomLeft,
 } from '../../store/slices/participantsSlice';
-import { enteredWaitingRoom, selectParticipantLimit } from '../../store/slices/roomSlice';
+import { roomParametersChanged, enteredWaitingRoom, selectParticipantLimit } from '../../store/slices/roomSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import { setWhiteboardAvailable } from '../../store/slices/whiteboardSlice';
 import {
@@ -346,6 +346,10 @@ export const handleRoomServerCoreMessage = async (
       break;
     case RoomserverMessageKey.LeftWaitingRoom: {
       dispatch(waitingRoomLeft(data.id));
+      break;
+    }
+    case RoomserverMessageKey.RoomParametersChanged: {
+      dispatch(roomParametersChanged(data.change));
       break;
     }
   }

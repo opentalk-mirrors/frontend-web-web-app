@@ -11,6 +11,7 @@ import { t } from 'i18next';
 import convertToSnakeCase from 'snakecase-keys';
 
 import { StartRoomError } from '../../api/rest';
+import { RoomParametersChanged } from '../../api/types/incoming/core';
 import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
 import { notifications } from '../../commonComponents';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
@@ -169,6 +170,15 @@ export const roomSlice = createSlice({
     setIsRoomDeleted: (state, { payload }) => {
       state.isDeleted = payload;
     },
+    roomParametersChanged: (state, action: PayloadAction<RoomParametersChanged['change']>) => {
+      const { password, title } = action.payload;
+      if (password !== undefined && state.roomInfo) {
+        state.roomInfo.password = password;
+      }
+      if (title !== undefined && state.eventInfo) {
+        state.eventInfo.title = title;
+      }
+    },
     roomReset: () => initialState,
   },
   extraReducers: (builder) => {
@@ -295,6 +305,7 @@ export const {
   presenceConfirmationRequested,
   presenceConfirmationDone,
   setIsRoomDeleted,
+  roomParametersChanged,
 } = actions;
 
 export const selectRoomPassword = (state: RootState) => state.room.password;

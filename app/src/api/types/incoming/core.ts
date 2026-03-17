@@ -79,6 +79,14 @@ export enum RoomCloseReason {
   IdleTimeoutReached = 'idle_timeout_reached',
 }
 
+export interface RoomParametersChanged {
+  message: 'room_parameters_changed';
+  change: {
+    password?: string;
+    title?: string;
+  };
+}
+
 export const isError = isErrorStruct;
 
 export type Message =
@@ -89,7 +97,8 @@ export type Message =
   | InWaitingRoom
   | JoinedWaitingRoom
   | LeftWaitingRoom
-  | Closing;
+  | Closing
+  | RoomParametersChanged;
 
 export enum RoomserverMessageKey {
   JoinSuccess = 'join_success',
@@ -98,6 +107,7 @@ export enum RoomserverMessageKey {
   InWaitingRoom = 'in_waiting_room',
   JoinedWaitingRoom = 'joined_waiting_room',
   LeftWaitingRoom = 'left_waiting_room',
+  RoomParametersChanged = 'room_parameters_changed',
 }
 
 export type RoomserverCore = NamespacedIncoming<Message, 'core'>;
