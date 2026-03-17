@@ -49,7 +49,7 @@ describe('ChatForm', () => {
     const user = userEvent.setup();
     const { store, dispatchSpy } = configureStore();
 
-    renderWithProviders(<ChatForm scope={ChatScope.Global} />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
 
     const input = screen.getByLabelText('chat-input-label');
     await user.type(input, 'Hello world');
@@ -70,9 +70,23 @@ describe('ChatForm', () => {
   it('submits a private message when Enter is pressed without modifiers', async () => {
     const user = userEvent.setup();
     const targetId = 'participant-42' as ParticipantId;
-    const { store, dispatchSpy } = configureStore();
+    const { store, dispatchSpy } = configureStore({
+      initialState: {
+        ui: {
+          chatConversationState: {
+            scope: ChatScope.Private,
+            targetId,
+          },
+          chatAutosavedInputs: {
+            [ChatScope.Private]: {
+              [targetId]: '',
+            },
+          },
+        },
+      },
+    });
 
-    renderWithProviders(<ChatForm scope={ChatScope.Private} targetId={targetId} />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
 
     const input = screen.getByLabelText('chat-input-label');
     await user.type(input, 'Secret message');
@@ -90,7 +104,7 @@ describe('ChatForm', () => {
     const user = userEvent.setup();
     const { store, dispatchSpy } = configureStore();
 
-    renderWithProviders(<ChatForm scope={ChatScope.Global} />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
 
     const input = screen.getByLabelText('chat-input-label');
     await user.type(input, 'Hello');
@@ -107,9 +121,24 @@ describe('ChatForm', () => {
 
   it('stores the current draft when the input loses focus', async () => {
     const user = userEvent.setup();
-    const { store, dispatchSpy } = configureStore();
+    const targetId = 'group-123' as GroupId;
+    const { store, dispatchSpy } = configureStore({
+      initialState: {
+        ui: {
+          chatConversationState: {
+            scope: ChatScope.Group,
+            targetId,
+          },
+          chatAutosavedInputs: {
+            [ChatScope.Group]: {
+              [targetId]: '',
+            },
+          },
+        },
+      },
+    });
 
-    renderWithProviders(<ChatForm scope={ChatScope.Group} targetId={'group-123' as GroupId} />, {
+    renderWithProviders(<ChatForm />, {
       store,
       provider: { mui: true },
     });
@@ -130,7 +159,7 @@ describe('ChatForm', () => {
 
     store.dispatch(setChatSettings({ id: 'user-1' as ParticipantId, timestamp, enabled: false }));
 
-    renderWithProviders(<ChatForm scope={ChatScope.Global} />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
 
     const input = screen.getByLabelText('chat-input-label');
     const emojiButton = screen.getByRole('button', { name: 'chat-open-emoji-picker' });

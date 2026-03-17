@@ -331,7 +331,7 @@ export const selectLastSeenTimestampGlobal = (state: { chat: ChatState }) => sta
 export const selectChatEnabledState = (state: { chat: ChatState }) => state.chat.settings.enabled;
 export const selectIsLoadingMoreChunks = (state: { chat: ChatState }) => state.chat.isLoadingMoreChunks;
 export const selectChatSearchResults = (state: { chat: ChatState }) => state.chat.searchResults;
-
+export const selectChatState = (state: { chat: ChatState }) => state.chat;
 export const selectHasAnyUnreadGroupChatMessage = createSelector(
   [(state: { chat: ChatState }) => state.chat.scope.group],
   (groups) => {
@@ -376,30 +376,6 @@ export const selectHasUnreadGlobalChatMessages = (state: { chat: ChatState }) =>
     isAfter(new Date(lastMessage.timestamp), new Date(lastSeenTimestamp))
   );
 };
-
-export const selectChatMessagesByScope = createSelector(
-  [(state: { chat: ChatState }, scope: ChatScope, targetId?: TargetId) => ({ state, scope, targetId })],
-  ({ state, scope, targetId }) => {
-    let messages: ChatMessage[] = [];
-    if (scope === ChatScope.Global) {
-      messages = globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
-    } else if (scope === ChatScope.Private && targetId) {
-      const private_messages = state.chat.scope.private[targetId as ParticipantId]?.messages;
-
-      if (private_messages) {
-        messages = privateMessagesSelectors.selectAll(private_messages);
-      }
-    } else if (scope === ChatScope.Group && targetId) {
-      const group_messages = state.chat.scope.group[targetId as GroupId]?.messages;
-
-      if (group_messages) {
-        messages = groupMessagesSelectors.selectAll(group_messages);
-      }
-    }
-
-    return messages;
-  }
-);
 
 export const selectAllGlobalChatMessages = createSelector(
   [(state: { chat: ChatState }) => state.chat.scope.global.messages],
@@ -525,18 +501,5 @@ export const selectUnreadPersonalMessageCountByTarget = createSelector(
     return messages.filter((message) => new Date(message.timestamp) > new Date(lastSeenTimestamp)).length;
   }
 );
-
-export function selectNextIndex(state: { chat: ChatState }, scope: ChatScope, targetId?: TargetId): number | null {
-  if (scope === ChatScope.Global) {
-    return state.chat.scope.global.nextIndex;
-  }
-  if (scope === ChatScope.Private && targetId) {
-    return state.chat.scope.private[targetId as ParticipantId]?.nextIndex;
-  }
-  if (scope === ChatScope.Group && targetId) {
-    return state.chat.scope.group[targetId as GroupId]?.nextIndex;
-  }
-  return null;
-}
 
 export default chatSlice.reducer;

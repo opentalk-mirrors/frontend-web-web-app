@@ -16,7 +16,6 @@ import {
 } from '../../store/slices/chatSlice';
 import { selectParticipantsTotal } from '../../store/slices/participantsSlice';
 import { selectCurrentMenuTab, setCurrentMenuTab } from '../../store/slices/uiSlice';
-import { ChatScope } from '../../types';
 import Chat from '../Chat';
 import ChatOverview from '../ChatOverview';
 import Participants from '../Participants';
@@ -139,7 +138,7 @@ const MenuTabs = () => {
 
       <TabPanel value={MenuTab.Chat} hidden={currentMenuTab !== MenuTab.Chat}>
         <VisuallyHiddenTitle component="h3" label="chatroom-hidden-heading" />
-        <Chat scope={ChatScope.Global} />
+        <Chat />
       </TabPanel>
       <TabPanel value={MenuTab.People} hidden={currentMenuTab !== MenuTab.People}>
         <VisuallyHiddenTitle component="h3" label="participant-list-hidden-heading" />

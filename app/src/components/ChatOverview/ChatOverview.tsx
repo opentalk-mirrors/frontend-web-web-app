@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, List as MuiList, Stack, Typography, styled } from '@mui/material';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BackIcon, NewMessageIcon, NoMessagesIcon } from '../../assets/icons';
@@ -67,14 +67,20 @@ const ChatOverview = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const resetSelectedChat = () => {
+  const resetSelectedChat = useCallback(() => {
     dispatch(
       chatConversationStateSet({
-        scope: undefined,
+        scope: ChatScope.Global,
         targetId: undefined,
       })
     );
-  };
+  }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      resetSelectedChat();
+    };
+  }, [resetSelectedChat]);
 
   const renderChats = () =>
     chats.length > 0 ? (
@@ -112,8 +118,6 @@ const ChatOverview = () => {
           {t('button-back-messages')}
         </AdjustedButton>
         <Chat
-          scope={chatConversationState.scope}
-          target={chatConversationState.targetId}
           // We want to focus chat input for the private and group messages
           // which are the ones containing `targetId`.
           autoFocusMessageInput={Boolean(chatConversationState.targetId)}

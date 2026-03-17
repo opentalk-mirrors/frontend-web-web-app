@@ -25,7 +25,7 @@ import { timerStarted, timerStopped } from './timerSlice';
 import { setWhiteboardAvailable } from './whiteboardSlice';
 
 export interface IChatConversationState {
-  scope?: ChatScope;
+  scope: ChatScope;
   targetId?: TargetId;
 }
 
@@ -84,7 +84,7 @@ const initialState: UIState = {
   showParticipantGroups: false,
   participantsSearchValue: '',
   chatConversationState: {
-    scope: undefined,
+    scope: ChatScope.Global,
     targetId: undefined,
   },
   cinemaLayout: LayoutOptions.Grid,
@@ -318,9 +318,11 @@ export const selectShowParticipantGroups = (state: RootState) => state.ui.showPa
 export const selectParticipantsSearchValue = (state: RootState) => state.ui.participantsSearchValue;
 export const selectCinemaLayout = (state: RootState) => state.ui.cinemaLayout;
 export const selectChatConversationState = (state: RootState) => state.ui.chatConversationState;
+export const selectChatConversationTargetId = (state: RootState) => state.ui.chatConversationState.targetId;
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;
 export const selectPaginationDirectionState = (state: RootState) => state.ui.paginationDirection;
 export const selectPinnedParticipantId = (state: RootState) => state.ui.pinnedParticipantId;
+export const selectChatConversationScope = (state: RootState) => state.ui.chatConversationState.scope;
 export const selectPresenterOverlayPinnedParticipantId = (state: RootState) =>
   state.ui.presenterOverlayPinnedParticipantId;
 export const selectMirroredVideoEnabled = (state: RootState) => state.ui.localVideoMirroringEnabled;
