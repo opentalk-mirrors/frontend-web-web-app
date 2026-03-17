@@ -570,6 +570,14 @@ poll-overview-panel-button-end = Beenden
 poll-overview-panel-status-active = Aktiv
 poll-overview-panel-status-finished = Beendet
 poll-form-popover-results-button = Umfrageergebnisse
+poll-error-insufficient-permissions = Sie haben keine Berechtigung für diese Aktion.
+poll-error-invalid-choice-count = Ungültige Anzahl an Antwortmöglichkeiten.
+poll-error-invalid-poll-id = Die angefragte Umfrage konnte nicht gefunden werden.
+poll-error-invalid-choice-id = Die ausgewählte Antwort ist ungültig.
+poll-error-invalid-duration = Die angegebene Dauer der Umfrage ist ungültig.
+poll-error-voted-already = Sie haben bereits an dieser Umfrage teilgenommen.
+poll-error-still-running = Diese Aktion kann nicht ausgeführt werden, solange die Umfrage noch läuft.
+
 
 timer-tab-title = Timer
 timer-form-button-submit = Timer starten
