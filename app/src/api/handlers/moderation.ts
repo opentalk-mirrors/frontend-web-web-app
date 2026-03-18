@@ -13,11 +13,12 @@ import {
   forceMuteDisabled,
   forceMuteEnabled,
 } from '../../store/slices/moderationSlice';
-import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
+import { patch } from '../../store/slices/participantsSlice';
 import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
-import { setDisplayName, updateRole } from '../../store/slices/userSlice';
+import { updateRole } from '../../store/slices/userSlice';
 import { Role, Timestamp } from '../../types';
 import { moderation } from '../types/incoming';
+import { participantRename } from './helpers';
 
 /**
  * Handles messages in the moderation namespace.
@@ -64,19 +65,28 @@ export const handleModerationMessage = (
     //     )
     //   );
     //   break;
-    case 'display_name_changed':
-      dispatch(participantsRename({ id: data.target, displayName: data.newName }));
-      if (data.target === state.user.uuid) {
-        dispatch(setDisplayName(data.newName));
+    case 'display_name_changed': {
+      dispatch(participantRename({ id: data.target, newName: data.newName }));
+      const isSelf = data.target === state.user.uuid;
+      const issuedBySelf = data.issuedBy === state.user.uuid;
+      const actorName = state.participants.entities[data.issuedBy]?.displayName ?? 'unknown';
+
+      if (issuedBySelf && isSelf) {
+        notifications.info(i18next.t('rename-self-notification', { newName: data.newName }));
+      } else if (issuedBySelf) {
+        notifications.info(
+          i18next.t('rename-other-feedback-notification', { oldName: data.oldName, newName: data.newName })
+        );
+      } else if (isSelf) {
+        notifications.info(i18next.t('rename-other-target-notification', { actorName, newName: data.newName }));
+      } else {
+        notifications.info(
+          i18next.t('rename-general-notification', { oldName: data.oldName, newName: data.newName, actorName })
+        );
       }
-      notifications.info(
-        i18next.t('display-name-change-notification', {
-          moderatorName: state.participants.entities[data.issuedBy]?.displayName || '',
-          oldName: data.oldName,
-          newName: data.newName,
-        })
-      );
+
       break;
+    }
     case 'muted': {
       const participants = state.participants.entities;
       notifications.warning(

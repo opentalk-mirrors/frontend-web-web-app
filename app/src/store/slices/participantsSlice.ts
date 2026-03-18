@@ -6,6 +6,7 @@ import { createAction, createEntityAdapter, createSelector, createSlice, Payload
 import i18next from 'i18next';
 import { Participant as RemoteParticipant } from 'livekit-client';
 
+import { participantRename } from '../../api/handlers/helpers';
 import { DisconnectReason } from '../../api/types/incoming/core';
 import { notifications } from '../../commonComponents';
 import {
@@ -194,15 +195,15 @@ export const participantsSlice = createSlice({
         });
       }
     },
-    rename: (state, { payload }: PayloadAction<Pick<Participant, 'id' | 'displayName'>>) => {
-      const { id, displayName } = payload;
-      participantAdapter.updateOne(state, {
-        id,
-        changes: {
-          displayName,
-        },
-      });
-    },
+    // rename: (state, { payload }: PayloadAction<Pick<Participant, 'id' | 'displayName'>>) => {
+    //   const { id, displayName } = payload;
+    //   participantAdapter.updateOne(state, {
+    //     id,
+    //     changes: {
+    //       displayName,
+    //     },
+    //   });
+    // },
   },
 
   extraReducers: (builder) => {
@@ -221,10 +222,19 @@ export const participantsSlice = createSlice({
         });
       }
     );
+
+    builder.addCase(participantRename, (state, { payload: { id, newName } }) => {
+      participantAdapter.updateOne(state, {
+        id,
+        changes: {
+          displayName: newName,
+        },
+      });
+    });
   },
 });
 
-export const { join, leave, update, patch, waitingRoomJoined, waitingRoomLeft, approveToEnter, approvedAll, rename } =
+export const { join, leave, update, patch, waitingRoomJoined, waitingRoomLeft, approveToEnter, approvedAll } =
   participantsSlice.actions;
 export const actions = participantsSlice.actions;
 

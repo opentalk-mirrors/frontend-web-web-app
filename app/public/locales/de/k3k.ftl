@@ -1261,7 +1261,6 @@ legal-vote-report-issue-description-placeholder = Beschreiben Sie das Problem...
 
 legal-vote-stopped-invalid-results-notification = Leider ist beim Abstimmen etwas schief gelaufen. Bitte informieren Sie den Moderator oder versuchen Sie es erneut.
 
-display-name-change-notification = Der Moderator {moderatorName} hat den Namen von {oldName} in {newName} geändert.
 display-name-character-limit-error = Der Name darf maximal { $limit } Zeichen umfassen.
 
 whisper-group-disbanded = Deine Flüstergruppe wurde aufgelöst.
@@ -1321,3 +1320,8 @@ meeting-inactivity-termination-notification = Diese Konferenz war {$minutes ->
     [one] eine Minute
    *[other] {$minutes} Minuten
 } inaktiv und wird jetzt beendet.
+
+rename-self-notification = Du hast deinen Anzeigenamen in '{$newName}' geändert.
+rename-other-target-notification = Dein Anzeigename wurde von Moderator {$actorName} in '{$newName}' geändert.
+rename-other-feedback-notification = Du hast den Namen von '{$oldName}' in '{$newName}' geändert.
+rename-general-notification = {$actorName} hat den Namen von '{$oldName}' in '{$newName}' geändert.

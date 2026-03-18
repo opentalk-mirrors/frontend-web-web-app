@@ -562,7 +562,7 @@ poll-topic-label = Topic
 poll-topic-placeholder = What is your poll about?
 poll-input-option = Add Option {$number}
 poll-input-option-button = Add Option
-poll-input-option-max = Limit of {$max} options reached 
+poll-input-option-max = Limit of {$max} options reached
 poll-form-input-error-max = Max {$max} characters
 poll-form-input-error-min = Topic required with min. {$min} letters
 poll-form-input-required = Required field
@@ -1262,7 +1262,6 @@ legal-vote-report-issue-description-placeholder = Describe the problem...
 
 legal-vote-stopped-invalid-results-notification = Unfortunately something went wrong during the vote. Please inform the moderator or try again.
 
-display-name-change-notification = Moderator {moderatorName} changed the display name of {oldName} to {newName}
 display-name-character-limit-error = name must be at most { $limit } characters
 
 whisper-group-disbanded = Your whisper group has been disbanded.
@@ -1322,3 +1321,8 @@ meeting-inactivity-termination-notification = This conference has been inactive 
     [one] one minute
    *[other] {$minutes} minutes
 } and is now being ended.
+
+rename-self-notification = You changed your display name to '{$newName}'.
+rename-other-target-notification = Your display name was changed to '{$newName}' by moderator {$actorName}.
+rename-other-feedback-notification = You changed the name of '{$oldName}' to '{$newName}'.
+rename-general-notification = {$actorName} changed the display name of '{$oldName}' to '{$newName}'.

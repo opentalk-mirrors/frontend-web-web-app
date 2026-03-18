@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { createAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
 import { notifications } from '../../commonComponents';
@@ -9,7 +10,7 @@ import { STORAGE_SECTION_PATH } from '../../pages/Dashboard/Home/fragments/const
 import type { RootState } from '../../store';
 import { selectAccountManagementUrl } from '../../store/slices/configSlice';
 import { MeetingNotesAccess } from '../../types';
-import type { MeetingNotesState } from '../../types';
+import type { MeetingNotesState, ParticipantId } from '../../types';
 import { isStringEnum } from '../../utils/tsUtils';
 import { LegalVoteError } from '../types/incoming/legalVote';
 
@@ -75,3 +76,5 @@ export const handleStorageExceededError = (state: RootState, error: string) => {
     showStorageNotification(state, 'error');
   }
 };
+
+export const participantRename = createAction<{ id: ParticipantId; newName: string }>('participants/rename');
