@@ -570,6 +570,14 @@ poll-overview-panel-status-active = Active
 poll-overview-panel-status-finished = Finished
 poll-form-save-as-template = Save As Template
 poll-form-popover-results-button = Show poll results
+poll-error-insufficient-permissions = You do not have permission to perform this action.
+poll-error-invalid-choice-count = Invalid number of choices provided.
+poll-error-invalid-poll-id = The requested poll could not be found.
+poll-error-invalid-choice-id = The selected answer is invalid.
+poll-error-invalid-duration = The specified poll duration is invalid.
+poll-error-voted-already = You have already voted in this poll.
+poll-error-still-running = This action cannot be performed while the poll is still running.
+
 
 timer-tab-title = Timer
 timer-form-button-submit = Start Timer
