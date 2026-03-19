@@ -570,6 +570,7 @@ poll-form-input-required = Pflichtfeld
 poll-form-input-error-number = Nur positive Zahlen
 poll-form-input-error-choices = Es müssen mindestens {$min} Optionen erstellt werden
 poll-form-input-error-choice = Antworten dürfen nicht leer sein
+poll-form-input-error-choice-unique = Alle Antwortmöglichkeiten müssen unterschiedlich sein
 poll-save-form-success = Ihre Umfrage wurde erfolgreich gespeichert
 poll-save-form-error = Die zu speichernde Umfrage muss mindestens ein Thema haben
 poll-overview-saved-polls = gespeicherte Umfragen
@@ -585,7 +586,6 @@ poll-error-invalid-choice-id = Die ausgewählte Antwort ist ungültig.
 poll-error-invalid-duration = Die angegebene Dauer der Umfrage ist ungültig.
 poll-error-voted-already = Sie haben bereits an dieser Umfrage teilgenommen.
 poll-error-still-running = Diese Aktion kann nicht ausgeführt werden, solange die Umfrage noch läuft.
-
 
 timer-tab-title = Timer
 timer-form-button-submit = Timer starten

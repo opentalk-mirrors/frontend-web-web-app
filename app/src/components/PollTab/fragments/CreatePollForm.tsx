@@ -62,7 +62,13 @@ const validationSchema = yup.object({
     .array()
     .of(yup.string().trim().required(i18next.t('poll-form-input-error-choice')))
     .min(CHOICE_MIN_AMOUNT, i18next.t('poll-form-input-error-choices', { min: CHOICE_MIN_AMOUNT }))
-    .required(i18next.t('poll-form-input-error-choices', { min: CHOICE_MIN_AMOUNT })),
+    .required(i18next.t('poll-form-input-error-choices', { min: CHOICE_MIN_AMOUNT }))
+    .test('unique', i18next.t('poll-form-input-error-choice-unique'), (choices) => {
+      if (isEmpty(choices)) {
+        return true;
+      }
+      return new Set(choices.map((choice: string) => choice?.toLowerCase())).size === choices.length;
+    }),
   live: yup.boolean().optional(),
   multipleChoice: yup.boolean().optional(),
 });
@@ -118,7 +124,9 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
           }}
         >
           <Form data-testid="create-poll-form" onSubmit={formik.handleSubmit}>
-            <Typography>{isEditing ? t('poll-header-title-update') : t('poll-header-title-create')}</Typography>
+            <Typography component="h4">
+              {isEditing ? t('poll-header-title-update') : t('poll-header-title-create')}
+            </Typography>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
                 <DurationFieldWrapper paddingTop={1}>
