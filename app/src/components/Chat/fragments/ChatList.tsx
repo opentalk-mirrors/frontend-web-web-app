@@ -10,11 +10,10 @@ import { getHistoryChunk, searchHistory } from '../../../api/types/outgoing/chat
 import { EncryptedMessagesIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useChatScroll } from '../../../hooks/useChatScroll';
-import { selectCombinedMessageAndEvents } from '../../../store/selectors';
+import { selectCombinedMessageAndEvents, selectNextIndex } from '../../../store/selectors';
 import {
   selectChatSearchResults,
   selectIsLoadingMoreChunks,
-  selectNextIndex,
   setGlobalChatLastSeenTimestamp,
   setIsLoadingMoreChunks,
   setLastSeenTimestampForGroupChat,
@@ -22,9 +21,13 @@ import {
 } from '../../../store/slices/chatSlice';
 import type { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
-import { selectChatSearchValue } from '../../../store/slices/uiSlice';
+import {
+  selectChatConversationScope,
+  selectChatConversationTargetId,
+  selectChatSearchValue,
+} from '../../../store/slices/uiSlice';
 import { selectOurUuid } from '../../../store/slices/userSlice';
-import { ChatMessage as ChatMessageType, ChatScope, GroupId, ParticipantId, TargetId, Timestamp } from '../../../types';
+import { ChatMessage as ChatMessageType, ChatScope, GroupId, ParticipantId, Timestamp } from '../../../types';
 import ChatMessage from './ChatMessage';
 import NoSearchResult from './NoSearchResult';
 
@@ -50,9 +53,6 @@ const ChatOrderedList = styled(List, {
 }));
 
 type ChatListProps = {
-  scope: ChatScope;
-  targetId?: TargetId;
-  participant?: ParticipantId;
   onReset?: () => void;
 };
 
@@ -81,10 +81,12 @@ function filterMessages(
   return Array.from(resultsMap.values());
 }
 
-const ChatList = ({ scope = ChatScope.Global, targetId, onReset }: ChatListProps) => {
+const ChatList = ({ onReset }: ChatListProps) => {
   const { t } = useTranslation();
-  const combinedMessageAndEvents = useAppSelector((state) => selectCombinedMessageAndEvents(state, scope, targetId));
-  const nextIndex = useAppSelector((state) => selectNextIndex(state, scope, targetId));
+  const combinedMessageAndEvents = useAppSelector(selectCombinedMessageAndEvents);
+  const scope = useAppSelector(selectChatConversationScope);
+  const targetId = useAppSelector(selectChatConversationTargetId);
+  const nextIndex = useAppSelector(selectNextIndex);
   const isLoadingMoreChunks = useAppSelector(selectIsLoadingMoreChunks);
   const chatSearchResults = useAppSelector(selectChatSearchResults);
   const chatSearchValue = useAppSelector(selectChatSearchValue);

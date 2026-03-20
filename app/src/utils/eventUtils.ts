@@ -18,8 +18,10 @@ import {
   EventId,
 } from '@opentalk/rest-api-rtk-query';
 import { addMonths, Interval, isWithinInterval, subMonths, areIntervalsOverlapping } from 'date-fns';
-import { cloneDeep, findIndex, orderBy } from 'lodash';
+import { cloneDeep, findIndex, orderBy, memoize, sortBy } from 'lodash';
 
+import { RoomEvent } from '../store/slices/eventSlice';
+import { ChatMessage } from '../types/chat';
 import { getISOStringWithoutMilliseconds } from './timeUtils';
 
 export enum TimePerspectiveFilter {
@@ -283,3 +285,9 @@ export const checkAssetPredicate = (assetCreatedAt: DateTime, recurrenceInstance
   // Check if asset date is within the interval of the current instance
   return interval ? isWithinInterval(assetDate, interval) : false;
 };
+
+export const mergeAndSortMessagesEndEvents = memoize(
+  (messages: Array<ChatMessage | RoomEvent>, events: Array<ChatMessage | RoomEvent>) =>
+    sortBy([...messages, ...events], ['timestamp']),
+  (messages, events) => JSON.stringify(messages) + JSON.stringify(events)
+);

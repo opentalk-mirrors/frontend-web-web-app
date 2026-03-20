@@ -35,7 +35,7 @@ describe('updateLastSeenTimestamp', () => {
       },
     });
 
-    renderWithProviders(<ChatList scope={ChatScope.Global} />, { store });
+    renderWithProviders(<ChatList />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
       setGlobalChatLastSeenTimestamp({
         value: expect.any(String),
@@ -61,10 +61,17 @@ describe('updateLastSeenTimestamp', () => {
             },
           },
         },
+        ui: {
+          chatConversationState: {
+            scope: ChatScope.Private,
+            targetId,
+          },
+          chatSearchValue: '',
+        },
       },
     });
 
-    renderWithProviders(<ChatList scope={ChatScope.Private} targetId={targetId} />, { store });
+    renderWithProviders(<ChatList />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
       setLastSeenTimestampForPrivateChat({
         timestamp: expect.any(String),
@@ -91,10 +98,17 @@ describe('updateLastSeenTimestamp', () => {
             },
           },
         },
+        ui: {
+          chatConversationState: {
+            scope: ChatScope.Group,
+            targetId,
+          },
+          chatSearchValue: '',
+        },
       },
     });
 
-    renderWithProviders(<ChatList scope={ChatScope.Group} targetId={targetId} />, { store });
+    renderWithProviders(<ChatList />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
       setLastSeenTimestampForGroupChat({
         timestamp: expect.any(String),

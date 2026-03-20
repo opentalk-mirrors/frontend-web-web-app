@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createSelector } from '@reduxjs/toolkit';
 import i18next, { t } from 'i18next';
-import _, { intersection } from 'lodash';
+import { intersection } from 'lodash';
 
-import type { RootState } from '.';
 import {
-  ChatMessage as ChatMessageType,
   ChatScope,
   FilterableParticipant,
   ForceMuteType,
@@ -19,9 +17,9 @@ import {
   ParticipantId,
   ParticipationKind,
   SortOption,
-  TargetId,
 } from '../types';
 import { moveItemToTopOfArray } from '../utils/arrayUtils';
+import { mergeAndSortMessagesEndEvents } from '../utils/eventUtils';
 import { sortParticipantsWithConfig } from '../utils/sortParticipants';
 import { selectAutomoderationParticipantIds } from './slices/automodSlice';
 import { selectCurrentBreakoutRoom, selectCurrentBreakoutRoomId } from './slices/breakoutSlice';
@@ -31,8 +29,9 @@ import {
   privateMessagesSelectors,
   selectAllGroupChats,
   selectAllPrivateChats,
+  selectChatState,
 } from './slices/chatSlice';
-import { RoomEvent, selectAllEvents } from './slices/eventSlice';
+import { selectAllEvents } from './slices/eventSlice';
 import { selectAllVotes } from './slices/legalVoteSlice';
 import { selectForceMute, selectHandUp, selectHandUpdatedAt } from './slices/moderationSlice';
 import {
@@ -43,7 +42,12 @@ import {
 import { selectAllPolls } from './slices/pollSlice';
 import { selectEventInfo } from './slices/roomSlice';
 import { selectParticipantsReady } from './slices/timerSlice';
-import { selectParticipantsSearchValue, selectParticipantsSortOption } from './slices/uiSlice';
+import {
+  selectChatConversationScope,
+  selectChatConversationTargetId,
+  selectParticipantsSearchValue,
+  selectParticipantsSortOption,
+} from './slices/uiSlice';
 import { selectGroups, selectOurUuid, selectUserAsPartialParticipant } from './slices/userSlice';
 
 export const selectUserAsParticipant = createSelector(
@@ -199,35 +203,53 @@ export const selectAllParticipantsSortedAndFiltered = createSelector(
   }
 );
 
-export const selectCombinedMessageAndEvents = createSelector(
-  [
-    (state: RootState) => state,
-    (_state: RootState, scope: ChatScope) => scope,
-    (_state: RootState, _scope: ChatScope, targetId?: TargetId) => targetId,
-  ],
-  (state, scope, targetId) => {
-    let messages: Array<ChatMessageType | RoomEvent> = [];
-
+export const selectChatMessagesByScope = createSelector(
+  [selectChatState, selectChatConversationScope, selectChatConversationTargetId],
+  (chatState, scope, targetId) => {
     if (scope === ChatScope.Global) {
-      messages = globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
-
-      const events = selectAllEvents(state);
-      if (events.length > 0) {
-        return _.sortBy([...messages, ...events], ['timestamp']);
+      return globalMessagesSelectors.selectAll(chatState.scope.global.messages);
+    } else if (scope === ChatScope.Private && targetId) {
+      const private_messages = chatState.scope.private[targetId as ParticipantId]?.messages;
+      if (private_messages) {
+        return privateMessagesSelectors.selectAll(private_messages);
       }
-
-      return messages.length > 0 ? messages : [];
+    } else if (scope === ChatScope.Group && targetId) {
+      const group_messages = chatState.scope.group[targetId as GroupId]?.messages;
+      if (group_messages) {
+        return groupMessagesSelectors.selectAll(group_messages);
+      }
     }
-    if (scope === ChatScope.Private && targetId) {
-      const privateChat = state.chat.scope.private[targetId as ParticipantId];
-      return privateChat ? privateMessagesSelectors.selectAll(privateChat.messages) : [];
-    }
-    if (scope === ChatScope.Group && targetId) {
-      const groupChat = state.chat.scope.group[targetId as GroupId];
-      return groupChat ? groupMessagesSelectors.selectAll(groupChat.messages) : [];
-    }
-
     return [];
+  }
+);
+
+const selectScopedEvents = createSelector([selectChatConversationScope, selectAllEvents], (scope, events) =>
+  scope === ChatScope.Global ? events : []
+);
+
+export const selectCombinedMessageAndEvents = createSelector(
+  [selectScopedEvents, selectChatMessagesByScope, selectChatConversationScope],
+  (events, messages, scope) => {
+    if (scope === ChatScope.Global) {
+      return mergeAndSortMessagesEndEvents(messages, events);
+    }
+    return messages;
+  }
+);
+
+export const selectNextIndex = createSelector(
+  [selectChatState, selectChatConversationScope, selectChatConversationTargetId],
+  (chatState, chatScope, conversationTargetId) => {
+    if (chatScope === ChatScope.Global) {
+      return chatState.scope.global.nextIndex;
+    }
+    if (chatScope === ChatScope.Private && conversationTargetId) {
+      return chatState.scope.private[conversationTargetId as ParticipantId]?.nextIndex;
+    }
+    if (chatScope === ChatScope.Group && conversationTargetId) {
+      return chatState.scope.group[conversationTargetId as GroupId]?.nextIndex;
+    }
+    return null;
   }
 );
 

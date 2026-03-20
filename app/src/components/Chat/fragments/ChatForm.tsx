@@ -30,8 +30,13 @@ import { AdornmentIconButton, CommonTextField, VisuallyHiddenTitle } from '../..
 import { CHAT_INPUT_ID } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
-import { saveDefaultChatMessage, selectDefaultChatMessage } from '../../../store/slices/uiSlice';
-import { ChatScope, GroupId, ParticipantId, TargetId } from '../../../types';
+import {
+  saveDefaultChatMessage,
+  selectChatConversationScope,
+  selectChatConversationTargetId,
+  selectDefaultChatMessage,
+} from '../../../store/slices/uiSlice';
+import { ChatScope, GroupId, ParticipantId } from '../../../types';
 import { formikGetValue, formikProps } from '../../../utils/formikUtils';
 import yup from '../../../utils/yupUtils';
 
@@ -86,14 +91,12 @@ const PickerContainer = styled('div')(({ theme }) => ({
 }));
 
 interface ChatFormProps {
-  scope: ChatScope;
-  targetId?: TargetId;
   autoFocusMessageInput?: boolean;
 }
 
 const MAX_CHAT_CHARS = 4000;
 
-const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }: ChatFormProps) => {
+const ChatForm = ({ autoFocusMessageInput }: ChatFormProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useAppDispatch();
@@ -102,6 +105,8 @@ const ChatForm = ({ scope = ChatScope.Global, targetId, autoFocusMessageInput }:
   const [hasFocus, setFocus] = useState(false);
   const isChatEnabled = useAppSelector(selectChatEnabledState);
   const emojiButton = useRef<HTMLButtonElement | null>(null);
+  const scope = useAppSelector(selectChatConversationScope);
+  const targetId = useAppSelector(selectChatConversationTargetId);
   const defaultChatMessage = useAppSelector((state) => selectDefaultChatMessage(state, scope, targetId));
   const messageInputReference = useRef<HTMLInputElement>(null);
 

@@ -114,7 +114,7 @@ describe('Chat', () => {
     store.dispatch(received({ chatMessage: lastMessage, userId: lastMessage.source }));
     dispatchSpy.mockClear();
 
-    renderWithProviders(<Chat scope={ChatScope.Global} />, { store });
+    renderWithProviders(<Chat />, { store });
 
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(lastSeenTimestampAdded({ scope: ChatScope.Global, timestamp }));
 
@@ -128,14 +128,28 @@ describe('Chat', () => {
 
   it('dispatches last seen updates for private messages with target', () => {
     const targetId = 'participant-2' as ParticipantId;
-    const { store, dispatchSpy } = configureStore();
+    const { store, dispatchSpy } = configureStore({
+      initialState: {
+        ui: {
+          chatConversationState: {
+            scope: ChatScope.Private,
+            targetId,
+          },
+          chatAutosavedInputs: {
+            [ChatScope.Private]: {
+              [targetId]: '',
+            },
+          },
+        },
+      },
+    });
     const lastMessage = createChatMessage(ChatScope.Private, targetId);
     const timestamp = lastMessage.timestamp as Timestamp;
 
     store.dispatch(received({ chatMessage: lastMessage, userId: lastMessage.source }));
     dispatchSpy.mockClear();
 
-    renderWithProviders(<Chat scope={ChatScope.Private} target={targetId} />, { store });
+    renderWithProviders(<Chat />, { store });
 
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
       lastSeenTimestampAdded({ scope: ChatScope.Private, target: targetId, timestamp })
@@ -194,13 +208,31 @@ describe('Chat', () => {
   });
 
   it('renders the live region only for the global scope', () => {
-    const { store } = configureStore();
-    const { unmount } = renderWithProviders(<Chat scope={ChatScope.Global} />, { store });
+    const storeWithGlobalScope = configureStore({
+      initialState: {
+        ui: {
+          chatConversationState: {
+            scope: ChatScope.Global,
+          },
+        },
+      },
+    });
+    const { unmount } = renderWithProviders(<Chat />, { store: storeWithGlobalScope.store });
 
     expect(screen.getByTestId('chat-live-region')).toBeInTheDocument();
 
     unmount();
-    renderWithProviders(<Chat scope={ChatScope.Private} />, { store });
+    const storeWithPrivateScope = configureStore({
+      initialState: {
+        ui: {
+          chatConversationState: {
+            scope: ChatScope.Private,
+            targetId: 'participant-2' as ParticipantId,
+          },
+        },
+      },
+    });
+    renderWithProviders(<Chat />, { store: storeWithPrivateScope.store });
 
     expect(screen.queryByTestId('chat-live-region')).not.toBeInTheDocument();
   });
