@@ -4,7 +4,7 @@
 import { Button, Chip as MuiChip, Grid, styled, Typography, FormHelperText } from '@mui/material';
 import { FieldArray, Field, FieldProps, useFormikContext } from 'formik';
 import { get, isEmpty } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AddIcon } from '../../../assets/icons';
@@ -93,15 +93,6 @@ const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAns
 
   const showUniqueError = () => get(errors, name)?.includes(i18n.t('poll-form-input-error-choice-unique'));
 
-  useEffect(() => {
-    choices.length > minAnswers &&
-      choices.forEach((item: string, index: number) => {
-        if (isEmpty(item)) {
-          setEditingIndex(index);
-        }
-      });
-  }, [name, choices, minAnswers]);
-
   return (
     <FieldArray
       name={name}
@@ -118,7 +109,6 @@ const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAns
                       name={name}
                       size="small"
                       fullWidth
-                      defaultValue={value}
                       error={isTouched(name) && Array.isArray(answerErrors) && Boolean(answerErrors[index])}
                       helperText={isTouched(name) && Array.isArray(answerErrors) && answerErrors[index]}
                       maxCharacters={MAX_ANSWER_LENGTH}
@@ -181,7 +171,10 @@ const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAns
               size="small"
               type="button"
               variant="text"
-              onClick={() => arrayHelpers.push('')}
+              onClick={() => {
+                arrayHelpers.push('');
+                setEditingIndex(choices.length);
+              }}
               startIcon={<Add />}
               color="secondary"
               disabled={choices.length >= maxAnswers}
