@@ -24,6 +24,7 @@ import {
 import { closeSnackbar } from 'notistack';
 
 import { stopTimeLimitNotification } from '../commonComponents/Notistack/fragments/variations/TimeLimitNotification/utils';
+import log from '../logger';
 import { BackgroundBlur, BackgroundConfig } from '../modules/Media/BackgroundBlur';
 import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
 import { BreakoutRoomId, FetchRequestError, JoinSuccessInternalState } from '../types';
@@ -420,12 +421,14 @@ export const createRoom = async (
 
   const room = new Room(roomOptions);
 
+  log.debug('Connecting to room with options: ', roomOptions);
+
   if (e2eeEnabled && !room.isE2EEEnabled) {
     keyProvider.setKey(e2eePassphrase);
     try {
       await room.setE2EEEnabled(true);
     } catch (error) {
-      console.debug(`E2ee encryption error: ${error}`);
+      log.debug(`E2ee encryption error: ${error}`);
     }
   }
 
