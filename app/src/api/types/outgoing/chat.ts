@@ -52,6 +52,7 @@ interface GetHistoryChunk {
   action: 'get_history_chunk';
   scope: ChatScope;
   messageIndex: number;
+  target?: TargetId;
 }
 
 interface SearchHistory {
