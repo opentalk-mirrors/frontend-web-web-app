@@ -33,8 +33,8 @@ export default function Ballot({ container }: BallotProps) {
   const voteOrPollIdToShow = useAppSelector(selectVoteOrPollIdToShow); // when user selects a vote to preview from the dropdown menu
 
   const pollToShow = useAppSelector(selectPollById((voteOrPollIdToShow ? voteOrPollIdToShow : pollIdToShow) as PollId));
-  const legalVoteToShow = useAppSelector(
-    selectVoteById((voteOrPollIdToShow ? voteOrPollIdToShow : voteIdToShow) as LegalVoteId)
+  const legalVoteToShow = useAppSelector((state) =>
+    selectVoteById(state, (voteOrPollIdToShow ? voteOrPollIdToShow : voteIdToShow) as LegalVoteId)
   );
   const ourUuid = useAppSelector(selectOurUuid);
   const isAllowedToVote =
