@@ -255,29 +255,26 @@ export const {
   savedLegalVoteForm,
 } = actions;
 
+export const selectLegalVotes = (state: { legalVote: State }) => state.legalVote.votes;
 export const {
   selectById: selectVoteById,
   selectIds: selectVoteIds,
   selectAll: selectAllVotes,
   selectEntities: selectVotes,
-} = legalVoteAdapter.getSelectors((state: { legalVote: State }) => state.legalVote.votes);
-
-const selectLegalVoteState = (state: { legalVote: State }) => state.legalVote;
+} = legalVoteAdapter.getSelectors(selectLegalVotes);
 
 export const selectShowLegalVoteWindow = (state: { legalVote: State }) => state.legalVote.showResultWindow;
 export const selectCurrentShownVoteId = (state: { legalVote: State }) => state.legalVote.currentShownVoteId;
 export const selectCurrentShownVote = createSelector(
-  [selectLegalVoteState, selectCurrentShownVoteId],
-  (legalVoteState, currentShownVoteId) => {
-    return currentShownVoteId ? selectVoteById({ legalVote: legalVoteState }, currentShownVoteId) : undefined;
-  }
+  [selectVotes, selectCurrentShownVoteId],
+  (votesById, currentShownVoteId) => (currentShownVoteId ? votesById[currentShownVoteId] : undefined)
 );
 export const selectActiveVoteId = (state: { legalVote: State }) => state.legalVote.activeVote?.id;
 export const selectPersistedToken = (state: { legalVote: State }) => state.legalVote.activeVote?.persistedToken;
 export const selectAllSavedLegalVotes = (state: { legalVote: State }) => state.legalVote.savedLegalVotes;
 export const selectSavedLegalVotePerId = createSelector(
-  [selectLegalVoteState, (_, id: number | undefined) => id],
-  (legalVoteState, id) => legalVoteState.savedLegalVotes.find((legalVote) => legalVote.id === id)
+  [selectAllSavedLegalVotes, (_, id: number | undefined) => id],
+  (savedLegalVotes, id) => savedLegalVotes.find((savedLegalVote) => savedLegalVote.id === id)
 );
 export const selectLegalVoteId = (state: { legalVote: State }) => state.legalVote.savedLegalVotes.length;
 
