@@ -84,9 +84,12 @@ export const authSlice = createSlice({
       })
       .addCase(getNewToken.pending, (state) => {
         state.refreshTokenLoading = true;
+        state.error = undefined;
       })
       .addCase(getNewToken.fulfilled, (state) => {
         state.refreshTokenLoading = false;
+        state.error = undefined;
+        state.state = SessionStatus.AUTHORIZED;
       })
       .addCase(getNewToken.rejected, (state, { payload }) => {
         state.refreshTokenLoading = false;
@@ -104,7 +107,8 @@ export const selectIsRefreshTokenLoading = (state: { auth: AuthState }): boolean
 export const selectLoginTimestamp = (state: { auth: AuthState }): string | undefined => state.auth.loginTimestamp;
 export const selectIsUserInitialLogin = (state: { auth: AuthState }): boolean =>
   state.auth.loginTimestamp === undefined;
-export const selectIsAuthenticated = (state: { auth: AuthState }): boolean => state.auth.state === 'authorized';
+export const selectIsAuthenticated = (state: { auth: AuthState }): boolean =>
+  state.auth.state === SessionStatus.AUTHORIZED;
 export const selectAuthIsPending = (state: { auth: AuthState }): boolean => state.auth.state === SessionStatus.PENDING;
 export const selectError = (state: { auth: AuthState }) => state.auth.error;
 export const selectRefreshError = (state: { auth: AuthState }) =>
