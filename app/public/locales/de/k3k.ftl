@@ -1338,3 +1338,5 @@ rename-general-notification = {$actorName} hat den Namen von '{$oldName}' in '{$
 guest-access-switch-label = Gastzugang
 guest-access-select-waiting-room-option = Warteraum
 guest-access-select-direct-access-option = Direkter Zugang
+
+failed-playback-audio-warning = Audio ist derzeit durch Ihre Browser-Einstellungen eingeschränkt. Bitte heben Sie die Stummschaltung auf, um den Ton zu aktivieren und Ihre Sitzung zu beginnen. Falls Sie weiterhin nichts hören, empfehlen wir Ihnen, Ihre Browser-Erweiterungen auf etwaige Wiedergabesperren zu überprüfen.

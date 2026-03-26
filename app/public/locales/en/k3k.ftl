@@ -1340,3 +1340,5 @@ rename-general-notification = {$actorName} changed the display name of '{$oldNam
 guest-access-switch-label = Guest access
 guest-access-select-waiting-room-option = Waiting room
 guest-access-select-direct-access-option = Direct access
+
+failed-playback-audio-warning = Audio is currently restricted by your browser settings. Please unmute to activate the sound and begin your session. If you continue to experience silence, we recommend reviewing your browser extensions for any playback blocks.
