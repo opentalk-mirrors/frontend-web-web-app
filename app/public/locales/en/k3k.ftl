@@ -4,6 +4,8 @@ SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 SPDX-License-Identifier: EUPL-1.2
 -->
 
+modifier-control = control
+
 messages = Messages
 dismiss = Dismiss
 action-delete = Delete

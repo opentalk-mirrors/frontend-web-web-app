@@ -34,7 +34,7 @@ describe('HotkeyTable', () => {
   it('should render hotkey cells', () => {
     render(<HotkeyTable />);
 
-    expect(screen.getByRole('cell', { name: 'control + s' })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: 'modifier-control + s' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'hotkey-1' })).toBeInTheDocument();
 
     expect(screen.getByRole('cell', { name: 'd' })).toBeInTheDocument();
