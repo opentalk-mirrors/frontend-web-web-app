@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 
 import { LastSeenTimestampAddedPayload, setLastSeenTimestamp } from '../../api/types/outgoing/chat';
 import { useAppSelector } from '../../hooks';
+import { getCurrentConferenceRoom } from '../../modules/WebRTC/ConferenceRoom';
 import { lastSeenTimestampAdded, selectLastMessageForScope } from '../../store/slices/chatSlice';
 import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
 import {
@@ -60,6 +61,9 @@ const Chat = ({ autoFocusMessageInput }: ChatProps) => {
   const debouncedSetLastSeenTimestamp = useMemo(
     () =>
       debounce((message: LastSeenTimestampAddedPayload) => {
+        if (getCurrentConferenceRoom() === undefined) {
+          return;
+        }
         dispatch(setLastSeenTimestamp.action(message));
       }, 1000),
     [dispatch]
@@ -82,6 +86,9 @@ const Chat = ({ autoFocusMessageInput }: ChatProps) => {
   const debouncedSetChatSearchValue = useMemo(
     () =>
       debounce((value: string) => {
+        if (getCurrentConferenceRoom() === undefined) {
+          return;
+        }
         dispatch(setChatSearchValue(value));
       }, 150),
     [dispatch]
