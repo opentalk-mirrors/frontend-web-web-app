@@ -23,6 +23,7 @@ import {
   selectLivekitPublicUrl,
 } from '../../../store/slices/livekitSlice';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
+import { selectE2EEncryption } from '../../../store/slices/roomSlice';
 import { pinnedParticipantIdSet, selectCinemaLayout, selectPinnedParticipantId } from '../../../store/slices/uiSlice';
 import { ParticipantId } from '../../../types';
 import BrokenSubscriberIndicator from './BrokenSubscriberIndicator';
@@ -83,6 +84,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
     roomId: RoomId;
   };
   const isFullscreenSupported = useAppSelector(selectFullscreenSupported);
+  const isE2EEnabled = useAppSelector(selectE2EEncryption);
 
   // Opening url is known bug in react -> https://github.com/facebook/react/issues/17355
   // Using setTimeout as a workaround
@@ -169,7 +171,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
                 </OverlayIconButton>
               </Tooltip>
             )}
-            {isScreenShareOrVideoActive && (
+            {!isE2EEnabled && isScreenShareOrVideoActive && (
               <Tooltip title={t('video-overlay-tooltip-separate-window')}>
                 <OverlayIconButton aria-label={t('global-open-new-tab')} color="primary" onClick={openInNewTab}>
                   <ExtendToTabIcon />
