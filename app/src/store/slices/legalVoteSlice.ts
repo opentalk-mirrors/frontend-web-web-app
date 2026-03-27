@@ -3,13 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
-import {
-  VoteCanceled,
-  VoteResponse,
-  VoteStarted,
-  VoteStopped,
-  VoteUpdated,
-} from '../../api/types/incoming/legalVote';
+import { VoteCanceled, VoteResponse, VoteStarted, VoteStopped, VoteUpdated } from '../../api/types/incoming/legalVote';
 import log from '../../logger';
 import {
   LegalVote,
@@ -267,7 +261,7 @@ export const selectShowLegalVoteWindow = (state: { legalVote: State }) => state.
 export const selectCurrentShownVoteId = (state: { legalVote: State }) => state.legalVote.currentShownVoteId;
 export const selectCurrentShownVote = createSelector(
   [selectVotes, selectCurrentShownVoteId],
-  (votesById, currentShownVoteId) => (currentShownVoteId ? votesById[currentShownVoteId] : undefined)
+  (votesById, currentShownVoteId) => (currentShownVoteId !== undefined ? votesById[currentShownVoteId] : undefined)
 );
 export const selectActiveVoteId = (state: { legalVote: State }) => state.legalVote.activeVote?.id;
 export const selectPersistedToken = (state: { legalVote: State }) => state.legalVote.activeVote?.persistedToken;

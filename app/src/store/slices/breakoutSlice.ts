@@ -110,12 +110,16 @@ export const selectBreakoutRoomById = createSelector(
   (breakoutRoomEntities, id) => breakoutRoomEntities[id]
 );
 export const selectCurrentBreakoutRoom = createSelector(
-  [selectBreakoutRoomEntities, selectCurrentBreakoutRoomId],
-  (breakoutRoomEntities, currentRoomId) => (currentRoomId ? breakoutRoomEntities[currentRoomId] : undefined)
+  [selectCurrentBreakoutRoomId, selectBreakoutRoomEntities],
+  (currentRoomId, breakoutRoomEntities) => {
+    return currentRoomId !== undefined ? breakoutRoomEntities[currentRoomId] : undefined;
+  }
 );
 export const selectAssignedBreakoutRoomId = (state: { breakout: BreakoutState }) => state.breakout.assignment;
 export const selectLastDispatchedActionType = (state: { breakout: BreakoutState }) => state.breakout.action;
 export const selectExpiredDate = (state: { breakout: BreakoutState }) => state.breakout.expires;
+export const selectBreakoutStopsAt = (state: { breakout: BreakoutState }) => state.breakout.stopsAt;
+export const selectBreakoutClosedAt = (state: { breakout: BreakoutState }) => state.breakout.closedAt;
 export const actions = breakoutSlice.actions;
 
 export default breakoutSlice.reducer;

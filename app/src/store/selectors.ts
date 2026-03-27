@@ -30,7 +30,7 @@ import {
   breakoutMessagesSelectors,
   selectAllPrivateChats,
   selectChatStateChunkScope,
-  selectAllBreakoutChats,
+  selectChatState,
 } from './slices/chatSlice';
 import { selectAllEvents } from './slices/eventSlice';
 import { selectAllVotes } from './slices/legalVoteSlice';
@@ -175,10 +175,7 @@ const selectGlobalChatMessagesState = createSelector([selectChatStateChunkScope]
 const selectPrivateChatMessagesState = createSelector(
   [selectChatStateChunkScope, selectChatConversationTarget],
   (chunk, targetId) => {
-    if (!targetId) {
-      return [];
-    }
-    const messages = chunk.private[targetId as ParticipantId]?.messages;
+    const messages = chunk.private?.[targetId as ParticipantId]?.messages;
     return messages ? privateMessagesSelectors.selectAll(messages) : [];
   }
 );
@@ -186,10 +183,7 @@ const selectPrivateChatMessagesState = createSelector(
 const selectBreakoutChatMessagesState = createSelector(
   [selectChatStateChunkScope, selectChatConversationTarget],
   (chunk, targetId) => {
-    if (!targetId) {
-      return [];
-    }
-    const messages = chunk.breakout[targetId as BreakoutRoomId]?.messages;
+    const messages = chunk.breakout?.[targetId as BreakoutRoomId]?.messages;
     return messages ? breakoutMessagesSelectors.selectAll(messages) : [];
   }
 );
@@ -227,9 +221,24 @@ export const selectCombinedMessageAndEvents = createSelector(
   [selectScopedEvents, selectChatMessagesByScope, selectChatConversationScope],
   (events, messages, scope) => {
     if (scope === ChatScope.Global) {
-      return mergeAndSortMessagesEndEvents(messages, events);
+      const filteredEvents = events.filter((event) => event.participationKind !== ParticipationKind.Recorder);
+      return mergeAndSortMessagesEndEvents(messages, filteredEvents);
     }
     return messages;
+  }
+);
+
+export const selectNextIndex = createSelector(
+  [selectChatState, selectChatConversationScope, selectChatConversationTarget],
+  (chat, scope, target) => {
+    switch (scope) {
+      case ChatScope.Global:
+        return chat.scope.global.nextIndex;
+      case ChatScope.Private:
+        return chat.scope.private[target as ParticipantId]?.nextIndex;
+      case ChatScope.Breakout:
+        return chat.scope.breakout[target as BreakoutRoomId]?.nextIndex;
+    }
   }
 );
 
@@ -293,12 +302,10 @@ export const selectIsUserMicDisabled = createSelector([selectForceMute, selectOu
   );
 });
 
-export const selectAllPersonalChats = createSelector(
-  [selectAllBreakoutChats, selectAllPrivateChats],
-  (breakoutChats, privateChats) =>
-    [...Object.values(breakoutChats), ...Object.values(privateChats)].sort(
-      (a, b) => Date.parse(b.lastMessage?.timestamp) - Date.parse(a.lastMessage?.timestamp)
-    )
+export const selectAllPersonalChats = createSelector([selectAllPrivateChats], (privateChats) =>
+  [...Object.values(privateChats)].sort(
+    (a, b) => Date.parse(b.lastMessage?.timestamp) - Date.parse(a.lastMessage?.timestamp)
+  )
 );
 
 export const selectRoomTitle = createSelector(

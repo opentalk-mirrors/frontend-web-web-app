@@ -4,7 +4,6 @@
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 import { createAction, createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
-import { Participant as RemoteParticipant } from 'livekit-client';
 
 import { participantRename } from '../../api/handlers/helpers';
 import { DisconnectReason } from '../../api/types/incoming/core';
@@ -194,15 +193,6 @@ export const participantsSlice = createSlice({
         });
       }
     },
-    // rename: (state, { payload }: PayloadAction<Pick<Participant, 'id' | 'displayName'>>) => {
-    //   const { id, displayName } = payload;
-    //   participantAdapter.updateOne(state, {
-    //     id,
-    //     changes: {
-    //       displayName,
-    //     },
-    //   });
-    // },
   },
 
   extraReducers: (builder) => {
@@ -291,18 +281,15 @@ export const selectParticipationKind: (state: RootState, id: ParticipantId) => P
   );
 
 export const selectRemoteParticipantsDisplayNameRecord = createSelector(
-  [(_state: RootState, remoteParticipants: RemoteParticipant[]) => remoteParticipants, selectAllOnlineParticipants],
-  (remoteParticipants, onlineParticipants) => {
-    return remoteParticipants.reduce(
-      (acc, remoteParticipant) => {
-        const { participantId } = deconstructConnectionIdentifier(remoteParticipant.identity as ConnectionIdentifier);
-        acc[remoteParticipant.identity] = onlineParticipants.find(
-          (participant) => participant.id === participantId
-        )?.displayName;
-        return acc;
-      },
-      {} as Record<string, string | undefined>
-    );
+  [(_state: RootState, identities: string[]) => identities, selectAllOnlineParticipants],
+  (identities, onlineParticipants) => {
+    const participantMap = new Map(onlineParticipants.map((participant) => [participant.id, participant.displayName]));
+    const result: Record<string, string | undefined> = {};
+    for (const identity of identities) {
+      const { participantId } = deconstructConnectionIdentifier(identity as ConnectionIdentifier);
+      result[identity] = participantMap.get(participantId);
+    }
+    return result;
   }
 );
 

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { BackIcon, NewMessageIcon, NoMessagesIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectOtherOnlineParticipants, selectAllPersonalChats } from '../../store/selectors';
+import { PrivateChatProps } from '../../store/slices/chatSlice';
 import { chatConversationStateSet, selectChatConversationState } from '../../store/slices/uiSlice';
 import { ChatScope, ParticipantId } from '../../types';
 import Chat from '../Chat';
@@ -83,8 +84,8 @@ const ChatOverview = () => {
             chat.chatIdentifier.scope === ChatScope.Private && (
               <ChatOverviewItem
                 key={chat.chatIdentifier.target}
-                onClick={() => setSelectedChat(chat.chatIdentifier.target)}
-                chat={chat}
+                onClick={() => setSelectedChat(chat.chatIdentifier.target as ParticipantId)}
+                chat={chat as PrivateChatProps}
               />
             )
         )}
@@ -117,12 +118,7 @@ const ChatOverview = () => {
         >
           {t('button-back-messages')}
         </AdjustedButton>
-        <Chat
-          chatIdentifier={{ scope: ChatScope.Private, target: chatConversationState.target }}
-          // We want to focus chat input for the private
-          // which are the ones containing `target`.
-          autoFocusMessageInput={Boolean(chatConversationState.target)}
-        />
+        <Chat />
       </Container>
     );
   }

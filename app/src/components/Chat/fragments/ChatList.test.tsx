@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { lastSeenTimestampAdded } from '../../../store/slices/chatSlice';
-import { BreakoutRoomId, ChatIdentifier, ChatScope, ParticipantId } from '../../../types';
+import { BreakoutRoomId, ChatScope, ParticipantId } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ChatList from './ChatList';
 
@@ -11,8 +11,6 @@ describe('updateLastSeenTimestamp', () => {
     // Silence reselect warnings during tests
     vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
-
-  const globalChatIdentifier: ChatIdentifier = { scope: ChatScope.Global };
 
   it('updates the last seen timestamp for a public chat', () => {
     const { store, dispatchSpy } = configureStore({
@@ -33,7 +31,7 @@ describe('updateLastSeenTimestamp', () => {
       },
     });
 
-    renderWithProviders(<ChatList chatIdentifier={globalChatIdentifier} />, { store });
+    renderWithProviders(<ChatList />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
       lastSeenTimestampAdded({
         scope: ChatScope.Global,
@@ -88,12 +86,7 @@ describe('updateLastSeenTimestamp', () => {
       },
     });
 
-    const privateChatIdentifier: ChatIdentifier = {
-      scope: ChatScope.Private,
-      target,
-    };
-
-    renderWithProviders(<ChatList chatIdentifier={privateChatIdentifier} />, { store });
+    renderWithProviders(<ChatList />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
       lastSeenTimestampAdded({
         scope: ChatScope.Private,
@@ -149,12 +142,7 @@ describe('updateLastSeenTimestamp', () => {
       },
     });
 
-    const breakoutChatIdentifier: ChatIdentifier = {
-      scope: ChatScope.Breakout,
-      target,
-    };
-
-    renderWithProviders(<ChatList chatIdentifier={breakoutChatIdentifier} />, { store });
+    renderWithProviders(<ChatList />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
       lastSeenTimestampAdded({
         scope: ChatScope.Breakout,

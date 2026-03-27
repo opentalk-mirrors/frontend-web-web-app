@@ -20,6 +20,7 @@ import {
   LegalVoteId,
   ParticipantId,
   PollId,
+  RoomKind,
   SortOption,
   TimerStyle,
 } from '../../types';
@@ -27,6 +28,7 @@ import { constructConnectionIdentifier } from '../../utils/constructConnectionId
 import { hangUp, joinSuccess } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted } from './automodSlice';
+import { switchedRoom } from './breakoutSlice';
 import { CinemaViewSortOrder } from './common';
 import { started as legalVoteStarted } from './legalVoteSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
@@ -300,6 +302,21 @@ export const uiSlice = createSlice({
     builder.addCase(automodStarted, (state) => {
       state.currentMenuTab = MenuTab.People;
     });
+    builder.addMatcher(isAnyOf(switchedRoom, joinSuccess), (state, { payload }) => {
+      if ('newRoom' in payload && payload.newRoom) {
+        if (payload.newRoom.kind === RoomKind.Breakout) {
+          state.chatConversationState.scope = ChatScope.Breakout;
+          state.chatConversationState.target = payload.newRoom.id;
+        } else {
+          state.chatConversationState.scope = ChatScope.Global;
+          state.chatConversationState.target = undefined;
+        }
+      }
+      if (RoomKind.Breakout in payload && payload.breakout?.room.kind === RoomKind.Breakout) {
+        state.chatConversationState.scope = ChatScope.Breakout;
+        state.chatConversationState.target = payload.breakout.room.id;
+      }
+    });
   },
 });
 
@@ -381,6 +398,12 @@ export const selectCurrentMenuTab = (state: RootState) => state.ui.currentMenuTa
 export const selectPresenterVideoPosition = (state: RootState) => state.ui.presenterVideoPosition;
 
 export default uiSlice.reducer;
+
+/************************************************/
+/*                                              */
+/*                  Listeners                   */
+/*                                              */
+/************************************************/
 
 const startUiChangeModeListener = (startAppListening: StartAppListening) =>
   startAppListening({

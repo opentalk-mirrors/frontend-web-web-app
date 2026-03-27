@@ -101,7 +101,8 @@ describe('selectCombinedMessageAndEvents', () => {
       },
       ui: {
         chatConversationState: {
-          scope: ChatScope.Global,
+          scope: ChatScope.Breakout,
+          target: breakoutRoomId,
         },
       },
       events: {
@@ -110,7 +111,7 @@ describe('selectCombinedMessageAndEvents', () => {
       },
     } as unknown as RootState;
 
-    const result = selectCombinedMessageAndEvents(state, { scope: ChatScope.Breakout, target: breakoutRoomId });
+    const result = selectCombinedMessageAndEvents(state);
 
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchObject({

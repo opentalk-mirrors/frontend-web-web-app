@@ -10,19 +10,22 @@ import { getHistoryChunk, searchHistory } from '../../../api/types/outgoing/chat
 import { EncryptedMessagesIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useChatScroll } from '../../../hooks/useChatScroll';
-import { selectCombinedMessageAndEvents } from '../../../store/selectors';
+import { selectCombinedMessageAndEvents, selectLastMessageForScope, selectNextIndex } from '../../../store/selectors';
 import {
   lastSeenTimestampAdded,
   selectChatSearchResults,
   selectIsLoadingMoreChunks,
-  selectNextIndex,
   setIsLoadingMoreChunks,
 } from '../../../store/slices/chatSlice';
 import type { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
-import { selectChatSearchValue } from '../../../store/slices/uiSlice';
+import {
+  selectChatConversationScope,
+  selectChatConversationTarget,
+  selectChatSearchValue,
+} from '../../../store/slices/uiSlice';
 import { selectOurUuid } from '../../../store/slices/userSlice';
-import { ChatIdentifier, ChatMessage as ChatMessageType, ParticipantId, Timestamp } from '../../../types';
+import { BreakoutRoomId, ChatMessage as ChatMessageType, ChatScope, ParticipantId, Timestamp } from '../../../types';
 import ChatMessage from './ChatMessage';
 import NoSearchResult from './NoSearchResult';
 
@@ -48,7 +51,6 @@ const ChatOrderedList = styled(List, {
 }));
 
 type ChatListProps = {
-  chatIdentifier: ChatIdentifier;
   participant?: ParticipantId;
   onReset?: () => void;
 };
@@ -78,10 +80,10 @@ function filterMessages(
   return Array.from(resultsMap.values());
 }
 
-const ChatList = ({ onReset, chatIdentifier }: ChatListProps) => {
+const ChatList = ({ onReset }: ChatListProps) => {
   const { t } = useTranslation();
-  const combinedMessageAndEvents = useAppSelector((state) => selectCombinedMessageAndEvents(state, chatIdentifier));
-  const nextIndex = useAppSelector((state) => selectNextIndex(state, chatIdentifier));
+  const combinedMessageAndEvents = useAppSelector(selectCombinedMessageAndEvents);
+  const nextIndex = useAppSelector(selectNextIndex);
   const isLoadingMoreChunks = useAppSelector(selectIsLoadingMoreChunks);
   const chatSearchResults = useAppSelector(selectChatSearchResults);
   const chatSearchValue = useAppSelector(selectChatSearchValue);
@@ -90,16 +92,31 @@ const ChatList = ({ onReset, chatIdentifier }: ChatListProps) => {
   const virtualList = useRef<ViewportListRef | null>(null);
   const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
   const ourUuid = useAppSelector(selectOurUuid);
+  const scope = useAppSelector(selectChatConversationScope);
+  const target = useAppSelector(selectChatConversationTarget);
+  const lastMessageForScope = useAppSelector(selectLastMessageForScope);
 
   const searchedMessages = useMemo(
     () => filterMessages(combinedMessageAndEvents, chatSearchValue, chatSearchResults),
     [combinedMessageAndEvents, chatSearchValue, chatSearchResults]
   );
 
+  const constructLastSeenPayload = useCallback(() => {
+    const timestamp = (lastMessageForScope?.timestamp as Timestamp) ?? (new Date().toISOString() as Timestamp);
+
+    switch (scope) {
+      case ChatScope.Global:
+        return { scope, timestamp };
+      case ChatScope.Private:
+        return { scope, timestamp, target: target as ParticipantId };
+      case ChatScope.Breakout:
+        return { scope, timestamp, target: target as BreakoutRoomId };
+    }
+  }, [lastMessageForScope, scope, target]);
+
   const updateLastSeenTimestamp = useCallback(() => {
-    const timestamp = new Date().toISOString() as Timestamp;
-    dispatch(lastSeenTimestampAdded({ ...chatIdentifier, timestamp }));
-  }, [dispatch, chatIdentifier]);
+    dispatch(lastSeenTimestampAdded(constructLastSeenPayload()));
+  }, [dispatch, constructLastSeenPayload]);
 
   useEffect(() => {
     if (!isRoomDeleted) {
@@ -145,7 +162,7 @@ const ChatList = ({ onReset, chatIdentifier }: ChatListProps) => {
         const [entry] = entries;
         if (entry.isIntersecting) {
           dispatch(setIsLoadingMoreChunks(true));
-          dispatch(getHistoryChunk.action({ scope: chatIdentifier.scope, messageIndex: nextIndex }));
+          dispatch(getHistoryChunk.action({ scope, messageIndex: nextIndex }));
         }
       },
       {
@@ -160,7 +177,7 @@ const ChatList = ({ onReset, chatIdentifier }: ChatListProps) => {
     return () => {
       observer.disconnect();
     };
-  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, chatIdentifier.scope, viewportNode]);
+  }, [nextIndex, isLoadingMoreChunks, chatSearchValue, dispatch, scope, viewportNode]);
 
   useLayoutEffect(() => {
     if (searchedMessages.length === 0) {
@@ -177,12 +194,12 @@ const ChatList = ({ onReset, chatIdentifier }: ChatListProps) => {
     if (chatSearchValue.length >= 2 && nextIndex !== null) {
       dispatch(
         searchHistory.action({
-          scope: chatIdentifier.scope,
+          scope,
           term: chatSearchValue,
         })
       );
     }
-  }, [chatSearchValue, nextIndex, chatIdentifier.scope, dispatch]);
+  }, [chatSearchValue, nextIndex, scope, dispatch]);
 
   if (chatSearchValue && searchedMessages.length === 0) {
     return <NoSearchResult onReset={onReset} />;

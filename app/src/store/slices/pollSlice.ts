@@ -138,7 +138,7 @@ export const {
 
 export const selectPollIdToShow = (state: { poll: State }) => state.poll.pollIdToShow;
 export const selectPollToShow = createSelector([selectPollIdToShow, selectPollVotes], (pollIdToShow, pollById) =>
-  pollIdToShow ? pollById[pollIdToShow] : undefined
+  pollIdToShow !== undefined ? pollById[pollIdToShow] : undefined
 );
 export const selectAllSavedPolls = (state: { poll: State }) => state.poll.savedPolls;
 export const selectSavedPollPerId = createSelector(

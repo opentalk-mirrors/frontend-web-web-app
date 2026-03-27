@@ -263,7 +263,7 @@ export const chatSlice = createSlice({
           lastSeenTimestamp: new Date().toISOString() as Timestamp,
         };
       });
-      const breakoutRoomId = breakout?.room?.id as BreakoutRoomId | undefined;
+      const breakoutRoomId = breakout?.room?.id;
       if (chat.breakoutRoomHistory && breakoutRoomId != null) {
         state.scope.breakout[breakoutRoomId] = {
           messages: breakoutMessagesAdapter.setAll(
@@ -293,7 +293,6 @@ export const {
 export const actions = chatSlice.actions;
 
 export const selectLastSeenTimestampGlobal = (state: { chat: ChatState }) => state.chat.scope.global.lastSeenTimestamp;
-
 export const selectChatEnabledState = (state: { chat: ChatState }) => state.chat.settings.enabled;
 export const selectIsLoadingMoreChunks = (state: { chat: ChatState }) => state.chat.isLoadingMoreChunks;
 export const selectChatSearchResults = (state: { chat: ChatState }) => state.chat.searchResults;
@@ -330,36 +329,6 @@ export const selectHasAnyUnreadPrivateChatMessage = createSelector([selectChatSc
   });
 });
 
-export const selectHasUnreadGlobalChatMessages = (state: { chat: ChatState }) => {
-  const messages = globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
-  const lastSeenTimestamp = state.chat.scope.global.lastSeenTimestamp;
-  const lastMessage = messages.at(-1);
-  return (
-    messages.length > 0 &&
-    lastMessage !== undefined &&
-    isAfter(new Date(lastMessage.timestamp), new Date(lastSeenTimestamp))
-  );
-};
-
-export const selectChatMessagesByScope = (state: { chat: ChatState }, chatIdentifier: ChatIdentifier) => {
-  const { scope, target } = chatIdentifier;
-
-  switch (scope) {
-    case ChatScope.Global:
-      return globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
-    case ChatScope.Private: {
-      const privateMessages = state.chat.scope.private[target]?.messages;
-      return privateMessages ? privateMessagesSelectors.selectAll(privateMessages) : [];
-    }
-    case ChatScope.Breakout: {
-      const breakoutMessages = state.chat.scope.breakout[target]?.messages;
-      return breakoutMessages ? breakoutMessagesSelectors.selectAll(breakoutMessages) : [];
-    }
-    default:
-      return [];
-  }
-};
-
 export const selectAllGlobalChatMessages = createSelector(
   [(state: { chat: ChatState }) => state.chat.scope.global.messages],
   (messages) => globalMessagesSelectors.selectAll(messages)
@@ -386,22 +355,7 @@ export const selectAllPrivateChats = createSelector([selectChatScopePrivate], (p
       id: participantId as TargetId,
       scope: ChatScope.Private,
       messages,
-      chatIdentifier: { target: participantId as ParticipantId, scope: ChatScope.Private },
-      lastMessage: messages.at(-1) ?? null,
-    } as ChatProps;
-  }
-  return result;
-});
-
-export const selectAllBreakoutChats = createSelector([selectChatScopeBreakout], (breakoutScope) => {
-  const result: Record<BreakoutRoomId | string, ChatProps> = {};
-  for (const [breakoutId, chat] of Object.entries(breakoutScope)) {
-    const messages = breakoutMessagesSelectors.selectAll(chat.messages);
-    result[breakoutId] = {
-      id: breakoutId as TargetId,
-      scope: ChatScope.Breakout,
-      messages,
-      chatIdentifier: { target: Number.parseInt(breakoutId) as BreakoutRoomId, scope: ChatScope.Breakout }, // TODO: This parsing is a bit concerning, we need to find another way of creating this selector
+      chatIdentifier: { target: participantId as TargetId, scope: ChatScope.Private },
       lastMessage: messages.at(-1) ?? null,
     } as ChatProps;
   }
@@ -448,21 +402,15 @@ export const selectUnreadPersonalMessageCountByTarget = createSelector(
   }
 );
 
-export const selectNextIndex = createSelector(
-  [
-    (state: { chat: ChatState }) => state,
-    (_state: { chat: ChatState }, chatIdentifier: ChatIdentifier) => chatIdentifier,
-  ],
-  (state, chatIdentifier) => {
-    const { scope, target } = chatIdentifier;
-    switch (scope) {
-      case ChatScope.Global:
-        return state.chat.scope.global.nextIndex;
-      case ChatScope.Private:
-        return state.chat.scope.private[target]?.nextIndex;
-      case ChatScope.Breakout:
-        return state.chat.scope.breakout[target]?.nextIndex;
-    }
+export const selectHasUnreadGlobalChatMessages = createSelector(
+  [selectAllGlobalChatMessages, selectLastSeenTimestampGlobal],
+  (messages, lastSeenTimestamp) => {
+    const lastMessage = messages.at(-1);
+    return (
+      messages.length > 0 &&
+      lastMessage !== undefined &&
+      isAfter(new Date(lastMessage.timestamp), new Date(lastSeenTimestamp))
+    );
   }
 );
 
