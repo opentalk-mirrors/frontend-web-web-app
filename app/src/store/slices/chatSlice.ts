@@ -13,6 +13,7 @@ import {
   ChatScope,
   ParticipantId,
   PrivateChatIdentifier,
+  TargetId,
   Timestamp,
 } from '../../types';
 import { joinSuccess } from '../commonActions';
@@ -298,39 +299,36 @@ export const selectIsLoadingMoreChunks = (state: { chat: ChatState }) => state.c
 export const selectChatSearchResults = (state: { chat: ChatState }) => state.chat.searchResults;
 export const selectChatState = (state: { chat: ChatState }) => state.chat;
 export const selectChatStateChunkScope = (state: { chat: ChatState }) => state.chat.scope;
-export const selectHasAnyUnreadBreakoutChatMessage = createSelector(
-  [(state: { chat: ChatState }) => state.chat.scope.breakout],
-  (breakoutRooms) => {
-    if (!breakoutRooms) {
-      return false;
-    }
+export const selectChatScopePrivate = (state: { chat: ChatState }) => state.chat.scope.private;
+export const selectChatScopeBreakout = (state: { chat: ChatState }) => state.chat.scope.breakout;
 
-    return Object.values(breakoutRooms).some((breakoutRoom) => {
-      const messages = breakoutMessagesSelectors.selectAll(breakoutRoom.messages);
+export const selectHasAnyUnreadBreakoutChatMessage = createSelector([selectChatScopeBreakout], (breakouts) => {
+  if (!breakouts) {
+    return false;
+  }
+
+  return Object.values(breakouts).some((breakout) => {
+    const messages = breakoutMessagesSelectors.selectAll(breakout.messages);
+    const lastMessage = messages.at(-1);
+    return lastMessage && new Date(lastMessage.timestamp) > new Date(breakout.lastSeenTimestamp);
+  });
+});
+
+export const selectHasAnyUnreadPrivateChatMessage = createSelector([selectChatScopePrivate], (privateChats) => {
+  if (!privateChats) {
+    return false;
+  }
+
+  return Object.values(privateChats).some((privateChat) => {
+    const lastSeenTimestamp = privateChat.lastSeenTimestamp;
+    if (lastSeenTimestamp) {
+      const messages = privateMessagesSelectors.selectAll(privateChat.messages);
       const lastMessage = messages.at(-1);
-      return lastMessage && new Date(lastMessage.timestamp) > new Date(breakoutRoom.lastSeenTimestamp);
-    });
-  }
-);
-
-export const selectHasAnyUnreadPrivateChatMessage = createSelector(
-  [(state: { chat: ChatState }) => state.chat.scope.private],
-  (privateChats) => {
-    if (!privateChats) {
-      return false;
+      return lastMessage && isAfter(new Date(lastMessage.timestamp), new Date(lastSeenTimestamp));
     }
-
-    return Object.values(privateChats).some((privateChat) => {
-      const lastSeenTimestamp = privateChat.lastSeenTimestamp;
-      if (lastSeenTimestamp) {
-        const messages = privateMessagesSelectors.selectAll(privateChat.messages);
-        const lastMessage = messages.at(-1);
-        return lastMessage && isAfter(new Date(lastMessage.timestamp), new Date(lastSeenTimestamp));
-      }
-      return false;
-    });
-  }
-);
+    return false;
+  });
+});
 
 export const selectHasUnreadGlobalChatMessages = (state: { chat: ChatState }) => {
   const messages = globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
@@ -367,9 +365,12 @@ export const selectAllGlobalChatMessages = createSelector(
   (messages) => globalMessagesSelectors.selectAll(messages)
 );
 
-export const selectAllPrivateChatMessages = createSelector(
-  [(state: { chat: ChatState }) => state.chat.scope.private],
-  (privateChats) => Object.values(privateChats).flatMap((chat) => privateMessagesSelectors.selectAll(chat.messages))
+export const selectAllPrivateChatMessages = createSelector([selectChatScopePrivate], (privateChats) =>
+  Object.values(privateChats).flatMap((chat) => privateMessagesSelectors.selectAll(chat.messages))
+);
+
+export const selectAllBreakoutChatMessages = createSelector([selectChatScopeBreakout], (breakoutChats) =>
+  Object.values(breakoutChats).flatMap((chat) => breakoutMessagesSelectors.selectAll(chat.messages))
 );
 
 export const selectAllChatMessages = createSelector(
@@ -377,39 +378,35 @@ export const selectAllChatMessages = createSelector(
   (globalMessages, privateMessages) => [...globalMessages, ...privateMessages].filter((msg) => msg !== undefined)
 );
 
-export const selectAllPrivateChats = createSelector(
-  [(state: { chat: ChatState }) => state.chat.scope.private],
-  (privateScope) => {
-    return Object.entries(privateScope).map(([participantId, chat]) => {
-      const messages = privateMessagesSelectors.selectAll(chat.messages);
-      return {
-        chatIdentifier: {
-          scope: ChatScope.Private,
-          target: participantId,
-        },
-        messages,
-        lastMessage: messages.at(-1) ?? null,
-      } as PrivateChatProps;
-    });
+export const selectAllPrivateChats = createSelector([selectChatScopePrivate], (privateScope) => {
+  const result: Record<ParticipantId, ChatProps> = {};
+  for (const [participantId, chat] of Object.entries(privateScope)) {
+    const messages = privateMessagesSelectors.selectAll(chat.messages);
+    result[participantId as ParticipantId] = {
+      id: participantId as TargetId,
+      scope: ChatScope.Private,
+      messages,
+      chatIdentifier: { target: participantId as ParticipantId, scope: ChatScope.Private },
+      lastMessage: messages.at(-1) ?? null,
+    } as ChatProps;
   }
-);
+  return result;
+});
 
-export const selectLastMessageForScope = createSelector([selectChatMessagesByScope], (messages) => messages.at(-1));
-// Select all group chats (not just messages)
-export const selectAllBreakoutChats = createSelector(
-  [(state: { chat: ChatState }) => state.chat.scope.breakout],
-  (breakoutScope) =>
-    Object.entries(breakoutScope).map(([breakoutRoomId, chat]) => {
-      const messages = breakoutMessagesSelectors.selectAll(chat.messages);
-      return {
-        id: breakoutRoomId,
-        scope: ChatScope.Breakout,
-        messages,
-        lastMessage: messages.at(-1) ?? null,
-        chatIdentifier: { target: Number.parseInt(breakoutRoomId) as BreakoutRoomId, scope: ChatScope.Breakout },
-      } as ChatProps;
-    })
-);
+export const selectAllBreakoutChats = createSelector([selectChatScopeBreakout], (breakoutScope) => {
+  const result: Record<BreakoutRoomId | string, ChatProps> = {};
+  for (const [breakoutId, chat] of Object.entries(breakoutScope)) {
+    const messages = breakoutMessagesSelectors.selectAll(chat.messages);
+    result[breakoutId] = {
+      id: breakoutId as TargetId,
+      scope: ChatScope.Breakout,
+      messages,
+      chatIdentifier: { target: Number.parseInt(breakoutId) as BreakoutRoomId, scope: ChatScope.Breakout }, // TODO: This parsing is a bit concerning, we need to find another way of creating this selector
+      lastMessage: messages.at(-1) ?? null,
+    } as ChatProps;
+  }
+  return result;
+});
 
 export const selectUnreadGlobalMessageCount = createSelector(
   [

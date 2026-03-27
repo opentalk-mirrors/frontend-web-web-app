@@ -30,6 +30,7 @@ import {
   breakoutMessagesSelectors,
   selectAllPrivateChats,
   selectChatStateChunkScope,
+  selectAllBreakoutChats,
 } from './slices/chatSlice';
 import { selectAllEvents } from './slices/eventSlice';
 import { selectAllVotes } from './slices/legalVoteSlice';
@@ -59,6 +60,7 @@ export const selectUserAsParticipant = createSelector(
 
     return {
       ...partialParticipant,
+      connections: [], // TODO: This should be populated with actual connection data if needed (right now I added just becase the typing was missing)
       handIsUp,
       handUpdatedAt,
       breakoutRoomId,
@@ -291,8 +293,12 @@ export const selectIsUserMicDisabled = createSelector([selectForceMute, selectOu
   );
 });
 
-export const selectAllPersonalChats = createSelector([selectAllPrivateChats], (privateChats) =>
-  privateChats.sort((a, b) => Date.parse(b.lastMessage?.timestamp) - Date.parse(a.lastMessage?.timestamp))
+export const selectAllPersonalChats = createSelector(
+  [selectAllBreakoutChats, selectAllPrivateChats],
+  (breakoutChats, privateChats) =>
+    [...Object.values(breakoutChats), ...Object.values(privateChats)].sort(
+      (a, b) => Date.parse(b.lastMessage?.timestamp) - Date.parse(a.lastMessage?.timestamp)
+    )
 );
 
 export const selectRoomTitle = createSelector(
