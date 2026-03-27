@@ -15,6 +15,7 @@ export class ReduxDomEvents {
     ReduxDomEvents.dispatchFunction = dispatch;
     ReduxDomEvents.bindDomEventsToRedux();
 
+    // If you register keys with another modifier key, make sure to add the relevant translation key.
     registerHotkeys([
       {
         key: 'm',

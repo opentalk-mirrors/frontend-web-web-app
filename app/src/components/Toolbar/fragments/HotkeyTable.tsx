@@ -12,7 +12,8 @@ const HotkeyTable = () => {
   const renderHotkeys = () =>
     hotkeys.map((hotkey) => {
       const key = hotkey.key === ' ' ? t('global-spacebar') : hotkey.key.toLowerCase();
-      const keyCombination = hotkey.modifier ? `${hotkey.modifier.toLowerCase()} + ${key}` : key;
+      const translatedModifier = hotkey.modifier ? t(`modifier-${hotkey.modifier.toLowerCase()}`) : undefined;
+      const keyCombination = translatedModifier ? `${translatedModifier} + ${key}` : key;
 
       return (
         <TableRow key={hotkey.key}>
