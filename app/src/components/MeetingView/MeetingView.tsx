@@ -76,6 +76,10 @@ const MeetingView = () => {
   const room = useAppSelector(selectLivekitRoom);
   const whisperRoom = useAppSelector(selectLivekitWhisperRoom);
 
+  if (room === undefined) {
+    return null;
+  }
+
   return (
     <>
       {whisperToken && (
