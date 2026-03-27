@@ -29,7 +29,6 @@ import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { selectCurrentBreakoutRoomId } from './breakoutSlice';
 import { received } from './chatSlice';
-import { CinemaViewSortOrder } from './common';
 import { connectionClosed } from './roomSlice';
 import { removeParticipant } from './subroomAudioSlice';
 
@@ -268,53 +267,8 @@ export const selectAllOnlineParticipants = createSelector(
     participants.filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
 );
 
-export const selectSortedParticipants = createSelector(
-  [
-    (_state: RootState, cinemaViewOrder: CinemaViewSortOrder) => cinemaViewOrder,
-    selectAllOnlineParticipantsInConference,
-    selectCurrentBreakoutRoomId,
-    (state: RootState) => state.livekit.room,
-  ],
-  (cinemaViewOrder, participants, currentBreakoutRoomId, room) => {
-    let filteredParticipants = participants
-      .filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
-      .sort((a, b) => a.joinedAt.localeCompare(b.joinedAt)); // always sort by firstJoined;
-
-    if (cinemaViewOrder === CinemaViewSortOrder.ModeratorsFirst) {
-      filteredParticipants = filteredParticipants.sort((participant) => (participant.role === Role.Moderator ? -1 : 1));
-    }
-    if (cinemaViewOrder === CinemaViewSortOrder.VideoFirst) {
-      const videoSubscribers = Array.from(room?.remoteParticipants.values() || []).filter(
-        (participant) => participant.isCameraEnabled
-      );
-
-      filteredParticipants = filteredParticipants
-        .sort((a, b) => Date.parse(b.lastActive) - Date.parse(a.lastActive))
-        .sort((participant) =>
-          videoSubscribers.find((subscriber) => participant.id === subscriber.identity) ? -1 : 1
-        );
-    }
-    return filteredParticipants;
-  }
-);
-
-export const selectSlicedParticipants = createSelector(
-  [
-    (state: RootState, cinemaViewOrder: CinemaViewSortOrder) => selectSortedParticipants(state, cinemaViewOrder),
-    (_state: RootState, _cinemaViewOrder: CinemaViewSortOrder, page: number) => page,
-    (_state: RootState, _cinemaViewOrder: CinemaViewSortOrder, _page: number, maxParticipants: number) =>
-      maxParticipants,
-  ],
-  (participants, page, maxParticipants) => {
-    const maxPage = Math.ceil(participants.length / maxParticipants);
-    if (maxPage === page) {
-      return participants.slice(-maxParticipants);
-    }
-    return participants.slice((page - 1) * maxParticipants, maxParticipants * page);
-  }
-);
-
 export const selectParticipants = (state: RootState) => participantSelectors.selectEntities(state);
+
 export const selectParticipantsTotal = createSelector(
   [selectAllOnlineParticipants],
   (participants) => participants.length + 1
