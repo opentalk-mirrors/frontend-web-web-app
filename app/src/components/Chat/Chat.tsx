@@ -3,20 +3,20 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, styled } from '@mui/material';
 import { debounce } from 'lodash';
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { LastSeenTimestampAddedPayload, setLastSeenTimestamp } from '../../api/types/outgoing/chat';
 import { useAppSelector } from '../../hooks';
-import { getCurrentConferenceRoom } from '../../modules/WebRTC/ConferenceRoom';
 import { lastSeenTimestampAdded, selectLastMessageForScope } from '../../store/slices/chatSlice';
 import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
-import { selectChatSearchValue, setChatSearchValue } from '../../store/slices/uiSlice';
-import { ChatIdentifier, ChatScope, Timestamp } from '../../types';
+import { selectChatConversationScope, selectChatSearchValue, setChatSearchValue } from '../../store/slices/uiSlice';
+import { BreakoutRoomId, ChatIdentifier, ChatMessage, ChatScope, ParticipantId, Timestamp } from '../../types';
 import ChatForm from './fragments/ChatForm';
 import ChatList from './fragments/ChatList';
 import ChatLiveRegion from './fragments/ChatLiveRegion';
 import ChatSearch from './fragments/ChatSearch';
+import { getCurrentConferenceRoom } from '../../modules/WebRTC/ConferenceRoom';
 
 const Container = styled(Stack)({
   flex: 1,
@@ -29,14 +29,29 @@ export type ChatProps = {
   autoFocusMessageInput?: boolean;
 };
 
-const Chat = ({ autoFocusMessageInput, chatIdentifier }: ChatProps) => {
+const Chat = ({ chatIdentifier, autoFocusMessageInput }: ChatProps) => {
   // Default value is used when we switch tabs and component remounts.
   const defaultChatValue = useAppSelector(selectChatSearchValue);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const [searchValue, setSearchValue] = useState<string>(defaultChatValue);
   const dispatch = useDispatch();
   const chatSearchInputReference = useRef<HTMLInputElement | null>(null);
-  const lastMessageForScope = useAppSelector((state) => selectLastMessageForScope(state, chatIdentifier));
+  const scope = useAppSelector(selectChatConversationScope);
+  const lastMessageForScope = useAppSelector(selectLastMessageForScope);
+
+  const constructLastSeenPayload = useCallback((lastMessageForScope: ChatMessage): LastSeenTimestampAddedPayload => {
+    const { scope, target } = lastMessageForScope;
+    const timestamp = lastMessageForScope.timestamp as Timestamp;
+
+    switch (scope) {
+      case ChatScope.Global:
+        return { scope, timestamp };
+      case ChatScope.Private:
+        return { scope, timestamp, target: target as ParticipantId };
+      case ChatScope.Breakout:
+        return { scope, timestamp, target: target as BreakoutRoomId };
+    }
+  }, []);
 
   const debouncedSetLastSeenTimestamp = useMemo(
     () =>

@@ -48,6 +48,24 @@ describe('updateLastSeenTimestamp', () => {
         room: { isRoomDeleted: false },
         chat: {
           scope: {
+            global: {
+              messages: {
+                ids: [],
+                entities: {},
+              },
+              nextIndex: null,
+              lastSeenTimestamp: null,
+            },
+            breakout: {
+              [target]: {
+                messages: {
+                  ids: [],
+                  entities: {},
+                },
+                nextIndex: null,
+                lastSeenTimestamp: null,
+              },
+            },
             private: {
               [target]: {
                 messages: {
@@ -91,7 +109,25 @@ describe('updateLastSeenTimestamp', () => {
         room: { isRoomDeleted: false },
         chat: {
           scope: {
+            global: {
+              messages: {
+                ids: [],
+                entities: {},
+              },
+              nextIndex: null,
+              lastSeenTimestamp: null,
+            },
             breakout: {
+              [target]: {
+                messages: {
+                  ids: [],
+                  entities: {},
+                },
+                nextIndex: null,
+                lastSeenTimestamp: null,
+              },
+            },
+            private: {
               [target]: {
                 messages: {
                   ids: [],

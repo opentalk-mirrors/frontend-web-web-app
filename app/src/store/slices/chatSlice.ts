@@ -262,7 +262,7 @@ export const chatSlice = createSlice({
           lastSeenTimestamp: new Date().toISOString() as Timestamp,
         };
       });
-      const breakoutRoomId = breakout?.room?.id;
+      const breakoutRoomId = breakout?.room?.id as BreakoutRoomId | undefined;
       if (chat.breakoutRoomHistory && breakoutRoomId != null) {
         state.scope.breakout[breakoutRoomId] = {
           messages: breakoutMessagesAdapter.setAll(
@@ -297,6 +297,21 @@ export const selectChatEnabledState = (state: { chat: ChatState }) => state.chat
 export const selectIsLoadingMoreChunks = (state: { chat: ChatState }) => state.chat.isLoadingMoreChunks;
 export const selectChatSearchResults = (state: { chat: ChatState }) => state.chat.searchResults;
 export const selectChatState = (state: { chat: ChatState }) => state.chat;
+export const selectChatStateChunkScope = (state: { chat: ChatState }) => state.chat.scope;
+export const selectHasAnyUnreadBreakoutChatMessage = createSelector(
+  [(state: { chat: ChatState }) => state.chat.scope.breakout],
+  (breakoutRooms) => {
+    if (!breakoutRooms) {
+      return false;
+    }
+
+    return Object.values(breakoutRooms).some((breakoutRoom) => {
+      const messages = breakoutMessagesSelectors.selectAll(breakoutRoom.messages);
+      const lastMessage = messages.at(-1);
+      return lastMessage && new Date(lastMessage.timestamp) > new Date(breakoutRoom.lastSeenTimestamp);
+    });
+  }
+);
 
 export const selectHasAnyUnreadPrivateChatMessage = createSelector(
   [(state: { chat: ChatState }) => state.chat.scope.private],
@@ -380,6 +395,21 @@ export const selectAllPrivateChats = createSelector(
 );
 
 export const selectLastMessageForScope = createSelector([selectChatMessagesByScope], (messages) => messages.at(-1));
+// Select all group chats (not just messages)
+export const selectAllBreakoutChats = createSelector(
+  [(state: { chat: ChatState }) => state.chat.scope.breakout],
+  (breakoutScope) =>
+    Object.entries(breakoutScope).map(([breakoutRoomId, chat]) => {
+      const messages = breakoutMessagesSelectors.selectAll(chat.messages);
+      return {
+        id: breakoutRoomId,
+        scope: ChatScope.Breakout,
+        messages,
+        lastMessage: messages.at(-1) ?? null,
+        chatIdentifier: { target: Number.parseInt(breakoutRoomId) as BreakoutRoomId, scope: ChatScope.Breakout },
+      } as ChatProps;
+    })
+);
 
 export const selectUnreadGlobalMessageCount = createSelector(
   [
