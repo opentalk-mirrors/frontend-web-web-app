@@ -63,7 +63,6 @@ const RoomAssetTable = ({ roomId, isMeetingCreator, recurrenceInstance }: RoomAs
       assets={derivedAssets}
       onDownload={handleDownload}
       onDelete={isMeetingCreator ? handleDelete : undefined}
-      maxHeight="17rem"
     />
   );
 };

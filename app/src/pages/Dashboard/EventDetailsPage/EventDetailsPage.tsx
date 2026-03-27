@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, Stack, Typography, styled, useTheme } from '@mui/material';
+import { Box, Button, Stack, Typography, styled } from '@mui/material';
 import { EventId, InviteStatus, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,19 @@ const ButtonContainer = styled(Stack)(({ theme }) => ({
   gap: theme.spacing(3),
   flexDirection: 'row',
   justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1, 1, 0),
+  padding: theme.spacing(2, 1, 1, 0),
+  flexShrink: 0,
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: `-${theme.spacing(3)}`,
+    left: 0,
+    right: 0,
+    height: theme.spacing(3),
+    background: `linear-gradient(to bottom, transparent, ${theme.palette.background.main.primary})`,
+    pointerEvents: 'none',
+  },
 }));
 
 const ParticipantLimitTypography = styled(Typography)(({ theme }) => ({
@@ -38,6 +50,16 @@ const ParticipantLimitTypography = styled(Typography)(({ theme }) => ({
 
 const ContainerStack = styled(Stack)(({ theme }) => ({
   color: theme.palette.text.primary,
+  flexDirection: 'column',
+  height: '100%',
+  overflow: 'hidden',
+}));
+
+const ScrollableStack = styled(Stack)(({ theme }) => ({
+  flex: 1,
+  minHeight: 0,
+  overflow: 'auto',
+  paddingRight: theme.spacing(2),
 }));
 
 const EventDetailsPage = () => {
@@ -64,7 +86,6 @@ const EventDetailsPage = () => {
   const isMeetingCreator = me?.id === event?.createdBy.id;
   const { data: tariff } = useGetRoomTariffQuery(event?.room.id ?? skipToken);
   const roomParticipantLimit = tariff?.quotas.roomParticipantLimit;
-  const theme = useTheme();
   const navigate = useNavigate();
   const pageHeading = event?.title || t('fallback-room-title') || '';
   useUpdateDocumentTitle(pageHeading);
@@ -135,75 +156,73 @@ const EventDetailsPage = () => {
   };
 
   return (
-    <ContainerStack
-      style={{ paddingRight: theme.spacing(5), marginRight: theme.spacing(-5) }}
-      sx={{
-        justifyContent: 'space-between',
-        height: '100%',
-        overflow: 'auto',
-      }}
-    >
-      <Stack>
-        <Stack
-          sx={{
-            mb: 4,
-          }}
-        >
-          <Typography variant="h1" fontWeight="bold">
-            {pageHeading}
-          </Typography>
-          <Typography
-            variant="body1"
-            component="span"
-            sx={{
-              fontWeight: 400,
-              mt: 1,
-            }}
-          >
-            {getTimeInformationString()}
-          </Typography>
-        </Stack>
-
-        {event.description && event.description !== '' && (
+    <ContainerStack>
+      <ScrollableStack data-testid="scrollable-container">
+        <Stack data-testid="event-details">
           <Stack
             sx={{
               mb: 4,
             }}
           >
-            <Typography variant="h2">{t('dashboard-meeting-details-page-description-title')}</Typography>
-            <Box
+            <Typography variant="h1" fontWeight="bold">
+              {pageHeading}
+            </Typography>
+            <Typography
+              variant="body1"
+              component="span"
               sx={{
-                maxHeight: 50,
-                overflow: 'auto',
+                fontWeight: 400,
                 mt: 1,
               }}
             >
-              <Typography variant="body2">{event.description}</Typography>
-            </Box>
+              {getTimeInformationString()}
+            </Typography>
           </Stack>
-        )}
 
-        <Stack
-          sx={{
-            mb: 2,
-          }}
-        >
-          <InviteToMeeting existingEvent={event} showOnlyLinkFields isUpdatable={false} />
+          {event.description && event.description !== '' && (
+            <Stack
+              sx={{
+                mb: 4,
+              }}
+            >
+              <Typography variant="h2">{t('dashboard-meeting-details-page-description-title')}</Typography>
+              <Box
+                sx={{
+                  maxHeight: 50,
+                  overflow: 'auto',
+                  mt: 1,
+                }}
+              >
+                <Typography variant="body2">{event.description}</Typography>
+              </Box>
+            </Stack>
+          )}
+
+          <Stack
+            sx={{
+              mb: 2,
+            }}
+          >
+            <InviteToMeeting existingEvent={event} showOnlyLinkFields isUpdatable={false} />
+          </Stack>
+          {roomParticipantLimit && (
+            <ParticipantLimitTypography>
+              {t('dashboard-meeting-details-page-participant-limit', { maxParticipants: roomParticipantLimit })}
+            </ParticipantLimitTypography>
+          )}
+
+          {event.invitees && event.invitees.length > 0 && (
+            <InvitedParticipants eventId={event.id} isUpdatable={false} />
+          )}
         </Stack>
-        {roomParticipantLimit && (
-          <ParticipantLimitTypography>
-            {t('dashboard-meeting-details-page-participant-limit', { maxParticipants: roomParticipantLimit })}
-          </ParticipantLimitTypography>
-        )}
-
-        {event.invitees && event.invitees.length > 0 && <InvitedParticipants eventId={event.id} isUpdatable={false} />}
-
-        <RoomAssetTable
-          roomId={event.room.id}
-          isMeetingCreator={isMeetingCreator}
-          recurrenceInstance={recurrenceInstance}
-        />
-      </Stack>
+        <Box flex="1">
+          <RoomAssetTable
+            roomId={event.room.id}
+            isMeetingCreator={isMeetingCreator}
+            recurrenceInstance={recurrenceInstance}
+          />
+        </Box>
+      </ScrollableStack>
       <ButtonContainer>
         <ButtonBack />
         {!isMeetingCreator && (
