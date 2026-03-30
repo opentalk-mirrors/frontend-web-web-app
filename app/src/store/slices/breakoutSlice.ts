@@ -76,9 +76,6 @@ export const breakoutSlice = createSlice({
       state.stopsAt = undefined;
       state.expires = undefined;
     },
-    setBreakoutLoading: (state, { payload }: PayloadAction<boolean>) => {
-      state.loading = payload;
-    },
   },
   extraReducers: (builder) => {
     builder.addCase(startRoom.pending, (state, { meta: { arg } }) => {
@@ -98,7 +95,7 @@ export const breakoutSlice = createSlice({
   },
 });
 
-export const { started, closing, closeNotice, switchedRoom, closed, setBreakoutLoading } = breakoutSlice.actions;
+export const { started, closing, closeNotice, switchedRoom, closed } = breakoutSlice.actions;
 
 const breakoutRoomsSelectors = breakoutRooms.getSelectors<RootState>((state) => state.breakout.breakoutRooms);
 const rootState = (state: RootState) => state;

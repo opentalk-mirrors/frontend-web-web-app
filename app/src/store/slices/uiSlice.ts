@@ -351,7 +351,7 @@ export const selectUiMode = (state: RootState) => state.ui.mode;
 export const selectDefaultChatMessage = createSelector(
   [
     (state: RootState) => state.ui.chatAutosavedInputs,
-    (_state: RootState, chatIdentifier: ChatIdentifier) => ({ ...chatIdentifier }),
+    (_state: RootState, chatIdentifier: ChatIdentifier) => chatIdentifier,
   ],
   (chatAutosavedInputs, { scope, target }) => {
     switch (scope) {

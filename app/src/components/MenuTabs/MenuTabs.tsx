@@ -90,10 +90,10 @@ const MenuTabs = () => {
   const roomKind = useAppSelector(selectRoomKind);
   const breakoutRoomId = useAppSelector(selectCurrentBreakoutRoomId);
 
-  const chatIdentifier: ChatIdentifier =
-    roomKind === RoomKind.Breakout && breakoutRoomId
-      ? { scope: ChatScope.Breakout, target: breakoutRoomId }
-      : { scope: ChatScope.Global };
+  const isBreakoutValid = roomKind === RoomKind.Breakout && typeof breakoutRoomId === 'number';
+  const chatIdentifier: ChatIdentifier = isBreakoutValid
+    ? { scope: ChatScope.Breakout, target: breakoutRoomId }
+    : { scope: ChatScope.Global };
 
   const handleChange = (_event: React.SyntheticEvent<Element, Event>, newValue: MenuTab) => {
     dispatch(setCurrentMenuTab(newValue));

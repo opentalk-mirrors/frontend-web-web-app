@@ -37,7 +37,7 @@ export type ChatMessage = {
 export interface InitialChat {
   enabled: boolean;
   globalHistory: ChatChunk;
-  breakoutRoomHistory?: Array<BreakoutHistory>;
+  breakoutRoomHistory?: ChatChunk;
   privateHistory: Array<PrivateHistory>;
   lastSeenTimestampGlobal?: Timestamp;
   lastSeenTimestampBreakout?: Timestamp;
@@ -46,11 +46,6 @@ export interface InitialChat {
 
 export interface PrivateHistory {
   correspondent: ParticipantId;
-  history: ChatChunk;
-}
-
-export interface BreakoutHistory {
-  room: BreakoutRoomId;
   history: ChatChunk;
 }
 

@@ -60,7 +60,7 @@ import {
 } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
-import { setBreakoutLoading, switchedRoom } from './breakoutSlice';
+import { switchedRoom } from './breakoutSlice';
 import { abortedReconnection, enteredWaitingRoom } from './roomSlice';
 import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice';
 import { timerStarted } from './timerSlice';
@@ -610,20 +610,6 @@ const startNewAccessTokenListener = (startAppListening: StartAppListening) =>
     },
   });
 
-const startBreakoutRoomLoadingListener = (startAppListening: StartAppListening) =>
-  startAppListening({
-    actionCreator: setBreakoutLoading,
-    effect: (action, listenerApi) => {
-      const state = listenerApi.getState();
-      const room = state.livekit.room;
-
-      if (room && action.payload === true) {
-        // ensures LiveKit creates a new connection; prevents "already connected to room ..." error
-        room.disconnect();
-      }
-    },
-  });
-
 const startSwitchRoomListener = (startAppListening: StartAppListening) =>
   startAppListening({
     actionCreator: switchRoom.action,
@@ -783,7 +769,6 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startAbortReconnectListeners(startAppListening);
   startDisconnectRoomCleanupListener(startAppListening);
   startPageUnloadCleanupListener(startAppListening);
-  startBreakoutRoomLoadingListener(startAppListening);
   startSwitchRoomListener(startAppListening);
 };
 

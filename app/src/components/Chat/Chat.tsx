@@ -36,7 +36,7 @@ const Chat = ({ autoFocusMessageInput, chatIdentifier }: ChatProps) => {
   const [searchValue, setSearchValue] = useState<string>(defaultChatValue);
   const dispatch = useDispatch();
   const chatSearchInputReference = useRef<HTMLInputElement | null>(null);
-  const lastMessageForScope = useAppSelector((state) => selectLastMessageForScope({ state, chatIdentifier }));
+  const lastMessageForScope = useAppSelector((state) => selectLastMessageForScope(state, chatIdentifier));
 
   const debouncedSetLastSeenTimestamp = useMemo(
     () =>

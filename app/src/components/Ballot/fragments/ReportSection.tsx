@@ -27,7 +27,7 @@ const reportValidationScheme = yup.object({
 });
 
 type ReportSectionProps = {
-  legalVoteId: string;
+  legalVoteId: LegalVoteId;
 };
 
 const KIND_OPTIONS = [
@@ -67,7 +67,7 @@ export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
 
   const initialValues = useMemo(
     () => ({
-      legalVoteId: legalVoteId as LegalVoteId,
+      legalVoteId,
       ...FORMIK_DEFAULTS,
     }),
     [legalVoteId]

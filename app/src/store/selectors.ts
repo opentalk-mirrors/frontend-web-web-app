@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createSelector } from '@reduxjs/toolkit';
 import i18next from 'i18next';
-import { sortBy } from 'lodash';
 
 import {
   ChatScope,
+  ChatIdentifier,
   FilterableParticipant,
   ForceMuteType,
   LegalVoteState,
@@ -23,6 +23,7 @@ import {
 import { moveItemToTopOfArray } from '../utils/arrayUtils';
 import { mergeAndSortMessagesEndEvents } from '../utils/eventUtils';
 import { sortParticipantsWithConfig } from '../utils/sortParticipants';
+import type { RootState } from './index';
 import { selectAutomoderationParticipantIds } from './slices/automodSlice';
 import { selectCurrentBreakoutRoom, selectCurrentBreakoutRoomId } from './slices/breakoutSlice';
 import {
@@ -32,7 +33,7 @@ import {
   selectAllPrivateChats,
   selectChatState,
 } from './slices/chatSlice';
-import { selectAllEvents } from './slices/eventSlice';
+import { selectVisibleEvents } from './slices/eventSlice';
 import { selectAllVotes } from './slices/legalVoteSlice';
 import { selectForceMute, selectHandUp, selectHandUpdatedAt } from './slices/moderationSlice';
 import {
@@ -167,20 +168,21 @@ export const selectAllParticipantsSortedAndFiltered = createSelector(
   }
 );
 
-const selectScopedEvents = createSelector([selectChatConversationScope, selectAllEvents], (scope, events) =>
+const selectScopedConversationScope = (state: RootState, chatIdentifier?: ChatIdentifier) =>
+  chatIdentifier?.scope ?? selectChatConversationScope(state);
+
+const selectScopedConversationTarget = (state: RootState, chatIdentifier?: ChatIdentifier) =>
+  chatIdentifier?.target ?? selectChatConversationTarget(state);
+
+const selectScopedEvents = createSelector([selectScopedConversationScope, selectVisibleEvents], (scope, events) =>
   scope === ChatScope.Global ? events : []
 );
 
 export const selectChatMessagesByScope = createSelector(
-  [selectChatState, selectScopedEvents, selectChatConversationScope, selectChatConversationTarget],
-  (chatState, events, scope, target) => {
+  [selectChatState, selectScopedConversationScope, selectScopedConversationTarget],
+  (chatState, scope, target) => {
     if (scope === ChatScope.Global) {
       const globalChatMessages = globalMessagesSelectors.selectAll(chatState.scope.global.messages);
-
-      if (events.length > 0) {
-        return sortBy([...globalChatMessages, ...events], ['timestamp']);
-      }
-
       return globalChatMessages.length > 0 ? globalChatMessages : [];
     }
     if (scope === ChatScope.Private && target) {
@@ -188,7 +190,8 @@ export const selectChatMessagesByScope = createSelector(
       return privateChat ? privateMessagesSelectors.selectAll(privateChat.messages) : [];
     }
     if (scope === ChatScope.Breakout && target !== undefined) {
-      return breakoutMessagesSelectors.selectAll(chatState.scope.breakout[target as BreakoutRoomId].messages);
+      const breakoutChat = chatState.scope.breakout[target as BreakoutRoomId];
+      return breakoutChat ? breakoutMessagesSelectors.selectAll(breakoutChat.messages) : [];
     }
 
     return [];
@@ -196,7 +199,7 @@ export const selectChatMessagesByScope = createSelector(
 );
 
 export const selectCombinedMessageAndEvents = createSelector(
-  [selectScopedEvents, selectChatMessagesByScope, selectChatConversationScope],
+  [selectScopedEvents, selectChatMessagesByScope, selectScopedConversationScope],
   (events, messages, scope) => {
     if (scope === ChatScope.Global) {
       return mergeAndSortMessagesEndEvents(messages, events);

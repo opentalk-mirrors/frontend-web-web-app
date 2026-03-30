@@ -11,7 +11,6 @@ import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectCombinedParticipantsAndUserInConference } from '../../../store/selectors';
 import { selectAllBreakoutRooms, selectBreakoutStopsAt, selectExpiredDate } from '../../../store/slices/breakoutSlice';
-import { selectLivekitRoom } from '../../../store/slices/livekitSlice';
 import { selectOurUuid } from '../../../store/slices/userSlice';
 import { BreakoutRoomId, RoomKind } from '../../../types';
 import RoomOverviewListItem from './RoomOverviewListItem';
@@ -43,7 +42,6 @@ const RoomOverview = () => {
   const participants = useAppSelector(selectCombinedParticipantsAndUserInConference);
   const expires = useAppSelector(selectExpiredDate);
   const ourUuid = useAppSelector(selectOurUuid);
-  const room = useAppSelector(selectLivekitRoom);
   const breakoutStopsAt = useAppSelector(selectBreakoutStopsAt);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
@@ -114,8 +112,6 @@ const RoomOverview = () => {
   };
 
   const switchToBreakoutRoom = (id: BreakoutRoomId) => {
-    // ensures LiveKit creates a new connection; prevents "already connected to room ..." error
-    room?.disconnect();
     dispatch(
       switchRoom.action({
         kind: RoomKind.Breakout,

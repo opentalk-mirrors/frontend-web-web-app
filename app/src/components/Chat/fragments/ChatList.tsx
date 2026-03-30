@@ -80,7 +80,7 @@ function filterMessages(
 
 const ChatList = ({ onReset, chatIdentifier }: ChatListProps) => {
   const { t } = useTranslation();
-  const combinedMessageAndEvents = useAppSelector((state) => selectCombinedMessageAndEvents(state));
+  const combinedMessageAndEvents = useAppSelector((state) => selectCombinedMessageAndEvents(state, chatIdentifier));
   const nextIndex = useAppSelector((state) => selectNextIndex(state, chatIdentifier));
   const isLoadingMoreChunks = useAppSelector(selectIsLoadingMoreChunks);
   const chatSearchResults = useAppSelector(selectChatSearchResults);
