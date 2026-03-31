@@ -24,7 +24,7 @@ const EMPTY_MEETING_PROP_ARRAY: Array<MeetingsProp> = [];
 const EVENTS_PER_REQUEST = 100;
 
 const EventsOverviewPage = () => {
-  const [expandAccordionOverride, setExpandAccordionOverride] = useState<string>('');
+  const [expandAccordion, setExpandAccordion] = useState<string[]>([]);
   const [filter, setFilter] = useState<DashboardEventsFilters>({
     timePeriod: TimeFilter.Month,
     timeMin: new Date().toTimeString() as DateTime,
@@ -53,83 +53,72 @@ const EventsOverviewPage = () => {
     }
   }, [timePerspective]);
 
-  const { data, isLoading, isFetching } = useGetEventsQuery({
-    favorites: favoriteMeetings,
-    perPage: EVENTS_PER_REQUEST,
-    adhoc: false,
-    timeIndependent: timePerspective === TimePerspectiveFilter.TimeIndependent,
-    timeMin: timeMinFilter,
-    timeMax: timeMaxFilter,
-  });
-
-  const events = useMemo<Array<MeetingsProp>>(() => {
-    if (!data) {
-      return EMPTY_MEETING_PROP_ARRAY;
-    }
-
-    const eventsWithEventInstances = appendRecurringEventInstances(data.data, true, undefined, timePerspective);
-
-    let targetedEvents = eventsWithEventInstances;
-    if (favoriteMeetings || openInvitedMeeting) {
-      targetedEvents = eventsWithEventInstances.filter((event) => {
-        if (favoriteMeetings) {
-          return event.isFavorite;
+  const { events, isLoading, isFetching } = useGetEventsQuery(
+    {
+      favorites: favoriteMeetings,
+      perPage: EVENTS_PER_REQUEST,
+      adhoc: false,
+      timeIndependent: timePerspective === TimePerspectiveFilter.TimeIndependent,
+      timeMin: timeMinFilter,
+      timeMax: timeMaxFilter,
+    },
+    {
+      selectFromResult: ({ data, ...props }) => {
+        if (!data) {
+          return {
+            events: EMPTY_MEETING_PROP_ARRAY,
+            ...props,
+          };
         }
-        return event.inviteStatus !== InviteStatus.Accepted;
-      });
+        const eventsWithEventInstances = appendRecurringEventInstances(data.data, true, undefined, timePerspective);
+        let targetedEvents = eventsWithEventInstances;
+        if (favoriteMeetings || openInvitedMeeting) {
+          targetedEvents = eventsWithEventInstances.filter((event) => {
+            if (favoriteMeetings) {
+              return event.isFavorite;
+            }
+            return event.inviteStatus !== InviteStatus.Accepted;
+          });
+        }
+
+        const orderedEventsWithRecurringInstances = orderEventsByDate(
+          targetedEvents,
+          timePerspective === TimePerspectiveFilter.Future ? SortDirection.ASC : SortDirection.DESC
+        );
+
+        if (timePerspective === TimePerspectiveFilter.TimeIndependent) {
+          return {
+            ...props,
+            events: [
+              {
+                title: t('dashboard-meeting-details-page-timeindependent'),
+                events: orderedEventsWithRecurringInstances,
+              },
+            ],
+          };
+        }
+
+        const eventsGroupedByTimeFilter = groupBy(orderedEventsWithRecurringInstances, (event) =>
+          filterByTimePeriod(
+            timePeriod,
+            isTimelessEvent(event) ? event.createdAt : (event.startsAt?.datetime as DateTime)
+          )
+        );
+
+        const events = Object.entries(eventsGroupedByTimeFilter).map(([title, groupedEvents]) => ({
+          title,
+          events: groupedEvents,
+        }));
+
+        return {
+          ...props,
+          events,
+        };
+      },
     }
-
-    const orderedEventsWithRecurringInstances = orderEventsByDate(
-      targetedEvents,
-      timePerspective === TimePerspectiveFilter.Future ? SortDirection.ASC : SortDirection.DESC
-    );
-
-    if (timePerspective === TimePerspectiveFilter.TimeIndependent) {
-      return [
-        {
-          title: t('dashboard-meeting-details-page-timeindependent'),
-          events: orderedEventsWithRecurringInstances,
-        },
-      ];
-    }
-
-    const eventsGroupedByTimeFilter = groupBy(orderedEventsWithRecurringInstances, (event) =>
-      filterByTimePeriod(timePeriod, isTimelessEvent(event) ? event.createdAt : (event.startsAt?.datetime as DateTime))
-    );
-
-    return Object.entries(eventsGroupedByTimeFilter).map(([title, groupedEvents]) => ({
-      title,
-      events: groupedEvents,
-    }));
-  }, [data, favoriteMeetings, openInvitedMeeting, timePeriod, timePerspective, t]);
-
-  const defaultExpandAccordion = useMemo(() => {
-    if (!events.length) {
-      return '';
-    }
-
-    if (timePerspective === TimePerspectiveFilter.TimeIndependent) {
-      return 'all';
-    }
-
-    return events[0].title;
-  }, [events, timePerspective]);
-
-  const expandAccordion = useMemo(() => {
-    if (!expandAccordionOverride) {
-      return defaultExpandAccordion;
-    }
-
-    if (expandAccordionOverride === 'all') {
-      return 'all';
-    }
-
-    const hasMatchingEntry = events.some((entry) => entry.title === expandAccordionOverride);
-    return hasMatchingEntry ? expandAccordionOverride : defaultExpandAccordion;
-  }, [defaultExpandAccordion, events, expandAccordionOverride]);
+  );
 
   const onFilterChange: FilterChangeCallbackType = useCallback((key, value) => {
-    setExpandAccordionOverride('');
     setFilter((prevFilters) => ({ ...prevFilters, [key]: value ? value : !prevFilters[key] }));
   }, []);
 
@@ -139,7 +128,7 @@ const EventsOverviewPage = () => {
       <EventsOverview
         entries={events}
         expandAccordion={expandAccordion}
-        setExpandAccordion={setExpandAccordionOverride}
+        setExpandAccordion={setExpandAccordion}
         isLoading={isLoading}
         isFetching={isFetching}
       />
