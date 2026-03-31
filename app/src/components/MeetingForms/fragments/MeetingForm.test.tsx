@@ -95,7 +95,7 @@ describe('MeetingForm', () => {
     expect(screen.getByRole('textbox', { name: 'dashboard-meeting-textfield-details' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'dashboard-direct-meeting-password-label' })).toBeInTheDocument();
 
-    expect(screen.getAllByRole('switch')).toHaveLength(3); // Date/Time, Waiting Room, Details
+    expect(screen.getAllByRole('switch')).toHaveLength(4); // Date/Time, Waiting Room, Details, Guest Access
     expect(screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' })).toBeInTheDocument();
     expect(screen.getByRole('switch', { name: 'dashboard-meeting-waiting-room-switch' })).toBeInTheDocument();
     expect(screen.getByRole('switch', { name: 'dashboard-meeting-details-tooltip' })).toBeInTheDocument();
@@ -127,7 +127,7 @@ describe('MeetingForm', () => {
         store,
         provider: { mui: true },
       });
-      expect(screen.getAllByRole('switch')).toHaveLength(4); // default + shared folder
+      expect(screen.getAllByRole('switch')).toHaveLength(5); // default + shared folder
       expect(screen.getByRole('switch', { name: 'dashboard-meeting-shared-folder-switch' })).toBeInTheDocument();
     });
     it('renders streaming options section if streaming feature is enabled', () => {
@@ -165,7 +165,7 @@ describe('MeetingForm', () => {
         store,
         provider: { mui: true },
       });
-      expect(screen.getAllByRole('switch')).toHaveLength(4); // default + e2e encryption
+      expect(screen.getAllByRole('switch')).toHaveLength(5); // default + e2e encryption
       expect(screen.getByRole('switch', { name: 'dashboard-meeting-e2ee-tooltip' })).toBeInTheDocument();
     });
   });

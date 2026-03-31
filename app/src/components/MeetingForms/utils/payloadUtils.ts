@@ -27,6 +27,7 @@ export const createPayload = (
       values.trainingParticipationReport,
       existingEvent?.trainingParticipationReport
     ),
+    guestAccess: values.guestAccess,
   };
 
   if (values.isTimeDependent) {

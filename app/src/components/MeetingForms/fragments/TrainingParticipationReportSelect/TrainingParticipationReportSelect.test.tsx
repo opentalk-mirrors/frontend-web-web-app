@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RecurrencePattern } from '@opentalk/rest-api-rtk-query';
+import { GuestAccess, RecurrencePattern } from '@opentalk/rest-api-rtk-query';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Formik } from 'formik';
 
@@ -22,6 +22,7 @@ const initialValues = {
   },
   showMeetingDetails: false,
   e2eEncryption: false,
+  guestAccess: GuestAccess.DirectAccess,
 };
 
 describe('Training participation report select', () => {

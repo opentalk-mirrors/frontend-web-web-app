@@ -1327,3 +1327,7 @@ rename-self-notification = Du hast deinen Anzeigenamen in '{$newName}' geändert
 rename-other-target-notification = Dein Anzeigename wurde von Moderator {$actorName} in '{$newName}' geändert.
 rename-other-feedback-notification = Du hast den Namen von '{$oldName}' in '{$newName}' geändert.
 rename-general-notification = {$actorName} hat den Namen von '{$oldName}' in '{$newName}' geändert.
+
+guest-access-switch-label = Gastzugang
+guest-access-select-waiting-room-option = Warteraum
+guest-access-select-direct-access-option = Direkter Zugang

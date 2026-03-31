@@ -10,6 +10,7 @@ import {
   Email,
   EventId,
   EventType,
+  GuestAccess,
   InviteCode,
   InviteStatus,
   PlatformKind,
@@ -354,6 +355,7 @@ export const eventMockedData: TimelessEvent = {
     waitingRoom: false,
     e2eEncryption: false,
     password: null,
+    guestAccess: GuestAccess.DirectAccess,
   },
   type: EventType.Single,
   updatedBy: {
@@ -435,6 +437,7 @@ export const mockedRecurringEvent: RecurringEvent = {
       password: '0513013745',
     },
     password: null,
+    guestAccess: GuestAccess.DirectAccess,
   },
   inviteesTruncated: true,
   invitees: [],
@@ -488,6 +491,7 @@ export const mockedSingleEvent: SingleEvent = {
       password: '2320845822',
     },
     password: null,
+    guestAccess: GuestAccess.DirectAccess,
   },
   inviteesTruncated: true,
   invitees: [],
@@ -618,4 +622,5 @@ export const mockedMeetingFormValues: MeetingFormValues = {
   e2eEncryption: true,
   trainingParticipationReport: { enabled: false, parameter: undefined },
   recurrencePattern: CommonFrequencies.NONE,
+  guestAccess: GuestAccess.DirectAccess,
 };

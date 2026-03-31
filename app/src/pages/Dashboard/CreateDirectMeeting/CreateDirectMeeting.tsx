@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Skeleton, Stack, Typography, styled } from '@mui/material';
+import { GuestAccess } from '@opentalk/rest-api-rtk-query';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -47,6 +48,7 @@ const CreateDirectMeeting = () => {
         isAdhoc: true,
         e2eEncryption: false,
         password: null,
+        guestAccess: GuestAccess.DirectAccess,
       }).unwrap();
     } catch (_err) {
       notifications.error(t('dashboard-meeting-notification-error'));

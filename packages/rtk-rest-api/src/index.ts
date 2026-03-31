@@ -87,5 +87,6 @@ export {
   isPendingEvent,
   EventType,
   EventStatus,
+  GuestAccess,
 } from './types/event';
 export type { EventInvite, CreateEventInvitePayload } from './types/eventInvite';
