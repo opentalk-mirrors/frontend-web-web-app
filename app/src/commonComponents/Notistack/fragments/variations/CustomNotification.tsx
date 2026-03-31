@@ -37,6 +37,9 @@ const StyledSnackbarContent = styled(SnackbarContent)(({ theme }) => ({
   },
 
   '& > span': {
+    display: 'block',
+    overflowWrap: 'break-word',
+    wordBreak: 'break-word',
     flex: 1,
   },
 
