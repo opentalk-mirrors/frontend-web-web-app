@@ -6,8 +6,8 @@ import {
   ListItem as MuiListItem,
   ListItemAvatar as MuiListItemAvatar,
   ListItemText as MuiListItemText,
-  styled,
   Typography,
+  styled,
 } from '@mui/material';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

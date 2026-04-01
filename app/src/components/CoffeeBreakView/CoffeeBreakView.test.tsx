@@ -12,7 +12,6 @@ describe('CoffeeBreakView', () => {
       initialState: {
         timer: {
           style: 'coffee-break',
-          timerId: 'test-timer-id',
           startedAt: new Date().toISOString(),
         },
       },
@@ -27,7 +26,6 @@ describe('CoffeeBreakView', () => {
       initialState: {
         timer: {
           style: 'coffee-break',
-          timerId: 'test-timer-id',
           startedAt: new Date().toISOString(),
         },
         ui: {

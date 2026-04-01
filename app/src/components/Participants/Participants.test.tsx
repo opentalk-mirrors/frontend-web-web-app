@@ -23,10 +23,7 @@ describe('Participants', () => {
     vi.clearAllMocks();
   });
 
-  const participants = [
-    { ...mockedParticipant(0), groups: ['Group A'] },
-    { ...mockedParticipant(1), groups: ['Group B'] },
-  ];
+  const participants = [{ ...mockedParticipant(0) }, { ...mockedParticipant(1) }];
 
   it('renders TalkingStickParticipantList when automod is active', () => {
     const { store } = configureStore({

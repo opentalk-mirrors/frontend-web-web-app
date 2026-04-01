@@ -11,23 +11,30 @@ import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { ModerationTabKey } from '../../config/constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
-import { ChatScope, LegalVoteId, ParticipantId, PollId, SortOption, TargetId, TimerStyle } from '../../types';
+import {
+  BreakoutRoomId,
+  ChatIdentifier,
+  ChatScope,
+  ConnectionId,
+  ConnectionIdentifier,
+  LegalVoteId,
+  ParticipantId,
+  PollId,
+  SortOption,
+  TimerStyle,
+} from '../../types';
+import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import { hangUp, joinSuccess } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted } from './automodSlice';
 import { CinemaViewSortOrder } from './common';
 import { started as legalVoteStarted } from './legalVoteSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
-import { breakoutLeft, leave } from './participantsSlice';
+import { leave } from './participantsSlice';
 import { started as PollStarted } from './pollSlice';
 import { connectionClosed } from './roomSlice';
 import { timerStarted, timerStopped } from './timerSlice';
 import { setWhiteboardAvailable } from './whiteboardSlice';
-
-export interface IChatConversationState {
-  scope: ChatScope;
-  targetId?: TargetId;
-}
 
 interface ErrorDialog {
   event: ErrorEvent | undefined;
@@ -49,13 +56,13 @@ export type UIState = {
   participantsSortOption: SortOption;
   showParticipantGroups: boolean;
   participantsSearchValue: string;
-  chatConversationState: IChatConversationState;
+  chatConversationState: ChatIdentifier;
   cinemaLayout: LayoutOptions;
   lastCinemaLayout: LayoutOptions;
   paginationPage: number;
   paginationDirection: PaginationDirection;
-  pinnedParticipantId?: ParticipantId;
-  presenterOverlayPinnedParticipantId?: ParticipantId;
+  pinnedConnectionIdentifier?: ConnectionIdentifier;
+  presenterOverlayPinnedParticipantId?: ConnectionIdentifier;
   localVideoMirroringEnabled: boolean;
   showVoteOrPollResult: boolean;
   voteOrPollIdToShow?: LegalVoteId | PollId;
@@ -66,8 +73,8 @@ export type UIState = {
   activeTab: ModerationTabKey;
   chatAutosavedInputs: {
     [ChatScope.Global]: string;
-    [ChatScope.Group]: Record<TargetId, string>;
-    [ChatScope.Private]: Record<TargetId, string>;
+    [ChatScope.Private]: Record<ParticipantId, string>;
+    [ChatScope.Breakout]: Record<BreakoutRoomId, string>;
   };
   hotkeysEnabled: boolean;
   errorDialog: ErrorDialog;
@@ -77,6 +84,7 @@ export type UIState = {
   currentMenuTab: MenuTab;
   presenterVideoPosition: PresenterVideoPosition;
   mode?: UiMode;
+  showSelfRenameDialog: boolean;
 };
 
 const initialState: UIState = {
@@ -85,13 +93,12 @@ const initialState: UIState = {
   participantsSearchValue: '',
   chatConversationState: {
     scope: ChatScope.Global,
-    targetId: undefined,
   },
   cinemaLayout: LayoutOptions.Grid,
   lastCinemaLayout: LayoutOptions.Grid,
   paginationPage: 1,
   paginationDirection: 'right',
-  pinnedParticipantId: undefined,
+  pinnedConnectionIdentifier: undefined,
   presenterOverlayPinnedParticipantId: undefined,
   localVideoMirroringEnabled: true,
   showVoteOrPollResult: false,
@@ -103,8 +110,8 @@ const initialState: UIState = {
   activeTab: ModerationTabKey.Home,
   chatAutosavedInputs: {
     [ChatScope.Global]: '',
-    [ChatScope.Group]: {},
     [ChatScope.Private]: {},
+    [ChatScope.Breakout]: {},
   },
   hotkeysEnabled: true,
   errorDialog: {
@@ -116,6 +123,7 @@ const initialState: UIState = {
   cinemaViewOrder: CinemaViewSortOrder.FirstJoined,
   currentMenuTab: MenuTab.Chat,
   presenterVideoPosition: 'bottomRight',
+  showSelfRenameDialog: false,
 };
 
 export const uiSlice = createSlice({
@@ -131,7 +139,7 @@ export const uiSlice = createSlice({
     setParticipantsSearchValue: (state, action: PayloadAction<string>) => {
       state.participantsSearchValue = action.payload;
     },
-    chatConversationStateSet: (state, action: PayloadAction<IChatConversationState>) => {
+    chatConversationStateSet: (state, action: PayloadAction<ChatIdentifier>) => {
       state.chatConversationState = action.payload;
     },
     updatedCinemaViewSortOrder: (state, action: PayloadAction<CinemaViewSortOrder>) => {
@@ -153,10 +161,10 @@ export const uiSlice = createSlice({
       state.paginationDirection = action.payload > state.paginationPage ? 'left' : 'right';
       state.paginationPage = action.payload;
     },
-    pinnedParticipantIdSet: (state, { payload }: PayloadAction<ParticipantId | undefined>) => {
-      state.pinnedParticipantId = payload;
+    pinnedConnectionIdentifierSet: (state, { payload }: PayloadAction<ConnectionIdentifier | undefined>) => {
+      state.pinnedConnectionIdentifier = payload;
     },
-    presenterOverlayPinnedParticipantIdSet: (state, { payload }: PayloadAction<ParticipantId | undefined>) => {
+    presenterOverlayPinnedParticipantIdSet: (state, { payload }: PayloadAction<ConnectionIdentifier | undefined>) => {
       state.presenterOverlayPinnedParticipantId = payload;
     },
     mirroredVideoSet: (state, { payload: enabled }: PayloadAction<boolean>) => {
@@ -183,21 +191,24 @@ export const uiSlice = createSlice({
         state.haveSeenMobilePollsAndVotes = true;
       }
     },
-    pinnedRemoteScreenshare(state, { payload: id }: PayloadAction<ParticipantId>) {
-      state.pinnedParticipantId = id;
+    pinnedRemoteScreenshare(state, { payload: id }: PayloadAction<ConnectionIdentifier>) {
+      state.pinnedConnectionIdentifier = id;
       state.lastCinemaLayout = state.cinemaLayout;
     },
-    saveDefaultChatMessage(
-      state,
-      { payload }: PayloadAction<{ scope: ChatScope; targetId?: TargetId; input: string }>
-    ) {
-      if (payload.scope === ChatScope.Global) {
-        state.chatAutosavedInputs[ChatScope.Global] = payload.input;
-        return;
-      }
-
-      if (payload.targetId) {
-        state.chatAutosavedInputs[payload.scope][payload.targetId] = payload.input;
+    saveDefaultChatMessage(state, { payload }: PayloadAction<ChatIdentifier & { input: string }>) {
+      switch (payload.scope) {
+        case ChatScope.Global: {
+          state.chatAutosavedInputs[ChatScope.Global] = payload.input;
+          break;
+        }
+        case ChatScope.Private: {
+          state.chatAutosavedInputs[payload.scope][payload.target] = payload.input;
+          break;
+        }
+        case ChatScope.Breakout: {
+          state.chatAutosavedInputs[payload.scope][payload.target] = payload.input;
+          break;
+        }
       }
     },
     setHotkeysEnabled: (state, { payload }) => {
@@ -219,18 +230,20 @@ export const uiSlice = createSlice({
     setUiMode: (state, { payload }: PayloadAction<UiMode>) => {
       state.mode = payload;
     },
+    setSelfRenameDialogVisible: (state, { payload }: PayloadAction<boolean>) => {
+      state.showSelfRenameDialog = payload;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(leave, (state, { payload: { id } }: PayloadAction<{ id: ParticipantId }>) => {
-      if (state.pinnedParticipantId === id) {
-        state.pinnedParticipantId = undefined;
+    builder.addCase(
+      leave,
+      (state, { payload: { id, connection } }: PayloadAction<{ id: ParticipantId; connection: ConnectionId }>) => {
+        const identifier = constructConnectionIdentifier(id, connection);
+        if (state.pinnedConnectionIdentifier === identifier) {
+          state.pinnedConnectionIdentifier = undefined;
+        }
       }
-    });
-    builder.addCase(breakoutLeft, (state, { payload: { id } }: PayloadAction<{ id: ParticipantId }>) => {
-      if (state.pinnedParticipantId === id) {
-        state.pinnedParticipantId = undefined;
-      }
-    });
+    );
     builder.addCase(hangUp.pending, (state) => {
       state.voteOrPollIdToShow = undefined;
     });
@@ -241,7 +254,7 @@ export const uiSlice = createSlice({
       state.chatConversationState = initialState.chatConversationState;
       state.cinemaLayout = initialState.cinemaLayout;
       state.participantsSortOption = initialState.participantsSortOption;
-      state.pinnedParticipantId = initialState.pinnedParticipantId;
+      state.pinnedConnectionIdentifier = initialState.pinnedConnectionIdentifier;
       state.paginationPage = initialState.paginationPage;
       state.participantsSearchValue = initialState.participantsSearchValue;
     });
@@ -291,7 +304,7 @@ export const {
   chatConversationStateSet,
   updatedCinemaLayout,
   setPaginationPage,
-  pinnedParticipantIdSet,
+  pinnedConnectionIdentifierSet,
   presenterOverlayPinnedParticipantIdSet,
   mirroredVideoSet,
   setShowVoteOrPollResult,
@@ -309,6 +322,7 @@ export const {
   setCurrentMenuTab,
   setPresenterVideoPosition,
   setUiMode,
+  setSelfRenameDialogVisible,
 } = uiSlice.actions;
 
 export const actions = uiSlice.actions;
@@ -318,11 +332,11 @@ export const selectShowParticipantGroups = (state: RootState) => state.ui.showPa
 export const selectParticipantsSearchValue = (state: RootState) => state.ui.participantsSearchValue;
 export const selectCinemaLayout = (state: RootState) => state.ui.cinemaLayout;
 export const selectChatConversationState = (state: RootState) => state.ui.chatConversationState;
-export const selectChatConversationTargetId = (state: RootState) => state.ui.chatConversationState.targetId;
+export const selectChatConversationTarget = (state: RootState) => state.ui.chatConversationState.target;
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;
 export const selectPaginationDirectionState = (state: RootState) => state.ui.paginationDirection;
-export const selectPinnedParticipantId = (state: RootState) => state.ui.pinnedParticipantId;
 export const selectChatConversationScope = (state: RootState) => state.ui.chatConversationState.scope;
+export const selectPinnedConnectionIdentifier = (state: RootState) => state.ui.pinnedConnectionIdentifier;
 export const selectPresenterOverlayPinnedParticipantId = (state: RootState) =>
   state.ui.presenterOverlayPinnedParticipantId;
 export const selectMirroredVideoEnabled = (state: RootState) => state.ui.localVideoMirroringEnabled;
@@ -337,19 +351,17 @@ export const selectUiMode = (state: RootState) => state.ui.mode;
 export const selectDefaultChatMessage = createSelector(
   [
     (state: RootState) => state.ui.chatAutosavedInputs,
-    (_state: RootState, scope: ChatScope) => scope,
-    (_state: RootState, _scope: ChatScope, targetId?: TargetId) => targetId,
+    (_state: RootState, chatIdentifier: ChatIdentifier) => chatIdentifier,
   ],
-  (chatAutosavedInputs, scope, targetId) => {
-    if (scope === ChatScope.Global) {
-      return chatAutosavedInputs[ChatScope.Global];
+  (chatAutosavedInputs, { scope, target }) => {
+    switch (scope) {
+      case ChatScope.Global:
+        return chatAutosavedInputs[ChatScope.Global];
+      case ChatScope.Private:
+        return chatAutosavedInputs[ChatScope.Private][target];
+      case ChatScope.Breakout:
+        return chatAutosavedInputs[ChatScope.Breakout][target];
     }
-
-    if (targetId && chatAutosavedInputs[scope][targetId]) {
-      return chatAutosavedInputs[scope][targetId];
-    }
-
-    return '';
   }
 );
 
@@ -380,3 +392,5 @@ const startUiChangeModeListener = (startAppListening: StartAppListening) =>
 export const startUiListeners = (startAppListening: StartAppListening) => {
   startUiChangeModeListener(startAppListening);
 };
+
+export const selectSelfRenameDialogVisible = (state: RootState) => state.ui.showSelfRenameDialog;

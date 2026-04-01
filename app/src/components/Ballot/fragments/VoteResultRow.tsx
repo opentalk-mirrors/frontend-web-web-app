@@ -7,7 +7,7 @@ import { memo } from 'react';
 import { useAppSelector } from '../../../hooks';
 import { selectUserAsParticipant } from '../../../store/selectors';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
-import type { LegalVoteOption, ParticipantId } from '../../../types';
+import { LegalVoteOption, ParticipantId } from '../../../types';
 
 interface VoteResultRowProps {
   participantId: string;
@@ -16,7 +16,7 @@ interface VoteResultRowProps {
 }
 
 function VoteResultRow(props: VoteResultRowProps) {
-  const participant = useAppSelector(selectParticipantById(props.participantId.toLowerCase() as ParticipantId));
+  const participant = useAppSelector(selectParticipantById(props.participantId as ParticipantId));
   const user = useAppSelector(selectUserAsParticipant);
   const { token } = props;
 
@@ -35,9 +35,9 @@ function VoteResultRow(props: VoteResultRowProps) {
           {participantLabel}
         </Typography>
       </TableCell>
-      <TableCell>{props.selectedVote === 'yes' ? 'x' : null}</TableCell>
-      <TableCell>{props.selectedVote === 'no' ? 'x' : null}</TableCell>
-      <TableCell>{props.selectedVote === 'abstain' ? 'x' : null}</TableCell>
+      <TableCell align="center">{props.selectedVote === LegalVoteOption.Yes ? 'x' : null}</TableCell>
+      <TableCell align="center">{props.selectedVote === LegalVoteOption.No ? 'x' : null}</TableCell>
+      <TableCell align="center">{props.selectedVote === LegalVoteOption.Abstain ? 'x' : null}</TableCell>
     </TableRow>
   );
 }

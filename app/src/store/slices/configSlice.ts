@@ -7,6 +7,7 @@ import { merge } from 'lodash';
 
 import type { RootState } from '../';
 import log from '../../logger';
+import { SignalingTariff } from '../../types';
 import type { VideoCodec } from '../../types/livekit';
 import { Seconds } from '../../utils/tsUtils';
 import { joinSuccess } from '../commonActions';
@@ -149,7 +150,8 @@ export type ConfigState = {
   maxVideoBandwidth: number;
   readonly features: Features;
   libravatarDefaultImage: DefaultAvatarImage;
-  tariff: Tariff;
+  enabledModules: BackendModules[];
+  tariff: SignalingTariff;
   imprintUrl?: string;
   dataProtectionUrl?: string;
   version?: {
@@ -224,11 +226,12 @@ export const initialState: ConfigState = {
   videoBackgrounds: [],
   maxVideoBandwidth: 600000,
   libravatarDefaultImage: 'robohash',
+  enabledModules: [],
   tariff: {
     id: '' as TariffId,
     name: '',
     quotas: {},
-    modules: {},
+    disabledFeatures: [],
   },
   glitchtip: {
     dsn: undefined,
@@ -247,6 +250,7 @@ export const configSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload }) => {
       state.tariff = { ...payload.tariff };
+      state.enabledModules = payload.enabledModules;
     });
   },
 });
@@ -276,11 +280,11 @@ export const selectErrorReportEmail = (state: RootState) => state.config.errorRe
 export const selectDisallowCustomDisplayName = (state: RootState) => state.config.disallowCustomDisplayName;
 export const selectLogLevel = (state: RootState) => state.config.logLevel;
 export const selectChangePassword = (state: RootState) => state.config.changePassword;
-export const selectEnabledModulesList = (state: RootState) => state.config.tariff.modules;
+export const selectEnabledModulesList = (state: RootState) => state.config.enabledModules ?? [];
 export const selectIsModuleEnabled = (module: BackendModules) => (state: RootState) =>
-  Object.keys(state.config.tariff.modules).some((moduleKey) => module === moduleKey);
+  (state.config.enabledModules ?? []).includes(module);
 export const selectIsFeatureEnabled = (featureKey: BackendFeatures) => (state: RootState) =>
-  Object.values(state.config.tariff.modules).some((module) => module?.features.includes(featureKey));
+  !(state.config.tariff?.disabledFeatures ?? []).includes(featureKey);
 export const selectAccountManagementUrl = (state: RootState) => state.config.provider.accountManagementUrl;
 export const selectImprintUrl = (state: RootState) => state.config.imprintUrl;
 export const selectIsProviderActive = (state: RootState) => state.config.provider.active;

@@ -4,12 +4,14 @@
 import { Namespaces } from '@opentalk/rest-api-rtk-query';
 import { Track } from 'livekit-client';
 
+import { BreakoutRoomId } from './breakout';
 import type { MeetingNotesState } from './meetingNotes';
 import type { TimerIsReady } from './timer';
 
 export type ParticipantId = string & { readonly __tag: unique symbol };
-export type GroupId = string & { readonly __tag: unique symbol };
-export type TargetId = GroupId | ParticipantId;
+export type ConnectionId = string & { readonly __tag: unique symbol };
+export type ConnectionIdentifier = string & { readonly __tag: unique symbol };
+export type TargetId = ParticipantId | BreakoutRoomId;
 
 export type Timestamp = string & { readonly __tag: unique symbol };
 
@@ -33,9 +35,11 @@ export enum VideoSetting {
 }
 
 export enum ParticipationKind {
-  User = 'user',
+  Registered = 'registered',
   Guest = 'guest',
-  Sip = 'sip',
+  Recorder = 'recorder',
+  CallIn = 'call_in',
+  RegisteredCallIn = 'registered_call_in',
 }
 
 export interface MediaSessionState {
@@ -86,6 +90,7 @@ export type ParticipantMediaState = {
 
 export interface BackendParticipant {
   id: ParticipantId;
+  connectionId?: ParticipantId;
   // Core fields are present in any case
   control: IParticipantControl;
   meetingNotes?: MeetingNotesState;
@@ -103,7 +108,6 @@ export interface Command {
 }
 
 export enum Role {
-  Guest = 'guest',
   User = 'user',
   Moderator = 'moderator',
 }
@@ -125,4 +129,9 @@ export enum KickScope {
   All = 'all',
   Guests = 'guests',
   UsersAndGuests = 'users_and_guests',
+}
+
+export enum RoomKind {
+  Main = 'main',
+  Breakout = 'breakout',
 }

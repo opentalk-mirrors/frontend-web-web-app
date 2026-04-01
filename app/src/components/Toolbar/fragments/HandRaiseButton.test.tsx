@@ -22,6 +22,6 @@ describe('<HandraiseButton />', () => {
 
     fireEvent.click(endButton);
 
-    expect(dispatchSpy.mock.calls).toContainEqual([{ payload: undefined, type: 'signaling/control/raise_hand' }]);
+    expect(dispatchSpy.mock.calls).toContainEqual([{ payload: undefined, type: 'signaling/raise_hands/raise_hand' }]);
   });
 });

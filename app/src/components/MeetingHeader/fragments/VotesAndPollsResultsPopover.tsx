@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PollIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
-import { selectActivePollsAndVotingsCount, selectPollsAndVotingsCount } from '../../../store/selectors';
+import { selectActivePollsAndVotingCount, selectPollsAndVotingCount } from '../../../store/selectors';
 import { generateUniqueId } from '../../../utils/stringUtils';
 import { MeetingHeaderButton } from './MeetingHeaderButton';
 import ResultsList from './ResultsList';
@@ -25,9 +25,9 @@ type RenderButtonFunc = (props: RenderButtonProps) => ReactElement | null;
 const VotesAndPollsResultsPopover = ({ renderButton }: { renderButton?: RenderButtonFunc }) => {
   const id = generateUniqueId();
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
-  const votingsAndPollsCount = useAppSelector(selectPollsAndVotingsCount);
+  const votingsAndPollsCount = useAppSelector(selectPollsAndVotingCount);
   const hasVotingsOrPolls = votingsAndPollsCount > 0;
-  const activeVotesOrPolls = useAppSelector(selectActivePollsAndVotingsCount);
+  const activeVotesOrPolls = useAppSelector(selectActivePollsAndVotingCount);
   const hasActiveVotesOrPolls = activeVotesOrPolls > 0;
   const { t } = useTranslation();
 

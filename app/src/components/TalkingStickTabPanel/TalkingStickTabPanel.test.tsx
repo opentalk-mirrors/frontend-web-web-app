@@ -69,12 +69,10 @@ describe('<TalkingStickTabPanel />', () => {
       });
       expect(spyAutomodStartAction).toHaveBeenCalledExactlyOnceWith({
         allowDoubleSelection: false,
-        animationOnRandom: false,
         autoAppendOnJoin: true,
-        considerHandRaise: false,
         playlist: ['00000000-e6b4-4759-000', '00000000-e6b4-4759-001'],
         selectionStrategy: 'playlist',
-        showList: true,
+        showRemaining: true,
       });
     });
   });

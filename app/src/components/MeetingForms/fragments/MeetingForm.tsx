@@ -2,7 +2,14 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, styled } from '@mui/material';
-import { DateTime, Event, RecurringEvent, RecurrencePattern, SingleEvent } from '@opentalk/rest-api-rtk-query';
+import {
+  DateTime,
+  Event,
+  RecurringEvent,
+  RecurrencePattern,
+  SingleEvent,
+  RecordingFeatures,
+} from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
 import { FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +54,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
   const isWaitingRoomEnabledByDefault = useAppSelector(selectWaitingRoomDefault);
 
   const { data: tariff } = useGetMeTariffQuery();
-  const isStreamingEnabled = tariff && isFeatureEnabledPredicate('stream', tariff.modules);
+  const isStreamingEnabled = tariff && isFeatureEnabledPredicate(RecordingFeatures.Stream, tariff.modules);
   const isSharedFolderEnabled = tariff?.modules.sharedFolder;
   const isTrainingParticipationReportEnabled = tariff?.modules.trainingParticipationReport;
 

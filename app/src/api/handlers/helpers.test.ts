@@ -1,16 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { notifications, setLibravatarOptions } from '../../commonComponents';
+import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
-import { ForceMuteType, MeetingNotesAccess, ParticipantId, ParticipationKind, WaitingState } from '../../types';
-import type { BackendParticipant, ParticipantInOtherRoom } from '../../types';
+import { MeetingNotesAccess } from '../../types';
 import { LegalVoteError } from '../types/incoming/legalVote';
 import {
   handleStorageExceededError,
-  mapBreakoutToUiParticipant,
   mapMeetingNotesToMeetingNotesAccess,
-  mapToUiParticipant,
   showErrorNotification,
   showStorageNotification,
 } from './helpers';
@@ -42,40 +39,6 @@ const createState = (isTariffUpgradable: boolean) =>
     },
   }) as RootState;
 
-const createBackendParticipant = (): BackendParticipant =>
-  ({
-    id: 'participant-1' as ParticipantId,
-    control: {
-      displayName: 'Alex',
-      avatarUrl: 'https://avatar.example',
-      handIsUp: false,
-      joinedAt: '2024-01-01T10:00:00Z',
-      leftAt: null,
-      handUpdatedAt: '2024-01-01T10:00:00Z',
-      participationKind: ParticipationKind.User,
-      isRoomOwner: true,
-    },
-    meetingNotes: {
-      readonly: false,
-    },
-    media: {
-      forceMute: {
-        type: ForceMuteType.Disabled,
-        unrestrictedParticipants: [],
-      },
-    },
-  }) as BackendParticipant;
-
-const createBreakoutParticipant = (): ParticipantInOtherRoom =>
-  ({
-    breakoutRoom: 'breakout-1',
-    id: 'participant-2',
-    displayName: 'Nora',
-    avatarUrl: 'https://avatar.example/nora',
-    leftAt: null,
-    participationKind: ParticipationKind.Guest,
-  }) as ParticipantInOtherRoom;
-
 describe('helpers', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -92,49 +55,6 @@ describe('helpers', () => {
 
     it('returns write when meeting notes are writable', () => {
       expect(mapMeetingNotesToMeetingNotesAccess({ readonly: false })).toBe(MeetingNotesAccess.Write);
-    });
-  });
-
-  describe('mapToUiParticipant', () => {
-    it('maps backend participant fields and meeting notes access', () => {
-      const state = createState(true);
-      const participant = createBackendParticipant();
-
-      const result = mapToUiParticipant(state, participant, null, WaitingState.Waiting);
-
-      expect(setLibravatarOptions).toHaveBeenCalledExactlyOnceWith(participant.control.avatarUrl, {
-        defaultImage: state.config.libravatarDefaultImage,
-      });
-      expect(result).toMatchObject({
-        id: participant.id,
-        displayName: participant.control.displayName,
-        waitingState: WaitingState.Waiting,
-        breakoutRoomId: null,
-        meetingNotesAccess: MeetingNotesAccess.Write,
-        isRoomOwner: true,
-      });
-    });
-  });
-
-  describe('mapBreakoutToUiParticipant', () => {
-    it('maps breakout participant fields', () => {
-      const state = createState(true);
-      const participant = createBreakoutParticipant();
-      const joinTime = '2024-01-01T11:00:00Z';
-
-      const result = mapBreakoutToUiParticipant(state, participant, joinTime);
-
-      expect(setLibravatarOptions).toHaveBeenCalledExactlyOnceWith(participant.avatarUrl, {
-        defaultImage: state.config.libravatarDefaultImage,
-      });
-      expect(result).toMatchObject({
-        id: participant.id,
-        breakoutRoomId: participant.breakoutRoom,
-        waitingState: WaitingState.Joined,
-        meetingNotesAccess: MeetingNotesAccess.None,
-        joinedAt: joinTime,
-        lastActive: joinTime,
-      });
     });
   });
 

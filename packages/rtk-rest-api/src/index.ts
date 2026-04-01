@@ -18,7 +18,8 @@ export type {
   BaseAsset,
 } from './types/common';
 export { InviteStatus, Tag } from './types/common';
-export type { Modules, CoreFeatures, RecordingFeatures, BackendFeatures, TariffId, Tariff } from './types/tariff';
+export type { Modules, BackendFeatures, TariffId, Tariff } from './types/tariff';
+export { RecordingFeatures, CoreFeatures } from './types/tariff';
 export { BackendModules } from './types/tariff';
 export type {
   StreamingTargetId,
@@ -73,6 +74,7 @@ export type {
   RecurrencePattern,
   SharedFolderData,
   EventInfo,
+  MeetingDetails,
   StreamingLink,
 } from './types/event';
 export {

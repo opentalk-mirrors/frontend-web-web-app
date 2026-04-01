@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Middleware, freeze, isAction } from '@reduxjs/toolkit';
+import { freeze, isAction, Middleware } from '@reduxjs/toolkit';
 
 import log from '../logger';
-import { ConferenceRoom, shutdownConferenceContext } from '../modules/WebRTC';
+import { shutdownConferenceContext } from '../modules/WebRTC';
 import { getCurrentConferenceRoom } from '../modules/WebRTC/ConferenceRoom';
 import type { AppDispatch, RootState } from '../store';
 import { hangUp, startRoom } from '../store/commonActions';
@@ -15,7 +15,6 @@ import {
   handleAutomodMessage,
   handleBreakoutMessage,
   handleChatMessage,
-  handleControlMessage,
   handleLegalVoteMessage,
   handleLivekitMessage,
   handleMeetingNotesMessage,
@@ -28,6 +27,8 @@ import {
   handleTimerMessage,
   handleTrainingParticipationReportMessage,
   handleWhiteboardMessage,
+  handleRoomServerCoreMessage,
+  handleRaiseHandsMessage,
 } from './handlers';
 import { Message as IncomingMessage } from './types/incoming';
 import * as outgoing from './types/outgoing';
@@ -40,64 +41,72 @@ import * as outgoing from './types/outgoing';
  * @returns (MessageEvent) => void
  * anonymous function that dispatches redux actions based on the Signaling API incoming message
  */
-const onMessage =
-  (dispatch: AppDispatch, getState: () => RootState, conference: ConferenceRoom) =>
-  async (message: IncomingMessage) => {
-    switch (message.namespace) {
-      case 'control':
-        await handleControlMessage(dispatch, getState(), conference, message.payload, message.timestamp);
-        break;
-      case 'breakout':
-        handleBreakoutMessage(dispatch, getState(), message.payload, message.timestamp);
-        break;
-      case 'automod':
-        handleAutomodMessage(dispatch, message.payload, getState());
-        break;
-      case 'legal_vote':
-        handleLegalVoteMessage(dispatch, message.payload, getState());
-        break;
-      case 'moderation':
-        handleModerationMessage(dispatch, message.payload, getState());
-        break;
-      case 'meeting_notes':
-        handleMeetingNotesMessage(dispatch, message.payload, getState());
-        break;
-      case 'meeting_report':
-        handleMeetingReportMessage(dispatch, message.payload, getState());
-        break;
-      case 'polls':
-        handlePollVoteMessage(dispatch, message.payload);
-        break;
-      case 'chat':
-        handleChatMessage(dispatch, message.payload, message.timestamp, getState());
-        break;
-      case 'timer':
-        handleTimerMessage(dispatch, message.payload);
-        break;
-      case 'whiteboard':
-        handleWhiteboardMessage(dispatch, message.payload, getState());
-        break;
-      case 'recording':
-        await handleStreamingMessage(dispatch, message.payload, getState());
-        break;
-      case 'shared_folder':
-        handleSharedFolderMessage(dispatch, message.payload);
-        break;
-      case 'livekit':
-        handleLivekitMessage(dispatch, message.payload, getState());
-        break;
-      case 'subroom_audio':
-        handleSubroomAudioMessage(dispatch, message.payload, getState());
-        break;
-      case 'training_participation_report':
-        handleTrainingParticipationReportMessage(dispatch, message.payload, getState());
-        break;
-      default: {
-        const dataString = JSON.stringify(message, null, 2);
-        throw new Error(`Unknown message type: ${dataString}`);
-      }
+const onMessage = (dispatch: AppDispatch, getState: () => RootState) => async (message: IncomingMessage) => {
+  switch (message.namespace) {
+    case 'core':
+      handleRoomServerCoreMessage(dispatch, message.payload, message.timestamp, getState());
+      break;
+    case 'e2ee':
+      // TODO - #3063 implement e2ee module
+      log.error('E2EE module is not implemented yet');
+      break;
+    case 'breakout':
+      handleBreakoutMessage(dispatch, message.payload, message.timestamp);
+      break;
+    case 'automod':
+      handleAutomodMessage(dispatch, message.payload, getState());
+      break;
+    case 'legal_vote':
+      handleLegalVoteMessage(dispatch, message.payload, getState());
+      break;
+    case 'moderation':
+      handleModerationMessage(dispatch, message.payload, message.timestamp, getState());
+      break;
+    case 'meeting_notes':
+      handleMeetingNotesMessage(dispatch, message.payload, getState());
+      break;
+    case 'meeting_report':
+      handleMeetingReportMessage(message.payload, getState());
+      break;
+    case 'polls':
+      handlePollVoteMessage(dispatch, message.payload);
+      break;
+    case 'chat':
+      handleChatMessage(dispatch, message.payload, message.timestamp, getState());
+      break;
+    case 'timer':
+      handleTimerMessage(dispatch, message.payload);
+      break;
+    case 'whiteboard':
+      handleWhiteboardMessage(dispatch, message.payload, getState());
+      break;
+    case 'recording':
+      await handleStreamingMessage(dispatch, message.payload, getState());
+      break;
+    case 'shared_folder':
+      handleSharedFolderMessage(dispatch, message.payload);
+      break;
+    case 'livekit':
+      handleLivekitMessage(dispatch, message.payload);
+      break;
+    case 'raise_hands':
+      handleRaiseHandsMessage(dispatch, message.payload, message.timestamp, getState());
+      break;
+    case 'subroom_audio':
+      handleSubroomAudioMessage(dispatch, message.payload, getState());
+      break;
+    case 'training_participation_report':
+      handleTrainingParticipationReportMessage(dispatch, message.payload, getState());
+      break;
+    case 'error':
+      log.error('Received error message from RoomServer:', message.payload);
+      break;
+    default: {
+      const dataString = JSON.stringify(message, null, 2);
+      throw new Error(`Unknown message type: ${dataString}`);
     }
-  };
+  }
+};
 
 /**
  * Our Signaling API Middleware
@@ -121,7 +130,7 @@ export const apiMiddleware: Middleware = ({
       .addCase(
         startRoom.fulfilled,
         (
-          state,
+          _state,
           {
             payload: { conferenceContext },
             meta: {
@@ -130,7 +139,7 @@ export const apiMiddleware: Middleware = ({
           }
         ) => {
           const connectedHandler = () => conferenceContext.join(displayName);
-          const messageHandler = onMessage(dispatch, getState, conferenceContext);
+          const messageHandler = onMessage(dispatch, getState);
 
           const shutdownHandler = ({ error }: { error?: number }) => {
             dispatch(connectionClosed({ errorCode: error }));
@@ -158,7 +167,7 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.automod.handler(builder, dispatch))
       .addModule((builder) => outgoing.chat.handler(builder, dispatch))
       .addModule((builder) => outgoing.breakout.handler(builder, dispatch))
-      .addModule((builder) => outgoing.control.handler(builder, dispatch))
+      .addModule((builder) => outgoing.core.handler(builder, dispatch))
       .addModule((builder) => outgoing.legalVote.handler(builder, dispatch))
       .addModule((builder) => outgoing.livekit.handler(builder, dispatch))
       .addModule((builder) => outgoing.poll.handler(builder, dispatch))
@@ -169,6 +178,7 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.timer.handler(builder, dispatch))
       .addModule((builder) => outgoing.whiteboard.handler(builder, dispatch))
       .addModule((builder) => outgoing.recording.handler(builder, dispatch))
+      .addModule((builder) => outgoing.raiseHands.handler(builder, dispatch))
       .addModule((builder) => outgoing.trainingParticipationReport.handler(builder, dispatch));
   });
 

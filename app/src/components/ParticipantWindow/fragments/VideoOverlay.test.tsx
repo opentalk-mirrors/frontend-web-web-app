@@ -5,6 +5,7 @@ import { useRemoteParticipant } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import VideoOverlay from './VideoOverlay';
 
@@ -13,6 +14,10 @@ vi.mock('@livekit/components-react', () => ({
 }));
 
 const mockedDefaultRemoteParticipant = { ...mockedParticipant(0), signalClient: { isDisconnected: true } };
+const connectionIdentifier = constructConnectionIdentifier(
+  mockedDefaultRemoteParticipant.id,
+  mockedDefaultRemoteParticipant.connections[0]
+);
 
 describe('VideoOverlay general', () => {
   const { store } = configureStore();
@@ -22,7 +27,7 @@ describe('VideoOverlay general', () => {
   });
 
   it('does not render any button if overlay is not active', () => {
-    renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={false} />, {
+    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={false} />, {
       store,
       provider: { snackbar: true, mui: true },
     });
@@ -33,7 +38,7 @@ describe('VideoOverlay general', () => {
     const { store } = configureStore({
       initialState: { fullscreen: { supported: true, active: false } },
     });
-    renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
+    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
       store,
       provider: { snackbar: true, mui: true },
     });
@@ -45,7 +50,7 @@ describe('VideoOverlay general', () => {
     const { store } = configureStore({
       initialState: { fullscreen: { supported: false, active: false } },
     });
-    renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
+    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
       store,
       provider: { snackbar: true, mui: true },
     });
@@ -64,7 +69,7 @@ describe('VideoOverlay extend tab', () => {
       isCameraEnabled: false,
     });
 
-    renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
+    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
       store,
       provider: { snackbar: true, mui: true },
     });
@@ -79,7 +84,7 @@ describe('VideoOverlay extend tab', () => {
       isCameraEnabled: false,
     });
 
-    renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
+    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
       store,
       provider: { snackbar: true, mui: true },
     });
@@ -94,7 +99,7 @@ describe('VideoOverlay extend tab', () => {
       isCameraEnabled: true,
     });
 
-    renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
+    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
       store,
       provider: { snackbar: true, mui: true },
     });
@@ -109,7 +114,7 @@ describe('VideoOverlay extend tab', () => {
       isCameraEnabled: true,
     });
 
-    renderWithProviders(<VideoOverlay participantId={mockedDefaultRemoteParticipant.id} active={true} />, {
+    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
       store,
       provider: { snackbar: true, mui: true },
     });

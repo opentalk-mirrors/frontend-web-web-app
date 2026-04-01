@@ -13,7 +13,8 @@ import {
   setPresenterVideoPosition,
 } from '../../../store/slices/uiSlice';
 import { VideoSetting } from '../../../types';
-import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
+import { mockStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import ParticipantVideo from './ParticipantVideo';
 
 type ScreenPresenterVideoMockProps = {
@@ -66,17 +67,17 @@ vi.mock('./ScreenPresenterVideo', () => ({
 }));
 
 const participant = mockedParticipant(0);
-const participantId = participant.id;
+const connectionIdentifier = constructConnectionIdentifier(participant.id, participant.connections[0]);
 
 const baseProps = {
-  participantId,
+  connectionIdentifier,
   presenterVideoIsActive: false,
 };
 
 const serializableParticipantsState = {
-  ids: [participantId],
+  ids: [connectionIdentifier],
   entities: {
-    [participantId]: {
+    [connectionIdentifier]: {
       ...participant,
       getTrackPublication: undefined,
       setMicrophoneEnabled: undefined,
@@ -125,7 +126,7 @@ describe('ParticipantVideo', () => {
 
     expect(
       screen.getByTestId(
-        `remoteVideo-${idFromDescriptor({ participantId, mediaType: Track.Source.Camera } as MediaDescriptor)}`
+        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.Camera } as MediaDescriptor)}`
       )
     ).toBeInTheDocument();
     expect(screen.queryByTestId('participantScreenShareVideo')).not.toBeInTheDocument();
@@ -149,7 +150,7 @@ describe('ParticipantVideo', () => {
     expect(screenShareContainer).toBeInTheDocument();
     expect(
       screen.getByTestId(
-        `remoteVideo-${idFromDescriptor({ participantId, mediaType: Track.Source.ScreenShare } as MediaDescriptor)}`
+        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.ScreenShare } as MediaDescriptor)}`
       )
     ).toBeInTheDocument();
     expect(screen.queryByTestId('screenPresenterVideo')).not.toBeInTheDocument();
@@ -184,7 +185,7 @@ describe('ParticipantVideo', () => {
     act(() => {
       lastPresenterVideoProps?.togglePin();
     });
-    expect(dispatchSpy).toHaveBeenCalledWith(presenterOverlayPinnedParticipantIdSet(participantId));
+    expect(dispatchSpy).toHaveBeenCalledWith(presenterOverlayPinnedParticipantIdSet(connectionIdentifier));
 
     act(() => {
       lastPresenterVideoProps?.changeVideoPosition();

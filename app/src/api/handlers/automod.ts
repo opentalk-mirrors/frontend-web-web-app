@@ -66,7 +66,6 @@ export const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventTy
           dispatch(automod.selectNext.action());
         }
       }
-      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
       break;
     }
     case 'stopped': {
@@ -82,7 +81,6 @@ export const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventTy
         ariaLive: 'polite',
       });
 
-      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
       break;
     }
     // case 'start_animation':
@@ -93,7 +91,6 @@ export const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventTy
       break;
     case 'speaker_updated': {
       if (data.speaker !== state.user.uuid) {
-        dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
         dispatch(setAsInactiveSpeaker());
       }
       notifications.close(nextId);

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 
-import { GroupId } from '../../../types';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import ParticipantSimpleList from './ParticipantSimpleList';
 
@@ -16,17 +15,10 @@ vi.mock('@livekit/components-react', () => ({
 }));
 
 const setup = () => {
-  const participants = [
-    { ...mockedParticipant(0), groups: ['Group A' as GroupId] },
-    { ...mockedParticipant(1), groups: ['Group A' as GroupId] },
-    { ...mockedParticipant(2), groups: ['Group B' as GroupId] },
-  ];
+  const participants = [{ ...mockedParticipant(0) }, { ...mockedParticipant(1) }, { ...mockedParticipant(2) }];
 
   const store = configureStore({
     initialState: {
-      user: {
-        groups: ['Group A', 'Group B'],
-      },
       participants: {
         ids: participants.map((p) => p.id),
         entities: Object.fromEntries(participants.map((p) => [p.id, p])),

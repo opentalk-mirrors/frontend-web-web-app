@@ -13,7 +13,6 @@ import { ProgressBar } from '../../../commonComponents';
 import { useDateFormat } from '../../../hooks';
 import { setVoteOrPollIdToShow } from '../../../store/slices/uiSlice';
 import { LegalVoteState, LegalVote } from '../../../types';
-import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
 import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 
 const MainContainer = styled(Stack)(({ theme }) => ({
@@ -64,7 +63,6 @@ const LegalVoteOverviewPanel = ({
       cancel.action({
         legalVoteId: id,
         reason: 'Testing reasons',
-        timezone: getCurrentTimezone(),
       })
     );
   };
@@ -79,7 +77,6 @@ const LegalVoteOverviewPanel = ({
     dispatch(
       stop.action({
         legalVoteId: id,
-        timezone: getCurrentTimezone(),
       })
     );
   };

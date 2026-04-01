@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { sendChatMessage } from '../../../api/types/outgoing/chat';
 import { setChatSettings } from '../../../store/slices/chatSlice';
 import { saveDefaultChatMessage } from '../../../store/slices/uiSlice';
-import { ChatScope, GroupId, ParticipantId, Timestamp } from '../../../types';
+import { ChatIdentifier, ChatScope, ParticipantId, Timestamp } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ChatForm from './ChatForm';
 
@@ -44,12 +44,16 @@ describe('ChatForm', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
+  const globalChatIdentifier: ChatIdentifier = { scope: ChatScope.Global };
 
   it('sends a global message when the submit button is clicked', async () => {
     const user = userEvent.setup();
     const { store, dispatchSpy } = configureStore();
 
-    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm chatIdentifier={globalChatIdentifier} />, {
+      store,
+      provider: { mui: true },
+    });
 
     const input = screen.getByLabelText('chat-input-label');
     await user.type(input, 'Hello world');
@@ -62,31 +66,21 @@ describe('ChatForm', () => {
       )
     );
     expect(dispatchSpy).toHaveBeenCalledWith(
-      saveDefaultChatMessage({ scope: ChatScope.Global, targetId: undefined, input: '' })
+      saveDefaultChatMessage({ scope: ChatScope.Global, target: undefined, input: '' })
     );
     expect(input).toHaveValue('');
   });
 
   it('submits a private message when Enter is pressed without modifiers', async () => {
     const user = userEvent.setup();
-    const targetId = 'participant-42' as ParticipantId;
-    const { store, dispatchSpy } = configureStore({
-      initialState: {
-        ui: {
-          chatConversationState: {
-            scope: ChatScope.Private,
-            targetId,
-          },
-          chatAutosavedInputs: {
-            [ChatScope.Private]: {
-              [targetId]: '',
-            },
-          },
-        },
-      },
-    });
+    const target = 'participant-42' as ParticipantId;
+    const { store, dispatchSpy } = configureStore();
+    const privateChatIdentifier: ChatIdentifier = { scope: ChatScope.Private, target };
 
-    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm chatIdentifier={privateChatIdentifier} />, {
+      store,
+      provider: { mui: true },
+    });
 
     const input = screen.getByLabelText('chat-input-label');
     await user.type(input, 'Secret message');
@@ -95,7 +89,7 @@ describe('ChatForm', () => {
 
     await waitFor(() => {
       expect(dispatchSpy).toHaveBeenCalledWith(
-        sendChatMessage.action({ scope: ChatScope.Private, content: 'Secret message', target: targetId })
+        sendChatMessage.action({ scope: ChatScope.Private, content: 'Secret message', target })
       );
     });
   });
@@ -104,7 +98,7 @@ describe('ChatForm', () => {
     const user = userEvent.setup();
     const { store, dispatchSpy } = configureStore();
 
-    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm chatIdentifier={globalChatIdentifier} />, { store, provider: { mui: true } });
 
     const input = screen.getByLabelText('chat-input-label');
     await user.type(input, 'Hello');
@@ -114,43 +108,7 @@ describe('ChatForm', () => {
     await user.click(pickerButton);
 
     expect(input).toHaveValue('Hello😀');
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      saveDefaultChatMessage({ scope: ChatScope.Global, targetId: undefined, input: 'Hello😀' })
-    );
-  });
-
-  it('stores the current draft when the input loses focus', async () => {
-    const user = userEvent.setup();
-    const targetId = 'group-123' as GroupId;
-    const { store, dispatchSpy } = configureStore({
-      initialState: {
-        ui: {
-          chatConversationState: {
-            scope: ChatScope.Group,
-            targetId,
-          },
-          chatAutosavedInputs: {
-            [ChatScope.Group]: {
-              [targetId]: '',
-            },
-          },
-        },
-      },
-    });
-
-    renderWithProviders(<ChatForm />, {
-      store,
-      provider: { mui: true },
-    });
-
-    const input = screen.getByLabelText('chat-input-label');
-    await user.type(input, 'Draft message');
-
-    fireEvent.blur(input);
-
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      saveDefaultChatMessage({ scope: ChatScope.Group, targetId: 'group-123' as GroupId, input: 'Draft message' })
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith(saveDefaultChatMessage({ scope: ChatScope.Global, input: 'Hello😀' }));
   });
 
   it('disables the form controls when chat is disabled', () => {
@@ -159,7 +117,7 @@ describe('ChatForm', () => {
 
     store.dispatch(setChatSettings({ id: 'user-1' as ParticipantId, timestamp, enabled: false }));
 
-    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm chatIdentifier={globalChatIdentifier} />, { store, provider: { mui: true } });
 
     const input = screen.getByLabelText('chat-input-label');
     const emojiButton = screen.getByRole('button', { name: 'chat-open-emoji-picker' });

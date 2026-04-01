@@ -1,60 +1,111 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { moveItemToTopOfArray } from './arrayUtils';
+import { spliceIntoChunks } from './arrayUtils';
 
-describe('arrayUtils', () => {
-  describe('move item to top of array function', () => {
-    it('should move a primitive item to the top of the array given no identifier function', () => {
-      const array = [1, 2, 3, 4, 5];
-      const mutatedArray = moveItemToTopOfArray(3, array);
-      expect(array).toStrictEqual([1, 2, 3, 4, 5]);
-      expect(mutatedArray).toStrictEqual([3, 1, 2, 4, 5]);
+describe('spliceIntoChunks', () => {
+  describe('when splitSize is greater than or equal to array length', () => {
+    it('should return each item in its own chunk', () => {
+      const array = [1, 2, 3];
+      const result = spliceIntoChunks(array, 5);
+
+      expect(result).toEqual([[1], [2], [3]]);
     });
-    it('should move an object to the top of the array given an identifier function', () => {
-      const array = [
-        { firstName: 'Alice', lastName: 'Adams' },
-        { firstName: 'Bob', lastName: 'Burton' },
-        { firstName: 'Carl', lastName: 'Carlsen' },
-      ];
-      const mutatedArray = moveItemToTopOfArray(
-        { firstName: 'Carl', lastName: 'Carlsen' },
-        array,
-        (person) => person.firstName === 'Carl' && person.lastName === 'Carlsen'
-      );
-      expect(array).toStrictEqual([
-        { firstName: 'Alice', lastName: 'Adams' },
-        { firstName: 'Bob', lastName: 'Burton' },
-        { firstName: 'Carl', lastName: 'Carlsen' },
-      ]);
-      expect(mutatedArray).toStrictEqual([
-        { firstName: 'Carl', lastName: 'Carlsen' },
-        { firstName: 'Alice', lastName: 'Adams' },
-        { firstName: 'Bob', lastName: 'Burton' },
+  });
+
+  describe('when array divides evenly', () => {
+    it('should split 6 items into 3 equal chunks of 2', () => {
+      const array = [1, 2, 3, 4, 5, 6];
+      const result = spliceIntoChunks(array, 3);
+
+      expect(result).toEqual([
+        [1, 2],
+        [3, 4],
+        [5, 6],
       ]);
     });
-    it('should move an object to the top of the array given no identifier function', () => {
-      const array = [
-        { firstName: 'Alice', lastName: 'Adams' },
-        { firstName: 'Bob', lastName: 'Burton' },
-        { firstName: 'Carl', lastName: 'Carlsen' },
-      ];
-      const mutatedArray = moveItemToTopOfArray({ firstName: 'Carl', lastName: 'Carlsen' }, array);
-      expect(array).toStrictEqual([
-        { firstName: 'Alice', lastName: 'Adams' },
-        { firstName: 'Bob', lastName: 'Burton' },
-        { firstName: 'Carl', lastName: 'Carlsen' },
-      ]);
-      expect(mutatedArray).toStrictEqual([
-        { firstName: 'Carl', lastName: 'Carlsen' },
-        { firstName: 'Alice', lastName: 'Adams' },
-        { firstName: 'Bob', lastName: 'Burton' },
+
+    it('should split 9 items into 3 equal chunks of 3', () => {
+      const array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+      const result = spliceIntoChunks(array, 3);
+
+      expect(result).toEqual([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
       ]);
     });
-    it('should not return a copy if the item is already on top', () => {
-      const array = [1, 2, 3, 4, 5];
-      const mutatedArray = moveItemToTopOfArray(1, array);
-      expect(mutatedArray).toBe(array);
+  });
+
+  describe('when array does not divide evenly', () => {
+    it('should distribute remainder items to first chunks (7 items, 3 chunks)', () => {
+      const array = [1, 2, 3, 4, 5, 6, 7];
+      const result = spliceIntoChunks(array, 3);
+
+      expect(result).toEqual([
+        [1, 2, 3],
+        [4, 5],
+        [6, 7],
+      ]);
+      expect(result[0]).toHaveLength(3);
+      expect(result[1]).toHaveLength(2);
+      expect(result[2]).toHaveLength(2);
+    });
+
+    it('should distribute remainder items to first chunks (10 items, 3 chunks)', () => {
+      const array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      const result = spliceIntoChunks(array, 3);
+
+      expect(result).toEqual([
+        [1, 2, 3, 4],
+        [5, 6, 7],
+        [8, 9, 10],
+      ]);
+      expect(result[0]).toHaveLength(4);
+      expect(result[1]).toHaveLength(3);
+      expect(result[2]).toHaveLength(3);
+    });
+
+    it('should distribute remainder items to first chunks (11 items, 4 chunks)', () => {
+      const array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      const result = spliceIntoChunks(array, 4);
+
+      expect(result).toEqual([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+        [10, 11],
+      ]);
+      expect(result[0]).toHaveLength(3);
+      expect(result[1]).toHaveLength(3);
+      expect(result[2]).toHaveLength(3);
+      expect(result[3]).toHaveLength(2);
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle empty array', () => {
+      const array: number[] = [];
+      const result = spliceIntoChunks(array, 2);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should handle single item array', () => {
+      const array = [1];
+      const result = spliceIntoChunks(array, 3);
+
+      expect(result).toEqual([[1]]);
+    });
+
+    it('should work with object arrays', () => {
+      const array = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
+      const result = spliceIntoChunks(array, 2);
+
+      expect(result).toEqual([
+        [{ id: 1 }, { id: 2 }],
+        [{ id: 3 }, { id: 4 }],
+      ]);
     });
   });
 });

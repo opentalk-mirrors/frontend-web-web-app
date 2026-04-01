@@ -5,7 +5,7 @@ import { useParticipants } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
-import type { ParticipantId } from '../../types';
+import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import { mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import NameTile from './NameTile';
 
@@ -17,15 +17,18 @@ vi.mock('@livekit/components-react', () => ({
 describe('NameTile with activated media', () => {
   const participant = mockedParticipant(0);
   const displayName = participant.displayName;
-  const participantId = participant.id as ParticipantId;
+  const connectionIdentifier = constructConnectionIdentifier(participant.id, participant.connections[0]);
   beforeEach(() => {
     (useParticipants as Mock).mockReturnValue([{ ...participant, isMicrophoneEnabled: true, isCameraEnabled: true }]);
   });
 
   it('render NameTile component with audio on', () => {
-    renderWithProviders(<NameTile displayName={participant.displayName} participantId={participant.id} />, {
-      provider: { mui: true },
-    });
+    renderWithProviders(
+      <NameTile displayName={participant.displayName} connectionIdentifier={connectionIdentifier} />,
+      {
+        provider: { mui: true },
+      }
+    );
 
     expect(screen.getByTestId('nameTile')).toBeInTheDocument();
     expect(screen.getByText(participant.displayName)).toBeInTheDocument();
@@ -33,7 +36,7 @@ describe('NameTile with activated media', () => {
   });
 
   it('render NameTile component with video on', () => {
-    renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
+    renderWithProviders(<NameTile displayName={displayName} connectionIdentifier={connectionIdentifier} />, {
       provider: { mui: true },
     });
 
@@ -43,7 +46,7 @@ describe('NameTile with activated media', () => {
   });
 
   it('render NameTile component with video and audio on', () => {
-    renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
+    renderWithProviders(<NameTile displayName={displayName} connectionIdentifier={connectionIdentifier} />, {
       provider: { mui: true },
     });
 
@@ -56,13 +59,14 @@ describe('NameTile with activated media', () => {
 describe('NameTile with deactivated media', () => {
   const participant = mockedParticipant(0);
   const displayName = participant.displayName;
-  const participantId = participant.id as ParticipantId;
+  const connectionIdentifier = constructConnectionIdentifier(participant.id, participant.connections[0]);
+
   beforeEach(() => {
     (useParticipants as Mock).mockReturnValue([participant]);
   });
 
   it('render NameTile component with audio off', () => {
-    renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
+    renderWithProviders(<NameTile displayName={displayName} connectionIdentifier={connectionIdentifier} />, {
       provider: { mui: true },
     });
 
@@ -72,7 +76,7 @@ describe('NameTile with deactivated media', () => {
   });
 
   it('render NameTile component with video off', () => {
-    renderWithProviders(<NameTile displayName={displayName} participantId={participantId} />, {
+    renderWithProviders(<NameTile displayName={displayName} connectionIdentifier={connectionIdentifier} />, {
       provider: { mui: true },
     });
 

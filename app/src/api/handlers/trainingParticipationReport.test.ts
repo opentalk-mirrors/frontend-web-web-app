@@ -7,10 +7,6 @@ import { notificationAction } from '../../commonComponents';
 import { showWithLinkNotification } from '../../components/WithLinkNotification';
 import log from '../../logger';
 import type { RootState } from '../../store';
-import {
-  trainingParticipationReportDisabled,
-  trainingParticipationReportEnabled,
-} from '../../store/slices/moderationSlice';
 import { presenceConfirmationDone, presenceConfirmationRequested } from '../../store/slices/roomSlice';
 import { composeMeetingDetailsUrl } from '../../utils/apiUtils';
 import { TrainingParticipationReportError } from '../types/incoming/trainingParticipationReport';
@@ -66,40 +62,6 @@ describe('handleTrainingParticipationReportMessage', () => {
     vi.clearAllMocks();
   });
 
-  it('dispatches enable notification for owners', () => {
-    const dispatch = vi.fn();
-    const state = createState();
-    const data: TrainingParticipationReportMessage = { message: 'presence_logging_enabled' };
-
-    handleTrainingParticipationReportMessage(dispatch, data, state);
-
-    expect(dispatch).toHaveBeenCalledWith(trainingParticipationReportEnabled());
-    expect(notificationAction).toHaveBeenCalledWith(
-      expect.objectContaining({
-        msg: 'presence-logging-enabled-notification',
-        variant: 'info',
-        ariaLive: 'polite',
-      })
-    );
-  });
-
-  it('dispatches disable notification for owners', () => {
-    const dispatch = vi.fn();
-    const state = createState();
-    const data: TrainingParticipationReportMessage = { message: 'presence_logging_disabled' };
-
-    handleTrainingParticipationReportMessage(dispatch, data, state);
-
-    expect(dispatch).toHaveBeenCalledWith(trainingParticipationReportDisabled());
-    expect(notificationAction).toHaveBeenCalledWith(
-      expect.objectContaining({
-        msg: 'presence-logging-disabled-notification',
-        variant: 'info',
-        ariaLive: 'polite',
-      })
-    );
-  });
-
   it('notifies about logging has started', () => {
     const dispatch = vi.fn();
     const state = createState();
@@ -107,7 +69,6 @@ describe('handleTrainingParticipationReportMessage', () => {
 
     handleTrainingParticipationReportMessage(dispatch, data, state);
 
-    expect(dispatch).not.toHaveBeenCalled();
     expect(notificationAction).toHaveBeenCalledWith(
       expect.objectContaining({
         msg: 'presence-logging-started-notification',
@@ -155,7 +116,7 @@ describe('handleTrainingParticipationReportMessage', () => {
     const dispatch = vi.fn();
     const state = createState();
     const data: TrainingParticipationReportMessage = {
-      message: 'pdf_asset',
+      message: 'pdf_created',
       filename: 'report.pdf',
       assetId: 'asset-1' as AssetId,
     };
@@ -173,7 +134,7 @@ describe('handleTrainingParticipationReportMessage', () => {
     const dispatch = vi.fn();
     const state = createState({ room: { isOwnedByCurrentUser: true } as RootState['room'] });
     const data: TrainingParticipationReportMessage = {
-      message: 'pdf_asset',
+      message: 'pdf_created',
       filename: 'report.pdf',
       assetId: 'asset-1' as AssetId,
     };

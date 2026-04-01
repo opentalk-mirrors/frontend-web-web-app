@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 
-import { renderWithProviders, mockedParticipant, configureStore } from '../../../utils/testUtils';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import HandRaisedIndicator from './HandRaisedIndicator';
 
 const participant1 = mockedParticipant(1);

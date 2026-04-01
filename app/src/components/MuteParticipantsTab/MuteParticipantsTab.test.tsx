@@ -45,7 +45,7 @@ describe('MuteParticipantsTab', () => {
 
   it('click on muteAll button should dispatch moderator_mute action', async () => {
     renderWithProviders(<MuteParticipantsTab />, { store, provider: { mui: true } });
-    const allParticipantIds = [mockedParticipant(0).identity, mockedParticipant(1).identity];
+    const allParticipantIds = [mockedParticipant(0).id, mockedParticipant(1).id];
 
     const muteAllButton = screen.getByRole('button', { name: /global-all/i });
     expect(muteAllButton).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe('MuteParticipantsTab', () => {
     expect(dispatchSpy.mock.calls).toContainEqual([
       {
         payload: { participants: [...allParticipantIds] },
-        type: 'signaling/livekit/force_mute',
+        type: 'signaling/moderation/mute',
       },
     ]);
   });
@@ -82,8 +82,8 @@ describe('MuteParticipantsTab', () => {
 
     expect(dispatchSpy.mock.calls).toContainEqual([
       {
-        payload: { participants: [participant1.identity, participant2.identity] },
-        type: 'signaling/livekit/force_mute',
+        payload: { participants: [participant1.id, participant2.id] },
+        type: 'signaling/moderation/mute',
       },
     ]);
   });

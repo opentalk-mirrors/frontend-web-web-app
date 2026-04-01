@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import {
   selectParticipantsReady,
   selectReadyCheckEnabled,
-  selectTimerId,
+  selectTimerActive,
   selectTimerTitle,
 } from '../../../store/slices/timerSlice';
 import { selectOurUuid } from '../../../store/slices/userSlice';
@@ -22,20 +22,18 @@ const NormalTimerPopover = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const userId = useAppSelector(selectOurUuid);
-  const timerId = useAppSelector(selectTimerId);
+  const isTimerActive = useAppSelector(selectTimerActive);
   const timerTitle = useAppSelector(selectTimerTitle);
   const hasReadyCheckEnabled = useAppSelector(selectReadyCheckEnabled);
   const participantsAreReady = useAppSelector(selectParticipantsReady);
   const isUserReady = userId && participantsAreReady.includes(userId);
 
   const handleDone = useCallback(() => {
-    if (timerId) {
-      dispatch(readyToContinue.action({ timerId, status: !isUserReady }));
-    }
-  }, [dispatch, isUserReady, timerId]);
+    dispatch(readyToContinue.action({ status: !isUserReady }));
+  }, [dispatch, isUserReady]);
 
   return (
-    <Container open={Boolean(timerId)} role="dialog" aria-label={timerTitle || t('timer-popover-title')}>
+    <Container open={Boolean(isTimerActive)} role="dialog" aria-label={timerTitle || t('timer-popover-title')}>
       <Stack spacing={2}>
         <Typography variant="h1">{t('timer-popover-title')}</Typography>
         {timerTitle && <Typography variant="h2">{timerTitle}</Typography>}

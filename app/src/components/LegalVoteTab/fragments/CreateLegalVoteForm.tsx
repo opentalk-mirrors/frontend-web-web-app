@@ -14,23 +14,22 @@ import { start } from '../../../api/types/outgoing/legalVote';
 import { BackIcon } from '../../../assets/icons';
 import { notifications } from '../../../commonComponents';
 import { savedLegalVoteForm, selectLegalVoteId } from '../../../store/slices/legalVoteSlice';
-import { LegalVoteFormValues, LegalVoteKind, SavedLegalVoteForm } from '../../../types';
+import { LegalVoteFormValues, SavedLegalVoteForm } from '../../../types';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
 import SaveAsTemplateButton from '../../SaveAsTemplateButton';
 import LegalVoteSetupForm from './LegalVoteSetupForm';
 import ParticipantSelector, { AllowedParticipant } from './ParticipantSelector';
 
 const defaultInitialValues = {
-  duration: 1,
+  pseudonymous: false,
+  live: true,
+  name: '',
+  allowedParticipants: [],
   enableAbstain: true,
   autoClose: false,
-  name: '',
-  topic: '',
-  allowedParticipants: [],
-  subtitle: '',
+  duration: 1,
   createPdf: true,
-  kind: 'roll_call',
-} as LegalVoteFormValues;
+} as SavedLegalVoteForm;
 
 const Form = styled(FormikForm)({
   flex: 1,
@@ -60,7 +59,6 @@ const CreateLegalVoteForm = ({
     topic: yup.string().trim().required(t('legal-vote-input-topic-required')),
     duration: yup.number().min(0).nullable().typeError(t('legal-vote-form-input-error-number')),
     createPdf: yup.bool(),
-    kind: yup.string().oneOf(Object.values(LegalVoteKind)),
   });
 
   const saveFormValues = useCallback(
@@ -92,20 +90,21 @@ const CreateLegalVoteForm = ({
     currentStep === 0 ? <LegalVoteSetupForm /> : <ParticipantSelector name="allowedParticipants" />;
 
   const onSubmit = (values: FormikValues) => {
-    const allowedParticipants = values.allowedParticipants as AllowedParticipant[];
+    const allowedParticipants = values.allowedParticipants as unknown as AllowedParticipant[];
     dispatch(
       start.action({
+        pseudonymous: values.pseudonymous,
+        live: values.live,
         name: values.name,
         subtitle: values.subtitle || undefined,
         topic: values.topic || undefined,
-        enableAbstain: values.enableAbstain,
-        autoClose: values.autoClose,
-        duration: values.duration ? values.duration * 60 : values.duration,
         allowedParticipants: Array.isArray(allowedParticipants)
           ? allowedParticipants.map((allowedParticipant) => allowedParticipant.id)
           : [],
+        enableAbstain: values.enableAbstain,
+        autoClose: values.autoClose,
+        duration: values.duration ? values.duration * 60 : values.duration,
         createPdf: values.createPdf,
-        kind: values.kind,
         timezone: getCurrentTimezone() || undefined,
       })
     );

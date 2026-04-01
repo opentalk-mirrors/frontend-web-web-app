@@ -27,7 +27,8 @@ const PopoverParagraph = styled(Typography)(({ theme }) => ({
 const CenteredGrid = styled(Grid)(() => ({ textAlign: 'center' }));
 
 const isParticipantUnsafe = (participant: Participant) =>
-  participant.participationKind === ParticipationKind.Guest || participant.participationKind === ParticipationKind.Sip;
+  participant.participationKind === ParticipationKind.Guest ||
+  participant.participationKind === ParticipationKind.CallIn;
 
 const SecurityBadge = () => {
   const allParticipants = useAppSelector(selectCombinedParticipantsAndUser);
@@ -44,14 +45,14 @@ const SecurityBadge = () => {
   const getBadgeTranslationKey = () => {
     if (
       unsafeParticipantKinds.includes(ParticipationKind.Guest) &&
-      unsafeParticipantKinds.includes(ParticipationKind.Sip)
+      unsafeParticipantKinds.includes(ParticipationKind.CallIn)
     ) {
       return 'secure-connection-contaminated';
     }
     if (unsafeParticipantKinds.includes(ParticipationKind.Guest)) {
       return 'secure-connection-guests';
     }
-    if (unsafeParticipantKinds.includes(ParticipationKind.Sip)) {
+    if (unsafeParticipantKinds.includes(ParticipationKind.CallIn)) {
       return 'secure-connection-sip';
     }
     //ideally this case should not be reached, ever

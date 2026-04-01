@@ -1,12 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { setLibravatarOptions } from '../../commonComponents';
 import log from '../../logger';
-import type { AppDispatch, RootState } from '../../store';
+import type { AppDispatch } from '../../store';
 import * as breakoutStore from '../../store/slices/breakoutSlice';
-import { selectLibravatarDefaultImage } from '../../store/slices/configSlice';
-import { breakoutJoined, breakoutLeft } from '../../store/slices/participantsSlice';
+import { patch } from '../../store/slices/participantsSlice';
 import { Timestamp } from '../../types';
 import { breakout } from '../types/incoming';
 import { showErrorNotification } from './helpers';
@@ -14,33 +12,33 @@ import { showErrorNotification } from './helpers';
 /**
  * Handles messages in the breakout namespace.
  */
-export const handleBreakoutMessage = (
-  dispatch: AppDispatch,
-  state: RootState,
-  data: breakout.Message,
-  timestamp: Timestamp
-) => {
+export const handleBreakoutMessage = (dispatch: AppDispatch, data: breakout.Message, timestamp: Timestamp) => {
   switch (data.message) {
     case 'started':
       dispatch(breakoutStore.started(data));
       break;
-    case 'stopped':
-      dispatch(breakoutStore.stopped(data));
+    // time to manual send switch room command (stop action + delay)
+    case 'close_notice':
+      dispatch(breakoutStore.closeNotice(data));
       break;
-    case 'expired':
-      dispatch(breakoutStore.expired());
+    // room server is closing the breakout rooms (stop action without delay)
+    case 'closing':
+      dispatch(breakoutStore.closing(data));
       break;
-    case 'joined':
-      {
-        const modifiedData = {
-          ...data,
-          avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
-        };
-        dispatch(breakoutJoined({ data: modifiedData, timestamp }));
-      }
+    case 'closed':
+      dispatch(breakoutStore.closed(data));
       break;
-    case 'left':
-      dispatch(breakoutLeft({ id: data.id, timestamp }));
+    case 'participant_switched_room':
+      dispatch(
+        patch({
+          participantId: data.participantId,
+          lastActive: timestamp,
+          breakoutRoomId: data.newRoom.id,
+        })
+      );
+      break;
+    case 'switched_room':
+      dispatch(breakoutStore.switchedRoom(data));
       break;
     case 'error':
       showErrorNotification(data.error);

@@ -1,20 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Switch, Grid, Tooltip, Select, MenuItem } from '@mui/material';
+import { Switch, Grid, Tooltip } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useEffect } from 'react';
+import { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DurationField, CommonTextField } from '../../../commonComponents';
 import { CommonFormItem } from '../../../commonComponents';
-import { LegalVoteFormValues, LegalVoteKind } from '../../../types';
-import {
-  formikDurationFieldProps,
-  formikSwitchProps,
-  formikProps,
-  formikSelectProps,
-} from '../../../utils/formikUtils';
+import { LegalVoteFormValues } from '../../../types';
+import { formikDurationFieldProps, formikSwitchProps, formikProps } from '../../../utils/formikUtils';
 import { DurationFieldWrapper } from '../../DurationFieldWrapper';
 
 const MAX_TITLE_CHARACTERS = 150;
@@ -46,6 +42,30 @@ export const LegalVoteSetupForm = () => {
       </Grid>
       <Grid size={{ xs: 12 }}>
         <CommonFormItem
+          name="pseudonymous"
+          onChange={(e: ChangeEvent<unknown>) => {
+            const target = e.target as HTMLInputElement;
+            const checked = target.checked;
+
+            formik.setFieldValue('pseudonymous', checked);
+            if (checked) {
+              formik.setFieldValue('live', false);
+            }
+          }}
+          onBlur={formik.handleBlur}
+          control={<Switch color="primary" checked={formik.values.pseudonymous} />}
+          label={t('legal-vote-form-allow-pseudonymous')}
+        />
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <CommonFormItem
+          {...formikSwitchProps('live', formik)}
+          control={<Switch color="primary" disabled={formik.values.pseudonymous} />}
+          label={t('legal-vote-form-live')}
+        />
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <CommonFormItem
           {...formikSwitchProps('enableAbstain', formik)}
           control={<Switch color="primary" />}
           label={t('legal-vote-form-allow-abstain')}
@@ -61,15 +81,6 @@ export const LegalVoteSetupForm = () => {
           }
           label={t('legal-vote-form-auto-stop')}
         />
-      </Grid>
-      <Grid size={{ xs: 12 }}>
-        <Select {...formikSelectProps('kind', formik)} defaultValue={formik.initialValues.kind} id="vote-kind">
-          {Object.values(LegalVoteKind).map((kind) => (
-            <MenuItem key={kind} value={kind}>
-              {t(`legal-vote-${kind}`)}
-            </MenuItem>
-          ))}
-        </Select>
       </Grid>
       <Grid size={{ xs: 12 }}>
         <CommonTextField

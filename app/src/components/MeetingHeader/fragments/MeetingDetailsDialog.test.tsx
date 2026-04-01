@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import type { EventId, EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
+import type { EventId, EventInfo, InviteCode, MeetingDetails, RoomId } from '@opentalk/rest-api-rtk-query';
+import { CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 
 import type { RoomInfo } from '../../../types';
@@ -12,12 +13,13 @@ const mockEventInfo: EventInfo = {
   id: '1' as EventId,
   title: 'Test Meeting',
   isAdhoc: false,
-  meetingDetails: {
-    inviteCodeId: '12345' as InviteCode,
-    streamingLinks: [],
-  },
   roomId: '1' as RoomId,
   e2eEncryption: false,
+};
+
+const meetingDetails: MeetingDetails = {
+  inviteCodeId: '12345' as InviteCode,
+  streamingLinks: [],
 };
 
 const mockRoomInfo: RoomInfo = {
@@ -45,11 +47,7 @@ describe('MeetingDetailsDialog', () => {
       config: {
         baseUrl: 'http://localhost:3000',
         tariff: {
-          modules: {
-            core: {
-              features: ['guests_allowed'],
-            },
-          },
+          disabledFeatures: [],
         },
       },
     },
@@ -57,7 +55,13 @@ describe('MeetingDetailsDialog', () => {
 
   it('renders dialog and it"s main components', () => {
     renderWithProviders(
-      <MeetingDetailsDialog open={true} onClose={vi.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
+      <MeetingDetailsDialog
+        open={true}
+        onClose={vi.fn()}
+        eventInfo={mockEventInfo}
+        meetingDetails={meetingDetails}
+        roomInfo={mockRoomInfo}
+      />,
       { store }
     );
 
@@ -68,7 +72,13 @@ describe('MeetingDetailsDialog', () => {
 
   it('renders room password text field when password provided', () => {
     renderWithProviders(
-      <MeetingDetailsDialog open={true} onClose={vi.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
+      <MeetingDetailsDialog
+        open={true}
+        onClose={vi.fn()}
+        eventInfo={mockEventInfo}
+        meetingDetails={meetingDetails}
+        roomInfo={mockRoomInfo}
+      />,
       { store }
     );
     expect(screen.getByRole('textbox', { name: 'meeting-details-dialog-label-room-password' })).toBeInTheDocument();
@@ -80,6 +90,7 @@ describe('MeetingDetailsDialog', () => {
         open={true}
         onClose={vi.fn()}
         eventInfo={mockEventInfo}
+        meetingDetails={meetingDetails}
         roomInfo={{ ...mockRoomInfo, password: '' }}
       />,
       { store }
@@ -89,7 +100,13 @@ describe('MeetingDetailsDialog', () => {
 
   it('renders invite link when guests allowed feature is enabled', () => {
     renderWithProviders(
-      <MeetingDetailsDialog open={true} onClose={vi.fn()} eventInfo={mockEventInfo} roomInfo={mockRoomInfo} />,
+      <MeetingDetailsDialog
+        open={true}
+        onClose={vi.fn()}
+        eventInfo={mockEventInfo}
+        meetingDetails={meetingDetails}
+        roomInfo={mockRoomInfo}
+      />,
       { store, provider: { snackbar: true, mui: true } }
     );
     expect(screen.getByRole('textbox', { name: 'meeting-details-dialog-label-invite-link' })).toBeInTheDocument();
@@ -101,11 +118,7 @@ describe('MeetingDetailsDialog', () => {
         config: {
           baseUrl: 'http://localhost:3000',
           tariff: {
-            modules: {
-              core: {
-                features: [],
-              },
-            },
+            disabledFeatures: [CoreFeatures.GuestsAllowed],
           },
         },
       },
@@ -115,6 +128,7 @@ describe('MeetingDetailsDialog', () => {
         open={true}
         onClose={vi.fn()}
         eventInfo={mockEventInfo}
+        meetingDetails={meetingDetails}
         roomInfo={{ ...mockRoomInfo, password: '' }}
       />,
       { store: storeWithGuestsNotAllowed }

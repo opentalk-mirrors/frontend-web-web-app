@@ -195,8 +195,6 @@ presenter-role-revoked = You have revoked the presenter role from { $displayName
 
 sort-label = Order
 sort-by = Sort by
-sort-groups-on = Group filter on
-sort-groups-off = Group filter off
 sort-name-asc = Name (A - Z)
 sort-name-dsc = Name (Z - A)
 sort-first-join = First Join Time
@@ -242,6 +240,8 @@ breakout-notification-joined-session-cta = You joined a conference, where curren
 breakout-notification-joined-session-button = Switch to Room {$roomName}
 breakout-notification-session-ended-header = Breakout Session Ended
 breakout-notification-session-ended-cta = The Breakout Session you were part of ended. Please return to the main conference. You got {$timeInSeconds} seconds before you will be moved automatically.
+breakout-switching-title = Switching rooms
+breakout-switching-description = Establishing media connection. This may take a moment.
 
 jumplink-nav-label = Skip links
 jumplink-skip-to = Skip to
@@ -283,6 +283,8 @@ waiting-room-enabled-message = Waiting room is enabled
 waiting-room-disabled-message = Waiting room is disabled
 more-menu-enable-microphones = Enable microphones
 more-menu-disable-microphones = Disable microphones
+more-menu-disable-display-name-change-restrictions = Enable renaming
+more-menu-enable-display-name-change-restrictions = Disable renaming
 more-menu-enable-chat = Enable chat
 more-menu-disable-chat = Disable chat
 more-menu-moderator-aria-label = Open menu for more options
@@ -298,6 +300,8 @@ microphones-enabled-notification = Microphones were enabled by the moderator
 microphones-disabled-notification = Microphones were disabled by the moderator
 turn-handraises-off-notification = Handraises were disabled by the moderator
 turn-handraises-on-notification = Handraises were enabled by the moderator
+renaming-enabled-notification = Renaming was enabled by the moderator
+renaming-disabled-notification = Renaming was disabled by the moderator
 
 in-waiting-room = You are currently in the waiting room
 in-waiting-room-ready = You are enabled to join the room
@@ -420,6 +424,8 @@ legal-vote-select-participants-title = Select participants
 legal-vote-form-duration = Duration
 legal-vote-form-duration-unlimited = Unlimited
 legal-vote-form-allow-abstain = Allow Abstaining
+legal-vote-form-allow-pseudonymous = Pseudonymous
+legal-vote-form-live = Live
 legal-vote-form-auto-stop = Auto Close
 legal-vote-form-hidden-voting = Secret Voting
 legal-vote-form-auto-stop-tooltip = Activate or deactivate automatic exit once all votes have been cast
@@ -556,7 +562,7 @@ poll-topic-label = Topic
 poll-topic-placeholder = What is your poll about?
 poll-input-option = Add Option {$number}
 poll-input-option-button = Add Option
-poll-input-option-max = Limit of {$max} options reached 
+poll-input-option-max = Limit of {$max} options reached
 poll-form-input-error-max = Max {$max} characters
 poll-form-input-error-min = Topic required with min. {$min} letters
 poll-form-input-required = Required field
@@ -750,6 +756,7 @@ global-meeting = { $count ->
 global-open-new-tab = Open in new tab
 global-required-field = This is a mandatory field
 global-unknown = Unknown
+global-rename = Rename
 
 retry-available-in = Retry available in {$seconds}
 
@@ -1255,7 +1262,6 @@ legal-vote-report-issue-description-placeholder = Describe the problem...
 
 legal-vote-stopped-invalid-results-notification = Unfortunately something went wrong during the vote. Please inform the moderator or try again.
 
-display-name-change-notification = Moderator {moderatorName} changed the display name of {oldName} to {newName}
 display-name-character-limit-error = name must be at most { $limit } characters
 
 whisper-group-disbanded = Your whisper group has been disbanded.
@@ -1315,3 +1321,8 @@ meeting-inactivity-termination-notification = This conference has been inactive 
     [one] one minute
    *[other] {$minutes} minutes
 } and is now being ended.
+
+rename-self-notification = You changed your display name to '{$newName}'.
+rename-other-target-notification = Your display name was changed to '{$newName}' by moderator {$actorName}.
+rename-other-feedback-notification = You changed the name of '{$oldName}' to '{$newName}'.
+rename-general-notification = {$actorName} changed the display name of '{$oldName}' to '{$newName}'.

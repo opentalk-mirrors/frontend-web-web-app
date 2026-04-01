@@ -5,7 +5,7 @@ import { screen } from '@testing-library/react';
 
 import { ParticipationKind } from '../../../types';
 import { getInitials } from '../../../utils/stringUtils';
-import { mockedParticipant, mockStore, renderWithProviders } from '../../../utils/testUtils';
+import { mockStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import { AvatarContainer } from './AvatarContainer';
 
 describe('render <AvatarContainer />', () => {
@@ -14,15 +14,21 @@ describe('render <AvatarContainer />', () => {
 
   it('should render AvatarContainer component with initial', () => {
     const { store } = mockStore(1);
-    renderWithProviders(<AvatarContainer participantId={participant.id} />, { store, provider: { mui: true } });
+    renderWithProviders(<AvatarContainer participantId={participant.id} />, {
+      store,
+      provider: { mui: true },
+    });
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
     expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
     expect(screen.getByText(initials)).toBeInTheDocument();
   });
 
   it('render with isSipParticipant flag should not render initials', () => {
-    const { store } = mockStore(1, { participantKinds: [ParticipationKind.Sip] });
-    renderWithProviders(<AvatarContainer participantId={participant.id} />, { store, provider: { mui: true } });
+    const { store } = mockStore(1, { participantKinds: [ParticipationKind.CallIn] });
+    renderWithProviders(<AvatarContainer participantId={participant.id} />, {
+      store,
+      provider: { mui: true },
+    });
     expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
     expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
     expect(screen.queryByTestId('avatarIcon')).not.toBeInTheDocument();

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, styled } from '@mui/material';
 import { debounce } from 'lodash';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { LastSeenTimestampAddedPayload, setLastSeenTimestamp } from '../../api/types/outgoing/chat';
@@ -11,13 +11,8 @@ import { useAppSelector } from '../../hooks';
 import { getCurrentConferenceRoom } from '../../modules/WebRTC/ConferenceRoom';
 import { lastSeenTimestampAdded, selectLastMessageForScope } from '../../store/slices/chatSlice';
 import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
-import {
-  selectChatConversationScope,
-  selectChatConversationTargetId,
-  selectChatSearchValue,
-  setChatSearchValue,
-} from '../../store/slices/uiSlice';
-import { ChatMessage, ChatScope, GroupId, ParticipantId, Timestamp } from '../../types';
+import { selectChatSearchValue, setChatSearchValue } from '../../store/slices/uiSlice';
+import { ChatIdentifier, ChatScope, Timestamp } from '../../types';
 import ChatForm from './fragments/ChatForm';
 import ChatList from './fragments/ChatList';
 import ChatLiveRegion from './fragments/ChatLiveRegion';
@@ -29,34 +24,19 @@ const Container = styled(Stack)({
   width: '100%',
 });
 
-interface ChatProps {
+export type ChatProps = {
+  chatIdentifier: ChatIdentifier;
   autoFocusMessageInput?: boolean;
-}
+};
 
-const Chat = ({ autoFocusMessageInput }: ChatProps) => {
+const Chat = ({ autoFocusMessageInput, chatIdentifier }: ChatProps) => {
   // Default value is used when we switch tabs and component remounts.
   const defaultChatValue = useAppSelector(selectChatSearchValue);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const [searchValue, setSearchValue] = useState<string>(defaultChatValue);
   const dispatch = useDispatch();
   const chatSearchInputReference = useRef<HTMLInputElement | null>(null);
-  const scope = useAppSelector(selectChatConversationScope);
-  const target = useAppSelector(selectChatConversationTargetId);
-  const lastMessageForScope = useAppSelector((state) => selectLastMessageForScope(state, scope, target));
-
-  const constructLastSeenPayload = useCallback((lastMessageForScope: ChatMessage): LastSeenTimestampAddedPayload => {
-    const { scope, target } = lastMessageForScope;
-    const timestamp = lastMessageForScope.timestamp as Timestamp;
-
-    switch (scope) {
-      case ChatScope.Global:
-        return { scope, timestamp };
-      case ChatScope.Private:
-        return { scope, timestamp, target: target as ParticipantId };
-      case ChatScope.Group:
-        return { scope, timestamp, target: target as GroupId };
-    }
-  }, []);
+  const lastMessageForScope = useAppSelector((state) => selectLastMessageForScope(state, chatIdentifier));
 
   const debouncedSetLastSeenTimestamp = useMemo(
     () =>
@@ -76,12 +56,15 @@ const Chat = ({ autoFocusMessageInput }: ChatProps) => {
   // Adds a last seen timestamp when the specific scope is opened or a message in the scope is received while open
   useEffect(() => {
     if (!isRoomDeleted && lastMessageForScope) {
-      const message = constructLastSeenPayload(lastMessageForScope);
+      const message = {
+        ...chatIdentifier,
+        timestamp: lastMessageForScope.timestamp as Timestamp,
+      };
 
       dispatch(lastSeenTimestampAdded(message));
       debouncedSetLastSeenTimestamp(message);
     }
-  }, [dispatch, lastMessageForScope, debouncedSetLastSeenTimestamp, constructLastSeenPayload, isRoomDeleted]);
+  }, [dispatch, lastMessageForScope, debouncedSetLastSeenTimestamp, isRoomDeleted, chatIdentifier]);
 
   const debouncedSetChatSearchValue = useMemo(
     () =>
@@ -114,10 +97,10 @@ const Chat = ({ autoFocusMessageInput }: ChatProps) => {
   return (
     <Container data-testid="chat" spacing={1} sx={{ pt: 0.7 }}>
       <ChatSearch value={searchValue} onChange={onChangeMiddleware} ref={chatSearchInputReference} />
-      <ChatList onReset={resetSearch} />
-      <ChatForm autoFocusMessageInput={autoFocusMessageInput} />
+      <ChatList chatIdentifier={chatIdentifier} onReset={resetSearch} />
+      <ChatForm chatIdentifier={chatIdentifier} autoFocusMessageInput={autoFocusMessageInput} />
       {/* Currently we want to announce only global chat messages */}
-      {scope === ChatScope.Global && <ChatLiveRegion />}
+      {chatIdentifier.scope === ChatScope.Global && <ChatLiveRegion />}
     </Container>
   );
 };

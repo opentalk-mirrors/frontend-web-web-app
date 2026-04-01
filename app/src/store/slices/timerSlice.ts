@@ -15,7 +15,6 @@ import type { StartAppListening } from '../listenerMiddleware';
 
 export type State = {
   startedAt?: Timestamp;
-  timerId?: string;
   endsAt?: Timestamp;
   participantsReady: Array<ParticipantId>;
   readyCheckEnabled?: boolean;
@@ -28,7 +27,6 @@ export type State = {
 
 const initialState: State = {
   startedAt: undefined,
-  timerId: undefined,
   endsAt: undefined,
   participantsReady: [],
   readyCheckEnabled: undefined,
@@ -56,7 +54,6 @@ export const timerSlice = createSlice({
       }
     },
     timerStarted: (state, { payload }) => {
-      state.timerId = payload.timerId;
       state.startedAt = payload.startedAt;
       state.endsAt = payload.endsAt;
       state.readyCheckEnabled = payload.readyCheckEnabled;
@@ -72,7 +69,6 @@ export const timerSlice = createSlice({
       state.timerStopKind = undefined;
     },
     timerStopped: (state, { payload }) => {
-      state.timerId = undefined;
       state.startedAt = undefined;
       state.endsAt = undefined;
       state.readyCheckEnabled = undefined;
@@ -87,7 +83,6 @@ export const timerSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload: { participantId, participantsReady, timer } }) => {
       if (timer) {
-        state.timerId = timer.timerId;
         state.startedAt = timer.startedAt;
         state.endsAt = timer.endsAt;
         state.kind = timer.kind;
@@ -116,7 +111,6 @@ export const { updateParticipantsReady, resetTimerState, timerStarted, timerStop
 export const actions = timerSlice.actions;
 
 export const selectTimerStartedAt = (state: RootState) => state.timer.startedAt;
-export const selectTimerId = (state: RootState) => state.timer.timerId;
 export const selectTimerEndsAt = (state: RootState) => state.timer.endsAt;
 export const selectParticipantsReady = (state: RootState) => state.timer.participantsReady;
 export const selectReadyCheckEnabled = (state: RootState) => state.timer.readyCheckEnabled;
@@ -125,8 +119,6 @@ export const selectTimerActive = (state: RootState) => state.timer.startedAt && 
 export const selectTimerKind = (state: RootState) => state.timer.kind;
 export const selectTimerStyle = (state: RootState) => state.timer.style;
 export const selectTotalDuration = (state: RootState) => state.timer.totalDuration;
-export const selectCoffeeBreakTimerId = (state: RootState) =>
-  state.timer.style === TimerStyle.CoffeeBreak ? state.timer.timerId : undefined;
 
 export default timerSlice.reducer;
 

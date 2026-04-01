@@ -5,7 +5,8 @@ import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { styled } from '@mui/material';
 import { memo, useRef, useState } from 'react';
 
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { selectUserAsParticipant } from '../../store/selectors';
 import {
   selectAudioEnabled,
   selectLivekitAccessToken,
@@ -16,9 +17,14 @@ import {
 } from '../../store/slices/livekitSlice';
 import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
 import { selectSubroomAudioToken } from '../../store/slices/subroomAudioSlice';
-import { selectShowCoffeeBreakCurtain } from '../../store/slices/uiSlice';
+import {
+  selectSelfRenameDialogVisible,
+  selectShowCoffeeBreakCurtain,
+  setSelfRenameDialogVisible,
+} from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import CoffeeBreakView from '../CoffeeBreakView';
+import RenameParticipantDialog from '../Participants/fragments/RenameParticipantDialog';
 import TimerPopover from '../TimerPopover';
 import InactivityGuard from './fragments/InactivityGuard';
 import InnerLayout from './fragments/InnerLayout';
@@ -76,6 +82,11 @@ const MeetingView = () => {
   const room = useAppSelector(selectLivekitRoom);
   const whisperRoom = useAppSelector(selectLivekitWhisperRoom);
 
+  const dispatch = useAppDispatch();
+  const isSelfRenameDialogVisible = useAppSelector(selectSelfRenameDialogVisible);
+  const participant = useAppSelector(selectUserAsParticipant);
+  const close = () => dispatch(setSelfRenameDialogVisible(false));
+
   if (room === undefined) {
     return null;
   }
@@ -111,6 +122,9 @@ const MeetingView = () => {
         </Container>
         {isRoomDeleted && !isDialogOpen && <MeetingEndedDialog setIsDialogOpen={setIsDialogOpen} />}
         <InactivityGuard />
+        {isSelfRenameDialogVisible && participant && (
+          <RenameParticipantDialog open onClose={close} participant={participant} selfRename />
+        )}
       </RoomContainer>
     </>
   );

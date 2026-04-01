@@ -28,7 +28,7 @@ const Video = ({ mediaDescriptor, room }: { mediaDescriptor: MediaDescriptor; ro
     let timeout: NodeJS.Timeout;
     if (videoTrack === undefined) {
       timeout = setTimeout(() => {
-        const participant = room.remoteParticipants.get(mediaDescriptor.participantId);
+        const participant = room.remoteParticipants.get(mediaDescriptor.connectionIdentifier);
         setParticipant(participant);
         const participantVideoTrack = participant?.getTrackPublication(mediaDescriptor.mediaType);
         setVideoTrack(participantVideoTrack);
@@ -39,7 +39,7 @@ const Video = ({ mediaDescriptor, room }: { mediaDescriptor: MediaDescriptor; ro
         clearTimeout(timeout);
       }
     };
-  }, [mediaDescriptor.mediaType, mediaDescriptor.participantId, room, videoTrack]);
+  }, [mediaDescriptor.mediaType, mediaDescriptor.connectionIdentifier, room, videoTrack]);
 
   const handleResize = useCallback(() => {
     setWindowHeight(window.innerHeight);

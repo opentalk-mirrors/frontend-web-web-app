@@ -6,48 +6,74 @@ import {
   BreakoutRoom,
   BreakoutRoomId,
   ErrorStruct,
+  ModuleData,
   NamespacedIncoming,
   ParticipantId,
-  ParticipantInOtherRoom,
+  RoomKindBreakout,
+  RoomKindMain,
+  Timestamp,
 } from '../../../types';
 import { isEnumErrorStruct } from '../../../utils/tsUtils';
 
-export interface AssocParticipantInOtherRoom {
-  // BreakoutRoomId or null, null means the participant was in the parent room.
-  breakoutRoom: BreakoutRoomId | null;
-  id: ParticipantId;
-}
-
 export interface Started {
   message: 'started';
+  startedBy: ParticipantId;
   rooms: Array<BreakoutRoom>;
-  assignment: BreakoutRoomId | null;
-  expires?: string;
+  expiresAt?: Timestamp;
+  assignment?: BreakoutRoomId;
 }
 
-export interface Stopped {
-  message: 'stopped';
+export interface ParticipantSwitchedRoom {
+  message: 'participant_switched_room';
+  participantId: ParticipantId;
+  oldRoom: RoomKindMain | RoomKindBreakout;
+  newRoom: RoomKindMain | RoomKindBreakout;
+  moduleData?: ModuleData;
 }
 
-export interface Expired {
-  message: 'expired';
+export interface SwitchedRoom {
+  message: 'switched_room';
+  ownData?: ModuleData;
+  oldRoom: RoomKindMain | RoomKindBreakout;
+  newRoom: RoomKindMain | RoomKindBreakout;
+  peerData?: ModuleData;
 }
 
-export interface Joined extends ParticipantInOtherRoom {
-  message: 'joined';
+export interface CloseNotice {
+  message: 'close_notice';
+  issuedBy: ParticipantId;
+  stopsAt: Timestamp;
 }
 
-export interface Left extends AssocParticipantInOtherRoom {
-  message: 'left';
+export interface Closing {
+  message: 'closing';
+  issuedBy: ParticipantId;
+}
+
+export interface Closed {
+  message: 'closed';
 }
 
 export enum BreakoutError {
-  InsufficientPermissions = 'insufficient_permissions',
+  InsufficientPermission = 'insufficient_permission',
+  AlreadyActive = 'already_active',
+  AlreadyInRoom = 'already_in_room',
+  UnknownParticipant = 'unknown_participant',
+  InvalidSelection = 'invalid_selection',
+  UnknownBreakoutId = 'unknown_breakout_id',
+  BreakoutInactive = 'breakout_inactive',
 }
 
 export const isError = isEnumErrorStruct(BreakoutError);
 
-export type Message = Started | Stopped | Expired | Joined | Left | ErrorStruct<BreakoutError>;
+export type Message =
+  | Started
+  | ParticipantSwitchedRoom
+  | SwitchedRoom
+  | CloseNotice
+  | Closing
+  | Closed
+  | ErrorStruct<BreakoutError>;
 export type Breakout = NamespacedIncoming<Message, 'breakout'>;
 
 export default Breakout;

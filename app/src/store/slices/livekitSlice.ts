@@ -34,6 +34,7 @@ import {
 } from 'livekit-client';
 
 import { Credentials } from '../../api/types/incoming/livekit';
+import { switchRoom } from '../../api/types/outgoing/breakout';
 import { createNewAccessToken } from '../../api/types/outgoing/livekit';
 import { leaveWhisperGroup } from '../../api/types/outgoing/subroomAudio';
 import { notifications } from '../../commonComponents';
@@ -41,7 +42,7 @@ import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import log from '../../logger';
 import { MediaDescriptor } from '../../modules/WebRTC';
-import { ParticipantId, TimerStyle, VideoSetting } from '../../types';
+import { ConnectionIdentifier, RoomKind, TimerStyle, VideoSetting } from '../../types';
 import { BackgroundEffect } from '../../types/livekit';
 import { insertItem, removeItem } from '../../utils/reduxUtils';
 import {
@@ -59,10 +60,11 @@ import {
 } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
+import { switchedRoom } from './breakoutSlice';
 import { abortedReconnection, enteredWaitingRoom } from './roomSlice';
 import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice';
 import { timerStarted } from './timerSlice';
-import { pinnedParticipantIdSet, pinnedRemoteScreenshare, updatedCinemaLayout } from './uiSlice';
+import { pinnedConnectionIdentifierSet, pinnedRemoteScreenshare, updatedCinemaLayout } from './uiSlice';
 
 type WritableDraft<T> = {
   -readonly [K in keyof T]: Draft<T[K]>;
@@ -336,6 +338,13 @@ export const livekitSlice = createSlice({
     builder.addCase(startBroadcastRoom, (state) => {
       state.isPopoutStream = true;
     });
+    builder.addCase(switchedRoom, (state, { payload }) => {
+      const livekitData = payload.ownData?.livekit;
+      if (livekitData) {
+        state.accessToken = livekitData.token;
+        state.publicUrl = livekitData.publicUrl;
+      }
+    });
   },
 });
 
@@ -358,7 +367,7 @@ export const {
 } = livekitSlice.actions;
 
 export const setLivekitUnavailable = createAction<boolean>('livekit/set_livekit_unavailable');
-export const startBroadcastRoom = createAction<{ accessToken?: string; participantId?: ParticipantId }>(
+export const startBroadcastRoom = createAction<{ accessToken?: string; connectionIdentifier?: string }>(
   'livekit/start_broadcast_room'
 );
 export const cleanLocalTracks = createAction('livekit/clean_local_tracks');
@@ -398,12 +407,13 @@ export const selectScreenshareChangeInProgress = (state: RootState) =>
 export const selectLivekitPopoutStreamAccessByParticipantId = createSelector(
   [
     (state: RootState) => state.livekit.popoutStreamAccesses,
-    (_state: RootState, participantId: string) => participantId,
+    (_state: RootState, connectionIdentifier: ConnectionIdentifier) => connectionIdentifier,
   ],
-  (popoutStreamAccess, participantId) => {
+  (popoutStreamAccess, connectionIdentifier) => {
     return popoutStreamAccess.find(
       (popoutStreamAccess) =>
-        popoutStreamAccess.mediaDescriptor.participantId === participantId && popoutStreamAccess.token !== undefined
+        popoutStreamAccess.mediaDescriptor.connectionIdentifier === connectionIdentifier &&
+        popoutStreamAccess.token !== undefined
     );
   }
 );
@@ -600,6 +610,20 @@ const startNewAccessTokenListener = (startAppListening: StartAppListening) =>
     },
   });
 
+const startSwitchRoomListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: switchRoom.action,
+    effect: (action, listenerApi) => {
+      const state = listenerApi.getState();
+      const room = state.livekit.room;
+
+      if (room && action.payload.kind === RoomKind.Breakout) {
+        // ensures LiveKit creates a new connection; prevents "already connected to room ..." error
+        room.disconnect();
+      }
+    },
+  });
+
 const BASE_RETRY_DELAY = 500; // ms
 const MAX_RETRY_DELAY = 20000; // ms
 const RECONNECT_INDICATOR_THRESHOLD = 0;
@@ -745,6 +769,7 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startAbortReconnectListeners(startAppListening);
   startDisconnectRoomCleanupListener(startAppListening);
   startPageUnloadCleanupListener(startAppListening);
+  startSwitchRoomListener(startAppListening);
 };
 
 /************************************************/
@@ -904,7 +929,7 @@ const handleEncryptionError = (error: Error) => {
 
 const handleTrackPublished = (pub: RemoteTrackPublication, participant: RemoteParticipant, dispatch: AppDispatch) => {
   if (pub.source === Track.Source.ScreenShare) {
-    dispatch(pinnedRemoteScreenshare(participant.identity as ParticipantId));
+    dispatch(pinnedRemoteScreenshare(participant.identity as ConnectionIdentifier));
     dispatch(updatedCinemaLayout({ layout: LayoutOptions.Speaker }));
   }
 };
@@ -916,8 +941,8 @@ const handleRemoteTrackUnpublished = (
   getState: () => RootState
 ) => {
   const state = getState();
-  if (pub.source === Track.Source.ScreenShare && participant.identity === state.ui.pinnedParticipantId) {
-    dispatch(pinnedParticipantIdSet(undefined));
+  if (pub.source === Track.Source.ScreenShare && participant.identity === state.ui.pinnedConnectionIdentifier) {
+    dispatch(pinnedConnectionIdentifierSet(undefined));
     dispatch(updatedCinemaLayout({ layout: state.ui.lastCinemaLayout }));
   }
 };

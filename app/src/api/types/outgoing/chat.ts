@@ -2,51 +2,33 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { RootState } from '../../../store';
-import { ChatScope, GroupId, Namespaced, ParticipantId, TargetId, Timestamp, createModule } from '../../../types';
+import { ChatIdentifier, ChatScope, Namespaced, Timestamp, createModule, TargetId } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { ClearGlobalMessages, sendMessage } from './common';
 
-interface ChatActionBase {
-  content: string;
-}
-interface SendMessage extends ChatActionBase {
+type SendMessage = {
   action: 'send_message';
-  target?: TargetId;
-  scope: ChatScope;
-}
-interface EnableChat {
+  content: string;
+} & ChatIdentifier;
+
+type EnableChat = {
   action: 'enable_chat';
-}
+};
 
-interface DisableChat {
+type DisableChat = {
   action: 'disable_chat';
-}
-
-type LastSeenGlobalTimestampAddedPayload = {
-  scope: ChatScope.Global;
-  target?: never;
 };
 
-type LastSeenPrivateTimestampAddedPayload = {
-  scope: ChatScope.Private;
-  target: ParticipantId;
-};
-
-type LastSeenGroupTimestampAddedPayload = {
-  scope: ChatScope.Group;
-  target: GroupId;
-};
-
-export type LastSeenTimestampAddedPayload = {
+type LastSeenTimestampAddedPayloadBase = {
   timestamp: Timestamp;
-} & (LastSeenGlobalTimestampAddedPayload | LastSeenPrivateTimestampAddedPayload | LastSeenGroupTimestampAddedPayload);
+};
 
-interface SetLastSeenTimestamp {
+export type LastSeenTimestampAddedPayload = ChatIdentifier & LastSeenTimestampAddedPayloadBase;
+
+export type SetLastSeenTimestamp = {
   action: 'set_last_seen_timestamp';
   timestamp: Timestamp;
-  scope: ChatScope;
-  target?: TargetId;
-}
+} & ChatIdentifier;
 
 interface GetHistoryChunk {
   action: 'get_history_chunk';

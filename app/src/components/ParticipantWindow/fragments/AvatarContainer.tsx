@@ -42,7 +42,7 @@ export const AvatarContainer = ({ participantId }: AvatarContainerProps) => {
       flexWrap="nowrap"
       data-testid="avatarContainer"
     >
-      <Avatar src={avatarUrl} isSipParticipant={participationKind === ParticipationKind.Sip}>
+      <Avatar src={avatarUrl} isSipParticipant={participationKind === ParticipationKind.CallIn}>
         {displayName || ''}
       </Avatar>
     </Container>

@@ -32,11 +32,9 @@ export interface AutomodState {
   selectionStrategy: AutomodSelectionStrategy;
   history: EntityState<ParticipantId, ParticipantId>;
   remaining: EntityState<ParticipantId, ParticipantId>;
-  animationOnRandom: boolean;
   allowDoubleSelection: boolean;
   timeLimit: MilliSeconds | null;
-  showList: boolean;
-  considerHandRaise: boolean;
+  showRemaining: boolean;
   speakerId?: ParticipantId;
   issuedBy?: ParticipantId;
   speakerState: SpeakerState;
@@ -49,11 +47,9 @@ function getInitialState() {
     selectionStrategy: AutomodSelectionStrategy.Playlist,
     history: historyParticipantsAdapter.getInitialState(),
     remaining: remainingParticipantsAdapter.getInitialState(),
-    animationOnRandom: false,
     allowDoubleSelection: false,
     timeLimit: null,
-    showList: false,
-    considerHandRaise: false,
+    showRemaining: false,
     speakerId: undefined,
     issuedBy: undefined,
     speakerState: SpeakerState.Inactive,
@@ -67,11 +63,9 @@ function reset(state: AutomodState) {
   state.history = historyParticipantsAdapter.getInitialState();
   state.remaining = remainingParticipantsAdapter.getInitialState();
   state.selectionStrategy = initialState.selectionStrategy;
-  state.animationOnRandom = initialState.animationOnRandom;
   state.allowDoubleSelection = initialState.allowDoubleSelection;
   state.timeLimit = initialState.timeLimit;
-  state.showList = initialState.showList;
-  state.considerHandRaise = initialState.considerHandRaise;
+  state.showRemaining = initialState.showRemaining;
   state.speakerId = undefined;
   state.issuedBy = undefined;
   state.speakerState = SpeakerState.Inactive;
@@ -86,11 +80,9 @@ export const automodSlice = createSlice({
       historyParticipantsAdapter.setAll(state.history, payload.history);
       remainingParticipantsAdapter.setAll(state.remaining, payload.remaining);
       state.selectionStrategy = payload.selectionStrategy;
-      state.animationOnRandom = payload.animationOnRandom;
       state.allowDoubleSelection = payload.allowDoubleSelection;
       state.timeLimit = payload.timeLimit || null;
-      state.showList = payload.showList;
-      state.considerHandRaise = payload.considerHandRaise;
+      state.showRemaining = payload.showRemaining;
       state.issuedBy = payload.issuedBy;
     },
     stopped: reset,
@@ -125,11 +117,9 @@ export const automodSlice = createSlice({
         state.history = historyParticipantsAdapter.setAll(state.history, automod.config.history);
         state.remaining = remainingParticipantsAdapter.setAll(state.remaining, automod.config.remaining);
         state.selectionStrategy = automod.config.selectionStrategy;
-        state.animationOnRandom = automod.config.animationOnRandom;
         state.allowDoubleSelection = automod.config.allowDoubleSelection;
         state.timeLimit = automod.config.timeLimit || null;
-        state.showList = automod.config.showList;
-        state.considerHandRaise = automod.config.considerHandRaise;
+        state.showRemaining = automod.config.showRemaining;
         state.speakerId = automod.speaker || undefined;
       } else {
         reset(state);

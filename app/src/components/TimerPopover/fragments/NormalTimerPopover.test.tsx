@@ -18,7 +18,8 @@ vi.mock('../../TimerTab/fragments/TimerDuration', () => ({
 }));
 
 const DEFAULT_TIMER_STATE = {
-  timerId: 'timer-123',
+  startedAt: Date.now(),
+  timerStopKind: undefined,
   title: 'Daily standup',
   readyCheckEnabled: true,
   participantsReady: [] as string[],
@@ -60,7 +61,7 @@ describe('NormalTimerPopover', () => {
   });
 
   it('keeps the popover hidden when no timer is active', () => {
-    renderComponent({ timerId: undefined });
+    renderComponent({ startedAt: undefined });
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
@@ -71,9 +72,7 @@ describe('NormalTimerPopover', () => {
 
     await user.click(screen.getByRole('button', { name: 'timer-popover-button-done' }));
 
-    expect(dispatchSpy.mock.calls).toContainEqual([
-      readyToContinue.action({ timerId: DEFAULT_TIMER_STATE.timerId, status: true }),
-    ]);
+    expect(dispatchSpy.mock.calls).toContainEqual([readyToContinue.action({ status: true })]);
   });
 
   it('dispatches readyToContinue with status false when toggling readiness off', async () => {
@@ -82,9 +81,7 @@ describe('NormalTimerPopover', () => {
 
     await user.click(screen.getByRole('button', { name: 'timer-popover-button-not-done' }));
 
-    expect(dispatchSpy.mock.calls).toContainEqual([
-      readyToContinue.action({ timerId: DEFAULT_TIMER_STATE.timerId, status: false }),
-    ]);
+    expect(dispatchSpy.mock.calls).toContainEqual([readyToContinue.action({ status: false })]);
   });
 
   it('does not show the ready button when ready check is disabled', () => {

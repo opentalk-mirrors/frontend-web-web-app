@@ -45,7 +45,7 @@ const RoomAssetTable = ({ roomId, isMeetingCreator, recurrenceInstance }: RoomAs
 
   const handleDelete = async (assetId: AssetId) => {
     return await deleteRoomAsset({ roomId, assetId }).catch((error) => {
-      log.error(`Error occured when deleting asset ${assetId}: `, error);
+      log.error(`Error occurred when deleting asset ${assetId}: `, error);
       notifications.error(t('asset-delete-error'));
     });
   };

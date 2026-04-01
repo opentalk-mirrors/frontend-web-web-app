@@ -12,18 +12,15 @@ vi.mock('@livekit/components-react', () => ({
 }));
 
 describe('ParticipantsContainer', () => {
-  const participants = [{ ...mockedParticipant(0), groups: ['Group A'] }];
+  const participants = [{ ...mockedParticipant(0) }];
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders search, grouping form, and grouped participants if grouping is enabled', () => {
+  it('renders search', () => {
     const { store } = configureStore({
       initialState: {
-        user: {
-          groups: ['Group A'],
-        },
         ui: {
           showParticipantGroups: true,
           participantsSearchValue: '',
@@ -37,17 +34,11 @@ describe('ParticipantsContainer', () => {
     renderWithProviders(<ParticipantsContainer />, { store, provider: { mui: true } });
 
     expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('switch')).toBeInTheDocument();
-    // Grouped view: should render ParticipantGroups
-    expect(screen.getByRole('heading', { level: 4 })).toBeInTheDocument();
   });
 
   it('renders ungrouped participants if grouping is disabled', () => {
     const { store } = configureStore({
       initialState: {
-        user: {
-          groups: ['Group A'],
-        },
         ui: {
           showParticipantGroups: false,
           participantsSearchValue: '',
@@ -66,9 +57,6 @@ describe('ParticipantsContainer', () => {
   it('dispatches setParticipantsSearchValue when search changes', () => {
     const { store } = configureStore({
       initialState: {
-        user: {
-          groups: ['Group A'],
-        },
         ui: {
           showParticipantGroups: false,
           participantsSearchValue: '',

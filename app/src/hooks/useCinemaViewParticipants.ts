@@ -8,7 +8,8 @@ import { useMemo } from 'react';
 import { CinemaViewSortOrder } from '../store/slices/common';
 import { selectAllOnlineParticipants } from '../store/slices/participantsSlice';
 import { selectCinemaViewOrder } from '../store/slices/uiSlice';
-import { Participant, Role } from '../types';
+import { Participant, ParticipationKind, Role } from '../types';
+import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
 import { useAppSelector } from './useCustomRedux';
 
 export type CinemaViewParticipant = Participant & {
@@ -18,7 +19,11 @@ export type CinemaViewParticipant = Participant & {
   lastSpokeAt?: Date;
 };
 
-const ROLE_SORT_MAP: Record<Role, number> = { moderator: 0, user: 1, guest: 2 };
+const ROLE_SORT_MAP: Record<Role, number> = { [Role.Moderator]: 0, [Role.User]: 1 };
+const PARTICIPATION_SORT_MAP: Partial<Record<ParticipationKind, number>> = {
+  [ParticipationKind.Registered]: 0,
+  [ParticipationKind.Guest]: 1,
+};
 /**
  * Merges participant data from controller with livekit participant data and sorts it
  * according to the selected cinema view sort order
@@ -48,19 +53,40 @@ export function useCinemaViewParticipants(): {
   const viewOrder = useAppSelector(selectCinemaViewOrder);
 
   const cinemaViewParticipants = useMemo(() => {
-    const mergedParticipants = onlineParticipants.map((op) => {
-      const remoteParticipant = remoteParticipantsMap.get(op.id);
-      return {
-        ...op,
-        audioLevel: remoteParticipant?.audioLevel ?? 0,
-        isCameraEnabled: remoteParticipant?.isCameraEnabled ?? false,
-        isSpeaking: remoteParticipant?.isSpeaking ?? false,
-        lastSpokeAt: remoteParticipant?.lastSpokeAt,
-      };
+    const mergedParticipants = onlineParticipants.flatMap((op) => {
+      return op.connections.map((connectionId) => {
+        const combinedId = constructConnectionIdentifier(op.id, connectionId);
+        const remoteParticipant = remoteParticipantsMap.get(combinedId);
+
+        return {
+          ...op,
+          connections: [connectionId],
+          audioLevel: remoteParticipant?.audioLevel ?? 0,
+          isCameraEnabled: remoteParticipant?.isCameraEnabled ?? false,
+          isSpeaking: remoteParticipant?.isSpeaking ?? false,
+          lastSpokeAt: remoteParticipant?.lastSpokeAt,
+        };
+      });
     });
+
     return mergedParticipants.sort((a, b) => {
       if (viewOrder === CinemaViewSortOrder.ModeratorsFirst) {
-        return ROLE_SORT_MAP[a.role || Role.Guest] - ROLE_SORT_MAP[b.role || Role.Guest];
+        const aRole = a.role ?? Role.User;
+        const bRole = b.role ?? Role.User;
+        const roleDelta = ROLE_SORT_MAP[aRole] - ROLE_SORT_MAP[bRole];
+        if (roleDelta !== 0) {
+          return roleDelta;
+        }
+
+        // Within Role.User, prioritize Registered over Guest
+        if (aRole === Role.User && bRole === Role.User) {
+          const aPart = PARTICIPATION_SORT_MAP[a.participationKind] ?? 1;
+          const bPart = PARTICIPATION_SORT_MAP[b.participationKind] ?? 1;
+          const partDelta = aPart - bPart;
+          if (partDelta !== 0) {
+            return partDelta;
+          }
+        }
       } else if (viewOrder === CinemaViewSortOrder.VideoFirst) {
         if (a.isCameraEnabled !== b.isCameraEnabled) {
           return a.isCameraEnabled ? -1 : 1;

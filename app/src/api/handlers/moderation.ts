@@ -3,22 +3,32 @@
 // SPDX-License-Identifier: EUPL-1.2
 import i18next from 'i18next';
 
-import { notifications, setLibravatarOptions } from '../../commonComponents';
+import { notifications } from '../../commonComponents';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import { hangUp } from '../../store/commonActions';
-import { selectLibravatarDefaultImage } from '../../store/slices/configSlice';
-import { disableRaisedHands, enableRaisedHands, forceLowerHand } from '../../store/slices/moderationSlice';
-import { rename as participantsRename, waitingRoomJoined, waitingRoomLeft } from '../../store/slices/participantsSlice';
+import {
+  disabledSelfRename,
+  enabledSelfRename,
+  forceMuteDisabled,
+  forceMuteEnabled,
+} from '../../store/slices/moderationSlice';
+import { patch } from '../../store/slices/participantsSlice';
 import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
-import { setDisplayName } from '../../store/slices/userSlice';
-import { Role } from '../../types';
+import { updateRole } from '../../store/slices/userSlice';
+import { Role, Timestamp } from '../../types';
 import { moderation } from '../types/incoming';
+import { participantRename } from './helpers';
 
 /**
  * Handles messages in the moderation namespace.
  */
-export const handleModerationMessage = (dispatch: AppDispatch, data: moderation.Message, state: RootState) => {
+export const handleModerationMessage = (
+  dispatch: AppDispatch,
+  data: moderation.Message,
+  timestamp: Timestamp,
+  state: RootState
+) => {
   switch (data.message) {
     case 'kicked':
       dispatch(hangUp());
@@ -39,67 +49,90 @@ export const handleModerationMessage = (dispatch: AppDispatch, data: moderation.
     case 'waiting_room_disabled':
       dispatch(disableWaitingRoom());
       break;
-    case 'joined_waiting_room':
-      {
-        const modifiedData = {
-          ...data,
-          control: {
-            ...data.control,
-            avatarUrl: setLibravatarOptions(data.control.avatarUrl, {
-              defaultImage: selectLibravatarDefaultImage(state),
-            }),
-          },
-        };
-        dispatch(waitingRoomJoined(modifiedData));
-      }
-      break;
-    case 'left_waiting_room':
-      dispatch(waitingRoomLeft(data.id));
-      break;
-    case 'in_waiting_room':
-      dispatch(enteredWaitingRoom());
-      break;
     case 'accepted':
       dispatch(readyToEnter());
-      break;
-    case 'raised_hand_reset_by_moderator':
-      notifications.info(i18next.t('reset-handraises-notification'));
-      dispatch(forceLowerHand());
-      break;
-    case 'raise_hands_disabled':
-      notifications.info(i18next.t('turn-handraises-off-notification'));
-      dispatch(forceLowerHand());
-      dispatch(disableRaisedHands());
-      break;
-    case 'raise_hands_enabled':
-      notifications.info(i18next.t('turn-handraises-on-notification'));
-      dispatch(enableRaisedHands());
       break;
     case 'debriefing_started':
       notifications.info(i18next.t('debriefing-started-notification'));
       break;
-    case 'session_ended':
-      dispatch(hangUp());
-      notifications.info(
-        i18next.t(
-          state.user.role === Role.Moderator
-            ? 'debriefing-session-ended-for-all-notification'
-            : 'debriefing-session-ended-notification'
-        )
-      );
-      break;
-    case 'display_name_changed':
-      dispatch(participantsRename({ id: data.target, displayName: data.newName }));
-      if (data.target === state.user.uuid) {
-        dispatch(setDisplayName(data.newName));
+    // case 'session_ended':
+    //   dispatch(hangUp());
+    //   notifications.info(
+    //     i18next.t(
+    //       state.user.role === Role.Moderator
+    //         ? 'debriefing-session-ended-for-all-notification'
+    //         : 'debriefing-session-ended-notification'
+    //     )
+    //   );
+    //   break;
+    case 'display_name_changed': {
+      dispatch(participantRename({ id: data.target, newName: data.newName }));
+      const isSelf = data.target === state.user.uuid;
+      const issuedBySelf = data.issuedBy === state.user.uuid;
+      const actorName = state.participants.entities[data.issuedBy]?.displayName ?? 'unknown';
+
+      if (issuedBySelf && isSelf) {
+        notifications.info(i18next.t('rename-self-notification', { newName: data.newName }));
+      } else if (issuedBySelf) {
+        notifications.info(
+          i18next.t('rename-other-feedback-notification', { oldName: data.oldName, newName: data.newName })
+        );
+      } else if (isSelf) {
+        notifications.info(i18next.t('rename-other-target-notification', { actorName, newName: data.newName }));
+      } else {
+        notifications.info(
+          i18next.t('rename-general-notification', { oldName: data.oldName, newName: data.newName, actorName })
+        );
       }
-      notifications.info(
-        i18next.t('display-name-change-notification', {
-          moderatorName: state.participants.entities[data.issued_by]?.displayName || '',
-          oldName: data.oldName,
-          newName: data.newName,
-        })
+
+      break;
+    }
+    case 'muted': {
+      const participants = state.participants.entities;
+      notifications.warning(
+        i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
       );
+      return;
+    }
+    case 'role_updated':
+      if (data.participantId === state.user.uuid) {
+        dispatch(updateRole(data.newRole));
+        if (data.newRole === Role.Moderator) {
+          notifications.info(i18next.t('moderation-rights-granted'));
+        } else {
+          notifications.warning(i18next.t('moderation-rights-revoked'));
+        }
+      } else {
+        dispatch(
+          patch({
+            participantId: data.participantId,
+            lastActive: timestamp,
+            role: data.newRole,
+          })
+        );
+      }
+      break;
+    case 'participant_accepted':
+      break;
+    case 'microphone_restrictions_enabled':
+      dispatch(forceMuteEnabled({ unrestrictedParticipants: data.unrestrictedParticipants }));
+      if (state.user.uuid !== null && !data.unrestrictedParticipants.includes(state.user.uuid)) {
+        notifications.info(i18next.t('microphones-disabled-notification'));
+      }
+      break;
+    case 'microphone_restrictions_disabled':
+      dispatch(forceMuteDisabled());
+      if (state.user.uuid && !state.moderation.forceMute.unrestrictedParticipants.includes(state.user.uuid)) {
+        notifications.info(i18next.t('microphones-enabled-notification'));
+      }
+      break;
+    case 'display_name_change_restrictions_enabled':
+      dispatch(disabledSelfRename());
+      notifications.info(i18next.t('renaming-enabled-notification'));
+      break;
+    case 'display_name_change_restrictions_disabled':
+      dispatch(enabledSelfRename());
+      notifications.info(i18next.t('renaming-disabled-notification'));
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);

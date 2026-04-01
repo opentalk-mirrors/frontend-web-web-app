@@ -14,7 +14,7 @@ import { LegalVoteId } from '../../../types';
 import yup from '../../../utils/yupUtils';
 
 const reportValidationScheme = yup.object({
-  legal_vote_id: yup.string().uuid().required(),
+  legalVoteId: yup.string().uuid().required(),
   kind: yup
     .string()
     .equals([ReportIssueKind.Screenshare, ReportIssueKind.Audio, ReportIssueKind.Video, ReportIssueKind.Other])
@@ -27,7 +27,7 @@ const reportValidationScheme = yup.object({
 });
 
 type ReportSectionProps = {
-  legalVoteId: string;
+  legalVoteId: LegalVoteId;
 };
 
 const KIND_OPTIONS = [
@@ -67,7 +67,7 @@ export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
 
   const initialValues = useMemo(
     () => ({
-      legal_vote_id: legalVoteId as LegalVoteId,
+      legalVoteId,
       ...FORMIK_DEFAULTS,
     }),
     [legalVoteId]
@@ -154,19 +154,17 @@ export const ReportSection: FC<ReportSectionProps> = ({ legalVoteId }) => {
             ))}
           </RadioGroup>
           {formik.values.kind === ReportIssueKind.Other && (
-            <>
-              <CommonTextField
-                fullWidth
-                name="description"
-                value={formik.values.description}
-                onChange={formik.handleChange}
-                label={t('global-other')}
-                placeholder={t('legal-vote-report-issue-description-placeholder')}
-                multiline
-                maxRows={4}
-                sx={{ mb: 1 }}
-              />
-            </>
+            <CommonTextField
+              fullWidth
+              name="description"
+              value={formik.values.description}
+              onChange={formik.handleChange}
+              label={t('global-other')}
+              placeholder={t('legal-vote-report-issue-description-placeholder')}
+              multiline
+              maxRows={4}
+              sx={{ mb: 1 }}
+            />
           )}
           <Box
             sx={{

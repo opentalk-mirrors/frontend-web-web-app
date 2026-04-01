@@ -4,6 +4,7 @@
 // Switch off the rule, as it doesn't recognize assertion in the utility helper function
 // Maybe it's a bug or maybe it's not a good practice to use this kind of helper function
 /* eslint-disable vitest/expect-expect */
+import { CoreFeatures, BackendModules } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -68,7 +69,12 @@ describe('MoreMenu', () => {
       });
 
     const moderatorState = { user: { role: Role.Moderator }, room: { isOwnedByCurrentUser: true } };
-    const { store } = configureStore({ initialState: { ...moderatorState } });
+    const { store } = configureStore({
+      initialState: {
+        ...moderatorState,
+        config: { tariff: { disabledFeatures: [CoreFeatures.GuestsAllowed] } },
+      },
+    });
 
     describe('invite guest options', () => {
       it('does not render invite guest options if the guests allowed feature is not enabled', () => {
@@ -79,7 +85,7 @@ describe('MoreMenu', () => {
         const { store: storeWithGuestsAllowed } = configureStore({
           initialState: {
             ...moderatorState,
-            config: { tariff: { modules: { core: { features: ['guests_allowed'] } } } },
+            config: { tariff: { disabledFeatures: [] } },
           },
         });
         renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
@@ -99,7 +105,7 @@ describe('MoreMenu', () => {
         const { store: storeWithGuestsAllowed } = configureStore({
           initialState: {
             ...moderatorState,
-            config: { tariff: { modules: { core: { features: ['guests_allowed'] } } } },
+            config: { tariff: { disabledFeatures: [] } },
           },
         });
         renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
@@ -124,7 +130,7 @@ describe('MoreMenu', () => {
     });
     describe('training participation report options', () => {
       describe('if the module is enabled', () => {
-        const config = { tariff: { modules: { trainingParticipationReport: { features: [] } } } };
+        const config = { enabledModules: [BackendModules.TrainingParticipationReport] };
 
         it('shows the enable training participation logging button, if the logging is disabled, and does not show the disable button', () => {
           const { store: storeWithModules } = configureStore({ initialState: { ...moderatorState, config } });
@@ -220,7 +226,7 @@ describe('MoreMenu', () => {
 
     it('shows the meeting notes export option, if the meeting notes module is enabled', () => {
       const { store } = configureStore({
-        initialState: { ...moderatorState, config: { tariff: { modules: { meetingReport: { features: [] } } } } },
+        initialState: { ...moderatorState, config: { enabledModules: [BackendModules.MeetingReport] } },
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
@@ -236,7 +242,7 @@ describe('MoreMenu', () => {
       const { store: storeWithGuestsAllowed } = configureStore({
         initialState: {
           ...moderatorState,
-          config: { tariff: { modules: { core: { features: ['guests_allowed'] } } } },
+          config: { tariff: { disabledFeatures: [] } },
         },
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
@@ -284,7 +290,7 @@ describe('MoreMenu', () => {
         initialState: {
           user: { role: Role.Moderator },
           room: { isOwnedByCurrentUser: true },
-          config: { tariff: { modules: { trainingParticipationReport: { features: [] } } } },
+          config: { enabledModules: [BackendModules.TrainingParticipationReport] },
         },
       });
 

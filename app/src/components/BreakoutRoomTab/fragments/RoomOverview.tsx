@@ -2,22 +2,17 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button as MuiButton, styled, Box, Typography } from '@mui/material';
-import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
 
-import { stop } from '../../../api/types/outgoing/breakout';
+import { stop, switchRoom } from '../../../api/types/outgoing/breakout';
 import { ClockIcon } from '../../../assets/icons';
+import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useInviteCode } from '../../../hooks/useInviteCode';
-import { startRoom } from '../../../store/commonActions';
-import { selectCombinedParticipantsAndUserInCoference } from '../../../store/selectors';
-import { selectAllBreakoutRooms, selectExpiredDate } from '../../../store/slices/breakoutSlice';
-import { selectRoomPassword } from '../../../store/slices/roomSlice';
-import { selectDisplayName, selectOurUuid } from '../../../store/slices/userSlice';
-import { BreakoutRoomId } from '../../../types';
-import { composeRoomPath } from '../../../utils/apiUtils';
+import { selectCombinedParticipantsAndUserInConference } from '../../../store/selectors';
+import { selectAllBreakoutRooms, selectBreakoutStopsAt, selectExpiredDate } from '../../../store/slices/breakoutSlice';
+import { selectOurUuid } from '../../../store/slices/userSlice';
+import { BreakoutRoomId, RoomKind } from '../../../types';
 import RoomOverviewListItem from './RoomOverviewListItem';
 
 const StyledClockIcon = styled(ClockIcon)(({ theme }) => ({
@@ -44,26 +39,20 @@ const ListContainer = styled('div')({
 
 const RoomOverview = () => {
   const [timeLeft, setTimeLeft] = useState<{ minutes: number; seconds: number } | null>(null);
-  const participants = useAppSelector(selectCombinedParticipantsAndUserInCoference);
+  const participants = useAppSelector(selectCombinedParticipantsAndUserInConference);
   const expires = useAppSelector(selectExpiredDate);
-  const { roomId } = useParams<'roomId'>() as {
-    roomId: RoomId;
-  };
-  const roomPassword = useAppSelector(selectRoomPassword);
-  const displayName = useAppSelector(selectDisplayName);
   const ourUuid = useAppSelector(selectOurUuid);
+  const breakoutStopsAt = useAppSelector(selectBreakoutStopsAt);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const breakoutRooms = useAppSelector(selectAllBreakoutRooms);
   const calculateTimeLeft = (expiredDate: Date) => {
-    const distance = expiredDate.getTime() - new Date().getTime();
+    const distance = expiredDate.getTime() - Date.now();
     return {
       minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
       seconds: Math.floor((distance % (1000 * 60)) / 1000),
     };
   };
-  const inviteCode = useInviteCode();
 
   useEffect(() => {
     if (expires === undefined || expires === null) {
@@ -103,7 +92,11 @@ const RoomOverview = () => {
   }, [expires]);
 
   const stopBreakoutRoom = () => {
-    dispatch(stop.action());
+    dispatch(
+      stop.action({
+        delay: BREAKOUT_ROOM_CLOSE_DELAY,
+      })
+    );
   };
 
   const renderDurationText = () => {
@@ -118,29 +111,26 @@ const RoomOverview = () => {
     return t('breakout-room-room-overview-no-duration');
   };
 
-  const navigateToBreakoutRoom = (breakoutRoom: BreakoutRoomId) => {
+  const switchToBreakoutRoom = (id: BreakoutRoomId) => {
     dispatch(
-      startRoom({
-        roomId: roomId,
-        password: roomPassword,
-        breakoutRoomId: breakoutRoom,
-        displayName,
-        inviteCode: inviteCode,
+      switchRoom.action({
+        kind: RoomKind.Breakout,
+        id,
       })
-    ).then(() => navigate(composeRoomPath(roomId, inviteCode, breakoutRoom)));
+    );
   };
 
   const renderAccordions = () => {
     return breakoutRooms.map((breakout) => {
       const participantsInCurrentBreakout = participants
         .filter((participant) => participant.breakoutRoomId === breakout.id && !participant.leftAt)
-        .sort((a, b) => (b.id === ourUuid ? 1 : 0)); //// push the current user in his breakout room on top of the list
+        .sort((_a, b) => (b.id === ourUuid ? 1 : 0)); //// push the current user in his breakout room on top of the list
 
       return (
         <RoomOverviewListItem
           groupedParticipants={participantsInCurrentBreakout}
           breakoutRoomId={breakout.id}
-          joinRoom={(breakoutRoom) => navigateToBreakoutRoom(breakoutRoom)}
+          joinRoom={(breakoutRoom) => switchToBreakoutRoom(breakoutRoom)}
           key={breakout.id}
         />
       );
@@ -184,7 +174,7 @@ const RoomOverview = () => {
         <ListContainer>{renderAccordions()}</ListContainer>
       </Box>
       <Box>
-        <Button variant="contained" onClick={stopBreakoutRoom}>
+        <Button disabled={!!breakoutStopsAt} variant="contained" onClick={stopBreakoutRoom}>
           {t('breakout-room-room-overview-button-close')}
         </Button>
       </Box>

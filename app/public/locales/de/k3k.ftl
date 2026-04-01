@@ -195,8 +195,6 @@ presenter-role-revoked = Sie haben { $displayName } die Rolle des Präsentators 
 
 sort-label = Reihenfolge
 sort-by = Sortierung nach
-sort-groups-on = Gruppenfilter an
-sort-groups-off = Gruppenfilter aus
 sort-name-asc = Name (A - Z)
 sort-name-dsc = Name (Z - A)
 sort-first-join = Zuerst beigetreten
@@ -240,8 +238,10 @@ breakout-notification-joined-session-cta = Sie sind einer Konferenz beigetreten,
    *[other] Die folgenden {$numberOfOtherRooms} anderen Räume sind
 } betretbar:
 breakout-notification-joined-session-button = Zu Breakout-Raum {$roomName} wechseln
-breakout-notification-session-ended-header = Breakout Session beended
+breakout-notification-session-ended-header = Breakout Session beendet
 breakout-notification-session-ended-cta = Die Breakout Session wurde beendet. Bitte gehen Sie zurück in den Hauptraum. Nach {$timeInSeconds} Sekunden werden Sie automatisch zurückgeführt.
+breakout-switching-title = Raumwechsel
+breakout-switching-description = Medienverbindung wird aufgebaut. Bitte haben Sie einen kurzen Moment Geduld.
 
 jumplink-nav-label = Sprunglinks
 jumplink-skip-to = Direkt zu
@@ -283,6 +283,8 @@ waiting-room-enabled-message = Warteraum ist aktiviert
 waiting-room-disabled-message = Warteraum ist deaktiviert
 more-menu-enable-microphones = Mikrofone einschalten
 more-menu-disable-microphones = Mikrofone ausschalten
+more-menu-disable-display-name-change-restrictions = Umbenennung aktivieren
+more-menu-enable-display-name-change-restrictions = Umbenennung deaktivieren
 more-menu-enable-chat = Chat aktivieren
 more-menu-disable-chat = Chat deaktivieren
 more-menu-moderator-aria-label = Öffne Menu für mehr Optionen
@@ -298,6 +300,8 @@ microphones-enabled-notification = Der Moderator hat die Mikrofone wieder aktivi
 microphones-disabled-notification = Der Moderator hat die Mikrofone deaktiviert
 turn-handraises-off-notification = Der Moderator hat das Handheben deaktiviert
 turn-handraises-on-notification = Der Moderator hat das Handheben aktiviert
+renaming-enabled-notification = Der Moderator hat das Umbenennen aktiviert
+renaming-disabled-notification = Der Moderator hat das Umbenennen deaktiviert
 
 in-waiting-room = Sie befinden sich gerade im Warteraum
 in-waiting-room-ready = Sie sind freigeschaltet
@@ -420,6 +424,8 @@ legal-vote-select-participants-title = Teilnehmer auswählen
 legal-vote-form-duration = Abstimmungsdauer
 legal-vote-form-duration-unlimited = unbegrenzt
 legal-vote-form-allow-abstain = Enthaltung erlauben
+legal-vote-form-allow-pseudonymous = Pseudonyme Abstimmung
+legal-vote-form-live = Live Abstimmung
 legal-vote-form-auto-stop = Automatische Beendigung
 legal-vote-form-hidden-voting = geheime Abstimmung
 legal-vote-form-auto-stop-tooltip = Automatisches Beenden, sobald alle Stimmen abgegeben wurden, aktivieren oder deaktivieren.
@@ -1255,7 +1261,6 @@ legal-vote-report-issue-description-placeholder = Beschreiben Sie das Problem...
 
 legal-vote-stopped-invalid-results-notification = Leider ist beim Abstimmen etwas schief gelaufen. Bitte informieren Sie den Moderator oder versuchen Sie es erneut.
 
-display-name-change-notification = Der Moderator {moderatorName} hat den Namen von {oldName} in {newName} geändert.
 display-name-character-limit-error = Der Name darf maximal { $limit } Zeichen umfassen.
 
 whisper-group-disbanded = Deine Flüstergruppe wurde aufgelöst.
@@ -1315,3 +1320,8 @@ meeting-inactivity-termination-notification = Diese Konferenz war {$minutes ->
     [one] eine Minute
    *[other] {$minutes} Minuten
 } inaktiv und wird jetzt beendet.
+
+rename-self-notification = Du hast deinen Anzeigenamen in '{$newName}' geändert.
+rename-other-target-notification = Dein Anzeigename wurde von Moderator {$actorName} in '{$newName}' geändert.
+rename-other-feedback-notification = Du hast den Namen von '{$oldName}' in '{$newName}' geändert.
+rename-general-notification = {$actorName} hat den Namen von '{$oldName}' in '{$newName}' geändert.

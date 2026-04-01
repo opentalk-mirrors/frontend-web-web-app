@@ -4,7 +4,7 @@
 import { TableCell, TableRow } from '@mui/material';
 import { screen, waitFor, within } from '@testing-library/react';
 
-import { LegalVote, LegalVoteId, LegalVoteKind, LegalVoteState, ParticipantId } from '../../../types';
+import { LegalVote, LegalVoteId, LegalVoteOption, LegalVoteState, ParticipantId, Timestamp } from '../../../types';
 import { renderWithProviders } from '../../../utils/testUtils';
 import VoteResultTable from './VoteResultTable';
 
@@ -37,7 +37,6 @@ vi.mock('react-i18next', () => ({
 const createVote = (overrides?: Partial<LegalVote>): LegalVote => ({
   id: 'vote-id' as LegalVoteId,
   state: LegalVoteState.Finished,
-  kind: LegalVoteKind.RollCall,
   name: 'Test vote',
   subtitle: 'subtitle',
   topic: 'topic',
@@ -47,11 +46,13 @@ const createVote = (overrides?: Partial<LegalVote>): LegalVote => ({
   createPdf: false,
   allowedParticipants: [],
   initiatorId: 'initiator-1' as ParticipantId,
-  startTime: new Date('2023-01-01T00:00:00Z').toISOString(),
-  endTime: new Date('2023-01-01T00:10:00Z').toISOString(),
+  startTime: new Date('2023-01-01T00:00:00Z').toISOString() as Timestamp,
+  endTime: new Date('2023-01-01T00:10:00Z').toISOString() as Timestamp,
   maxVotes: 10,
   votes: { yes: 0, no: 0, abstain: 0 },
   votingRecord: {},
+  live: true,
+  pseudonymous: false,
   ...overrides,
 });
 
@@ -89,11 +90,11 @@ describe('VoteResultTable', () => {
 
   it('renders pseudonymous results with tokens and totals', async () => {
     const vote = createVote({
-      kind: LegalVoteKind.Pseudonymous,
+      pseudonymous: true,
       votingRecord: {
-        'token-1': 'yes',
-        'token-2': 'no',
-      } as Record<ParticipantId, 'yes' | 'no' | 'abstain'>,
+        'token-1': LegalVoteOption.Yes,
+        'token-2': LegalVoteOption.No,
+      } as Record<ParticipantId, LegalVoteOption>,
       votes: { yes: 1, no: 1, abstain: 0 },
     });
     const scrollToResults = vi.fn();
@@ -122,10 +123,9 @@ describe('VoteResultTable', () => {
 
   it('passes participant id for non-pseudonymous votes', async () => {
     const vote = createVote({
-      kind: LegalVoteKind.RollCall,
       votingRecord: {
-        'participant-1': 'abstain',
-      } as Record<ParticipantId, 'yes' | 'no' | 'abstain'>,
+        'participant-1': LegalVoteOption.Abstain,
+      } as Record<ParticipantId, LegalVoteOption>,
       votes: { yes: 0, no: 0, abstain: 1 },
     });
     const scrollToResults = vi.fn();

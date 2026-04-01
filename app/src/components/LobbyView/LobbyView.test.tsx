@@ -5,8 +5,8 @@ import { InviteCode } from '@opentalk/rest-api-rtk-query';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Role } from '../../api/types/incoming/control';
 import * as UseInviteCodeModule from '../../hooks/useInviteCode';
+import { ParticipationKind, Role } from '../../types/common';
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import LobbyView from './LobbyView';
 
@@ -39,7 +39,7 @@ describe('LobbyView', () => {
   const { store } = configureStore({
     initialState: {
       auth: { isAuthed: true },
-      user: { loggedIdToken: undefined, role: Role.Guest },
+      user: { loggedIdToken: undefined, role: Role.User, participantKind: ParticipationKind.Guest },
       room: { passwordRequired: true, invite: { inviteCode: 'inviteCode' } },
     },
   });

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { LinearProgress, Link, Stack, Typography, linearProgressClasses, styled } from '@mui/material';
+import { CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useGetMeQuery, useGetMeTariffQuery } from '../../../../api/rest';
@@ -70,7 +71,7 @@ const StorageUsage = () => {
   });
   const { data: tariffData, isLoading: isTariffDataLoading } = useGetMeTariffQuery();
   const isStorageUpgradable = Boolean(
-    tariffData && isFeatureEnabledPredicate('storage_upgradable', tariffData.modules)
+    tariffData && isFeatureEnabledPredicate(CoreFeatures.StorageUpgradable, tariffData.modules)
   );
   const usedStorage = userData?.usedStorage;
   const maxStorage = tariffData?.quotas.maxStorage;

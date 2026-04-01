@@ -5,20 +5,25 @@ import { useRemoteParticipants } from '@livekit/components-react';
 import { RoomEvent } from 'livekit-client';
 import { useMemo, useState } from 'react';
 
-import { resetRaisedHands } from '../../api/types/outgoing/moderation';
+import { resetRaisedHands } from '../../api/types/outgoing/raiseHands';
 import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAndSelectParticipantsTab';
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectParticipantsWithRaisedHands } from '../../store/selectors';
 import { selectRemoteParticipantsDisplayNameRecord } from '../../store/slices/participantsSlice';
-import { ParticipantId } from '../../types';
+import { ConnectionIdentifier, ParticipantId } from '../../types';
+import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 
 const ResetHandraisesTab = () => {
   const dispatch = useAppDispatch();
   const activeParticipants = useAppSelector(selectParticipantsWithRaisedHands);
+  const activeIds = new Set(activeParticipants.map((p) => p.id));
   const remoteParticipants = useRemoteParticipants({
     updateOnlyOn: [RoomEvent.ParticipantConnected, RoomEvent.ParticipantDisconnected],
-  }).filter((remote) => activeParticipants.some((active) => active.id === remote.identity));
+  }).filter((remote) => {
+    const { participantId } = deconstructConnectionIdentifier(remote.identity as ConnectionIdentifier);
+    return activeIds.has(participantId);
+  });
 
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
@@ -33,9 +38,10 @@ const ResetHandraisesTab = () => {
         const displayName = participantNamesMap[participant.identity];
         return displayName?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
       })
-      .map((participant) =>
-        toSelectableParticipant(participant, selectedParticipants.includes(participant.identity as ParticipantId))
-      );
+      .map((participant) => {
+        const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
+        return toSelectableParticipant(participant, selectedParticipants.includes(participantId));
+      });
   }, [search, remoteParticipants, selectedParticipants, participantNamesMap]);
 
   const handleSelectParticipant = (checked: boolean, participantId: ParticipantId) => {

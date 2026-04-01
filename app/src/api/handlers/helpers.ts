@@ -1,21 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { createAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
-import { notifications, setLibravatarOptions } from '../../commonComponents';
+import { notifications } from '../../commonComponents';
 import type { NotificationType } from '../../commonComponents/Notistack/fragments/utils';
 import { STORAGE_SECTION_PATH } from '../../pages/Dashboard/Home/fragments/constants';
 import type { RootState } from '../../store';
-import { selectAccountManagementUrl, selectLibravatarDefaultImage } from '../../store/slices/configSlice';
-import { MeetingNotesAccess, WaitingState } from '../../types';
-import type {
-  BackendParticipant,
-  BreakoutRoomId,
-  MeetingNotesState,
-  Participant,
-  ParticipantInOtherRoom,
-} from '../../types';
+import { selectAccountManagementUrl } from '../../store/slices/configSlice';
+import { MeetingNotesAccess } from '../../types';
+import type { MeetingNotesState, ParticipantId } from '../../types';
 import { isStringEnum } from '../../utils/tsUtils';
 import { LegalVoteError } from '../types/incoming/legalVote';
 
@@ -28,50 +23,6 @@ export const mapMeetingNotesToMeetingNotesAccess = (meetingNotes?: MeetingNotesS
   }
   return MeetingNotesAccess.Write;
 };
-
-export const mapToUiParticipant = (
-  state: RootState,
-  { id, control, meetingNotes }: BackendParticipant,
-  breakoutRoomId: BreakoutRoomId | null,
-  waitingState: WaitingState
-): Participant => ({
-  id,
-  groups: [],
-  displayName: control.displayName,
-  avatarUrl: setLibravatarOptions(control.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
-  handIsUp: control.handIsUp,
-  joinedAt: control.joinedAt,
-  leftAt: control.leftAt,
-  handUpdatedAt: control.handUpdatedAt,
-  breakoutRoomId: breakoutRoomId,
-  participationKind: control.participationKind,
-  lastActive: control.joinedAt,
-  role: control.role,
-  waitingState,
-  meetingNotesAccess: mapMeetingNotesToMeetingNotesAccess(meetingNotes),
-  isRoomOwner: control.isRoomOwner,
-});
-
-export const mapBreakoutToUiParticipant = (
-  state: RootState,
-  { breakoutRoom, id, displayName, avatarUrl, participationKind, leftAt }: ParticipantInOtherRoom,
-  joinTime: string
-): Participant => ({
-  id,
-  groups: [],
-  displayName,
-  avatarUrl: setLibravatarOptions(avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
-  handIsUp: false,
-  joinedAt: joinTime,
-  leftAt: leftAt,
-  handUpdatedAt: undefined,
-  breakoutRoomId: breakoutRoom,
-  participationKind,
-  lastActive: joinTime,
-  waitingState: WaitingState.Joined,
-  meetingNotesAccess: MeetingNotesAccess.None,
-  isRoomOwner: false,
-});
 
 //TODO: improve to a more general solution with proper typing as part of #2251(https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2251)
 export const showErrorNotification = (message: string) => {
@@ -125,3 +76,5 @@ export const handleStorageExceededError = (state: RootState, error: string) => {
     showStorageNotification(state, 'error');
   }
 };
+
+export const participantRename = createAction<{ id: ParticipantId; newName: string }>('participants/rename');

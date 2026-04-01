@@ -1,47 +1,72 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ChatBase, ChatHistory, ChatScope, GroupId, NamespacedIncoming, ParticipantId } from '../../../types';
+import {
+  BreakoutRoomId,
+  ChatChunk,
+  ChatScope,
+  NamespacedIncoming,
+  ParticipantId,
+  Timestamp,
+  ChatMessage as ChatMessageBase,
+} from '../../../types';
 
-interface MessageSent extends ChatBase {
+export type MessageSent = ChatMessageBase & {
   message: 'message_sent';
-}
+};
 
 export interface ChatEnabled {
   message: 'chat_enabled';
-  id: ParticipantId;
+  issuedBy: ParticipantId;
 }
 
 interface ChatDisabled {
   message: 'chat_disabled';
-  id: ParticipantId;
+  issuedBy: ParticipantId;
 }
 
 export interface ClearGlobalChat {
   message: 'history_cleared';
 }
 
+type SetLastSeenTimestampBase = {
+  message: 'set_last_seen_timestamp';
+  timestamp: Timestamp;
+};
+
+type SetGlobalLastSeenTimestamp = {
+  scope: ChatScope.Global;
+} & SetLastSeenTimestampBase;
+
+type SetPrivateLastSeenTimestamp = {
+  scope: ChatScope.Private;
+  target: ParticipantId;
+} & SetLastSeenTimestampBase;
+
+type SetBreakoutLastSeenTimestamp = {
+  scope: ChatScope.Breakout;
+  target: BreakoutRoomId;
+} & SetLastSeenTimestampBase;
+
+export type SetLastSeenTimestamp =
+  | SetGlobalLastSeenTimestamp
+  | SetPrivateLastSeenTimestamp
+  | SetBreakoutLastSeenTimestamp;
+
 export interface RoomChatHistoryChunk {
   message: 'room_chat_history_chunk';
-  history: ChatHistory;
-}
-
-export interface GroupChatHistoryChunk {
-  message: 'group_chat_history_chunk';
-  id: GroupId;
-  name: string;
-  history: ChatHistory;
+  history: ChatChunk;
 }
 
 export interface PrivateChatHistoryChunk {
   message: 'private_chat_history_chunk';
   correspondent: ParticipantId;
-  history: ChatHistory;
+  history: ChatChunk;
 }
 
 export interface SearchResults {
   message: 'search_results';
-  matches: ChatHistory;
+  matches: ChatChunk;
   scope: ChatScope;
 }
 
@@ -51,9 +76,9 @@ export type ChatMessage =
   | ChatDisabled
   | ClearGlobalChat
   | RoomChatHistoryChunk
-  | GroupChatHistoryChunk
   | PrivateChatHistoryChunk
-  | SearchResults;
+  | SearchResults
+  | SetLastSeenTimestamp;
 
 export type Chat = NamespacedIncoming<ChatMessage, 'chat'>;
 

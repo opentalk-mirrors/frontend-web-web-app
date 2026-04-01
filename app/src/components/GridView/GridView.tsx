@@ -20,6 +20,7 @@ import {
   selectPaginationDirectionState,
   selectPaginationPageState,
 } from '../../store/slices/uiSlice';
+import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import GridCell from './fragments/GridCell';
 
 const GridContainer = styled('div', {
@@ -87,16 +88,20 @@ const GridView = () => {
   const highlight = gridViewParticipants.length >= 2;
 
   const gridCells = gridViewParticipants.map((participant) => {
-    // We will use participant data from the controller until we get the more preferable data from the livekit server
-    const participantData =
-      remoteParticipantsMap.get(participant.id) ||
-      new Participant(participant.id, participant.id, participant.displayName);
+    return participant.connections.map((connection) => {
+      const connectionIdentifier = constructConnectionIdentifier(participant.id, connection);
 
-    return (
-      <ParticipantContext.Provider value={participantData} key={participant.id}>
-        <GridCell direction={direction} highlight={highlight} />
-      </ParticipantContext.Provider>
-    );
+      // We will use participant data from the controller until we get the more preferable data from the livekit server
+      const participantData =
+        remoteParticipantsMap.get(connectionIdentifier) ||
+        new Participant(connectionIdentifier, connectionIdentifier, participant.displayName);
+
+      return (
+        <ParticipantContext.Provider value={participantData} key={connectionIdentifier}>
+          <GridCell direction={direction} highlight={highlight} />
+        </ParticipantContext.Provider>
+      );
+    });
   });
 
   const areGridCellsLoading = gridViewParticipants.length > 1 && gridCells.length === 0;

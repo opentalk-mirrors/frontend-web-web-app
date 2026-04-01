@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { renderHook } from '@testing-library/react';
 import { Provider as ReduxProvider } from 'react-redux';
 
@@ -10,15 +11,17 @@ import { RoomMode, TimerStyle } from '../types';
 import { configureStore } from '../utils/testUtils';
 import useTabs from './useTabs';
 
-vi.mock('../config/moderationTabs', () => ({
-  tabs: [
-    { key: 'tab-home', featureKey: undefined, moduleKey: undefined, divider: false },
-    { key: 'tab-timer', featureKey: 'timer', moduleKey: undefined, divider: false },
-    { key: 'tab-coffee-break', featureKey: 'coffee', moduleKey: undefined, divider: false },
-    { key: 'tab-talking-stick', featureKey: undefined, moduleKey: 'automod', divider: false },
-  ],
-  Tab: {},
-}));
+vi.mock('../config/moderationTabs', async () => {
+  return {
+    tabs: [
+      { key: 'tab-home', featureKey: undefined, moduleKey: undefined, divider: false },
+      { key: 'tab-timer', featureKey: BackendModules.Timer, moduleKey: undefined, divider: false },
+      { key: 'tab-coffee-break', featureKey: BackendModules.Timer, moduleKey: undefined, divider: false },
+      { key: 'tab-talking-stick', featureKey: undefined, moduleKey: BackendModules.Automod, divider: false },
+    ],
+    Tab: {},
+  };
+});
 
 describe('useTabs', () => {
   beforeEach(() => {
@@ -30,11 +33,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: false },
-          tariff: {
-            modules: {
-              automod: { features: [] },
-            },
-          },
+          enabledModules: [BackendModules.Automod],
         },
       },
     });
@@ -46,6 +45,7 @@ describe('useTabs', () => {
     expect(result.current.map((tab: Tab) => tab.key)).toEqual([
       ModerationTabKey.Home,
       ModerationTabKey.Timer,
+      ModerationTabKey.CoffeeBreak,
       ModerationTabKey.TalkingStick,
     ]);
   });
@@ -55,9 +55,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: false },
-          tariff: {
-            modules: {},
-          },
+          enabledModules: [],
         },
       },
     });
@@ -74,16 +72,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: true, talkingStick: true },
-          tariff: {
-            modules: {
-              automod: {
-                features: [],
-              },
-              timer: {
-                features: [],
-              },
-            },
-          },
+          enabledModules: [BackendModules.Automod, BackendModules.Timer],
         },
         room: {
           currentMode: RoomMode.TalkingStick,
@@ -111,12 +100,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: true },
-          tariff: {
-            modules: {
-              automod: { features: {} },
-              timer: { features: {} },
-            },
-          },
+          enabledModules: [BackendModules.Automod, BackendModules.Timer],
         },
         timer: {
           style: TimerStyle.Normal,
@@ -140,12 +124,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: true },
-          tariff: {
-            modules: {
-              automod: { features: {} },
-              timer: { features: {} },
-            },
-          },
+          enabledModules: [BackendModules.Automod, BackendModules.Timer],
         },
         timer: {
           style: TimerStyle.CoffeeBreak,

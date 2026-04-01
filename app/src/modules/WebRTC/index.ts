@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MediaSessionState, MediaSessionType, ParticipantId } from '../../types';
+import { ConnectionIdentifier, MediaSessionState, MediaSessionType } from '../../types';
 import { ConferenceRoom, getCurrentConferenceRoom } from './ConferenceRoom';
 
 export { ConferenceRoom };
@@ -14,18 +14,18 @@ export { ConferenceRoom };
  */
 
 export interface MediaDescriptor {
-  participantId: ParticipantId;
+  connectionIdentifier: ConnectionIdentifier;
   mediaType: MediaSessionType;
 }
 
 export type MediaId = string & { readonly __tag: unique symbol };
 
 export const idFromDescriptor = (descriptor: MediaDescriptor): MediaId =>
-  `${descriptor.participantId}/${descriptor.mediaType}` as MediaId;
+  `${descriptor.connectionIdentifier}/${descriptor.mediaType}` as MediaId;
 
 export const descriptorFromId = (id: MediaId): MediaDescriptor => {
-  const [participantId, mediaType] = id.split('/');
-  return { participantId: participantId as ParticipantId, mediaType: mediaType as MediaSessionType };
+  const [connectionIdentifier, mediaType] = id.split('/') as [ConnectionIdentifier, string];
+  return { connectionIdentifier, mediaType: mediaType as MediaSessionType };
 };
 
 export type SubscriberConfig = MediaDescriptor & MediaSessionState;

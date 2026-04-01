@@ -4,16 +4,28 @@
 import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { isAfter } from 'date-fns';
 
-import { GroupChatHistoryChunk, PrivateChatHistoryChunk, RoomChatHistoryChunk } from '../../api/types/incoming/chat';
+import { PrivateChatHistoryChunk, RoomChatHistoryChunk } from '../../api/types/incoming/chat';
 import { LastSeenTimestampAddedPayload } from '../../api/types/outgoing/chat';
-import { ChatMessage, ChatScope, GroupId, ParticipantId, TargetId, Timestamp } from '../../types';
+import {
+  BreakoutRoomId,
+  ChatIdentifier,
+  ChatMessage,
+  ChatScope,
+  ParticipantId,
+  PrivateChatIdentifier,
+  Timestamp,
+} from '../../types';
 import { joinSuccess } from '../commonActions';
 import { UserState } from './userSlice';
 
 export type ChatProps = {
-  id: TargetId;
+  chatIdentifier: ChatIdentifier;
   messages: Array<ChatMessage>;
-  scope: ChatScope;
+  lastMessage: ChatMessage;
+};
+export type PrivateChatProps = {
+  chatIdentifier: PrivateChatIdentifier;
+  messages: Array<ChatMessage>;
   lastMessage: ChatMessage;
 };
 
@@ -31,12 +43,12 @@ const privateMessagesAdapter = createEntityAdapter<ChatMessage & { scope: ChatSc
 
 export const privateMessagesSelectors = privateMessagesAdapter.getSelectors();
 
-const groupMessagesAdapter = createEntityAdapter<ChatMessage & { scope: ChatScope.Group }, ChatMessage['id']>({
+const breakoutMessagesAdapter = createEntityAdapter<ChatMessage & { scope: ChatScope.Breakout }, ChatMessage['id']>({
   selectId: (message: ChatMessage) => `${message.source}@${message.timestamp}`,
   sortComparer: (a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp),
 });
 
-export const groupMessagesSelectors = groupMessagesAdapter.getSelectors();
+export const breakoutMessagesSelectors = breakoutMessagesAdapter.getSelectors();
 
 export interface ChatState {
   settings: {
@@ -50,16 +62,16 @@ export interface ChatState {
       nextIndex: number | null;
       lastSeenTimestamp: Timestamp;
     };
-    group: {
-      [id: GroupId]: {
-        messages: EntityState<ChatMessage & { scope: ChatScope.Group }, ChatMessage['id']>;
+    private: {
+      [id: ParticipantId]: {
+        messages: EntityState<ChatMessage & { scope: ChatScope.Private }, ChatMessage['id']>;
         nextIndex: number | null;
         lastSeenTimestamp: Timestamp;
       };
     };
-    private: {
-      [id: ParticipantId]: {
-        messages: EntityState<ChatMessage & { scope: ChatScope.Private }, ChatMessage['id']>;
+    breakout: {
+      [id: BreakoutRoomId]: {
+        messages: EntityState<ChatMessage & { scope: ChatScope.Breakout }, ChatMessage['id']>;
         nextIndex: number | null;
         lastSeenTimestamp: Timestamp;
       };
@@ -81,15 +93,15 @@ const initialState: ChatState = {
       nextIndex: null,
       lastSeenTimestamp: new Date().toISOString() as Timestamp,
     },
-    group: {},
     private: {},
+    breakout: {},
   },
   isLoadingMoreChunks: false,
   searchResults: [],
 };
 
-const getMessageRecipient = (message: ChatMessage, currentUserId: ParticipantId) => {
-  if (message.target) {
+const getPrivateMessageRecipient = (message: ChatMessage, currentUserId: ParticipantId): ParticipantId => {
+  if (message.scope === ChatScope.Private) {
     return message.source === currentUserId ? message.target : message.source;
   }
 
@@ -114,35 +126,34 @@ export const chatSlice = createSlice({
           globalMessagesAdapter.addOne(state.scope.global.messages, chatMessage);
           break;
 
-        case ChatScope.Private:
-          if (chatMessage.target) {
-            const participantId = getMessageRecipient(chatMessage, userId) as ParticipantId;
-            if (!Reflect.has(state.scope.private, participantId)) {
-              state.scope.private[participantId] = {
-                messages: privateMessagesAdapter.getInitialState({}, [chatMessage]),
-                nextIndex: null,
-                lastSeenTimestamp: new Date(Date.parse(chatMessage.timestamp) - 1).toISOString() as Timestamp,
-              };
-            } else {
-              privateMessagesAdapter.addOne(state.scope.private[participantId].messages, chatMessage);
-            }
+        case ChatScope.Private: {
+          const { timestamp } = chatMessage;
+          const recipient = getPrivateMessageRecipient(chatMessage, userId);
+          if (!Reflect.has(state.scope.private, recipient)) {
+            state.scope.private[recipient] = {
+              messages: privateMessagesAdapter.getInitialState({}, [chatMessage]),
+              nextIndex: null,
+              lastSeenTimestamp: new Date(Date.parse(timestamp) - 1).toISOString() as Timestamp,
+            };
+          } else {
+            privateMessagesAdapter.addOne(state.scope.private[recipient].messages, chatMessage);
           }
           break;
+        }
 
-        case ChatScope.Group:
-          if (chatMessage.target) {
-            const groupId = chatMessage.target as GroupId;
-            if (!Reflect.has(state.scope.group, groupId)) {
-              state.scope.group[groupId] = {
-                messages: groupMessagesAdapter.getInitialState({}, [chatMessage]),
-                nextIndex: null,
-                lastSeenTimestamp: new Date(Date.parse(chatMessage.timestamp) - 1).toISOString() as Timestamp,
-              };
-            } else {
-              groupMessagesAdapter.addOne(state.scope.group[groupId].messages, chatMessage);
-            }
+        case ChatScope.Breakout: {
+          const { target, timestamp } = chatMessage;
+          if (!Reflect.has(state.scope.breakout, target)) {
+            state.scope.breakout[target] = {
+              messages: breakoutMessagesAdapter.getInitialState({}, [chatMessage]),
+              nextIndex: null,
+              lastSeenTimestamp: new Date(Date.parse(timestamp) - 1).toISOString() as Timestamp,
+            };
+          } else {
+            breakoutMessagesAdapter.addOne(state.scope.breakout[target].messages, chatMessage);
           }
           break;
+        }
       }
     },
     roomChatHistoryChunkReceived: (state, { payload }: PayloadAction<RoomChatHistoryChunk>) => {
@@ -154,23 +165,6 @@ export const chatSlice = createSlice({
         )
       );
       state.scope.global.nextIndex = payload.history.nextIndex ?? null;
-      state.isLoadingMoreChunks = false;
-    },
-    groupChatHistoryChunkReceived: (state, { payload }: PayloadAction<GroupChatHistoryChunk>) => {
-      const groupId = payload.id;
-      const group_messages = payload.history.messages.filter(
-        (msg): msg is ChatMessage & { scope: ChatScope.Group } => msg.scope === ChatScope.Group
-      );
-      if (!state.scope.group[groupId]) {
-        state.scope.group[groupId] = {
-          messages: groupMessagesAdapter.getInitialState({}, group_messages),
-          nextIndex: payload.history.nextIndex ?? null,
-          lastSeenTimestamp: new Date().toISOString() as Timestamp,
-        };
-      } else {
-        groupMessagesAdapter.addMany(state.scope.group[groupId].messages, group_messages);
-        state.scope.group[groupId].nextIndex = payload.history.nextIndex ?? null;
-      }
       state.isLoadingMoreChunks = false;
     },
     privateChatHistoryChunkReceived: (state, { payload }: PayloadAction<PrivateChatHistoryChunk>) => {
@@ -193,53 +187,38 @@ export const chatSlice = createSlice({
     setChatSearchResults: (state, { payload }: PayloadAction<ChatMessage[]>) => {
       state.searchResults = payload;
     },
-    lastSeenTimestampAdded: (
-      state: ChatState,
-      { payload: { scope, target, timestamp } }: PayloadAction<LastSeenTimestampAddedPayload>
-    ) => {
-      if (scope === ChatScope.Global) {
-        state.scope.global.lastSeenTimestamp = timestamp;
-      }
-      if (scope === ChatScope.Private && target) {
-        if (Reflect.has(state.scope.private, target)) {
-          state.scope.private[target].lastSeenTimestamp = timestamp;
+    lastSeenTimestampAdded: (state: ChatState, { payload }: PayloadAction<LastSeenTimestampAddedPayload>) => {
+      const { scope, timestamp } = payload;
+      switch (scope) {
+        case ChatScope.Global:
+          state.scope.global.lastSeenTimestamp = timestamp;
+          break;
+        case ChatScope.Private: {
+          const { target } = payload;
+          if (Reflect.has(state.scope.private, target)) {
+            state.scope.private[target].lastSeenTimestamp = timestamp;
+          } else {
+            state.scope.private[target] = {
+              messages: privateMessagesAdapter.getInitialState(),
+              nextIndex: null,
+              lastSeenTimestamp: timestamp,
+            };
+          }
+          break;
         }
-      }
-      if (scope === ChatScope.Group && target) {
-        if (Reflect.has(state.scope.group, target)) {
-          state.scope.group[target].lastSeenTimestamp = timestamp;
+        case ChatScope.Breakout: {
+          const { target } = payload;
+          if (Reflect.has(state.scope.breakout, target)) {
+            state.scope.breakout[target].lastSeenTimestamp = timestamp;
+          } else {
+            state.scope.breakout[target] = {
+              messages: breakoutMessagesAdapter.getInitialState(),
+              nextIndex: null,
+              lastSeenTimestamp: timestamp,
+            };
+          }
+          break;
         }
-      }
-    },
-    setGlobalChatLastSeenTimestamp: (state: ChatState, { payload: { value } }: PayloadAction<{ value: Timestamp }>) => {
-      state.scope.global.lastSeenTimestamp = value;
-    },
-    setLastSeenTimestampForPrivateChat: (
-      state: ChatState,
-      { payload: { participantId, timestamp } }: PayloadAction<{ participantId: ParticipantId; timestamp: Timestamp }>
-    ) => {
-      if (Reflect.has(state.scope.private, participantId)) {
-        state.scope.private[participantId].lastSeenTimestamp = timestamp;
-      } else {
-        state.scope.private[participantId] = {
-          messages: privateMessagesAdapter.getInitialState(),
-          nextIndex: null,
-          lastSeenTimestamp: timestamp,
-        };
-      }
-    },
-    setLastSeenTimestampForGroupChat: (
-      state: ChatState,
-      { payload: { groupId, timestamp } }: PayloadAction<{ groupId: GroupId; timestamp: Timestamp }>
-    ) => {
-      if (Reflect.has(state.scope.group, groupId)) {
-        state.scope.group[groupId].lastSeenTimestamp = timestamp;
-      } else {
-        state.scope.group[groupId] = {
-          messages: groupMessagesAdapter.getInitialState(),
-          nextIndex: null,
-          lastSeenTimestamp: timestamp,
-        };
       }
     },
     setChatSettings: (
@@ -262,50 +241,40 @@ export const chatSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(joinSuccess, (state: ChatState, { payload: { chat } }) => {
+    builder.addCase(joinSuccess, (state: ChatState, { payload: { chat, breakout } }) => {
       globalMessagesAdapter.setAll(
         state.scope.global.messages,
-        chat.roomHistory.messages.filter(
+        chat.globalHistory.messages.filter(
           (msg): msg is ChatMessage & { scope: ChatScope.Global } => msg.scope === ChatScope.Global
         )
       );
-      state.scope.global.nextIndex = chat.roomHistory.nextIndex;
+      state.scope.global.nextIndex = chat.globalHistory.nextIndex;
 
-      const privateMessagesByParticipant: Record<ParticipantId, ChatMessage[]> = {};
-      for (const message of chat.roomHistory.messages) {
-        if (message.scope === ChatScope.Private && message.target) {
-          const participantId = message.target;
-          if (!privateMessagesByParticipant[participantId]) {
-            privateMessagesByParticipant[participantId] = [];
-          }
-          privateMessagesByParticipant[participantId].push(message);
-        }
-      }
-      for (const [participantId, messages] of Object.entries(privateMessagesByParticipant)) {
-        state.scope.private[participantId as ParticipantId] = {
+      chat.privateHistory.forEach((ph) => {
+        state.scope.private[ph.correspondent] = {
           messages: privateMessagesAdapter.setAll(
             privateMessagesAdapter.getInitialState(),
-            messages.filter((msg): msg is ChatMessage & { scope: ChatScope.Private } => msg.scope === ChatScope.Private)
+            ph.history.messages.filter(
+              (msg): msg is ChatMessage & { scope: ChatScope.Private } => msg.scope === ChatScope.Private
+            )
           ),
-          nextIndex: null,
+          nextIndex: ph.history.nextIndex,
+          lastSeenTimestamp: new Date().toISOString() as Timestamp,
+        };
+      });
+      const breakoutRoomId = breakout?.room?.id;
+      if (chat.breakoutRoomHistory && breakoutRoomId != null) {
+        state.scope.breakout[breakoutRoomId] = {
+          messages: breakoutMessagesAdapter.setAll(
+            breakoutMessagesAdapter.getInitialState(),
+            chat.breakoutRoomHistory.messages.filter(
+              (msg): msg is ChatMessage & { scope: ChatScope.Breakout } => msg.scope === ChatScope.Breakout
+            )
+          ),
+          nextIndex: chat.breakoutRoomHistory?.nextIndex ?? null,
           lastSeenTimestamp: new Date().toISOString() as Timestamp,
         };
       }
-
-      chat.groupsHistory
-        .filter((group) => group.history.messages.length > 0)
-        .forEach((group) => {
-          state.scope.group[group.name] = {
-            messages: groupMessagesAdapter.setAll(
-              groupMessagesAdapter.getInitialState(),
-              group.history.messages.filter(
-                (msg): msg is ChatMessage & { scope: ChatScope.Group } => msg.scope === ChatScope.Group
-              )
-            ),
-            nextIndex: group.history.nextIndex,
-            lastSeenTimestamp: new Date().toISOString() as Timestamp,
-          };
-        });
     });
   },
 });
@@ -314,12 +283,8 @@ export const {
   lastSeenTimestampAdded,
   received,
   roomChatHistoryChunkReceived,
-  groupChatHistoryChunkReceived,
   privateChatHistoryChunkReceived,
   setChatSearchResults,
-  setGlobalChatLastSeenTimestamp,
-  setLastSeenTimestampForPrivateChat,
-  setLastSeenTimestampForGroupChat,
   setChatSettings,
   clearGlobalChat,
   setIsLoadingMoreChunks,
@@ -332,20 +297,6 @@ export const selectChatEnabledState = (state: { chat: ChatState }) => state.chat
 export const selectIsLoadingMoreChunks = (state: { chat: ChatState }) => state.chat.isLoadingMoreChunks;
 export const selectChatSearchResults = (state: { chat: ChatState }) => state.chat.searchResults;
 export const selectChatState = (state: { chat: ChatState }) => state.chat;
-export const selectHasAnyUnreadGroupChatMessage = createSelector(
-  [(state: { chat: ChatState }) => state.chat.scope.group],
-  (groups) => {
-    if (!groups) {
-      return false;
-    }
-
-    return Object.values(groups).some((group) => {
-      const messages = groupMessagesSelectors.selectAll(group.messages);
-      const lastMessage = messages.at(-1);
-      return lastMessage && new Date(lastMessage.timestamp) > new Date(group.lastSeenTimestamp);
-    });
-  }
-);
 
 export const selectHasAnyUnreadPrivateChatMessage = createSelector(
   [(state: { chat: ChatState }) => state.chat.scope.private],
@@ -377,6 +328,25 @@ export const selectHasUnreadGlobalChatMessages = (state: { chat: ChatState }) =>
   );
 };
 
+export const selectChatMessagesByScope = (state: { chat: ChatState }, chatIdentifier: ChatIdentifier) => {
+  const { scope, target } = chatIdentifier;
+
+  switch (scope) {
+    case ChatScope.Global:
+      return globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
+    case ChatScope.Private: {
+      const privateMessages = state.chat.scope.private[target]?.messages;
+      return privateMessages ? privateMessagesSelectors.selectAll(privateMessages) : [];
+    }
+    case ChatScope.Breakout: {
+      const breakoutMessages = state.chat.scope.breakout[target]?.messages;
+      return breakoutMessages ? breakoutMessagesSelectors.selectAll(breakoutMessages) : [];
+    }
+    default:
+      return [];
+  }
+};
+
 export const selectAllGlobalChatMessages = createSelector(
   [(state: { chat: ChatState }) => state.chat.scope.global.messages],
   (messages) => globalMessagesSelectors.selectAll(messages)
@@ -387,15 +357,9 @@ export const selectAllPrivateChatMessages = createSelector(
   (privateChats) => Object.values(privateChats).flatMap((chat) => privateMessagesSelectors.selectAll(chat.messages))
 );
 
-export const selectAllGroupChatMessages = createSelector(
-  [(state: { chat: ChatState }) => state.chat.scope.group],
-  (groupChats) => Object.values(groupChats).flatMap((chat) => groupMessagesSelectors.selectAll(chat.messages))
-);
-
 export const selectAllChatMessages = createSelector(
-  [selectAllGlobalChatMessages, selectAllPrivateChatMessages, selectAllGroupChatMessages],
-  (globalMessages, privateMessages, groupMessages) =>
-    [...globalMessages, ...privateMessages, ...groupMessages].filter((msg) => msg !== undefined)
+  [selectAllGlobalChatMessages, selectAllPrivateChatMessages],
+  (globalMessages, privateMessages) => [...globalMessages, ...privateMessages].filter((msg) => msg !== undefined)
 );
 
 export const selectAllPrivateChats = createSelector(
@@ -404,55 +368,18 @@ export const selectAllPrivateChats = createSelector(
     return Object.entries(privateScope).map(([participantId, chat]) => {
       const messages = privateMessagesSelectors.selectAll(chat.messages);
       return {
-        id: participantId,
-        scope: ChatScope.Private,
+        chatIdentifier: {
+          scope: ChatScope.Private,
+          target: participantId,
+        },
         messages,
         lastMessage: messages.at(-1) ?? null,
-      } as ChatProps;
+      } as PrivateChatProps;
     });
   }
 );
 
-// Select all group chats (not just messages)
-export const selectAllGroupChats = createSelector(
-  [(state: { chat: ChatState }) => state.chat.scope.group],
-  (groupScope) =>
-    Object.entries(groupScope).map(([groupId, chat]) => {
-      const messages = groupMessagesSelectors.selectAll(chat.messages);
-      return {
-        id: groupId,
-        scope: ChatScope.Group,
-        messages,
-        lastMessage: messages.at(-1) ?? null,
-      } as ChatProps;
-    })
-);
-
-export function selectLastMessageForScope(
-  state: { chat: ChatState },
-  scope: ChatScope,
-  target?: TargetId
-): ChatMessage | undefined {
-  if (scope === ChatScope.Global) {
-    const messages = globalMessagesSelectors.selectAll(state.chat.scope.global.messages);
-    return messages.at(-1);
-  }
-  if (scope === ChatScope.Private && target) {
-    const privateChat = state.chat.scope.private[target as ParticipantId];
-    if (privateChat) {
-      const messages = privateMessagesSelectors.selectAll(privateChat.messages);
-      return messages.at(-1);
-    }
-  }
-  if (scope === ChatScope.Group && target) {
-    const groupChat = state.chat.scope.group[target as GroupId];
-    if (groupChat) {
-      const messages = groupMessagesSelectors.selectAll(groupChat.messages);
-      return messages.at(-1);
-    }
-  }
-  return undefined;
-}
+export const selectLastMessageForScope = createSelector([selectChatMessagesByScope], (messages) => messages.at(-1));
 
 export const selectUnreadGlobalMessageCount = createSelector(
   [
@@ -473,32 +400,42 @@ export const selectNotOwnGlobalChatMessages = createSelector(
 
 export const selectUnreadPersonalMessageCountByTarget = createSelector(
   [
-    (state: { chat: ChatState }, targetId: TargetId) => {
-      const privateChat = state.chat.scope.private[targetId as ParticipantId];
+    (state: { chat: ChatState }, target: ParticipantId) => {
+      const privateChat = state.chat.scope.private[target];
       return privateChat ? privateMessagesSelectors.selectAll(privateChat.messages) : undefined;
     },
-    (state: { chat: ChatState }, targetId: TargetId) => {
-      const groupChat = state.chat.scope.group[targetId as GroupId];
-      return groupChat ? groupMessagesSelectors.selectAll(groupChat.messages) : undefined;
-    },
-    (state: { chat: ChatState }, targetId: TargetId) => {
-      const privateChat = state.chat.scope.private[targetId as ParticipantId];
+    (state: { chat: ChatState }, target: ParticipantId) => {
+      const privateChat = state.chat.scope.private[target];
       if (privateChat) {
         return privateChat.lastSeenTimestamp;
-      }
-      const groupChat = state.chat.scope.group[targetId as GroupId];
-      if (groupChat) {
-        return groupChat.lastSeenTimestamp;
       }
       return undefined;
     },
   ],
-  (privateMessages, groupMessages, lastSeenTimestamp) => {
-    const messages = privateMessages ?? groupMessages ?? [];
+  (privateMessages, lastSeenTimestamp) => {
+    const messages = privateMessages ?? [];
     if (!lastSeenTimestamp) {
       return messages.length;
     }
     return messages.filter((message) => new Date(message.timestamp) > new Date(lastSeenTimestamp)).length;
+  }
+);
+
+export const selectNextIndex = createSelector(
+  [
+    (state: { chat: ChatState }) => state,
+    (_state: { chat: ChatState }, chatIdentifier: ChatIdentifier) => chatIdentifier,
+  ],
+  (state, chatIdentifier) => {
+    const { scope, target } = chatIdentifier;
+    switch (scope) {
+      case ChatScope.Global:
+        return state.chat.scope.global.nextIndex;
+      case ChatScope.Private:
+        return state.chat.scope.private[target]?.nextIndex;
+      case ChatScope.Breakout:
+        return state.chat.scope.breakout[target]?.nextIndex;
+    }
   }
 );
 

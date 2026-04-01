@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, DialogActions, Button, Typography } from '@mui/material';
-import { CallIn, StreamingLink } from '@opentalk/rest-api-rtk-query';
+import { Button, DialogActions, Typography, styled } from '@mui/material';
+import { CallIn, CoreFeatures, StreamingLink } from '@opentalk/rest-api-rtk-query';
 import { MeetingDetails } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,7 @@ const DialogActionsLeftAligned = styled(DialogActions)({ justifyContent: 'start'
 
 export interface MeetingDetailsDialogActionsProps {
   title: string;
-  roomPassword: string;
+  roomPassword?: string;
   meetingDetails?: MeetingDetails;
   inviteUrl?: URL | null;
 }
@@ -36,7 +36,7 @@ const MeetingDetailsDialogActions = ({
   const { t } = useTranslation();
 
   const currentUser = useAppSelector(selectUserAsParticipant);
-  const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled('guests_allowed'));
+  const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled(CoreFeatures.GuestsAllowed));
 
   const handleClipboardClick = () => {
     navigator.clipboard.writeText(createClipboardString()).then(() => {

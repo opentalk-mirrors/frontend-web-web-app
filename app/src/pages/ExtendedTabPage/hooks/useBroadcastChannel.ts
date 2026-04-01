@@ -6,12 +6,12 @@ import { useEffect, useState } from 'react';
 
 import { useAppDispatch } from '../../../hooks';
 import { startBroadcastRoom } from '../../../store/slices/livekitSlice';
-import { MediaSessionType, ParticipantId } from '../../../types';
+import { ConnectionIdentifier, MediaSessionType } from '../../../types';
 
 type IUseBroadcastChannel = {
   accessToken?: string;
   mediaType?: MediaSessionType;
-  participantId?: ParticipantId;
+  connectionIdentifier?: ConnectionIdentifier;
   livekitUrl?: string;
   roomId?: RoomId;
 };
@@ -22,7 +22,10 @@ const useBroadcastChannel = (channelId: string | undefined): IUseBroadcastChanne
   useEffect(() => {
     if (channelId) {
       dispatch(
-        startBroadcastRoom({ accessToken: livekitData?.accessToken, participantId: livekitData?.participantId })
+        startBroadcastRoom({
+          accessToken: livekitData?.accessToken,
+          connectionIdentifier: livekitData?.connectionIdentifier,
+        })
       );
       const channel = new BroadcastChannel(channelId);
       channel.postMessage({ namespace: 'extended_tab', payload: { action: 'request_livekit_data' } });
@@ -34,12 +37,12 @@ const useBroadcastChannel = (channelId: string | undefined): IUseBroadcastChanne
         }
       };
     }
-  }, [channelId, dispatch, livekitData?.accessToken, livekitData?.participantId]);
+  }, [channelId, dispatch, livekitData?.accessToken, livekitData?.connectionIdentifier]);
 
   return {
     accessToken: livekitData?.accessToken,
     mediaType: livekitData?.mediaType,
-    participantId: livekitData?.participantId,
+    connectionIdentifier: livekitData?.connectionIdentifier,
     livekitUrl: livekitData?.livekitUrl,
     roomId: livekitData?.roomId,
   };

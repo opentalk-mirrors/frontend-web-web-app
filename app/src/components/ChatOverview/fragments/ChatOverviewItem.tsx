@@ -13,10 +13,9 @@ import { isEmpty } from 'lodash';
 
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector, useDateFormat } from '../../../hooks';
-import { ChatProps, selectUnreadPersonalMessageCountByTarget } from '../../../store/slices/chatSlice';
+import { PrivateChatProps, selectUnreadPersonalMessageCountByTarget } from '../../../store/slices/chatSlice';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
 import { ChatScope } from '../../../types';
-import type { ParticipantId } from '../../../types';
 
 const CustomListItemButton = styled(ListItemButton)(({ theme }) => ({
   '&:hover': {
@@ -34,20 +33,20 @@ const TimeTypography = styled(Typography)({
   opacity: 0.7,
 });
 
-interface IScopedChatItemProps {
-  chat: ChatProps;
+export interface ChatOverviewItemProps {
+  chat: PrivateChatProps;
   onClick: (arg: string) => void;
 }
 
-const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
-  const participant = useAppSelector(selectParticipantById(chat.id as ParticipantId));
+const ChatOverviewItem = ({ chat, onClick }: ChatOverviewItemProps) => {
+  const { scope, target } = chat.chatIdentifier;
+  const participant = useAppSelector(selectParticipantById(target));
   const lastMessageTimestamp = chat.lastMessage?.timestamp ?? chat.messages.at(-1)?.timestamp;
   const date = lastMessageTimestamp ? new Date(lastMessageTimestamp) : new Date(0);
   const formattedTime = useDateFormat(date, 'time');
-  const getDisplayName = () => (isEmpty(participant) ? chat.id : participant?.displayName);
-  const lastSeenTimestampCount = useAppSelector((state) => selectUnreadPersonalMessageCountByTarget(state, chat.id));
-  const hasUnreadMessage =
-    (chat.scope === ChatScope.Private || chat.scope === ChatScope.Group) && lastSeenTimestampCount > 0;
+  const getDisplayName = () => (isEmpty(participant) ? target : participant?.displayName);
+  const lastSeenTimestampCount = useAppSelector((state) => selectUnreadPersonalMessageCountByTarget(state, target));
+  const hasUnreadMessage = scope === ChatScope.Private && lastSeenTimestampCount > 0;
   const fontWeight = hasUnreadMessage ? 'bold' : 'normal';
 
   const renderPrimaryText = () => (
@@ -85,7 +84,7 @@ const ChatOverviewItem = ({ chat, onClick }: IScopedChatItemProps) => {
   );
 
   return (
-    <CustomListItemButton onClick={() => onClick(chat.id)}>
+    <CustomListItemButton onClick={() => onClick(String(target))}>
       <ListItemAvatar>
         <ParticipantAvatar src={participant?.avatarUrl}>{getDisplayName()}</ParticipantAvatar>
       </ListItemAvatar>

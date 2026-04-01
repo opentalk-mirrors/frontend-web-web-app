@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Typography, styled, Tooltip, Stack } from '@mui/material';
+import { Stack, Tooltip, Typography, styled } from '@mui/material';
 import { truncate } from 'lodash';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { InfoButton } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectRoomTitle } from '../../../store/selectors';
-import { selectEventInfo, selectRoomInfo } from '../../../store/slices/roomSlice';
+import { selectEventInfo, selectMeetingDetails, selectRoomInfo } from '../../../store/slices/roomSlice';
 import MeetingDetailsDialog from './MeetingDetailsDialog';
 import { ROOM_TITLE_MAX_LENGTH } from './constants';
 
@@ -26,7 +26,7 @@ const Container = styled(Stack)(({ theme }) => ({
   },
 }));
 
-const RoomTitleTypograhy = styled(Typography)(({ theme }) => ({
+const RoomTitleTypography = styled(Typography)(({ theme }) => ({
   padding: theme.spacing(0, 1),
   fontSize: theme.typography.pxToRem(14),
   fontWeight: 500,
@@ -36,6 +36,7 @@ const RoomTitleTypograhy = styled(Typography)(({ theme }) => ({
 const RoomTitle = () => {
   const { t } = useTranslation();
   const eventInfo = useAppSelector(selectEventInfo);
+  const meetingDetails = useAppSelector(selectMeetingDetails);
   const roomInfo = useAppSelector(selectRoomInfo);
   const [meetingDetailsDialogOpen, setMeetingDetailsDialogOpen] = useState(false);
 
@@ -46,11 +47,11 @@ const RoomTitle = () => {
   return (
     <Container direction="row">
       <Tooltip translate="no" title={title} describeChild>
-        <RoomTitleTypograhy noWrap translate="no" variant="h1">
+        <RoomTitleTypography noWrap translate="no" variant="h1">
           {truncatedTitle}
-        </RoomTitleTypograhy>
+        </RoomTitleTypography>
       </Tooltip>
-      {roomInfo && eventInfo?.meetingDetails && (
+      {roomInfo && meetingDetails && eventInfo && (
         <>
           <InfoButton
             aria-label={t('room-title-info-button-aria-label')}
@@ -58,6 +59,7 @@ const RoomTitle = () => {
           />
           <MeetingDetailsDialog
             eventInfo={eventInfo}
+            meetingDetails={meetingDetails}
             roomInfo={roomInfo}
             open={meetingDetailsDialogOpen}
             onClose={() => setMeetingDetailsDialogOpen(false)}

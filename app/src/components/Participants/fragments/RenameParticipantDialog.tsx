@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 /* eslint-disable jsx-a11y/no-autofocus */
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Paper, IconButton, styled } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, styled } from '@mui/material';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 
@@ -24,9 +24,10 @@ interface RenameParticipantDialogProps {
   open: boolean;
   participant: Participant;
   onClose: () => void;
+  selfRename?: boolean;
 }
 
-const RenameParticipantDialog = ({ open, onClose, participant }: RenameParticipantDialogProps) => {
+const RenameParticipantDialog = ({ open, onClose, participant, selfRename }: RenameParticipantDialogProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -39,7 +40,8 @@ const RenameParticipantDialog = ({ open, onClose, participant }: RenameParticipa
   });
 
   const formik = useFormik({
-    initialValues: { name: '' },
+    initialValues: { name: participant.displayName || '' },
+    enableReinitialize: true,
     validateOnBlur: false,
     validationSchema,
     onSubmit: (values) => {
@@ -72,7 +74,7 @@ const RenameParticipantDialog = ({ open, onClose, participant }: RenameParticipa
         },
       }}
     >
-      <DialogTitle>{t('participant-menu-rename')}</DialogTitle>
+      <DialogTitle>{t(selfRename ? 'global-rename' : 'participant-menu-rename')}</DialogTitle>
       <CloseIconButton aria-label={t('global-close-dialog')} onClick={handleClose}>
         <CloseIcon />
       </CloseIconButton>

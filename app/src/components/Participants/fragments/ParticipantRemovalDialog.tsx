@@ -9,8 +9,8 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  styled,
   Typography,
+  styled,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';

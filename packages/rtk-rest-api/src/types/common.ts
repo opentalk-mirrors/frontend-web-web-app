@@ -18,6 +18,7 @@ export type Namespaces =
   | 'breakout'
   | 'chat'
   | 'control'
+  | 'core'
   | 'ee_chat'
   | 'legal_vote'
   | 'polls'
@@ -32,7 +33,8 @@ export type Namespaces =
   | 'echo'
   | 'livekit'
   | 'subroom_audio'
-  | 'training_participation_report';
+  | 'training_participation_report'
+  | 'raise_hands';
 
 export enum Tag {
   Room = 'Room',

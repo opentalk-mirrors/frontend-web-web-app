@@ -9,16 +9,14 @@ import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import {
   clearGlobalChat,
-  groupChatHistoryChunkReceived,
+  lastSeenTimestampAdded,
   privateChatHistoryChunkReceived,
   received,
   roomChatHistoryChunkReceived,
   setChatSearchResults,
   setChatSettings,
-  setGlobalChatLastSeenTimestamp,
 } from '../../store/slices/chatSlice';
-import type { ChatMessage, GroupId, ParticipantId, Timestamp } from '../../types';
-import { ChatScope } from '../../types';
+import { BreakoutRoomId, ChatMessage, ChatScope, ParticipantId, Timestamp } from '../../types';
 import { chat } from '../types/incoming';
 
 /**
@@ -35,45 +33,45 @@ export const handleChatMessage = (
     case 'chat_disabled': {
       const enabled = data.message === 'chat_enabled';
       notifications.info(i18next.t(`chat-${enabled ? 'enabled' : 'disabled'}-message`));
-      dispatch(setChatSettings({ id: data.id, timestamp, enabled }));
+      dispatch(setChatSettings({ id: data.issuedBy, timestamp, enabled }));
       break;
     }
     case 'message_sent': {
       const userId = state.user.uuid as ParticipantId;
       let chatMessage: ChatMessage;
 
-      if (data.scope === ChatScope.Group) {
+      const { scope, target } = data;
+      const baseMessage = {
+        ...data,
+        timestamp,
+      };
+
+      if (scope === ChatScope.Private) {
         chatMessage = {
-          ...data,
-          timestamp,
-          scope: ChatScope.Group,
-          target: data.target as GroupId,
+          ...baseMessage,
+          scope,
+          target: target as ParticipantId,
         };
-        if (data.source !== userId) {
-          notifications.info(i18next.t('chat-new-group-message'));
-        }
-      } else if (data.scope === ChatScope.Private) {
-        chatMessage = {
-          ...data,
-          timestamp,
-          scope: ChatScope.Private,
-          target: data.target as ParticipantId,
-        };
-        if (data.target === userId) {
+        if (target === userId) {
           notifications.info(i18next.t('chat-new-private-message'));
         }
+      } else if (scope === ChatScope.Breakout) {
+        chatMessage = {
+          ...baseMessage,
+          scope,
+          target: target as BreakoutRoomId,
+        };
       } else {
         chatMessage = {
-          ...data,
-          timestamp,
-          scope: ChatScope.Global,
+          ...baseMessage,
+          scope,
           target: undefined,
         };
       }
 
       dispatch(received({ chatMessage, userId }));
       if (state.ui.currentMenuTab === MenuTab.Chat) {
-        dispatch(setGlobalChatLastSeenTimestamp({ value: timestamp }));
+        dispatch(lastSeenTimestampAdded({ scope: ChatScope.Global, timestamp }));
       }
       break;
     }
@@ -84,15 +82,17 @@ export const handleChatMessage = (
     case 'room_chat_history_chunk':
       dispatch(roomChatHistoryChunkReceived(data));
       break;
-    case 'group_chat_history_chunk':
-      dispatch(groupChatHistoryChunkReceived(data));
-      break;
     case 'private_chat_history_chunk':
       dispatch(privateChatHistoryChunkReceived(data));
       break;
     case 'search_results':
       dispatch(setChatSearchResults(data.matches.messages));
       break;
+    case 'set_last_seen_timestamp': {
+      const { message: _, ...payload } = data;
+      dispatch(lastSeenTimestampAdded(payload));
+      break;
+    }
     default: {
       const dataString = JSON.stringify(data, null, 2);
       log.error(`Unknown chat message type: ${dataString}`);

@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, render, screen } from '@testing-library/react';
 
+import { ConnectionIdentifier } from '../../types';
+import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 import { configureStore, mockedLivekitParticipant, renderWithProviders } from '../../utils/testUtils';
 import SearchAndSelectParticipantsTab from './SearchAndSelectParticipantsTab';
 import { SelectableParticipant } from './fragments/SelectParticipantsItem';
@@ -51,6 +53,12 @@ describe('Select Participants Tab', () => {
     fireEvent.change(searchInput, { target: { value: 'a' } });
     expect(mockHandleSearchChange).toHaveBeenCalledExactlyOnceWith('a');
   });
+
+  const participants = [1, 2, 3].map((value) => ({
+    ...mockedLivekitParticipant(value),
+    selected: false,
+  })) as SelectableParticipant[];
+
   it('should render participants', () => {
     const { store } = configureStore();
 
@@ -75,17 +83,19 @@ describe('Select Participants Tab', () => {
   });
 
   it('should call handleSelectParticipant when a checkbox is clicked', () => {
-    const participants = [1, 2, 3].map((value) => ({
-      ...mockedLivekitParticipant(value),
-      selected: false,
-    })) as SelectableParticipant[];
-
     const { store } = configureStore({
       initialState: {
         participants: {
-          ids: participants.map((p) => p.identity),
+          ids: participants.map((p) => {
+            const { participantId } = deconstructConnectionIdentifier(p.identity as ConnectionIdentifier);
+            return participantId;
+          }),
           entities: Object.fromEntries(
-            participants.map((participant) => [participant.identity, { ...participant, displayName: participant.name }])
+            participants.map((participant) => {
+              const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
+
+              return [participantId, { ...participant, displayName: participant.name }];
+            })
           ),
         },
       },
@@ -104,7 +114,8 @@ describe('Select Participants Tab', () => {
     );
     const checkbox1 = screen.getByRole('checkbox', { name: participants[1].name });
 
+    const { participantId } = deconstructConnectionIdentifier(participants[1].identity as ConnectionIdentifier);
     fireEvent.click(checkbox1);
-    expect(mockHandleSelectParticipant).toHaveBeenCalledExactlyOnceWith(true, participants[1].identity);
+    expect(mockHandleSelectParticipant).toHaveBeenCalledExactlyOnceWith(true, participantId);
   });
 });

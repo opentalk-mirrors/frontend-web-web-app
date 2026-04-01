@@ -30,13 +30,8 @@ import { AdornmentIconButton, CommonTextField, VisuallyHiddenTitle } from '../..
 import { CHAT_INPUT_ID } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
-import {
-  saveDefaultChatMessage,
-  selectChatConversationScope,
-  selectChatConversationTargetId,
-  selectDefaultChatMessage,
-} from '../../../store/slices/uiSlice';
-import { ChatScope, GroupId, ParticipantId } from '../../../types';
+import { saveDefaultChatMessage, selectDefaultChatMessage } from '../../../store/slices/uiSlice';
+import { ChatIdentifier } from '../../../types';
 import { formikGetValue, formikProps } from '../../../utils/formikUtils';
 import yup from '../../../utils/yupUtils';
 
@@ -90,13 +85,14 @@ const PickerContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-interface ChatFormProps {
+type ChatFormProps = {
+  chatIdentifier: ChatIdentifier;
   autoFocusMessageInput?: boolean;
-}
+};
 
 const MAX_CHAT_CHARS = 4000;
 
-const ChatForm = ({ autoFocusMessageInput }: ChatFormProps) => {
+const ChatForm = ({ autoFocusMessageInput, chatIdentifier }: ChatFormProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useAppDispatch();
@@ -105,10 +101,12 @@ const ChatForm = ({ autoFocusMessageInput }: ChatFormProps) => {
   const [hasFocus, setFocus] = useState(false);
   const isChatEnabled = useAppSelector(selectChatEnabledState);
   const emojiButton = useRef<HTMLButtonElement | null>(null);
-  const scope = useAppSelector(selectChatConversationScope);
-  const targetId = useAppSelector(selectChatConversationTargetId);
-  const defaultChatMessage = useAppSelector((state) => selectDefaultChatMessage(state, scope, targetId));
+  const defaultChatMessage = useAppSelector((state) => selectDefaultChatMessage(state, chatIdentifier));
   const messageInputReference = useRef<HTMLInputElement>(null);
+
+  const dispatchSaveDefaultChatMessage = (input: string) => {
+    dispatch(saveDefaultChatMessage({ ...chatIdentifier, input }));
+  };
 
   useLayoutEffect(
     function bootstrapMessageInputAutofocusing() {
@@ -143,12 +141,12 @@ const ChatForm = ({ autoFocusMessageInput }: ChatFormProps) => {
   const handleEmojiClick = (data: EmojiClickData) => {
     const message = formik.values.message + data.emoji;
     formik.setFieldValue('message', message);
-    dispatch(saveDefaultChatMessage({ scope, targetId, input: message }));
+    dispatchSaveDefaultChatMessage(message);
   };
 
   const blurHandler = (event: FocusEvent<HTMLDivElement>) => {
     if (event.target && event.target.tagName === 'INPUT') {
-      dispatch(saveDefaultChatMessage({ scope, targetId, input: formikGetValue('message', formik, '') }));
+      dispatchSaveDefaultChatMessage(formikGetValue('message', formik, ''));
     }
   };
 
@@ -253,36 +251,17 @@ const ChatForm = ({ autoFocusMessageInput }: ChatFormProps) => {
     validateOnBlur: false,
     enableReinitialize: true, // It is essential to reinitialize in order to pick up new default input message.
     onSubmit: (values, { resetForm, setErrors, setTouched }) => {
-      switch (scope) {
-        case ChatScope.Group:
-          if (targetId !== undefined) {
-            dispatch(
-              sendChatMessage.action({ scope: ChatScope.Group, content: values.message, target: targetId as GroupId })
-            );
-          }
-          break;
-        case ChatScope.Private:
-          dispatch(
-            sendChatMessage.action({
-              scope: ChatScope.Private,
-              content: values.message,
-              target: targetId as ParticipantId,
-            })
-          );
-          break;
-        default:
-          dispatch(sendChatMessage.action({ scope: ChatScope.Global, content: values.message }));
-      }
+      dispatch(sendChatMessage.action({ ...chatIdentifier, content: values.message }));
       setErrors({});
       setTouched({});
       resetForm();
       setOpenPicker(false);
-      dispatch(saveDefaultChatMessage({ scope, targetId, input: '' }));
+      dispatchSaveDefaultChatMessage('');
     },
   });
 
   const handleFormBlur = (e: FocusEvent<HTMLInputElement>) => {
-    dispatch(saveDefaultChatMessage({ scope, targetId, input: formikGetValue('message', formik, '') }));
+    dispatchSaveDefaultChatMessage(formikGetValue('message', formik, ''));
     setFocus(false);
     if (e.currentTarget.value.trim() === '') {
       formik.setErrors({});

@@ -1,71 +1,58 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { SnackbarKey } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
+import { switchRoom } from '../../api/types/outgoing/breakout';
 import BreakoutRoomIcon from '../../assets/images/subroom-illustration.svg?react';
 import { notifications } from '../../commonComponents';
+import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useInviteCode } from '../../hooks/useInviteCode';
-import { startRoom } from '../../store/commonActions';
 import {
   breakoutSlice,
   selectAssignedBreakoutRoomId,
+  selectBreakoutStopsAt,
   selectCurrentBreakoutRoomId,
   selectLastDispatchedActionType,
 } from '../../store/slices/breakoutSlice';
-import { selectRoomId, selectRoomPassword } from '../../store/slices/roomSlice';
-import { selectDisplayName } from '../../store/slices/userSlice';
-import { composeRoomPath } from '../../utils/apiUtils';
+import { RoomKind } from '../../types';
 import BreakoutRoomNotification, { Action } from './fragments/BreakoutRoomNotification';
+
+const getBreakoutCloseDuration = (breakoutStopsAt?: string) => {
+  return breakoutStopsAt ? Math.max(0, (new Date(breakoutStopsAt).getTime() - Date.now()) / 1000) : 0;
+};
 
 const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const assignedBreakoutRoomId = useAppSelector(selectAssignedBreakoutRoomId);
   const currentBreakoutRoomId = useAppSelector(selectCurrentBreakoutRoomId);
-  const isLoggedIn = useAppSelector(selectIsAuthenticated);
-  const roomPassword = useAppSelector(selectRoomPassword);
-  const roomId = useAppSelector(selectRoomId);
-  const inviteCode = useInviteCode();
   const visibleNotifications = useRef<SnackbarKey[]>([]);
   const lastDispatchedActionType = useAppSelector(selectLastDispatchedActionType);
-  const displayName = useAppSelector(selectDisplayName);
-  const navigate = useNavigate();
+  const breakoutStopsAt = useAppSelector(selectBreakoutStopsAt);
 
   const handleJoinBreakoutRoom = useCallback(() => {
-    if (roomId === undefined) {
-      throw new Error('roomid is unset when joining breakout room');
+    if (assignedBreakoutRoomId === undefined) {
+      throw new Error('roomId is unset when joining breakout room');
     }
     dispatch(
-      startRoom({
-        roomId,
-        password: roomPassword,
-        breakoutRoomId: assignedBreakoutRoomId,
-        displayName,
-        inviteCode: isLoggedIn ? undefined : inviteCode,
+      switchRoom.action({
+        kind: RoomKind.Breakout,
+        id: assignedBreakoutRoomId,
       })
-    ).then(() => navigate(composeRoomPath(roomId, inviteCode, assignedBreakoutRoomId)));
-  }, [dispatch, isLoggedIn, roomId, roomPassword, displayName, assignedBreakoutRoomId, navigate, inviteCode]);
+    );
+  }, [assignedBreakoutRoomId, dispatch]);
 
   const handleLeaveBreakoutRoom = useCallback(() => {
-    if (roomId === undefined) {
-      throw new Error('roomid is unset when leaving breakout room');
-    }
     dispatch(
-      startRoom({
-        roomId,
-        password: roomPassword,
-        breakoutRoomId: null,
-        displayName,
-        inviteCode: isLoggedIn ? undefined : inviteCode,
+      switchRoom.action({
+        kind: RoomKind.Main,
+        id: undefined,
       })
-    ).then(() => navigate(composeRoomPath(roomId, inviteCode)));
-  }, [dispatch, isLoggedIn, roomId, roomPassword, inviteCode, displayName, navigate]);
+    );
+  }, [dispatch]);
 
   const joinActions: Action[] = useMemo(
     () => [
@@ -87,19 +74,20 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
     [t, handleLeaveBreakoutRoom]
   );
 
-  const clearVisibleNotifications = () => {
+  const clearVisibleNotifications = useCallback(() => {
     visibleNotifications.current.forEach((key) => {
       notifications.close(key);
     });
     visibleNotifications.current = [];
-  };
+  }, []);
 
   useEffect(() => {
     clearVisibleNotifications();
+    const closeDuration = getBreakoutCloseDuration(breakoutStopsAt);
+
     switch (lastDispatchedActionType) {
-      case breakoutSlice.actions.stopped.type:
-      case breakoutSlice.actions.expired.type:
-        currentBreakoutRoomId !== null &&
+      case breakoutSlice.actions.closeNotice.type:
+        if (currentBreakoutRoomId !== undefined) {
           notifications.info(t('breakout-room-notification-stopped'), {
             persist: true,
             content: (key, message) => {
@@ -112,13 +100,14 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
                   actions={leaveActions}
                   countdown={{
                     action: handleLeaveBreakoutRoom,
-                    duration: 60,
+                    duration: closeDuration,
                     startedAt: Date.now(),
                   }}
                 />
               );
             },
           });
+        }
         break;
       case breakoutSlice.actions.started.type:
         notifications.info(t('breakout-room-notification-started'), {
@@ -133,7 +122,7 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
                 actions={joinActions}
                 countdown={{
                   action: handleJoinBreakoutRoom,
-                  duration: 60,
+                  duration: BREAKOUT_ROOM_CLOSE_DELAY,
                   startedAt: Date.now(),
                 }}
               />
@@ -150,6 +139,8 @@ const BreakoutRoomProvider = ({ children }: { children: React.ReactNode }) => {
     handleLeaveBreakoutRoom,
     handleJoinBreakoutRoom,
     currentBreakoutRoomId,
+    breakoutStopsAt,
+    clearVisibleNotifications,
   ]);
 
   return <>{children}</>;

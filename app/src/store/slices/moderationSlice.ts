@@ -14,6 +14,7 @@ export type ModerationState = {
   raiseHandsEnabled: boolean;
   forceMute: ForceMute;
   trainingParticipationReportEnabled: boolean;
+  selfRenameEnabled: boolean;
 };
 
 const initialState: ModerationState = {
@@ -24,6 +25,7 @@ const initialState: ModerationState = {
     unrestrictedParticipants: [],
   },
   trainingParticipationReportEnabled: false,
+  selfRenameEnabled: false,
 };
 
 export const moderationSlice = createSlice({
@@ -38,6 +40,7 @@ export const moderationSlice = createSlice({
     },
     disableRaisedHands: (state) => {
       state.raiseHandsEnabled = false;
+      state.hasHandUp = false;
     },
     forceMuteEnabled: (
       state,
@@ -74,6 +77,12 @@ export const moderationSlice = createSlice({
       state.hasHandUp = false;
       state.handUpdatedAt = undefined;
     },
+    enabledSelfRename: (state) => {
+      state.selfRenameEnabled = true;
+    },
+    disabledSelfRename: (state) => {
+      state.selfRenameEnabled = false;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, action) => {
@@ -91,6 +100,15 @@ export const moderationSlice = createSlice({
         };
       }
       state.raiseHandsEnabled = action.payload.moderation?.raiseHandsEnabled ?? state.raiseHandsEnabled;
+      const displayNameChangeRestrictions = action.payload.moderation?.displayNameChangeRestrictions;
+      if (displayNameChangeRestrictions) {
+        const restricted =
+          displayNameChangeRestrictions.type === 'enabled'
+            ? !displayNameChangeRestrictions.unrestricted_participants.includes(action.payload.participantId)
+            : false;
+
+        state.selfRenameEnabled = !restricted;
+      }
     });
   },
 });
@@ -105,6 +123,8 @@ export const {
   forceMuteDisabled,
   trainingParticipationReportEnabled,
   trainingParticipationReportDisabled,
+  disabledSelfRename,
+  enabledSelfRename,
 } = moderationSlice.actions;
 export const actions = moderationSlice.actions;
 
@@ -120,5 +140,6 @@ export const selectMicrophonesEnabled = (state: RootState) =>
   state.moderation.forceMute.type === ForceMuteType.Disabled;
 export const selectTrainingParticipationReportEnabled = (state: RootState) =>
   state.moderation.trainingParticipationReportEnabled;
+export const selectSelfRenameEnabled = (state: RootState) => state.moderation.selfRenameEnabled;
 
 export default moderationSlice.reducer;

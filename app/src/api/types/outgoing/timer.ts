@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { RootState } from '../../../store';
-import { createModule, Namespaced, TimerKind, TimerStyle } from '../../../types';
+import { Namespaced, TimerKind, TimerStyle, createModule } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
@@ -16,12 +16,10 @@ export interface StartTimer {
 }
 export interface StopTimer {
   action: 'stop';
-  timerId: string;
 }
 
 export interface ReadyToContinue {
   action: 'update_ready_status';
-  timerId: string;
   status: boolean;
 }
 

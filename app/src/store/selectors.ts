@@ -2,36 +2,38 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { createSelector } from '@reduxjs/toolkit';
-import i18next, { t } from 'i18next';
-import { intersection } from 'lodash';
+import i18next from 'i18next';
 
 import {
   ChatScope,
+  ChatIdentifier,
   FilterableParticipant,
   ForceMuteType,
-  GroupId,
   LegalVoteState,
   MeetingNotesAccess,
   MeetingNotesParticipant,
   Participant,
-  ParticipantId,
   ParticipationKind,
+  Role,
   SortOption,
+  WaitingState,
+  ParticipantId,
+  BreakoutRoomId,
 } from '../types';
 import { moveItemToTopOfArray } from '../utils/arrayUtils';
 import { mergeAndSortMessagesEndEvents } from '../utils/eventUtils';
 import { sortParticipantsWithConfig } from '../utils/sortParticipants';
+import type { RootState } from './index';
 import { selectAutomoderationParticipantIds } from './slices/automodSlice';
 import { selectCurrentBreakoutRoom, selectCurrentBreakoutRoomId } from './slices/breakoutSlice';
 import {
   globalMessagesSelectors,
-  groupMessagesSelectors,
   privateMessagesSelectors,
-  selectAllGroupChats,
+  breakoutMessagesSelectors,
   selectAllPrivateChats,
   selectChatState,
 } from './slices/chatSlice';
-import { selectAllEvents } from './slices/eventSlice';
+import { selectVisibleEvents } from './slices/eventSlice';
 import { selectAllVotes } from './slices/legalVoteSlice';
 import { selectForceMute, selectHandUp, selectHandUpdatedAt } from './slices/moderationSlice';
 import {
@@ -44,11 +46,11 @@ import { selectEventInfo } from './slices/roomSlice';
 import { selectParticipantsReady } from './slices/timerSlice';
 import {
   selectChatConversationScope,
-  selectChatConversationTargetId,
+  selectChatConversationTarget,
   selectParticipantsSearchValue,
   selectParticipantsSortOption,
 } from './slices/uiSlice';
-import { selectGroups, selectOurUuid, selectUserAsPartialParticipant } from './slices/userSlice';
+import { selectOurUuid, selectUserAsPartialParticipant } from './slices/userSlice';
 
 export const selectUserAsParticipant = createSelector(
   [selectUserAsPartialParticipant, selectCurrentBreakoutRoomId, selectHandUp, selectHandUpdatedAt],
@@ -66,7 +68,7 @@ export const selectUserAsParticipant = createSelector(
   }
 );
 
-export const selectCombinedParticipantsAndUserInCoference = createSelector(
+export const selectCombinedParticipantsAndUserInConference = createSelector(
   [selectAllOnlineParticipantsInConference, selectUserAsParticipant],
   (participants, user) => (user ? [...participants, user] : participants)
 );
@@ -81,14 +83,14 @@ export const selectCombinedParticipantsAndUser = createSelector(
   (participants, user) => (user ? [...participants, user] : participants)
 );
 
-export const selectParticipantsWithourGuestAndSip = createSelector(
+export const selectParticipantsWithoutGuestAndSip = createSelector(
   [selectCombinedParticipantsAndUser],
   (participants) =>
     participants.filter(
       (participant) =>
         !(
           participant.participationKind.match(ParticipationKind.Guest) ||
-          participant.participationKind.match(ParticipationKind.Sip)
+          participant.participationKind.match(ParticipationKind.CallIn)
         )
     )
 );
@@ -111,7 +113,9 @@ export const selectAllMeetingNotesParticipants = createSelector(
   (participants, user) => {
     if (user) {
       const allMeetingNotesParticipants = participants.filter(
-        (participant) => participant.participationKind !== ParticipationKind.Sip
+        (participant) =>
+          participant.participationKind !== ParticipationKind.Guest &&
+          participant.participationKind !== ParticipationKind.CallIn
       );
       const newParticipants = allMeetingNotesParticipants.map((participant): MeetingNotesParticipant => {
         const isSelected = participant.meetingNotesAccess === MeetingNotesAccess.Write;
@@ -129,33 +133,6 @@ export const selectAllMeetingNotesParticipants = createSelector(
   }
 );
 
-export const selectAllGroupParticipants = createSelector(
-  [selectCombinedParticipantsAndUser, selectGroups],
-  (participants, groups) => {
-    const NO_GROUP_ID = t('no-group-participants-label') as GroupId;
-    const groupDictionary = new Map<GroupId, Array<Participant>>();
-
-    groupDictionary.set(NO_GROUP_ID, []);
-    groups.forEach((group) => {
-      groupDictionary.set(group, []);
-    });
-
-    participants.forEach((participant) => {
-      const groups = participant.groups;
-      if (intersection(groups, [...groupDictionary.keys()]).length === 0) {
-        groupDictionary.get(NO_GROUP_ID)?.push(participant);
-        return;
-      }
-
-      groups.forEach((group) => {
-        groupDictionary.get(group)?.push(participant);
-      });
-    });
-
-    return groupDictionary;
-  }
-);
-
 export const sortParticipants = sortParticipantsWithConfig({ language: i18next.language });
 
 /**
@@ -170,18 +147,6 @@ const filterParticipants = <T extends FilterableParticipant>(participants: T[], 
 const sortAndFilterParticipants = (participants: Participant[], sortOption: SortOption, searchValue: string) => {
   return filterParticipants(sortParticipants(participants, sortOption), searchValue);
 };
-
-export const selectParticipantGroupsSortedAndFiltered = createSelector(
-  [selectAllGroupParticipants, selectParticipantsSortOption, selectParticipantsSearchValue],
-  (groups, sortOption, searchValue) => {
-    const groupDictionary = new Map<GroupId, Array<Participant>>();
-    groups.forEach((participants, groupId) => {
-      const sortedAndFilteredParticipants = sortAndFilterParticipants(participants, sortOption, searchValue);
-      groupDictionary.set(groupId, sortedAndFilteredParticipants);
-    });
-    return groupDictionary;
-  }
-);
 
 export const selectAllParticipantsSortedAndFiltered = createSelector(
   [
@@ -203,53 +168,43 @@ export const selectAllParticipantsSortedAndFiltered = createSelector(
   }
 );
 
+const selectScopedConversationScope = (state: RootState, chatIdentifier?: ChatIdentifier) =>
+  chatIdentifier?.scope ?? selectChatConversationScope(state);
+
+const selectScopedConversationTarget = (state: RootState, chatIdentifier?: ChatIdentifier) =>
+  chatIdentifier?.target ?? selectChatConversationTarget(state);
+
+const selectScopedEvents = createSelector([selectScopedConversationScope, selectVisibleEvents], (scope, events) =>
+  scope === ChatScope.Global ? events : []
+);
+
 export const selectChatMessagesByScope = createSelector(
-  [selectChatState, selectChatConversationScope, selectChatConversationTargetId],
-  (chatState, scope, targetId) => {
+  [selectChatState, selectScopedConversationScope, selectScopedConversationTarget],
+  (chatState, scope, target) => {
     if (scope === ChatScope.Global) {
-      return globalMessagesSelectors.selectAll(chatState.scope.global.messages);
-    } else if (scope === ChatScope.Private && targetId) {
-      const private_messages = chatState.scope.private[targetId as ParticipantId]?.messages;
-      if (private_messages) {
-        return privateMessagesSelectors.selectAll(private_messages);
-      }
-    } else if (scope === ChatScope.Group && targetId) {
-      const group_messages = chatState.scope.group[targetId as GroupId]?.messages;
-      if (group_messages) {
-        return groupMessagesSelectors.selectAll(group_messages);
-      }
+      const globalChatMessages = globalMessagesSelectors.selectAll(chatState.scope.global.messages);
+      return globalChatMessages.length > 0 ? globalChatMessages : [];
     }
+    if (scope === ChatScope.Private && target) {
+      const privateChat = chatState.scope.private[target as ParticipantId];
+      return privateChat ? privateMessagesSelectors.selectAll(privateChat.messages) : [];
+    }
+    if (scope === ChatScope.Breakout && target !== undefined) {
+      const breakoutChat = chatState.scope.breakout[target as BreakoutRoomId];
+      return breakoutChat ? breakoutMessagesSelectors.selectAll(breakoutChat.messages) : [];
+    }
+
     return [];
   }
 );
 
-const selectScopedEvents = createSelector([selectChatConversationScope, selectAllEvents], (scope, events) =>
-  scope === ChatScope.Global ? events : []
-);
-
 export const selectCombinedMessageAndEvents = createSelector(
-  [selectScopedEvents, selectChatMessagesByScope, selectChatConversationScope],
+  [selectScopedEvents, selectChatMessagesByScope, selectScopedConversationScope],
   (events, messages, scope) => {
     if (scope === ChatScope.Global) {
       return mergeAndSortMessagesEndEvents(messages, events);
     }
     return messages;
-  }
-);
-
-export const selectNextIndex = createSelector(
-  [selectChatState, selectChatConversationScope, selectChatConversationTargetId],
-  (chatState, chatScope, conversationTargetId) => {
-    if (chatScope === ChatScope.Global) {
-      return chatState.scope.global.nextIndex;
-    }
-    if (chatScope === ChatScope.Private && conversationTargetId) {
-      return chatState.scope.private[conversationTargetId as ParticipantId]?.nextIndex;
-    }
-    if (chatScope === ChatScope.Group && conversationTargetId) {
-      return chatState.scope.group[conversationTargetId as GroupId]?.nextIndex;
-    }
-    return null;
   }
 );
 
@@ -271,12 +226,15 @@ export const selectParticipantsWithRaisedHands = createSelector(
 
 export const selectVotingUsers = createSelector([selectCombinedParticipantsAndUser], (records) => {
   return records.filter((record) => {
-    return record.role === 'user' || record.participationKind === 'user';
+    return (
+      (record.role === Role.User || record.participationKind === ParticipationKind.Registered) &&
+      record.participationKind !== ParticipationKind.Guest
+    );
   });
 });
 
 export const selectTalkingStickParticipants = createSelector(
-  [selectCombinedParticipantsAndUserInCoference, selectAutomoderationParticipantIds],
+  [selectCombinedParticipantsAndUserInConference, selectAutomoderationParticipantIds],
   (onlineParticipants, talkingStickIds): Participant[] => {
     const participantsInTalkingStick: Participant[] = [];
 
@@ -292,13 +250,13 @@ export const selectTalkingStickParticipants = createSelector(
   }
 );
 
-export const selectPollsAndVotingsCount = createSelector([selectAllVotes, selectAllPolls], (votings, polls) => {
-  return votings.length + polls.length;
+export const selectPollsAndVotingCount = createSelector([selectAllVotes, selectAllPolls], (voting, polls) => {
+  return voting.length + polls.length;
 });
 
-export const selectActivePollsAndVotingsCount = createSelector([selectAllVotes, selectAllPolls], (votings, polls) => {
+export const selectActivePollsAndVotingCount = createSelector([selectAllVotes, selectAllPolls], (voting, polls) => {
   return (
-    votings.filter((voting) => voting.state === LegalVoteState.Started).length +
+    voting.filter((voting) => voting.state === LegalVoteState.Started).length +
     polls.filter((poll) => poll.state === 'active').length
   );
 });
@@ -310,12 +268,8 @@ export const selectIsUserMicDisabled = createSelector([selectForceMute, selectOu
   );
 });
 
-export const selectAllPersonalChats = createSelector(
-  [selectAllGroupChats, selectAllPrivateChats],
-  (groupChats, privateChats) =>
-    groupChats
-      .concat(privateChats)
-      .sort((a, b) => Date.parse(b.lastMessage?.timestamp) - Date.parse(a.lastMessage?.timestamp))
+export const selectAllPersonalChats = createSelector([selectAllPrivateChats], (privateChats) =>
+  privateChats.sort((a, b) => Date.parse(b.lastMessage?.timestamp) - Date.parse(a.lastMessage?.timestamp))
 );
 
 export const selectRoomTitle = createSelector(
@@ -328,5 +282,41 @@ export const selectRoomTitle = createSelector(
       return eventInfo.title;
     }
     return i18next.t('fallback-room-title') || '';
+  }
+);
+
+export const selectOtherParticipants = createSelector([selectAllParticipants, selectOurUuid], (participants, ourUuid) =>
+  participants.filter((participant) => participant.id !== ourUuid)
+);
+
+export const selectOtherOnlineParticipants = createSelector([selectOtherParticipants], (participants) =>
+  participants.filter((participant) => participant.leftAt === null && participant.waitingState === WaitingState.Joined)
+);
+
+export const selectOtherOnlineParticipantsInBreakoutRoom = createSelector(
+  [selectOtherOnlineParticipants, selectCurrentBreakoutRoomId],
+  (participants, breakoutRoomId) => participants.filter((participant) => participant.breakoutRoomId === breakoutRoomId)
+);
+
+export const selectOtherOnlineParticipantsInBreakoutRoomCount = createSelector(
+  [selectOtherOnlineParticipantsInBreakoutRoom],
+  (participants) => participants.length
+);
+
+export const selectMenuTabPeopleCount = createSelector(
+  [selectOtherOnlineParticipantsInBreakoutRoomCount],
+  (count) => count + 1 // +1 for the user themselves
+);
+
+export const selectPeopleTabParticipants = createSelector(
+  [
+    selectOtherOnlineParticipantsInBreakoutRoom,
+    selectUserAsParticipant,
+    selectParticipantsSortOption,
+    selectParticipantsSearchValue,
+  ],
+  (participants, user, sortOption, searchValue) => {
+    const allParticipants = user ? [user, ...participants] : participants;
+    return sortAndFilterParticipants(allParticipants, sortOption, searchValue);
   }
 );

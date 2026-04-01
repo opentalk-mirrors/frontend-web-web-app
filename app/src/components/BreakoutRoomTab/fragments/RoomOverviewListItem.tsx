@@ -79,7 +79,7 @@ const RoomOverviewListItem = ({ joinRoom, groupedParticipants, breakoutRoomId }:
               <Avatar
                 src={participant?.avatarUrl}
                 alt={participant?.displayName}
-                isSipParticipant={participant.participationKind === ParticipationKind.Sip}
+                isSipParticipant={participant.participationKind === ParticipationKind.CallIn}
               >
                 {participant?.displayName}
               </Avatar>

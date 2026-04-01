@@ -16,7 +16,7 @@ import {
 } from '../../store/slices/pollSlice';
 import { selectVoteOrPollIdToShow, setVoteOrPollIdToShow } from '../../store/slices/uiSlice';
 import { selectOurUuid } from '../../store/slices/userSlice';
-import type { PollId, LegalVoteId } from '../../types';
+import { type PollId, type LegalVoteId, LegalVoteState } from '../../types';
 import { LegalVoteContainer } from './fragments/LegalVoteContainer';
 import { PollContainer } from './fragments/PollContainer';
 import { ReportSection } from './fragments/ReportSection';
@@ -81,7 +81,9 @@ export default function Ballot({ container }: BallotProps) {
       >
         <DialogContent>
           <LegalVoteContainer onClose={handleClose} legalVote={legalVoteToShow} isAllowedToVote={isAllowedToVote} />
-          {isAllowedToVote && <ReportSection legalVoteId={legalVoteToShow.id} />}
+          {isAllowedToVote && legalVoteToShow.state !== LegalVoteState.Finished && (
+            <ReportSection legalVoteId={legalVoteToShow.id} />
+          )}
         </DialogContent>
       </Dialog>
     );

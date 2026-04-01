@@ -9,8 +9,7 @@ import { vote } from '../../../api/types/outgoing/legalVote';
 import { CloseIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector, useDateFormat } from '../../../hooks';
 import { selectPersistedToken } from '../../../store/slices/legalVoteSlice';
-import { LegalVoteKind, LegalVoteState, LegalVote, LegalVoteOption } from '../../../types';
-import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
+import { LegalVoteState, LegalVote, LegalVoteOption } from '../../../types';
 import { LegalVoteTokenClipboard } from '../../LegalVoteTokenClipboard';
 import VoteAndPollCountdown from '../../VoteAndPollCountdown';
 import { ActiveStateChip } from './ActiveStateChip';
@@ -30,6 +29,12 @@ type LegalVoteContainerProps = {
 const StyledLegend = styled('legend')(() => ({
   wordBreak: 'break-word',
   whiteSpace: 'pre-wrap',
+}));
+
+const CloseButton = styled(IconButton)(({ theme }) => ({
+  position: 'absolute',
+  right: theme.spacing(1),
+  top: theme.spacing(1),
 }));
 
 // Table is visible for all users who can vote in role_call and live_roll_call (by name)
@@ -59,10 +64,9 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
     !isLegalVoteActive || !isAllowedToVote || legalVote.userVote?.votedAt || !localSelectedLegalVoteOption || !token
   );
   const hasVotes = Object.keys(legalVote.votingRecord || {}).length > 0;
-  const isTableHintVisible =
-    legalVote.kind === LegalVoteKind.Pseudonymous && isAllowedToVote && !isLegalVoteActive && hasVotes;
+  const isTableHintVisible = legalVote.pseudonymous && isAllowedToVote && !isLegalVoteActive && hasVotes;
   const [showResults, setShowResults] = useState(false);
-  const showResultTable = (legalVote.kind !== LegalVoteKind.Pseudonymous || showResults) && isAllowedToVote && hasVotes;
+  const showResultTable = (!legalVote.pseudonymous || showResults) && isAllowedToVote && hasVotes;
   const showTokenClipboard = legalVote.state === LegalVoteState.Finished && isAllowedToVote && token;
   const resultsRef = useRef<HTMLDivElement>(null);
   const scrollToResults = () => {
@@ -82,13 +86,12 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
         legalVoteId: legalVote.id,
         option: localSelectedLegalVoteOption,
         token: token || '',
-        timezone: getCurrentTimezone(),
       })
     );
   };
 
   const calculateVotePercentage = (legalVote: LegalVote, voteKey: LegalVoteOption): number => {
-    return legalVote.votes && legalVote.votes[voteKey] != 0 ? (legalVote.votes[voteKey] / numberOfVotes) * 100 : 0;
+    return legalVote.votes && legalVote.votes[voteKey] !== 0 ? (legalVote.votes[voteKey] / numberOfVotes) * 100 : 0;
   };
 
   return (
@@ -132,14 +135,14 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
               />
             )}
           </Box>
-          <IconButton
+          <CloseButton
             onClick={onClose}
             aria-label={t('global-close-dialog')}
             /* eslint-disable jsx-a11y/no-autofocus */
             autoFocus
           >
             <CloseIcon />
-          </IconButton>
+          </CloseButton>
         </Box>
       </Grid>
       <Grid component="form" container size={{ xs: 12 }} onSubmit={submitLegalVoteOption}>
@@ -166,7 +169,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
                   (voteKey, index) =>
                     (voteKey !== 'abstain' || (voteKey === 'abstain' && legalVote.enableAbstain)) && (
                       <VoteResult
-                        key={index}
+                        key={voteKey}
                         title={t(`legal-vote-${voteKey}-label`)}
                         optionIndex={index}
                         voteType={VoteType.LegalVote}
@@ -206,7 +209,7 @@ export const LegalVoteContainer: FC<LegalVoteContainerProps> = ({ legalVote, onC
             </Typography>
           </Grid>
         )}
-        {isAllowedToVote && (
+        {isAllowedToVote && legalVote.state !== LegalVoteState.Finished && (
           <Grid
             size={{ xs: 12 }}
             container

@@ -23,14 +23,12 @@ export interface VoteStart extends LegalVoteParameters {
 export interface VoteStop {
   action: 'stop';
   legalVoteId: LegalVoteId;
-  timezone: string;
 }
 
 export interface VoteCancel {
   action: 'cancel';
   legalVoteId: LegalVoteId;
   reason: string;
-  timezone: string;
 }
 
 export interface VoteOutgoing {
@@ -38,21 +36,26 @@ export interface VoteOutgoing {
   legalVoteId: LegalVoteId;
   option: LegalVoteOption;
   token: string;
-  timezone: string;
 }
 
 export enum ReportIssueKind {
-  Screenshare = 'screenshare',
+  Other = 'other',
   Audio = 'audio',
   Video = 'video',
-  Other = 'other',
+  Screenshare = 'screenshare',
 }
 
 export interface VoteReportIssue {
   action: 'report_issue';
-  legal_vote_id: LegalVoteId;
+  legalVoteId: LegalVoteId;
   kind?: ReportIssueKind;
   description?: string;
+}
+
+export interface VoteGeneratePdf {
+  action: 'generate_pdf';
+  legalVoteId: LegalVoteId;
+  timezone?: string;
 }
 
 export type Action = VoteStart | VoteStop | VoteCancel | VoteOutgoing | VoteReportIssue;

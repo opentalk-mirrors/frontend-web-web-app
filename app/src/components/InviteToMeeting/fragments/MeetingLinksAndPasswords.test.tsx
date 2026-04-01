@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import type { CoreFeatures } from '@opentalk/rest-api-rtk-query';
+import { CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
@@ -61,7 +61,7 @@ describe('MeetingLinksAndPasswords component tests', () => {
   });
 
   beforeEach(() => {
-    mockCoreFeatures = ['guests_allowed'];
+    mockCoreFeatures = [CoreFeatures.GuestsAllowed];
   });
 
   describe('rendering of guest link field', () => {

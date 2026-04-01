@@ -48,7 +48,6 @@ describe('handleMeetingReportMessage', () => {
   });
 
   it('notifies with the meeting report link when event info is available', () => {
-    const dispatch = vi.fn();
     const state = createState();
     const data: MeetingReportMessage = {
       message: 'pdf_asset',
@@ -56,7 +55,7 @@ describe('handleMeetingReportMessage', () => {
       assetId: 'asset-1' as AssetId,
     };
 
-    handleMeetingReportMessage(dispatch, data, state);
+    handleMeetingReportMessage(data, state);
 
     expect(composeMeetingDetailsUrl).toHaveBeenCalledExactlyOnceWith(state.config.baseUrl, state.room.eventInfo?.id);
     expect(showWithLinkNotification).toHaveBeenCalledExactlyOnceWith({
@@ -66,7 +65,6 @@ describe('handleMeetingReportMessage', () => {
   });
 
   it('notifies without a link when event info is missing', () => {
-    const dispatch = vi.fn();
     const state = createState({ room: {} as RootState['room'] });
     const data: MeetingReportMessage = {
       message: 'pdf_asset',
@@ -74,7 +72,7 @@ describe('handleMeetingReportMessage', () => {
       assetId: 'asset-1' as AssetId,
     };
 
-    handleMeetingReportMessage(dispatch, data, state);
+    handleMeetingReportMessage(data, state);
 
     expect(composeMeetingDetailsUrl).not.toHaveBeenCalled();
     expect(showWithLinkNotification).toHaveBeenCalledExactlyOnceWith({
@@ -84,21 +82,18 @@ describe('handleMeetingReportMessage', () => {
   });
 
   it('routes storage errors through the helper', () => {
-    const dispatch = vi.fn();
     const state = createState();
     const data: MeetingReportMessage = { message: 'error', error: MeetingReportError.StorageExceeded };
 
-    handleMeetingReportMessage(dispatch, data, state);
+    handleMeetingReportMessage(data, state);
 
     expect(handleStorageExceededError).toHaveBeenCalledExactlyOnceWith(state, MeetingReportError.StorageExceeded);
-    expect(dispatch).not.toHaveBeenCalled();
   });
 
   it('throws on unknown message type', () => {
-    const dispatch = vi.fn();
     const state = createState();
     const data = { message: 'unknown' } as unknown as MeetingReportMessage;
 
-    expect(() => handleMeetingReportMessage(dispatch, data, state)).toThrow(/Unknown message type/);
+    expect(() => handleMeetingReportMessage(data, state)).toThrow(/Unknown message type/);
   });
 });

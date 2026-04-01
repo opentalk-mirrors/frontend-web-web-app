@@ -24,8 +24,13 @@ import {
 } from '../../../store/slices/livekitSlice';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
 import { selectE2EEncryption } from '../../../store/slices/roomSlice';
-import { pinnedParticipantIdSet, selectCinemaLayout, selectPinnedParticipantId } from '../../../store/slices/uiSlice';
-import { ParticipantId } from '../../../types';
+import {
+  pinnedConnectionIdentifierSet,
+  selectCinemaLayout,
+  selectPinnedConnectionIdentifier,
+} from '../../../store/slices/uiSlice';
+import { ConnectionIdentifier } from '../../../types';
+import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
 import BrokenSubscriberIndicator from './BrokenSubscriberIndicator';
 import { OverlayIconButton } from './OverlayIconButton';
 
@@ -48,35 +53,36 @@ const IndicatorContainer = styled(Grid)(({ theme }) => ({
 }));
 
 interface VideoOverlayProps {
-  participantId: ParticipantId;
+  connectionIdentifier: ConnectionIdentifier;
   active: boolean;
 }
 
-const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
+const VideoOverlay = ({ connectionIdentifier, active }: VideoOverlayProps) => {
+  const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
   const userLayout = useAppSelector(selectCinemaLayout);
   const [channelId, setChannelId] = useState<string | undefined>();
   const dispatch = useAppDispatch();
   const screenDescriptor = useMemo<MediaDescriptor>(
     () => ({
-      participantId,
+      connectionIdentifier,
       mediaType: Track.Source.ScreenShare,
     }),
-    [participantId]
+    [connectionIdentifier]
   );
   const videoDescriptor = useMemo<MediaDescriptor>(
-    () => ({ participantId, mediaType: Track.Source.Camera }),
-    [participantId]
+    () => ({ connectionIdentifier, mediaType: Track.Source.Camera }),
+    [connectionIdentifier]
   );
 
-  const participant = useRemoteParticipant(screenDescriptor.participantId);
+  const participant = useRemoteParticipant(screenDescriptor.connectionIdentifier);
   const isScreenShareActive = participant?.isScreenShareEnabled;
   const isVideoActive = participant?.isCameraEnabled;
   const isScreenShareOrVideoActive = isScreenShareActive || isVideoActive;
   const descriptor = isScreenShareActive ? screenDescriptor : videoDescriptor;
   const displayName = useAppSelector((state) => selectParticipantName(state, participantId));
-  const pinnedParticipantId = useAppSelector(selectPinnedParticipantId);
+  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
   const popoutStreamAccess = useAppSelector((state) =>
-    selectLivekitPopoutStreamAccessByParticipantId(state, participantId)
+    selectLivekitPopoutStreamAccessByParticipantId(state, connectionIdentifier)
   );
   const { t } = useTranslation();
   const livekitUrl = useAppSelector(selectLivekitPublicUrl);
@@ -105,7 +111,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
               action: 'livekit_data',
               accessToken: token,
               mediaType: popoutStreamAccess.mediaDescriptor.mediaType,
-              participantId: popoutStreamAccess.mediaDescriptor.participantId,
+              participantId: popoutStreamAccess.mediaDescriptor.connectionIdentifier,
               livekitUrl,
               roomId,
             },
@@ -121,17 +127,17 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
   }, [channelId, dispatch, livekitUrl, popoutStreamAccess, roomId]);
 
   const togglePin = useCallback(() => {
-    const updatePinnedId = pinnedParticipantId === participantId ? undefined : participantId;
-    dispatch(pinnedParticipantIdSet(updatePinnedId));
-  }, [dispatch, participantId, pinnedParticipantId]);
+    const updatePinnedId = pinnedConnectionIdentifier === connectionIdentifier ? undefined : connectionIdentifier;
+    dispatch(pinnedConnectionIdentifierSet(updatePinnedId));
+  }, [dispatch, connectionIdentifier, pinnedConnectionIdentifier]);
 
   const openFullScreenView: MouseEventHandler = useCallback(
     (e) => {
       e.stopPropagation();
-      dispatch(pinnedParticipantIdSet(participantId as ParticipantId));
+      dispatch(pinnedConnectionIdentifierSet(connectionIdentifier));
       dispatch(fullscreenActions.request());
     },
-    [dispatch, participantId]
+    [dispatch, connectionIdentifier]
   );
 
   const openInNewTab: MouseEventHandler = (event) => {
@@ -154,7 +160,7 @@ const VideoOverlay = ({ participantId, active }: VideoOverlayProps) => {
                   aria-label={t('indicator-pinned', {
                     participantName: displayName || '',
                   })}
-                  aria-pressed={pinnedParticipantId === descriptor.participantId}
+                  aria-pressed={pinnedConnectionIdentifier === descriptor.connectionIdentifier}
                 >
                   <PinIcon />
                 </OverlayIconButton>

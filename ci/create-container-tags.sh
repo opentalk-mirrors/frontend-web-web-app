@@ -34,12 +34,32 @@ is_latest() {
 
 create_tags() {
     local tag all_tags tags
-    tag=${1//v/}
-    all_tags=${2//v/}
+    tag=${1/#v/}
+    all_tags=${2/#v/}
+    branch=$3
+    default_branch=$4
 
-    if [ "$tag" = "main" ]; then
+    # If the pipeline is not running on a git tag
+    if [ -z "$tag" ]; then
+        # Create a dev tag if we're on the default branch.
+        if [ "$branch" = "$default_branch" ]; then
+            tags=()
+            tags=("dev")
+            echo "${tags[*]}"
+            return
+        fi
+
+        # TODO: The regex pattern below is not very readable. This should be removed when building
+        # from the roomserver branch is no longer necessary.
+        #
+        # Sanitize the input branch to a valid docker tag
+        # Remove leading . or - characters (s/^[.-]+//)
+        # Replace all characters except alpha numeric _, . or - with _ (s/[^A-Za-z0-9_.-]/_/g)
+        # Truncate the string to 128 characters (s/^(.{128}).*/\1/)
+        branch=$(echo "$branch" | sed -E 's/^[.-]+//; s/[^A-Za-z0-9_.-]/_/g; s/^(.{128}).*/\1/')
+        # Create a tag with the branch name otherwise
         tags=()
-        tags=("dev")
+        tags=("$branch")
         echo "${tags[*]}"
         return
     fi

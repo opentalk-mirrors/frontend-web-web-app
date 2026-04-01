@@ -1,29 +1,30 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantId, ParticipationKind } from './common';
+import type { RoomKind, Timestamp } from './common';
 
-export type BreakoutRoomId = string & { readonly __tag: unique symbol };
+// counting id (0,1,2,3,...)
+export type BreakoutRoomId = number & { readonly __tag: unique symbol };
 export interface BreakoutRoom {
   id: BreakoutRoomId;
   name: string;
 }
 
-export interface ParticipantInOtherRoom {
-  // BreakoutRoomId or null, null means the participant is in the parent room.
-  breakoutRoom: BreakoutRoomId | null;
-  id: ParticipantId;
-  displayName: string;
-  avatarUrl?: string;
-  leftAt: string | null;
-  participationKind: ParticipationKind;
-}
+export type RoomKindMain = {
+  kind: RoomKind.Main;
+  id?: never;
+};
+
+export type RoomKindBreakout = {
+  kind: RoomKind.Breakout;
+  id: BreakoutRoomId;
+};
 
 export interface InitialBreakout {
-  participants: Array<ParticipantInOtherRoom>;
+  /// The current room of the participant
+  room: RoomKindMain | RoomKindBreakout;
+  /// Active breakout rooms
   rooms: Array<BreakoutRoom>;
-  // ISO timestamp or null, null means the room won't expire.
-  expires: string | null;
-  // BreakoutRoomId or null, null means the participant is in the parent room.
-  current: BreakoutRoomId | null;
+  /// The expiry for all breakout rooms
+  expires?: Timestamp;
 }

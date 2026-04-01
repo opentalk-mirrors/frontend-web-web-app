@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { authError, AuthTypeError } from '@opentalk/redux-oidc';
+import { AuthTypeError, authError } from '@opentalk/redux-oidc';
 import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
+import { MeetingDetails } from '@opentalk/rest-api-rtk-query/dist/src/types/event';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ListenerEffectAPI } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
@@ -10,6 +11,7 @@ import { t } from 'i18next';
 import convertToSnakeCase from 'snakecase-keys';
 
 import { StartRoomError } from '../../api/rest';
+import { RoomParametersChanged } from '../../api/types/incoming/core';
 import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
 import { notifications } from '../../commonComponents';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
@@ -18,6 +20,7 @@ import {
   FetchRequestError,
   FetchRequestState,
   RoomInfo,
+  RoomKind,
   RoomMode,
   TimerStyle,
 } from '../../types';
@@ -26,6 +29,7 @@ import { disconnectRoom, hangUp, joinSuccess, startRoom } from '../commonActions
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted, stopped as automodStopped } from './automodSlice';
+import { switchedRoom } from './breakoutSlice';
 import { timerStarted, timerStopped } from './timerSlice';
 
 interface InviteState extends FetchRequestState {
@@ -39,7 +43,6 @@ export type RoomState = {
   password?: string;
   invite: InviteState;
   connectionState: ConnectionState;
-  resumptionToken?: string;
   waitingRoomEnabled: boolean;
   error?: string;
   serverTimeOffset: number;
@@ -47,11 +50,13 @@ export type RoomState = {
   participantLimit: number;
   currentMode?: RoomMode;
   eventInfo?: EventInfo;
+  meetingDetails?: MeetingDetails;
   roomInfo?: RoomInfo;
   reconnectTimerId: ReturnType<typeof setTimeout> | null;
   isOwnedByCurrentUser: boolean;
   isPresenceConfirmationActive: boolean;
   isDeleted: boolean;
+  roomKind: RoomKind;
 };
 
 export interface InviteRoomVerifyResponse {
@@ -80,6 +85,7 @@ const initialState: RoomState = {
   isOwnedByCurrentUser: false,
   isPresenceConfirmationActive: false,
   isDeleted: false,
+  roomKind: RoomKind.Main,
 };
 
 export enum InviteCodeErrorEnum {
@@ -164,6 +170,15 @@ export const roomSlice = createSlice({
     setIsRoomDeleted: (state, { payload }) => {
       state.isDeleted = payload;
     },
+    roomParametersChanged: (state, action: PayloadAction<RoomParametersChanged['change']>) => {
+      const { password, title } = action.payload;
+      if (password !== undefined && state.roomInfo) {
+        state.roomInfo.password = password;
+      }
+      if (title !== undefined && state.eventInfo) {
+        state.eventInfo.title = title;
+      }
+    },
     roomReset: () => initialState,
   },
   extraReducers: (builder) => {
@@ -175,7 +190,6 @@ export const roomSlice = createSlice({
       state.invite.loading = false;
       state.invite.inviteCode = meta.arg;
       state.connectionState = ConnectionState.Setup;
-      state.resumptionToken = undefined;
       state.passwordRequired = payload.passwordRequired;
     });
     builder.addCase(fetchRoomByInviteId.rejected, (state, { payload }) => {
@@ -202,9 +216,6 @@ export const roomSlice = createSlice({
         state.invite = { inviteCode, loading: false };
       }
     );
-    builder.addCase(startRoom.fulfilled, (state, { payload: { resumption } }) => {
-      state.resumptionToken = resumption;
-    });
     builder.addCase(startRoom.rejected, (state, payload) => {
       if ('code' in payload.error) {
         state.error = payload.error.code;
@@ -238,7 +249,12 @@ export const roomSlice = createSlice({
         }
       }
       state.eventInfo = payload.eventInfo;
+      state.meetingDetails = payload.meetingDetails;
       state.roomInfo = payload.roomInfo;
+
+      if (payload.breakout) {
+        state.roomKind = payload.breakout.room.kind;
+      }
     });
     builder.addCase(hangUp.pending, (state) => {
       state.connectionState = ConnectionState.Leaving;
@@ -269,6 +285,9 @@ export const roomSlice = createSlice({
     builder.addCase(automodStopped, (state) => {
       state.currentMode = undefined;
     });
+    builder.addCase(switchedRoom, (state, { payload }) => {
+      state.roomKind = payload.newRoom.kind;
+    });
   },
 });
 
@@ -286,6 +305,7 @@ export const {
   presenceConfirmationRequested,
   presenceConfirmationDone,
   setIsRoomDeleted,
+  roomParametersChanged,
 } = actions;
 
 export const selectRoomPassword = (state: RootState) => state.room.password;
@@ -298,11 +318,13 @@ export const selectPasswordRequired = (state: RootState) => state.room.passwordR
 export const selectParticipantLimit = (state: RootState) => state.room.participantLimit;
 export const selectCurrentRoomMode = (state: RootState) => state.room.currentMode;
 export const selectEventInfo = (state: RootState) => state.room.eventInfo;
+export const selectMeetingDetails = (state: RootState) => state.room.meetingDetails;
 export const selectRoomInfo = (state: RootState) => state.room.roomInfo;
 export const selectIsRoomOwner = (state: RootState) => state.room.isOwnedByCurrentUser;
 export const selectIsParticipationConfirmationActive = (state: RootState) => state.room.isPresenceConfirmationActive;
 export const selectIsRoomDeleted = (state: RootState) => state.room.isDeleted;
 export const selectE2EEncryption = (state: RootState) => state.room.eventInfo?.e2eEncryption;
+export const selectRoomKind = (state: RootState) => state.room.roomKind;
 
 export default roomSlice.reducer;
 
@@ -350,7 +372,7 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
           startRoom({
             roomId,
             password: roomPassword,
-            breakoutRoomId: null,
+            breakoutRoomId: undefined,
             displayName,
             inviteCode: isLoggedIn ? undefined : inviteCode,
           })
@@ -371,7 +393,7 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
       listenerApi.dispatch(
         startRoom({
           roomId,
-          breakoutRoomId: breakoutRoomId || null,
+          breakoutRoomId,
           displayName,
           inviteCode,
         })

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { selectNext, talkingStickStart, stop as talkingStickStop } from '../../api/types/outgoing/automod';
 import { CommonSwitch } from '../../commonComponents';
-import { useAppSelector, useAppDispatch } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectCombinedUserAndParticipants } from '../../store/selectors';
 import { selectAutomodActiveState, selectAutomoderationParticipantIds } from '../../store/slices/automodSlice';
 import { SortOption } from '../../types';
@@ -20,11 +20,12 @@ const INCLUDE_MODERATOR_ID = 'include-moderator-label';
 const TalkingStickTabPanel = () => {
   const dispatch = useAppDispatch();
   const { t, i18n } = useTranslation();
+  const [isTalkingStickCreatorIncluded, setIsTalkingStickCreatorIncluded] = useState<boolean>(true);
+
   const configurationParticipants = useAppSelector(selectCombinedUserAndParticipants);
   const userInitiatingTalkingStick = configurationParticipants[0];
   const isAutomodActive = useAppSelector(selectAutomodActiveState);
   const runningParticipantIds = useAppSelector(selectAutomoderationParticipantIds);
-  const [includeTalkingStickCreator, setIncludeTalkingStickCreator] = useState<boolean>(true);
   const [selectedSortType, setSelectedSortType] = useState<SortOption>(SortOption.NameASC);
 
   const participantsWithoutUser = useMemo(() => configurationParticipants.slice(1), [configurationParticipants]);
@@ -45,9 +46,10 @@ const TalkingStickTabPanel = () => {
 
   const handleStart = () => {
     const participantIdList = sortedParticipants.map((participant) => participant.id);
-    const sortedPlaylist = includeTalkingStickCreator
+    const sortedPlaylist = isTalkingStickCreatorIncluded
       ? [userInitiatingTalkingStick.id, ...participantIdList]
       : [...participantIdList];
+
     dispatch(
       talkingStickStart.action({
         playlist: sortedPlaylist,
@@ -64,22 +66,10 @@ const TalkingStickTabPanel = () => {
   };
 
   return (
-    <Stack
-      spacing={2}
-      sx={{
-        flex: 1,
-        overflow: 'hidden',
-      }}
-    >
+    <Stack spacing={2} sx={{ flex: 1, overflow: 'hidden' }}>
       {!isAutomodActive && (
         <Stack spacing={2}>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
+          <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography>{t('sort-label')}</Typography>
             {/* Component auto closes when selected sort type changes. */}
             <TalkingStickSortButton
@@ -100,41 +90,29 @@ const TalkingStickTabPanel = () => {
             </Typography>
             <CommonSwitch
               id="include-moderator-switch"
-              onChange={() => setIncludeTalkingStickCreator(!includeTalkingStickCreator)}
-              value={includeTalkingStickCreator}
-              checked={includeTalkingStickCreator}
+              onChange={() => setIsTalkingStickCreatorIncluded(!isTalkingStickCreatorIncluded)}
+              value={isTalkingStickCreatorIncluded}
+              checked={isTalkingStickCreatorIncluded}
               color="primary"
               aria-labelledby={INCLUDE_MODERATOR_ID}
             />
           </Box>
         </Stack>
       )}
-      <Stack
-        sx={{
-          overflow: 'hidden',
-          flex: 1,
-        }}
-      >
+      <Stack sx={{ overflow: 'hidden', flex: 1 }}>
         <TalkingStickParticipantList participants={isAutomodActive ? activeParticipants : sortedParticipants} />
       </Stack>
       <Stack>
         {!isAutomodActive ? (
-          <Button type="button" onClick={handleStart} color="secondary">
+          <Button onClick={handleStart} color="secondary">
             {t('global-start-now')}
           </Button>
         ) : (
-          <Stack
-            spacing={1}
-            sx={{
-              flexDirection: 'column',
-            }}
-          >
-            <Button type="button" onClick={handleSkipSpeaker} color="secondary">
+          <Stack spacing={1}>
+            <Button onClick={handleSkipSpeaker} color="secondary">
               {t('talking-stick-skip-speaker')}
             </Button>
-            <Button type="button" onClick={handleStop}>
-              {t('global-stop')}
-            </Button>
+            <Button onClick={handleStop}>{t('global-stop')}</Button>
           </Stack>
         )}
       </Stack>

@@ -1,20 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MenuItem as MuiMenuItem, Menu as MuiMenu, styled, ListItemText } from '@mui/material';
+import { ListItemText, Menu as MuiMenu, MenuItem as MuiMenuItem, styled } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
+import { useAppDispatch } from '../../../hooks';
 import { chatConversationStateSet } from '../../../store/slices/uiSlice';
-import { selectGroups } from '../../../store/slices/userSlice';
-import { TargetId, ChatScope } from '../../../types';
+import { ChatScope, Participant, ParticipantId } from '../../../types';
 
 interface INewMessagePopoverProps<T> {
   open: boolean;
   setAnchorEl: Dispatch<SetStateAction<T | undefined>>;
   anchorEl: (T & Element) | undefined;
+  participants: Participant[];
 }
 
 const Menu = styled(MuiMenu)(({ theme }) => ({
@@ -38,39 +37,23 @@ const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
   },
 }));
 
-function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopoverProps<T>) {
+function NewMessagePopover<T>({ setAnchorEl, anchorEl, open, participants }: INewMessagePopoverProps<T>) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const groups = useAppSelector(selectGroups);
-  const participants = useAppSelector(selectAllOnlineParticipants);
 
   const handleClose = () => {
     setAnchorEl(undefined);
   };
 
-  const handleChatSelected = (targetId: TargetId, scope: ChatScope) => {
+  const handleChatSelected = (target: ParticipantId) => {
     dispatch(
       chatConversationStateSet({
-        scope,
-        targetId,
+        scope: ChatScope.Private,
+        target,
       })
     );
     setAnchorEl(undefined);
   };
-
-  const renderGroupItems = () =>
-    groups.length > 0
-      ? [
-          <MenuItem disabled={true} key="chat-group-scope">
-            <ListItemText>{t('chat-group-scope')}</ListItemText>
-          </MenuItem>,
-          groups.map((group) => (
-            <MenuItem key={group} onClick={() => handleChatSelected(group, ChatScope.Group)}>
-              <ListItemText>{group}</ListItemText>
-            </MenuItem>
-          )),
-        ]
-      : null;
 
   const renderParticipantItems = () =>
     participants.length > 0
@@ -79,7 +62,7 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopove
             <ListItemText>{t('chat-private-scope')}</ListItemText>
           </MenuItem>,
           participants.map((participant) => (
-            <MenuItem key={participant.id} onClick={() => handleChatSelected(participant.id, ChatScope.Private)}>
+            <MenuItem key={participant.id} onClick={() => handleChatSelected(participant.id)}>
               <ListItemText translate="no">{participant.displayName}</ListItemText>
             </MenuItem>
           )),
@@ -101,7 +84,6 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open }: INewMessagePopove
       }}
       keepMounted
     >
-      {renderGroupItems()}
       {renderParticipantItems()}
     </Menu>
   );

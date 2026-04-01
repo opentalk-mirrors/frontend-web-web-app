@@ -9,7 +9,7 @@ import { LogoIcon, MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icon
 import { MAX_GRID_TILES_DESKTOP } from '../../../constants';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectPollsAndVotingsCount } from '../../../store/selectors';
+import { selectPollsAndVotingCount } from '../../../store/selectors';
 import { selectMeetingNotesUrl } from '../../../store/slices/meetingNotesSlice';
 import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
 import { selectIsSharedFolderAvailable } from '../../../store/slices/sharedFolderSlice';
@@ -120,8 +120,8 @@ const DesktopMeetingHeader = () => {
   const isCurrentWhiteboardHighlighted = useAppSelector(selectIsCurrentWhiteboardHighlighted);
   const isCurrentMeetingNotesHighlighted = useAppSelector(selectIsCurrentMeetingNotesHighlighted);
   const showWhiteboardIcon = isWhiteboardAvailable && selectedLayout !== LayoutOptions.Whiteboard;
-  const votingsAndPollsCount = useAppSelector(selectPollsAndVotingsCount);
-  const showVotesAndPolls = votingsAndPollsCount > 0;
+  const votingAndPollsCount = useAppSelector(selectPollsAndVotingCount);
+  const showVotesAndPolls = votingAndPollsCount > 0;
   const isSharedFolderAvailable = useAppSelector(selectIsSharedFolderAvailable);
   const { t } = useTranslation();
   const isMeetingNotesActive = selectedLayout === LayoutOptions.MeetingNotes;

@@ -8,20 +8,6 @@ export interface LivekitError {
   error: 'livekit_unavailable';
 }
 
-export interface MicrophoneRestrictionsEnabled {
-  message: 'microphone_restrictions_enabled';
-  unrestrictedParticipants: Array<ParticipantId>;
-}
-
-export interface MicrophoneRestrictionsDisabled {
-  message: 'microphone_restrictions_disabled';
-}
-
-export interface ForceMuted {
-  message: 'force_muted';
-  moderator: ParticipantId;
-}
-
 export interface PopoutStreamAccessToken {
   message: 'popout_stream_access_token';
   token: string;
@@ -34,13 +20,13 @@ export interface Credentials {
   publicUrl: string;
 }
 
-export type Message =
-  | MicrophoneRestrictionsEnabled
-  | MicrophoneRestrictionsDisabled
-  | ForceMuted
-  | PopoutStreamAccessToken
-  | Credentials
-  | LivekitError;
+export interface ScreenSharePermissionsUpdated {
+  message: 'screen_share_permissions_updated';
+  grant: boolean;
+  participants: ParticipantId[];
+}
+
+export type Message = PopoutStreamAccessToken | Credentials | ScreenSharePermissionsUpdated | LivekitError;
 
 export type Livekit = NamespacedIncoming<Message, 'livekit'>;
 

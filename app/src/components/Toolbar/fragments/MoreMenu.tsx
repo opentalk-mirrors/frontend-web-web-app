@@ -2,23 +2,22 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, ListItemIcon, MenuList, Divider as MuiDivider, Stack, Typography, styled } from '@mui/material';
-import { BackendModules, StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import { BackendModules, CoreFeatures, RecordingFeatures, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
-import {
-  disableMicrophoneRestrictions,
-  enableMicrophoneRestrictions,
-  requestMute,
-} from '../../../api/types/outgoing/livekit';
 import { generateAttendanceReport } from '../../../api/types/outgoing/meetingReport';
 import {
-  disableRaiseHands,
+  disableDisplayNameChangeRestrictions,
+  disableMicrophoneRestrictions,
   disableWaitingRoom,
-  enableRaiseHands,
+  enableDisplayNameChangeRestrictions,
+  enableMicrophoneRestrictions,
   enableWaitingRoom,
+  mute,
 } from '../../../api/types/outgoing/moderation';
+import { disableRaiseHands, enableRaiseHands } from '../../../api/types/outgoing/raiseHands';
 import { sendStartStreamSignal, sendStopStreamSignal } from '../../../api/types/outgoing/streaming';
 import { disablePresenceLogging, enablePresenceLogging } from '../../../api/types/outgoing/trainingParticipationReport';
 import {
@@ -26,6 +25,7 @@ import {
   AttendanceReportIcon,
   CloseIcon,
   DoneIcon,
+  EditIcon,
   ErrorIcon,
   LiveIcon,
   MicOffIcon,
@@ -50,6 +50,7 @@ import { selectFullscreenElement } from '../../../store/slices/fullscreen/slice'
 import {
   selectMicrophonesEnabled,
   selectRaiseHandsEnabled,
+  selectSelfRenameEnabled,
   selectTrainingParticipationReportEnabled,
 } from '../../../store/slices/moderationSlice';
 import { selectAllModeratorParticipants } from '../../../store/slices/participantsSlice';
@@ -59,7 +60,15 @@ import {
   selectInactiveStreamIds,
   selectRecordingTarget,
 } from '../../../store/slices/streamingSlice';
-import { selectAvatarUrl, selectDisplayName, selectIsModerator, selectOurUuid } from '../../../store/slices/userSlice';
+import { setSelfRenameDialogVisible } from '../../../store/slices/uiSlice';
+import {
+  selectAvatarUrl,
+  selectDisplayName,
+  selectIsGuest,
+  selectIsModerator,
+  selectOurUuid,
+} from '../../../store/slices/userSlice';
+import { ParticipantId } from '../../../types';
 import { isDevMode } from '../../../utils/devMode';
 import InviteGuestDialog from './InviteGuestDialog';
 import { ToolbarMenu, ToolbarMenuItem, ToolbarMenuProps } from './ToolbarMenuUtils';
@@ -68,6 +77,7 @@ interface MenuEntry {
   label: string;
   action: (e: React.MouseEvent) => void;
   icon: React.ReactNode;
+  disabled?: boolean;
 }
 
 const MenuTitleContainer = styled(Stack)(({ theme }) => ({
@@ -95,8 +105,11 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
   const participantId = useAppSelector(selectOurUuid);
+  const isGuest = useAppSelector(selectIsGuest);
   const moderatorParticipants = useAppSelector(selectAllModeratorParticipants);
-  const unrestrictedParticipants = moderatorParticipants.map((p) => p.id).concat(participantId ? [participantId] : []);
+  const unrestrictedParticipants = moderatorParticipants
+    .map((p) => p.id as ParticipantId)
+    .concat(participantId ? [participantId] : []);
   const displayName = useAppSelector(selectDisplayName);
   const avatarUrl = useAppSelector(selectAvatarUrl);
   const isRoomOwner = useAppSelector(selectIsRoomOwner);
@@ -104,12 +117,13 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const hasHandraisesEnabled = useAppSelector(selectRaiseHandsEnabled);
   const hasMicrophonesEnabled = useAppSelector(selectMicrophonesEnabled);
   const isChatEnabled = useAppSelector(selectChatEnabledState);
+  const hasSelfRenameEnabled = useAppSelector(selectSelfRenameEnabled);
   const dispatch = useAppDispatch();
   const recording = useAppSelector(selectRecordingTarget);
   const activeStreamIds = useAppSelector(selectActiveStreamIds);
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
-  const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled('record'));
-  const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled('guests_allowed'));
+  const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled(RecordingFeatures.Record));
+  const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled(CoreFeatures.GuestsAllowed));
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
   const userMenuItems: Array<MenuEntry> = [];
@@ -174,7 +188,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           if (participantId) {
             onClose();
             dispatch(enableMicrophoneRestrictions.action({ unrestrictedParticipants }));
-            dispatch(requestMute.action({ participants: moderatorParticipants.map((p) => p.id) }));
+            dispatch(mute.action({ participants: moderatorParticipants.map((p) => p.id) }));
           }
         },
         icon: <MicOffIcon />,
@@ -186,6 +200,24 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           dispatch(disableMicrophoneRestrictions.action());
         },
         icon: <MicOnIcon />,
+      };
+
+  const toggleSelfRename = hasSelfRenameEnabled
+    ? {
+        label: 'more-menu-enable-display-name-change-restrictions',
+        action: () => {
+          onClose();
+          dispatch(enableDisplayNameChangeRestrictions.action({ unrestrictedParticipants }));
+        },
+        icon: <CloseIcon />,
+      }
+    : {
+        label: 'more-menu-disable-display-name-change-restrictions',
+        action: () => {
+          onClose();
+          dispatch(disableDisplayNameChangeRestrictions.action());
+        },
+        icon: <DoneIcon />,
       };
 
   const togglePresenceLogging = isTrainingParticipationReportEnabled
@@ -257,6 +289,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   moderatorMenuItems.push(toggleWaitingRoomItem);
   moderatorMenuItems.push(toggleHandraises);
   moderatorMenuItems.push(toggleMicrophones);
+  moderatorMenuItems.push(toggleSelfRename);
   moderatorMenuItems.push(toggleChatItem);
   moderatorMenuItems.push(deleteGlobalChatItem);
 
@@ -320,6 +353,18 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         window.open('com.innovaphone.myapps:remotecontrol', '_blank');
       },
       icon: <ShareScreenOnIcon />,
+    });
+  }
+
+  if (isGuest) {
+    userMenuItems.push({
+      label: 'global-rename',
+      action: () => {
+        onClose();
+        dispatch(setSelfRenameDialogVisible(true));
+      },
+      icon: <EditIcon />,
+      disabled: !hasSelfRenameEnabled,
     });
   }
 
@@ -433,8 +478,8 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   }
 
   const renderMenuItems = (menuEntries: Array<MenuEntry>) =>
-    menuEntries.map(({ label, action, icon }) => (
-      <ToolbarMenuItem key={label} onClick={action}>
+    menuEntries.map(({ label, action, icon, disabled }) => (
+      <ToolbarMenuItem key={label} onClick={action} disabled={disabled}>
         <ListItemIcon>{icon}</ListItemIcon>
         <Typography variant="inherit" noWrap>
           {t(label)}

@@ -49,13 +49,13 @@ function VoteResultTable(props: VoteResultTableProps) {
       <TableHead>
         <TableRow>
           <TableCell>{t('global-participants')}</TableCell>
-          <TableCell>
+          <TableCell align="center">
             {t('legal-vote-yes-label')} ({vote.votes.yes || 0})
           </TableCell>
-          <TableCell>
+          <TableCell align="center">
             {t('legal-vote-no-label')} ({vote.votes.no || 0})
           </TableCell>
-          <TableCell>
+          <TableCell align="center">
             {t('legal-vote-abstain-label')} ({vote.votes.abstain || 0})
           </TableCell>
         </TableRow>
@@ -66,9 +66,9 @@ function VoteResultTable(props: VoteResultTableProps) {
           return (
             <VoteResultRow
               key={participantId}
-              participantId={vote.kind !== 'pseudonymous' ? participantId : ''}
+              participantId={!vote.pseudonymous ? participantId : ''}
               selectedVote={selectedVote}
-              token={vote.kind === 'pseudonymous' ? participantId : ''}
+              token={vote.pseudonymous ? participantId : ''}
             />
           );
         })}

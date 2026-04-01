@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { waitFor } from '@testing-library/react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -349,11 +350,7 @@ describe('hotkeys', () => {
     const { store } = configureStore({
       initialState: {
         config: {
-          tariff: {
-            modules: {
-              subroomAudio: true,
-            },
-          },
+          enabledModules: [BackendModules.SubroomAudio],
         },
         subroomAudio: {
           isWhisperActive: false,
@@ -410,11 +407,7 @@ describe('hotkeys', () => {
     const { store } = configureStore({
       initialState: {
         config: {
-          tariff: {
-            modules: {
-              subroomAudio: true,
-            },
-          },
+          enabledModules: [BackendModules.SubroomAudio],
         },
         subroomAudio: {
           isWhisperActive: false,

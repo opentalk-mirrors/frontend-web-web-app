@@ -1,77 +1,55 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { GroupId, ParticipantId, TargetId, Timestamp } from './common';
+import { BreakoutRoomId } from './breakout';
+import { ParticipantId, Timestamp } from './common';
 
 export enum ChatScope {
   Global = 'global',
   Private = 'private',
-  Group = 'group',
+  Breakout = 'breakout',
 }
 
-type GlobalChatMessage = {
+export type GlobalChatIdentifier = {
   scope: ChatScope.Global;
   target?: never;
-  group?: never;
 };
 
-type PrivateChatMessage = {
+export type PrivateChatIdentifier = {
   scope: ChatScope.Private;
   target: ParticipantId;
 };
 
-type GroupChatMessage = {
-  scope: ChatScope.Group;
-  target: GroupId;
+export type BreakoutChatIdentifier = {
+  scope: ChatScope.Breakout;
+  target: BreakoutRoomId;
 };
+
+export type ChatIdentifier = GlobalChatIdentifier | PrivateChatIdentifier | BreakoutChatIdentifier;
 
 export type ChatMessage = {
   id: string;
   timestamp: string;
   source: ParticipantId;
   content: string;
-} & (GlobalChatMessage | PrivateChatMessage | GroupChatMessage);
-
-export interface ChatMessageBase {
-  id: string;
-  source: ParticipantId;
-  content: string;
-}
-
-export interface BaseMessageWithTimestamp extends ChatMessageBase {
-  timestamp: Timestamp;
-}
-
-export interface ChatBase extends ChatMessageBase {
-  scope: ChatScope;
-  target?: TargetId;
-}
-
-export type ChatMessageWithTimestamp = ChatBase & BaseMessageWithTimestamp;
+} & ChatIdentifier;
 
 export interface InitialChat {
   enabled: boolean;
-  lastSeenTimestampGlobal?: string;
-  lastSeenTimestampsGroup?: Record<string, string>;
-  lastSeenTimestampsPrivate?: Record<string, string>;
-  groups: Array<GroupId>;
-  groupsHistory: Array<GroupsHistory>;
+  globalHistory: ChatChunk;
+  breakoutRoomHistory?: ChatChunk;
   privateHistory: Array<PrivateHistory>;
-  roomHistory: ChatHistory;
+  lastSeenTimestampGlobal?: Timestamp;
+  lastSeenTimestampBreakout?: Timestamp;
+  lastSeenTimestampsPrivate: Record<string, string>;
 }
-
-export type GroupsHistory = {
-  history: ChatHistory;
-  id: string;
-  name: GroupId;
-};
 
 export interface PrivateHistory {
   correspondent: ParticipantId;
-  history: ChatHistory;
+  history: ChatChunk;
 }
 
-export interface ChatHistory {
+export interface ChatChunk {
   messages: Array<ChatMessage>;
   nextIndex: number | null;
 }

@@ -24,7 +24,7 @@ const Statistics = ({
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
-  const participant = useRemoteParticipant(descriptor.participantId);
+  const participant = useRemoteParticipant(descriptor.connectionIdentifier);
   const isOnline = participant?.connectionQuality !== ConnectionQuality.Lost;
   const hasPacketLoss = participant?.connectionQuality === ConnectionQuality.Poor;
 

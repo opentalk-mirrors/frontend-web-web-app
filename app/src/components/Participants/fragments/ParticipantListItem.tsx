@@ -11,20 +11,15 @@ import {
   Typography,
   styled,
 } from '@mui/material';
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { format } from 'date-fns';
 import { isEmpty, uniqueId } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { RowComponentProps } from 'react-window';
 
-import { Role } from '../../../api/types/incoming/control';
-import { grantModeratorRole, revokeModeratorRole } from '../../../api/types/outgoing/control';
-import {
-  grantScreenSharePermission,
-  requestMute,
-  revokeScreenSharePermission,
-} from '../../../api/types/outgoing/livekit';
-import { sendParticipantToWaitingRoom } from '../../../api/types/outgoing/moderation';
+import { grantScreenSharePermission, revokeScreenSharePermission } from '../../../api/types/outgoing/livekit';
+import { sendParticipantToWaitingRoom, mute, updateRole } from '../../../api/types/outgoing/moderation';
 import { inviteToWhisperGroup, leaveWhisperGroup, requestWhisperGroup } from '../../../api/types/outgoing/subroomAudio';
 import {
   MeetingNotesIcon,
@@ -59,9 +54,11 @@ import {
   Participant,
   ParticipantId,
   ParticipationKind,
+  Role,
   SortOption,
   WhisperParticipantState,
 } from '../../../types';
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import { MenuTab } from '../../MenuTabs/fragments/constants';
 import ParticipantMenu, { ParticipantMenuOption } from './ParticipantMenu';
 import ParticipantRemovalDialog from './ParticipantRemovalDialog';
@@ -149,7 +146,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   const sortType = useAppSelector(selectParticipantsSortOption);
   const isCurrentUserModerator = useAppSelector(selectIsModerator);
   const { t } = useTranslation();
-  const isSipParticipant = participant.participationKind === ParticipationKind.Sip;
+  const isSipParticipant = participant.participationKind === ParticipationKind.CallIn;
   const dispatch = useAppDispatch();
   const open = Boolean(anchorEl);
   const ownId = useAppSelector(selectOurUuid);
@@ -160,9 +157,12 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
   const [openRemovalDialog, setOpenRemovalDialog] = useState(false);
 
-  const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).subroomAudio;
+  const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).includes(BackendModules.SubroomAudio);
 
-  const selectedParticipant = useRemoteParticipant(participant.id);
+  const selectedParticipant = useRemoteParticipant(
+    constructConnectionIdentifier(participant.id, participant.connections[0])
+  );
+  const participantId = participant.id;
   const selectedParticipantCanPublishScreenShare =
     selectedParticipant?.permissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
   const audioActive = selectedParticipant?.isMicrophoneEnabled || false;
@@ -189,7 +189,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   const handleMoveToWaitingRoom = () => {
     closePopover();
     if (participant.participationKind) {
-      dispatch(sendParticipantToWaitingRoom.action({ target: participant.id }));
+      dispatch(sendParticipantToWaitingRoom.action({ target: participantId }));
       notifications.info(t('meeting-notification-user-moved-to-waiting-room'));
       return;
     }
@@ -198,20 +198,19 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   };
 
   const handleModerationRight = () => {
-    participant?.role === Role.Moderator
-      ? dispatch(revokeModeratorRole.action({ target: participant.id }))
-      : dispatch(grantModeratorRole.action({ target: participant.id }));
+    const newRole = participant?.role === Role.Moderator ? Role.User : Role.Moderator;
+    dispatch(updateRole.action({ participantId, newRole }));
     closePopover();
   };
 
   const handlePresenterRoleRight = () => {
     selectedParticipantCanPublishScreenShare
-      ? dispatch(revokeScreenSharePermission.action({ participants: [participant.id] }))
-      : dispatch(grantScreenSharePermission.action({ participants: [participant.id] }));
+      ? dispatch(revokeScreenSharePermission.action({ participants: [participantId] }))
+      : dispatch(grantScreenSharePermission.action({ participants: [participantId] }));
   };
 
   const handleMuting = () => {
-    dispatch(requestMute.action({ participants: [participant.id] }));
+    dispatch(mute.action({ participants: [participantId] }));
     closePopover();
   };
 
@@ -239,32 +238,34 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
           muteOption,
         ];
         break;
-      case Role.User:
-        options = [
-          {
-            i18nKey: 'participant-menu-grant-moderator',
-            action: handleModerationRight,
-          },
-          {
-            i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
-            action: handlePresenterRoleRight,
-          },
-          muteOption,
-        ];
+      case Role.User: {
+        if (participant.participationKind === ParticipationKind.Registered) {
+          options = [
+            {
+              i18nKey: 'participant-menu-grant-moderator',
+              action: handleModerationRight,
+            },
+            {
+              i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
+              action: handlePresenterRoleRight,
+            },
+            muteOption,
+          ];
+        } else if (participant.participationKind === ParticipationKind.Guest) {
+          options = [
+            {
+              i18nKey: 'participant-menu-rename',
+              action: handleRenameParticipantDialog,
+            },
+            {
+              i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
+              action: handlePresenterRoleRight,
+            },
+            muteOption,
+          ];
+        }
         break;
-      case Role.Guest:
-        options = [
-          {
-            i18nKey: 'participant-menu-rename',
-            action: handleRenameParticipantDialog,
-          },
-          {
-            i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
-            action: handlePresenterRoleRight,
-          },
-          muteOption,
-        ];
-        break;
+      }
       default:
         options = [];
     }
@@ -280,8 +281,8 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
 
   const participantIsInSameWhisperGroup =
     whisperGroupId &&
-    subroomAudioParticipantIds.includes(participant.id) &&
-    getParticipantInviteState(participant.id) !== WhisperParticipantState.Invited;
+    subroomAudioParticipantIds.includes(participantId) &&
+    getParticipantInviteState(participantId) !== WhisperParticipantState.Invited;
 
   const userIsInWhisperGroup = whisperGroupId && getParticipantInviteState(ownId) !== WhisperParticipantState.Invited;
 
@@ -297,7 +298,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
         {
           i18nKey: 'participant-menu-start-whisper',
           action: () => {
-            dispatch(requestWhisperGroup.action({ participantIds: [participant.id] }));
+            dispatch(requestWhisperGroup.action({ participantIds: [participantId] }));
             closePopover();
           },
         },
@@ -308,7 +309,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
         {
           i18nKey: 'participant-menu-invite-whisper-partner',
           action: () => {
-            dispatch(inviteToWhisperGroup.action({ whisperId: whisperGroupId, participantIds: [participant.id] }));
+            dispatch(inviteToWhisperGroup.action({ whisperId: whisperGroupId, participantIds: [participantId] }));
             closePopover();
           },
         },
@@ -324,7 +325,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
         dispatch(
           chatConversationStateSet({
             scope: ChatScope.Private,
-            targetId: participant.id,
+            target: participantId,
           })
         );
         dispatch(setCurrentMenuTab(MenuTab.Messages));
@@ -450,7 +451,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   };
 
   const renderAvatar = useCallback(() => {
-    const isParticipantGuest = participant.role === Role.Guest;
+    const isParticipantGuest = participant.participationKind === ParticipationKind.Guest;
     const isParticipantModerator = participant.role === Role.Moderator;
     const renderWithBadge = isParticipantGuest || isParticipantModerator;
 
@@ -539,7 +540,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
 
         <IconsContainer>
           {isMeetingNotesEditor(participant) && <MeetingNotesIcon />}
-          <WhisperStateIcon state={getParticipantInviteState(participant.id)} />
+          <WhisperStateIcon state={getParticipantInviteState(participantId)} />
           {renderIcon()}
         </IconsContainer>
       </Box>

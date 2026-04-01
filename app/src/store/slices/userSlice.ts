@@ -2,27 +2,28 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { codeCallback } from '@opentalk/redux-oidc';
+import { CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
 import type { RootState } from '../';
+import { participantRename } from '../../api/handlers/helpers';
 import { restApi } from '../../api/rest';
-import { Role } from '../../api/types/incoming/control';
 import { sendChatMessage } from '../../api/types/outgoing/chat';
-import { lowerHand, raiseHand } from '../../api/types/outgoing/control';
+import { lowerHand, raiseHand } from '../../api/types/outgoing/raiseHands';
 import i18n from '../../i18n';
-import { GroupId, MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, WaitingState } from '../../types';
+import { MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, Role, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
-import { isFeatureEnabledPredicate } from '../../utils/moduleUtils';
 import { changeMedia, joinSuccess, setScreenShareEnabled, startRoom } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
+// import { rename } from './participantsSlice';
 import { connectionClosed, fetchRoomByInviteId } from './roomSlice';
 
 export type UserState = {
   uuid: ParticipantId | null;
-  groups: GroupId[];
   role: Role;
+  participationKind: ParticipationKind;
   displayName: string;
   avatarUrl?: string;
   lastActive?: string;
@@ -34,9 +35,9 @@ export type UserState = {
 
 const initialState: UserState = {
   uuid: null,
-  groups: [],
   displayName: '',
   role: Role.User,
+  participationKind: ParticipationKind.Registered,
   meetingNotesAccess: 'none' as MeetingNotesAccess.None, // this will be fixed with the next version of the ts-jest
   isRoomOwner: false,
 };
@@ -57,7 +58,7 @@ export const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRoomByInviteId.fulfilled, (state) => {
-      state.role = Role.Guest;
+      state.participationKind = ParticipationKind.Guest;
     });
     builder.addCase(
       startRoom.pending,
@@ -70,24 +71,20 @@ export const userSlice = createSlice({
         }
       ) => {
         state.displayName = displayName;
-        if (state.role === Role.Guest) {
+        if (state.participationKind === ParticipationKind.Guest) {
           initSentryReportWithUser({ name: state.displayName, lang: i18next.language });
         }
       }
     );
-    builder.addCase(
-      joinSuccess,
-      (state, { payload: { avatarUrl, role, participantId, groups, isRoomOwner, tariff } }) => {
-        state.role = role;
-        state.avatarUrl = avatarUrl;
-        state.uuid = participantId;
-        state.groups = groups;
-        state.joinedAt = new Date().toISOString();
-        state.lastActive = state.joinedAt;
-        state.isRoomOwner = isRoomOwner;
-        state.isTariffUpgradable = isFeatureEnabledPredicate('storage_upgradable', tariff.modules);
-      }
-    );
+    builder.addCase(joinSuccess, (state, { payload: { avatarUrl, role, participantId, isRoomOwner, tariff } }) => {
+      state.role = role;
+      state.avatarUrl = avatarUrl;
+      state.uuid = participantId;
+      state.joinedAt = new Date().toISOString();
+      state.lastActive = state.joinedAt;
+      state.isRoomOwner = isRoomOwner;
+      state.isTariffUpgradable = !tariff.disabledFeatures.includes(CoreFeatures.StorageUpgradable);
+    });
     builder.addCase(connectionClosed, (state) => {
       state.uuid = null;
       state.joinedAt = undefined;
@@ -114,6 +111,11 @@ export const userSlice = createSlice({
     builder.addCase(setScreenShareEnabled.fulfilled, (state) => {
       state.lastActive = new Date().toISOString();
     });
+    builder.addCase(participantRename, (state, { payload: { id, newName } }) => {
+      if (state.uuid === id) {
+        state.displayName = newName;
+      }
+    });
   },
 });
 
@@ -123,31 +125,35 @@ export const { updateRole, setDisplayName, updateLastActive } = actions;
 const userState = (state: RootState) => state.user;
 
 export const selectOurUuid = createSelector([userState], (state) => state.uuid);
-export const selectGroups = createSelector([userState], (state) => state.groups);
 export const selectDisplayName = createSelector([userState], (state) => state.displayName);
 export const selectAvatarUrl = createSelector([userState], (state) => state.avatarUrl);
 export const selectUserMeetingNotesAccess = createSelector([userState], (state) => state.meetingNotesAccess);
 export const selectIsModerator = createSelector([userState], (state) => state.role === Role.Moderator);
-export const selectIsGuest = createSelector([userState], (state) => state.role === Role.Guest);
+export const selectIsGuest = createSelector(
+  [userState],
+  (state) => state.participationKind === ParticipationKind.Guest
+);
 export const selectRole = createSelector([userState], (state) => state.role);
 
 export const selectUserAsPartialParticipant = createSelector(
   [userState],
   (state): Omit<Participant, 'breakoutRoomId' | 'handIsUp' | 'handUpdatedAt'> | undefined => {
-    const { displayName, avatarUrl, groups, joinedAt, lastActive, isRoomOwner, role } = state;
+    const { displayName, avatarUrl, joinedAt, lastActive, isRoomOwner, role } = state;
 
     if (state.uuid === null || joinedAt === undefined || lastActive === undefined) {
       return undefined;
     }
 
     const participationKind =
-      state.role === Role.User || state.role === Role.Moderator ? ParticipationKind.User : ParticipationKind.Guest;
+      state.role === Role.User || state.role === Role.Moderator
+        ? ParticipationKind.Registered
+        : ParticipationKind.Guest;
 
     return {
       id: state.uuid,
+      connections: [],
       displayName,
       avatarUrl,
-      groups,
       joinedAt,
       lastActive,
       leftAt: null,

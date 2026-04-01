@@ -22,18 +22,19 @@ vi.mock('@livekit/components-react', async (importOriginal) => {
 type mockedRemoteParticipantOptions = {
   usersWithCameraOn?: number;
   moderators?: number;
-  users?: number;
+  registeredUsers?: number;
   guests?: number;
 };
 const mockedRemoteParticipants = (
   total: number,
-  options: mockedRemoteParticipantOptions = { usersWithCameraOn: 0, moderators: 0, users: total, guests: 0 }
+  options: mockedRemoteParticipantOptions = { usersWithCameraOn: 0, moderators: 0, registeredUsers: total, guests: 0 }
 ) => {
   const participantIds = range(total);
-  let [generatedUsersWithCameraOn, generatedModerators, generatedUsers, generatedGuests] = [0, 0, 0, 0];
+  let [generatedUsersWithCameraOn, generatedModerators, generatedRegistered, generatedGuests] = [0, 0, 0, 0];
   const participants = participantIds.map((id) => {
     let isCameraEnabled = false;
     let role: Role = Role.User;
+    let kind: ParticipationKind = ParticipationKind.Registered;
     if (generatedUsersWithCameraOn < options.usersWithCameraOn!) {
       isCameraEnabled = true;
       generatedUsersWithCameraOn++;
@@ -41,16 +42,19 @@ const mockedRemoteParticipants = (
     if (generatedModerators < options.moderators!) {
       role = Role.Moderator;
       generatedModerators++;
-    } else if (generatedUsers < options.users!) {
-      generatedUsers++;
+    } else if (generatedRegistered < options.registeredUsers!) {
+      kind = ParticipationKind.Registered;
+      generatedRegistered++;
     } else if (generatedGuests < options.guests!) {
-      role = Role.Guest;
+      kind = ParticipationKind.Guest;
       generatedGuests++;
     }
-    const kind = role === Role.Guest ? ParticipationKind.Guest : ParticipationKind.User;
 
+    const base = mockedParticipant(id, kind, role);
     return {
-      ...mockedParticipant(id, kind, role),
+      ...base,
+      // Align identity with connection identifier for remote participant mapping in hook
+      identity: base.identity,
       isCameraEnabled,
     };
   });
@@ -94,18 +98,20 @@ describe('useCinemaViewParticipants hook', () => {
       expect(cinemaViewParticipants[enabledCameraCount - 1]).not.toEqual(cinemaViewParticipants[enabledCameraCount]);
     });
   });
-  describe('sort order: sort by roles', () => {
-    const countRoles = (participants: CinemaViewParticipant[], role: Role) =>
+  describe('sort order: moderators first', () => {
+    const countByRole = (participants: CinemaViewParticipant[], role: Role) =>
       participants.reduce((sum, p) => sum + (p.role === role ? 1 : 0), 0);
-    describe('given all 3 roles of user in a conference', () => {
+    const countByKind = (participants: CinemaViewParticipant[], kind: ParticipationKind) =>
+      participants.reduce((sum, p) => sum + (p.participationKind === kind ? 1 : 0), 0);
+    describe('given moderators, registered users and guests', () => {
       mockUseRemoteParticipants.mockImplementation(() =>
-        mockedRemoteParticipants(10, { moderators: 3, users: 4, guests: 3 })
+        mockedRemoteParticipants(10, { moderators: 3, registeredUsers: 4, guests: 3 })
       );
       const { store } = mockStore(10, {
         randomizeJoinTime: true,
         store: {
           initialState: {
-            ui: { cinemaViewOrder: CinemaViewSortOrder.VideoFirst },
+            ui: { cinemaViewOrder: CinemaViewSortOrder.ModeratorsFirst },
           },
         },
       });
@@ -113,38 +119,42 @@ describe('useCinemaViewParticipants hook', () => {
       const { result } = renderHookWithProviders(() => useCinemaViewParticipants(), { store });
       const { cinemaViewParticipants } = result.current;
 
-      it('should sort moderators first, users next and guests last', () => {
-        const moderatorCount = countRoles(cinemaViewParticipants, Role.Moderator);
-        const userCount = countRoles(cinemaViewParticipants, Role.User);
-        const guestCount = countRoles(cinemaViewParticipants, Role.Guest);
-        range(0, moderatorCount).forEach((index) => expect(cinemaViewParticipants[index].role).toBe(Role.Moderator));
-        range(moderatorCount, moderatorCount + userCount).forEach((index) =>
-          expect(cinemaViewParticipants[index].role).toBe(Role.User)
+      it('should sort moderators first, registered users next and guests last', () => {
+        const moderatorCount = countByRole(cinemaViewParticipants, Role.Moderator);
+        const registeredCount = countByKind(cinemaViewParticipants, ParticipationKind.Registered);
+        const guestCount = countByKind(cinemaViewParticipants, ParticipationKind.Guest);
+        range(0, moderatorCount).map((index) => expect(cinemaViewParticipants[index].role).toBe(Role.Moderator));
+        range(moderatorCount, moderatorCount + registeredCount).map((index) =>
+          expect(cinemaViewParticipants[index].participationKind).toBe(ParticipationKind.Registered)
         );
-        range(moderatorCount + userCount, moderatorCount + userCount + guestCount).forEach((index) =>
-          expect(cinemaViewParticipants[index].role).toBe(Role.Guest)
+        range(moderatorCount + registeredCount, moderatorCount + registeredCount + guestCount).map((index) =>
+          expect(cinemaViewParticipants[index].participationKind).toBe(ParticipationKind.Guest)
         );
       });
     });
-    describe('given only users and guests are present', () => {
-      mockUseRemoteParticipants.mockImplementation(() => mockedRemoteParticipants(10, { users: 7, guests: 3 }));
+    describe('given only registered users and guests are present', () => {
+      mockUseRemoteParticipants.mockImplementation(() =>
+        mockedRemoteParticipants(10, { registeredUsers: 7, guests: 3 })
+      );
       const { store } = mockStore(10, {
         randomizeJoinTime: true,
         store: {
           initialState: {
-            ui: { cinemaViewOrder: CinemaViewSortOrder.VideoFirst },
+            ui: { cinemaViewOrder: CinemaViewSortOrder.ModeratorsFirst },
           },
         },
       });
 
       const { result } = renderHookWithProviders(() => useCinemaViewParticipants(), { store });
       const { cinemaViewParticipants } = result.current;
-      it('should sort users first and guests last', () => {
-        const userCount = countRoles(cinemaViewParticipants, Role.User);
-        const guestCount = countRoles(cinemaViewParticipants, Role.Guest);
-        range(0, userCount).forEach((index) => expect(cinemaViewParticipants[index].role).toBe(Role.User));
-        range(userCount, userCount + guestCount).forEach((index) =>
-          expect(cinemaViewParticipants[index].role).toBe(Role.Guest)
+      it('should sort registered users first and guests last', () => {
+        const registeredCount = countByKind(cinemaViewParticipants, ParticipationKind.Registered);
+        const guestCount = countByKind(cinemaViewParticipants, ParticipationKind.Guest);
+        range(0, registeredCount).map((index) =>
+          expect(cinemaViewParticipants[index].participationKind).toBe(ParticipationKind.Registered)
+        );
+        range(registeredCount, registeredCount + guestCount).map((index) =>
+          expect(cinemaViewParticipants[index].participationKind).toBe(ParticipationKind.Guest)
         );
       });
     });
@@ -154,7 +164,7 @@ describe('useCinemaViewParticipants hook', () => {
         randomizeJoinTime: true,
         store: {
           initialState: {
-            ui: { cinemaViewOrder: CinemaViewSortOrder.VideoFirst },
+            ui: { cinemaViewOrder: CinemaViewSortOrder.ModeratorsFirst },
           },
         },
       });
@@ -162,21 +172,23 @@ describe('useCinemaViewParticipants hook', () => {
       const { result } = renderHookWithProviders(() => useCinemaViewParticipants(), { store });
       const { cinemaViewParticipants } = result.current;
       it('should sort moderators first and guests last', () => {
-        const moderatorCount = countRoles(cinemaViewParticipants, Role.Moderator);
-        const guestCount = countRoles(cinemaViewParticipants, Role.Guest);
-        range(0, moderatorCount).forEach((index) => expect(cinemaViewParticipants[index].role).toBe(Role.Moderator));
-        range(moderatorCount, moderatorCount + guestCount).forEach((index) =>
-          expect(cinemaViewParticipants[index].role).toBe(Role.Guest)
+        const moderatorCount = countByRole(cinemaViewParticipants, Role.Moderator);
+        const guestCount = countByKind(cinemaViewParticipants, ParticipationKind.Guest);
+        range(0, moderatorCount).map((index) => expect(cinemaViewParticipants[index].role).toBe(Role.Moderator));
+        range(moderatorCount, moderatorCount + guestCount).map((index) =>
+          expect(cinemaViewParticipants[index].participationKind).toBe(ParticipationKind.Guest)
         );
       });
     });
-    describe('given only moderators and users are present', () => {
-      mockUseRemoteParticipants.mockImplementation(() => mockedRemoteParticipants(10, { moderators: 3, users: 7 }));
+    describe('given only moderators and registered users are present', () => {
+      mockUseRemoteParticipants.mockImplementation(() =>
+        mockedRemoteParticipants(10, { moderators: 3, registeredUsers: 7 })
+      );
       const { store } = mockStore(10, {
         randomizeJoinTime: true,
         store: {
           initialState: {
-            ui: { cinemaViewOrder: CinemaViewSortOrder.VideoFirst },
+            ui: { cinemaViewOrder: CinemaViewSortOrder.ModeratorsFirst },
           },
         },
       });
@@ -184,11 +196,11 @@ describe('useCinemaViewParticipants hook', () => {
       const { result } = renderHookWithProviders(() => useCinemaViewParticipants(), { store });
       const { cinemaViewParticipants } = result.current;
       it('should sort moderators first and guests last', () => {
-        const moderatorCount = countRoles(cinemaViewParticipants, Role.Moderator);
-        const userCount = countRoles(cinemaViewParticipants, Role.User);
-        range(0, moderatorCount).forEach((index) => expect(cinemaViewParticipants[index].role).toBe(Role.Moderator));
-        range(moderatorCount, moderatorCount + userCount).forEach((index) =>
-          expect(cinemaViewParticipants[index].role).toBe(Role.User)
+        const moderatorCount = countByRole(cinemaViewParticipants, Role.Moderator);
+        const registeredCount = countByKind(cinemaViewParticipants, ParticipationKind.Registered);
+        range(0, moderatorCount).map((index) => expect(cinemaViewParticipants[index].role).toBe(Role.Moderator));
+        range(moderatorCount, moderatorCount + registeredCount).map((index) =>
+          expect(cinemaViewParticipants[index].participationKind).toBe(ParticipationKind.Registered)
         );
       });
     });

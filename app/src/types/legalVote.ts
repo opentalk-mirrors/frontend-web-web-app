@@ -1,24 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantId } from './common';
+import { ParticipantId, Timestamp } from './common';
 
 export type LegalVoteId = string & { readonly __tag: unique symbol };
-
-export enum LegalVoteKind {
-  /**
-   * It's visible afterwards who voted what
-   */
-  RollCall = 'roll_call',
-  /**
-   * You can see in real time who voted what
-   */
-  LiveRollCall = 'live_roll_call',
-  /**
-   * You can't see who voted what
-   */
-  Pseudonymous = 'pseudonymous',
-}
 
 export enum LegalVoteState {
   Started = 'started',
@@ -32,48 +17,43 @@ enum StopKind {
   Expired = 'expired',
   Auto = 'auto',
 }
+
 export interface LegalVoteFormValues {
-  kind: LegalVoteKind;
+  /// On a pseudonymous vote, only the tokens will be published with the results, but not the
+  /// participant identities.
+  pseudonymous: boolean;
+  /// On a live vote, the interim results are sent to all participants when somebody voted. This
+  /// option does not take effect if the vote is pseudonymous.
+  live: boolean;
+  /// The name of the vote. Max length is 150 characters.
   name: string;
+  /// A Subtitle for the vote. Max length is 255 characters.
   subtitle?: string;
-  /**
-   * The topic that will be voted on
-   */
+  /// The topic that will be voted on. Max length is 500 characters.
   topic?: string;
-  /**
-   * Indicates that the `Abstain` vote option is enabled
-   */
+  /// Indicates that the `Abstain` vote option is enabled.
   enableAbstain: boolean;
-  /**
-   * The vote will automatically stop when every participant voted
-   */
+  /// The vote will automatically stop when every participant voted.
   autoClose: boolean;
-  /**
-   * The vote will stop when the duration (in second) has passed
-   */
-  duration: number | null;
-  /**
-   * Automatically create a protocol PDF when the vote ends.
-   */
+  /// The vote will stop when the duration (in seconds) has passed.
+  duration?: number;
+  /// A PDF document will be created when the vote is over.
   createPdf: boolean;
 }
-/**
- * Shared fields between incoming and outgoing
- */
+
 export interface LegalVoteParameters extends LegalVoteFormValues {
-  /**
-   * List of participants that are allowed to cast a vote
-   */
+  /// List of participants that are allowed to cast a vote.
   allowedParticipants: Array<ParticipantId>;
-  /**
-   * Timezone used in the protocol, defaults to UTC, IANA format, e.g."CET" or "Europe/Vienna".
-   */
+  /// An optional timezone, defaults to UTC.
+  /// Format as standardized by IANA, e.g.\"CET\" or \"Europe/Vienna\".
+  /// See: <https://www.iana.org/time-zones>
   timezone?: string;
 }
+
 export interface IncomingVote extends LegalVoteParameters {
   initiatorId: ParticipantId;
   legalVoteId: LegalVoteId;
-  startTime: string;
+  startTime: Timestamp;
   maxVotes: number;
   token?: string;
 }
@@ -88,7 +68,11 @@ interface StartedVote extends VoteSummaryBase {
 }
 
 //Finished vote types
-export type LegalVoteOption = 'yes' | 'no' | 'abstain';
+export enum LegalVoteOption {
+  Yes = 'yes',
+  No = 'no',
+  Abstain = 'abstain',
+}
 
 type VotingRecordMap = Record<ParticipantId, LegalVoteOption>;
 

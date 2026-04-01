@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
+
 import { pass } from '../../../api/types/outgoing/automod';
 import { showConsentNotification } from '../../../commonComponents';
 import log from '../../../logger';
@@ -88,7 +90,7 @@ export const toggleMicrophone = async (params: HotkeyCallbackParams, forcedState
 let audioStateBeforeWhisperStarts: boolean;
 
 export const toggleAudioToWhisperGroup = async ({ state, dispatch }: HotkeyCallbackParams) => {
-  const subroomAudioEnabled = selectEnabledModulesList(state).subroomAudio;
+  const subroomAudioEnabled = selectEnabledModulesList(state).includes(BackendModules.SubroomAudio);
   const whisperRoom = selectLivekitWhisperRoom(state);
   const isWhisperActive = selectIsWhisperActive(state);
   const audioEnabled = selectAudioEnabled(state);

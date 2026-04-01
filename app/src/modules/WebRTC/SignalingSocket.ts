@@ -7,13 +7,10 @@ import convertToSnakeCase from 'snakecase-keys';
 import type { Message as IncomingMessage } from '../../api/types/incoming';
 import type { Message as OutgoingMessage } from '../../api/types/outgoing';
 import log from '../../logger';
-import { NamespacedIncoming } from '../../types';
+import type { NamespacedIncoming } from '../../types';
 import { BaseEventEmitter } from '../EventListener';
 
 const uuidMatchingRegexp = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
-
-// Currently, this is a living spec
-const API_VERSION = '1.0';
 
 /*
  * Signaling state chart:
@@ -30,7 +27,7 @@ type SignalingConnectionEvent = {
   message: IncomingMessage;
 };
 
-type EchoMessage = NamespacedIncoming<{ message: 'ping' }, 'echo'>;
+type PingMessage = NamespacedIncoming<{ action: 'echo' }, 'echo'>;
 
 const HEARTBEAT_INTERVAL = 12000; //ms
 const HEARTBEAT_TIMEOUT = 10000; //ms
@@ -43,7 +40,7 @@ export class SignalingSocket extends BaseEventEmitter<SignalingConnectionEvent> 
   private heartbeatIntervalId?: NodeJS.Timeout;
   private closeSignalingTimeoutId?: NodeJS.Timeout;
 
-  constructor(url: URL, ticket: string) {
+  constructor(url: URL) {
     super();
     this.url = url;
     const windowRef = window;
@@ -52,10 +49,10 @@ export class SignalingSocket extends BaseEventEmitter<SignalingConnectionEvent> 
       this.socket.close();
     };
 
-    this.socket = new WebSocket(this.url, [`ticket#${ticket}`, `opentalk-signaling-json-v${API_VERSION}`]);
+    this.socket = new WebSocket(this.url);
     this.socket.onopen = this.onConnected;
     this.socket.onmessage = (ev) => {
-      const message: IncomingMessage | EchoMessage = camelcaseKeys(JSON.parse(ev.data), {
+      const message: IncomingMessage | PingMessage = camelcaseKeys(JSON.parse(ev.data), {
         // We exclude votingRecord, lastSeenTimestamp* because they contain id that must not be converted to the camel case
         // as we can no longer map them to the participants.
         stopPaths: [

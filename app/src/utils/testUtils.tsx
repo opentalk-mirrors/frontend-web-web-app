@@ -4,25 +4,25 @@
 import { ThemeProvider } from '@mui/material';
 import '@mui/material';
 import {
+  AssetId,
   BaseAsset,
   DateTime,
   Email,
   EventId,
   EventType,
+  InviteCode,
   InviteStatus,
+  PlatformKind,
   RecurrencePattern,
   RecurringEvent,
   RoomId,
   RoomInvite,
   SingleEvent,
+  SipId,
+  StreamingTarget,
+  ThemeBasePalette,
   TimelessEvent,
   UserId,
-  PlatformKind,
-  StreamingTarget,
-  AssetId,
-  InviteCode,
-  SipId,
-  ThemeBasePalette,
 } from '@opentalk/rest-api-rtk-query';
 import { ConfigureStoreOptions, Store } from '@reduxjs/toolkit';
 import { RenderOptions, RenderResult, render as rtlRender, renderHook as rtlRenderHook } from '@testing-library/react';
@@ -51,9 +51,9 @@ import { AutomodState, SpeakerState } from '../store/slices/automodSlice';
 import { Poll } from '../store/slices/pollSlice';
 import {
   AutomodSelectionStrategy,
+  ConnectionId,
   LegalVote,
   LegalVoteId,
-  LegalVoteKind,
   LegalVoteState,
   MeetingNotesAccess,
   Participant,
@@ -61,8 +61,10 @@ import {
   ParticipationKind,
   PollId,
   Role,
+  Timestamp,
   WaitingState,
 } from '../types';
+import { constructConnectionIdentifier } from './constructConnectionIdentifier';
 import { CommonFrequencies } from './rruleUtils';
 import { getRandomTimeInThePast } from './timeUtils';
 
@@ -77,12 +79,10 @@ const automodState: AutomodState = {
     ids: [],
     entities: {},
   },
-  animationOnRandom: false,
   allowDoubleSelection: false,
   timeLimit: null,
-  showList: false,
+  showRemaining: false,
   speakerState: SpeakerState.Inactive,
-  considerHandRaise: false,
 };
 
 i18n.use(initReactI18next).init({
@@ -241,7 +241,7 @@ export const mockStore = (
 
 export const mockedParticipant = (
   index: number,
-  kind: ParticipationKind = ParticipationKind.User,
+  kind: ParticipationKind = ParticipationKind.Registered,
   role: Role = Role.User
 ): Participant & {
   identity: string;
@@ -252,14 +252,14 @@ export const mockedParticipant = (
   videoTrackPublications: Map<string, RemoteTrackPublication>;
 } => ({
   id: `00000000-e6b4-4759-00${index}` as ParticipantId,
-  identity: `00000000-e6b4-4759-00${index}`, //some components while using livekit participants require identity as id -> TODO: map old participants type to Livekit Participant
+  connections: [`10000000-e6b4-4759-00${index}` as ConnectionId],
+  identity: `00000000-e6b4-4759-00${index}:10000000-e6b4-4759-00${index}`, //some components while using livekit participants require identity as id -> TODO: map old participants type to Livekit Participant
   displayName: `Test User Randy Mock${index}`,
   handIsUp: false,
   handUpdatedAt: '2022-03-23T12:32:30Z',
   joinedAt: '2022-03-23T12:32:30Z',
   leftAt: null,
-  breakoutRoomId: null,
-  groups: [],
+  breakoutRoomId: undefined,
   participationKind: kind,
   lastActive: '2022-03-23T12:32:30Z',
   waitingState: WaitingState.Joined,
@@ -275,21 +275,27 @@ export const mockedParticipant = (
 
 export const mockedLivekitParticipant = (index: number) => {
   return new LivekitParticipant(
-    `00000000-e6b4-4759-00${index}`,
-    `00000000-e6b4-4759-00${index}`,
+    `00000000-e6b4-4759-00${index}:10000000-e6b4-4759-00${index}`,
+    `00000000-e6b4-4759-00${index}:10000000-e6b4-4759-00${index}`,
     `Test User Randy Mock${index}`
   );
 };
 
 export const mockedVideoMediaDescriptor = (index: number) =>
   ({
-    participantId: mockedParticipant(index).id,
+    connectionIdentifier: constructConnectionIdentifier(
+      mockedParticipant(index).id,
+      mockedParticipant(index).connections[0]
+    ),
     mediaType: Track.Source.Camera,
   }) as MediaDescriptor;
 
 export const mockedScreenMediaDescriptor = (index: number) =>
   ({
-    participantId: mockedParticipant(index).id,
+    connectionIdentifier: constructConnectionIdentifier(
+      mockedParticipant(index).id,
+      mockedParticipant(index).connections[0]
+    ),
     mediaType: Track.Source.ScreenShare,
   }) as MediaDescriptor;
 
@@ -570,7 +576,7 @@ export const mockPoll: Poll = {
 export const mockLegalVote: LegalVote = {
   id: 'fake-poll-id' as LegalVoteId,
   duration: 60,
-  startTime: new Date().toString(),
+  startTime: new Date().toString() as Timestamp,
   state: LegalVoteState.Started,
   topic: 'This is a legal vote fake description',
   votes: {
@@ -582,10 +588,11 @@ export const mockLegalVote: LegalVote = {
   autoClose: false,
   createPdf: false,
   enableAbstain: true,
-  kind: LegalVoteKind.RollCall,
   name: 'Fake legal vote',
   initiatorId: 'asd' as ParticipantId,
   maxVotes: 0,
+  pseudonymous: false,
+  live: false,
 };
 
 export const mockedStreamingTarget: StreamingTarget = {

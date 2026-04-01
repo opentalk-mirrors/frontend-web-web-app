@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { List } from '@mui/material';
 
-import { ParticipantId } from '../../../types';
+import { ConnectionIdentifier, ParticipantId } from '../../../types';
+import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
 import SelectParticipantsItem, { SelectableParticipant } from './SelectParticipantsItem';
 
 type SelectParticipantsListProps = {
@@ -16,7 +17,10 @@ const SelectParticipantsList = ({ participantsList, onCheck }: SelectParticipant
     {participantsList.map((participant) => (
       <SelectParticipantsItem
         participant={participant}
-        onCheck={(checked) => onCheck(checked, participant.identity as ParticipantId)}
+        onCheck={(checked) => {
+          const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
+          onCheck(checked, participantId);
+        }}
         key={participant.identity}
       />
     ))}

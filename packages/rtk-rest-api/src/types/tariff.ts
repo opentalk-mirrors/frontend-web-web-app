@@ -38,8 +38,16 @@ export enum BackendModules {
  */
 export type Modules = { [value in BackendModules]?: { features: Array<string> } };
 
-export type RecordingFeatures = 'stream' | 'record';
-export type CoreFeatures = 'call_in' | 'storage_upgradable' | 'guests_allowed';
+export enum RecordingFeatures {
+  Stream = 'stream',
+  Record = 'record',
+}
+
+export enum CoreFeatures {
+  CallIn = 'call_in',
+  StorageUpgradable = 'storage_upgradable',
+  GuestsAllowed = 'guests_allowed',
+}
 /**
  * Union type that contains features from different modules. Has to be manually extended.
  */

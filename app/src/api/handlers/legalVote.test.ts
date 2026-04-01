@@ -12,12 +12,14 @@ import {
   voted as legalVoteVoted,
 } from '../../store/slices/legalVoteSlice';
 import {
+  ErrorStruct,
   LegalVoteId,
-  LegalVoteKind,
+  LegalVoteOption,
   MeetingNotesAccess,
   Participant,
   ParticipantId,
   ParticipationKind,
+  Timestamp,
   VoteCancelReason,
   VoteInvalidReason,
   WaitingState,
@@ -25,16 +27,14 @@ import {
 import type {
   LegalVoteMessageType,
   VoteCanceled,
-  VoteFailedType,
   VoteReportedIssue,
   VoteStopped,
-  VoteStoppedAuto,
-  VoteSuccessType,
   VoteUpdated,
   VoteStarted,
+  VoteResponse,
 } from '../types/incoming/legalVote';
-import { LegalVoteError, VoteFinalResults } from '../types/incoming/legalVote';
-import { showErrorNotification } from './helpers';
+import { LegalVoteError, StopKind, VoteFinalResults } from '../types/incoming/legalVote';
+import { ReportIssueKind } from '../types/outgoing/legalVote';
 import { handleLegalVoteMessage } from './legalVote';
 
 vi.mock('i18next', () => ({
@@ -57,10 +57,6 @@ vi.mock('../../commonComponents', () => ({
   },
 }));
 
-vi.mock('./helpers', () => ({
-  showErrorNotification: vi.fn(),
-}));
-
 const createState = (overrides: Partial<RootState> = {}) =>
   ({
     participants: {
@@ -75,27 +71,27 @@ const createState = (overrides: Partial<RootState> = {}) =>
 const baseVote = {
   legalVoteId: 'vote-1' as LegalVoteId,
   initiatorId: 'user-1' as ParticipantId,
-  startTime: '2024-01-01T10:00:00Z',
+  startTime: '2024-01-01T10:00:00Z' as Timestamp,
   maxVotes: 1,
-  kind: LegalVoteKind.RollCall,
   name: 'Test Vote',
   enableAbstain: true,
   autoClose: false,
-  duration: null,
+  duration: undefined,
   createPdf: false,
   allowedParticipants: [],
+  pseudonymous: false,
+  live: false,
 };
 
 const createParticipant = (id: ParticipantId, displayName: string): Participant => ({
   id,
-  breakoutRoomId: null,
+  connections: [],
+  breakoutRoomId: undefined,
   displayName,
   handIsUp: false,
-  joinedAt: '2024-01-01T10:00:00Z',
+  joinedAt: '2024-01-01T10:00:00Z' as Timestamp,
   leftAt: null,
-  handUpdatedAt: '2024-01-01T10:00:00Z',
-  groups: [],
-  participationKind: ParticipationKind.User,
+  participationKind: ParticipationKind.Registered,
   lastActive: '2024-01-01T10:00:00Z',
   waitingState: WaitingState.Joined,
   meetingNotesAccess: MeetingNotesAccess.None,
@@ -140,9 +136,13 @@ describe('handleLegalVoteMessage', () => {
     const data: VoteStopped = {
       message: 'stopped',
       legalVoteId: baseVote.legalVoteId,
-      kind: 'auto' as VoteStoppedAuto['kind'],
+      kind: StopKind.Auto,
       results: VoteFinalResults.Invalid,
       reason: VoteInvalidReason.ProtocolInconsistent,
+      endTime: '2024-01-01T11:00:00Z' as Timestamp,
+      yes: 1,
+      no: 0,
+      votingRecord: {},
     };
 
     handleLegalVoteMessage(dispatch, data, state);
@@ -159,6 +159,7 @@ describe('handleLegalVoteMessage', () => {
       message: 'canceled',
       legalVoteId: baseVote.legalVoteId,
       reason: VoteCancelReason.RoomDestroyed,
+      endTime: '2024-01-01T11:00:00Z' as Timestamp,
     };
 
     handleLegalVoteMessage(dispatch, data, state);
@@ -170,11 +171,10 @@ describe('handleLegalVoteMessage', () => {
   it('dispatches successful vote submissions', () => {
     const dispatch = vi.fn();
     const state = createState();
-    const data: VoteSuccessType = {
+    const data: VoteResponse = {
       message: 'voted',
       legalVoteId: baseVote.legalVoteId,
-      response: 'success',
-      voteOption: 'yes',
+      voteOption: LegalVoteOption.Yes,
       issuer: 'user-2' as ParticipantId,
       consumedToken: 'token',
     };
@@ -187,16 +187,14 @@ describe('handleLegalVoteMessage', () => {
   it('notifies when a vote fails', () => {
     const dispatch = vi.fn();
     const state = createState();
-    const data: VoteFailedType = {
-      message: 'voted',
-      legalVoteId: baseVote.legalVoteId,
-      response: 'failed',
-      reason: 'invalid_vote_id' as VoteFailedType['reason'],
+    const error: ErrorStruct<LegalVoteError> = {
+      message: 'error',
+      error: LegalVoteError.InvalidVoteId,
     };
 
-    handleLegalVoteMessage(dispatch, data, state);
+    handleLegalVoteMessage(dispatch, error, state);
 
-    expect(notifications.error).toHaveBeenCalledExactlyOnceWith('legal-vote-error');
+    expect(notifications.error).toHaveBeenCalledExactlyOnceWith('invalid-vote-id-error');
   });
 
   it('notifies about reported issues from other participants', () => {
@@ -212,7 +210,8 @@ describe('handleLegalVoteMessage', () => {
     const data: VoteReportedIssue = {
       message: 'reported_issue',
       participantId: 'user-2' as ParticipantId,
-      kind: 'video',
+      kind: ReportIssueKind.Video,
+      legalVoteId: baseVote.legalVoteId,
     };
 
     handleLegalVoteMessage(dispatch, data, state);
@@ -222,16 +221,6 @@ describe('handleLegalVoteMessage', () => {
       kind: 'video',
     });
     expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('legal-vote-report-issue-kind-notification');
-  });
-
-  it('routes error events through helper', () => {
-    const dispatch = vi.fn();
-    const state = createState();
-    const data: LegalVoteMessageType = { message: 'error', error: LegalVoteError.Internal };
-
-    handleLegalVoteMessage(dispatch, data, state);
-
-    expect(showErrorNotification).toHaveBeenCalledExactlyOnceWith(LegalVoteError.Internal);
   });
 
   it('throws on unknown message type', () => {

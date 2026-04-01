@@ -4,22 +4,17 @@
 import { memo, useCallback } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import {
-  selectParticipantsSearchValue,
-  selectShowParticipantGroups,
-  setParticipantsSearchValue,
-} from '../../../store/slices/uiSlice';
-import ParticipantGroupingForm from './ParticipantGroupingForm';
-import ParticipantGroups from './ParticipantGroups';
-import ParticipantNoGroups from './ParticipantNoGroups';
+import { selectPeopleTabParticipants } from '../../../store/selectors';
+import { selectParticipantsSearchValue, setParticipantsSearchValue } from '../../../store/slices/uiSlice';
+import ParticipantSimpleList from './ParticipantSimpleList';
 import SearchTextField from './SearchTextField';
 
 const CachedSearchTextField = memo(SearchTextField);
 
 const ParticipantsContainer = () => {
   const dispatch = useAppDispatch();
-  const groupParticipantsEnabled = useAppSelector(selectShowParticipantGroups);
   const searchValue = useAppSelector(selectParticipantsSearchValue);
+  const participants = useAppSelector(selectPeopleTabParticipants);
 
   const dispatchNextSearchValue = useCallback(
     (nextSearchValue: string) => {
@@ -31,8 +26,7 @@ const ParticipantsContainer = () => {
   return (
     <>
       <CachedSearchTextField searchValue={searchValue} onSearch={dispatchNextSearchValue} fullWidth showSort />
-      <ParticipantGroupingForm />
-      {groupParticipantsEnabled ? <ParticipantGroups flex={1} /> : <ParticipantNoGroups />}
+      <ParticipantSimpleList participants={participants} />
     </>
   );
 };

@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { start } from '../../../api/types/outgoing/legalVote';
 import { notifications } from '../../../commonComponents';
 import { savedLegalVoteForm } from '../../../store/slices/legalVoteSlice';
-import { LegalVoteFormValues, LegalVoteKind, SavedLegalVoteForm } from '../../../types';
+import { LegalVoteFormValues, SavedLegalVoteForm } from '../../../types';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import CreateLegalVoteForm from './CreateLegalVoteForm';
 import { AllowedParticipant } from './ParticipantSelector';
@@ -45,7 +45,8 @@ const buildInitialValues = (overrides: Partial<LegalVoteFormWithParticipants> = 
   allowedParticipants: [],
   subtitle: '',
   createPdf: true,
-  kind: LegalVoteKind.RollCall,
+  live: true,
+  pseudonymous: false,
   ...overrides,
 });
 
@@ -164,8 +165,9 @@ describe('CreateLegalVoteForm', () => {
       duration: 120,
       allowedParticipants: [participant.id],
       createPdf: false,
-      kind: LegalVoteKind.RollCall,
       timezone: 'Mock/Zone',
+      live: true,
+      pseudonymous: false,
     };
 
     await waitFor(() => {

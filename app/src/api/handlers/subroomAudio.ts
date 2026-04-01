@@ -11,8 +11,10 @@ import {
   inviteParticipants,
   removeParticipant,
   resetSubroomAudioData,
-  selectSubroomAudioState,
+  selectSubroomAudioParticipants,
+  selectWhisperGroupId,
   setSubroomAudioData,
+  setWhisperParticipants,
   updateParticipantInviteState,
 } from '../../store/slices/subroomAudioSlice';
 import { selectOurUuid } from '../../store/slices/userSlice';
@@ -29,7 +31,7 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
       dispatch(setSubroomAudioData({ whisperId: data.whisperId, token: data.token, participants: data.participants }));
       break;
     case 'whisper_invite': {
-      const isAlreadyInWhisperGroup = selectSubroomAudioState(state).whisperId;
+      const isAlreadyInWhisperGroup = selectWhisperGroupId(state);
       if (isAlreadyInWhisperGroup) {
         dispatch(declineWhisperInvite.action({ whisperId: data.whisperId }));
         break;
@@ -47,6 +49,7 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
         persist: true,
         onAction: () => {
           dispatch(acceptWhisperInvite.action({ whisperId: data.whisperId }));
+          dispatch(setWhisperParticipants({ participants: data.participants }));
         },
         onCancel: () => {
           dispatch(declineWhisperInvite.action({ whisperId: data.whisperId }));
@@ -56,9 +59,9 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
       break;
     }
     case 'whisper_token': {
-      const subroomAudioState = selectSubroomAudioState(state);
+      const participants = selectSubroomAudioParticipants(state);
       const myOwnParticipantId = selectOurUuid(state);
-      const updatedParticipants = subroomAudioState.participants.map((p) =>
+      const updatedParticipants = participants.map((p) =>
         p.participantId === myOwnParticipantId ? { ...p, state: WhisperParticipantState.Accepted } : p
       );
       dispatch(
@@ -101,8 +104,8 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
       const error = data.error;
       switch (error) {
         default:
-          log.error(`Livekit Error: ${data}`);
-          throw new Error(`Livekit Error: ${error}`);
+          log.error(`Subroom Audio Error: ${data}`);
+          throw new Error(`Subroom Audio Error: ${error}`);
       }
     }
     default: {

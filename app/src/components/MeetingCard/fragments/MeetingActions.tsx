@@ -2,7 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, MenuList, MenuItem as MuiMenuItem, Popover as MuiPopover, Stack, styled } from '@mui/material';
-import { Event, EventException, EventId, InviteStatus, isEvent, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
+import {
+  CoreFeatures,
+  Event,
+  EventException,
+  EventId,
+  InviteStatus,
+  isEvent,
+  isRecurringEvent,
+} from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/query';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -87,7 +95,9 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
 
   const { data: roomTariff } = useGetRoomTariffQuery(roomId ?? skipToken);
   const isInviteAllowed = Boolean(
-    roomTariff && isFeatureEnabledPredicate('guests_allowed', roomTariff.modules) && !event.room?.e2eEncryption
+    roomTariff &&
+    isFeatureEnabledPredicate(CoreFeatures.GuestsAllowed, roomTariff.modules) &&
+    !event.room?.e2eEncryption
   );
 
   const stopPropagation = useCallback(

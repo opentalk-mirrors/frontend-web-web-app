@@ -1,12 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import {
-  setGlobalChatLastSeenTimestamp,
-  setLastSeenTimestampForGroupChat,
-  setLastSeenTimestampForPrivateChat,
-} from '../../../store/slices/chatSlice';
-import { ChatScope, GroupId, ParticipantId } from '../../../types';
+import { lastSeenTimestampAdded } from '../../../store/slices/chatSlice';
+import { BreakoutRoomId, ChatIdentifier, ChatScope, ParticipantId } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ChatList from './ChatList';
 
@@ -15,6 +11,8 @@ describe('updateLastSeenTimestamp', () => {
     // Silence reselect warnings during tests
     vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
+
+  const globalChatIdentifier: ChatIdentifier = { scope: ChatScope.Global };
 
   it('updates the last seen timestamp for a public chat', () => {
     const { store, dispatchSpy } = configureStore({
@@ -35,22 +33,23 @@ describe('updateLastSeenTimestamp', () => {
       },
     });
 
-    renderWithProviders(<ChatList />, { store });
+    renderWithProviders(<ChatList chatIdentifier={globalChatIdentifier} />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
-      setGlobalChatLastSeenTimestamp({
-        value: expect.any(String),
+      lastSeenTimestampAdded({
+        scope: ChatScope.Global,
+        timestamp: expect.any(String),
       })
     );
   });
   it('updates the last seen timestamp for a private chat', () => {
-    const targetId = 'participant-123' as ParticipantId;
+    const target = 'participant-123' as ParticipantId;
     const { store, dispatchSpy } = configureStore({
       initialState: {
         room: { isRoomDeleted: false },
         chat: {
           scope: {
             private: {
-              [targetId]: {
+              [target]: {
                 messages: {
                   ids: [],
                   entities: {},
@@ -64,30 +63,36 @@ describe('updateLastSeenTimestamp', () => {
         ui: {
           chatConversationState: {
             scope: ChatScope.Private,
-            targetId,
+            target,
           },
           chatSearchValue: '',
         },
       },
     });
 
-    renderWithProviders(<ChatList />, { store });
+    const privateChatIdentifier: ChatIdentifier = {
+      scope: ChatScope.Private,
+      target,
+    };
+
+    renderWithProviders(<ChatList chatIdentifier={privateChatIdentifier} />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
-      setLastSeenTimestampForPrivateChat({
+      lastSeenTimestampAdded({
+        scope: ChatScope.Private,
         timestamp: expect.any(String),
-        participantId: targetId,
+        target: target,
       })
     );
   });
-  it('updates the last seen timestamp for a group chat', () => {
-    const targetId = 'group-123' as GroupId;
+  it('updates the last seen timestamp for a breakout chat', () => {
+    const target = 1 as BreakoutRoomId;
     const { store, dispatchSpy } = configureStore({
       initialState: {
         room: { isRoomDeleted: false },
         chat: {
           scope: {
-            group: {
-              [targetId]: {
+            breakout: {
+              [target]: {
                 messages: {
                   ids: [],
                   entities: {},
@@ -100,19 +105,25 @@ describe('updateLastSeenTimestamp', () => {
         },
         ui: {
           chatConversationState: {
-            scope: ChatScope.Group,
-            targetId,
+            scope: ChatScope.Breakout,
+            target,
           },
           chatSearchValue: '',
         },
       },
     });
 
-    renderWithProviders(<ChatList />, { store });
+    const breakoutChatIdentifier: ChatIdentifier = {
+      scope: ChatScope.Breakout,
+      target,
+    };
+
+    renderWithProviders(<ChatList chatIdentifier={breakoutChatIdentifier} />, { store });
     expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
-      setLastSeenTimestampForGroupChat({
+      lastSeenTimestampAdded({
+        scope: ChatScope.Breakout,
         timestamp: expect.any(String),
-        groupId: targetId,
+        target: target,
       })
     );
   });

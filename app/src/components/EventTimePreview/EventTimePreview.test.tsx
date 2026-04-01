@@ -6,8 +6,8 @@ import { render, screen } from '@testing-library/react';
 import EventTimePreview from './EventTimePreview';
 
 const commonProps = {
-  startDate: new Date('2023-10-01T10:00:00.000Z'),
-  endDate: new Date('2023-10-01T12:00:00.000Z'),
+  startDate: new Date('2023-10-01T10:00:00'),
+  endDate: new Date('2023-10-01T12:00:00'),
 };
 
 describe('EventTimePreview', () => {
@@ -25,8 +25,8 @@ describe('EventTimePreview', () => {
 
   it('omits date part if start and end dates are different', async () => {
     const differentDatesProps = {
-      startDate: new Date('2023-10-01T10:00:00.000Z'),
-      endDate: new Date('2023-10-02T12:00:00.000Z'),
+      startDate: new Date('2023-10-01T10:00:00'),
+      endDate: new Date('2023-10-02T12:00:00'),
     };
 
     render(<EventTimePreview {...differentDatesProps} />);

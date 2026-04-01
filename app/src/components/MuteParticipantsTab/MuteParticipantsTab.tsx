@@ -5,13 +5,14 @@ import { useRemoteParticipants } from '@livekit/components-react';
 import { RoomEvent } from 'livekit-client';
 import { useMemo, useState } from 'react';
 
-import { requestMute } from '../../api/types/outgoing/livekit';
+import { mute } from '../../api/types/outgoing/moderation';
 import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAndSelectParticipantsTab';
 import { SelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/SelectParticipantsItem';
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectRemoteParticipantsDisplayNameRecord } from '../../store/slices/participantsSlice';
-import { ParticipantId } from '../../types';
+import { ConnectionIdentifier, ParticipantId } from '../../types';
+import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 
 const MuteParticipantsTab = () => {
   const dispatch = useAppDispatch();
@@ -39,9 +40,10 @@ const MuteParticipantsTab = () => {
         const displayName = participantNames[participant.identity];
         return displayName?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
       })
-      .map((participant) =>
-        toSelectableParticipant(participant, selectedParticipants.includes(participant.identity as ParticipantId))
-      );
+      .map((participant) => {
+        const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
+        return toSelectableParticipant(participant, selectedParticipants.includes(participantId));
+      });
   }, [search, unmutedParticipants, selectedParticipants, participantNames]);
 
   const handleSelectParticipant = (checked: boolean, participantId: ParticipantId) => {
@@ -53,12 +55,19 @@ const MuteParticipantsTab = () => {
   };
 
   const muteAll = () => {
-    const unmutedParticipantIds = unmutedParticipants.map((participant) => participant.identity as ParticipantId);
-    dispatch(requestMute.action({ participants: unmutedParticipantIds }));
+    const unmutedParticipantIds = unmutedParticipants.reduce<ParticipantId[]>((acc, p) => {
+      const { participantId } = deconstructConnectionIdentifier(p.identity as ConnectionIdentifier);
+      if (participantId) {
+        acc.push(participantId);
+      }
+      return acc;
+    }, []);
+
+    dispatch(mute.action({ participants: unmutedParticipantIds }));
   };
 
   const muteSelected = () => {
-    dispatch(requestMute.action({ participants: selectedParticipants }));
+    dispatch(mute.action({ participants: selectedParticipants }));
     setSelectedParticipants([]);
   };
 

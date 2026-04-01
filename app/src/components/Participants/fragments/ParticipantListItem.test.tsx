@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { Store } from '@reduxjs/toolkit';
 import { screen, within, fireEvent } from '@testing-library/react';
 import { List } from 'react-window';
@@ -35,11 +36,7 @@ const USER_IS_MODERATOR_STORE = {
 const WHISPER_MODULE_ENABLED_STORE = {
   initialState: {
     config: {
-      tariff: {
-        modules: {
-          subroomAudio: [],
-        },
-      },
+      enabledModules: [BackendModules.SubroomAudio],
     },
   },
 };
@@ -136,7 +133,11 @@ describe('participant context menu', () => {
       expect(moveParticipantToWaitingRoomOption).toBeInTheDocument();
     });
     describe('and the participant is a guest', () => {
-      const { store } = mockStore(2, { role: [Role.Moderator, Role.Guest], store: USER_IS_MODERATOR_STORE });
+      const { store } = mockStore(2, {
+        role: [Role.Moderator, Role.User],
+        participantKinds: [ParticipationKind.Registered, ParticipationKind.Guest],
+        store: USER_IS_MODERATOR_STORE,
+      });
       beforeEach(() => {
         openMenu(store);
       });
@@ -293,7 +294,7 @@ describe('participant context menu', () => {
       it('should not contain an invite to whisper group option on sip participants', () => {
         const { store } = mockStore(3, {
           store: IN_WHISPER_GROUP_STORE,
-          participantKinds: [ParticipationKind.User, ParticipationKind.User, ParticipationKind.Sip],
+          participantKinds: [ParticipationKind.Registered, ParticipationKind.CallIn],
         });
         renderEachParticipant(store);
 

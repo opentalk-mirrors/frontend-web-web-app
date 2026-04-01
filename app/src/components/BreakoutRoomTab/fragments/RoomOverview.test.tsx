@@ -3,24 +3,21 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import { ConfigureStoreOptions } from '@reduxjs/toolkit';
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Mock } from 'vitest';
 
-import { Role } from '../../../api/types/incoming/control';
-import { stop } from '../../../api/types/outgoing/breakout';
+import { stop, switchRoom } from '../../../api/types/outgoing/breakout';
+import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../../constants';
 import * as reduxHooks from '../../../hooks/useCustomRedux';
 import * as InviteCodeModule from '../../../hooks/useInviteCode';
-import * as commonActions from '../../../store/commonActions';
-import { BreakoutRoomId, MeetingNotesAccess, Participant } from '../../../types';
-import { composeRoomPath } from '../../../utils/apiUtils';
+import { BreakoutRoomId, MeetingNotesAccess, Participant, Role, RoomKind } from '../../../types';
 import { renderWithProviders, configureStore, mockedParticipant } from '../../../utils/testUtils';
 import RoomOverview from './RoomOverview';
 
 vi.mock('react-router-dom', async (importActual) => ({
   ...(await importActual()),
-  useNavigate: vi.fn(),
   useParams: vi.fn(),
 }));
 
@@ -46,12 +43,11 @@ vi.mock('./RoomOverviewListItem', () => ({
   ),
 }));
 
-const breakoutRoomOne = { id: 'breakout-room-1' as BreakoutRoomId, name: 'Room 1' };
-const breakoutRoomTwo = { id: 'breakout-room-2' as BreakoutRoomId, name: 'Room 2' };
+const breakoutRoomOne = { id: 1 as BreakoutRoomId, name: 'Room 1' };
+const breakoutRoomTwo = { id: 2 as BreakoutRoomId, name: 'Room 2' };
 const roomId = 'room-id' as RoomId;
 const inviteCode = 'invite-code' as InviteCode;
 
-const mockUseNavigate = useNavigate as Mock;
 const mockUseParams = useParams as Mock;
 const inviteCodeSpy = vi.spyOn(InviteCodeModule, 'useInviteCode');
 
@@ -94,7 +90,6 @@ const buildBaseState = () => {
     user: {
       uuid: userParticipant.id,
       displayName: userParticipant.displayName,
-      groups: [],
       role: Role.User,
       meetingNotesAccess: MeetingNotesAccess.None,
       isRoomOwner: false,
@@ -132,23 +127,15 @@ const createStore = (overrides?: ConfigureStoreOptions['preloadedState']) => {
 };
 
 describe('RoomOverview', () => {
-  const mockNavigate = vi.fn();
-  let startRoomSpy: ReturnType<typeof vi.spyOn>;
-
   beforeEach(() => {
     vi.useRealTimers();
     vi.clearAllMocks();
     mockUseParams.mockReturnValue({ roomId });
-    mockUseNavigate.mockReturnValue(mockNavigate);
-    startRoomSpy = vi
-      .spyOn(commonActions, 'startRoom')
-      .mockReturnValue((() => Promise.resolve()) as unknown as ReturnType<typeof commonActions.startRoom>);
     inviteCodeSpy.mockReturnValue(inviteCode);
   });
 
   afterEach(() => {
     vi.useRealTimers();
-    startRoomSpy?.mockRestore();
   });
 
   it('shows a fallback when there is no expiration timestamp', () => {
@@ -192,26 +179,22 @@ describe('RoomOverview', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'breakout-room-room-overview-button-close' }));
 
-    expect(mockDispatch).toHaveBeenCalledWith(stop.action());
+    expect(mockDispatch).toHaveBeenCalledWith(stop.action({ delay: BREAKOUT_ROOM_CLOSE_DELAY }));
     dispatchSpy.mockRestore();
   });
 
-  it('starts and navigates to the selected breakout room', async () => {
-    const { store, dispatchSpy, userParticipant } = createStore();
-    const navigatePath = composeRoomPath(roomId, inviteCode, breakoutRoomTwo.id);
+  it('dispatches switchRoom action when joining a breakout room', async () => {
+    const { store, dispatchSpy } = createStore();
 
     renderWithProviders(<RoomOverview />, { store, provider: { mui: true } });
 
     await userEvent.click(screen.getByRole('button', { name: `join-${breakoutRoomTwo.id}` }));
 
-    expect(startRoomSpy).toHaveBeenCalledWith({
-      roomId,
-      password: 'room-password',
-      breakoutRoomId: breakoutRoomTwo.id,
-      displayName: userParticipant.displayName,
-      inviteCode,
-    });
-    expect(dispatchSpy).toHaveBeenCalledWith(expect.any(Function));
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith(navigatePath));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      switchRoom.action({
+        kind: RoomKind.Breakout,
+        id: breakoutRoomTwo.id,
+      })
+    );
   });
 });
