@@ -21,8 +21,6 @@ interface AssetTableRowProps {
 const DownloadButton = styled(Button, {
   shouldForwardProp: (prop) => prop !== 'progressPercentage',
 })<{ progressPercentage?: number }>(({ theme, progressPercentage }) => ({
-  marginRight: theme.spacing(1),
-
   backgroundImage:
     progressPercentage !== undefined
       ? `linear-gradient(to right, ${theme.palette.warning.main} ${progressPercentage}%, ${theme.palette.text.disabled} ${progressPercentage}%)`
@@ -42,21 +40,23 @@ export const AssetTableRow = ({
 
   return (
     <TableRow key={assetId}>
-      <TableCell scope="row">{filename}</TableCell>
-      <TableCell>{format(new Date(createdAt), 'HH:mm dd.MM.yyyy')}</TableCell>
-      <TableCell>{formatBytes(size)}</TableCell>
+      <TableCell sx={{ width: '100%' }} scope="row">
+        {filename}
+      </TableCell>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>{format(new Date(createdAt), 'HH:mm dd.MM.yyyy')}</TableCell>
+      <TableCell sx={{ whiteSpace: 'nowrap' }}>{formatBytes(size)}</TableCell>
       <TableCell>
-        <Stack spacing={0.5} direction="column">
+        <Stack spacing={1} direction="row">
           <DownloadButton
             onClick={() => handleDownload({ assetId })}
             disabled={disabledDownload}
             progressPercentage={progress}
-            fullWidth
+            size="small"
           >
             {t(disabledDownload ? 'download-in-progress' : 'action-download')}
           </DownloadButton>
           {handleDelete && (
-            <Button color="danger" onClick={() => handleDelete(assetId)} disabled={disabledDelete} fullWidth>
+            <Button color="danger" onClick={() => handleDelete(assetId)} disabled={disabledDelete} size="small">
               {t('action-delete')}
             </Button>
           )}

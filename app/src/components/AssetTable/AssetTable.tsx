@@ -126,7 +126,7 @@ export const AssetTable = ({ assets, onDownload, onDelete, maxHeight = 'none' }:
 
   return (
     <AssetTableContainer maxHeight={maxHeight} component={Paper}>
-      <Table padding="normal" stickyHeader>
+      <Table padding="normal" stickyHeader sx={{ width: 'auto' }}>
         <TableHead>
           <TableRow>
             <TableCell>{t('asset-table-filename')}</TableCell>
