@@ -41,6 +41,8 @@ const AutocompleteTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
+const MIN_QUERY_LENGTH_CHAR = 3;
+
 const SelectParticipants = ({
   onParticipantSelect,
   label,
@@ -50,6 +52,7 @@ const SelectParticipants = ({
 }: SelectParticipantsProps) => {
   const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState('');
+  const [lastSearchedValue, setLastSearchedValue] = useState('');
   const avatarDefaultImage = useAppSelector(selectLibravatarDefaultImage);
   const { data: invitees = [] } = useGetEventInvitesQuery({ eventId }, { refetchOnMountOrArgChange: true });
 
@@ -59,7 +62,7 @@ const SelectParticipants = ({
     }),
   });
 
-  const [findUsers, { isLoading, foundUsers }] = useLazyFindUsersQuery({
+  const [findUsers, { isFetching, foundUsers }] = useLazyFindUsersQuery({
     selectFromResult: ({ data, ...props }) => ({
       foundUsers: data?.filter((user) => user.email !== myEmail),
       ...props,
@@ -69,15 +72,18 @@ const SelectParticipants = ({
   const debounceFindUsers = useMemo(
     () =>
       debounce((inputValue: string) => {
-        if (inputValue.length > 2) {
+        setLastSearchedValue(inputValue);
+        if (inputValue.length >= MIN_QUERY_LENGTH_CHAR) {
           findUsers({ q: inputValue });
         }
       }, 250),
     [findUsers]
   );
 
+  const suggestionsAreStale = searchValue !== lastSearchedValue;
+
   const suggestedParticipants: Array<User> = useMemo(() => {
-    if (isLoading || searchValue.length < 3) {
+    if (isFetching || searchValue.length < MIN_QUERY_LENGTH_CHAR || suggestionsAreStale) {
       return [];
     }
     const invitedUsers = invitees?.map((invited) => invited.profile) || [];
@@ -87,7 +93,7 @@ const SelectParticipants = ({
       const bName = `${b.firstname} ${b.lastname}`;
       return aName.localeCompare(bName);
     });
-  }, [isLoading, foundUsers, selectedUsers, searchValue, invitees]);
+  }, [isFetching, foundUsers, selectedUsers, searchValue, invitees, suggestionsAreStale]);
 
   const hasParticipantsSuggestion = suggestedParticipants?.length > 0;
 
@@ -137,8 +143,8 @@ const SelectParticipants = ({
       }}
       onInputChange={(_, value) => searchEntryHandler(value || '')}
       noOptionsText={t('global-no-result')}
-      loading={isLoading}
-      open={!isLoading && (hasParticipantsSuggestion || searchValue.length > 2)}
+      loading={isFetching}
+      open={!isFetching && hasParticipantsSuggestion && !suggestionsAreStale}
       renderInput={({ InputProps, ...params }) => (
         <AutocompleteTextField
           {...params}
@@ -157,7 +163,7 @@ const SelectParticipants = ({
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  {isLoading ? <CircularProgress color="inherit" size={16} /> : null}
+                  {isFetching ? <CircularProgress color="inherit" size={16} /> : null}
                 </InputAdornment>
               ),
             },
