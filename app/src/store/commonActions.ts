@@ -408,6 +408,8 @@ export const createRoom = async (
     videoCaptureDefaults: {
       resolution: VideoPresets.h720.resolution,
     },
+    // singlePeerConnection mode is used to fix broken audio subscription in certain cases, see https://github.com/livekit/livekit/issues/4379
+    singlePeerConnection: false,
     encryption: e2eeEnabled
       ? ({
           keyProvider,
