@@ -144,7 +144,7 @@ const SelectParticipants = ({
       onInputChange={(_, value) => searchEntryHandler(value || '')}
       noOptionsText={t('global-no-result')}
       loading={isFetching}
-      open={!isFetching && hasParticipantsSuggestion && !suggestionsAreStale}
+      open={!isFetching && !suggestionsAreStale && searchValue?.length >= MIN_QUERY_LENGTH_CHAR}
       renderInput={({ InputProps, ...params }) => (
         <AutocompleteTextField
           {...params}
