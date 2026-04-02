@@ -96,7 +96,7 @@ describe('Layout selection menu', () => {
     const user = userEvent.setup();
     mockUseMediaQuery.mockReturnValue(true);
     const { store } = configureStore({
-      initialState: { config: { enabledModules: { [BackendModules.MeetingNotes]: { features: [] } } } },
+      initialState: { config: { enabledModules: { [BackendModules.MeetingNotes]: [] } } },
     });
 
     renderWithProviders(<LayoutSelection />, { store, provider: { snackbar: true, mui: true } });

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, DialogActions, Typography, styled } from '@mui/material';
-import { CallIn, CoreFeatures, StreamingLink } from '@opentalk/rest-api-rtk-query';
+import { BackendModules, CallIn, CoreFeatures, StreamingLink } from '@opentalk/rest-api-rtk-query';
 import { MeetingDetails } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { useTranslation } from 'react-i18next';
 
@@ -36,7 +36,9 @@ const MeetingDetailsDialogActions = ({
   const { t } = useTranslation();
 
   const currentUser = useAppSelector(selectUserAsParticipant);
-  const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled(CoreFeatures.GuestsAllowed));
+  const isGuestsAllowedFeatureEnabled = useAppSelector(
+    selectIsFeatureEnabled(BackendModules.Core, CoreFeatures.GuestsAllowed)
+  );
 
   const handleClipboardClick = () => {
     navigator.clipboard.writeText(createClipboardString()).then(() => {

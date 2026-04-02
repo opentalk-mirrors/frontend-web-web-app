@@ -72,7 +72,9 @@ describe('MoreMenu', () => {
     const { store } = configureStore({
       initialState: {
         ...moderatorState,
-        config: { tariff: { disabledFeatures: [CoreFeatures.GuestsAllowed] } },
+        config: {
+          enabledModules: {},
+        },
       },
     });
 
@@ -85,7 +87,9 @@ describe('MoreMenu', () => {
         const { store: storeWithGuestsAllowed } = configureStore({
           initialState: {
             ...moderatorState,
-            config: { tariff: { disabledFeatures: [] } },
+            config: {
+              enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
+            },
           },
         });
         renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
@@ -94,18 +98,20 @@ describe('MoreMenu', () => {
         });
         expect(screen.getByRole('menuitem', { name: 'more-menu-create-invite' })).toBeInTheDocument();
       });
-      it('renders inivte guest dialog and it"s closed by default', () => {
+      it('renders invite guest dialog and it"s closed by default', () => {
         setup();
         expect(screen.getByTestId('invite-guest-dialog')).toBeInTheDocument();
         expect(screen.queryByText('Invite Guest Open')).not.toBeInTheDocument();
       });
-      it('opens invite guest dialog when user clicks on inivte guest menu option', async () => {
+      it('opens invite guest dialog when user clicks on invite guest menu option', async () => {
         // eslint-disable-next-line testing-library/render-result-naming-convention
         const user = userEvent.setup();
         const { store: storeWithGuestsAllowed } = configureStore({
           initialState: {
             ...moderatorState,
-            config: { tariff: { disabledFeatures: [] } },
+            config: {
+              enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
+            },
           },
         });
         renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
@@ -130,7 +136,7 @@ describe('MoreMenu', () => {
     });
     describe('training participation report options', () => {
       describe('if the module is enabled', () => {
-        const config = { enabledModules: { [BackendModules.TrainingParticipationReport]: { features: [] } } };
+        const config = { enabledModules: { [BackendModules.TrainingParticipationReport]: [] } };
 
         it('shows the enable training participation logging button, if the logging is disabled, and does not show the disable button', () => {
           const { store: storeWithModules } = configureStore({ initialState: { ...moderatorState, config } });
@@ -226,10 +232,7 @@ describe('MoreMenu', () => {
 
     it('shows the meeting notes export option, if the meeting notes module is enabled', () => {
       const { store } = configureStore({
-        initialState: {
-          ...moderatorState,
-          config: { enabledModules: { [BackendModules.MeetingReport]: { features: [] } } },
-        },
+        initialState: { ...moderatorState, config: { enabledModules: { [BackendModules.MeetingReport]: [] } } },
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
@@ -245,7 +248,9 @@ describe('MoreMenu', () => {
       const { store: storeWithGuestsAllowed } = configureStore({
         initialState: {
           ...moderatorState,
-          config: { tariff: { disabledFeatures: [] } },
+          config: {
+            enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
+          },
         },
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
@@ -293,7 +298,7 @@ describe('MoreMenu', () => {
         initialState: {
           user: { role: Role.Moderator },
           room: { isOwnedByCurrentUser: true },
-          config: { enabledModules: { [BackendModules.TrainingParticipationReport]: { features: [] } } },
+          config: { enabledModules: { [BackendModules.TrainingParticipationReport]: [] } },
         },
       });
 

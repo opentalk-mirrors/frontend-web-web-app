@@ -36,7 +36,7 @@ const USER_IS_MODERATOR_STORE = {
 const WHISPER_MODULE_ENABLED_STORE = {
   initialState: {
     config: {
-      enabledModules: { [BackendModules.SubroomAudio]: { features: [] } },
+      enabledModules: { [BackendModules.SubroomAudio]: [] },
     },
   },
 };

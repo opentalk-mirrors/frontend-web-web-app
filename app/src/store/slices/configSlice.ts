@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { BackendFeatures, BackendModules, Modules, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
+import { BackendFeatures, BackendModules, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
 import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
 import type { RootState } from '../';
 import log from '../../logger';
-import { SignalingTariff } from '../../types';
+import { EnabledModules, SignalingTariff } from '../../types';
 import type { VideoCodec } from '../../types/livekit';
 import { Seconds } from '../../utils/tsUtils';
 import { joinSuccess } from '../commonActions';
@@ -150,7 +150,7 @@ export type ConfigState = {
   maxVideoBandwidth: number;
   readonly features: Features;
   libravatarDefaultImage: DefaultAvatarImage;
-  enabledModules: Modules;
+  enabledModules: EnabledModules;
   tariff: SignalingTariff;
   imprintUrl?: string;
   dataProtectionUrl?: string;
@@ -286,8 +286,8 @@ export const selectEnabledModulesList = createSelector(
 );
 export const selectIsModuleEnabled = (module: BackendModules) => (state: RootState) =>
   module in (state.config.enabledModules ?? {});
-export const selectIsFeatureEnabled = (featureKey: BackendFeatures) => (state: RootState) =>
-  !(state.config.tariff?.disabledFeatures ?? []).includes(featureKey);
+export const selectIsFeatureEnabled = (module: BackendModules, featureKey: BackendFeatures) => (state: RootState) =>
+  (state.config.enabledModules?.[module] ?? []).includes(featureKey);
 export const selectAccountManagementUrl = (state: RootState) => state.config.provider.accountManagementUrl;
 export const selectImprintUrl = (state: RootState) => state.config.imprintUrl;
 export const selectIsProviderActive = (state: RootState) => state.config.provider.active;

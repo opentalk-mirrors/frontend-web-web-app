@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { CoreFeatures, InviteCode, SipId } from '@opentalk/rest-api-rtk-query';
+import { BackendModules, CoreFeatures, InviteCode, SipId } from '@opentalk/rest-api-rtk-query';
 import { MeetingDetails } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { screen, fireEvent } from '@testing-library/react';
 import { Mock } from 'vitest';
@@ -88,9 +88,7 @@ describe('message creation', () => {
     const defaultInitialState: DeepPartial<RootState> = {
       config: {
         baseUrl: 'http://localhost:3000',
-        tariff: {
-          disabledFeatures: [],
-        },
+        enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
       },
     };
 
@@ -160,7 +158,7 @@ describe('message creation', () => {
         const clipboardArg = await setup(
           {
             ...defaultInitialState,
-            config: { tariff: { disabledFeatures: [CoreFeatures.GuestsAllowed] } },
+            config: { enabledModules: {} },
           },
           {
             ...defaultProps,
@@ -191,7 +189,7 @@ describe('message creation', () => {
         const clipboardArg = await setup(
           {
             ...defaultInitialState,
-            config: { tariff: { disabledFeatures: [CoreFeatures.GuestsAllowed] } },
+            config: { enabledModules: {} },
           },
           {
             ...defaultProps,
@@ -217,7 +215,7 @@ describe('message creation', () => {
       it('is not printed if guests are not allowed and invite link is provided', async () => {
         const clipboardArg = await setup({
           ...defaultInitialState,
-          config: { tariff: { disabledFeatures: [CoreFeatures.GuestsAllowed] } },
+          config: { enabledModules: {} },
         });
         expect(clipboardArg).not.toContain(`global-meeting-link`);
         expect(clipboardArg).not.toContain(mockInviteUrl.toString());
@@ -249,7 +247,7 @@ describe('message creation', () => {
       it('is not printed if guests are not allowed, invite link is provided and password is provided', async () => {
         const clipboardArg = await setup({
           ...defaultInitialState,
-          config: { tariff: { disabledFeatures: [CoreFeatures.GuestsAllowed] } },
+          config: { enabledModules: {} },
         });
         expect(clipboardArg).not.toContain(`global-password`);
         expect(clipboardArg).not.toContain(DEFAULT_PASSWORD);
