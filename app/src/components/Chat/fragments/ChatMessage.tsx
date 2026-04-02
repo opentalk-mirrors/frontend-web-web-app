@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Stack, Typography, styled, useTheme } from '@mui/material';
+import { Box, Stack, Typography, styled } from '@mui/material';
 import { format } from 'date-fns';
-import Linkify from 'linkify-react';
 import { uniqueId } from 'lodash';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +17,7 @@ import { selectAvatarUrl, selectDisplayName, selectOurUuid } from '../../../stor
 import { ChatMessage as ChatMessageType, Role } from '../../../types';
 import { isEventMessage } from '../../../utils/typeGuardUtils';
 import TextWithDivider from '../../TextWithDivider';
+import ChatMessageContent from './ChatMessageContent';
 
 const EventTypography = styled(TextWithDivider)(({ theme }) => ({
   fontSize: theme.typography.pxToRem(12),
@@ -74,7 +74,6 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   const ourUuid = useAppSelector(selectOurUuid);
   const ownDisplayName = useAppSelector(selectDisplayName);
   const ownAvatarUrl = useAppSelector(selectAvatarUrl);
-  const theme = useTheme();
   const { t } = useTranslation();
   const date = message?.timestamp ? new Date(message.timestamp) : new Date();
   const formattedTime = useDateFormat(date, 'time');
@@ -123,15 +122,6 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
     return singleEmojiRegex.test(trimedMessage);
   }, [message]);
 
-  const options = {
-    target: '_blank',
-    attributes: {
-      style: {
-        color: theme.palette.secondary.main,
-      },
-    },
-  };
-
   const getTimeStringFromTimestamp = (message: RoomEvent) => {
     const date = Date.parse(message.timestamp);
     return format(date, 'HH:mm');
@@ -177,7 +167,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
     }
   }
 
-  const ownMessage = message?.source === ourUuid;
+  const ownMessage = !isEventMessage(message) && message?.source === ourUuid;
   const displayName = ownMessage ? ownDisplayName : sender?.displayName;
   const isModerator = sender?.role === Role.Moderator;
   const renderNameAndTime = () => (
@@ -225,14 +215,18 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
         sx={{
           gap: 1,
           py: 1,
-          width: '85%',
+          flex: 1,
+          minWidth: 0,
         }}
       >
         {renderNameAndTime()}
-        <ContentTypography singleEmoji={isItSingleEmojiMessage()} variant="body2" align={ownMessage ? 'right' : 'left'}>
-          <Linkify tagName="span" options={options}>
-            {message.content}
-          </Linkify>
+        <ContentTypography
+          as="div"
+          singleEmoji={isItSingleEmojiMessage()}
+          variant="body2"
+          align={ownMessage ? 'right' : 'left'}
+        >
+          <ChatMessageContent content={message.content} ownMessage={ownMessage} />
         </ContentTypography>
       </Stack>
     </Box>
