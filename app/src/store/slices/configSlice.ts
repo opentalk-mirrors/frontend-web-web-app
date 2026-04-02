@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { BackendFeatures, BackendModules, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { BackendFeatures, BackendModules, Modules, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
+import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
 import type { RootState } from '../';
@@ -150,7 +150,7 @@ export type ConfigState = {
   maxVideoBandwidth: number;
   readonly features: Features;
   libravatarDefaultImage: DefaultAvatarImage;
-  enabledModules: BackendModules[];
+  enabledModules: Modules;
   tariff: SignalingTariff;
   imprintUrl?: string;
   dataProtectionUrl?: string;
@@ -226,7 +226,7 @@ export const initialState: ConfigState = {
   videoBackgrounds: [],
   maxVideoBandwidth: 600000,
   libravatarDefaultImage: 'robohash',
-  enabledModules: [],
+  enabledModules: {},
   tariff: {
     id: '' as TariffId,
     name: '',
@@ -280,9 +280,12 @@ export const selectErrorReportEmail = (state: RootState) => state.config.errorRe
 export const selectDisallowCustomDisplayName = (state: RootState) => state.config.disallowCustomDisplayName;
 export const selectLogLevel = (state: RootState) => state.config.logLevel;
 export const selectChangePassword = (state: RootState) => state.config.changePassword;
-export const selectEnabledModulesList = (state: RootState) => state.config.enabledModules ?? [];
+export const selectEnabledModulesList = createSelector(
+  (state: RootState) => state.config.enabledModules,
+  (enabledModules) => Object.keys(enabledModules ?? {}) as BackendModules[]
+);
 export const selectIsModuleEnabled = (module: BackendModules) => (state: RootState) =>
-  (state.config.enabledModules ?? []).includes(module);
+  module in (state.config.enabledModules ?? {});
 export const selectIsFeatureEnabled = (featureKey: BackendFeatures) => (state: RootState) =>
   !(state.config.tariff?.disabledFeatures ?? []).includes(featureKey);
 export const selectAccountManagementUrl = (state: RootState) => state.config.provider.accountManagementUrl;

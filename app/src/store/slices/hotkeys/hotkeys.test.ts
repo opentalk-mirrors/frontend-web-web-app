@@ -350,7 +350,7 @@ describe('hotkeys', () => {
     const { store } = configureStore({
       initialState: {
         config: {
-          enabledModules: [BackendModules.SubroomAudio],
+          enabledModules: { [BackendModules.SubroomAudio]: { features: [] } },
         },
         subroomAudio: {
           isWhisperActive: false,
@@ -407,7 +407,7 @@ describe('hotkeys', () => {
     const { store } = configureStore({
       initialState: {
         config: {
-          enabledModules: [BackendModules.SubroomAudio],
+          enabledModules: { [BackendModules.SubroomAudio]: { features: [] } },
         },
         subroomAudio: {
           isWhisperActive: false,

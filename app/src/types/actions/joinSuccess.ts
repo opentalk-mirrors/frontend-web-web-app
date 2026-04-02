@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  BackendModules,
   BackendFeatures,
   EventInfo,
+  Modules,
   SharedFolderData,
   StreamingState,
   TariffId,
@@ -72,7 +72,7 @@ export interface JoinSuccessInternalState {
     publicUrl: string;
   };
   trainingParticipationReport?: ParticipationLogging;
-  enabledModules: BackendModules[];
+  enabledModules: Modules;
 }
 
 export interface JoinSuccessIncoming {
@@ -123,7 +123,7 @@ export interface JoinSuccessRoomserver {
   role: Role;
   closesAt?: Timestamp;
   tariff: SignalingTariff;
-  enabledModules: BackendModules[];
+  enabledModules: Modules;
   moduleData: ModuleData;
   participants: RoomserverParticipant[];
   eventInfo?: EventInfo;

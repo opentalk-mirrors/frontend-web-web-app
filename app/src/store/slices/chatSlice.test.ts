@@ -95,7 +95,7 @@ describe('chatSlice breakout handling', () => {
           token: 'token',
           publicUrl: 'https://example.test',
         },
-        enabledModules: [],
+        enabledModules: {},
       } as never)
     );
 
