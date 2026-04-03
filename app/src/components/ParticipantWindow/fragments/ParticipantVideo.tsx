@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
 import { Slide, styled } from '@mui/material';
-import { Track } from 'livekit-client';
+import { ParticipantEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -39,7 +39,14 @@ interface ParticipantVideoProps {
 }
 
 const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
-  const participant = useRemoteParticipant(connectionIdentifier);
+  const participant = useRemoteParticipant(connectionIdentifier, {
+    updateOnlyOn: [
+      ParticipantEvent.TrackMuted,
+      ParticipantEvent.TrackUnmuted,
+      ParticipantEvent.TrackSubscribed,
+      ParticipantEvent.TrackUnsubscribed,
+    ],
+  });
   const dispatch = useAppDispatch();
   const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
 
