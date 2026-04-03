@@ -88,6 +88,7 @@ export type UIState = {
   presenterVideoPosition: PresenterVideoPosition;
   mode?: UiMode;
   showSelfRenameDialog: boolean;
+  activeSpeakerFirstEnabled?: boolean;
 };
 
 export const initialState: UIState = {
@@ -98,7 +99,7 @@ export const initialState: UIState = {
     scope: ChatScope.Global,
   },
   cinemaLayout: LayoutOptions.Grid,
-  cinemaViewOrder: CinemaViewSortOrder.FirstJoined,
+  cinemaViewOrder: CinemaViewSortOrder.VideoFirst,
   cinemaGridSize: GRID_SIZES[0],
   lastCinemaLayout: LayoutOptions.Grid,
   paginationPage: 1,
@@ -128,6 +129,7 @@ export const initialState: UIState = {
   currentMenuTab: MenuTab.Chat,
   presenterVideoPosition: 'bottomRight',
   showSelfRenameDialog: false,
+  activeSpeakerFirstEnabled: true,
 };
 
 export const uiSlice = createSlice({
@@ -240,6 +242,9 @@ export const uiSlice = createSlice({
     setSelfRenameDialogVisible: (state, { payload }: PayloadAction<boolean>) => {
       state.showSelfRenameDialog = payload;
     },
+    setActiveSpeakerFirstEnabled: (state, { payload }: PayloadAction<boolean>) => {
+      state.activeSpeakerFirstEnabled = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(
@@ -349,6 +354,7 @@ export const {
   setPresenterVideoPosition,
   setUiMode,
   setSelfRenameDialogVisible,
+  setActiveSpeakerFirstEnabled,
 } = uiSlice.actions;
 
 export const actions = uiSlice.actions;
@@ -377,6 +383,7 @@ export const selectShowCoffeeBreakCurtain = (state: RootState) => state.ui.showC
 export const selectActiveTab = (state: RootState) => state.ui.activeTab;
 export const selectUiMode = (state: RootState) => state.ui.mode;
 export const selectLastCinemaLayout = (state: RootState) => state.ui.lastCinemaLayout;
+export const selectActiveSpeakerFirstEnabled = (state: RootState) => state.ui.activeSpeakerFirstEnabled;
 export const selectDefaultChatMessage = createSelector(
   [
     (state: RootState) => state.ui.chatAutosavedInputs,

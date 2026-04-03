@@ -1227,6 +1227,7 @@ layout-selection-grid-camera-first = Kamerastatus
 layout-selection-grid-moderators-first = Rolle
 layout-selection-grid-size = Anzahl Kacheln
 layout-selection-tiles = Kacheln
+layout-selection-dynamic-sorting = Dynamische Kachelsortierung
 shared-folder-open-label = Geteilten Ordner öffnen
 shared-folder-password-label = Ordner-Passwort kopieren
 

@@ -5,11 +5,11 @@ import { useRemoteParticipants, useSortedParticipants } from '@livekit/component
 import { RemoteParticipant, RoomEvent } from 'livekit-client';
 import { useMemo } from 'react';
 
-import { CinemaViewSortOrder } from '../store/slices/common';
 import { selectAllOnlineParticipants } from '../store/slices/participantsSlice';
 import { selectCinemaViewOrder, selectPinnedConnectionIdentifier } from '../store/slices/uiSlice';
-import { Participant, ParticipationKind, Role } from '../types';
+import { Participant } from '../types';
 import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
+import { sortCinemaViewParticipants } from '../utils/sortCinemaViewParticipants';
 import { useAppSelector } from './useCustomRedux';
 
 export type CinemaViewParticipant = Participant & {
@@ -19,11 +19,6 @@ export type CinemaViewParticipant = Participant & {
   lastSpokeAt?: Date;
 };
 
-const ROLE_SORT_MAP: Record<Role, number> = { [Role.Moderator]: 0, [Role.User]: 1 };
-const PARTICIPATION_SORT_MAP: Partial<Record<ParticipationKind, number>> = {
-  [ParticipationKind.Registered]: 0,
-  [ParticipationKind.Guest]: 1,
-};
 /**
  * Merges participant data from controller with livekit participant data and sorts it
  * according to the selected cinema view sort order
@@ -74,32 +69,7 @@ export function useCinemaViewParticipants(): {
       });
     });
 
-    return mergedParticipants.sort((a, b) => {
-      if (viewOrder === CinemaViewSortOrder.ModeratorsFirst) {
-        const aRole = a.role ?? Role.User;
-        const bRole = b.role ?? Role.User;
-        const roleDelta = ROLE_SORT_MAP[aRole] - ROLE_SORT_MAP[bRole];
-        if (roleDelta !== 0) {
-          return roleDelta;
-        }
-
-        // Within Role.User, prioritize Registered over Guest
-        if (aRole === Role.User && bRole === Role.User) {
-          const aPart = PARTICIPATION_SORT_MAP[a.participationKind] ?? 1;
-          const bPart = PARTICIPATION_SORT_MAP[b.participationKind] ?? 1;
-          const partDelta = aPart - bPart;
-          if (partDelta !== 0) {
-            return partDelta;
-          }
-        }
-      } else if (viewOrder === CinemaViewSortOrder.VideoFirst) {
-        if (a.isCameraEnabled !== b.isCameraEnabled) {
-          return a.isCameraEnabled ? -1 : 1;
-        }
-      }
-
-      return a.joinedAt.localeCompare(b.joinedAt);
-    });
+    return sortCinemaViewParticipants(mergedParticipants, viewOrder);
   }, [onlineParticipants, remoteParticipantsMap, viewOrder]);
 
   return { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId };
