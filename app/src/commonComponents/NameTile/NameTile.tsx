@@ -1,14 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useParticipants } from '@livekit/components-react';
 import { Box, BoxProps, Stack, Typography, styled } from '@mui/material';
 import Color from 'colorjs.io';
 import { omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CameraOffIcon, MicOffIcon } from '../../assets/icons';
-import { ConnectionIdentifier } from '../../types';
 
 const NameBox = styled(Box)(({ theme }) => {
   const background = new Color(theme.palette.background.customPaper.primary);
@@ -54,43 +52,20 @@ const StyledMicOffIcon = styled(MicOffIcon)(({ theme }) => ({
   },
 }));
 
-type NameTileBaseProps = {
+type NameTileProps = {
   displayName: string;
+  videoOn?: boolean;
+  audioOn?: boolean;
 } & BoxProps;
 
-type LocalNameTileProps = {
-  localVideoOn: boolean;
-  localAudioOn: boolean;
-} & NameTileBaseProps;
-
-type RemoteNameTileProps = {
-  connectionIdentifier: ConnectionIdentifier;
-} & NameTileBaseProps;
-
-type NameTileProps = LocalNameTileProps | RemoteNameTileProps;
-
-const NameTile = ({ displayName, ...props }: NameTileProps) => {
+const NameTile = ({ displayName, videoOn = false, audioOn = false, ...props }: NameTileProps) => {
   const { t } = useTranslation();
-  const participants = useParticipants();
 
-  let isVideoActive = false;
-  let isAudioActive = false;
+  const renderCameraOffIcon = () => !videoOn && <CameraOffIcon data-testid="camOff" />;
+  const renderAudioOffIcon = () => !audioOn && <StyledMicOffIcon data-testid="micOff" />;
 
-  if ('connectionIdentifier' in props) {
-    const { connectionIdentifier } = props;
-    const participant = participants.find((participant) => participant.identity === connectionIdentifier);
-    isVideoActive = participant?.isCameraEnabled || false;
-    isAudioActive = participant?.isMicrophoneEnabled || false;
-  } else {
-    const { localVideoOn, localAudioOn } = props;
-    isVideoActive = Boolean(localVideoOn);
-    isAudioActive = Boolean(localAudioOn);
-  }
-
-  const renderCameraOffIcon = () => !isVideoActive && <CameraOffIcon data-testid="camOff" />;
-  const renderAudioOffIcon = () => !isAudioActive && <StyledMicOffIcon data-testid="micOff" />;
   const renderIconBox = () =>
-    !(isAudioActive && isVideoActive) && (
+    !(audioOn && videoOn) && (
       <IconBox
         data-testid="iconBox"
         direction="row"
@@ -104,7 +79,7 @@ const NameTile = ({ displayName, ...props }: NameTileProps) => {
       </IconBox>
     );
 
-  const boxProps = omit(props, 'connectionIdentifier', 'localVideoOn', 'localAudioOn');
+  const boxProps = omit(props, 'displayName', 'videoOn', 'audioOn');
 
   return (
     <NameBox data-testid="nameTile" {...boxProps}>

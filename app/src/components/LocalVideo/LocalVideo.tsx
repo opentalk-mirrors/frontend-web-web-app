@@ -133,8 +133,8 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
             />
           )}
           <NameTile
-            localAudioOn={!fullscreenMode || isMicrophoneEnabled}
-            localVideoOn={!fullscreenMode || isCameraEnabled}
+            audioOn={!fullscreenMode || isMicrophoneEnabled}
+            videoOn={!fullscreenMode || isCameraEnabled}
             displayName={displayName || ''}
             className="positionBottom"
           />
