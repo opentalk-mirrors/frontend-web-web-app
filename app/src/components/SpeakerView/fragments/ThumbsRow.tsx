@@ -4,7 +4,7 @@
 import { ParticipantLoop } from '@livekit/components-react';
 import { Stack, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
 import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
@@ -27,6 +27,20 @@ export interface ThumbsProps {
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   const { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId } = useCinemaViewParticipants();
+  const [fallbackParticipantCache] = useState(() => new Map<string, Participant>());
+
+  const createOrGetFallbackParticipant = useCallback(
+    (connectionIdentifier: string, displayName: string) => {
+      if (!fallbackParticipantCache.has(connectionIdentifier)) {
+        fallbackParticipantCache.set(
+          connectionIdentifier,
+          new Participant(connectionIdentifier, connectionIdentifier, displayName)
+        );
+      }
+      return fallbackParticipantCache.get(connectionIdentifier)!;
+    },
+    [fallbackParticipantCache]
+  );
 
   const participants = useMemo(() => {
     return cinemaViewParticipants.flatMap((participant) =>
@@ -41,11 +55,11 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
         .map((connection) => {
           const combinedId = constructConnectionIdentifier(participant.id, connection);
           return (
-            remoteParticipantsMap.get(combinedId) ?? new Participant(combinedId, combinedId, participant.displayName)
+            remoteParticipantsMap.get(combinedId) ?? createOrGetFallbackParticipant(combinedId, participant.displayName)
           );
         })
     );
-  }, [cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId]);
+  }, [cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId, createOrGetFallbackParticipant]);
 
   const [firstVisibleParticipantIndex, setFirstVisibleParticipantIndex] = useState(0);
 
