@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useRemoteParticipants } from '@livekit/components-react';
+import { useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
 import { RemoteParticipant, RoomEvent } from 'livekit-client';
 import { useMemo } from 'react';
 
 import { CinemaViewSortOrder } from '../store/slices/common';
 import { selectAllOnlineParticipants } from '../store/slices/participantsSlice';
-import { selectCinemaViewOrder } from '../store/slices/uiSlice';
+import { selectCinemaViewOrder, selectPinnedConnectionIdentifier } from '../store/slices/uiSlice';
 import { Participant, ParticipationKind, Role } from '../types';
 import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
 import { useAppSelector } from './useCustomRedux';
@@ -32,6 +32,7 @@ const PARTICIPATION_SORT_MAP: Partial<Record<ParticipationKind, number>> = {
 export function useCinemaViewParticipants(): {
   cinemaViewParticipants: CinemaViewParticipant[];
   remoteParticipantsMap: Map<string, RemoteParticipant>;
+  currentSpeakerId?: string;
 } {
   const remoteParticipants = useRemoteParticipants({
     updateOnlyOn: [
@@ -43,6 +44,9 @@ export function useCinemaViewParticipants(): {
       RoomEvent.TrackUnmuted,
     ],
   });
+  const sortedParticipants = useSortedParticipants(remoteParticipants);
+  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
+  const currentSpeakerId = pinnedConnectionIdentifier || sortedParticipants[0]?.identity;
 
   const onlineParticipants = useAppSelector(selectAllOnlineParticipants);
   const remoteParticipantsMap = useMemo(
@@ -97,5 +101,5 @@ export function useCinemaViewParticipants(): {
     });
   }, [onlineParticipants, remoteParticipantsMap, viewOrder]);
 
-  return { cinemaViewParticipants, remoteParticipantsMap };
+  return { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId };
 }

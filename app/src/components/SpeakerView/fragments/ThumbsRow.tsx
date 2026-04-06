@@ -7,7 +7,6 @@ import { Participant } from 'livekit-client';
 import { useMemo, useState } from 'react';
 
 import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
-import { useCurrentSpeaker } from '../../../hooks/useCurrentSpeaker';
 import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import IconSlideButton from './IconSlideButton';
 import { Thumbnail } from './Thumbnail';
@@ -27,18 +26,17 @@ export interface ThumbsProps {
 }
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
-  const { cinemaViewParticipants, remoteParticipantsMap } = useCinemaViewParticipants();
-  const selectedParticipantId = useCurrentSpeaker();
+  const { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId } = useCinemaViewParticipants();
 
   const participants = useMemo(() => {
     return cinemaViewParticipants.flatMap((participant) =>
       participant.connections
         .filter((connection) => {
-          if (!selectedParticipantId) {
+          if (!currentSpeakerId) {
             return true;
           }
           const combinedId = constructConnectionIdentifier(participant.id, connection);
-          return combinedId !== selectedParticipantId;
+          return combinedId !== currentSpeakerId;
         })
         .map((connection) => {
           const combinedId = constructConnectionIdentifier(participant.id, connection);
@@ -47,7 +45,7 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
           );
         })
     );
-  }, [cinemaViewParticipants, remoteParticipantsMap, selectedParticipantId]);
+  }, [cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId]);
 
   const [firstVisibleParticipantIndex, setFirstVisibleParticipantIndex] = useState(0);
 
