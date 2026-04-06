@@ -4,6 +4,7 @@
 import { ParticipantContext, useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
 import { styled } from '@mui/material';
 import { RoomEvent } from 'livekit-client';
+import { useMemo } from 'react';
 
 import { useCurrentSpeaker } from '../../../hooks/useCurrentSpeaker';
 import ParticipantWindow from '../../ParticipantWindow';
@@ -25,24 +26,23 @@ const Container = styled('div', {
 }));
 
 const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerViewProps) => {
-  const sortedParticipants = useSortedParticipants(
-    useRemoteParticipants({
-      updateOnlyOn: [
-        RoomEvent.ParticipantConnected,
-        RoomEvent.ParticipantDisconnected,
-        RoomEvent.ActiveSpeakersChanged,
-        RoomEvent.TrackPublished,
-      ],
-    })
-  ); //TODO: Recheck for ActiveSpeakersChanged
-
+  const remoteParticipants = useRemoteParticipants({
+    updateOnlyOn: [
+      RoomEvent.ParticipantConnected,
+      RoomEvent.ParticipantDisconnected,
+      RoomEvent.ActiveSpeakersChanged,
+      RoomEvent.TrackPublished,
+    ],
+  });
+  const sortedParticipants = useSortedParticipants(remoteParticipants);
   const currentSpeakerId = useCurrentSpeaker();
 
-  const selectedSpeaker = sortedParticipants.find((participant) => participant.identity === currentSpeakerId);
+  const selectedParticipant = useMemo(() => {
+    const selectedSpeaker = sortedParticipants.find((participant) => participant.identity === currentSpeakerId);
+    return selectedSpeaker || sortedParticipants[0];
+  }, [sortedParticipants, currentSpeakerId]);
 
-  const selectedParticipant = selectedSpeaker || sortedParticipants[0];
-
-  const calculateDimensions = () => {
+  const { width, height } = useMemo(() => {
     if (speakerWindowWidth && speakerWindowHeight) {
       const aspectRatio = 16 / 9;
       const height = Math.min(speakerWindowWidth / aspectRatio, speakerWindowHeight);
@@ -50,9 +50,7 @@ const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerViewP
       return { width, height };
     }
     return { width: 1, height: 1 };
-  };
-
-  const { width, height } = calculateDimensions();
+  }, [speakerWindowWidth, speakerWindowHeight]);
 
   return (
     <Container width={width} height={height} data-testid="SpeakerWindow1">
