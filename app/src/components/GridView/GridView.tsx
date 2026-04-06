@@ -4,7 +4,7 @@
 import { ParticipantContext } from '@livekit/components-react';
 import { CircularProgress, Grid, styled } from '@mui/material';
 import { Participant, RemoteParticipant } from 'livekit-client';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   GRID_BIG_VIDEO_WIDTH,
@@ -46,6 +46,7 @@ export type GridViewProps = {
 
 const GridView = () => {
   const { cinemaViewParticipants: participants, remoteParticipantsMap } = useCinemaViewParticipants();
+  const [fallbackParticipantCache] = useState(() => new Map<string, Participant>());
   const videoWidth = participants.length <= 4 ? GRID_BIG_VIDEO_WIDTH : GRID_SMALL_VIDEO_WIDTH;
   const isMobile = useIsMobile();
   const lastSpokenParticipant = useMemo(() => {
@@ -87,6 +88,16 @@ const GridView = () => {
   }, [participants, pageNumber, isMobile, lastSpokenParticipant]);
   const highlight = gridViewParticipants.length >= 2;
 
+  const createOrGetFallbackParticipant = (connectionIdentifier: string, displayName: string) => {
+    if (!fallbackParticipantCache.has(connectionIdentifier)) {
+      fallbackParticipantCache.set(
+        connectionIdentifier,
+        new Participant(connectionIdentifier, connectionIdentifier, displayName)
+      );
+    }
+    return fallbackParticipantCache.get(connectionIdentifier)!;
+  };
+
   const gridCells = gridViewParticipants.map((participant) => {
     return participant.connections.map((connection) => {
       const connectionIdentifier = constructConnectionIdentifier(participant.id, connection);
@@ -94,7 +105,7 @@ const GridView = () => {
       // We will use participant data from the controller until we get the more preferable data from the livekit server
       const participantData =
         remoteParticipantsMap.get(connectionIdentifier) ||
-        new Participant(connectionIdentifier, connectionIdentifier, participant.displayName);
+        createOrGetFallbackParticipant(connectionIdentifier, participant.displayName);
 
       return (
         <ParticipantContext.Provider value={participantData} key={connectionIdentifier}>

@@ -12,15 +12,21 @@ vi.mock('./fragments/GridCell', () => ({
   default: () => <div data-testid="gridCell"></div>,
 }));
 
-vi.mock('@livekit/components-react', () => ({
-  ParticipantContext: {
-    Provider: ({ children }: PropsWithChildren) => {
-      return <div>{children}</div>;
+vi.mock('@livekit/components-react', async (importOriginal) => {
+  const actual = (await importOriginal()) as typeof import('@mui/material');
+
+  return {
+    ...actual,
+    ParticipantContext: {
+      Provider: ({ children }: PropsWithChildren) => {
+        return <div>{children}</div>;
+      },
     },
-  },
-  useRoomContext: () => vi.fn(),
-  useRemoteParticipants: () => [mockedParticipant(0)],
-}));
+    useRoomContext: () => vi.fn(),
+    useSortedParticipants: vi.fn(() => []),
+    useRemoteParticipants: vi.fn(() => [mockedParticipant(0)]),
+  };
+});
 
 describe('GridView', () => {
   it('render GridView', () => {
