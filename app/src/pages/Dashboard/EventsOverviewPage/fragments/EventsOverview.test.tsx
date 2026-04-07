@@ -20,7 +20,7 @@ describe('EventsOverview', () => {
     renderWithProviders(
       <EventsOverview
         entries={mockEvents as MeetingsProp[]}
-        expandAccordion=""
+        expandAccordion={[]}
         isFetching={false}
         isLoading={false}
         setExpandAccordion={() => ''}
@@ -35,7 +35,7 @@ describe('EventsOverview', () => {
     renderWithProviders(
       <EventsOverview
         entries={mockEvents as MeetingsProp[]}
-        expandAccordion="false"
+        expandAccordion={[]}
         isFetching={false}
         isLoading={false}
         setExpandAccordion={() => ''}

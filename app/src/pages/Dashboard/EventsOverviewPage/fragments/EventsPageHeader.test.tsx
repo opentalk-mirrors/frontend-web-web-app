@@ -9,9 +9,9 @@ import { Mock } from 'vitest';
 
 import { TimePerspectiveFilter } from '../../../../utils/eventUtils';
 import { renderWithProviders } from '../../../../utils/testUtils';
+import { TimeFilter } from '../types';
 import { EventFilterButtonBar } from './EventFilterButtonBar';
 import { EventPageFilters } from './EventPageFilters';
-import { TimeFilter } from './EventsPageHeader';
 import EventsPageHeader from './EventsPageHeader';
 
 vi.mock('@mui/material', async () => {

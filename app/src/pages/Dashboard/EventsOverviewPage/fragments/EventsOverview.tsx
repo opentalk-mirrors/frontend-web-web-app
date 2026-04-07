@@ -7,7 +7,7 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import { isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { kebabCase } from 'lodash';
-import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, SyntheticEvent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ArrowDownIcon } from '../../../../assets/icons';
@@ -16,8 +16,8 @@ import { MeetingsProp } from '../types';
 
 interface MeetingsOverviewProp {
   entries: MeetingsProp[];
-  expandAccordion: string;
-  setExpandAccordion: Dispatch<SetStateAction<string>>;
+  expandAccordion: string[];
+  setExpandAccordion: Dispatch<SetStateAction<string[]>>;
   isLoading: boolean;
   isFetching: boolean;
 }
@@ -85,33 +85,13 @@ const EventsOverview = ({
   isFetching,
 }: MeetingsOverviewProp) => {
   const theme = useTheme();
-  const [expanded, setExpanded] = useState<string[]>([]);
   const marginTopReset = theme.spacing(2);
   const { t } = useTranslation();
-
-  const entryTitles = useMemo(() => entries.map((event) => event.title), [entries]);
-
-  const sanitizedExpanded = useMemo(() => {
-    if (!expanded.length) {
-      return expanded;
-    }
-    const knownTitles = new Set(entryTitles);
-    return expanded.filter((title) => knownTitles.has(title));
-  }, [expanded, entryTitles]);
-
-  const resolvedExpandedPanels = useMemo(() => {
-    if (expandAccordion === 'all') {
-      return entryTitles;
-    }
-    if (expandAccordion) {
-      return [expandAccordion];
-    }
-    return sanitizedExpanded;
-  }, [entryTitles, expandAccordion, sanitizedExpanded]);
+  const isAllExpanded = expandAccordion.length === entries.length;
 
   const handleChange = useCallback(
     (panel: string) => (_event: SyntheticEvent, newExpanded: boolean) => {
-      setExpanded((prevExpanded) => {
+      setExpandAccordion((prevExpanded) => {
         if (newExpanded) {
           if (prevExpanded.includes(panel)) {
             return prevExpanded;
@@ -121,7 +101,7 @@ const EventsOverview = ({
         return prevExpanded.filter((value) => value !== panel);
       });
     },
-    []
+    [setExpandAccordion]
   );
 
   if (isLoading || isFetching) {
@@ -156,9 +136,9 @@ const EventsOverview = ({
       >
         {entries.length !== 0 && (
           <ArrowDownButton
-            active={expandAccordion === 'all'}
-            onClick={() => setExpandAccordion((prev: string) => (prev === 'all' ? '' : 'all'))}
-            aria-label={t(`global-${expandAccordion === 'all' ? 'collapse' : 'expand'}`, {
+            active={expandAccordion.length === entries.length}
+            onClick={() => setExpandAccordion(isAllExpanded ? [] : entries.map((entry) => entry.title))}
+            aria-label={t(`global-${isAllExpanded ? 'collapse' : 'expand'}`, {
               target: t('global-meeting', { count: 2 }),
             })}
           >
@@ -166,7 +146,7 @@ const EventsOverview = ({
           </ArrowDownButton>
         )}
         {entries.map((entry) => {
-          const isExpanded = resolvedExpandedPanels.includes(entry.title);
+          const isExpanded = expandAccordion.includes(entry.title);
 
           return (
             <Accordion
