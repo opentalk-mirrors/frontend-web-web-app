@@ -1,9 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import i18next from 'i18next';
-import { camelCase } from 'lodash';
 
 import {
   createStackedMessages,
@@ -207,7 +205,7 @@ export const handleRoomServerCoreMessage = async (
       }
 
       const serverTimeOffset = new Date(timestamp).getTime() - Date.now();
-      const enabledModules = data.enabledModules.map(camelCase) as BackendModules[];
+      const enabledModules = data.enabledModules;
       dispatch(
         joinSuccess({
           participantId: data.id,

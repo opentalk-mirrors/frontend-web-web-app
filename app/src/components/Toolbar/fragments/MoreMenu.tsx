@@ -122,8 +122,12 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const recording = useAppSelector(selectRecordingTarget);
   const activeStreamIds = useAppSelector(selectActiveStreamIds);
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
-  const hasRecordingFeatureOn = useAppSelector(selectIsFeatureEnabled(RecordingFeatures.Record));
-  const isGuestsAllowedFeatureEnabled = useAppSelector(selectIsFeatureEnabled(CoreFeatures.GuestsAllowed));
+  const hasRecordingFeatureOn = useAppSelector(
+    selectIsFeatureEnabled(BackendModules.RecordingService, RecordingFeatures.Record)
+  );
+  const isGuestsAllowedFeatureEnabled = useAppSelector(
+    selectIsFeatureEnabled(BackendModules.Core, CoreFeatures.GuestsAllowed)
+  );
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
   const userMenuItems: Array<MenuEntry> = [];

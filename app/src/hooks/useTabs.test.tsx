@@ -33,7 +33,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: false },
-          enabledModules: [BackendModules.Automod],
+          enabledModules: { [BackendModules.Automod]: [] },
         },
       },
     });
@@ -55,7 +55,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: false },
-          enabledModules: [],
+          enabledModules: {},
         },
       },
     });
@@ -72,7 +72,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: true, talkingStick: true },
-          enabledModules: [BackendModules.Automod, BackendModules.Timer],
+          enabledModules: { [BackendModules.Automod]: [], [BackendModules.Timer]: [] },
         },
         room: {
           currentMode: RoomMode.TalkingStick,
@@ -100,7 +100,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: true },
-          enabledModules: [BackendModules.Automod, BackendModules.Timer],
+          enabledModules: { [BackendModules.Automod]: [], [BackendModules.Timer]: [] },
         },
         timer: {
           style: TimerStyle.Normal,
@@ -124,7 +124,7 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: true },
-          enabledModules: [BackendModules.Automod, BackendModules.Timer],
+          enabledModules: { [BackendModules.Automod]: [], [BackendModules.Timer]: [] },
         },
         timer: {
           style: TimerStyle.CoffeeBreak,

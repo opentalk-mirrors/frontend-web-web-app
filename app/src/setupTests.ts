@@ -65,7 +65,7 @@ const config: ConfigState = {
     quotas: {},
     disabledFeatures: [],
   },
-  enabledModules: [],
+  enabledModules: {},
   beta: {
     isBeta: false,
     badgeUrl: '',

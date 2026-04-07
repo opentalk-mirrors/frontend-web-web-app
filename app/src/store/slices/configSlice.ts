@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { BackendFeatures, BackendModules, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
 import type { RootState } from '../';
 import log from '../../logger';
-import { SignalingTariff } from '../../types';
+import { EnabledModules, SignalingTariff } from '../../types';
 import type { VideoCodec } from '../../types/livekit';
 import { Seconds } from '../../utils/tsUtils';
 import { joinSuccess } from '../commonActions';
@@ -150,7 +150,7 @@ export type ConfigState = {
   maxVideoBandwidth: number;
   readonly features: Features;
   libravatarDefaultImage: DefaultAvatarImage;
-  enabledModules: BackendModules[];
+  enabledModules: EnabledModules;
   tariff: SignalingTariff;
   imprintUrl?: string;
   dataProtectionUrl?: string;
@@ -226,7 +226,7 @@ export const initialState: ConfigState = {
   videoBackgrounds: [],
   maxVideoBandwidth: 600000,
   libravatarDefaultImage: 'robohash',
-  enabledModules: [],
+  enabledModules: {},
   tariff: {
     id: '' as TariffId,
     name: '',
@@ -280,11 +280,14 @@ export const selectErrorReportEmail = (state: RootState) => state.config.errorRe
 export const selectDisallowCustomDisplayName = (state: RootState) => state.config.disallowCustomDisplayName;
 export const selectLogLevel = (state: RootState) => state.config.logLevel;
 export const selectChangePassword = (state: RootState) => state.config.changePassword;
-export const selectEnabledModulesList = (state: RootState) => state.config.enabledModules ?? [];
+export const selectEnabledModulesList = createSelector(
+  (state: RootState) => state.config.enabledModules,
+  (enabledModules) => Object.keys(enabledModules ?? {}) as BackendModules[]
+);
 export const selectIsModuleEnabled = (module: BackendModules) => (state: RootState) =>
-  (state.config.enabledModules ?? []).includes(module);
-export const selectIsFeatureEnabled = (featureKey: BackendFeatures) => (state: RootState) =>
-  !(state.config.tariff?.disabledFeatures ?? []).includes(featureKey);
+  module in (state.config.enabledModules ?? {});
+export const selectIsFeatureEnabled = (module: BackendModules, featureKey: BackendFeatures) => (state: RootState) =>
+  (state.config.enabledModules?.[module] ?? []).includes(featureKey);
 export const selectAccountManagementUrl = (state: RootState) => state.config.provider.accountManagementUrl;
 export const selectImprintUrl = (state: RootState) => state.config.imprintUrl;
 export const selectIsProviderActive = (state: RootState) => state.config.provider.active;

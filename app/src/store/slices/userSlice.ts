@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { codeCallback } from '@opentalk/redux-oidc';
-import { CoreFeatures } from '@opentalk/rest-api-rtk-query';
+import { BackendModules, CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
@@ -76,15 +76,18 @@ export const userSlice = createSlice({
         }
       }
     );
-    builder.addCase(joinSuccess, (state, { payload: { avatarUrl, role, participantId, isRoomOwner, tariff } }) => {
-      state.role = role;
-      state.avatarUrl = avatarUrl;
-      state.uuid = participantId;
-      state.joinedAt = new Date().toISOString();
-      state.lastActive = state.joinedAt;
-      state.isRoomOwner = isRoomOwner;
-      state.isTariffUpgradable = !tariff.disabledFeatures.includes(CoreFeatures.StorageUpgradable);
-    });
+    builder.addCase(
+      joinSuccess,
+      (state, { payload: { avatarUrl, role, participantId, isRoomOwner, enabledModules } }) => {
+        state.role = role;
+        state.avatarUrl = avatarUrl;
+        state.uuid = participantId;
+        state.joinedAt = new Date().toISOString();
+        state.lastActive = state.joinedAt;
+        state.isRoomOwner = isRoomOwner;
+        state.isTariffUpgradable = enabledModules[BackendModules.Core]?.includes(CoreFeatures.StorageUpgradable);
+      }
+    );
     builder.addCase(connectionClosed, (state) => {
       state.uuid = null;
       state.joinedAt = undefined;
