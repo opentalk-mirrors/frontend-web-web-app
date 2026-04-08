@@ -111,7 +111,7 @@ const VideoOverlay = ({ connectionIdentifier, active }: VideoOverlayProps) => {
               action: 'livekit_data',
               accessToken: token,
               mediaType: popoutStreamAccess.mediaDescriptor.mediaType,
-              participantId: popoutStreamAccess.mediaDescriptor.connectionIdentifier,
+              connectionIdentifier: popoutStreamAccess.mediaDescriptor.connectionIdentifier,
               livekitUrl,
               roomId,
             },

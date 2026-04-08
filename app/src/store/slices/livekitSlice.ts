@@ -155,14 +155,14 @@ export const livekitSlice = createSlice({
       state.publicUrl = payload.publicUrl;
     },
     setLivekitPopoutStreamAccessToken: (state, { payload }: PayloadAction<string>) => {
-      const popoutStreamAccess = state.popoutStreamAccesses.find(
-        (popoutStreamAccess) => popoutStreamAccess.token === undefined
+      state.popoutStreamAccesses = state.popoutStreamAccesses.map((popoutStreamAccess) =>
+        popoutStreamAccess.token === undefined
+          ? {
+              ...popoutStreamAccess,
+              token: payload,
+            }
+          : popoutStreamAccess
       );
-      if (popoutStreamAccess) {
-        popoutStreamAccess.token = payload;
-      } else {
-        log.warn('cant find popoutStreamAccess to add token');
-      }
     },
     setLivekitRoom: (
       state,
