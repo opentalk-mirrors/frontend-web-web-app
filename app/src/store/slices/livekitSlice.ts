@@ -34,7 +34,6 @@ import {
 } from 'livekit-client';
 
 import { Credentials } from '../../api/types/incoming/livekit';
-import { switchRoom } from '../../api/types/outgoing/breakout';
 import { createNewAccessToken } from '../../api/types/outgoing/livekit';
 import { leaveWhisperGroup } from '../../api/types/outgoing/subroomAudio';
 import { notifications } from '../../commonComponents';
@@ -42,7 +41,7 @@ import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import log from '../../logger';
 import { MediaDescriptor } from '../../modules/WebRTC';
-import { ConnectionIdentifier, RoomKind, TimerStyle, VideoSetting } from '../../types';
+import { ConnectionIdentifier, TimerStyle, VideoSetting } from '../../types';
 import { BackgroundEffect } from '../../types/livekit';
 import { insertItem, removeItem } from '../../utils/reduxUtils';
 import {
@@ -612,13 +611,12 @@ const startNewAccessTokenListener = (startAppListening: StartAppListening) =>
 
 const startSwitchRoomListener = (startAppListening: StartAppListening) =>
   startAppListening({
-    actionCreator: switchRoom.action,
-    effect: (action, listenerApi) => {
-      const state = listenerApi.getState();
-      const room = state.livekit.room;
-
-      if (room && action.payload.kind === RoomKind.Breakout) {
-        // ensures LiveKit creates a new connection; prevents "already connected to room ..." error
+    actionCreator: switchedRoom,
+    effect: (_, listenerApi) => {
+      const room = listenerApi.getState().livekit.room;
+      if (!room) {
+        listenerApi.dispatch(connectRoom({ isWhisperRoom: false }));
+      } else if (room.state !== 'disconnected') {
         room.disconnect();
       }
     },
