@@ -101,6 +101,9 @@ const onMessage = (dispatch: AppDispatch, getState: () => RootState) => async (m
     case 'error':
       log.error('Received error message from RoomServer:', message.payload);
       break;
+    case 'asset_storage':
+      // FIXME: At the moment we can't do anything with received usedStorage information as we don't store maximum storage information in the frontend.
+      break;
     default: {
       const dataString = JSON.stringify(message, null, 2);
       throw new Error(`Unknown message type: ${dataString}`);

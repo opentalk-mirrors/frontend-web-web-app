@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import AssetStorage from './assetStorage';
 import AutomodMessage from './automod';
 import BreakoutMessage from './breakout';
 import ChatMessage from './chat';
@@ -62,4 +63,5 @@ export type Message =
   | RoomserverCoreMessage
   | RaiseHandsMessage
   | E2eeMessage
-  | RoomServerErrorMessage;
+  | RoomServerErrorMessage
+  | AssetStorage;
