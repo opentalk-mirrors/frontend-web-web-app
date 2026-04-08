@@ -19,6 +19,7 @@ type IUseBroadcastChannel = {
 const useBroadcastChannel = (channelId: string | undefined): IUseBroadcastChannel => {
   const [livekitData, setLivekitData] = useState<IUseBroadcastChannel>();
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (channelId) {
       dispatch(
