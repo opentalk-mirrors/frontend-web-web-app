@@ -5,7 +5,7 @@ import { ParticipantId } from './common';
 
 type InitialDisplayNameChangeRestrictionsEnabled = {
   type: 'enabled';
-  unrestricted_participants: ParticipantId[];
+  unrestrictedParticipants: ParticipantId[];
 };
 
 type InitialDisplayNameChangeRestrictionsDisabled = {
