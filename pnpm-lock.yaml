@@ -27,7 +27,7 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2(@vue/compiler-sfc@3.5.32)(prettier@3.8.2)
       '@types/node':
-        specifier: ^24.10.13
+        specifier: ^24.12.2
         version: 24.12.2
       '@vitest/coverage-v8':
         specifier: ^4.1.4
@@ -256,10 +256,10 @@ importers:
         specifier: ^1.41.5
         version: 1.41.5
       '@types/lodash':
-        specifier: ^4.17.23
+        specifier: ^4.17.24
         version: 4.17.24
       '@types/node':
-        specifier: ^24.10.13
+        specifier: ^24.12.2
         version: 24.12.2
       '@types/react':
         specifier: ^19.2.14
