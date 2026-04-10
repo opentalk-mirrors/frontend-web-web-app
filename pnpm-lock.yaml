@@ -231,7 +231,7 @@ importers:
         specifier: ^13.0.0
         version: 13.0.0
       web-vitals:
-        specifier: ^5.1.0
+        specifier: ^5.2.0
         version: 5.2.0
       yup:
         specifier: ^1.7.1
