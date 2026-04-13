@@ -88,6 +88,14 @@ export interface RoomParametersChanged {
   };
 }
 
+export interface StorageQuotaChanged {
+  message: 'storage_quota_changed';
+  quota: {
+    total?: number;
+    used: number;
+  };
+}
+
 export const isError = isErrorStruct;
 
 export type Message =
@@ -99,7 +107,8 @@ export type Message =
   | JoinedWaitingRoom
   | LeftWaitingRoom
   | Closing
-  | RoomParametersChanged;
+  | RoomParametersChanged
+  | StorageQuotaChanged;
 
 export enum RoomserverMessageKey {
   JoinSuccess = 'join_success',

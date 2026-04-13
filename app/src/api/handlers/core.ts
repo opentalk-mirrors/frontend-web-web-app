@@ -137,17 +137,6 @@ export const handleRoomServerCoreMessage = async (
         dispatch(setChatSettings({ id: data.id, timestamp, enabled: chatEnabled }));
       }
 
-      // const maximumStorage = data.tariff.quotas?.maxStorage;
-      // const usedStorage = data.assetStorage?.usedStorage;
-
-      // if (usedStorage) {
-      //   if (usedStorage >= maximumStorage) {
-      //     showStorageNotification(state, 'error');
-      //   } else if (usedStorage >= maximumStorage * 0.95) {
-      //     showStorageNotification(state, 'warning');
-      //   }
-      // }
-
       // handles different connections(tabs) of your own user
       if (data.connections.length > 0) {
         const coreModuleData: CorePeerState = {

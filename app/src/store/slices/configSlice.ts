@@ -236,6 +236,7 @@ export const initialState: ConfigState = {
     id: '' as TariffId,
     name: '',
     quotas: {},
+    usedQuota: {},
     disabledFeatures: [],
   },
   glitchtip: {
