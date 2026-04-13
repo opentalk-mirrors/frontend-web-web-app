@@ -16,7 +16,7 @@ import { createStreamUpdatedNotification } from '../../components/StreamUpdatedN
 import type { AppDispatch, RootState } from '../../store';
 import { joinSuccess } from '../../store/commonActions';
 import { setChatSettings } from '../../store/slices/chatSlice';
-import { selectLibravatarDefaultImage } from '../../store/slices/configSlice';
+import { selectLibravatarDefaultImage, setStorageQuota } from '../../store/slices/configSlice';
 import {
   join,
   leave,
@@ -360,5 +360,8 @@ export const handleRoomServerCoreMessage = async (
       dispatch(roomParametersChanged(data.change));
       break;
     }
+    case RoomserverMessageKey.StorageQuotaChanged:
+      dispatch(setStorageQuota(data.quota));
+      break;
   }
 };

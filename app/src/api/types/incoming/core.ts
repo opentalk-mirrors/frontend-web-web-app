@@ -89,7 +89,7 @@ export interface RoomParametersChanged {
 }
 
 export interface StorageQuotaChanged {
-  message: 'storage_quota_changed';
+  message: RoomserverMessageKey.StorageQuotaChanged;
   quota: {
     total?: number;
     used: number;
@@ -118,6 +118,7 @@ export enum RoomserverMessageKey {
   JoinedWaitingRoom = 'joined_waiting_room',
   LeftWaitingRoom = 'left_waiting_room',
   RoomParametersChanged = 'room_parameters_changed',
+  StorageQuotaChanged = 'storage_quota_changed',
 }
 
 export type RoomserverCore = NamespacedIncoming<Message, 'core'>;
