@@ -101,9 +101,8 @@ const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAns
           {choices.map((answer: string, index: number) => (
             <Grid size={{ xs: 12 }} key={index}>
               {editingIndex === index ? (
-                <Field
-                  name={`${name}.${index}`}
-                  component={({ field: { value, onBlur, onChange, name } }: FieldProps) => (
+                <Field name={`${name}.${index}`}>
+                  {({ field: { value, onBlur, onChange, name } }: FieldProps) => (
                     <StyledCommonTextField
                       inputRef={inputRef}
                       name={name}
@@ -140,7 +139,7 @@ const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAns
                       }}
                     />
                   )}
-                />
+                </Field>
               ) : (
                 <Chip
                   label={
