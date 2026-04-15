@@ -237,7 +237,11 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
             '&.Mui-checked': {
               // color: theme.palette.common.white,
               '& .MuiSwitch-thumb:before': {
-                backgroundImage: `url(${doneSvg})`,
+                backgroundColor: theme.palette.primary.contrastText,
+                mask: `url("${doneSvg}")`,
+                maskSize: '40%',
+                maskRepeat: 'no-repeat',
+                maskPosition: 'center',
               },
               '& + .MuiSwitch-track': {
                 opacity: 1,
@@ -269,7 +273,11 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
               top: 0,
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              backgroundImage: `url(${closeSvg})`,
+              backgroundColor: theme.palette.primary.contrastText,
+              mask: `url("${closeSvg}")`,
+              maskSize: '40%',
+              maskRepeat: 'no-repeat',
+              maskPosition: 'center',
               backgroundSize: 8,
             },
           }),
