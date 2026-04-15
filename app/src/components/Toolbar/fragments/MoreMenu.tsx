@@ -211,17 +211,17 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         label: 'more-menu-enable-display-name-change-restrictions',
         action: () => {
           onClose();
-          dispatch(enableDisplayNameChangeRestrictions.action({ unrestrictedParticipants }));
+          dispatch(disableDisplayNameChangeRestrictions.action());
         },
-        icon: <CloseIcon />,
+        icon: <DoneIcon />,
       }
     : {
         label: 'more-menu-disable-display-name-change-restrictions',
         action: () => {
           onClose();
-          dispatch(disableDisplayNameChangeRestrictions.action());
+          dispatch(enableDisplayNameChangeRestrictions.action({ unrestrictedParticipants }));
         },
-        icon: <DoneIcon />,
+        icon: <CloseIcon />,
       };
 
   const togglePresenceLogging = isTrainingParticipationReportEnabled

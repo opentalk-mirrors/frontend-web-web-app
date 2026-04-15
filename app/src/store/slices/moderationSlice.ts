@@ -104,7 +104,7 @@ export const moderationSlice = createSlice({
       if (displayNameChangeRestrictions) {
         const restricted =
           displayNameChangeRestrictions.type === 'enabled'
-            ? !displayNameChangeRestrictions.unrestricted_participants.includes(action.payload.participantId)
+            ? !displayNameChangeRestrictions.unrestrictedParticipants.includes(action.payload.participantId)
             : false;
 
         state.selfRenameEnabled = !restricted;

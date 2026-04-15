@@ -126,13 +126,13 @@ export const handleModerationMessage = (
         notifications.info(i18next.t('microphones-enabled-notification'));
       }
       break;
-    case 'display_name_change_restrictions_enabled':
-      dispatch(disabledSelfRename());
-      notifications.info(i18next.t('renaming-enabled-notification'));
-      break;
     case 'display_name_change_restrictions_disabled':
-      dispatch(enabledSelfRename());
+      dispatch(disabledSelfRename());
       notifications.info(i18next.t('renaming-disabled-notification'));
+      break;
+    case 'display_name_change_restrictions_enabled':
+      dispatch(enabledSelfRename());
+      notifications.info(i18next.t('renaming-enabled-notification'));
       break;
     default: {
       const dataString = JSON.stringify(data, null, 2);

@@ -5,7 +5,7 @@ import i18next from 'i18next';
 
 import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
-import { disabledSelfRename, forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
+import { enabledSelfRename, forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
 import { enteredWaitingRoom } from '../../store/slices/roomSlice';
 import { Role } from '../../types';
 import type { ParticipantId, Timestamp } from '../../types';
@@ -190,7 +190,7 @@ describe('handleModerationMessage', () => {
       message: 'display_name_change_restrictions_enabled',
     };
     handleModerationMessage(dispatch, message, timestamp, state);
-    expect(dispatch).toHaveBeenCalledExactlyOnceWith(disabledSelfRename());
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(enabledSelfRename());
     expect(i18next.t).toHaveBeenCalledExactlyOnceWith('renaming-enabled-notification');
     expect(notifications.info).toHaveBeenCalledExactlyOnceWith('renaming-enabled-notification');
   });
