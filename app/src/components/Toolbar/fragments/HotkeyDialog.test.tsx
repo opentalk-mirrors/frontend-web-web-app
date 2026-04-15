@@ -31,7 +31,7 @@ describe('HotkeyDialog', () => {
     });
     expect(screen.getByRole('heading', { name: 'my-meeting-menu-keyboard-hotkeys' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'global-close-dialog' })).toBeInTheDocument();
-    expect(screen.getByRole('switch', { name: 'my-meeting-menu-keyboard-hotkeys' })).toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: 'my-meeting-menu-activate-hotkeys' })).toBeInTheDocument();
     expect(screen.getByTestId('HotkeyTable')).toBeInTheDocument();
   });
 
@@ -43,7 +43,7 @@ describe('HotkeyDialog', () => {
     });
     renderWithProviders(<HotkeyDialog open onClose={mockOnClose} />, { store });
 
-    const switchButton = screen.getByRole('switch', { name: 'my-meeting-menu-keyboard-hotkeys' });
+    const switchButton = screen.getByRole('switch', { name: 'my-meeting-menu-activate-hotkeys' });
 
     await userEvent.click(switchButton);
 
