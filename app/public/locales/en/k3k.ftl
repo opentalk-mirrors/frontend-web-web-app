@@ -454,7 +454,7 @@ legal-vote-participant-joined-the-meeting = {{participantName}} joined the meeti
 poll-participant-list-button-select = Select
 poll-participant-list-button-close = Close
 poll-participant-list-button-save = Save
-poll-participant-list-button-start = Start vote
+poll-participant-list-button-start = Start
 poll-participant-list-button-select-all = Select all
 
 legal-vote-success = Your vote was counted successfully at {{atVoteTime}} on {{onVoteDate}} using the following confirmation token.
