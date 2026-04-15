@@ -93,7 +93,7 @@ const HotkeyDialog = (props: HotkeyDialogProps) => {
               position: 'relative',
             }}
           >
-            <SwitchLabel htmlFor={switchId}>{t('my-meeting-menu-keyboard-hotkeys')}</SwitchLabel>
+            <SwitchLabel htmlFor={switchId}>{t('my-meeting-menu-activate-hotkeys')}</SwitchLabel>
             <CommonSwitch
               id={switchId}
               checked={hotkeysEnabled}
