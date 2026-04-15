@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Chip as MuiChip, Grid, styled, Typography } from '@mui/material';
+import { Button, Chip as MuiChip, Grid, styled, Typography, FormHelperText } from '@mui/material';
 import { FieldArray, Field, FieldProps, useFormikContext } from 'formik';
 import { get, isEmpty } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AddIcon } from '../../../assets/icons';
 import { CommonTextField } from '../../../commonComponents';
+import i18n from '../../../i18n';
 
 interface IAnswersFormElementProps {
   name: string;
@@ -29,6 +30,9 @@ const Chip = styled(MuiChip)(({ theme }) => ({
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(1),
   borderRadius: theme.borderRadius.small,
+  '&.Mui-focusVisible': {
+    outlineOffset: -2,
+  },
   '& .MuiChip-label': {
     textOverflow: 'unset',
     whiteSpace: 'pre-wrap',
@@ -83,17 +87,11 @@ const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAns
   const isTouched = (name: string) => {
     const error = get(errors, name);
     const touchedField = get(touched, name);
+
     return Boolean(error) && Boolean(touchedField);
   };
 
-  useEffect(() => {
-    choices.length > minAnswers &&
-      choices.forEach((item: string, index: number) => {
-        if (isEmpty(item)) {
-          setEditingIndex(index);
-        }
-      });
-  }, [name, choices, minAnswers]);
+  const showUniqueError = () => get(errors, name)?.includes(i18n.t('poll-form-input-error-choice-unique'));
 
   return (
     <FieldArray
@@ -103,15 +101,13 @@ const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAns
           {choices.map((answer: string, index: number) => (
             <Grid size={{ xs: 12 }} key={index}>
               {editingIndex === index ? (
-                <Field
-                  name={`${name}.${index}`}
-                  component={({ field: { value, onBlur, onChange, name } }: FieldProps) => (
+                <Field name={`${name}.${index}`}>
+                  {({ field: { value, onBlur, onChange, name } }: FieldProps) => (
                     <StyledCommonTextField
                       inputRef={inputRef}
                       name={name}
                       size="small"
                       fullWidth
-                      defaultValue={value}
                       error={isTouched(name) && Array.isArray(answerErrors) && Boolean(answerErrors[index])}
                       helperText={isTouched(name) && Array.isArray(answerErrors) && answerErrors[index]}
                       maxCharacters={MAX_ANSWER_LENGTH}
@@ -143,7 +139,7 @@ const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAns
                       }}
                     />
                   )}
-                />
+                </Field>
               ) : (
                 <Chip
                   label={
@@ -159,17 +155,25 @@ const AnswersFormElement = ({ name, answersRange: { min: minAnswers, max: maxAns
                     )
                   }
                   onClick={() => setEditingIndex(index)}
-                  onDelete={index < minAnswers ? undefined : () => arrayHelpers.remove(index)}
+                  onDelete={choices.length > minAnswers ? () => arrayHelpers.remove(index) : undefined}
                 />
               )}
             </Grid>
           ))}
+          {showUniqueError() && (
+            <Grid>
+              <FormHelperText error>{t('poll-form-input-error-choice-unique')}</FormHelperText>
+            </Grid>
+          )}
           <Grid>
             <StyledAddButton
               size="small"
               type="button"
               variant="text"
-              onClick={() => arrayHelpers.push('')}
+              onClick={() => {
+                arrayHelpers.push('');
+                setEditingIndex(choices.length);
+              }}
               startIcon={<Add />}
               color="secondary"
               disabled={choices.length >= maxAnswers}
