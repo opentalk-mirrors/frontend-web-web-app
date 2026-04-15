@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { format } from 'date-fns';
+import { ParticipantEvent } from 'livekit-client';
 import { isEmpty, uniqueId } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -158,10 +159,15 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   const [openRemovalDialog, setOpenRemovalDialog] = useState(false);
 
   const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).includes(BackendModules.SubroomAudio);
-
-  const selectedParticipant = useRemoteParticipant(
-    constructConnectionIdentifier(participant.id, participant.connections[0])
-  );
+  const connectionIdentifier = constructConnectionIdentifier(participant.id, participant.connections[0]);
+  const selectedParticipant = useRemoteParticipant(connectionIdentifier, {
+    updateOnlyOn: [
+      ParticipantEvent.TrackMuted,
+      ParticipantEvent.TrackUnmuted,
+      ParticipantEvent.TrackSubscribed,
+      ParticipantEvent.TrackUnsubscribed,
+    ],
+  });
   const participantId = participant.id;
   const selectedParticipantCanPublishScreenShare =
     selectedParticipant?.permissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;

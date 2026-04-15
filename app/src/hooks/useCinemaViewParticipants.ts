@@ -42,6 +42,7 @@ export function useCinemaViewParticipants(): {
       RoomEvent.TrackUnpublished,
       RoomEvent.TrackMuted,
       RoomEvent.TrackUnmuted,
+      RoomEvent.ActiveSpeakersChanged,
     ],
   });
   const sortedParticipants = useSortedParticipants(remoteParticipants);

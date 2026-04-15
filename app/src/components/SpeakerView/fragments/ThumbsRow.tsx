@@ -4,9 +4,10 @@
 import { ParticipantLoop } from '@livekit/components-react';
 import { Stack, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
+import { ConnectionIdentifier } from '../../../types';
 import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import IconSlideButton from './IconSlideButton';
 import { Thumbnail } from './Thumbnail';
@@ -27,10 +28,21 @@ export interface ThumbsProps {
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   const { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId } = useCinemaViewParticipants();
-  const [fallbackParticipantCache] = useState(() => new Map<string, Participant>());
+  const [fallbackParticipantCache] = useState(() => new Map<ConnectionIdentifier, Participant>());
+
+  useEffect(() => {
+    const activeIds = new Set(
+      cinemaViewParticipants.flatMap((p) => p.connections.map((c) => constructConnectionIdentifier(p.id, c)))
+    );
+    for (const key of fallbackParticipantCache.keys()) {
+      if (remoteParticipantsMap.has(key) || !activeIds.has(key)) {
+        fallbackParticipantCache.delete(key);
+      }
+    }
+  }, [cinemaViewParticipants, remoteParticipantsMap, fallbackParticipantCache]);
 
   const createOrGetFallbackParticipant = useCallback(
-    (connectionIdentifier: string, displayName: string) => {
+    (connectionIdentifier: ConnectionIdentifier, displayName: string) => {
       if (!fallbackParticipantCache.has(connectionIdentifier)) {
         fallbackParticipantCache.set(
           connectionIdentifier,

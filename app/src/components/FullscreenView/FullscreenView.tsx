@@ -8,8 +8,8 @@ import {
   useSortedParticipants,
 } from '@livekit/components-react';
 import { Box, IconButton as MuiIconButton, Slide, styled } from '@mui/material';
-import { RoomEvent } from 'livekit-client';
-import { useCallback, useEffect, useState } from 'react';
+import { ParticipantEvent, RoomEvent } from 'livekit-client';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, PinIcon, PollIcon } from '../../assets/icons';
@@ -93,6 +93,7 @@ const FullscreenView = () => {
     })
   ); //TODO: Recheck for ActiveSpeakersChanged
   const sortedParticipantsIdentity = sortedParticipants[0]?.identity as ConnectionIdentifier | undefined;
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const selectedConnectionIdentifier = pinnedConnectionIdentifier || sortedParticipantsIdentity;
   const selectedParticipantId = (() => {
@@ -103,7 +104,14 @@ const FullscreenView = () => {
     return participantId;
   })();
 
-  const selectedParticipant = useRemoteParticipant({ identity: selectedConnectionIdentifier || '' });
+  const selectedParticipant = useRemoteParticipant(selectedConnectionIdentifier || '', {
+    updateOnlyOn: [
+      ParticipantEvent.TrackMuted,
+      ParticipantEvent.TrackUnmuted,
+      ParticipantEvent.TrackSubscribed,
+      ParticipantEvent.TrackUnsubscribed,
+    ],
+  });
   const displayName = useAppSelector((state) =>
     selectedParticipantId ? selectParticipantName(state, selectedParticipantId) : undefined
   );
@@ -111,12 +119,17 @@ const FullscreenView = () => {
 
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    if (hasVisibleControls) {
-      timeout = setTimeout(() => setVisibleControls(false), 5000);
+  const handleMouseMove = useCallback(() => {
+    if (!hasVisibleControls) {
+      setVisibleControls(true);
     }
-    return () => timeout && clearTimeout(timeout);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setVisibleControls(false);
+      timeoutRef.current = null;
+    }, 5000);
   }, [hasVisibleControls]);
 
   const toggleLocalVideoPin = () => setIsLocalVideoPinned((prevState) => !prevState);
@@ -135,11 +148,7 @@ const FullscreenView = () => {
 
   return (
     <ParticipantContext.Provider value={selectedParticipant}>
-      <Container
-        onMouseMove={() => setVisibleControls(true)}
-        onMouseLeave={() => setVisibleControls(false)}
-        data-testid="fullscreen"
-      >
+      <Container onMouseMove={handleMouseMove} onMouseLeave={() => setVisibleControls(false)} data-testid="fullscreen">
         <ButtonsContainer>
           <VotesAndPollsResultsPopover
             renderButton={(props) => (

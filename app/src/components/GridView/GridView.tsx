@@ -4,7 +4,7 @@
 import { ParticipantContext } from '@livekit/components-react';
 import { CircularProgress, Grid, styled } from '@mui/material';
 import { Participant, RemoteParticipant } from 'livekit-client';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   GRID_BIG_VIDEO_WIDTH,
@@ -20,6 +20,7 @@ import {
   selectPaginationDirectionState,
   selectPaginationPageState,
 } from '../../store/slices/uiSlice';
+import { ConnectionIdentifier } from '../../types';
 import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import GridCell from './fragments/GridCell';
 
@@ -46,7 +47,7 @@ export type GridViewProps = {
 
 const GridView = () => {
   const { cinemaViewParticipants: participants, remoteParticipantsMap } = useCinemaViewParticipants();
-  const [fallbackParticipantCache] = useState(() => new Map<string, Participant>());
+  const [fallbackParticipantCache] = useState(() => new Map<ConnectionIdentifier, Participant>());
   const videoWidth = participants.length <= 4 ? GRID_BIG_VIDEO_WIDTH : GRID_SMALL_VIDEO_WIDTH;
   const isMobile = useIsMobile();
   const lastSpokenParticipant = useMemo(() => {
@@ -86,10 +87,22 @@ const GridView = () => {
     ].slice((pageNumber - 1) * MAX_GRID_TILES, pageNumber * MAX_GRID_TILES);
     return gridViewParticipants;
   }, [participants, pageNumber, isMobile, lastSpokenParticipant]);
+
   const highlight = gridViewParticipants.length >= 2;
 
+  useEffect(() => {
+    const activeIds = new Set(
+      gridViewParticipants.flatMap((p) => p.connections.map((c) => constructConnectionIdentifier(p.id, c)))
+    );
+    for (const key of fallbackParticipantCache.keys()) {
+      if (remoteParticipantsMap.has(key) || !activeIds.has(key)) {
+        fallbackParticipantCache.delete(key);
+      }
+    }
+  }, [gridViewParticipants, remoteParticipantsMap, fallbackParticipantCache]);
+
   const createOrGetFallbackParticipant = useCallback(
-    (connectionIdentifier: string, displayName: string) => {
+    (connectionIdentifier: ConnectionIdentifier, displayName: string) => {
       if (!fallbackParticipantCache.has(connectionIdentifier)) {
         fallbackParticipantCache.set(
           connectionIdentifier,
@@ -101,22 +114,24 @@ const GridView = () => {
     [fallbackParticipantCache]
   );
 
-  const gridCells = gridViewParticipants.map((participant) => {
-    return participant.connections.map((connection) => {
-      const connectionIdentifier = constructConnectionIdentifier(participant.id, connection);
+  const gridCells = useMemo(() => {
+    return gridViewParticipants.map((participant) => {
+      return participant.connections.map((connection) => {
+        const connectionIdentifier = constructConnectionIdentifier(participant.id, connection);
 
-      // We will use participant data from the controller until we get the more preferable data from the livekit server
-      const participantData =
-        remoteParticipantsMap.get(connectionIdentifier) ||
-        createOrGetFallbackParticipant(connectionIdentifier, participant.displayName);
+        // We will use participant data from the controller until we get the more preferable data from the livekit server
+        const participantData =
+          remoteParticipantsMap.get(connectionIdentifier) ||
+          createOrGetFallbackParticipant(connectionIdentifier, participant.displayName);
 
-      return (
-        <ParticipantContext.Provider value={participantData} key={connectionIdentifier}>
-          <GridCell direction={direction} highlight={highlight} />
-        </ParticipantContext.Provider>
-      );
+        return (
+          <ParticipantContext.Provider value={participantData} key={connectionIdentifier}>
+            <GridCell direction={direction} highlight={highlight} />
+          </ParticipantContext.Provider>
+        );
+      });
     });
-  });
+  }, [gridViewParticipants, remoteParticipantsMap, createOrGetFallbackParticipant, direction, highlight]);
 
   const areGridCellsLoading = gridViewParticipants.length > 1 && gridCells.length === 0;
 

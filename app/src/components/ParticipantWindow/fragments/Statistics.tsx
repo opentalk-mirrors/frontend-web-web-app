@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
 import { Popover, Tooltip } from '@mui/material';
-import { ConnectionQuality } from 'livekit-client';
+import { ConnectionQuality, ParticipantEvent } from 'livekit-client';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +24,9 @@ const Statistics = ({
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
-  const participant = useRemoteParticipant(descriptor.connectionIdentifier);
+  const participant = useRemoteParticipant(descriptor.connectionIdentifier, {
+    updateOnlyOn: [ParticipantEvent.ConnectionQualityChanged],
+  });
   const isOnline = participant?.connectionQuality !== ConnectionQuality.Lost;
   const hasPacketLoss = participant?.connectionQuality === ConnectionQuality.Poor;
 

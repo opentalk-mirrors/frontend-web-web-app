@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
-import { Track } from 'livekit-client';
+import { ParticipantEvent, Track } from 'livekit-client';
 import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,15 @@ type IRemoteVideoProps = VideoHTMLAttributes<HTMLVideoElement> & {
 };
 
 const BrokenSubscriberIndicator = ({ descriptor }: IRemoteVideoProps) => {
-  const participant = useRemoteParticipant(descriptor.connectionIdentifier);
+  const participant = useRemoteParticipant(descriptor.connectionIdentifier, {
+    updateOnlyOn: [
+      ParticipantEvent.TrackMuted,
+      ParticipantEvent.TrackUnmuted,
+      ParticipantEvent.TrackSubscribed,
+      ParticipantEvent.TrackUnsubscribed,
+      ParticipantEvent.ConnectionQualityChanged,
+    ],
+  });
 
   const isParticipantDisconnected = participant?.signalClient?.isDisconnected;
   const { t } = useTranslation();
