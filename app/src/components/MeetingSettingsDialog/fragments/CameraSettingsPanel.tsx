@@ -16,7 +16,7 @@ import { ConnectionState } from 'livekit-client';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CloseIcon, MicOnIcon, SettingsIcon } from '../../../assets/icons';
+import { CameraOnIcon, CloseIcon, SettingsIcon } from '../../../assets/icons';
 import { CommonSwitch } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
@@ -168,7 +168,7 @@ const CameraSettingsPanel = () => {
         onSelectDevice={handleSelectDevice}
         subheader={{
           title: t('videomenu-choose-input'),
-          titleIcon: <MicOnIcon />,
+          titleIcon: <CameraOnIcon />,
         }}
         state={getDevicesState()}
       />
