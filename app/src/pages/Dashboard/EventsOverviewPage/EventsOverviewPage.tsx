@@ -24,7 +24,6 @@ const EMPTY_MEETING_PROP_ARRAY: Array<MeetingsProp> = [];
 const EVENTS_PER_REQUEST = 100;
 
 const EventsOverviewPage = () => {
-  const [expandAccordion, setExpandAccordion] = useState<string[]>([]);
   const [filter, setFilter] = useState<DashboardEventsFilters>({
     timePeriod: TimeFilter.Month,
     timeMin: new Date().toTimeString() as DateTime,
@@ -125,13 +124,9 @@ const EventsOverviewPage = () => {
   return (
     <>
       <EventsPageHeader entries={events} filters={filter} onFilterChange={onFilterChange} title={pageHeading} />
-      <EventsOverview
-        entries={events}
-        expandAccordion={expandAccordion}
-        setExpandAccordion={setExpandAccordion}
-        isLoading={isLoading}
-        isFetching={isFetching}
-      />
+      {events.length !== 0 && (
+        <EventsOverview key={events[0].title} entries={events} isLoading={isLoading} isFetching={isFetching} />
+      )}
     </>
   );
 };
