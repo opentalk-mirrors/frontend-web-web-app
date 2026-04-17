@@ -1241,7 +1241,9 @@ landmark-complementary-toolbar = Persönliche Kontrollleiste
 
 my-meeting-menu-accessibility = Barrierefreiheit
 my-meeting-menu = Mein Meeting
-my-meeting-menu-keyboard-hotkeys = Tastaturkürzel
+my-meeting-menu-keyboard-hotkeys = Tastaturkürzel Einstellungen
+my-meeting-menu-activate-hotkeys = Tastaturkürzel aktivieren
+my-meeting-menu-hotkeys-list = Liste der Tastaturkürzel
 my-meeting-menu-user-manual = Handbuch
 my-meeting-menu-glitchtip-trigger = Fehler melden
 my-meeting-menu-support = Support

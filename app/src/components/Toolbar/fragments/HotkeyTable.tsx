@@ -28,21 +28,26 @@ const HotkeyTable = () => {
     });
 
   return (
-    <TableContainer component={Paper}>
-      <Table padding="normal" tabIndex={0}>
-        <TableHead>
-          <TableRow>
-            <TableCell scope="col" id="shortcut-key">
-              {t('global-hotkey')}
-            </TableCell>
-            <TableCell scope="col" id="shortcut-description">
-              {t('global-description')}
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>{renderHotkeys()}</TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <Typography component="h3" gutterBottom>
+        {t('my-meeting-menu-hotkeys-list')}
+      </Typography>
+      <TableContainer component={Paper}>
+        <Table padding="normal" tabIndex={0}>
+          <TableHead>
+            <TableRow>
+              <TableCell scope="col" id="shortcut-key">
+                {t('global-hotkey')}
+              </TableCell>
+              <TableCell scope="col" id="shortcut-description">
+                {t('global-description')}
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>{renderHotkeys()}</TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 
