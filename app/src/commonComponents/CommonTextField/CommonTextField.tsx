@@ -28,7 +28,7 @@ const StyledTextField = styled(TextField, {
   },
 
   '& .MuiFormLabel-asterisk': {
-    color: theme.palette.text.error,
+    color: theme.palette.error.main,
   },
 
   '& .MuiFormLabel-root.Mui-focused .MuiFormLabel-asterisk': {

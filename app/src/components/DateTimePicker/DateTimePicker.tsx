@@ -49,7 +49,7 @@ const StartAdornmentTypography = styled(Typography)<{ component?: string; htmlFo
   whiteSpace: 'nowrap',
 
   '& .MuiFormLabel-asterisk': {
-    color: theme.palette.text.error,
+    color: theme.palette.error.main,
   },
 }));
 
