@@ -7,7 +7,7 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import { isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { kebabCase } from 'lodash';
-import { Dispatch, SetStateAction, SyntheticEvent, useCallback } from 'react';
+import { SyntheticEvent, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ArrowDownIcon } from '../../../../assets/icons';
@@ -16,8 +16,6 @@ import { MeetingsProp } from '../types';
 
 interface MeetingsOverviewProp {
   entries: MeetingsProp[];
-  expandAccordion: string[];
-  setExpandAccordion: Dispatch<SetStateAction<string[]>>;
   isLoading: boolean;
   isFetching: boolean;
 }
@@ -77,13 +75,8 @@ const ArrowDownButton = styled(IconButton, { shouldForwardProp: (prop) => prop !
   },
 }));
 
-const EventsOverview = ({
-  entries,
-  expandAccordion,
-  setExpandAccordion,
-  isLoading,
-  isFetching,
-}: MeetingsOverviewProp) => {
+const EventsOverview = ({ entries, isLoading, isFetching }: MeetingsOverviewProp) => {
+  const [expandAccordion, setExpandAccordion] = useState<string[]>(entries[0] ? [entries[0].title] : []);
   const theme = useTheme();
   const marginTopReset = theme.spacing(2);
   const { t } = useTranslation();

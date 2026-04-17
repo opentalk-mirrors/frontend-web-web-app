@@ -14,17 +14,17 @@ const mockEvents = [
   },
 ];
 
+vi.mock('../../../../components/MeetingCard', async (importOriginal) => ({
+  ...(await importOriginal()),
+  __esModule: true,
+  default: () => <div data-testid="MeetingCard" />,
+}));
+
 describe('EventsOverview', () => {
   it('page will not crash', () => {
     const { store } = configureStore();
     renderWithProviders(
-      <EventsOverview
-        entries={mockEvents as MeetingsProp[]}
-        expandAccordion={[]}
-        isFetching={false}
-        isLoading={false}
-        setExpandAccordion={() => ''}
-      />,
+      <EventsOverview entries={mockEvents as MeetingsProp[]} isFetching={false} isLoading={false} />,
       { store, provider: { mui: true } }
     );
     expect(screen.getAllByTestId('EventAccordion')).toHaveLength(1);
@@ -33,13 +33,7 @@ describe('EventsOverview', () => {
   it('does not render the accordion title', () => {
     const { store } = configureStore();
     renderWithProviders(
-      <EventsOverview
-        entries={mockEvents as MeetingsProp[]}
-        expandAccordion={[]}
-        isFetching={false}
-        isLoading={false}
-        setExpandAccordion={() => ''}
-      />,
+      <EventsOverview entries={mockEvents as MeetingsProp[]} isFetching={false} isLoading={false} />,
       { store, provider: { mui: true } }
     );
     expect(screen.getByText('Time Independent Meetings')).toBeInTheDocument();
