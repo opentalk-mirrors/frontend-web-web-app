@@ -2,13 +2,12 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Popover } from '@mui/material';
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PollIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
 import { selectActivePollsAndVotingCount, selectPollsAndVotingCount } from '../../../store/selectors';
-import { generateUniqueId } from '../../../utils/stringUtils';
 import { MeetingHeaderButton } from './MeetingHeaderButton';
 import ResultsList from './ResultsList';
 
@@ -23,7 +22,7 @@ type RenderButtonProps = Partial<{
 type RenderButtonFunc = (props: RenderButtonProps) => ReactElement | null;
 
 const VotesAndPollsResultsPopover = ({ renderButton }: { renderButton?: RenderButtonFunc }) => {
-  const id = generateUniqueId();
+  const id = useId();
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const votingsAndPollsCount = useAppSelector(selectPollsAndVotingCount);
   const hasVotingsOrPolls = votingsAndPollsCount > 0;

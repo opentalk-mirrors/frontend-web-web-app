@@ -13,11 +13,11 @@ import {
 import { DateTimePicker as MuiDateTimePicker, PickersActionBarAction, PickersLocaleText } from '@mui/x-date-pickers';
 import { isSameDay } from 'date-fns';
 import { isEmpty } from 'lodash';
+import React from 'react';
 
 import { ErrorFormMessage } from '../../commonComponents';
 import PickerLocalizationProvider from '../../provider/PickerLocalizationProvider';
 import { IFormikDateTimePickerPropsReturnValue } from '../../utils/formikUtils';
-import { generateUniqueId } from '../../utils/stringUtils';
 
 type PickerTextFieldProps = {
   placeholder?: string;
@@ -76,13 +76,12 @@ const DateTimePicker = ({
   textField,
   InputProps,
 }: DateTimePickerProps) => {
+  const inputId = React.useId();
   const { placeholder, id, startAdornment, fullWidth, required } = textField || {};
   const isScreenHeightTooSmall = useMediaQuery((theme: Theme) => {
     const query = theme.breakpoints.up('sm') + ' and (max-height:900px)';
     return query;
   });
-
-  const inputId = generateUniqueId();
 
   //If explicitly stated as null we do not give a min date.
   //Still keeps the fallback as current date.

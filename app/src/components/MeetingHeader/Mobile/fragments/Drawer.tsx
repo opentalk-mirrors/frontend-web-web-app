@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Drawer as MuiDrawer, Stack, styled } from '@mui/material';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ModerationTabKey } from '../../../../config/constants';
@@ -29,7 +30,6 @@ import {
   setIsDrawerOpen,
 } from '../../../../store/slices/uiSlice';
 import { selectIsModerator } from '../../../../store/slices/userSlice';
-import { generateUniqueId } from '../../../../utils/stringUtils';
 import { DrawerButton } from './DrawerButton';
 import DrawerTab from './DrawerTab';
 
@@ -69,7 +69,7 @@ const Drawer = () => {
 
   const { t } = useTranslation();
 
-  const drawerId = generateUniqueId();
+  const drawerId = React.useId();
 
   const getTabTitle = (tab: Tab) => {
     if (tab.titleKey) {
