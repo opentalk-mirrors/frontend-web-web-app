@@ -14,7 +14,6 @@ import {
 export type MessageSent = ChatMessageBase & {
   message: 'message_sent';
 };
-
 export interface ChatEnabled {
   message: 'chat_enabled';
   issuedBy: ParticipantId;
@@ -27,6 +26,20 @@ interface ChatDisabled {
 
 export interface ClearGlobalChat {
   message: 'history_cleared';
+}
+export interface SlowDown {
+  message: 'slow_down';
+  recommendedWaitMs: number;
+}
+export interface TooManyRequests {
+  message: 'error';
+  retryAfterMs: number;
+  error: 'too_many_requests';
+}
+
+interface ParticipantRateLimited {
+  message: 'participant_rate_limited';
+  participantId: ParticipantId;
 }
 
 type SetLastSeenTimestampBase = {
@@ -78,7 +91,10 @@ export type ChatMessage =
   | RoomChatHistoryChunk
   | PrivateChatHistoryChunk
   | SearchResults
-  | SetLastSeenTimestamp;
+  | SetLastSeenTimestamp
+  | SlowDown
+  | TooManyRequests
+  | ParticipantRateLimited;
 
 export type Chat = NamespacedIncoming<ChatMessage, 'chat'>;
 

@@ -10,11 +10,13 @@ import type { AppDispatch, RootState } from '../../store';
 import {
   clearGlobalChat,
   lastSeenTimestampAdded,
+  MessageDelayType,
   privateChatHistoryChunkReceived,
   received,
   roomChatHistoryChunkReceived,
   setChatSearchResults,
   setChatSettings,
+  setSlowDownDelay,
 } from '../../store/slices/chatSlice';
 import { BreakoutRoomId, ChatMessage, ChatScope, ParticipantId, Timestamp } from '../../types';
 import { chat } from '../types/incoming';
@@ -39,7 +41,6 @@ export const handleChatMessage = (
     case 'message_sent': {
       const userId = state.user.uuid as ParticipantId;
       let chatMessage: ChatMessage;
-
       const { scope, target } = data;
       const baseMessage = {
         ...data,
@@ -91,6 +92,24 @@ export const handleChatMessage = (
     case 'set_last_seen_timestamp': {
       const { message: _, ...payload } = data;
       dispatch(lastSeenTimestampAdded(payload));
+      break;
+    }
+    case 'slow_down': {
+      dispatch(setSlowDownDelay({ delayMs: data.recommendedWaitMs, type: MessageDelayType.SlowDown }));
+      break;
+    }
+    case 'participant_rate_limited': {
+      log.warn(`Participant ${data.participantId} is rate limited.`);
+      break;
+    }
+    case 'error': {
+      if (data.error === 'too_many_requests') {
+        dispatch(setSlowDownDelay({ delayMs: data.retryAfterMs, type: MessageDelayType.LimitReached }));
+      } else {
+        const dataString = JSON.stringify(data, null, 2);
+        log.error(`Unknown chat message type: ${dataString}`);
+        throw new Error(`Unknown message type: ${dataString}`);
+      }
       break;
     }
     default: {
