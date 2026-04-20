@@ -143,28 +143,6 @@ export interface CreateTimelessEventPayload extends CreateBaseEventPayload {
 export type CreateEventPayload = CreateTimedEventPayload | CreateTimelessEventPayload;
 
 /**
- * Object to create a new exception for a given event
- *
- * RequestBody for POST /events
- */
-export interface CreateEventExceptionPayload {
-  title?: string;
-  description?: string;
-  startsAt?: DateTimeWithTimezone;
-  endsAt?: DateTimeWithTimezone;
-  isAllDay?: boolean;
-  /**
-   * Event Id for which this new exception shall be created
-   */
-  recurringEventId: EventId;
-  /**
-   * The time the event instance would start per the recurrence pattern (RRULE).
-   * Used to uniquely identify a specific occurrence of an recurring event.
-   */
-  originalStartsAt: string;
-}
-
-/**
  * Object to patch an event.
  *
  * RequestBody for PATCH /events/{eventId}
@@ -204,36 +182,6 @@ export interface UpdateEventInstancePayload {
   waitingRoom?: boolean;
   isAdhoc?: boolean;
   status: EventStatus;
-}
-
-/**
- * Body for the reschedule endpoint
- * This is used to reschedule all instances from the from property onwards.
- * Implementation Detail: This ends the current eventId and creates a new one.
- *
- * RequestBody of POST /events/{id}/reschedule
- */
-export interface RescheduleEventPayload {
-  /**
-   * From this point in time _t_ the new schedule takes place
-   */
-  from: DateTimeWithTimezone;
-  /**
-   * Overwrites the start time of the event
-   */
-  startsAt?: DateTimeWithTimezone;
-  /**
-   * Overwrites the end time of the event
-   */
-  endsAt?: DateTimeWithTimezone;
-  /**
-   * Overwrites the isAllDay property of an event
-   */
-  isAllDay?: boolean;
-  /**
-   * Sets a different recurrence pattern for the events from time _t_
-   */
-  recurrencePattern?: Array<RecurrencePattern>;
 }
 
 // Response Objects
@@ -398,4 +346,12 @@ export const isTimelessEvent = (obj: BaseEvent): obj is TimelessEvent => {
 
 export const isPendingEvent = (obj: BaseEvent) => {
   return isEvent(obj) && obj.inviteStatus === InviteStatus.Pending;
+};
+
+// For instances and exceptions we need to use the recurringEventId  as `event_id` query parameter in HTTP requests
+export const getEventId = (event: Event | EventException | EventInstance): EventId => {
+  if (isEventInstance(event) || isEventException(event)) {
+    return event.recurringEventId;
+  }
+  return event.id;
 };

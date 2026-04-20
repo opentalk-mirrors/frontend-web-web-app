@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { DateTime, EventException, Event } from '@opentalk/rest-api-rtk-query';
+import { DateTime, Event, EventInstance } from '@opentalk/rest-api-rtk-query';
 
 import { TimePerspectiveFilter } from '../../../utils/eventUtils';
 
@@ -27,5 +27,5 @@ export type FilterChangeCallbackType = <K extends keyof DashboardEventsFilters>(
 
 export interface MeetingsProp {
   title: string;
-  events: Array<Event | EventException>;
+  events: Array<Event | EventInstance>;
 }

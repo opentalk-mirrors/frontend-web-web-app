@@ -8,21 +8,17 @@ import {
   Event,
   EventException,
   EventInstanceId,
-  InviteStatus,
-  isEvent,
-  isEventException,
-  isRecurringEvent,
   isTimelessEvent,
   RecurringEvent,
   SingleEvent,
   EventId,
+  EventInstance,
 } from '@opentalk/rest-api-rtk-query';
-import { addMonths, Interval, isWithinInterval, subMonths, areIntervalsOverlapping } from 'date-fns';
-import { cloneDeep, findIndex, orderBy, memoize, sortBy } from 'lodash';
+import { Interval, isWithinInterval, areIntervalsOverlapping } from 'date-fns';
+import { memoize, sortBy } from 'lodash';
 
 import { RoomEvent } from '../store/slices/eventSlice';
 import { ChatMessage } from '../types/chat';
-import { getISOStringWithoutMilliseconds } from './timeUtils';
 
 export enum TimePerspectiveFilter {
   TimeIndependent = 'timeindependent',
@@ -35,122 +31,6 @@ export enum EventDeletionType {
   All = 'all', // all events + corresponding data
 }
 
-const DEFAULT_MONTHS_CONSIDERED = 3;
-
-const mapDateToRecurringEvent = (recurrenceDate: Date, initialEvent: RecurringEvent) => {
-  const recurringEvent = cloneDeep(initialEvent);
-  const recurrenceStartDate = new Date(initialEvent.startsAt.datetime);
-  const recurrenceEndDate = new Date(initialEvent.endsAt.datetime);
-
-  const startDate = new Date(recurrenceStartDate);
-  startDate.setDate(recurrenceDate.getDate());
-  startDate.setMonth(recurrenceDate.getMonth());
-  startDate.setUTCFullYear(recurrenceDate.getUTCFullYear());
-  recurringEvent.startsAt = {
-    datetime: getISOStringWithoutMilliseconds(startDate),
-    timezone: initialEvent.startsAt.timezone,
-  };
-
-  const endDate = new Date(recurrenceEndDate);
-  endDate.setDate(recurrenceDate.getDate());
-  endDate.setMonth(recurrenceDate.getMonth());
-  endDate.setUTCFullYear(recurrenceDate.getUTCFullYear());
-  recurringEvent.endsAt = {
-    datetime: getISOStringWithoutMilliseconds(endDate),
-    timezone: initialEvent.endsAt.timezone,
-  };
-
-  return recurringEvent;
-};
-
-const isRecurringEventException = (event: RecurringEvent, exceptions: EventException[]) => {
-  return findIndex(exceptions, { recurringEventId: event.id, originalStartsAt: event.startsAt }) != -1;
-};
-
-const createRecurringEventInstances = (
-  event: RecurringEvent,
-  maxMonths: number = DEFAULT_MONTHS_CONSIDERED,
-  filter?: TimePerspectiveFilter,
-  exceptions?: EventException[]
-) => {
-  const today = new Date();
-  const recurrenceStartDate = new Date(event.startsAt.datetime);
-
-  let windowStartOffset = 0;
-  let windowEndOffset = maxMonths;
-
-  if (filter === TimePerspectiveFilter.Past) {
-    windowStartOffset = maxMonths;
-    windowEndOffset = 0;
-  }
-
-  const windowStartDate = subMonths(today, windowStartOffset);
-  const windowEndDate = addMonths(today, windowEndOffset);
-
-  const partialRule = RRule.parseString(event.recurrencePattern[0]);
-
-  partialRule.dtstart = recurrenceStartDate;
-  if (!partialRule.until) {
-    partialRule.until = windowEndDate;
-  } else if (windowEndDate < partialRule.until) {
-    partialRule.until = windowEndDate;
-  }
-
-  const rule = new RRule({
-    ...partialRule,
-  });
-
-  const generatedRecurrenceDates = rule.between(windowStartDate, windowEndDate, true);
-
-  return generatedRecurrenceDates
-    .map((generatedRecurrenceDate) => mapDateToRecurringEvent(generatedRecurrenceDate, event))
-    .filter((recurringEvent) => (exceptions ? !isRecurringEventException(recurringEvent, exceptions) : true));
-};
-
-export enum SortDirection {
-  ASC = 'asc',
-  DESC = 'desc',
-}
-
-export const orderEventsByDate = (events: Event[], sortDirection: SortDirection = SortDirection.ASC) =>
-  orderBy(
-    events,
-    [
-      (event: Event) => {
-        if (isTimelessEvent(event)) {
-          return new Date(event.createdAt);
-        }
-        return new Date(event.startsAt.datetime);
-      },
-    ],
-    [sortDirection]
-  );
-
-export const appendRecurringEventInstances = (
-  eventList: Array<Event | EventException>,
-  filterDeclined?: boolean,
-  maxMonths?: number,
-  filter?: TimePerspectiveFilter
-): Event[] => {
-  const events = Array<Event>();
-  const exceptions = eventList.filter((event): event is EventException => isEventException(event));
-
-  eventList
-    .filter((event): event is Event => isEvent(event))
-    .filter((event) => (filterDeclined ? event.inviteStatus !== InviteStatus.Declined : true))
-    .forEach((event) => {
-      if (!isTimelessEvent(event) && isRecurringEvent(event)) {
-        createRecurringEventInstances(event, maxMonths, filter, exceptions).forEach((recurringEvent) => {
-          events.push(recurringEvent);
-        });
-      } else {
-        events.push(event);
-      }
-    });
-
-  return events;
-};
-
 /**
  * Finds an overlapping for a current event in an array of events.
  * @param {Date} currentEventStart - start time of the current event.
@@ -161,13 +41,13 @@ export const appendRecurringEventInstances = (
 export const findOverlappingEvent = (
   currentEventStart: Date,
   currentEventEnd: Date,
-  events: Array<Event | EventException>,
+  events: Array<Event | EventException | EventInstance>,
   currentEventId?: EventId
 ): SingleEvent | RecurringEvent | undefined => {
   if (events.length > 0) {
-    const potentialOverlappingEvents: Array<SingleEvent | RecurringEvent> = appendRecurringEventInstances(
-      events
-    ).filter((event) => !isTimelessEvent(event)) as Array<SingleEvent | RecurringEvent>;
+    const potentialOverlappingEvents: Array<SingleEvent | RecurringEvent> = events.filter(
+      (event) => !isTimelessEvent(event)
+    ) as Array<SingleEvent | RecurringEvent>;
 
     const currentEventInterval: Interval = {
       start: currentEventStart,
