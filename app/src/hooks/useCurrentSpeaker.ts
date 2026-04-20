@@ -8,15 +8,10 @@ import { selectPinnedConnectionIdentifier } from '../store/slices/uiSlice';
 import { useAppSelector } from './useCustomRedux';
 
 export function useCurrentSpeaker() {
-  const sortedParticipants = useSortedParticipants(
-    useRemoteParticipants({
-      updateOnlyOn: [
-        RoomEvent.ParticipantConnected,
-        RoomEvent.ParticipantDisconnected,
-        RoomEvent.ActiveSpeakersChanged,
-      ],
-    })
-  );
+  const remoteParticipants = useRemoteParticipants({
+    updateOnlyOn: [RoomEvent.ParticipantConnected, RoomEvent.ParticipantDisconnected, RoomEvent.ActiveSpeakersChanged],
+  });
+  const sortedParticipants = useSortedParticipants(remoteParticipants);
   const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
 
   return pinnedConnectionIdentifier || sortedParticipants[0]?.identity;

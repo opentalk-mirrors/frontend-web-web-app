@@ -4,7 +4,7 @@
 import { useRemoteParticipant } from '@livekit/components-react';
 import { Grid, Tooltip, styled } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
-import { Track } from 'livekit-client';
+import { ParticipantEvent, Track } from 'livekit-client';
 import { MouseEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -74,7 +74,14 @@ const VideoOverlay = ({ connectionIdentifier, active }: VideoOverlayProps) => {
     [connectionIdentifier]
   );
 
-  const participant = useRemoteParticipant(screenDescriptor.connectionIdentifier);
+  const participant = useRemoteParticipant(screenDescriptor.connectionIdentifier, {
+    updateOnlyOn: [
+      ParticipantEvent.TrackMuted,
+      ParticipantEvent.TrackUnmuted,
+      ParticipantEvent.TrackSubscribed,
+      ParticipantEvent.TrackUnsubscribed,
+    ],
+  });
   const isScreenShareActive = participant?.isScreenShareEnabled;
   const isVideoActive = participant?.isCameraEnabled;
   const isScreenShareOrVideoActive = isScreenShareActive || isVideoActive;

@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useParticipantContext } from '@livekit/components-react';
+import { useParticipantContext, useRemoteParticipant } from '@livekit/components-react';
 import { Box as MuiBox, styled } from '@mui/material';
+import { ParticipantEvent } from 'livekit-client';
 import { useState } from 'react';
 
 import { NameTile } from '../../commonComponents';
@@ -37,6 +38,14 @@ interface ParticipantWindowProps {
 const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: ParticipantWindowProps) => {
   const participant = useParticipantContext();
   const connectionIdentifier = participant.identity as ConnectionIdentifier;
+  const remoteParticipant = useRemoteParticipant(connectionIdentifier, {
+    updateOnlyOn: [
+      ParticipantEvent.TrackMuted,
+      ParticipantEvent.TrackUnmuted,
+      ParticipantEvent.TrackSubscribed,
+      ParticipantEvent.TrackUnsubscribed,
+    ],
+  });
   const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
 
@@ -44,7 +53,6 @@ const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: 
   const [activeOverlay, setActiveOverlay] = useState<boolean>(!!alwaysShowOverlay);
 
   const handleDisplayOverlay = (show: boolean) => !alwaysShowOverlay && setActiveOverlay(show);
-
   return (
     <Container
       onMouseEnter={() => handleDisplayOverlay(true)}
@@ -60,7 +68,8 @@ const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: 
       {!isFullscreenActive && (
         <NameTile
           displayName={displayName || participant.name || ''}
-          connectionIdentifier={connectionIdentifier}
+          videoOn={remoteParticipant?.isCameraEnabled}
+          audioOn={remoteParticipant?.isMicrophoneEnabled}
           className="positionBottom"
         />
       )}

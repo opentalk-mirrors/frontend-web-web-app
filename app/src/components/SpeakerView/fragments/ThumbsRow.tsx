@@ -4,10 +4,10 @@
 import { ParticipantLoop } from '@livekit/components-react';
 import { Stack, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
-import { useCurrentSpeaker } from '../../../hooks/useCurrentSpeaker';
+import { ConnectionIdentifier } from '../../../types';
 import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import IconSlideButton from './IconSlideButton';
 import { Thumbnail } from './Thumbnail';
@@ -27,27 +27,51 @@ export interface ThumbsProps {
 }
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
-  const { cinemaViewParticipants, remoteParticipantsMap } = useCinemaViewParticipants();
-  const selectedParticipantId = useCurrentSpeaker();
+  const { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId } = useCinemaViewParticipants();
+  const [fallbackParticipantCache] = useState(() => new Map<ConnectionIdentifier, Participant>());
+
+  useEffect(() => {
+    const activeIds = new Set(
+      cinemaViewParticipants.flatMap((p) => p.connections.map((c) => constructConnectionIdentifier(p.id, c)))
+    );
+    for (const key of fallbackParticipantCache.keys()) {
+      if (remoteParticipantsMap.has(key) || !activeIds.has(key)) {
+        fallbackParticipantCache.delete(key);
+      }
+    }
+  }, [cinemaViewParticipants, remoteParticipantsMap, fallbackParticipantCache]);
+
+  const createOrGetFallbackParticipant = useCallback(
+    (connectionIdentifier: ConnectionIdentifier, displayName: string) => {
+      if (!fallbackParticipantCache.has(connectionIdentifier)) {
+        fallbackParticipantCache.set(
+          connectionIdentifier,
+          new Participant(connectionIdentifier, connectionIdentifier, displayName)
+        );
+      }
+      return fallbackParticipantCache.get(connectionIdentifier)!;
+    },
+    [fallbackParticipantCache]
+  );
 
   const participants = useMemo(() => {
     return cinemaViewParticipants.flatMap((participant) =>
       participant.connections
         .filter((connection) => {
-          if (!selectedParticipantId) {
+          if (!currentSpeakerId) {
             return true;
           }
           const combinedId = constructConnectionIdentifier(participant.id, connection);
-          return combinedId !== selectedParticipantId;
+          return combinedId !== currentSpeakerId;
         })
         .map((connection) => {
           const combinedId = constructConnectionIdentifier(participant.id, connection);
           return (
-            remoteParticipantsMap.get(combinedId) ?? new Participant(combinedId, combinedId, participant.displayName)
+            remoteParticipantsMap.get(combinedId) ?? createOrGetFallbackParticipant(combinedId, participant.displayName)
           );
         })
     );
-  }, [cinemaViewParticipants, remoteParticipantsMap, selectedParticipantId]);
+  }, [cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId, createOrGetFallbackParticipant]);
 
   const [firstVisibleParticipantIndex, setFirstVisibleParticipantIndex] = useState(0);
 

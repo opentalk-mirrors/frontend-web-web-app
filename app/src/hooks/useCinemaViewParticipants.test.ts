@@ -10,11 +10,13 @@ import { mockedParticipant, mockStore, renderHookWithProviders } from '../utils/
 import { CinemaViewParticipant, useCinemaViewParticipants } from './useCinemaViewParticipants';
 
 const mockUseRemoteParticipants = vi.fn();
+const mockUseSortedParticipants = vi.fn(() => []);
 vi.mock('@livekit/components-react', async (importOriginal) => {
   const actual = (await importOriginal()) as typeof import('@mui/material');
 
   return {
     ...actual,
+    useSortedParticipants: () => mockUseSortedParticipants(),
     useRemoteParticipants: () => mockUseRemoteParticipants(),
   };
 });
