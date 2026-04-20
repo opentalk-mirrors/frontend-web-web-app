@@ -318,7 +318,7 @@ export const selectMeetingInactivityWarningSeconds = (state: RootState) => state
 export const selectMeetingInactivityTerminationSeconds = (state: RootState) =>
   state.config.meetingInactivityTerminationSeconds;
 export const selectIsSpacedeckEnabled = (state: RootState) => state.config.spacedeck.enabled;
-export const selectStorageUsed = (state: RootState) => state.config.tariff.usedQuota['maxStorage'];
-export const selectStorageTotal = (state: RootState) => state.config.tariff.quotas['maxStorage'];
+export const selectStorageUsed = (state: RootState) => state.config.tariff?.usedQuota['maxStorage'];
+export const selectStorageTotal = (state: RootState) => state.config.tariff?.quotas['maxStorage'];
 
 export default configSlice.reducer;

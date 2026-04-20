@@ -16,19 +16,29 @@ import {
   Stack,
   Typography,
   styled,
+  Tooltip,
+  Link,
 } from '@mui/material';
 import { cloneDeep, isEmpty, some, differenceBy, uniqueId, truncate } from 'lodash';
 import { unionBy, intersectionBy } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { revokeWriteAccess, grantWriteAccess, uploadPdf } from '../../api/types/outgoing/meetingNotes';
 import { DoneIcon, SearchIcon } from '../../assets/icons';
 import { CommonTextField, ParticipantAvatar } from '../../commonComponents';
+import { showStorageNearLimitNotification } from '../../commonComponents/Notistack/helper';
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useStorageStatus } from '../../hooks/useStorageStatus';
 import { selectAllMeetingNotesParticipants } from '../../store/selectors';
+import { selectAccountManagementUrl } from '../../store/slices/configSlice';
 import { selectMeetingNotesUrl } from '../../store/slices/meetingNotesSlice';
+import { selectIsModerator } from '../../store/slices/userSlice';
 import { MeetingNotesParticipant } from '../../types';
+
+const FullWidthSpan = styled('span')({
+  width: '100%',
+});
 
 const ParticipantSelectContainer = styled(Container)(({ theme }) => ({
   width: '19rem',
@@ -66,7 +76,10 @@ const MeetingNotesTab = () => {
   const meetingNotesUrl = useAppSelector(selectMeetingNotesUrl);
   const [selectedParticipants, setSelectedParticipants] = useState<MeetingNotesParticipant[]>([]);
   const allMeetingNotesParticipants = useAppSelector(selectAllMeetingNotesParticipants);
+  const isModerator = useAppSelector(selectIsModerator);
+  const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
   const [searchMask, setSearchMask] = useState('');
+  const { storageStatus, canUpgrade } = useStorageStatus();
   const salt = React.useId();
 
   // List of selected participants with permission writes is stored locally, until moderator pressed `Show meeting notes to all`
@@ -183,8 +196,11 @@ const MeetingNotesTab = () => {
   );
 
   const uploadPdfAction = useCallback(() => {
+    if (isModerator) {
+      showStorageNearLimitNotification({ storageStatus, canUpgrade, accountManagementUrl });
+    }
     dispatch(uploadPdf.action());
-  }, [dispatch]);
+  }, [accountManagementUrl, canUpgrade, dispatch, isModerator, storageStatus]);
 
   const renderSelectedParticipantListItems = () => (
     <SelectedParticipantsList>
@@ -212,6 +228,54 @@ const MeetingNotesTab = () => {
         ))}
     </SelectedParticipantsList>
   );
+
+  const renderCreatePDFButton = () => {
+    if (!meetingNotesUrl) {
+      return null;
+    }
+    if (storageStatus === 'full') {
+      return (
+        <Tooltip
+          placement="top"
+          describeChild
+          title={
+            <Trans
+              i18nKey={
+                canUpgrade
+                  ? 'conference-storage-tooltip-upgradeable-full-storage'
+                  : 'conference-storage-tooltip-full-storage'
+              }
+              components={{
+                accountManagementLink: accountManagementUrl ? (
+                  <Link href={accountManagementUrl} target="_blank" />
+                ) : (
+                  <span />
+                ),
+              }}
+            />
+          }
+          slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
+        >
+          <FullWidthSpan>
+            <Button
+              fullWidth
+              onClick={uploadPdfAction}
+              aria-label={t('meeting-notes-upload-pdf-button')}
+              color="secondary"
+              disabled
+            >
+              {t('meeting-notes-upload-pdf-button')}
+            </Button>
+          </FullWidthSpan>
+        </Tooltip>
+      );
+    }
+    return (
+      <Button fullWidth onClick={uploadPdfAction} aria-label={t('meeting-notes-upload-pdf-button')} color="secondary">
+        {t('meeting-notes-upload-pdf-button')}
+      </Button>
+    );
+  };
 
   const open = Boolean(anchorEl);
   const hasSelectedParticipants = some(mergedParticipants, 'isSelected');
@@ -255,16 +319,7 @@ const MeetingNotesTab = () => {
           alignItems: 'center',
         }}
       >
-        {meetingNotesUrl && (
-          <Button
-            fullWidth
-            onClick={uploadPdfAction}
-            aria-label={t('meeting-notes-upload-pdf-button')}
-            color="secondary"
-          >
-            {t('meeting-notes-upload-pdf-button')}
-          </Button>
-        )}
+        {renderCreatePDFButton()}
         <Button
           fullWidth
           aria-label={

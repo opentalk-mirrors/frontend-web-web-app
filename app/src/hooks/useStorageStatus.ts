@@ -6,6 +6,8 @@ import { BackendModules, CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { selectIsFeatureEnabled, selectStorageTotal, selectStorageUsed } from '../store/slices/configSlice';
 import { useAppSelector } from './useCustomRedux';
 
+export type StorageStatusReturn = ReturnType<typeof useStorageStatus>;
+
 export const useStorageStatus = () => {
   const used = useAppSelector(selectStorageUsed) ?? 0;
   const total = useAppSelector(selectStorageTotal);

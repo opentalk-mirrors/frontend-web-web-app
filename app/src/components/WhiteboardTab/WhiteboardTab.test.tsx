@@ -35,6 +35,9 @@ describe('WhiteboardTab', () => {
           spacedeck: {
             enabled: false,
           },
+          provider: {
+            accountManagementUrl: 'https://account.opentalk.eu',
+          },
         },
         whiteboard: {
           whiteboardAssetList: [
