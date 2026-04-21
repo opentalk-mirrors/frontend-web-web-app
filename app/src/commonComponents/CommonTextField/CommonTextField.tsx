@@ -2,10 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { InputProps, InputLabelProps, TextField, TextFieldProps, styled, SelectProps } from '@mui/material';
-import { useState, FocusEvent } from 'react';
+import { useState, FocusEvent, useId } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { generateUniqueId } from '../../utils/stringUtils';
 
 type ComposedTextFieldProps = TextFieldProps & {
   maxCharacters?: number;
@@ -60,7 +58,7 @@ const CommonTextField = ({
   const InputProps = (slotProps?.input || {}) as InputProps;
   const SelectProps = (slotProps?.select || {}) as SelectProps;
 
-  const id = props.id || generateUniqueId();
+  const id = useId();
 
   const computedInputLabelProps = {
     ...initialInputLabelProps,
@@ -132,7 +130,7 @@ const CommonTextField = ({
       onBlur={handleBlur}
       ref={ref}
       error={error}
-      id={id}
+      id={props.id || id}
       helperText={getHelperText()}
       fullWidth={fullWidth}
       hideLabel={hideLabel}

@@ -2,11 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, Stack } from '@mui/material';
-import { CSSProperties, ForwardedRef, forwardRef } from 'react';
+import { CSSProperties, ForwardedRef, forwardRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DoneIcon } from '../../../../assets/icons';
-import { generateUniqueId } from '../../../../utils/stringUtils';
 import { CustomSnackbarContent } from '../CustomSnackbarContent';
 import { NotificationHeading } from '../NotificationHeading';
 
@@ -19,7 +18,7 @@ interface TalkingStickMutedNotificationProps {
 export const TalkingStickUnmutedNotification = forwardRef(
   ({ style, onNext, isLastSpeaker }: TalkingStickMutedNotificationProps, ref: ForwardedRef<HTMLDivElement>) => {
     const { t } = useTranslation();
-    const messageId = generateUniqueId();
+    const messageId = useId();
 
     return (
       <CustomSnackbarContent role="alertdialog" aria-live="polite" aria-describedby={messageId} ref={ref} style={style}>

@@ -5,7 +5,7 @@ import { Box, Button, MenuItem, Select, Stack, Switch, styled } from '@mui/mater
 import { FormikValues, useFormik } from 'formik';
 import i18next from 'i18next';
 import { intersectionBy, reduce, shuffle } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 
@@ -16,7 +16,6 @@ import { selectCombinedParticipantsAndUser, selectCombinedParticipantsAndUserCou
 import { Participant } from '../../../types';
 import { spliceIntoChunks } from '../../../utils/arrayUtils';
 import { formikDurationFieldProps, formikProps, formikSwitchProps } from '../../../utils/formikUtils';
-import { generateUniqueId } from '../../../utils/stringUtils';
 import { Seconds } from '../../../utils/tsUtils';
 import { DurationFieldWrapper } from '../../DurationFieldWrapper';
 import TextWithDivider from '../../TextWithDivider';
@@ -154,7 +153,7 @@ const CreateRoomsForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteOfflineParticipantsFromAssignments, participants]);
 
-  const ariaId = generateUniqueId();
+  const ariaId = React.useId();
 
   const { calculatedParticipantsPerRoom, roomCreationInfoText } = useMemo(() => {
     if (formik.values.selectionMode === DropdownOptions.Rooms) {

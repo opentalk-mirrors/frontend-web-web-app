@@ -5,7 +5,6 @@ import { Box, Stack } from '@mui/material';
 import type { TextFieldProps, CheckboxProps, SwitchProps } from '@mui/material';
 import React from 'react';
 
-import { generateUniqueId } from '../../utils/stringUtils';
 import ErrorFormMessage from '../ErrorFormMessage';
 
 interface CommonFormItemProps {
@@ -44,7 +43,7 @@ const CommonFormItem = ({
   ...props
 }: CommonFormItemProps) => {
   const isChecked = checked === undefined ? undefined : checked;
-  const id = props.id || generateUniqueId();
+  const id = React.useId();
   const controlInputProps = control.props?.inputProps || {};
 
   return (
@@ -56,13 +55,13 @@ const CommonFormItem = ({
           alignItems: 'center',
         }}
       >
-        <label htmlFor={id}>{label}</label>
+        <label htmlFor={props.id || id}>{label}</label>
         {React.cloneElement(control, {
           onChange,
           onKeyDown,
           onBlur,
           name,
-          id,
+          id: props.id || id,
           checked: isChecked,
           inputProps: { ...controlInputProps },
           value,

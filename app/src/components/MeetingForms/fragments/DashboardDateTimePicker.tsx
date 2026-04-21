@@ -5,10 +5,10 @@ import { Stack } from '@mui/material';
 import type { RecurrencePattern, StreamingTarget } from '@opentalk/rest-api-rtk-query';
 import { TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { FormikProps } from 'formik';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formikDateTimePickerProps } from '../../../utils/formikUtils';
-import { generateUniqueId } from '../../../utils/stringUtils';
 import DateTimePicker from '../../DateTimePicker';
 import { DateTimePickerProps } from '../../DateTimePicker/DateTimePicker';
 
@@ -48,7 +48,7 @@ export type DashboardDateTimePickerProps = {
 } & Pick<DateTimePickerProps, 'minTimeDate' | 'helperText'>;
 
 export const DashboardDateTimePicker = (props: DashboardDateTimePickerProps) => {
-  const id = props.id || generateUniqueId();
+  const id = React.useId();
   const { t } = useTranslation();
 
   return (
@@ -60,7 +60,7 @@ export const DashboardDateTimePicker = (props: DashboardDateTimePickerProps) => 
         })}
         minTimeDate={props.minTimeDate}
         textField={{
-          id: id,
+          id: props.id || id,
           startAdornment: t(`dashboard-meeting-date-${props.type}`),
           required: true,
         }}
