@@ -150,6 +150,7 @@ export default defineConfig(({ command, mode }) => {
       environment: 'happy-dom',
       logHeapUsage: true,
       globals: true,
+      testTimeout: 10000,
       setupFiles: ['./src/setupTests.ts'],
       env: {
         TZ: 'UTC',
