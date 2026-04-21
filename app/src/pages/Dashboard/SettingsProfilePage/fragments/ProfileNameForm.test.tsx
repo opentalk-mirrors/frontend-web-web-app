@@ -14,7 +14,6 @@ const MOCK_DISPLAY_NAME = 'Test User';
 const mockSuccessNotification = vi.fn();
 const mockErrorNotification = vi.fn();
 vi.mock('../../../../commonComponents/Notistack/fragments/utils', () => ({
-  ...vi.importActual('../../../../commonComponents/Notistack/fragments/utils'),
   notifications: {
     success: (key: string) => mockSuccessNotification(key),
     error: (key: string) => mockErrorNotification(key),

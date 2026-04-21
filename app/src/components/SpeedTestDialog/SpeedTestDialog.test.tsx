@@ -26,7 +26,6 @@ const mockState = {
 const ndt7TestMock = vi.hoisted(() => vi.fn());
 
 vi.mock('react-i18next', () => ({
-  ...vi.importActual('react-i18next'),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 

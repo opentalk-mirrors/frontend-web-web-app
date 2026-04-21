@@ -10,8 +10,6 @@ import { mockedAudioInputs } from '../../../utils/testUtils';
 import AudioSettingsPanel from './AudioSettingsPanel';
 
 vi.mock('./DeviceManager', () => ({
-  ...vi.importActual('./DeviceManager'),
-  __esModule: true,
   default: () => <div data-testid="MockDeviceManager"></div>,
 }));
 

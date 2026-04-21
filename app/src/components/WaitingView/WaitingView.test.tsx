@@ -18,8 +18,6 @@ vi.mock('@livekit/components-react', () => ({
 }));
 
 vi.mock('../SelfTest', () => ({
-  ...vi.importActual('../SelfTest'),
-  __esModule: true,
   default: (props: PropsWithChildren) => <div data-testid="selfTest">{props.children}</div>,
 }));
 

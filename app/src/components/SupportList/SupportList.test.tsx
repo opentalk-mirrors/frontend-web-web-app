@@ -7,7 +7,6 @@ import { USER_MANUAL_URL } from '../../utils/apiUtils';
 import { SupportList } from './SupportList';
 
 vi.mock('react-i18next', () => ({
-  ...vi.importActual('react-i18next'),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 

@@ -9,14 +9,10 @@ import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import MeetingSettingsDialog from './MeetingSettingsDialog';
 
 vi.mock('./fragments/DesktopDialogContent', () => ({
-  ...vi.importActual('./fragments/DesktopDialogContent'),
-  __esModule: true,
   default: () => <div data-testid="desktop-dialog-content"></div>,
 }));
 
 vi.mock('./fragments/MobileDialogContent', () => ({
-  ...vi.importActual('./fragments/MobileDialogContent'),
-  __esModule: true,
   default: () => <div data-testid="mobile-dialog-content"></div>,
 }));
 

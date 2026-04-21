@@ -11,14 +11,10 @@ import Home from './Home';
 import BannerContainer from './fragments/BannerContainer';
 
 vi.mock('./fragments/DesktopHome', () => ({
-  ...vi.importActual('./fragments/DesktopHome'),
-  __esModule: true,
   default: () => <div data-testid="desktop-home"></div>,
 }));
 
 vi.mock('./fragments/MobileHome', () => ({
-  ...vi.importActual('./fragments/MobileHome'),
-  __esModule: true,
   default: () => <div data-testid="mobile-home"></div>,
 }));
 

@@ -27,8 +27,6 @@ vi.mock('@livekit/components-react', () => ({
 }));
 
 vi.mock('./fragments/ToolbarContainer', () => ({
-  ...vi.importActual('./fragments/ToolbarContainer'),
-  __esModule: true,
   default: ({ children }: PropsWithChildren) => {
     return <div data-testid="buttomContainer"> {children}</div>;
   },
