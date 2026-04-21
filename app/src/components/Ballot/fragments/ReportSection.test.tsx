@@ -49,7 +49,7 @@ describe('ReportSection', () => {
   });
 
   it('can submit description', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderWithProviders(<ReportSection legalVoteId={mockLegalVote.id} />, { provider: { snackbar: true, mui: true } });
 
     await user.click(screen.getByText('legal-vote-report-issue-title'));

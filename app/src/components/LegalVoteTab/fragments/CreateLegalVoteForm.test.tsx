@@ -96,7 +96,7 @@ describe('CreateLegalVoteForm', () => {
 
   it('saves form values and notifies when save is clicked with valid inputs', async () => {
     const { store, dispatchSpy } = configureStore();
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
     renderWithProviders(
       <CreateLegalVoteForm initialValues={buildInitialValues()} onClose={vi.fn()} isCoffeeBreakActive={false} />,
@@ -135,7 +135,7 @@ describe('CreateLegalVoteForm', () => {
         },
       },
     });
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const onClose = vi.fn();
 
     renderWithProviders(
