@@ -12,6 +12,7 @@ import { CopyTextField, IconButton } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectCurrentBreakoutRoomId } from '../../../store/slices/breakoutSlice';
 import { selectBaseUrl, selectIsFeatureEnabled } from '../../../store/slices/configSlice';
+import { selectE2EEncryption } from '../../../store/slices/roomSlice';
 import type { RoomInfo } from '../../../types';
 import { composeInviteUrl } from '../../../utils/apiUtils';
 import { FieldKeys } from '../../InviteToMeeting/fragments/constants';
@@ -54,6 +55,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
   const streamingLinksExist = meetingDetails !== undefined && meetingDetails.streamingLinks.length > 0;
 
   const getRoomOwnerNameString = () => `${roomOwner.firstname} ${roomOwner.lastname}`;
+  const highSecurityEnabled = useAppSelector(selectE2EEncryption);
 
   const renderStreamingLinks = (streamingLinks: StreamingLink[]) => (
     <>
@@ -115,7 +117,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
       </Box>
       <DialogContent>
         <Stack spacing={2}>
-          {isGuestsAllowedFeatureEnabled && (
+          {isGuestsAllowedFeatureEnabled && !highSecurityEnabled && (
             <CustomCopyTextField
               label={getLabelText(FieldKeys.InviteLink)}
               value={inviteUrl?.toString()}

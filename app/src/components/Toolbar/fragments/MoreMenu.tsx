@@ -54,7 +54,7 @@ import {
   selectTrainingParticipationReportEnabled,
 } from '../../../store/slices/moderationSlice';
 import { selectAllModeratorParticipants } from '../../../store/slices/participantsSlice';
-import { selectIsRoomOwner, selectWaitingRoomState } from '../../../store/slices/roomSlice';
+import { selectE2EEncryption, selectIsRoomOwner, selectWaitingRoomState } from '../../../store/slices/roomSlice';
 import {
   selectActiveStreamIds,
   selectInactiveStreamIds,
@@ -137,6 +137,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     selectIsModuleEnabled(BackendModules.TrainingParticipationReport)
   );
   const isTrainingParticipationReportEnabled = useAppSelector(selectTrainingParticipationReportEnabled);
+  const highSecurityEnabled = useAppSelector(selectE2EEncryption);
 
   const inviteGuestItem = {
     label: 'more-menu-create-invite',
@@ -282,7 +283,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
 
   // Only room owner is allowed to create invites
   if (isRoomOwner) {
-    if (isGuestsAllowedFeatureEnabled) {
+    if (isGuestsAllowedFeatureEnabled && !highSecurityEnabled) {
       moderatorMenuItems.push(inviteGuestItem);
     }
     if (isTrainingParticipationReportModuleOn) {
