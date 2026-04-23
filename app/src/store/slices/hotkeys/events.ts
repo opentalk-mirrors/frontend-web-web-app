@@ -13,6 +13,7 @@ import { selectSpeakerState, setAsTransitioningSpeaker, SpeakerState } from '../
 import { selectEnabledModulesList } from '../configSlice';
 import { fullscreenActions, selectFullscreenSupported } from '../fullscreen/slice';
 import {
+  selectAudioDeviceId,
   selectAudioEnabled,
   selectLivekitRoom,
   selectLivekitWhisperRoom,
@@ -94,6 +95,7 @@ export const toggleAudioToWhisperGroup = async ({ state, dispatch }: HotkeyCallb
   const whisperRoom = selectLivekitWhisperRoom(state);
   const isWhisperActive = selectIsWhisperActive(state);
   const audioEnabled = selectAudioEnabled(state);
+  const deviceId = selectAudioDeviceId(state);
 
   if (subroomAudioEnabled && whisperRoom) {
     if (!isWhisperActive && audioEnabled) {
@@ -103,8 +105,8 @@ export const toggleAudioToWhisperGroup = async ({ state, dispatch }: HotkeyCallb
     }
     audioStateBeforeWhisperStarts = audioEnabled;
 
+    await whisperRoom?.localParticipant.setMicrophoneEnabled(!isWhisperActive, { deviceId });
     dispatch(setIsWhisperActive(!isWhisperActive));
-    await whisperRoom?.localParticipant.setMicrophoneEnabled(!isWhisperActive);
   }
 };
 
