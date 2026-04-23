@@ -7,16 +7,16 @@ import { createRoot } from 'react-dom/client';
 
 import App from './App';
 import './banner';
+import { exposeDevTools } from './devTools';
 import './glitchtip';
 import './i18n';
-import { exposeSetLogLevel } from './logger';
 import SplashScreenPage from './pages/SplashScreenPage';
 import reportWebVitals from './reportWebVitals';
 
 const container = document.getElementById('root');
 const root = createRoot(container as HTMLElement);
 
-exposeSetLogLevel();
+exposeDevTools();
 
 root.render(
   <StrictMode>

@@ -48,6 +48,8 @@ export enum ConnectionState {
 }
 
 const REJOIN_ON_BLOCKED_CONNECTION_TIME = 10000;
+const FORCE_NEW_DEVICE_SECRET_KEY = 'force_new_device_secret';
+const DEVICE_SECRET_KEY = 'device_secret';
 
 type ConferenceEvent = {
   connected: undefined;
@@ -71,14 +73,24 @@ export const getCurrentConferenceRoom = () => {
   return currentConferenceRoom;
 };
 
+export const setForceNewDeviceSecret = (enabled: boolean) => {
+  if (enabled) {
+    localStorage.setItem(FORCE_NEW_DEVICE_SECRET_KEY, '1');
+  } else {
+    localStorage.removeItem(FORCE_NEW_DEVICE_SECRET_KEY);
+  }
+};
+
 const createOrGenerateDeviceSecret = async () => {
-  const storedDeviceSecret = localStorage.getItem('device_secret');
-  if (storedDeviceSecret && storedDeviceSecret.length >= 16 && storedDeviceSecret.length < 255) {
-    return storedDeviceSecret;
+  if (!localStorage.getItem(FORCE_NEW_DEVICE_SECRET_KEY)) {
+    const storedDeviceSecret = localStorage.getItem(DEVICE_SECRET_KEY);
+    if (storedDeviceSecret && storedDeviceSecret.length >= 16 && storedDeviceSecret.length < 255) {
+      return storedDeviceSecret;
+    }
   }
 
   const newSecret = await generatePkceChallenge();
-  localStorage.setItem('device_secret', newSecret);
+  localStorage.setItem(DEVICE_SECRET_KEY, newSecret);
 
   return newSecret;
 };
@@ -93,7 +105,6 @@ export const startRoom = async (credentials: RoomCredentials, config: ConfigStat
     authUrl = new URL(`${roomPath}/start`, getControllerBaseUrl(config));
   }
 
-  // TODO - fix password empty string
   const { inviteCode, password } = credentials;
   const body = JSON.stringify({
     device_secret: await createOrGenerateDeviceSecret(),

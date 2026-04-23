@@ -6,7 +6,7 @@ import log, { LogLevelDesc } from 'loglevel';
 
 import { formatCurrentTime } from './utils/timeUtils';
 
-enum LogLevel {
+export enum LogLevel {
   trace = 0,
   debug = 1,
   info = 2,
@@ -15,12 +15,12 @@ enum LogLevel {
   silent = 5,
 }
 
-enum LoggerNames {
+export enum LoggerNames {
   OpenTalk = 'opentalk',
   Livekit = 'livekit',
 }
 
-const loggers: Record<string, log.Logger> = {};
+export const loggers: Record<string, log.Logger> = {};
 
 const levelColors: Record<string, string> = {
   trace: 'color: #89BCB5',
@@ -99,7 +99,7 @@ function setLogLevel(level: LogLevelDesc, name?: string) {
       console.warn(`Logger for ${name} does not exist`);
     }
   } else {
-    Object.values(loggers).forEach((logger) => logger.setLevel(level as LogLevelDesc));
+    Object.values(loggers).map((logger) => logger.setLevel(level as LogLevelDesc));
     setLiveKitLogging(level);
   }
   synchronizeLogLevelsToLocalStorage();
@@ -110,7 +110,7 @@ function setLiveKitLogging(level: LogLevelDesc) {
   setLiveKitLogLevel(liveKitLogLevel);
 }
 
-function transformLevel(level: string | number): string {
+export function transformLevel(level: string | number): string {
   if (typeof level === 'number') {
     return LogLevel[level]?.toLowerCase() ?? 'unknown';
   }
@@ -133,17 +133,6 @@ function synchronizeLogLevelsToLocalStorage() {
   localStorage.setItem('loglevel', currentLevels);
 }
 
-// Expose setting log levels in the browser console
-export const exposeSetLogLevel = () => {
-  window.setLogLevel = (level: LogLevel, name?: LoggerNames) => {
-    const lowercaseName = name?.toLowerCase();
-    if (lowercaseName && !loggers[lowercaseName]) {
-      console.warn(`Invalid logger name: ${lowercaseName}`);
-      return;
-    }
-    setLogLevel(level, lowercaseName);
-    console.log(`Log level for ${lowercaseName || 'all'} set to ${transformLevel(level)}`);
-  };
-};
+export { setLogLevel };
 
 export default loggers[LoggerNames.OpenTalk];
