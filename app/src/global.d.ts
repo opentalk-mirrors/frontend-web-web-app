@@ -15,6 +15,7 @@ declare global {
     i18n: i18n;
     debugKillSignaling: () => void;
     setLogLevel: (level: LogLevel, name?: LoggerNames) => void;
+    setForceNewDeviceSecret: (enabled: boolean) => void;
   }
   // still marked as experimental but already implemented in most browsers
   interface HTMLAudioElement {
