@@ -8,8 +8,6 @@ import DeviceManager from './DeviceManager';
 import { DevicePermissionState } from './constants';
 
 vi.mock('./DeviceList', () => ({
-  ...vi.importActual('./DeviceList'),
-  __esModule: true,
   default: () => <div data-testid="MockDeviceList"></div>,
 }));
 

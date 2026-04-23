@@ -98,8 +98,9 @@ describe('Custom Recurrence Dialog', () => {
     render(<CustomRecurringEventDialog {...mockDialogProps} />);
 
     const optionOn = screen.getByRole('radio', { name: 'dashboard-recurrence-dialog-end-option-on' });
+    const user = userEvent.setup({ delay: null });
 
-    await userEvent.click(optionOn);
+    await user.click(optionOn);
 
     const dayInput = screen.getByRole('spinbutton', { name: 'Day' });
     const monthInput = screen.getByRole('spinbutton', { name: 'Month' });

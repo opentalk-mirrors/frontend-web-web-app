@@ -102,15 +102,16 @@ describe('LobbyView', () => {
 
     const useInviteCodeMock = vi.spyOn(UseInviteCodeModule, 'useInviteCode');
     useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
+    const user = userEvent.setup({ delay: null });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
-    await userEvent.clear(userNameInput);
-    await userEvent.type(userNameInput, USERNAME);
+    await user.clear(userNameInput);
+    await user.type(userNameInput, USERNAME);
     expect(userNameInput).toHaveValue(USERNAME);
 
     const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
-    await userEvent.type(passwordInput, PASSWORD);
+    await user.type(passwordInput, PASSWORD);
     expect(passwordInput).toHaveValue(PASSWORD);
 
     /* TODO the startRoom ('room/start/pending') async thunks is undefined here

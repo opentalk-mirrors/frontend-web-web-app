@@ -129,7 +129,8 @@ describe('GlitchtipErrorDialog', () => {
 
     renderDialog();
 
-    await userEvent.click(screen.getByRole('button', { name: 'global-close-dialog' }));
+    const user = userEvent.setup({ delay: null });
+    await user.click(screen.getByRole('button', { name: 'global-close-dialog' }));
 
     expect(mockDispatch).toHaveBeenCalledWith(setShowErrorDialog({ showErrorDialog: false, event: undefined }));
   });
@@ -142,8 +143,9 @@ describe('GlitchtipErrorDialog', () => {
 
     renderDialog();
 
-    await userEvent.type(screen.getByLabelText('glitchtip-crash-report-labelName'), 'John Doe');
-    await userEvent.click(screen.getByRole('button', { name: 'glitchtip-crash-report-labelSubmit' }));
+    const user = userEvent.setup({ delay: null });
+    await user.type(screen.getByLabelText('glitchtip-crash-report-labelName'), 'John Doe');
+    await user.click(screen.getByRole('button', { name: 'glitchtip-crash-report-labelSubmit' }));
 
     expect(getGlitchtipCalls(fetchMock)).toHaveLength(0);
     expect(await screen.findAllByText('global-error: field-error-required')).toHaveLength(2);
@@ -157,10 +159,11 @@ describe('GlitchtipErrorDialog', () => {
 
     renderDialog();
 
-    await userEvent.type(screen.getByLabelText('glitchtip-crash-report-labelName'), 'Jane Doe');
-    await userEvent.type(screen.getByLabelText('glitchtip-crash-report-labelEmail'), 'jane@example.com');
-    await userEvent.type(screen.getByLabelText('glitchtip-crash-report-labelComments'), 'It crashed');
-    await userEvent.click(screen.getByRole('button', { name: 'glitchtip-crash-report-labelSubmit' }));
+    const user = userEvent.setup({ delay: null });
+    await user.type(screen.getByLabelText('glitchtip-crash-report-labelName'), 'Jane Doe');
+    await user.type(screen.getByLabelText('glitchtip-crash-report-labelEmail'), 'jane@example.com');
+    await user.type(screen.getByLabelText('glitchtip-crash-report-labelComments'), 'It crashed');
+    await user.click(screen.getByRole('button', { name: 'glitchtip-crash-report-labelSubmit' }));
 
     await waitFor(() => {
       expect(findCallIndex(fetchMock, '/envelope/')).toBeGreaterThanOrEqual(0);

@@ -7,32 +7,22 @@ import userEvent from '@testing-library/user-event';
 import MobileHome from './MobileHome';
 
 vi.mock('./AdhocMeetingButton', () => ({
-  ...vi.importActual('./AdhocMeetingButton'),
-  __esModule: true,
   default: () => <div data-testid="adhoc-button"></div>,
 }));
 
 vi.mock('../../../../components/JoinMeetingDialog', () => ({
-  ...vi.importActual('../../../../components/JoinMeetingDialog'),
-  __esModule: true,
   default: () => <div data-testid="join-meeting-dialog"></div>,
 }));
 
 vi.mock('./NewMeetingButton', () => ({
-  ...vi.importActual('./NewMeetingButton'),
-  __esModule: true,
   default: () => <div data-testid="new-meeting-button"></div>,
 }));
 
 vi.mock('./CurrentMeetings', () => ({
-  ...vi.importActual('./CurrentMeetings'),
-  __esModule: true,
   default: () => <div data-testid="current-meetings"></div>,
 }));
 
 vi.mock('./FavoriteMeetings', () => ({
-  ...vi.importActual('./FavoriteMeetings'),
-  __esModule: true,
   default: () => <div data-testid="favorite-meetings"></div>,
 }));
 

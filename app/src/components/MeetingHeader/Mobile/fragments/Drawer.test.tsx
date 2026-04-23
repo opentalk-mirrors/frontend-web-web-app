@@ -14,27 +14,23 @@ vi.mock('../../../../hooks/useTabs', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('../../../../config/moderationTabs', () => {
-  const originalModule = vi.importActual('../../../../config/moderationTabs');
-  return {
-    ...originalModule,
-    SupportMenuMobileTab: {
-      key: 'tab-support-menu' as ModerationTabKey,
-      component: <div>SupportMenu</div>,
-      titleKey: 'support-menu-tab-title',
-    },
-    PollsAndVotesMobileTab: {
-      key: 'tab-polls-voting' as ModerationTabKey,
-      component: <div>PollsAndVotesMobileTab</div>,
-      titleKey: 'votes-poll-overview-title',
-    },
-    WaitingRoomMobileTab: {
-      key: 'tab-waiting-room' as ModerationTabKey,
-      component: <div>WaitingRoomMobileTab</div>,
-      titleKey: 'waiting-room-tab-title',
-    },
-  };
-});
+vi.mock('../../../../config/moderationTabs', () => ({
+  SupportMenuMobileTab: {
+    key: 'tab-support-menu' as ModerationTabKey,
+    component: <div>SupportMenu</div>,
+    titleKey: 'support-menu-tab-title',
+  },
+  PollsAndVotesMobileTab: {
+    key: 'tab-polls-voting' as ModerationTabKey,
+    component: <div>PollsAndVotesMobileTab</div>,
+    titleKey: 'votes-poll-overview-title',
+  },
+  WaitingRoomMobileTab: {
+    key: 'tab-waiting-room' as ModerationTabKey,
+    component: <div>WaitingRoomMobileTab</div>,
+    titleKey: 'waiting-room-tab-title',
+  },
+}));
 
 vi.mock('./DrawerButton', () => ({
   __esModule: true,

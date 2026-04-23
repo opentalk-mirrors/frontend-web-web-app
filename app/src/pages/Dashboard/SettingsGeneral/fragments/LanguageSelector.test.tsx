@@ -12,7 +12,6 @@ const mockUpdateMe = vi.fn();
 
 const mockSuccessNotification = vi.fn();
 vi.mock('../../../../commonComponents/Notistack/fragments/utils', () => ({
-  ...vi.importActual('../../../../commonComponents/Notistack/fragments/utils'),
   notifications: {
     success: (key: string) => mockSuccessNotification(key),
   },

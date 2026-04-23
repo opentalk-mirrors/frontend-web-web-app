@@ -9,14 +9,11 @@ import { Mock } from 'vitest';
 import { renderWithProviders } from '../../../utils/testUtils';
 import AnswersFormElement from './AnswersFormElement';
 
-vi.mock('formik', () => {
-  return {
-    ...vi.importActual('formik'),
-    useFormikContext: vi.fn(),
-    FieldArray: (props: { render: () => React.ReactElement }) => props.render(),
-    Field: () => <div />,
-  };
-});
+vi.mock('formik', () => ({
+  useFormikContext: vi.fn(),
+  FieldArray: (props: { render: () => React.ReactElement }) => props.render(),
+  Field: () => <div />,
+}));
 
 const MIN_ANSWERS_LENGTH = 2;
 const MAX_ANSWERS_LENGTH = 4;

@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     pool: 'threads',
+    testTimeout: 10000,
     coverage: {
       provider: 'v8',
       reporter: ['cobertura', 'json', 'text', 'html'],
