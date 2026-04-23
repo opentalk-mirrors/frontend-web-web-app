@@ -1208,6 +1208,8 @@ conference-view-sorting = Sort by
 conference-view-grid-first-joined = Join time
 conference-view-grid-camera-first = Camera status
 conference-view-grid-moderators-first = Role
+conference-view-grid-size = Grid size
+conference-view-tiles = tiles
 shared-folder-open-label = Open shared folder
 shared-folder-password-label = Copy Folder-password
 

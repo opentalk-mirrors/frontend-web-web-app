@@ -1206,6 +1206,8 @@ conference-view-sorting = Sortieren nach
 conference-view-grid-first-joined = Beitrittszeit
 conference-view-grid-camera-first = Kamerastatus
 conference-view-grid-moderators-first = Rolle
+conference-view-grid-size = Anzahl Kacheln
+conference-view-tiles = Kacheln
 shared-folder-open-label = Geteilten Ordner öffnen
 shared-folder-password-label = Ordner-Passwort kopieren
 

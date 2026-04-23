@@ -9,6 +9,7 @@ import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { ModerationTabKey } from '../../config/constants';
+import { GRID_SIZES } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import {
@@ -61,6 +62,7 @@ export type UIState = {
   chatConversationState: ChatIdentifier;
   cinemaLayout: LayoutOptions;
   cinemaViewOrder: CinemaViewSortOrder;
+  cinemaGridSize: (typeof GRID_SIZES)[number];
   lastCinemaLayout: LayoutOptions;
   paginationPage: number;
   paginationDirection: PaginationDirection;
@@ -98,6 +100,7 @@ export const initialState: UIState = {
   },
   cinemaLayout: LayoutOptions.Grid,
   cinemaViewOrder: CinemaViewSortOrder.FirstJoined,
+  cinemaGridSize: GRID_SIZES[0],
   lastCinemaLayout: LayoutOptions.Grid,
   paginationPage: 1,
   paginationDirection: 'right',
@@ -158,6 +161,9 @@ export const uiSlice = createSlice({
       if (action.payload.layout === LayoutOptions.MeetingNotes && state.isCurrentMeetingNotesHighlighted) {
         state.isCurrentMeetingNotesHighlighted = false;
       }
+    },
+    updatedCinemaGridSize: (state, action: PayloadAction<(typeof GRID_SIZES)[number]>) => {
+      state.cinemaGridSize = action.payload;
     },
     setPaginationPage: (state, action: PayloadAction<number>) => {
       state.paginationDirection = action.payload > state.paginationPage ? 'left' : 'right';
@@ -294,6 +300,7 @@ export const uiSlice = createSlice({
       if (cinemaLayoutSettings) {
         state.cinemaLayout = cinemaLayoutSettings.cinemaLayout ?? state.cinemaLayout;
         state.cinemaViewOrder = cinemaLayoutSettings.cinemaViewOrder ?? state.cinemaViewOrder;
+        state.cinemaGridSize = cinemaLayoutSettings.cinemaGridSize ?? state.cinemaGridSize;
       }
       if (timer?.style === TimerStyle.CoffeeBreak) {
         state.showCoffeeBreakCurtain = true;
@@ -326,6 +333,8 @@ export const {
   setParticipantsSearchValue,
   chatConversationStateSet,
   updatedCinemaLayout,
+  updatedCinemaViewSortOrder,
+  updatedCinemaGridSize,
   setPaginationPage,
   pinnedConnectionIdentifierSet,
   presenterOverlayPinnedParticipantIdSet,
@@ -341,7 +350,6 @@ export const {
   setHotkeysEnabled,
   setShowErrorDialog,
   setIsDrawerOpen,
-  updatedCinemaViewSortOrder,
   setCurrentMenuTab,
   setPresenterVideoPosition,
   setUiMode,
@@ -355,6 +363,7 @@ export const selectShowParticipantGroups = (state: RootState) => state.ui.showPa
 export const selectParticipantsSearchValue = (state: RootState) => state.ui.participantsSearchValue;
 export const selectCinemaLayout = (state: RootState) => state.ui.cinemaLayout;
 export const selectCinemaViewOrder = (state: RootState) => state.ui.cinemaViewOrder;
+export const selectCinemaGridSize = (state: RootState) => state.ui.cinemaGridSize;
 export const selectChatConversationState = (state: RootState) => state.ui.chatConversationState;
 export const selectChatConversationTarget = (state: RootState) => state.ui.chatConversationState.target;
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;
@@ -420,11 +429,12 @@ const startUiChangeModeListener = (startAppListening: StartAppListening) =>
 
 const startLayoutChangeListener = (startAppListening: StartAppListening) =>
   startAppListening({
-    matcher: isAnyOf(updatedCinemaLayout, updatedCinemaViewSortOrder),
+    matcher: isAnyOf(updatedCinemaLayout, updatedCinemaViewSortOrder, updatedCinemaGridSize),
     effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
       const updatedLayoutSettings = {
         cinemaLayout: listenerApi.getState().ui.cinemaLayout,
         cinemaViewOrder: listenerApi.getState().ui.cinemaViewOrder,
+        cinemaGridSize: listenerApi.getState().ui.cinemaGridSize,
       };
       storeCinemaLayoutSettingsToLocalStorage(updatedLayoutSettings);
     },
@@ -447,7 +457,7 @@ export const loadCinemaLayoutSettingsFromLocalStorage = (): Partial<UIState> | u
 };
 
 export const storeCinemaLayoutSettingsToLocalStorage = (
-  cinemaLayoutSettings: Pick<UIState, 'cinemaLayout' | 'cinemaViewOrder'>
+  cinemaLayoutSettings: Pick<UIState, 'cinemaLayout' | 'cinemaViewOrder' | 'cinemaGridSize'>
 ) => {
   localStorage.setItem('cinemaLayoutSettings', JSON.stringify(cinemaLayoutSettings));
 };
