@@ -93,7 +93,7 @@ const MeetingView = () => {
 
   return (
     <>
-      {whisperToken && (
+      {whisperToken && whisperRoom && (
         <WhisperContext token={whisperToken} room={whisperRoom} serverUrl={publicUrl} video={false} audio={false}>
           <RoomAudioRenderer />
         </WhisperContext>
