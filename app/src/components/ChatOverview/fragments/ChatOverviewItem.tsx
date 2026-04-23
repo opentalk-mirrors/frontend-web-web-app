@@ -21,6 +21,9 @@ const CustomListItemButton = styled(ListItemButton)(({ theme }) => ({
   '&:hover': {
     background: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
+    '& .MuiTypography-root': {
+      color: theme.palette.primary.contrastText,
+    },
   },
 }));
 

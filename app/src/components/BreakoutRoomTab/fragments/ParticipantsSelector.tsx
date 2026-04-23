@@ -16,7 +16,7 @@ import { DropdownOptions } from './constants';
 
 const UserNameContainer = styled('div')(({ theme }) => ({
   '& > *': {
-    color: theme.palette.common.white,
+    color: theme.palette.background.highlightContrast,
   },
   '& > *:not(:last-child)': {
     paddingBottom: theme.spacing(1),
