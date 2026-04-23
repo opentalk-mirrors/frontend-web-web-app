@@ -33,7 +33,10 @@ import speedMeterReducer from './slices/speedMeterSlice';
 import streamingReducer from './slices/streamingSlice';
 import subroomAudioReducer from './slices/subroomAudioSlice';
 import timerReducer from './slices/timerSlice';
-import uiReducer from './slices/uiSlice';
+import uiReducer, {
+  initialState as uiInitialState,
+  loadCinemaLayoutSettingsFromLocalStorage as uiRehydrateSlice,
+} from './slices/uiSlice';
 import userReducer from './slices/userSlice';
 import whiteboardReducer from './slices/whiteboardSlice';
 
@@ -133,6 +136,7 @@ export function setupStore(preloadedState?: Partial<RootState>) {
     preloadedState: {
       config: merge({}, initialConfig, window.config),
       livekit: merge({}, livekitInitialState, mediaRehydrateSlice()),
+      ui: merge({}, uiInitialState, uiRehydrateSlice()),
       ...preloadedState,
     },
     devTools: {

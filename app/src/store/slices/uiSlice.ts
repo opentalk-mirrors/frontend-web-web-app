@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createSelector, createSlice, ListenerEffectAPI, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, isAnyOf, ListenerEffectAPI, PayloadAction } from '@reduxjs/toolkit';
 import { ErrorEvent } from '@sentry/react';
 
 import type { AppDispatch, RootState } from '../';
@@ -58,6 +58,7 @@ export type UIState = {
   participantsSearchValue: string;
   chatConversationState: ChatIdentifier;
   cinemaLayout: LayoutOptions;
+  cinemaViewOrder: CinemaViewSortOrder;
   lastCinemaLayout: LayoutOptions;
   paginationPage: number;
   paginationDirection: PaginationDirection;
@@ -80,14 +81,13 @@ export type UIState = {
   errorDialog: ErrorDialog;
   haveSeenMobilePollsAndVotes: boolean;
   isDrawerOpen: boolean;
-  cinemaViewOrder: CinemaViewSortOrder;
   currentMenuTab: MenuTab;
   presenterVideoPosition: PresenterVideoPosition;
   mode?: UiMode;
   showSelfRenameDialog: boolean;
 };
 
-const initialState: UIState = {
+export const initialState: UIState = {
   participantsSortOption: SortOption.NameASC,
   showParticipantGroups: false,
   participantsSearchValue: '',
@@ -95,6 +95,7 @@ const initialState: UIState = {
     scope: ChatScope.Global,
   },
   cinemaLayout: LayoutOptions.Grid,
+  cinemaViewOrder: CinemaViewSortOrder.FirstJoined,
   lastCinemaLayout: LayoutOptions.Grid,
   paginationPage: 1,
   paginationDirection: 'right',
@@ -120,7 +121,6 @@ const initialState: UIState = {
   },
   haveSeenMobilePollsAndVotes: false,
   isDrawerOpen: false,
-  cinemaViewOrder: CinemaViewSortOrder.FirstJoined,
   currentMenuTab: MenuTab.Chat,
   presenterVideoPosition: 'bottomRight',
   showSelfRenameDialog: false,
@@ -253,6 +253,7 @@ export const uiSlice = createSlice({
     builder.addCase(connectionClosed, (state) => {
       state.chatConversationState = initialState.chatConversationState;
       state.cinemaLayout = initialState.cinemaLayout;
+      state.cinemaViewOrder = initialState.cinemaViewOrder;
       state.participantsSortOption = initialState.participantsSortOption;
       state.pinnedConnectionIdentifier = initialState.pinnedConnectionIdentifier;
       state.paginationPage = initialState.paginationPage;
@@ -287,6 +288,11 @@ export const uiSlice = createSlice({
       }
     });
     builder.addCase(joinSuccess, (state, { payload: { timer } }) => {
+      const cinemaLayoutSettings = loadCinemaLayoutSettingsFromLocalStorage();
+      if (cinemaLayoutSettings) {
+        state.cinemaLayout = cinemaLayoutSettings.cinemaLayout ?? state.cinemaLayout;
+        state.cinemaViewOrder = cinemaLayoutSettings.cinemaViewOrder ?? state.cinemaViewOrder;
+      }
       if (timer?.style === TimerStyle.CoffeeBreak) {
         state.showCoffeeBreakCurtain = true;
       }
@@ -331,6 +337,7 @@ export const selectParticipantsSortOption = (state: RootState) => state.ui.parti
 export const selectShowParticipantGroups = (state: RootState) => state.ui.showParticipantGroups;
 export const selectParticipantsSearchValue = (state: RootState) => state.ui.participantsSearchValue;
 export const selectCinemaLayout = (state: RootState) => state.ui.cinemaLayout;
+export const selectCinemaViewOrder = (state: RootState) => state.ui.cinemaViewOrder;
 export const selectChatConversationState = (state: RootState) => state.ui.chatConversationState;
 export const selectChatConversationTarget = (state: RootState) => state.ui.chatConversationState.target;
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;
@@ -370,7 +377,6 @@ export const selectShowErrorDialog = (state: RootState) => state.ui.errorDialog.
 export const selectErrorDialogEvent = (state: RootState) => state.ui.errorDialog.event;
 export const selectHaveSeenMobilePollsAndVotes = (state: RootState) => state.ui.haveSeenMobilePollsAndVotes;
 export const selectIsDrawerOpen = (state: RootState) => state.ui.isDrawerOpen;
-export const selectCinemaViewOrder = (state: RootState) => state.ui.cinemaViewOrder;
 export const selectCurrentMenuTab = (state: RootState) => state.ui.currentMenuTab;
 export const selectPresenterVideoPosition = (state: RootState) => state.ui.presenterVideoPosition;
 
@@ -389,8 +395,36 @@ const startUiChangeModeListener = (startAppListening: StartAppListening) =>
     },
   });
 
+const startLayoutChangeListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    matcher: isAnyOf(updatedCinemaLayout, updatedCinemaViewSortOrder),
+    effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      const updatedLayoutSettings = {
+        cinemaLayout: listenerApi.getState().ui.cinemaLayout,
+        cinemaViewOrder: listenerApi.getState().ui.cinemaViewOrder,
+      };
+      storeCinemaLayoutSettingsToLocalStorage(updatedLayoutSettings);
+    },
+  });
+
 export const startUiListeners = (startAppListening: StartAppListening) => {
   startUiChangeModeListener(startAppListening);
+  startLayoutChangeListener(startAppListening);
 };
 
 export const selectSelfRenameDialogVisible = (state: RootState) => state.ui.showSelfRenameDialog;
+
+export const loadCinemaLayoutSettingsFromLocalStorage = (): Partial<UIState> | undefined => {
+  const storageItem = localStorage.getItem('cinemaLayoutSettings');
+  if (storageItem !== null) {
+    return JSON.parse(storageItem);
+  }
+
+  return undefined;
+};
+
+export const storeCinemaLayoutSettingsToLocalStorage = (
+  cinemaLayoutSettings: Pick<UIState, 'cinemaLayout' | 'cinemaViewOrder'>
+) => {
+  localStorage.setItem('cinemaLayoutSettings', JSON.stringify(cinemaLayoutSettings));
+};
