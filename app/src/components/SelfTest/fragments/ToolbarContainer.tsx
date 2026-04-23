@@ -43,7 +43,6 @@ const ButtonStack = styled(Stack, { shouldForwardProp: (prop) => prop !== 'waiti
   ({ theme, waitingRoom }) => ({
     alignItems: 'center',
     [theme.breakpoints.up('md')]: {
-      marginTop: `${theme.typography.pxToRem(4)} !important`,
       marginRight: waitingRoom && 'auto !important',
     },
   })
@@ -81,7 +80,7 @@ const ToolbarContainer = ({ children, actionButton, localAudioTrack, waitingRoom
         spacing={2}
         sx={{
           justifyContent: 'center',
-          alignItems: { xs: 'center', md: 'flex-start' },
+          alignItems: { xs: 'center' },
         }}
       >
         {!isMobile && (

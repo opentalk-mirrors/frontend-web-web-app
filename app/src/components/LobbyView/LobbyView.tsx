@@ -65,6 +65,12 @@ const CustomTextField = styled(CommonTextField)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     minWidth: theme.typography.pxToRem(220),
   },
+  [theme.breakpoints.up('md')]: {
+    '& .MuiFormHelperText-root': {
+      position: 'absolute',
+      bottom: `-${theme.typography.pxToRem(24)}`,
+    },
+  },
   '& .MuiInputBase-input.Mui-disabled': {
     WebkitTextFillColor: theme.palette.primary.main,
     backgroundColor: theme.palette.primary.contrastText,
@@ -76,7 +82,7 @@ const ActionButton = styled(Button)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     marginTop: `${theme.typography.pxToRem(4)} !important`,
     marginRight: 'auto !important',
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
   },
 }));
 
