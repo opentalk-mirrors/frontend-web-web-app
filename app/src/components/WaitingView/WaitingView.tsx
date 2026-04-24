@@ -41,6 +41,7 @@ const WaitingRoomText = styled(Typography)(({ theme }) => ({
 
 const ActionButton = styled(Button)({
   height: '100%',
+  alignSelf: 'center',
 });
 
 const WaitingView = () => {
