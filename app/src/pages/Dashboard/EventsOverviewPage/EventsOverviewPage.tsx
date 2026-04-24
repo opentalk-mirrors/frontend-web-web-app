@@ -54,7 +54,6 @@ const EventsOverviewPage = () => {
 
   const { events, isLoading, isFetching } = useGetEventsQuery(
     {
-      favorites: favoriteMeetings,
       perPage: EVENTS_PER_REQUEST,
       adhoc: false,
       timeIndependent: timePerspective === TimePerspectiveFilter.TimeIndependent,
@@ -73,10 +72,10 @@ const EventsOverviewPage = () => {
         let targetedEvents = eventsWithEventInstances;
         if (favoriteMeetings || openInvitedMeeting) {
           targetedEvents = eventsWithEventInstances.filter((event) => {
-            if (favoriteMeetings) {
-              return event.isFavorite;
-            }
-            return event.inviteStatus !== InviteStatus.Accepted;
+            const isPendingInvite = openInvitedMeeting && event.inviteStatus !== InviteStatus.Accepted;
+            const isMarkedAsFavourite = favoriteMeetings && event.isFavorite;
+
+            return isPendingInvite || isMarkedAsFavourite;
           });
         }
 
