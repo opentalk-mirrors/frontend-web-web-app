@@ -1,14 +1,17 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { StreamingKind, StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import { RecordingStatus, StreamStatus } from '@opentalk/rest-api-rtk-query';
 import i18next from 'i18next';
 
 import { notifications, showConsentNotification } from '../../commonComponents';
-import { createStreamUpdatedNotification } from '../../components/StreamUpdatedNotification';
+import {
+  createStreamUpdatedNotification,
+  createRecordingUpdatedNotification,
+} from '../../components/StreamUpdatedNotification';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
-import { streamUpdated } from '../../store/slices/streamingSlice';
+import { recordingStatusUpdated, streamUpdated } from '../../store/slices/streamingSlice';
 import { streaming } from '../types/incoming';
 
 /**
@@ -21,18 +24,14 @@ export const handleStreamingMessage = async (dispatch: AppDispatch, data: stream
 
       const streamTarget = state.streaming.streams.entities[data.targetId];
       if (streamTarget) {
-        //Add notification handler based on status
-        const publicUrl = streamTarget.streamingKind === StreamingKind.Livestream ? streamTarget.publicUrl : undefined;
         createStreamUpdatedNotification({
-          kind: streamTarget.streamingKind,
           status: data.status,
-          publicUrl,
-          eventId: state.room.eventInfo?.id,
+          publicUrl: streamTarget.publicUrl,
         });
       }
 
       const { cameraEnabled, microphoneEnabled } = state.livekit.mediaSettings;
-      const isActiveStream = data.status === StreamingStatus.Active;
+      const isActiveStream = data.status === StreamStatus.Active;
       const isMediaActive = cameraEnabled || microphoneEnabled;
       const isConsentRequired =
         isActiveStream && (state.streaming.consent === undefined || (!state.streaming.consent && isMediaActive));
@@ -43,8 +42,36 @@ export const handleStreamingMessage = async (dispatch: AppDispatch, data: stream
 
       break;
     }
-    case 'recorder_error': {
-      if (data.error === 'timeout') {
+    case 'recording_updated': {
+      dispatch(recordingStatusUpdated(data.status));
+
+      if (data.status === RecordingStatus.Active || data.status === RecordingStatus.Inactive) {
+        createRecordingUpdatedNotification({
+          status: data.status,
+          eventId: state.room.eventInfo?.id,
+        });
+      }
+
+      const { cameraEnabled, microphoneEnabled } = state.livekit.mediaSettings;
+      const isActiveRecording = data.status === RecordingStatus.Active;
+      const isMediaActive = cameraEnabled || microphoneEnabled;
+      const isConsentRequired =
+        isActiveRecording && (state.streaming.consent === undefined || (!state.streaming.consent && isMediaActive));
+
+      if (isConsentRequired) {
+        await showConsentNotification(dispatch);
+      }
+
+      break;
+    }
+    case 'consent_updated': {
+      break;
+    }
+    case 'service': {
+      break;
+    }
+    case 'error': {
+      if (data.error === 'recorder_not_started') {
         notifications.error(i18next.t('livestream-recording-error'));
         log.error('recording error:', data.error);
       }

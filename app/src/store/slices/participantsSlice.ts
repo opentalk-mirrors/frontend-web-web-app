@@ -248,7 +248,12 @@ export const selectNotApprovedParticipants = createSelector([selectAllParticipan
 );
 
 export const selectAllOnlineParticipantsInConference = createSelector([selectAllParticipants], (participants) =>
-  participants.filter((participant) => participant.leftAt === null && participant.waitingState === WaitingState.Joined)
+  participants.filter(
+    (participant) =>
+      participant.leftAt === null &&
+      participant.waitingState === WaitingState.Joined &&
+      participant.participationKind !== ParticipationKind.Recorder
+  )
 );
 
 export const selectAllOnlineParticipants = createSelector(

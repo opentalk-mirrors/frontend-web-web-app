@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { RecordingStatus, StreamStatus } from '@opentalk/rest-api-rtk-query';
 import i18next from 'i18next';
 
 import {
@@ -8,8 +9,10 @@ import {
   notificationAction,
   notifications,
   setLibravatarOptions,
+  showConsentNotification,
   startTimeLimitNotification,
 } from '../../commonComponents';
+import { createStreamUpdatedNotification } from '../../components/StreamUpdatedNotification';
 import type { AppDispatch, RootState } from '../../store';
 import { joinSuccess } from '../../store/commonActions';
 import { setChatSettings } from '../../store/slices/chatSlice';
@@ -274,23 +277,24 @@ export const handleRoomServerCoreMessage = async (
         }
       }
 
-      // TODO: Recording Module - https://git.opentalk.dev/opentalk/frontend/web/web-app/-/work_items/3149
-      //Show notification for active streaming target
-      // const activeTarget =
-      //   moduleData.recording &&
-      //   Object.values(moduleData.recording.targets).find((target) => target.status === StreamingStatus.Active);
-      // if (activeTarget) {
-      //   createStreamUpdatedNotification({
-      //     kind: activeTarget.streamingKind,
-      //     status: activeTarget.status,
-      //     publicUrl: activeTarget.streamingKind === StreamingKind.Livestream ? activeTarget.publicUrl : undefined,
-      //     eventId: state.room.eventInfo?.id,
-      //   });
+      // Show notification for active streaming target
+      const activeTarget =
+        moduleData.recording &&
+        Object.values(moduleData.recording.streamStates).find((target) => target.status === StreamStatus.Active);
 
-      //   if (state.streaming.consent === undefined) {
-      //     showConsentNotification(dispatch);
-      //   }
-      // }
+      if (activeTarget) {
+        createStreamUpdatedNotification({
+          status: activeTarget.status,
+          publicUrl: activeTarget.publicUrl,
+        });
+      }
+
+      if (
+        moduleData.recording?.recordingState.status === RecordingStatus.Active &&
+        state.streaming.consent === undefined
+      ) {
+        showConsentNotification(dispatch);
+      }
 
       // Switch to a breakout room, if a breakout session is active
       if (moduleData.breakout && moduleData.breakout.room.kind === RoomKind.Main) {

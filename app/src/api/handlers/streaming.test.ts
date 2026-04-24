@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  StreamingKind,
   StreamingStatus,
+  StreamStatus,
   type StreamUpdatedMessage,
   type StreamingTargetEntity,
   type StreamingTargetId,
@@ -75,12 +75,11 @@ describe('handleStreamingMessage', () => {
     const data: StreamUpdatedMessage = {
       message: 'stream_updated',
       targetId,
-      status: StreamingStatus.Active,
+      status: StreamStatus.Active,
     };
     const streamTarget: StreamingTargetEntity = {
       targetId,
-      status: StreamingStatus.Active,
-      streamingKind: StreamingKind.Livestream,
+      status: StreamStatus.Active,
       publicUrl: 'https://stream.example',
       name: 'Livestream 1',
     };
@@ -93,6 +92,7 @@ describe('handleStreamingMessage', () => {
             [targetId]: streamTarget,
           },
         },
+        recording: StreamingStatus.Active,
       },
     });
 
@@ -100,10 +100,8 @@ describe('handleStreamingMessage', () => {
 
     expect(dispatch).toHaveBeenCalledWith(streamUpdated(data));
     expect(createStreamUpdatedNotification).toHaveBeenCalledExactlyOnceWith({
-      kind: StreamingKind.Livestream,
-      status: StreamingStatus.Active,
+      status: StreamStatus.Active,
       publicUrl: 'https://stream.example',
-      eventId: 'event-1',
     });
     expect(showConsentNotification).toHaveBeenCalledExactlyOnceWith(dispatch);
   });
@@ -114,7 +112,7 @@ describe('handleStreamingMessage', () => {
     const data: StreamUpdatedMessage = {
       message: 'stream_updated',
       targetId,
-      status: StreamingStatus.Active,
+      status: StreamStatus.Active,
     };
     const state = createState({
       streaming: {
@@ -123,6 +121,7 @@ describe('handleStreamingMessage', () => {
           ids: [],
           entities: {},
         },
+        recording: StreamingStatus.Active,
       },
     });
 
@@ -137,15 +136,15 @@ describe('handleStreamingMessage', () => {
     const dispatch = vi.fn();
     const state = createState();
     const data: StreamingMessage = {
-      message: 'recorder_error',
-      error: 'timeout',
+      message: 'error',
+      error: 'recorder_not_started',
     } as StreamingMessage;
 
     await handleStreamingMessage(dispatch, data, state);
 
     expect(i18next.t).toHaveBeenCalledWith('livestream-recording-error');
     expect(notifications.error).toHaveBeenCalledWith('livestream-recording-error');
-    expect(log.error).toHaveBeenCalledWith('recording error:', 'timeout');
+    expect(log.error).toHaveBeenCalledWith('recording error:', 'recorder_not_started');
   });
 
   it('throws on unknown message types', async () => {

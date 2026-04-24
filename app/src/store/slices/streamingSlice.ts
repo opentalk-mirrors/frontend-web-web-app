@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import {
-  StreamingKind,
+  StreamStatus,
   StreamingStatus,
   StreamingTargetId,
   StreamingTargetEntity,
@@ -15,8 +15,7 @@ import { sendStreamConsentSignal } from '../../api/types/outgoing/streaming';
 import { hangUp, joinSuccess } from '../commonActions';
 
 interface StreamingTargetFilter {
-  status?: StreamingStatus;
-  kind?: StreamingKind;
+  status?: StreamStatus;
 }
 
 const streamingAdapter = createEntityAdapter<StreamingTargetEntity, StreamingTargetId>({
@@ -25,11 +24,13 @@ const streamingAdapter = createEntityAdapter<StreamingTargetEntity, StreamingTar
 
 export type StreamingState = {
   streams: EntityState<StreamingTargetEntity, StreamingTargetId>;
+  recording: StreamingStatus;
   consent?: boolean;
 };
 
 const initialState: StreamingState = {
   streams: streamingAdapter.getInitialState(),
+  recording: StreamingStatus.Inactive,
   consent: undefined,
 };
 
@@ -41,6 +42,9 @@ const streamingSlice = createSlice({
       //Could need to handle potential edge case of going from status.Error to non error -> reason field might not be removed then, but it could also not impact
       streamingAdapter.updateOne(state.streams, { id: payload.targetId, changes: { ...payload } });
     },
+    recordingStatusUpdated: (state, { payload }: PayloadAction<StreamingStatus>) => {
+      state.recording = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload: { recording: streaming } }) => {
@@ -51,9 +55,9 @@ const streamingSlice = createSlice({
 
       const targetList: Array<StreamingTargetEntity> = [];
 
-      for (const key in streaming.targets) {
+      for (const key in streaming.streamStates) {
         const id = key as StreamingTargetId;
-        const target = streaming.targets[id];
+        const target = streaming.streamStates[id];
 
         targetList.push({
           ...target,
@@ -62,6 +66,7 @@ const streamingSlice = createSlice({
       }
 
       streamingAdapter.setAll(state.streams, targetList);
+      state.recording = streaming.recordingState.status;
     });
     builder.addCase(hangUp.pending, () => initialState);
     builder.addCase(sendStreamConsentSignal.action, (state, { payload: { consent } }) => {
@@ -70,33 +75,26 @@ const streamingSlice = createSlice({
   },
 });
 
-export const { streamUpdated } = streamingSlice.actions;
+export const { streamUpdated, recordingStatusUpdated } = streamingSlice.actions;
 
 const streamingSelectors = streamingAdapter.getSelectors<RootState>((state) => state.streaming.streams);
 
 const selectAllStreamingTargets = (state: RootState) => streamingSelectors.selectAll(state);
+export const selectRecordingTargetStatus = (state: RootState) => state.streaming.recording;
 
-const selectTargetsByStatusAndKind = ({ status, kind }: StreamingTargetFilter) =>
+const selectTargetsByStatus = ({ status }: StreamingTargetFilter) =>
   createSelector([selectAllStreamingTargets], (targets) =>
-    targets.filter((target) => (!status || target.status === status) && (!kind || target.streamingKind === kind))
+    targets.filter((target) => !status || target.status === status)
   );
 
-//Could change if we have multiple recording targets
-export const selectRecordingTarget: (state: RootState) => StreamingTargetEntity | undefined = createSelector(
-  [selectAllStreamingTargets],
-  (streamingTargets) =>
-    streamingTargets.find((streamingTarget) => streamingTarget.streamingKind === StreamingKind.Recording)
-);
-
 export const selectIsRecordingActive = createSelector(
-  [selectTargetsByStatusAndKind({ status: StreamingStatus.Active, kind: StreamingKind.Recording })],
-  (recordings) => recordings.length > 0
+  [selectRecordingTargetStatus],
+  (recordingStatus) => recordingStatus === StreamingStatus.Active
 );
 
-const selectActiveStreams = createSelector(
-  [selectTargetsByStatusAndKind({ status: StreamingStatus.Active, kind: StreamingKind.Livestream })],
-  (streams) => [...streams]
-);
+const selectActiveStreams = createSelector([selectTargetsByStatus({ status: StreamStatus.Active })], (streams) => [
+  ...streams,
+]);
 export const selectIsStreamActive = createSelector([selectActiveStreams], (activeStreams) => activeStreams.length > 0);
 
 export const selectActiveStreamIds = createSelector([selectActiveStreams], (activeStreams) =>
@@ -105,16 +103,12 @@ export const selectActiveStreamIds = createSelector([selectActiveStreams], (acti
 
 export const selectInactiveStreamIds = createSelector([selectAllStreamingTargets], (targets) =>
   targets
-    .filter(
-      (target) =>
-        target.streamingKind === StreamingKind.Livestream &&
-        (target.status === StreamingStatus.Inactive || target.status === StreamingStatus.Error)
-    )
+    .filter((target) => target.status === StreamStatus.Inactive || target.status === StreamStatus.Error)
     .map((stream) => stream.targetId)
 );
 
 const selectHasActiveTarget = createSelector([selectAllStreamingTargets], (streamingTargets) =>
-  streamingTargets.some((streamingTarget) => streamingTarget.status === StreamingStatus.Active)
+  streamingTargets.some((streamingTarget) => streamingTarget.status === StreamStatus.Active)
 );
 const selectHasConsent = (state: RootState) => state.streaming.consent;
 export const selectNeedRecordingConsent = createSelector(
