@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
-import type { RootState } from '..';
-import { VoteCanceled, VoteStarted, VoteStopped, VoteUpdated, VoteResponse } from '../../api/types/incoming/legalVote';
+import { VoteCanceled, VoteResponse, VoteStarted, VoteStopped, VoteUpdated } from '../../api/types/incoming/legalVote';
 import log from '../../logger';
 import {
   LegalVote,
@@ -250,34 +249,28 @@ export const {
   savedLegalVoteForm,
 } = actions;
 
-const voteSelectors = legalVoteAdapter.getSelectors<RootState>((state) => state.legalVote.votes);
+export const selectLegalVotes = (state: { legalVote: State }) => state.legalVote.votes;
+export const {
+  selectById: selectVoteById,
+  selectIds: selectVoteIds,
+  selectAll: selectAllVotes,
+  selectEntities: selectVotes,
+} = legalVoteAdapter.getSelectors(selectLegalVotes);
 
-export const selectVoteById: (id: LegalVoteId) => (state: RootState) => LegalVote | undefined =
-  (id: LegalVoteId) => (state: RootState) =>
-    voteSelectors.selectById(state, id);
-export const selectVoteIds = (state: RootState) => voteSelectors.selectIds(state);
-export const selectAllVotes = (state: RootState) => voteSelectors.selectAll(state);
-export const selectVotes = (state: RootState) => voteSelectors.selectEntities(state);
-
-export const selectShowLegalVoteWindow = (state: RootState) => state.legalVote.showResultWindow;
-
-export const selectCurrentShownVoteId = (state: RootState) => state.legalVote.currentShownVoteId;
+export const selectShowLegalVoteWindow = (state: { legalVote: State }) => state.legalVote.showResultWindow;
+export const selectCurrentShownVoteId = (state: { legalVote: State }) => state.legalVote.currentShownVoteId;
 export const selectCurrentShownVote = createSelector(
-  [selectCurrentShownVoteId, (state: RootState) => state],
-  (currentShownVoteId, state) => {
-    return currentShownVoteId ? selectVoteById(currentShownVoteId)(state) : undefined;
-  }
+  [selectVotes, selectCurrentShownVoteId],
+  (votesById, currentShownVoteId) => (currentShownVoteId !== undefined ? votesById[currentShownVoteId] : undefined)
 );
-
-export const selectActiveVoteId = (state: RootState) => state.legalVote.activeVote?.id;
-export const selectPersistedToken = (state: RootState) => state.legalVote.activeVote?.persistedToken;
-
-export const selectAllSavedLegalVotes = (state: RootState) => state.legalVote.savedLegalVotes;
+export const selectActiveVoteId = (state: { legalVote: State }) => state.legalVote.activeVote?.id;
+export const selectPersistedToken = (state: { legalVote: State }) => state.legalVote.activeVote?.persistedToken;
+export const selectAllSavedLegalVotes = (state: { legalVote: State }) => state.legalVote.savedLegalVotes;
 export const selectSavedLegalVotePerId = createSelector(
-  [(state: RootState) => state.legalVote.savedLegalVotes, (_state: RootState, id: number | undefined) => id],
-  (savedLegalVotes, id) => savedLegalVotes.find((legalVote) => legalVote.id === id)
+  [selectAllSavedLegalVotes, (_, id: number | undefined) => id],
+  (savedLegalVotes, id) => savedLegalVotes.find((savedLegalVote) => savedLegalVote.id === id)
 );
-export const selectLegalVoteId = (state: RootState) => state.legalVote.savedLegalVotes.length;
+export const selectLegalVoteId = (state: { legalVote: State }) => state.legalVote.savedLegalVotes.length;
 
 const legalVoteReducer = legalVoteSlice.reducer;
 export default legalVoteReducer;

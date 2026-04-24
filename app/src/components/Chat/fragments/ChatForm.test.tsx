@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { sendChatMessage } from '../../../api/types/outgoing/chat';
 import { setChatSettings } from '../../../store/slices/chatSlice';
 import { saveDefaultChatMessage } from '../../../store/slices/uiSlice';
-import { ChatIdentifier, ChatScope, ParticipantId, Timestamp } from '../../../types';
+import { ChatScope, ParticipantId, Timestamp } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import ChatForm from './ChatForm';
 
@@ -44,13 +44,12 @@ describe('ChatForm', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
-  const globalChatIdentifier: ChatIdentifier = { scope: ChatScope.Global };
 
   it('sends a global message when the submit button is clicked', async () => {
     const user = userEvent.setup();
     const { store, dispatchSpy } = configureStore();
 
-    renderWithProviders(<ChatForm chatIdentifier={globalChatIdentifier} />, {
+    renderWithProviders(<ChatForm />, {
       store,
       provider: { mui: true },
     });
@@ -71,13 +70,11 @@ describe('ChatForm', () => {
     expect(input).toHaveValue('');
   });
 
-  it('submits a private message when Enter is pressed without modifiers', async () => {
+  it('submits a global message when Enter is pressed without modifiers', async () => {
     const user = userEvent.setup();
-    const target = 'participant-42' as ParticipantId;
     const { store, dispatchSpy } = configureStore();
-    const privateChatIdentifier: ChatIdentifier = { scope: ChatScope.Private, target };
 
-    renderWithProviders(<ChatForm chatIdentifier={privateChatIdentifier} />, {
+    renderWithProviders(<ChatForm />, {
       store,
       provider: { mui: true },
     });
@@ -89,7 +86,7 @@ describe('ChatForm', () => {
 
     await waitFor(() => {
       expect(dispatchSpy).toHaveBeenCalledWith(
-        sendChatMessage.action({ scope: ChatScope.Private, content: 'Secret message', target })
+        sendChatMessage.action({ scope: ChatScope.Global, content: 'Secret message' })
       );
     });
   });
@@ -98,7 +95,7 @@ describe('ChatForm', () => {
     const user = userEvent.setup();
     const { store, dispatchSpy } = configureStore();
 
-    renderWithProviders(<ChatForm chatIdentifier={globalChatIdentifier} />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
 
     const input = screen.getByLabelText('chat-input-label');
     await user.type(input, 'Hello');
@@ -117,7 +114,7 @@ describe('ChatForm', () => {
 
     store.dispatch(setChatSettings({ id: 'user-1' as ParticipantId, timestamp, enabled: false }));
 
-    renderWithProviders(<ChatForm chatIdentifier={globalChatIdentifier} />, { store, provider: { mui: true } });
+    renderWithProviders(<ChatForm />, { store, provider: { mui: true } });
 
     const input = screen.getByLabelText('chat-input-label');
     const emojiButton = screen.getByRole('button', { name: 'chat-open-emoji-picker' });

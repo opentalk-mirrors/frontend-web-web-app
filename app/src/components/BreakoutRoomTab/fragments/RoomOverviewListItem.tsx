@@ -27,7 +27,7 @@ const RoomOverviewListItem = ({ joinRoom, groupedParticipants, breakoutRoomId }:
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const currentBreakoutRoomId = useAppSelector(selectCurrentBreakoutRoomId);
-  const breakoutRoom = useAppSelector(selectBreakoutRoomById(breakoutRoomId));
+  const breakoutRoom = useAppSelector((state) => selectBreakoutRoomById(state, breakoutRoomId));
   const ourUuid = useAppSelector(selectOurUuid);
 
   const getParticipantLabel = useCallback(

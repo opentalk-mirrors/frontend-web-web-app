@@ -4,7 +4,6 @@
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 import { createAction, createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
-import { Participant as RemoteParticipant } from 'livekit-client';
 
 import { participantRename } from '../../api/handlers/helpers';
 import { DisconnectReason } from '../../api/types/incoming/core';
@@ -29,7 +28,6 @@ import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { selectCurrentBreakoutRoomId } from './breakoutSlice';
 import { received } from './chatSlice';
-import { CinemaViewSortOrder } from './common';
 import { connectionClosed } from './roomSlice';
 import { removeParticipant } from './subroomAudioSlice';
 
@@ -195,15 +193,6 @@ export const participantsSlice = createSlice({
         });
       }
     },
-    // rename: (state, { payload }: PayloadAction<Pick<Participant, 'id' | 'displayName'>>) => {
-    //   const { id, displayName } = payload;
-    //   participantAdapter.updateOne(state, {
-    //     id,
-    //     changes: {
-    //       displayName,
-    //     },
-    //   });
-    // },
   },
 
   extraReducers: (builder) => {
@@ -268,53 +257,8 @@ export const selectAllOnlineParticipants = createSelector(
     participants.filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
 );
 
-export const selectSortedParticipants = createSelector(
-  [
-    (_state: RootState, cinemaViewOrder: CinemaViewSortOrder) => cinemaViewOrder,
-    selectAllOnlineParticipantsInConference,
-    selectCurrentBreakoutRoomId,
-    (state: RootState) => state.livekit.room,
-  ],
-  (cinemaViewOrder, participants, currentBreakoutRoomId, room) => {
-    let filteredParticipants = participants
-      .filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
-      .sort((a, b) => a.joinedAt.localeCompare(b.joinedAt)); // always sort by firstJoined;
-
-    if (cinemaViewOrder === CinemaViewSortOrder.ModeratorsFirst) {
-      filteredParticipants = filteredParticipants.sort((participant) => (participant.role === Role.Moderator ? -1 : 1));
-    }
-    if (cinemaViewOrder === CinemaViewSortOrder.VideoFirst) {
-      const videoSubscribers = Array.from(room?.remoteParticipants.values() || []).filter(
-        (participant) => participant.isCameraEnabled
-      );
-
-      filteredParticipants = filteredParticipants
-        .sort((a, b) => Date.parse(b.lastActive) - Date.parse(a.lastActive))
-        .sort((participant) =>
-          videoSubscribers.find((subscriber) => participant.id === subscriber.identity) ? -1 : 1
-        );
-    }
-    return filteredParticipants;
-  }
-);
-
-export const selectSlicedParticipants = createSelector(
-  [
-    (state: RootState, cinemaViewOrder: CinemaViewSortOrder) => selectSortedParticipants(state, cinemaViewOrder),
-    (_state: RootState, _cinemaViewOrder: CinemaViewSortOrder, page: number) => page,
-    (_state: RootState, _cinemaViewOrder: CinemaViewSortOrder, _page: number, maxParticipants: number) =>
-      maxParticipants,
-  ],
-  (participants, page, maxParticipants) => {
-    const maxPage = Math.ceil(participants.length / maxParticipants);
-    if (maxPage === page) {
-      return participants.slice(-maxParticipants);
-    }
-    return participants.slice((page - 1) * maxParticipants, maxParticipants * page);
-  }
-);
-
 export const selectParticipants = (state: RootState) => participantSelectors.selectEntities(state);
+
 export const selectParticipantsTotal = createSelector(
   [selectAllOnlineParticipants],
   (participants) => participants.length + 1
@@ -337,18 +281,15 @@ export const selectParticipationKind: (state: RootState, id: ParticipantId) => P
   );
 
 export const selectRemoteParticipantsDisplayNameRecord = createSelector(
-  [(_state: RootState, remoteParticipants: RemoteParticipant[]) => remoteParticipants, selectAllOnlineParticipants],
-  (remoteParticipants, onlineParticipants) => {
-    return remoteParticipants.reduce(
-      (acc, remoteParticipant) => {
-        const { participantId } = deconstructConnectionIdentifier(remoteParticipant.identity as ConnectionIdentifier);
-        acc[remoteParticipant.identity] = onlineParticipants.find(
-          (participant) => participant.id === participantId
-        )?.displayName;
-        return acc;
-      },
-      {} as Record<string, string | undefined>
-    );
+  [(_state: RootState, identities: string[]) => identities, selectAllOnlineParticipants],
+  (identities, onlineParticipants) => {
+    const participantMap = new Map(onlineParticipants.map((participant) => [participant.id, participant.displayName]));
+    const result: Record<string, string | undefined> = {};
+    for (const identity of identities) {
+      const { participantId } = deconstructConnectionIdentifier(identity as ConnectionIdentifier);
+      result[identity] = participantMap.get(participantId);
+    }
+    return result;
   }
 );
 

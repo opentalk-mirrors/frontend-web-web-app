@@ -23,15 +23,24 @@ const MuteParticipantsTab = () => {
       RoomEvent.TrackMuted,
       RoomEvent.TrackUnmuted,
       RoomEvent.TrackPublished,
+      RoomEvent.TrackUnpublished,
     ],
   });
-  const unmutedParticipants = allParticipants.filter((participant) => participant.isMicrophoneEnabled);
+
+  const unmutedParticipants = useMemo(() => {
+    return allParticipants.filter((participant) => participant.isMicrophoneEnabled);
+  }, [allParticipants]);
+
+  const unmutedIdentities = useMemo(
+    () => unmutedParticipants.map((participant) => participant.identity),
+    [unmutedParticipants]
+  );
 
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
 
   const participantNames = useAppSelector((state) =>
-    selectRemoteParticipantsDisplayNameRecord(state, unmutedParticipants)
+    selectRemoteParticipantsDisplayNameRecord(state, unmutedIdentities)
   );
 
   const participantsList: SelectableParticipant[] = useMemo(() => {

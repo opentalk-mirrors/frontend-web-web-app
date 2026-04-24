@@ -12,12 +12,11 @@ import { restApi } from '../../api/rest';
 import { sendChatMessage } from '../../api/types/outgoing/chat';
 import { lowerHand, raiseHand } from '../../api/types/outgoing/raiseHands';
 import i18n from '../../i18n';
-import { MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, Role, WaitingState } from '../../types';
+import { MeetingNotesAccess, ParticipantId, ParticipationKind, Role, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
 import { changeMedia, joinSuccess, setScreenShareEnabled, startRoom } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
-// import { rename } from './participantsSlice';
 import { connectionClosed, fetchRoomByInviteId } from './roomSlice';
 
 export type UserState = {
@@ -137,24 +136,31 @@ export const selectIsGuest = createSelector(
   (state) => state.participationKind === ParticipationKind.Guest
 );
 export const selectRole = createSelector([userState], (state) => state.role);
+export const selectIsRoomOwner = createSelector([userState], (state) => state.isRoomOwner);
+export const selectJoinedAt = createSelector([userState], (state) => state.joinedAt);
+export const selectLastActive = createSelector([userState], (state) => state.lastActive);
 
 export const selectUserAsPartialParticipant = createSelector(
-  [userState],
-  (state): Omit<Participant, 'breakoutRoomId' | 'handIsUp' | 'handUpdatedAt'> | undefined => {
-    const { displayName, avatarUrl, joinedAt, lastActive, isRoomOwner, role } = state;
-
-    if (state.uuid === null || joinedAt === undefined || lastActive === undefined) {
+  [
+    selectDisplayName,
+    selectAvatarUrl,
+    selectUserMeetingNotesAccess,
+    selectRole,
+    selectOurUuid,
+    selectIsRoomOwner,
+    selectJoinedAt,
+    selectLastActive,
+  ],
+  (displayName, avatarUrl, meetingNotesAccess, role, uuid, isRoomOwner, joinedAt, lastActive) => {
+    if (uuid === null || joinedAt === undefined || lastActive === undefined) {
       return undefined;
     }
 
     const participationKind =
-      state.role === Role.User || state.role === Role.Moderator
-        ? ParticipationKind.Registered
-        : ParticipationKind.Guest;
+      role === Role.User || role === Role.Moderator ? ParticipationKind.Registered : ParticipationKind.Guest;
 
     return {
-      id: state.uuid,
-      connections: [],
+      id: uuid,
       displayName,
       avatarUrl,
       joinedAt,
@@ -162,7 +168,7 @@ export const selectUserAsPartialParticipant = createSelector(
       leftAt: null,
       participationKind,
       waitingState: WaitingState.Joined,
-      meetingNotesAccess: state.meetingNotesAccess,
+      meetingNotesAccess: meetingNotesAccess,
       isRoomOwner,
       role,
     };

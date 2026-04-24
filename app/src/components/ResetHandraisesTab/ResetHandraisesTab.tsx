@@ -24,12 +24,16 @@ const ResetHandraisesTab = () => {
     const { participantId } = deconstructConnectionIdentifier(remote.identity as ConnectionIdentifier);
     return activeIds.has(participantId);
   });
+  const remoteParticipantsIdentities = useMemo(
+    () => remoteParticipants.map((participant) => participant.identity),
+    [remoteParticipants]
+  );
 
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
 
   const participantNamesMap = useAppSelector((state) =>
-    selectRemoteParticipantsDisplayNameRecord(state, remoteParticipants)
+    selectRemoteParticipantsDisplayNameRecord(state, remoteParticipantsIdentities)
   );
 
   const searchFilteredParticipantsList = useMemo(() => {

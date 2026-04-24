@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
-import type { RootState } from '../';
 import { CloseNotice, Closing, Started, SwitchedRoom } from '../../api/types/incoming/breakout';
 import { BreakoutRoomId, Timestamp } from '../../types';
 import { joinSuccess, startRoom } from '../commonActions';
@@ -97,27 +96,30 @@ export const breakoutSlice = createSlice({
 
 export const { started, closing, closeNotice, switchedRoom, closed } = breakoutSlice.actions;
 
-const breakoutRoomsSelectors = breakoutRooms.getSelectors<RootState>((state) => state.breakout.breakoutRooms);
-const rootState = (state: RootState) => state;
-export const selectIsActive = (state: RootState) => state.breakout.active;
+export const selectBreakoutRooms = (state: { breakout: BreakoutState }) => state.breakout.breakoutRooms;
+export const {
+  selectById,
+  selectEntities: selectBreakoutRoomEntities,
+  selectAll: selectAllBreakoutRooms,
+} = breakoutRooms.getSelectors(selectBreakoutRooms);
+export const selectIsActive = (state: { breakout: BreakoutState }) => state.breakout.active;
 
-export const selectCurrentBreakoutRoomId = (state: RootState) => state.breakout.currentBreakoutRoomId;
-export const selectBreakoutRoomById = (id: BreakoutRoomId) => (state: RootState) =>
-  breakoutRoomsSelectors.selectById(state, id);
-
-export const selectCurrentBreakoutRoom = createSelector(
-  [rootState, selectCurrentBreakoutRoomId],
-  (state, currentRoomId) => breakoutRoomsSelectors.selectById(state, currentRoomId as BreakoutRoomId)
+export const selectCurrentBreakoutRoomId = (state: { breakout: BreakoutState }) => state.breakout.currentBreakoutRoomId;
+export const selectBreakoutRoomById = createSelector(
+  [selectBreakoutRoomEntities, (_, id: BreakoutRoomId) => id],
+  (breakoutRoomEntities, id) => breakoutRoomEntities[id]
 );
-
-export const selectAllBreakoutRooms = (state: RootState) => breakoutRoomsSelectors.selectAll(state);
-export const selectAssignedBreakoutRoomId = (state: RootState) => state.breakout.assignment;
-export const selectLastDispatchedActionType = (state: RootState) => state.breakout.action;
-export const selectExpiredDate = (state: RootState) => state.breakout.expires;
-export const selectBreakoutLoading = (state: RootState) => state.breakout.loading;
-export const selectBreakoutStopsAt = (state: RootState) => state.breakout.stopsAt;
-export const selectBreakoutClosedAt = (state: RootState) => state.breakout.closedAt;
-
+export const selectCurrentBreakoutRoom = createSelector(
+  [selectCurrentBreakoutRoomId, selectBreakoutRoomEntities],
+  (currentRoomId, breakoutRoomEntities) => {
+    return currentRoomId !== undefined ? breakoutRoomEntities[currentRoomId] : undefined;
+  }
+);
+export const selectAssignedBreakoutRoomId = (state: { breakout: BreakoutState }) => state.breakout.assignment;
+export const selectLastDispatchedActionType = (state: { breakout: BreakoutState }) => state.breakout.action;
+export const selectExpiredDate = (state: { breakout: BreakoutState }) => state.breakout.expires;
+export const selectBreakoutStopsAt = (state: { breakout: BreakoutState }) => state.breakout.stopsAt;
+export const selectBreakoutClosedAt = (state: { breakout: BreakoutState }) => state.breakout.closedAt;
 export const actions = breakoutSlice.actions;
 
 export default breakoutSlice.reducer;

@@ -29,7 +29,7 @@ interface VoteResultTableProps {
 function VoteResultTable(props: VoteResultTableProps) {
   const { voteId, scrollToResults } = props;
   const { t } = useTranslation();
-  const vote = useAppSelector(selectVoteById(voteId));
+  const vote = useAppSelector((state) => selectVoteById(state, voteId));
 
   useEffect(() => {
     if (vote?.votes) {
