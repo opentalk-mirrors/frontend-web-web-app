@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack } from '@mui/material';
 import type { RecurrencePattern, StreamingTarget } from '@opentalk/rest-api-rtk-query';
-import { TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
+import { GuestAccess, TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { FormikProps } from 'formik';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +35,7 @@ export interface MeetingFormValues {
   trainingParticipationReport: TrainingParticipationReport;
   showMeetingDetails: boolean;
   e2eEncryption: boolean;
+  guestAccess: GuestAccess;
 }
 
 export type DashboardDateTimePickerProps = {

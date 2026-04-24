@@ -1329,3 +1329,7 @@ rename-self-notification = You changed your display name to '{$newName}'.
 rename-other-target-notification = Your display name was changed to '{$newName}' by moderator {$actorName}.
 rename-other-feedback-notification = You changed the name of '{$oldName}' to '{$newName}'.
 rename-general-notification = {$actorName} changed the display name of '{$oldName}' to '{$newName}'.
+
+guest-access-switch-label = Guest access
+guest-access-select-waiting-room-option = Waiting room
+guest-access-select-direct-access-option = Direct access

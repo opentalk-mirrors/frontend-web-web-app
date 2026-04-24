@@ -1,9 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Event } from '@opentalk/rest-api-rtk-query';
-import { isTimelessEvent } from '@opentalk/rest-api-rtk-query';
-import { RecurrencePattern } from '@opentalk/rest-api-rtk-query';
+import { Event, GuestAccess, isTimelessEvent, RecurrencePattern } from '@opentalk/rest-api-rtk-query';
 import { TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { addMinutes } from 'date-fns';
 
@@ -29,6 +27,7 @@ export const defaultValues = {
   trainingParticipationReport: {
     enabled: false,
   },
+  guestAccess: GuestAccess.DirectAccess,
 };
 
 export const getDefaultEventDates = () => {
@@ -84,6 +83,7 @@ export const getInitialValuesForExisting = (
           parameter: existingEvent.trainingParticipationReport as TrainingParticipationReportParameterSet,
         }
       : defaultValues.trainingParticipationReport,
+    guestAccess: existingEvent.room.guestAccess,
   };
 };
 
@@ -108,6 +108,7 @@ export const getInitialValuesForNew = (
     streaming: getStreamingInitialValue(),
     e2eEncryption: defaultValues.e2eEncryption,
     trainingParticipationReport: defaultValues.trainingParticipationReport,
+    guestAccess: isWaitingRoomEnabledByDefault ? GuestAccess.WaitingRoom : GuestAccess.DirectAccess,
   };
 };
 

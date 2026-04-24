@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RecurrencePattern } from '@opentalk/rest-api-rtk-query';
+import { GuestAccess, RecurrencePattern } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { addMinutes } from 'date-fns';
@@ -31,6 +31,7 @@ const initialValues = {
   trainingParticipationReport: {
     enabled: false,
   },
+  guestAccess: GuestAccess.DirectAccess,
 };
 
 describe('DashboardDateTimePicker', () => {

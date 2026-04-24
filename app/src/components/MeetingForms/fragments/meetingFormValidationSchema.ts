@@ -177,4 +177,5 @@ export const meetingFormValidationSchema: yup.ObjectSchema<MeetingFormValues> = 
   waitingRoom: yup.boolean().required(),
   isTimeDependent: yup.boolean().required(),
   recurrencePattern: yup.mixed<MeetingFormValues['recurrencePattern']>().required(),
+  guestAccess: yup.mixed<MeetingFormValues['guestAccess']>().required(),
 });
