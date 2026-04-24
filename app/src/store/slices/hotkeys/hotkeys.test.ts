@@ -27,6 +27,11 @@ vi.mock('../../../modules/WebRTC/ConferenceRoom', async (importOriginal) => ({
   }),
 }));
 
+vi.mock('livekit-client', async (importOriginal) => ({
+  ...(await importOriginal()),
+  createLocalAudioTrack: vi.fn().mockResolvedValue({ stop: vi.fn() }),
+}));
+
 describe('hotkeys', () => {
   beforeAll(() => {
     const { store } = configureStore();
@@ -47,6 +52,16 @@ describe('hotkeys', () => {
     Object.defineProperty(navigator, 'permissions', {
       value: {
         query: vi.fn().mockResolvedValue({ state: 'granted' }),
+      },
+      writable: true,
+    });
+
+    Object.defineProperty(navigator, 'mediaDevices', {
+      value: {
+        ...navigator.mediaDevices,
+        enumerateDevices: vi
+          .fn()
+          .mockResolvedValue([{ kind: 'audioinput', label: 'Default Microphone', deviceId: 'default', groupId: '' }]),
       },
       writable: true,
     });
@@ -86,7 +101,7 @@ describe('hotkeys', () => {
 
     const spyToggleMicrophone = vi.spyOn(events, 'toggleMicrophone');
     const spyToggleVideo = vi.spyOn(events, 'toggleVideo');
-    const spyToggleAudioToWhisperGroup = vi.spyOn(events, 'toggleAudioToWhisperGroup');
+    const spySetAudioToWhisperGroup = vi.spyOn(events, 'setAudioToWhisperGroup');
     const spyNextSpeaker = vi.spyOn(events, 'nextSpeaker');
     const spyToggleFullscreen = vi.spyOn(events, 'toggleFullscreen');
 
@@ -112,7 +127,7 @@ describe('hotkeys', () => {
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
     vi.advanceTimersByTime(100);
-    expect(spyToggleAudioToWhisperGroup).not.toHaveBeenCalled();
+    expect(spySetAudioToWhisperGroup).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'w' }));
     vi.advanceTimersByTime(500);
 
@@ -135,7 +150,7 @@ describe('hotkeys', () => {
 
     const spyToggleMicrophone = vi.spyOn(events, 'toggleMicrophone');
     const spyToggleVideo = vi.spyOn(events, 'toggleVideo');
-    const spyToggleAudioToWhisperGroup = vi.spyOn(events, 'toggleAudioToWhisperGroup');
+    const spySetAudioToWhisperGroup = vi.spyOn(events, 'setAudioToWhisperGroup');
     const spyNextSpeaker = vi.spyOn(events, 'nextSpeaker');
     const spyToggleFullscreen = vi.spyOn(events, 'toggleFullscreen');
 
@@ -143,7 +158,7 @@ describe('hotkeys', () => {
     vi.advanceTimersByTime(100);
     expect(spyToggleMicrophone).not.toHaveBeenCalled();
     expect(spyToggleVideo).not.toHaveBeenCalled();
-    expect(spyToggleAudioToWhisperGroup).not.toHaveBeenCalled();
+    expect(spySetAudioToWhisperGroup).not.toHaveBeenCalled();
     expect(spyNextSpeaker).not.toHaveBeenCalled();
     expect(spyToggleFullscreen).not.toHaveBeenCalled();
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'x' }));
@@ -395,15 +410,9 @@ describe('hotkeys', () => {
     expect(store.getState().subroomAudio.isWhisperActive).toEqual(false);
   });
 
-  it('toggles whisper audio on press w key and restore conference audio', async () => {
-    let mainRoomMicrophoneEnabled = true;
-    let whisperRoomMicrophoneEnabled = false;
-    const mockSetMainRoomMicrophoneEnabled = vi.fn().mockImplementation((enabled: boolean) => {
-      mainRoomMicrophoneEnabled = enabled;
-    });
-    const mockSetWhisperRoomMicrophoneEnabled = vi.fn().mockImplementation((enabled: boolean) => {
-      whisperRoomMicrophoneEnabled = enabled;
-    });
+  it('toggles whisper audio on press w key and mutes conference audio while whispering', async () => {
+    const whisperRoomMicrophoneEnabled = false;
+    const mockSetWhisperRoomMicrophoneEnabled = vi.fn().mockResolvedValue(undefined);
     const { store } = configureStore({
       initialState: {
         config: {
@@ -425,10 +434,7 @@ describe('hotkeys', () => {
           room: {
             getActiveDevice: vi.fn().mockReturnValue('audioinput'),
             localParticipant: {
-              setMicrophoneEnabled: mockSetMainRoomMicrophoneEnabled,
-              get isMicrophoneEnabled() {
-                return mainRoomMicrophoneEnabled;
-              },
+              isMicrophoneEnabled: true,
             },
           },
           whisperRoom: {
@@ -448,33 +454,26 @@ describe('hotkeys', () => {
     });
     ReduxDomEvents.dispatchFunction = store.dispatch;
     const changeMediaSpy = vi.spyOn(commonActions, 'changeMedia');
+
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
-    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'w' }));
     vi.advanceTimersByTime(100);
 
-    await waitFor(
-      () => {
-        expect(changeMediaSpy).toHaveBeenCalledWith({
-          kind: 'audioinput',
-          enabled: false,
-        });
-      },
-      { timeout: 1000 }
-    );
+    await waitFor(() => expect(store.getState().subroomAudio.isWhisperActive).toEqual(true), { timeout: 2000 });
 
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
+    expect(mockSetWhisperRoomMicrophoneEnabled).toHaveBeenCalledWith(true, expect.anything());
+    // conference audio is muted while whispering
+    expect(changeMediaSpy).toHaveBeenCalledWith({ kind: 'audioinput', enabled: false });
+
+    changeMediaSpy.mockClear();
+
     window.dispatchEvent(new KeyboardEvent('keyup', { key: 'w' }));
     vi.advanceTimersByTime(500);
 
-    await waitFor(
-      () => {
-        expect(changeMediaSpy).toHaveBeenCalledWith({
-          kind: 'audioinput',
-          enabled: true,
-        });
-      },
-      { timeout: 1000 }
-    );
+    await waitFor(() => expect(store.getState().subroomAudio.isWhisperActive).toEqual(false), { timeout: 1000 });
+
+    expect(mockSetWhisperRoomMicrophoneEnabled).toHaveBeenCalledWith(false, expect.anything());
+    // conference audio is restored after whispering
+    expect(changeMediaSpy).toHaveBeenCalledWith({ kind: 'audioinput', enabled: true });
   });
 
   it('steps to next speaker when clicking n when active', async () => {

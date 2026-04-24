@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import type { AppDispatch } from '../../../store';
 import { bindFullscreenEventsToRedux } from '../fullscreen/listener';
-import { nextSpeaker, toggleAudioToWhisperGroup, toggleFullscreen, toggleMicrophone, toggleVideo } from './events';
+import { nextSpeaker, setAudioToWhisperGroup, toggleFullscreen, toggleMicrophone, toggleVideo } from './events';
 import { registerHotkeys, resetHotkeys } from './listener';
 import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from './slice';
 
@@ -38,8 +38,8 @@ export class ReduxDomEvents {
       },
       {
         key: 'w',
-        onPress: toggleAudioToWhisperGroup,
-        onRelease: toggleAudioToWhisperGroup,
+        onPress: (params) => setAudioToWhisperGroup(params, true),
+        onRelease: (params) => setAudioToWhisperGroup(params, false),
         descriptionKey: 'hotkey-whisper-to-whisper-group',
       },
       {

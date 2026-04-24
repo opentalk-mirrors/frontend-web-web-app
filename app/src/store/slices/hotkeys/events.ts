@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
+import { createLocalAudioTrack } from 'livekit-client';
 
 import { pass } from '../../../api/types/outgoing/automod';
 import { showConsentNotification } from '../../../commonComponents';
@@ -90,24 +91,46 @@ export const toggleMicrophone = async (params: HotkeyCallbackParams, forcedState
 
 let audioStateBeforeWhisperStarts: boolean;
 
-export const toggleAudioToWhisperGroup = async ({ state, dispatch }: HotkeyCallbackParams) => {
+export const setAudioToWhisperGroup = async ({ state, dispatch }: HotkeyCallbackParams, enable: boolean) => {
   const subroomAudioEnabled = selectEnabledModulesList(state).includes(BackendModules.SubroomAudio);
   const whisperRoom = selectLivekitWhisperRoom(state);
   const isWhisperActive = selectIsWhisperActive(state);
   const audioEnabled = selectAudioEnabled(state);
   const deviceId = selectAudioDeviceId(state);
 
-  if (subroomAudioEnabled && whisperRoom) {
-    if (!isWhisperActive && audioEnabled) {
-      await toggleAudio({ state, dispatch }, false);
-    } else if (audioStateBeforeWhisperStarts) {
-      await toggleAudio({ state, dispatch }, true);
-    }
-    audioStateBeforeWhisperStarts = audioEnabled;
-
-    await whisperRoom?.localParticipant.setMicrophoneEnabled(!isWhisperActive, { deviceId });
-    dispatch(setIsWhisperActive(!isWhisperActive));
+  if (!subroomAudioEnabled || !whisperRoom || enable === isWhisperActive) {
+    return;
   }
+
+  // Disable the conference microphone while we whisper and enable it if it was
+  // enabled before whispering
+  if (enable && audioEnabled) {
+    await toggleAudio({ state, dispatch }, false);
+  } else if (!enable && audioStateBeforeWhisperStarts) {
+    await toggleAudio({ state, dispatch }, true);
+  }
+
+  audioStateBeforeWhisperStarts = audioEnabled;
+
+  // pre-acquire mic permission if needed to avoid the dialog stealing the keyup event
+  if (enable) {
+    const permission = await navigator.permissions.query({ name: 'microphone' });
+    const hasMicPermission = permission.state === 'granted';
+
+    if (!hasMicPermission) {
+      try {
+        const tempTrack = await createLocalAudioTrack({ deviceId });
+        tempTrack.stop();
+      } catch {
+        log.warn('Microphone permission denied. Cannot enable whisper mode.');
+      }
+      window.dispatchEvent(new CustomEvent('hotkeys:clearPushedKeys'));
+      return;
+    }
+  }
+
+  await whisperRoom.localParticipant.setMicrophoneEnabled(enable, { deviceId });
+  dispatch(setIsWhisperActive(enable));
 };
 
 export const toggleVideo = async ({ state, dispatch }: HotkeyCallbackParams) => {
