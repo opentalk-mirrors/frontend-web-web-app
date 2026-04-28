@@ -69,13 +69,12 @@ const HotkeyDialog = (props: HotkeyDialogProps) => {
         <Typography id="shortcut-dialog-description" sx={visuallyHidden}>
           {t('shortcut-table-summary')}
         </Typography>
-        <Stack component="header">
+        <Stack component="header" spacing={4}>
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              py: 2,
               position: 'relative',
             }}
           >
@@ -89,7 +88,6 @@ const HotkeyDialog = (props: HotkeyDialogProps) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              py: 2,
               position: 'relative',
             }}
           >
@@ -105,8 +103,12 @@ const HotkeyDialog = (props: HotkeyDialogProps) => {
               color="primary"
             />
           </Box>
+          {hotkeysEnabled ? (
+            <HotkeyTable />
+          ) : (
+            <DeactivatedContainer>{t('hotkey-disabled-message')}</DeactivatedContainer>
+          )}
         </Stack>
-        {hotkeysEnabled ? <HotkeyTable /> : <DeactivatedContainer>{t('hotkey-deactive-message')}</DeactivatedContainer>}
       </DialogContent>
     </Dialog>
   );

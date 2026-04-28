@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 import type { AppDispatch } from '../../../store';
 import { bindFullscreenEventsToRedux } from '../fullscreen/listener';
-import { nextSpeaker, setAudioToWhisperGroup, toggleFullscreen, toggleMicrophone, toggleVideo } from './events';
+import { setAudioToWhisperGroup, toggleFullscreen, toggleMicrophone, toggleVideo } from './events';
 import { registerHotkeys, resetHotkeys } from './listener';
 import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from './slice';
+
+const isMacOS = navigator.platform.startsWith('Mac');
 
 export class ReduxDomEvents {
   static #instance: ReduxDomEvents;
@@ -18,8 +20,7 @@ export class ReduxDomEvents {
     // If you register keys with another modifier key, make sure to add the relevant translation key.
     registerHotkeys([
       {
-        key: 'm',
-        modifier: 'Control',
+        key: ' ',
         onPress: async (params) => await toggleMicrophone(params, true),
         onRelease: async (params) => await toggleMicrophone(params, false),
         descriptionKey: 'hotkey-hold-to-speak',
@@ -28,11 +29,13 @@ export class ReduxDomEvents {
       },
       {
         key: 'm',
+        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
         onPress: toggleMicrophone,
         descriptionKey: 'hotkey-microphone-toggle',
       },
       {
         key: 'v',
+        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
         onPress: toggleVideo,
         descriptionKey: 'hotkey-video-toggle',
       },
@@ -43,12 +46,8 @@ export class ReduxDomEvents {
         descriptionKey: 'hotkey-whisper-to-whisper-group',
       },
       {
-        key: 'n',
-        onPress: nextSpeaker,
-        descriptionKey: 'hotkey-pass-talking-stick',
-      },
-      {
         key: 'f',
+        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
         onPress: toggleFullscreen,
         descriptionKey: 'hotkey-fullscreen-toggle',
       },

@@ -47,7 +47,7 @@ describe('HotkeyDialog', () => {
 
     await userEvent.click(switchButton);
 
-    expect(screen.getByText('hotkey-deactive-message')).toBeInTheDocument();
+    expect(screen.getByText('hotkey-disabled-message')).toBeInTheDocument();
   });
 
   it('fires onClose callback on close button click', async () => {

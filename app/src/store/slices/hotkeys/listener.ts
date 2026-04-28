@@ -2,14 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { ListenerMiddlewareInstance } from '@reduxjs/toolkit';
-import { debounce, isEmpty, some } from 'lodash';
+import { debounce, isEqual } from 'lodash';
 
 import browser from '../../../modules/BrowserSupport';
 import type { AppDispatch, RootState } from '../../../store';
 import { domKeyDown, domKeyUp, domFocusIn, domFocusOut } from './slice';
-import type { Hotkey } from './types';
+import type { Hotkey, HotkeyModifier, ModifierKey } from './types';
 
 const INPUT_TYPES = ['input', 'textarea', 'select'];
+const MODIFIER_KEYS: ModifierKey[] = ['Control', 'Shift', 'Alt', 'Meta'];
 
 const isTargetInputTypeAndContentEditable = (target: EventTarget | null) => {
   if (target instanceof HTMLElement) {
@@ -28,8 +29,43 @@ let hotkeysDisabled = false;
 
 export const isHotkeysDisabled = () => hotkeysDisabled;
 
+const normalizeModifier = (modifier?: HotkeyModifier) => (modifier ? [modifier].flat().sort() : []);
+
+const formatModifier = (modifier?: HotkeyModifier) => {
+  const modifiers = normalizeModifier(modifier);
+
+  return modifiers.length > 0 ? `${modifiers.join(' + ')} + ` : '';
+};
+
+const eventModifierActive = (event: KeyboardEvent, modifier: ModifierKey) => {
+  switch (modifier) {
+    case 'Control':
+      return event.ctrlKey;
+    case 'Shift':
+      return event.shiftKey;
+    case 'Alt':
+      return event.altKey;
+    case 'Meta':
+      return event.metaKey;
+  }
+};
+
+const eventModifiers = (event: KeyboardEvent) =>
+  MODIFIER_KEYS.filter((modifier) => eventModifierActive(event, modifier));
+
+const modifiersMatch = (event: KeyboardEvent, modifier?: HotkeyModifier) => {
+  const activeModifiers = eventModifiers(event).sort();
+  const expectedModifiers = normalizeModifier(modifier);
+
+  return isEqual(activeModifiers, expectedModifiers);
+};
+
+const modifierIncludesKey = (modifier: HotkeyModifier | undefined, key: string) =>
+  normalizeModifier(modifier).some((modifierKey) => modifierKey.toLowerCase() === key.toLowerCase());
+
 export const resetHotkeys = () => {
   hotkeys.splice(0, hotkeys.length);
+  pushedKeyIsActive.clear();
   hotkeysDisabled = false;
 };
 
@@ -42,10 +78,12 @@ export const registerHotkey = ({
   preventActiveMediaAfterPermissionPrompt,
   forcePreventDefault,
 }: Hotkey) => {
-  const exists = hotkeys.some((hotkey) => hotkey.key === key && hotkey.modifier === modifier);
+  const exists = hotkeys.some(
+    (hotkey) => hotkey.key === key && isEqual(normalizeModifier(hotkey.modifier), normalizeModifier(modifier))
+  );
 
   if (exists) {
-    throw new Error(`Hotkey "${modifier ? modifier + '+' : ''}${key}" is already registered`);
+    throw new Error(`Hotkey "${formatModifier(modifier)}${key}" is already registered`);
   }
 
   hotkeys.push({
@@ -65,9 +103,7 @@ export const registerHotkeys = (hotkeysToRegister: Hotkey[]) => {
 
 const findHotkey = (event: KeyboardEvent) =>
   hotkeys.find(
-    (hotkey) =>
-      hotkey.key.toLowerCase() === event.key.toLowerCase() &&
-      !isEmpty(hotkey.modifier) === event.getModifierState(hotkey.modifier || '')
+    (hotkey) => hotkey.key.toLowerCase() === event.key.toLowerCase() && modifiersMatch(event, hotkey.modifier)
   );
 
 export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance['startListening']) => {
@@ -108,10 +144,7 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
 
       const debouncedOnPress = debounce(
         async () => {
-          const modifierMatch = hotkey.modifier ? event.getModifierState(hotkey.modifier) : true;
-          const isPushedKeyActive = some([...pushedKeyIsActive], { key: event.key });
-
-          if (event.key.toLowerCase() === hotkey.key.toLowerCase() && modifierMatch && !isPushedKeyActive) {
+          if (event.key.toLowerCase() === hotkey.key.toLowerCase() && modifiersMatch(event, hotkey.modifier)) {
             hotkey.onPress({
               state,
               dispatch: listenerApi.dispatch as AppDispatch,
@@ -138,26 +171,28 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
         return;
       }
 
-      const releasedHotkey = [...pushedKeyIsActive].find((h) => h.key === event.key || h.modifier === event.key);
+      const releasedHotkey = [...pushedKeyIsActive].find(
+        (h) => h.key === event.key || modifierIncludesKey(h.modifier, event.key)
+      );
 
       if (!releasedHotkey) {
         return;
       }
 
       event.preventDefault();
+      pushedKeyIsActive.delete(releasedHotkey);
 
       const debouncedPressRelease = debounce(
         () => {
           if (
             releasedHotkey.onRelease &&
-            some([...pushedKeyIsActive], (h) => h.key === event.key || h.modifier === event.key)
+            (releasedHotkey.key === event.key || modifierIncludesKey(releasedHotkey.modifier, event.key))
           ) {
             releasedHotkey.onRelease({
               state,
               dispatch: listenerApi.dispatch as AppDispatch,
             });
           }
-          pushedKeyIsActive.delete(releasedHotkey);
         },
         100,
         { leading: true, trailing: false }

@@ -1,23 +1,27 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { hotkeys } from '../../../store/slices/hotkeys/listener';
+import type { Hotkey } from '../../../store/slices/hotkeys/types';
+
+type Hotkeys = Hotkey[];
 
 const HotkeyTable = () => {
   const { t } = useTranslation();
 
-  const renderHotkeys = () =>
+  const renderHotkeys = (hotkeys: Hotkeys) =>
     hotkeys.map((hotkey) => {
       const key = hotkey.key === ' ' ? t('global-spacebar') : hotkey.key.toLowerCase();
-      const translatedModifier = hotkey.modifier ? t(`modifier-${hotkey.modifier.toLowerCase()}`) : undefined;
-      const keyCombination = translatedModifier ? `${translatedModifier} + ${key}` : key;
+      const modifiers = hotkey.modifier ? [hotkey.modifier].flat() : [];
+      const translatedModifiers = modifiers.map((modifier) => t(`modifier-${modifier.toLowerCase()}`));
+      const keyCombination = [...translatedModifiers, key].join(' + ');
 
       return (
-        <TableRow key={hotkey.key}>
-          <TableCell headers="shortcut-key">
+        <TableRow key={`${modifiers.join('+')}+${hotkey.key}`}>
+          <TableCell headers="shortcut-key" width="35%">
             <code>{keyCombination}</code>
           </TableCell>
           <TableCell headers="shortcut-description">
@@ -27,27 +31,37 @@ const HotkeyTable = () => {
       );
     });
 
-  return (
-    <>
-      <Typography component="h3" gutterBottom>
-        {t('my-meeting-menu-hotkeys-list')}
-      </Typography>
+  const groupedHotkeys = hotkeys.reduce<{
+    push2talk: Hotkeys;
+    toggle: Hotkeys;
+  }>(
+    (acc, hotkey) => {
+      if (hotkey.onRelease) {
+        acc.push2talk.push(hotkey);
+      } else {
+        acc.toggle.push(hotkey);
+      }
+      return acc;
+    },
+    { push2talk: [], toggle: [] }
+  );
+
+  const renderTable = (title: string, hotkeys: Hotkeys) => (
+    <Stack>
+      <Typography component="h3">{title}</Typography>
       <TableContainer component={Paper}>
         <Table padding="normal" tabIndex={0}>
-          <TableHead>
-            <TableRow>
-              <TableCell scope="col" id="shortcut-key">
-                {t('global-hotkey')}
-              </TableCell>
-              <TableCell scope="col" id="shortcut-description">
-                {t('global-description')}
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>{renderHotkeys()}</TableBody>
+          <TableBody>{renderHotkeys(hotkeys)}</TableBody>
         </Table>
       </TableContainer>
-    </>
+    </Stack>
+  );
+
+  return (
+    <Stack spacing={2}>
+      {renderTable(t('my-meeting-menu-hotkeys-table-toggle-title'), groupedHotkeys.toggle)}
+      {renderTable(t('my-meeting-menu-hotkeys-table-p2t-title'), groupedHotkeys.push2talk)}
+    </Stack>
   );
 };
 

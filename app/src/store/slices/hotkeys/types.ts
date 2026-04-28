@@ -4,6 +4,7 @@
 import type { AppDispatch, RootState } from '../../../store';
 
 export type ModifierKey = 'Control' | 'Shift' | 'Alt' | 'Meta';
+export type HotkeyModifier = ModifierKey | ModifierKey[];
 
 export interface HotkeyCallbackParams {
   state: RootState;
@@ -13,7 +14,7 @@ export interface HotkeyCallbackParams {
 
 export interface Hotkey {
   key: string;
-  modifier?: ModifierKey;
+  modifier?: HotkeyModifier;
   onPress: (params: HotkeyCallbackParams) => void;
   onRelease?: (params: HotkeyCallbackParams) => void;
   descriptionKey: string;
