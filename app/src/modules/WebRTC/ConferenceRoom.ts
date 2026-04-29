@@ -96,7 +96,7 @@ const createOrGenerateDeviceSecret = async () => {
 };
 
 export const startRoom = async (credentials: RoomCredentials, config: ConfigState, displayName: string) => {
-  const roomPath = `v1/rooms/${credentials.roomId}/roomserver`;
+  const roomPath = `v1/rooms/${credentials.roomId}`;
 
   let authUrl: URL;
   if (credentials.inviteCode !== undefined) {
