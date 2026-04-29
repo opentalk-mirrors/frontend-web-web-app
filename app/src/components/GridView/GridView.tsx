@@ -6,17 +6,13 @@ import { CircularProgress, Grid, styled } from '@mui/material';
 import { Participant, RemoteParticipant } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-  GRID_BIG_VIDEO_WIDTH,
-  GRID_SMALL_VIDEO_WIDTH,
-  MAX_GRID_TILES_DESKTOP,
-  MAX_GRID_TILES_MOBILE,
-} from '../../constants';
+import { MAX_GRID_TILES_DESKTOP, MAX_GRID_TILES_MOBILE, GRID_SIZES, GRID_VIDEO_WIDTHS } from '../../constants';
 import { useAppSelector } from '../../hooks';
 import { CinemaViewParticipant, useCinemaViewParticipants } from '../../hooks/useCinemaViewParticipants';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import {
   PaginationDirection,
+  selectCinemaGridSize,
   selectPaginationDirectionState,
   selectPaginationPageState,
 } from '../../store/slices/uiSlice';
@@ -48,7 +44,7 @@ export type GridViewProps = {
 const GridView = () => {
   const { cinemaViewParticipants: participants, remoteParticipantsMap } = useCinemaViewParticipants();
   const [fallbackParticipantCache] = useState(() => new Map<ConnectionIdentifier, Participant>());
-  const videoWidth = participants.length <= 4 ? GRID_BIG_VIDEO_WIDTH : GRID_SMALL_VIDEO_WIDTH;
+
   const isMobile = useIsMobile();
   const lastSpokenParticipant = useMemo(() => {
     return participants.reduce<CinemaViewParticipant | undefined>((latest, current) => {
@@ -63,20 +59,24 @@ const GridView = () => {
   }, [participants]);
   const pageNumber = useAppSelector(selectPaginationPageState);
   const direction = useAppSelector(selectPaginationDirectionState);
+  const selectedMaxGridTiles = useAppSelector(selectCinemaGridSize);
+
   const gridViewParticipants = useMemo(() => {
-    const MAX_GRID_TILES = isMobile ? MAX_GRID_TILES_MOBILE : MAX_GRID_TILES_DESKTOP;
+    const maxGridTiles = isMobile
+      ? Math.min(selectedMaxGridTiles, MAX_GRID_TILES_MOBILE)
+      : Math.min(selectedMaxGridTiles, MAX_GRID_TILES_DESKTOP);
 
     if (!lastSpokenParticipant) {
-      return participants.slice((pageNumber - 1) * MAX_GRID_TILES, pageNumber * MAX_GRID_TILES);
+      return participants.slice((pageNumber - 1) * maxGridTiles, pageNumber * maxGridTiles);
     }
 
     // I need to place last spoken participant on the first page if not already present
     // specifically on the last spot of the first page, pushing everyone else forward
-    const firstPageLastSpotIndex = MAX_GRID_TILES - 1;
+    const firstPageLastSpotIndex = maxGridTiles - 1;
     const lastSpokenParticipantIndex = participants.findIndex((p) => p.id === lastSpokenParticipant!.id);
-    if (lastSpokenParticipantIndex >= 0 && lastSpokenParticipantIndex < MAX_GRID_TILES) {
+    if (lastSpokenParticipantIndex >= 0 && lastSpokenParticipantIndex < maxGridTiles) {
       // already on the first page
-      return participants.slice((pageNumber - 1) * MAX_GRID_TILES, pageNumber * MAX_GRID_TILES);
+      return participants.slice((pageNumber - 1) * maxGridTiles, pageNumber * maxGridTiles);
     }
 
     const participantsWithoutLastSpoken = participants.filter((p) => p.id !== lastSpokenParticipant.id);
@@ -84,9 +84,12 @@ const GridView = () => {
       ...participantsWithoutLastSpoken.slice(0, firstPageLastSpotIndex),
       lastSpokenParticipant,
       ...participantsWithoutLastSpoken.slice(firstPageLastSpotIndex),
-    ].slice((pageNumber - 1) * MAX_GRID_TILES, pageNumber * MAX_GRID_TILES);
+    ].slice((pageNumber - 1) * maxGridTiles, pageNumber * maxGridTiles);
     return gridViewParticipants;
-  }, [participants, pageNumber, isMobile, lastSpokenParticipant]);
+  }, [participants, pageNumber, isMobile, lastSpokenParticipant, selectedMaxGridTiles]);
+
+  const videoWidthIndex = GRID_SIZES.findIndex((videoWidth) => gridViewParticipants.length <= videoWidth) ?? 0;
+  const videoWidth = GRID_VIDEO_WIDTHS[videoWidthIndex];
 
   const highlight = gridViewParticipants.length >= 2;
 

@@ -17,13 +17,13 @@ export enum ToolbarButtonIds {
 export const LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER = 3;
 export const LIVEKIT_AUDIO_PERMISSION_NUMBER = 2;
 
-export const MAX_GRID_TILES_DESKTOP = 9;
+export const MAX_GRID_TILES_DESKTOP = 24;
 export const MAX_GRID_TILES_MOBILE = 9;
 
 export const DISPLAY_NAME_MAX_CHARACTERS = 100;
 
-export const GRID_BIG_VIDEO_WIDTH = 50;
-export const GRID_SMALL_VIDEO_WIDTH = 33.3;
+export const GRID_VIDEO_WIDTHS = [50, 33.33, 25, 25] as readonly number[];
+export const GRID_SIZES = [6, 9, 16, 24] as readonly number[];
 
 export const BREAKOUT_ROOM_CLOSE_DELAY = 60;
 export const BREAKOUT_ROOM_DEFAULT_COUNTDOWN_DURATION = 120;

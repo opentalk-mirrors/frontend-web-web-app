@@ -75,7 +75,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
     const { store: nextStore } = configureStore({
       initialState: {
         participants: MOCK_PARTICIPANTS,
-        ui: { cinemaLayout: LayoutOptions.Grid, lastCinemaLayout: LayoutOptions.Grid },
+        ui: { cinemaLayout: LayoutOptions.Grid, lastCinemaLayout: LayoutOptions.Grid, cinemaGridSize: 6 },
       },
     });
     unmount();
