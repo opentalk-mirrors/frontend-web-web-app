@@ -15,7 +15,7 @@ import { useFormik } from 'formik';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useLazyGetEventsQuery, useGetMeTariffQuery } from '../../../api/rest';
+import { useLazyGetEventsWithInstancesQuery, useGetMeTariffQuery } from '../../../api/rest';
 import { CommonTextField } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectConfigFeatures, selectWaitingRoomDefault } from '../../../store/slices/configSlice';
@@ -50,9 +50,11 @@ const Form = styled('form')(({ theme }) => ({
   color: theme.palette.background.main.contrastText,
 }));
 
+const MAX_INSTANCES_PER_RECURRING_EVENT = 100;
+
 const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonClick }: MeetingFormProps) => {
   const { t } = useTranslation();
-  const [getEvents] = useLazyGetEventsQuery();
+  const [getEventsWithInstances] = useLazyGetEventsWithInstancesQuery();
   const isWaitingRoomEnabledByDefault = useAppSelector(selectWaitingRoomDefault);
 
   const { data: tariff } = useGetMeTariffQuery();
@@ -109,9 +111,11 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
 
     const startDate = formik.values.startDate;
     const endDate = formik.values.endDate;
-    const sameTimeEventQueryResponse = await getEvents({
+    const sameTimeEventQueryResponse = await getEventsWithInstances({
       timeMin: startDate as DateTime,
       timeMax: endDate as DateTime,
+      timeIndependent: false,
+      instancesMax: MAX_INSTANCES_PER_RECURRING_EVENT,
     });
 
     const overlappingEvent =

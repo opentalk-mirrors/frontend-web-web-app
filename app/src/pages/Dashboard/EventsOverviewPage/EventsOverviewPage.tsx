@@ -7,14 +7,9 @@ import { groupBy } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useGetEventsQuery } from '../../../api/rest';
+import { useGetEventsWithInstancesQuery } from '../../../api/rest';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
-import {
-  appendRecurringEventInstances,
-  SortDirection,
-  orderEventsByDate,
-  TimePerspectiveFilter,
-} from '../../../utils/eventUtils';
+import { TimePerspectiveFilter } from '../../../utils/eventUtils';
 import EventsOverview from './fragments/EventsOverview';
 import EventsPageHeader from './fragments/EventsPageHeader';
 import { filterByTimePeriod } from './fragments/utils';
@@ -22,6 +17,7 @@ import { DashboardEventsFilters, FilterChangeCallbackType, MeetingsProp, TimeFil
 
 const EMPTY_MEETING_PROP_ARRAY: Array<MeetingsProp> = [];
 const EVENTS_PER_REQUEST = 100;
+const MAX_INSTANCES_PER_RECURRING_EVENT = 100;
 
 const EventsOverviewPage = () => {
   const [filter, setFilter] = useState<DashboardEventsFilters>({
@@ -52,9 +48,10 @@ const EventsOverviewPage = () => {
     }
   }, [timePerspective]);
 
-  const { events, isLoading, isFetching } = useGetEventsQuery(
+  const { events, isLoading, isFetching } = useGetEventsWithInstancesQuery(
     {
       perPage: EVENTS_PER_REQUEST,
+      instancesMax: MAX_INSTANCES_PER_RECURRING_EVENT,
       adhoc: false,
       timeIndependent: timePerspective === TimePerspectiveFilter.TimeIndependent,
       timeMin: timeMinFilter,
@@ -68,10 +65,11 @@ const EventsOverviewPage = () => {
             ...props,
           };
         }
-        const eventsWithEventInstances = appendRecurringEventInstances(data.data, true, undefined, timePerspective);
-        let targetedEvents = eventsWithEventInstances;
+
+        let eventsWithEventInstances = data.data;
+
         if (favoriteMeetings || openInvitedMeeting) {
-          targetedEvents = eventsWithEventInstances.filter((event) => {
+          eventsWithEventInstances = eventsWithEventInstances.filter((event) => {
             const isPendingInvite = openInvitedMeeting && event.inviteStatus !== InviteStatus.Accepted;
             const isMarkedAsFavourite = favoriteMeetings && event.isFavorite;
 
@@ -79,10 +77,10 @@ const EventsOverviewPage = () => {
           });
         }
 
-        const orderedEventsWithRecurringInstances = orderEventsByDate(
-          targetedEvents,
-          timePerspective === TimePerspectiveFilter.Future ? SortDirection.ASC : SortDirection.DESC
-        );
+        const orderedEventsWithInstances =
+          timePerspective === TimePerspectiveFilter.Future
+            ? eventsWithEventInstances
+            : [...eventsWithEventInstances].reverse();
 
         if (timePerspective === TimePerspectiveFilter.TimeIndependent) {
           return {
@@ -90,23 +88,25 @@ const EventsOverviewPage = () => {
             events: [
               {
                 title: t('dashboard-meeting-details-page-timeindependent'),
-                events: orderedEventsWithRecurringInstances,
+                events: orderedEventsWithInstances,
               },
             ],
           };
         }
 
-        const eventsGroupedByTimeFilter = groupBy(orderedEventsWithRecurringInstances, (event) =>
+        const eventsGroupedByTimeFilter = groupBy(orderedEventsWithInstances, (event) =>
           filterByTimePeriod(
             timePeriod,
             isTimelessEvent(event) ? event.createdAt : (event.startsAt?.datetime as DateTime)
           )
         );
 
-        const events = Object.entries(eventsGroupedByTimeFilter).map(([title, groupedEvents]) => ({
-          title,
-          events: groupedEvents,
-        }));
+        const events = Object.entries(eventsGroupedByTimeFilter).map(
+          ([title, groupedEvents]): MeetingsProp => ({
+            title,
+            events: groupedEvents,
+          })
+        );
 
         return {
           ...props,

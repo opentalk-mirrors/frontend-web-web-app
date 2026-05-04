@@ -7,15 +7,15 @@ import snakeCaseKeys from 'snakecase-keys';
 import { Tag, Tags, UserId, CursorPaginated, DateTime, InviteStatus } from '../types/common';
 import {
   UpdateEventPayload,
-  RescheduleEventPayload,
   EventId,
   EventInstanceId,
   Event,
   EventException,
   EventInstance,
   CreateEventPayload,
-  CreateEventExceptionPayload,
   UpdateEventInstancePayload,
+  isEventInstance,
+  EventStatus,
 } from '../types/event';
 import { UpdateEventInvitePayload, CreateEventInvitePayload, EventInvite } from '../types/eventInvite';
 import { RevokeEmailUserPayload } from '../types/user';
@@ -44,6 +44,14 @@ export interface EventQueryParams {
    * @default false
    */
   timeIndependent?: boolean;
+}
+
+export interface EventsWithInstancesQueryParams extends EventQueryParams {
+  /**
+   * Maximum number of instances to return for each recurring event.
+   * @default 0
+   */
+  instancesMax?: number;
 }
 
 export interface TimeRangeQueryParams {
@@ -83,25 +91,6 @@ export const addEventsEndpoints = <
       return toCursorPaginated(meta?.response?.headers, response);
     },
   }),
-  // Todo(r.floren): We could provide a query here that already spits out event instances based on the RRULE without using the instances endpoint
-  // Along these lines
-  // getEventsInstanced: builder.query<
-  //   Array<EventInstance>,
-  //   CursorPaginationParams & TimeRangeQueryParams & EventQueryParams
-  // >({
-  //   query: (params) => ({
-  //     url: 'events',
-  //     params: params,
-  //   }),
-  //   providesTags: (result) =>
-  //     result
-  //       ? [...result.map(({ id }) => ({ type: 'EventInstance' as const, id: id })), { type: 'EventInstance', id: 'PARTIAL-LIST' }]
-  //       : [{ type: 'Room', id: 'PARTIAL-LIST' }],
-  //   transformResponse: (response: ApiResponse<Event>): Event => {
-  //     resolve rrules here add diffs from exceptions
-  //     return camelcaseKeysDeep(response);
-  //   },
-  // }),
   /**
    * Create new event
    */
@@ -114,6 +103,16 @@ export const addEventsEndpoints = <
     invalidatesTags: [{ type: Tag.Event, id: 'PARTIAL-LIST' }],
   }),
   /**
+   * Used to get a single event
+   */
+  getEvent: builder.query<Event, { eventId: EventId } & EventQueryParams>({
+    query: ({ eventId, ...params }) => ({
+      url: `events/${eventId}`,
+      params,
+    }),
+    providesTags: (result) => (result ? [{ type: Tag.Event, id: result.id }] : []),
+  }),
+  /**
    * Delete an event
    */
   deleteEvent: builder.mutation<unknown, EventId>({
@@ -121,18 +120,10 @@ export const addEventsEndpoints = <
       url: `events/${id}`,
       method: 'DELETE',
     }),
-    invalidatesTags: (result, error, id) => [{ type: Tag.Event, id }],
-  }),
-  /**
-   * Create new event exception
-   */
-  createEventException: builder.mutation<EventException, { eventId: EventId } & CreateEventExceptionPayload>({
-    query: ({ eventId, ...payload }) => ({
-      url: `events/${eventId}/instances`,
-      method: 'POST',
-      body: snakeCaseKeys(payload),
-    }),
-    invalidatesTags: [{ type: Tag.Event, id: 'PARTIAL-LIST' }],
+    invalidatesTags: (result, error, id) => [
+      { type: Tag.Event, id },
+      { type: Tag.Event, id: 'PARTIAL-LIST' },
+    ],
   }),
   /**
    * Update an event
@@ -146,28 +137,37 @@ export const addEventsEndpoints = <
     invalidatesTags: (res, error, { eventId }) => [{ type: Tag.Event, id: eventId }],
   }),
   /**
-   * Reschedule all following events based on the from argument
+   * Get a list of events with their instances
    */
-  rescheduleEvent: builder.mutation<EventException, { eventId: EventId } & RescheduleEventPayload>({
-    query: ({ eventId, ...payload }) => ({
-      url: `events/${eventId}/reschedule`,
-      method: 'POST',
-      body: snakeCaseKeys(payload),
-    }),
-    invalidatesTags: (res, error, { eventId }) => [{ type: Tag.Event, id: eventId }],
-  }),
-  /**
-   * Used to get a single event
-   */
-  getEvent: builder.query<Event, { eventId: EventId } & EventQueryParams>({
-    query: ({ eventId, ...params }) => ({
-      url: `events/${eventId}`,
+  getEventsWithInstances: builder.query<
+    CursorPaginated<Event | EventInstance>,
+    CursorPaginationParams & TimeRangeQueryParams & EventsWithInstancesQueryParams & EventInviteStatusQueryParam
+  >({
+    query: (params) => ({
+      url: `events/instances`,
       params,
     }),
-    providesTags: (result) => (result ? [{ type: Tag.Event, id: result.id }] : []),
+    providesTags: (result) =>
+      result
+        ? [
+            ...result.data.map(({ id }) => ({ type: Tag.EventInstance, id: id })),
+            { type: Tag.Event, id: 'PARTIAL-LIST' },
+          ]
+        : [{ type: Tag.Event, id: 'PARTIAL-LIST' }],
+    transformResponse: (response: Array<Event | EventInstance>, meta): CursorPaginated<Event | EventInstance> => {
+      // Currently controller returns also cancelled instances, that we typically don't want to show in the UI
+      // Maybe in the future controller could introduce a query param to filter those out
+      const onlyActiveEventInstances = response.filter((event) => {
+        if (isEventInstance(event)) {
+          return event.status === EventStatus.Ok;
+        }
+        return true;
+      });
+      return toCursorPaginated(meta?.response?.headers, onlyActiveEventInstances);
+    },
   }),
   /**
-   * Used to resolve the instances on the server. Use at last resort
+   * Get a list of instances for an event based on eventId
    */
   getEventInstances: builder.query<Array<EventInstance>, { eventId: EventId } & EventQueryParams>({
     query: ({ eventId, ...params }) => ({
@@ -207,6 +207,7 @@ export const addEventsEndpoints = <
     invalidatesTags: (result, error, { eventId, instanceId }) => [
       { type: Tag.EventInstance, id: instanceId },
       { type: Tag.Event, id: eventId },
+      { type: Tag.Event, id: 'PARTIAL-LIST' },
     ],
   }),
   /**
@@ -280,7 +281,10 @@ export const addEventsEndpoints = <
       url: `events/${eventId}/invite`,
       method: 'PATCH',
     }),
-    invalidatesTags: (res, error, { eventId }) => [{ type: Tag.Event, id: eventId }],
+    invalidatesTags: (res, error, { eventId }) => [
+      { type: Tag.Event, id: eventId },
+      { type: Tag.Event, id: 'PARTIAL-LIST' },
+    ],
   }),
   /**
    * Accept an event invite for the current user to the specified event
@@ -293,6 +297,7 @@ export const addEventsEndpoints = <
     invalidatesTags: (res, error, { eventId }) => [
       { type: Tag.Event, id: eventId },
       { type: Tag.EventInvite, id: eventId },
+      { type: Tag.Event, id: 'PARTIAL-LIST' },
     ],
   }),
   /**

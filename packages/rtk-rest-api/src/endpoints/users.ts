@@ -92,6 +92,7 @@ export const addUserEndpoints = <
     invalidatesTags: (_result, _error, eventId) => [
       { type: Tag.User, id: 'ME' },
       { type: Tag.Event, id: eventId },
+      { type: Tag.Event, id: 'PARTIAL-LIST' },
     ],
   }),
 });

@@ -18,10 +18,10 @@ const defaultTariff: Tariff = {
 };
 
 let mockTariff: Tariff;
-let mockGetEvents: MockedFunction<() => SingleEvent[]>;
+let mockGetEventsWithInstances: MockedFunction<() => SingleEvent[]>;
 vi.mock('../../../api/rest', async (importOriginal) => ({
   ...(await importOriginal()),
-  useLazyGetEventsQuery: () => [mockGetEvents],
+  useLazyGetEventsWithInstancesQuery: () => [mockGetEventsWithInstances],
   useGetMeTariffQuery: () => ({
     data: mockTariff,
   }),
@@ -81,7 +81,7 @@ describe('MeetingForm', () => {
   beforeEach(() => {
     mockTariff = defaultTariff;
     mockInitialValues = defaultValues;
-    mockGetEvents = vi.fn().mockReturnValue({});
+    mockGetEventsWithInstances = vi.fn().mockReturnValue({});
     vi.clearAllMocks();
   });
 
@@ -192,7 +192,7 @@ describe('MeetingForm', () => {
       });
     });
 
-    it('fetches events with same start and end date if meeting is time dependent', async () => {
+    it('fetches events with instances with same start and end date if meeting is time dependent', async () => {
       const mockStartDate = new Date('2023-10-01T10:00:00Z').toISOString();
       const mockEndDate = new Date('2023-10-01T10:30:00Z').toISOString();
       mockInitialValues = { ...defaultValues, startDate: mockStartDate, endDate: mockEndDate };
@@ -209,7 +209,12 @@ describe('MeetingForm', () => {
       fireEvent.submit(screen.getByRole('form'));
 
       await waitFor(() => {
-        expect(mockGetEvents).toHaveBeenCalledExactlyOnceWith({ timeMin: mockStartDate, timeMax: mockEndDate });
+        expect(mockGetEventsWithInstances).toHaveBeenCalledExactlyOnceWith({
+          timeIndependent: false,
+          instancesMax: 100,
+          timeMin: mockStartDate,
+          timeMax: mockEndDate,
+        });
       });
     });
 
@@ -242,7 +247,7 @@ describe('MeetingForm', () => {
       mockInitialValues = { ...defaultValues, startDate: mockStartDate, endDate: mockEndDate };
 
       mockOverlappingEvent = mockedSingleEvent;
-      mockGetEvents = vi.fn().mockReturnValue({ data: mockedSingleEvent });
+      mockGetEventsWithInstances = vi.fn().mockReturnValue({ data: mockedSingleEvent });
 
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
@@ -268,7 +273,7 @@ describe('MeetingForm', () => {
       mockInitialValues = { ...defaultValues, startDate: mockStartDate, endDate: mockEndDate };
 
       mockOverlappingEvent = mockedSingleEvent;
-      mockGetEvents = vi.fn().mockReturnValue({ data: mockedSingleEvent });
+      mockGetEventsWithInstances = vi.fn().mockReturnValue({ data: mockedSingleEvent });
 
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {

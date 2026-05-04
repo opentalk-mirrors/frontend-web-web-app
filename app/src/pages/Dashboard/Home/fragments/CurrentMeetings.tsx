@@ -2,16 +2,14 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, Skeleton, List, ListItem, styled } from '@mui/material';
-import { DateTime, Event, EventException, InviteStatus } from '@opentalk/rest-api-rtk-query';
+import { DateTime, Event, EventInstance, InviteStatus } from '@opentalk/rest-api-rtk-query';
 import { formatRFC3339 } from 'date-fns';
 import { isEmpty } from 'lodash';
 
-import { useGetEventsQuery } from '../../../../api/rest';
+import { useGetEventsWithInstancesQuery } from '../../../../api/rest';
 import MeetingCard from '../../../../components/MeetingCard';
-import { appendRecurringEventInstances, TimePerspectiveFilter } from '../../../../utils/eventUtils';
 
 const MAX_MEETINGS_PER_PAGE = 4;
-const MAX_CONSIDERED_MONTHS = 12;
 
 const MeetingList = styled(List)({
   width: '100%',
@@ -22,14 +20,16 @@ const CurrentMeetings = () => {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
-  const { data: upcomingEvents, isLoading: upcomingEventsIsLoading } = useGetEventsQuery({
+  const { data: upcomingEvents, isLoading: upcomingEventsIsLoading } = useGetEventsWithInstancesQuery({
     timeMin: formatRFC3339(currentDate) as DateTime,
     perPage: MAX_MEETINGS_PER_PAGE,
     adhoc: false,
+    timeIndependent: false,
     inviteStatus: [InviteStatus.Accepted, InviteStatus.Pending, InviteStatus.Tentative],
+    instancesMax: MAX_MEETINGS_PER_PAGE,
   });
 
-  const { data: timeIndependentEvents, isLoading: timeIndependentEventsIsLoading } = useGetEventsQuery({
+  const { data: timeIndependentEvents, isLoading: timeIndependentEventsIsLoading } = useGetEventsWithInstancesQuery({
     perPage: MAX_MEETINGS_PER_PAGE,
     adhoc: false,
     timeIndependent: true,
@@ -51,7 +51,7 @@ const CurrentMeetings = () => {
     return undefined;
   }
 
-  const renderEvent = (event: Event | EventException) => {
+  const renderEvent = (event: Event | EventInstance) => {
     let startsAt = '';
     if (!event.isTimeIndependent && event.startsAt) {
       startsAt = event.startsAt.datetime;
@@ -67,13 +67,7 @@ const CurrentMeetings = () => {
     let tiEvents = Array.from(timeIndependentEvents.data);
     if (upcomingEvents?.data) {
       const ucEvents = Array.from(upcomingEvents.data);
-      const expandedEvents = appendRecurringEventInstances(
-        ucEvents,
-        true,
-        MAX_CONSIDERED_MONTHS,
-        TimePerspectiveFilter.Future
-      );
-      tiEvents = tiEvents.concat(expandedEvents.slice(0, MAX_MEETINGS_PER_PAGE - tiEvents.length));
+      tiEvents = tiEvents.concat(ucEvents.slice(0, MAX_MEETINGS_PER_PAGE - tiEvents.length));
     }
     return <MeetingList>{tiEvents.map(renderEvent)}</MeetingList>;
   }

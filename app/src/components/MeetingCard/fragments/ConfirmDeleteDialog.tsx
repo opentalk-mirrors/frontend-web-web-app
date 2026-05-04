@@ -14,12 +14,11 @@ import {
 } from '@mui/material';
 import {
   Event,
-  EventException,
-  EventId,
+  EventInstance,
   EventStatus,
   EventType,
-  RecurringEvent,
-  isRecurringEvent,
+  getEventId,
+  isEventInstance,
 } from '@opentalk/rest-api-rtk-query';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,10 +26,10 @@ import { useTranslation } from 'react-i18next';
 import { useDeleteEventMutation, useUpdateEventInstanceMutation } from '../../../api/rest';
 import { CloseIcon } from '../../../assets/icons';
 import { notifications } from '../../../commonComponents';
-import { EventDeletionType, generateInstanceId } from '../../../utils/eventUtils';
+import { EventDeletionType } from '../../../utils/eventUtils';
 
 interface ConfirmDeleteDialogProps {
-  event: Event | EventException;
+  event: Event | EventInstance;
   open: boolean;
   onClose: () => void;
 }
@@ -54,7 +53,7 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
   const { t } = useTranslation();
   const { open, event, onClose } = props;
   const { title } = event;
-  const eventId = event.id as EventId;
+  const eventId = getEventId(event);
   const [updateEventInstance, { isLoading: isSubmittingUpdateEventInstance }] = useUpdateEventInstanceMutation();
   const [deleteEvent, { isLoading: isSubmittingDeleteEvent }] = useDeleteEventMutation();
   const submitting = isSubmittingUpdateEventInstance || isSubmittingDeleteEvent;
@@ -74,10 +73,10 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
     }
   };
 
-  const deleteMeetingInstance = async (event: RecurringEvent) => {
+  const deleteMeetingInstance = async (event: EventInstance) => {
     const response = await updateEventInstance({
-      eventId: event.id,
-      instanceId: generateInstanceId(event.startsAt),
+      eventId: event.recurringEventId,
+      instanceId: event.instanceId,
       status: EventStatus.Cancelled,
     });
     if (response.error && 'status' in response.error && response.error.status === 'FETCH_ERROR') {
@@ -86,7 +85,7 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
   };
 
   const contentBasedOnEventType: ContentBasedOnEventTypeProps =
-    event.type === EventType.Recurring
+    event.type === EventType.Recurring || event.type === EventType.Instance
       ? {
           message: t('dashboard-recurrence-meeting-card-delete-dialog-message'),
           title: t('dashboard-meeting-card-delete-dialog-title'),
@@ -130,7 +129,7 @@ export const ConfirmDeleteDialog = (props: ConfirmDeleteDialogProps) => {
   const handleActionButtons = (action: EventDeletionType | null) => {
     switch (action) {
       case EventDeletionType.One: {
-        if (isRecurringEvent(event)) {
+        if (isEventInstance(event)) {
           deleteMeetingInstance(event).finally(() => {
             onClose();
           });

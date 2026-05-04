@@ -5,11 +5,11 @@ import { Button, MenuList, MenuItem as MuiMenuItem, Popover as MuiPopover, Stack
 import {
   CoreFeatures,
   Event,
-  EventException,
-  EventId,
+  EventInstance,
   InviteStatus,
   isEvent,
   isRecurringEvent,
+  getEventId,
 } from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/query';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -33,7 +33,7 @@ import { isFeatureEnabledPredicate } from '../../../utils/moduleUtils';
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
 export interface MeetingCardBaseProps {
-  event: Event | EventException;
+  event: Event | EventInstance;
   highlighted?: boolean;
 }
 
@@ -80,7 +80,8 @@ const MoreButton = styled(IconButton)(({ theme }) => ({
 export const MeetingActions = ({ event, isMeetingCreator, highlighted }: MeetingCardFragmentProps) => {
   const { t } = useTranslation();
   const { isFavorite, title } = event;
-  const eventId = event.id as EventId;
+
+  const eventId = getEventId(event);
   const roomId = event.room?.id;
 
   const [markEvent] = useMarkFavoriteEventMutation();

@@ -217,6 +217,8 @@ export const {
   useGetStreamingTargetsQuery,
   useAddStreamingTargetsMutation,
   useGetEventInstanceQuery,
+  useGetEventsWithInstancesQuery,
+  useLazyGetEventsWithInstancesQuery,
   useGetUserOwnedAssetsQuery,
   useGetColorSchemesQuery,
 } = restApi;

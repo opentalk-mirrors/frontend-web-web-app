@@ -2,13 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Grid, styled, Typography, Collapse, Tooltip } from '@mui/material';
-import {
-  EventId,
-  isTimelessEvent,
-  isEventException,
-  isRecurringEvent,
-  isPendingEvent,
-} from '@opentalk/rest-api-rtk-query';
+import { isTimelessEvent, isRecurringEvent, isPendingEvent, getEventId } from '@opentalk/rest-api-rtk-query';
 import { Property } from 'csstype';
 import { uniqueId } from 'lodash';
 import React, { useRef } from 'react';
@@ -69,13 +63,13 @@ const TitleTypography = styled(Typography, {
 
 const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragmentProps) => {
   const { createdBy, isFavorite, title } = event;
-  const eventId = event.id as EventId;
+  const eventId = getEventId(event);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const getTimePreview = () => {
-    if (!isTimelessEvent(event) && !isEventException(event)) {
+    if (!isTimelessEvent(event)) {
       const startDate = new Date(event.startsAt.datetime);
       const endDate = new Date(event.endsAt.datetime);
 
