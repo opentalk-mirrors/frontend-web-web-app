@@ -941,6 +941,16 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
           noSsr: true,
         },
       },
+      MuiFormLabel: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            color: theme.palette.text.primary,
+          }),
+          colorSecondary: ({ theme }) => ({
+            color: theme.palette.secondary.main,
+          }),
+        },
+      },
     },
     typography: () => ({
       allVariants: {

@@ -761,6 +761,7 @@ global-open-new-tab = Open in new tab
 global-required-field = This is a mandatory field
 global-unknown = Unknown
 global-rename = Rename
+global-disabled = Disabled
 
 retry-available-in = Retry available in {$seconds}
 
