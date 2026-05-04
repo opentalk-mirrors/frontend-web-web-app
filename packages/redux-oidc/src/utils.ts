@@ -25,7 +25,12 @@ export enum SessionStatus {
 export function hasActiveSession() {
   const accessToken = localStorage.getItem('access_token');
   const refreshToken = localStorage.getItem('refresh_token');
-  const refreshExpiresIn = refreshToken && getTokenExpirationDate(refreshToken);
+  let refreshExpiresIn;
+  try {
+    refreshExpiresIn = refreshToken && getTokenExpirationDate(refreshToken);
+  } catch {
+    console.warn('Cannot identify expiration date for an opaque refresh token, fetching a new one');
+  }
   if (!accessToken || !refreshToken || !refreshExpiresIn) {
     return false;
   }
