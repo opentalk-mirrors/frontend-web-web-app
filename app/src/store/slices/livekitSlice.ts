@@ -34,6 +34,7 @@ import {
 } from 'livekit-client';
 
 import { Credentials } from '../../api/types/incoming/livekit';
+import { switchRoom } from '../../api/types/outgoing/breakout';
 import { createNewAccessToken } from '../../api/types/outgoing/livekit';
 import { leaveWhisperGroup } from '../../api/types/outgoing/subroomAudio';
 import { notifications } from '../../commonComponents';
@@ -105,6 +106,7 @@ export type LivekitState = {
   videoBackgroundEffects: BackgroundEffect;
   mediaSettings: MediaSettings;
   lobby: Lobby;
+  isSwitchingRooms: boolean;
   reconnectLoop: {
     active: boolean;
     attempt: number;
@@ -136,6 +138,7 @@ export const initialState: LivekitState = {
     audioTrackPublication: undefined,
     videoTrackPublication: undefined,
   },
+  isSwitchingRooms: false,
   reconnectLoop: { active: false, attempt: 0, timerId: null, nextDelayMs: null },
 };
 
@@ -343,6 +346,10 @@ export const livekitSlice = createSlice({
         state.accessToken = livekitData.token;
         state.publicUrl = livekitData.publicUrl;
       }
+      state.isSwitchingRooms = false;
+    });
+    builder.addCase(switchRoom.action, (state) => {
+      state.isSwitchingRooms = true;
     });
   },
 });
@@ -388,6 +395,7 @@ export const selectLobbyVideoTrack = (state: RootState) => state.livekit.lobby.v
 export const selectLobbyVideoEnabled = (state: RootState) => Boolean(state.livekit.lobby.videoTrackPublication);
 export const selectLobbyAudioEnabled = (state: RootState) => Boolean(state.livekit.lobby.audioTrackPublication);
 export const selectVideoBackgroundEffects = (state: RootState) => state.livekit?.videoBackgroundEffects;
+export const selectSwitchingRooms = (state: RootState) => state.livekit.isSwitchingRooms;
 
 export const selectAudioPermissionDenied = (state: RootState) =>
   Boolean(state.livekit?.permissionDenied?.find((kind) => kind === 'audioinput'));

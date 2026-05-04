@@ -7,28 +7,16 @@ import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { hangUp } from '../../../store/commonActions';
-import {
-  selectBreakoutClosedAt,
-  selectLastDispatchedActionType,
-  breakoutSlice,
-} from '../../../store/slices/breakoutSlice';
+import { selectSwitchingRooms } from '../../../store/slices/livekitSlice';
 
 const DescriptionContainer = styled('div')({
   margin: '1.5rem 0',
 });
 
-const MAX_ROOM_SWITCHING_TIME_SECONDS = 3;
-const isWithinSwitchWindow = (timestamp: number) => (Date.now() - timestamp) / 1000 <= MAX_ROOM_SWITCHING_TIME_SECONDS;
-
 const MediaReconnectionDialog = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const lastDispatchedActionType = useAppSelector(selectLastDispatchedActionType);
-  const breakoutClosedAt = useAppSelector(selectBreakoutClosedAt);
-
-  const switchingByAction = lastDispatchedActionType === breakoutSlice.actions.switchedRoom.type;
-  const switchingByRecentClose = typeof breakoutClosedAt === 'number' && isWithinSwitchWindow(breakoutClosedAt);
-  const isSwitchingRooms = switchingByAction || switchingByRecentClose;
+  const isSwitchingRooms = useAppSelector(selectSwitchingRooms);
 
   const { title, description } = useMemo(() => {
     if (isSwitchingRooms) {
