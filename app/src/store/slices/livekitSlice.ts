@@ -483,7 +483,10 @@ const startSubroomAudioDataListeners = (startAppListening: StartAppListening) =>
   startAppListening({
     actionCreator: setSubroomAudioData,
     effect: async (_, listenerApi) => {
-      listenerApi.dispatch(connectRoom({ isWhisperRoom: true }));
+      const token = listenerApi.getState().subroomAudio.token;
+      if (token) {
+        listenerApi.dispatch(connectRoom({ isWhisperRoom: true }));
+      }
     },
   });
 };
@@ -782,7 +785,7 @@ const createRoomListeners = (
   getState: () => RootState,
   room: Room
 ): Partial<RoomEventCallbacks> => ({
-  [RoomEvent.Connected]: () => handleRoomConnected(dispatch, getState),
+  [RoomEvent.Connected]: () => handleRoomConnected(dispatch, getState, room),
   [RoomEvent.Disconnected]: (reason) => handleRoomDisconnected(dispatch, getState, room, reason),
   [RoomEvent.TrackPublished]: (pub, participant) => {
     if (participant instanceof RemoteParticipant && pub instanceof RemoteTrackPublication) {
@@ -825,10 +828,16 @@ const detachRoomListeners = (room: Room) => {
   roomListeners.delete(room);
 };
 
-const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootState) => {
+const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
+  const state = getState();
+  const isWhisperRoom = state.livekit.whisperRoom?.name === room.name;
+
+  if (isWhisperRoom) {
+    return;
+  }
+
   dispatch(setLivekitUnavailable(false));
   dispatch(finishReconnectLoop());
-  const state = getState();
   const isLobbyCameraEnabled = selectLobbyVideoEnabled(state);
   const isLobbyMicrophoneEnabled = selectLobbyAudioEnabled(state);
 
@@ -850,7 +859,14 @@ const handleClientOrUserDisconnect = (dispatch: AppDispatch, getState: () => Roo
   dispatch(setLivekitRoom({ room: undefined, isWhisperRoom }));
 };
 
-function handleServerOrSignalDisconnect(dispatch: AppDispatch) {
+function handleServerOrSignalDisconnect(dispatch: AppDispatch, getState: () => RootState, room: Room) {
+  const isWhisperRoom = getState().livekit.whisperRoom?.name === room.name;
+  if (isWhisperRoom) {
+    detachRoomListeners(room);
+    dispatch(setLivekitRoom({ room: undefined, isWhisperRoom: true }));
+    dispatch(resetSubroomAudioData());
+    return;
+  }
   dispatch(triggerLivekitReconnect());
 }
 
@@ -878,10 +894,10 @@ const handleRoomDisconnected = (
     case DisconnectReason.CONNECTION_TIMEOUT:
     case DisconnectReason.MEDIA_FAILURE:
     case DisconnectReason.STATE_MISMATCH:
-      handleServerOrSignalDisconnect(dispatch);
+      handleServerOrSignalDisconnect(dispatch, getState, room);
       break;
     default:
-      handleServerOrSignalDisconnect(dispatch);
+      handleServerOrSignalDisconnect(dispatch, getState, room);
       log.warn('Unknown LiveKit disconnect reason:', reason);
   }
 };
