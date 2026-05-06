@@ -36,7 +36,7 @@ import {
   selectChatConversationTarget,
   selectDefaultChatMessage,
 } from '../../../store/slices/uiSlice';
-import { ChatIdentifier } from '../../../types';
+import { ChatIdentifier, ChatScope } from '../../../types';
 import { formikGetValue, formikProps } from '../../../utils/formikUtils';
 import yup from '../../../utils/yupUtils';
 
@@ -106,14 +106,14 @@ const ChatForm = () => {
   const chatIdentifier = { scope, target } as ChatIdentifier;
   const defaultChatMessage = useAppSelector((state) => selectDefaultChatMessage(state, chatIdentifier));
   const messageInputReference = useRef<HTMLInputElement>(null);
-  const autoFocusMessageInput = Boolean(target);
+  const autoFocusMessageInputOnPrivateMessages = scope === ChatScope.Private && Boolean(target);
   const dispatchSaveDefaultChatMessage = (input: string) => {
     dispatch(saveDefaultChatMessage({ ...chatIdentifier, input }));
   };
 
   useLayoutEffect(
     function bootstrapMessageInputAutofocusing() {
-      if (autoFocusMessageInput && messageInputReference.current) {
+      if (autoFocusMessageInputOnPrivateMessages && messageInputReference.current) {
         /**
          * Not a big fan of the solution but at the moment I couldn't find
          * proper way to put nested textarea in the MUI BaseInput component in focus.
@@ -126,7 +126,7 @@ const ChatForm = () => {
         }
       }
     },
-    [autoFocusMessageInput]
+    [autoFocusMessageInputOnPrivateMessages]
   );
 
   const emojiPickerCategories = useMemo(() => {
