@@ -32,6 +32,7 @@ import {
   selectCinemaLayout,
   selectCinemaViewOrder,
   selectIsCurrentMeetingNotesHighlighted,
+  selectLastCinemaLayout,
   updatedCinemaGridSize,
   updatedCinemaLayout,
   updatedCinemaViewSortOrder,
@@ -87,6 +88,7 @@ const LayoutSelection = () => {
   const isFullscreenSupported = useAppSelector(selectFullscreenSupported);
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
   const selectedCinemaGridSize = useAppSelector(selectCinemaGridSize);
+  const lastCinemaLayout = useAppSelector(selectLastCinemaLayout);
   /**
    * Placeholder condition for all features that has to show indicator.
    */
@@ -115,7 +117,7 @@ const LayoutSelection = () => {
           aria-haspopup="true"
           aria-controls={isViewPopoverOpen ? 'view-popover-menu' : undefined}
           aria-label={t('conference-view-trigger-button')}
-          onClick={() => dispatch(updatedCinemaLayout({ layout: LayoutOptions.Grid, cacheLastLayout: true }))}
+          onClick={() => dispatch(updatedCinemaLayout({ layout: lastCinemaLayout }))}
         >
           {t('meeting-notes-hide')}
         </Button>
@@ -128,7 +130,7 @@ const LayoutSelection = () => {
           aria-haspopup="true"
           aria-controls={isViewPopoverOpen ? 'view-popover-menu' : undefined}
           aria-label={t('conference-view-trigger-button')}
-          onClick={() => dispatch(updatedCinemaLayout({ layout: LayoutOptions.Grid, cacheLastLayout: true }))}
+          onClick={() => dispatch(updatedCinemaLayout({ layout: lastCinemaLayout }))}
         >
           {t('whiteboard-hide')}
         </Button>
