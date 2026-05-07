@@ -100,7 +100,10 @@ export const addEventsEndpoints = <
       method: 'POST',
       body: snakeCaseKeys(payload, { deep: true }),
     }),
-    invalidatesTags: [{ type: Tag.Event, id: 'PARTIAL-LIST' }],
+    invalidatesTags: [
+      { type: Tag.Event, id: 'PARTIAL-LIST' },
+      { type: Tag.EventInstance, id: 'PARTIAL-LIST' },
+    ],
   }),
   /**
    * Used to get a single event
@@ -123,6 +126,7 @@ export const addEventsEndpoints = <
     invalidatesTags: (result, error, id) => [
       { type: Tag.Event, id },
       { type: Tag.Event, id: 'PARTIAL-LIST' },
+      { type: Tag.EventInstance, id: 'PARTIAL-LIST' },
     ],
   }),
   /**

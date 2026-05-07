@@ -18,6 +18,8 @@ export interface DashboardEventsFilters {
   openInvitedMeeting?: boolean;
   favoriteMeetings?: boolean;
   timePerspective: TimePerspectiveFilter;
+  cursors: string[];
+  currentCursorIndex: number;
 }
 
 export type FilterChangeCallbackType = <K extends keyof DashboardEventsFilters>(
@@ -28,4 +30,6 @@ export type FilterChangeCallbackType = <K extends keyof DashboardEventsFilters>(
 export interface MeetingsProp {
   title: string;
   events: Array<Event | EventInstance>;
+  after?: string;
+  before?: string;
 }
