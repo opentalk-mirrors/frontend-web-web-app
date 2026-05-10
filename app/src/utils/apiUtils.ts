@@ -10,11 +10,16 @@ import { BreakoutRoomId } from '../types';
 type Fetch = typeof window.fetch;
 
 const createHeaders = (headers?: HeadersInit) => {
+  let newHeaders;
   if (headers) {
-    return !(headers instanceof Headers) ? new Headers(headers) : headers;
+    newHeaders = !(headers instanceof Headers) ? new Headers(headers) : headers;
   } else {
-    return new Headers();
+    newHeaders = new Headers();
   }
+  if (!newHeaders.has('Accept')) {
+    newHeaders.set('Accept', 'application/json');
+  }
+  return newHeaders;
 };
 
 const addEndingSlash = (string: string) => (string.charAt(string.length - 1) === '/' ? string : `${string}/`);
@@ -52,17 +57,13 @@ export const composeMeetingDetailsUrl = (baseUrl: string, eventId: EventId) => {
   return new URL(meetingDetailsPath, baseUrl);
 };
 
-const fetchWrapper = (
+const fetchWithAccessToken = (
   url: RequestInfo | URL,
   data: RequestInit = { method: 'GET' },
   fetch: Fetch,
   token?: string
 ): Promise<Response> => {
   const headers = createHeaders(data.headers);
-
-  if (!headers.has('Accept')) {
-    headers.set('Accept', 'application/json');
-  }
 
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
@@ -73,20 +74,38 @@ const fetchWrapper = (
   return fetch(url as RequestInfo, { ...data, headers });
 };
 
-export const fetchWithInviteWrapper =
-  (fetch: Fetch) =>
-  (url: RequestInfo | URL, data: RequestInit = { method: 'GET' }, inviteCode: string): Promise<Response> =>
-    fetchWrapper(url, data, fetch, inviteCode);
+const fetchWithInviteCode = (
+  url: RequestInfo | URL,
+  data: RequestInit = { method: 'GET' },
+  fetch: Fetch,
+  inviteCode: InviteCode
+): Promise<Response> => {
+  const headers = createHeaders(data.headers);
 
-export const fetchWithInvite = fetchWithInviteWrapper(window.fetch);
+  headers.set('Authorization', `InviteCode ${inviteCode}`);
+  if (!data.credentials) {
+    data.credentials = 'same-origin';
+  }
+
+  return fetch(url as RequestInfo, { ...data, headers });
+};
 
 // Relies on the access_token to be published at localStorage('access_token')
 // This allows the usage in parts where we have no access to the redux context or the store.
-export const fetchWithAuthWrapper =
+// Always tries to authorize with the access token first.
+// If the token is not available, will try to authorize with the invite code, if provided
+// Otherwise still tries to authorize with undefined token, to run into defined auth rejection from the server side
+const fetchWithAuthWrapper =
   (fetch: Fetch, storage: Storage) =>
-  async (url: RequestInfo | URL, data: RequestInit = { method: 'GET' }): Promise<Response> => {
-    const access_token = storage.getItem('access_token') || undefined;
-    return fetchWrapper(url, data, fetch, access_token);
+  async (url: RequestInfo | URL, data: RequestInit = { method: 'GET' }, inviteCode?: InviteCode): Promise<Response> => {
+    const accessToken = storage.getItem('access_token') || undefined;
+    if (accessToken) {
+      return fetchWithAccessToken(url, data, fetch, accessToken);
+    }
+    if (inviteCode) {
+      return fetchWithInviteCode(url, data, fetch, inviteCode);
+    }
+    return fetchWithAccessToken(url, data, fetch, accessToken);
   };
 
 export const fetchWithAuth = fetchWithAuthWrapper(window.fetch, window.localStorage);
