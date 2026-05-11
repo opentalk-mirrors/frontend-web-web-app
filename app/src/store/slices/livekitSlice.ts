@@ -61,6 +61,7 @@ import {
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { switchedRoom } from './breakoutSlice';
+import { selectShouldForceMuted } from './moderationSlice';
 import { abortedReconnection, enteredWaitingRoom } from './roomSlice';
 import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice';
 import { timerStarted } from './timerSlice';
@@ -838,6 +839,7 @@ const detachRoomListeners = (room: Room) => {
 
 const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
   const state = getState();
+  console.log(state);
   const isWhisperRoom = state.livekit.whisperRoom?.name === room.name;
 
   if (isWhisperRoom) {
@@ -848,11 +850,12 @@ const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootSt
   dispatch(finishReconnectLoop());
   const isLobbyCameraEnabled = selectLobbyVideoEnabled(state);
   const isLobbyMicrophoneEnabled = selectLobbyAudioEnabled(state);
+  const isMicrophoneDisabledForRoomByModerator = selectShouldForceMuted(state) ?? true;
 
   if (isLobbyCameraEnabled) {
     dispatch(changeMedia({ kind: 'videoinput', enabled: isLobbyCameraEnabled }));
   }
-  if (isLobbyMicrophoneEnabled) {
+  if (!isMicrophoneDisabledForRoomByModerator && isLobbyMicrophoneEnabled) {
     dispatch(changeMedia({ kind: 'audioinput', enabled: isLobbyMicrophoneEnabled }));
   }
   dispatch(cleanLocalTracks());
