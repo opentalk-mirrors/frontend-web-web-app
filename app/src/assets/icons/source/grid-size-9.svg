@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+
+  <g transform="matrix(1.365, 0, 0, 1.356, -4.428, -4.51)" data-editor-transform="true">
+    <path d="M 5.047 6.366 H 9.141 V 9.077 H 5.047 Z" transform="matrix(1, 0, 0, 1, -0.249, 0.114)" />
+    <path d="M 10.203 6.366 H 14.297 V 9.077 H 10.203 Z" transform="matrix(1, 0, 0, 1, -0.249, 0.114)" />
+    <path d="M 15.435 6.366 H 19.529 V 9.077 H 15.435 Z" transform="matrix(1, 0, 0, 1, -0.249, 0.114)" />
+    <path d="M 5.047 10.211 H 9.141 V 12.922 H 5.047 Z" transform="matrix(1, 0, 0, 1, -0.249, 0.114)" />
+    <path d="M 10.203 10.211 H 14.297 V 12.922 H 10.203 Z" transform="matrix(1, 0, 0, 1, -0.249, 0.114)" />
+    <path d="M 15.435 10.211 H 19.529 V 12.922 H 15.435 Z" transform="matrix(1, 0, 0, 1, -0.249, 0.114)" />
+    <path d="M 5.047 14.131 H 9.141 V 16.843 H 5.047 Z" transform="matrix(1, 0, 0, 1, -0.249, 0.114)" />
+    <path d="M 10.203 14.131 H 14.297 V 16.843 H 10.203 Z" transform="matrix(1, 0, 0, 1, -0.249, 0.114)" />
+    <path d="M 15.435 14.131 H 19.529 V 16.843 H 15.435 Z" transform="matrix(1, 0, 0, 1, -0.249, 0.114)" />
+  </g>
+</svg>

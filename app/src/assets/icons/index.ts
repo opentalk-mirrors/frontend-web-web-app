@@ -41,6 +41,10 @@ import FeedbackIcon from './FeedbackIcon';
 import ForwardIcon from './ForwardIcon';
 import FullscreenViewIcon from './FullscreenViewIcon';
 import GongIcon from './GongIcon';
+import GridSize6Icon from './GridSize6Icon';
+import GridSize9Icon from './GridSize9Icon';
+import GridSize16Icon from './GridSize16Icon';
+import GridSize24Icon from './GridSize24Icon';
 import GridViewIcon from './GridViewIcon';
 import HelpIcon from './HelpIcon';
 import HelpSquareIcon from './HelpSquareIcon';
@@ -146,6 +150,10 @@ export {
   FullscreenViewIcon,
   GongIcon,
   GridViewIcon,
+  GridSize6Icon,
+  GridSize9Icon,
+  GridSize16Icon,
+  GridSize24Icon,
   HelpIcon,
   HelpSquareIcon,
   HiddenIcon,

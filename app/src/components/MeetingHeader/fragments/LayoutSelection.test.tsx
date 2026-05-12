@@ -27,29 +27,43 @@ describe('Layout selection menu', () => {
   afterEach(() => {
     mockUseMediaQuery.mockClear();
   });
-  const getButtonSelector = (name: string) => screen.getByRole('menuitemradio', { name });
+  const getButtonSelector = (name: string) => screen.getByRole('button', { name });
 
-  it('opens a menu when the open button is clicked', async () => {
+  it('opens a dialog when the open button is clicked', async () => {
     const user = userEvent.setup();
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-    const menu = screen.getByRole('menu');
-    expect(menu).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
+    const dialog = screen.getByRole('dialog', { name: 'layout-selection-title' });
+    expect(dialog).toBeInTheDocument();
   });
+
   it('renders the correct buttons', async () => {
     const user = userEvent.setup();
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-    const gridViewButton = getButtonSelector('conference-view-grid');
-    const speakerViewButton = getButtonSelector('conference-view-speaker');
-    const cameraFirstButton = getButtonSelector('conference-view-grid-camera-first');
-    const moderatorFirstButton = getButtonSelector('conference-view-grid-moderators-first');
-    const firstJoinedButton = getButtonSelector('conference-view-grid-first-joined');
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
+    const closeButton = getButtonSelector('global-close');
+    const gridViewButton = getButtonSelector('layout-selection-grid');
+    const speakerViewButton = getButtonSelector('layout-selection-speaker');
+
+    expect(closeButton).toBeInTheDocument();
     expect(gridViewButton).toBeInTheDocument();
     expect(speakerViewButton).toBeInTheDocument();
-    expect(cameraFirstButton).toBeInTheDocument();
-    expect(moderatorFirstButton).toBeInTheDocument();
-    expect(firstJoinedButton).toBeInTheDocument();
+  });
+
+  it('renders a combobox containing camera sorting options', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
+    const cameraSortingSelect = screen.getByRole('combobox', { name: 'layout-selection-sorting' });
+    expect(cameraSortingSelect).toBeInTheDocument();
+    await user.click(cameraSortingSelect);
+
+    const cameraFirstOption = screen.getByRole('option', { name: 'layout-selection-grid-camera-first' });
+    const firstJoinedOption = screen.getByRole('option', { name: 'layout-selection-grid-first-joined' });
+    const moderatorFirstOption = screen.getByRole('option', { name: 'layout-selection-grid-moderators-first' });
+    expect(cameraFirstOption).toBeInTheDocument();
+    expect(firstJoinedOption).toBeInTheDocument();
+    expect(moderatorFirstOption).toBeInTheDocument();
   });
 
   it('renders fullscreen button if the fullscreen feature is available', async () => {
@@ -58,9 +72,9 @@ describe('Layout selection menu', () => {
       initialState: { fullscreen: { supported: true, active: false } },
     });
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
 
-    const fullscreenMenuItem = getButtonSelector('conference-view-fullscreen');
+    const fullscreenMenuItem = getButtonSelector('layout-selection-fullscreen');
     expect(fullscreenMenuItem).toBeInTheDocument();
   });
 
@@ -72,9 +86,9 @@ describe('Layout selection menu', () => {
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
     const spyFullscreenRequest = vi.spyOn(fullscreenActions, 'request');
 
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
 
-    const fullscreenMenuItem = getButtonSelector('conference-view-fullscreen');
+    const fullscreenMenuItem = getButtonSelector('layout-selection-fullscreen');
 
     await user.click(fullscreenMenuItem);
     expect(spyFullscreenRequest).toHaveBeenCalled();
@@ -87,9 +101,9 @@ describe('Layout selection menu', () => {
     });
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
 
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
 
-    expect(screen.queryByRole('menuitemradio', { name: 'conference-view-fullscreen' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitemradio', { name: 'layout-selection-fullscreen' })).not.toBeInTheDocument();
   });
 
   it('renders meeting notes option on mobile when meeting notes are available', async () => {
@@ -100,7 +114,7 @@ describe('Layout selection menu', () => {
     });
 
     renderWithProviders(<LayoutSelection />, { store, provider: { snackbar: true, mui: true } });
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
 
     expect(mockUseMediaQuery).toHaveBeenCalled();
 
@@ -108,97 +122,38 @@ describe('Layout selection menu', () => {
     expect(meetingNotesButton).toBeInTheDocument();
   });
 
-  it('closes the menu after clicking on a menu item', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-
-    const gridViewButton = getButtonSelector('conference-view-grid');
-    await user.click(gridViewButton);
-
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-    expect(gridViewButton).not.toBeInTheDocument();
-  });
-
-  it('allows the selection of only one layout at a time', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-
-    const gridViewButton = getButtonSelector('conference-view-grid');
-    await user.click(gridViewButton);
-
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-    expect(gridViewButton).toHaveAttribute('aria-checked', 'true');
-
-    const speakerViewButton = getButtonSelector('conference-view-speaker');
-    expect(speakerViewButton).toHaveAttribute('aria-checked', 'false');
-
-    await user.click(speakerViewButton);
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-    const updatedGridViewButton = getButtonSelector('conference-view-grid');
-
-    expect(updatedGridViewButton).toHaveAttribute('aria-checked', 'false');
-    expect(speakerViewButton).toHaveAttribute('aria-checked', 'true');
-  });
-  it('allows the selection of only one sorting option at a time', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-
-    const cameraFirstButton = getButtonSelector('conference-view-grid-camera-first');
-    await user.click(cameraFirstButton);
-    expect(cameraFirstButton).toHaveAttribute('aria-checked', 'true');
-
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-
-    const moderatorFirstButton = getButtonSelector('conference-view-grid-moderators-first');
-    await user.click(moderatorFirstButton);
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-
-    const updatedCameraFirstButton = getButtonSelector('conference-view-grid-camera-first');
-    expect(moderatorFirstButton).toHaveAttribute('aria-checked', 'true');
-    expect(updatedCameraFirstButton).toHaveAttribute('aria-checked', 'false');
-  });
-  it('allows the selection of one sorting option and one layout option', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-
-    const gridViewButton = getButtonSelector('conference-view-grid');
-    await user.click(gridViewButton);
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-    expect(gridViewButton).toHaveAttribute('aria-checked', 'true');
-
-    const cameraFirstButton = getButtonSelector('conference-view-grid-camera-first');
-    await user.click(cameraFirstButton);
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
-
-    expect(cameraFirstButton).toHaveAttribute('aria-checked', 'true');
-
-    expect(gridViewButton).toHaveAttribute('aria-checked', 'true');
-  });
   it('does not reset sorting option to first joined when switching view', async () => {
     const user = userEvent.setup();
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
 
-    const cameraFirstButton = getButtonSelector('conference-view-grid-camera-first');
-    const firstJoinedButton = getButtonSelector('conference-view-grid-first-joined');
-    await user.click(cameraFirstButton);
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
+    const cameraSortingSelect = screen.getByRole('combobox', { name: 'layout-selection-sorting' });
+    expect(cameraSortingSelect).toBeInTheDocument();
+    //open the sorting options to select camera first sorting
+    await user.click(cameraSortingSelect);
+    await user.click(screen.getByRole('option', { name: 'layout-selection-grid-camera-first' }));
+    //reopen the sorting options to confirm selection
+    await user.click(cameraSortingSelect);
 
-    expect(cameraFirstButton).toHaveAttribute('aria-checked', 'true');
-    expect(firstJoinedButton).toHaveAttribute('aria-checked', 'false');
+    const cameraFirstOption = screen.getByRole('option', { name: 'layout-selection-grid-camera-first' });
+    const firstJoinedOption = screen.getByRole('option', { name: 'layout-selection-grid-first-joined' });
 
-    const speakerViewButton = getButtonSelector('conference-view-speaker');
+    expect(cameraFirstOption).toHaveAttribute('aria-selected', 'true');
+    expect(firstJoinedOption).toHaveAttribute('aria-selected', 'false');
+    //select camera first again to close the combobox
+    await user.click(cameraFirstOption);
+    expect(screen.queryByRole('option', { name: 'layout-selection-grid-camera-first' })).not.toBeInTheDocument();
+
+    //switch layout to speaker view
+    const speakerViewButton = getButtonSelector('layout-selection-speaker');
     await user.click(speakerViewButton);
-    await user.click(screen.getByRole('button', { name: 'conference-view-trigger-button' }));
+    expect(speakerViewButton).toHaveAttribute('aria-pressed', 'true');
 
-    const updatedFirstJoinedButton = getButtonSelector('conference-view-grid-first-joined');
-    const updatedCameraFirstButton = getButtonSelector('conference-view-grid-camera-first');
-    expect(speakerViewButton).toHaveAttribute('aria-checked', 'true');
-    expect(updatedFirstJoinedButton).toHaveAttribute('aria-checked', 'false');
-    expect(updatedCameraFirstButton).toHaveAttribute('aria-checked', 'true');
+    //open combobox again to confirm that camera first sorting is still selected
+    await user.click(cameraSortingSelect);
+    const updatedCameraFirstOption = screen.getByRole('option', { name: 'layout-selection-grid-camera-first' });
+    const updatedFirstJoinedOption = screen.getByRole('option', { name: 'layout-selection-grid-first-joined' });
+    expect(updatedCameraFirstOption).toHaveAttribute('aria-selected', 'true');
+    expect(updatedFirstJoinedOption).toHaveAttribute('aria-selected', 'false');
   });
 });
