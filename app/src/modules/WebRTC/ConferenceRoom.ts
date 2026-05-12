@@ -113,11 +113,15 @@ export const startRoom = async (credentials: RoomCredentials, config: ConfigStat
     password: password || undefined,
   });
 
-  const response = await fetchWithAuth(authUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body,
-  });
+  const response = await fetchWithAuth(
+    authUrl,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    },
+    inviteCode
+  );
 
   if (!response.ok) {
     if (response.status === 403) {
