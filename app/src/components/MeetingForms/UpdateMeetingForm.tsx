@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Event } from '@opentalk/rest-api-rtk-query';
+import { truncate } from 'lodash';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -34,8 +35,11 @@ const UpdateMeetingForm = ({ existingEvent, onForwardButtonClick }: UpdateMeetin
         eventId: existingEvent.id,
         ...payload,
       }).unwrap();
-
-      notifications.success(t('dashboard-meeting-notification-success-edit', { event: event.title }));
+      notifications.success(
+        t('dashboard-meeting-notification-success-edit', {
+          event: truncate(event.title, { length: 50 }),
+        })
+      );
     } catch (_err) {
       notifications.error(t('dashboard-meeting-notification-error'));
     } finally {

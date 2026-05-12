@@ -13,6 +13,7 @@ import {
   styled,
 } from '@mui/material';
 import { format } from 'date-fns';
+import { truncate } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { enableWaitingRoom, kickParticipant } from '../../../api/types/outgoing/moderation';
@@ -41,9 +42,8 @@ const ParticipantRemovalDialog = ({ open, onClose, participant }: ParticipantRem
     dispatch(kickParticipant.action({ target: participant.id }));
     dispatch(enableWaitingRoom.action());
     const formatKickedTime = format(Date.parse(new Date().toISOString()), 'HH:mm');
-    notifications.info(
-      t('meeting-notification-user-was-kicked', { user: participant.displayName, time: formatKickedTime })
-    );
+    const displayName = truncate(participant.displayName, { length: 100 });
+    notifications.info(t('meeting-notification-user-was-kicked', { user: displayName, time: formatKickedTime }));
     onClose();
   };
 
@@ -54,8 +54,12 @@ const ParticipantRemovalDialog = ({ open, onClose, participant }: ParticipantRem
         <CloseIcon />
       </CloseIconButton>
       <DialogContent>
-        <Typography>
-          {t('participant-remove-dialog-content', { name: participant.displayName ?? t('global-participant') })}
+        <Typography
+          title={t('participant-remove-dialog-content', { name: participant.displayName ?? t('global-participant') })}
+        >
+          {t('participant-remove-dialog-content', {
+            name: truncate(participant.displayName ?? t('global-participant'), { length: 40 }),
+          })}
         </Typography>
       </DialogContent>
       <DialogActions>

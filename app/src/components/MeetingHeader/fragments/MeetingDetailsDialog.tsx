@@ -100,7 +100,10 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs" aria-labelledby="detail-invite-title">
-      <DialogTitle aria-hidden="true" sx={{ width: '95%' }}>
+      <DialogTitle
+        aria-hidden="true"
+        sx={{ width: '95%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+      >
         {t('meeting-details-dialog-title', { title })}
       </DialogTitle>
       {roomOwner && renderSubtitle()}

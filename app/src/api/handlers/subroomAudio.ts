@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import i18next from 'i18next';
+import { truncate } from 'lodash';
 
 import { notificationAction } from '../../commonComponents';
 import log from '../../logger';
@@ -41,7 +42,7 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
 
       const displayName = selectParticipantById(data.issuer)(state)?.displayName;
       notificationAction({
-        msg: i18next.t('whisper-invite-notification', { displayName }),
+        msg: i18next.t('whisper-invite-notification', { displayName: truncate(displayName, { length: 50 }) }),
         variant: 'info',
         ariaLive: 'polite',
         actionBtnText: i18next.t('global-accept'),
@@ -75,7 +76,7 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
     case 'whisper_invite_accepted': {
       const displayName = selectParticipantById(data.participantId)(state)?.displayName;
       notificationAction({
-        msg: i18next.t('whisper-invite-accept-notification', { displayName }),
+        msg: i18next.t('whisper-invite-accept-notification', { displayName: truncate(displayName, { length: 50 }) }),
         variant: 'info',
         ariaLive: 'polite',
       });
@@ -91,7 +92,7 @@ export const handleSubroomAudioMessage = (dispatch: AppDispatch, data: subroomAu
       const displayName = selectParticipantById(data.participantId)(state)?.displayName;
       dispatch(removeParticipant({ participantId: data.participantId }));
       notificationAction({
-        msg: i18next.t('whisper-invite-decline-notification', { displayName }),
+        msg: i18next.t('whisper-invite-decline-notification', { displayName: truncate(displayName, { length: 50 }) }),
         variant: 'error',
         ariaLive: 'assertive',
       });

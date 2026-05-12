@@ -9,6 +9,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
+import { truncate } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -65,7 +66,8 @@ const WaitingParticipantItem = ({ participant }: ParticipantRowProps) => {
     if (participant.waitingState === WaitingState.Waiting) {
       dispatch(acceptParticipantFromWaitingRoomToRoom.action({ target: participant.id }));
       dispatch(approveToEnter(participant.id));
-      notifications.info(t('meeting-notification-user-was-accepted', { user: participant.displayName }));
+      const displayName = truncate(participant.displayName, { length: 100 });
+      notifications.info(t('meeting-notification-user-was-accepted', { user: displayName }));
     }
   }, [dispatch, participant, t]);
 
