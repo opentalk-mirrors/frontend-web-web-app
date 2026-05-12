@@ -46,6 +46,7 @@ export enum DisconnectReason {
   Banned = 'banned',
   InternalError = 'internal_error',
   SentToWaitingRoom = 'sent_to_waiting_room',
+  Debriefed = 'debriefed',
 }
 
 // Signals to moderator that a participant has joined the waiting room.

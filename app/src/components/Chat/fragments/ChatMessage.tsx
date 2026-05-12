@@ -139,7 +139,15 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
           </EventTypography>
         );
       case 'left': {
-        const reason = message.reason === DisconnectReason.Leave ? 'left' : 'removed';
+        let reason: string;
+        switch (message.reason) {
+          case DisconnectReason.Leave:
+            reason = 'left';
+            break;
+          default:
+            reason = 'removed';
+            break;
+        }
         return (
           <EventTypography variant="body2" data-testid="user-event-message">
             <EventNameTypography variant="caption" translate="no">

@@ -9,6 +9,7 @@ import { enabledSelfRename, forceMuteDisabled, forceMuteEnabled } from '../../st
 import { enteredWaitingRoom } from '../../store/slices/roomSlice';
 import { Role } from '../../types';
 import type { ParticipantId, Timestamp } from '../../types';
+import { KickReason } from '../../types';
 import type { DisplayNameChanged, Message as ModerationMessage } from '../types/incoming/moderation';
 import { participantRename } from './helpers';
 import { handleModerationMessage } from './moderation';
@@ -65,12 +66,23 @@ describe('handleModerationMessage', () => {
   it('dispatches hangup and warning when kicked', () => {
     const dispatch = vi.fn();
     const state = createState();
-    const data: ModerationMessage = { message: 'kicked' };
+    const data: ModerationMessage = { message: 'kicked', reason: KickReason.Kicked };
 
     handleModerationMessage(dispatch, data, timestamp, state);
 
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
     expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('meeting-notification-kicked');
+  });
+
+  it('dispatches hangup and warning when debriefed', () => {
+    const dispatch = vi.fn();
+    const state = createState();
+    const data: ModerationMessage = { message: 'kicked', reason: KickReason.Debriefed };
+
+    handleModerationMessage(dispatch, data, timestamp, state);
+
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
+    expect(notifications.info).toHaveBeenCalledExactlyOnceWith('debriefing-session-ended-notification');
   });
 
   it('moves participant to waiting room when instructed', () => {

@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ErrorStruct, NamespacedIncoming, ParticipantId, Role, Timestamp } from '../../../types';
+import { ErrorStruct, KickReason, NamespacedIncoming, ParticipantId, Role, Timestamp } from '../../../types';
 
 export interface KickedParticipant {
   message: 'kicked';
+  reason: KickReason;
 }
 
 export interface BannedParticipant {
