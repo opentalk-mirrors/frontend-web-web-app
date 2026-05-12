@@ -4,7 +4,10 @@ SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 SPDX-License-Identifier: EUPL-1.2
 -->
 
-modifier-control = Steuerung
+modifier-control = Strg
+modifier-shift = Shift
+modifier-alt = Alt
+modifier-meta = Cmd
 
 messages = Nachrichten
 dismiss = Verwerfen
@@ -1158,13 +1161,12 @@ whiteboard-new-pdf-message = Es wurde ein neues Whiteboard PDF erstellt
 whiteboard-hide = Whiteboard ausblenden
 
 hotkey-hold-to-speak = Nicht stumm geschaltet, während gedrückt gehalten
-hotkey-pass-talking-stick = Redestab weitergeben
-hotkey-deactive-message = Die Tastaturkürzel wurden deaktiviert
+hotkey-disabled-message = Die Tastaturkürzel wurden deaktiviert
 hotkey-table-summary = Tabelle der verfügbaren Tastaturkürzel
-hotkey-whisper-to-whisper-group = Flüstern an Flüstergruppe
 hotkey-microphone-toggle = Mikrofon an / aus
 hotkey-video-toggle = Video an / aus
 hotkey-fullscreen-toggle = Ganzer Bildschirm an / aus
+hotkey-whisper-to-whisper-group = Flüstern an / aus
 
 meeting-required-start-date = Startdatum ist erforderlich
 meeting-required-end-date = Enddatum ist erforderlich
@@ -1245,7 +1247,8 @@ my-meeting-menu-accessibility = Barrierefreiheit
 my-meeting-menu = Mein Meeting
 my-meeting-menu-keyboard-hotkeys = Tastaturkürzel Einstellungen
 my-meeting-menu-activate-hotkeys = Tastaturkürzel aktivieren
-my-meeting-menu-hotkeys-list = Liste der Tastaturkürzel
+my-meeting-menu-hotkeys-table-toggle-title = Umschalten (an/aus)
+my-meeting-menu-hotkeys-table-p2t-title = Push to Talk (Halten zum Aktivieren)
 my-meeting-menu-user-manual = Handbuch
 my-meeting-menu-glitchtip-trigger = Fehler melden
 my-meeting-menu-support = Support

@@ -4,7 +4,10 @@ SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 SPDX-License-Identifier: EUPL-1.2
 -->
 
-modifier-control = control
+modifier-control = ctrl
+modifier-shift = shift
+modifier-alt = alt
+modifier-meta = cmd
 
 messages = Messages
 dismiss = Dismiss
@@ -719,7 +722,7 @@ global-off = Off
 global-microphone = Microphone
 global-video = Video
 global-description = Description
-global-hotkey = Hotkey
+global-hotkey = Shortcut
 global-spacebar = spacebar
 global-anonymous = Anonymous
 global-start-now = Start now
@@ -1160,13 +1163,12 @@ whiteboard-new-pdf-message = A new whiteboard pdf is available
 whiteboard-hide = Hide whiteboard
 
 hotkey-hold-to-speak = Hold to speak
-hotkey-pass-talking-stick = Pass on talking stick
-hotkey-deactive-message = Hotkeys deactivated
-hotkey-table-summary = Table of available hotkeys
-hotkey-whisper-to-whisper-group = Whisper to whisper group
+hotkey-disabled-message = Shortcuts disabled
+hotkey-table-summary = Table of available shortcuts
 hotkey-microphone-toggle = Microphone on / off
 hotkey-video-toggle = Video on / off
 hotkey-fullscreen-toggle = Fullscreen on / off
+hotkey-whisper-to-whisper-group = Whisper on / off
 
 meeting-required-start-date = Start date is required
 meeting-required-end-date = End date is required
@@ -1245,9 +1247,10 @@ landmark-complementary-toolbar = Personal control panel
 
 my-meeting-menu-accessibility = Accessibility
 my-meeting-menu = My meeting
-my-meeting-menu-keyboard-hotkeys = Hotkey Settings
-my-meeting-menu-activate-hotkeys = Activate hotkeys
-my-meeting-menu-hotkeys-list = List of hotkeys
+my-meeting-menu-keyboard-hotkeys = Shortcut Settings
+my-meeting-menu-activate-hotkeys = Activate shortcuts
+my-meeting-menu-hotkeys-table-toggle-title = Toggle (on/off)
+my-meeting-menu-hotkeys-table-p2t-title = Push to Talk (Hold to activate)
 my-meeting-menu-user-manual = User manual
 my-meeting-menu-glitchtip-trigger = Report a bug
 my-meeting-menu-support = Support

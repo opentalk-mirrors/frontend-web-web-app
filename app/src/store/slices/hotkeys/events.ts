@@ -4,13 +4,10 @@
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { createLocalAudioTrack } from 'livekit-client';
 
-import { pass } from '../../../api/types/outgoing/automod';
 import { showConsentNotification } from '../../../commonComponents';
 import log from '../../../logger';
-import { RoomMode } from '../../../types';
 import { changeLocalMedia, changeMedia } from '../../commonActions';
 import { selectIsUserMicDisabled } from '../../selectors';
-import { selectSpeakerState, setAsTransitioningSpeaker, SpeakerState } from '../automodSlice';
 import { selectEnabledModulesList } from '../configSlice';
 import { fullscreenActions, selectFullscreenSupported } from '../fullscreen/slice';
 import {
@@ -22,7 +19,6 @@ import {
   selectLobbyVideoEnabled,
   selectVideoEnabled,
 } from '../livekitSlice';
-import { selectCurrentRoomMode } from '../roomSlice';
 import { selectNeedRecordingConsent } from '../streamingSlice';
 import { selectIsWhisperActive, setIsWhisperActive } from '../subroomAudioSlice';
 import type { HotkeyCallbackParams } from './types';
@@ -154,16 +150,6 @@ export const toggleVideo = async ({ state, dispatch }: HotkeyCallbackParams) => 
     dispatch(changeMedia({ kind: 'videoinput', enabled: !isVideoEnabled }));
   } else {
     dispatch(changeLocalMedia({ kind: 'videoinput', enabled: !lobbyVideoEnabled }));
-  }
-};
-
-export const nextSpeaker = ({ state, dispatch }: HotkeyCallbackParams) => {
-  const speakerState = selectSpeakerState(state);
-  const roomMode = selectCurrentRoomMode(state);
-
-  if (roomMode === RoomMode.TalkingStick && speakerState === SpeakerState.Active) {
-    dispatch(setAsTransitioningSpeaker());
-    dispatch(pass.action());
   }
 };
 
