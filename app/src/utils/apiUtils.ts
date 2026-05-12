@@ -7,8 +7,6 @@ import type { useLocale } from '../hooks';
 import type { ConfigState, DefaultAvatarImage } from '../store/slices/configSlice';
 import { BreakoutRoomId } from '../types';
 
-type Fetch = typeof window.fetch;
-
 const createHeaders = (headers?: HeadersInit) => {
   let newHeaders;
   if (headers) {
@@ -60,7 +58,6 @@ export const composeMeetingDetailsUrl = (baseUrl: string, eventId: EventId) => {
 const fetchWithAccessToken = (
   url: RequestInfo | URL,
   data: RequestInit = { method: 'GET' },
-  fetch: Fetch,
   token?: string
 ): Promise<Response> => {
   const headers = createHeaders(data.headers);
@@ -71,13 +68,12 @@ const fetchWithAccessToken = (
       data.credentials = 'same-origin';
     }
   }
-  return fetch(url as RequestInfo, { ...data, headers });
+  return window.fetch(url as RequestInfo, { ...data, headers });
 };
 
 const fetchWithInviteCode = (
   url: RequestInfo | URL,
   data: RequestInit = { method: 'GET' },
-  fetch: Fetch,
   inviteCode: InviteCode
 ): Promise<Response> => {
   const headers = createHeaders(data.headers);
@@ -87,7 +83,7 @@ const fetchWithInviteCode = (
     data.credentials = 'same-origin';
   }
 
-  return fetch(url as RequestInfo, { ...data, headers });
+  return window.fetch(url as RequestInfo, { ...data, headers });
 };
 
 // Relies on the access_token to be published at localStorage('access_token')
@@ -95,20 +91,20 @@ const fetchWithInviteCode = (
 // Always tries to authorize with the access token first.
 // If the token is not available, will try to authorize with the invite code, if provided
 // Otherwise still tries to authorize with undefined token, to run into defined auth rejection from the server side
-const fetchWithAuthWrapper =
-  (fetch: Fetch, storage: Storage) =>
-  async (url: RequestInfo | URL, data: RequestInit = { method: 'GET' }, inviteCode?: InviteCode): Promise<Response> => {
-    const accessToken = storage.getItem('access_token') || undefined;
-    if (accessToken) {
-      return fetchWithAccessToken(url, data, fetch, accessToken);
-    }
-    if (inviteCode) {
-      return fetchWithInviteCode(url, data, fetch, inviteCode);
-    }
-    return fetchWithAccessToken(url, data, fetch, accessToken);
-  };
-
-export const fetchWithAuth = fetchWithAuthWrapper(window.fetch, window.localStorage);
+export const fetchWithAuth = async (
+  url: RequestInfo | URL,
+  data: RequestInit = { method: 'GET' },
+  inviteCode?: InviteCode
+): Promise<Response> => {
+  const accessToken = window.localStorage.getItem('access_token') || undefined;
+  if (accessToken) {
+    return fetchWithAccessToken(url, data, accessToken);
+  }
+  if (inviteCode) {
+    return fetchWithInviteCode(url, data, inviteCode);
+  }
+  return fetchWithAccessToken(url, data, accessToken);
+};
 
 type LibravatarOptions = {
   size?: number;
