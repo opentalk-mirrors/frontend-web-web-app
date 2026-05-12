@@ -25,7 +25,6 @@ export class ReduxDomEvents {
         onRelease: async (params) => await toggleMicrophone(params, false),
         descriptionKey: 'hotkey-hold-to-speak',
         preventActiveMediaAfterPermissionPrompt: true,
-        forcePreventDefault: true,
       },
       {
         key: 'm',
