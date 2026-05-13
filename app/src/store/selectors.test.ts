@@ -6,9 +6,10 @@ import type { RootState } from './index';
 import { selectCombinedMessageAndEvents } from './selectors';
 
 describe('selectCombinedMessageAndEvents', () => {
-  it('filters recorder events from global feed', () => {
+  it('filters recorder and transcription events from global feed', () => {
     const recorderId = 'recorder-1' as ParticipantId;
     const userId = 'user-1' as ParticipantId;
+    const transcriptionId = 'transcription-1' as ParticipantId;
 
     const state = {
       chat: {
@@ -49,6 +50,13 @@ describe('selectCombinedMessageAndEvents', () => {
             timestamp: '2026-03-10T10:01:00.000Z',
             event: 'joined',
             participationKind: ParticipationKind.Registered,
+          },
+          [`${transcriptionId}@event-transcription`]: {
+            id: 'event-transcription',
+            target: transcriptionId,
+            timestamp: '2026-03-10T10:02:00.000Z',
+            event: 'joined',
+            participationKind: ParticipationKind.Transcription,
           },
         },
       },

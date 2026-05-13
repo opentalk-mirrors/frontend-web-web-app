@@ -138,7 +138,6 @@ media-bad-connection = Ihre Serververbindung ist instabil, die Leistung / Qualit
 
 chatbar-send-message = Senden
 chatbar-input-placehoder = Nachricht eingeben
-chatbar-unknown-username = Unbekannt
 
 chat-private-scope = Privat senden
 chat-group-scope = Gruppen
@@ -281,6 +280,10 @@ more-menu-create-invite = Gast einladen
 more-menu-start-recording = Aufnahme starten
 more-menu-stop-recording = Aufnahme beenden
 more-menu-pause-recording = Aufnahme pausieren
+more-menu-start-transcription = Transkription starten
+more-menu-stop-transcription = Transkription beenden
+transcription-language = Sprache
+transcription-error = Transkriptionsdienst-Fehler
 
 more-menu-enable-waiting-room = Warteraum aktivieren
 more-menu-disable-waiting-room = Warteraum deaktivieren
@@ -292,7 +295,7 @@ more-menu-enable-guest-access = Gastzugang aktivieren
 more-menu-disable-guest-access = Gastzugang deaktivieren
 more-menu-turn-handraises-on = Handheben aktivieren
 more-menu-turn-handraises-off = Handheben deaktivieren
-more-menu-delete-global-chat = globalen Chat leeren
+more-menu-delete-global-chat = Globalen Chat leeren
 waiting-room-enabled-message = Warteraum ist aktiviert
 waiting-room-disabled-message = Warteraum ist deaktiviert
 waiting-room-for-guests-message = Warteraum ist für Gäste aktiviert
@@ -785,6 +788,7 @@ global-meeting = { $count ->
 global-open-new-tab = In neuem Tab öffnen
 global-required-field = Dies ist ein Pflichtfeld
 global-unknown = Unbekannt
+global-unknown-username = Unbekannt
 global-disabled = Deaktivieren
 global-next = Weiter
 global-previous = Zurück
@@ -1400,3 +1404,17 @@ dashboard-meeting-waiting-room-option-all-participants = Alle
 dashboard-meeting-waiting-room-option-guests-only = Nur Gäste
 
 failed-playback-audio-warning = Audio ist derzeit durch Ihre Browser-Einstellungen eingeschränkt. Bitte heben Sie die Stummschaltung auf, um den Ton zu aktivieren und Ihre Sitzung zu beginnen. Falls Sie weiterhin nichts hören, empfehlen wir Ihnen, Ihre Browser-Erweiterungen auf etwaige Wiedergabesperren zu überprüfen.
+
+subtitle-settings-dialog-title = Untertitel verwalten
+more-menu-subtitle-settings = Untertitel verwalten
+more-menu-show-subtitles = Untertitel einblenden
+more-menu-hide-subtitles = Untertitel ausblenden
+subtitle-settings-input-language = Sprache wählen...
+subtitle-settings-input-language-error = Bitte eine Eingabesprache wählen.
+subtitle-settings-enable-subtitles = Untertitel für alle freigeben
+subtitle-notification-show = Anzeigen
+subtitle-notification-hide = Jetzt nicht
+subtitle-notification-enabled = Untertitel sind nun verfügbar
+subtitle-notification-disabled = Untertitel wurden vom Host deaktiviert
+subtitle-notification-not-enabled-warning = Untertitel sind gerade nicht verfügbar. Versuche es bitte später wieder.
+subtitle-silence-placeholder = ...

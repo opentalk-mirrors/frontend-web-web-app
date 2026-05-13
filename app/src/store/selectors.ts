@@ -32,7 +32,7 @@ import {
   selectChatStateChunkScope,
   selectChatState,
 } from './slices/chatSlice';
-import { selectAllEvents } from './slices/eventSlice';
+import { selectAllEvents, selectVisibleEvents } from './slices/eventSlice';
 import { selectAllVotes } from './slices/legalVoteSlice';
 import { selectForceMute, selectHandUp, selectHandUpdatedAt } from './slices/moderationSlice';
 import {
@@ -224,10 +224,9 @@ const selectScopedEvents = createSelector([selectChatConversationScope, selectAl
 );
 
 export const selectCombinedMessageAndEvents = createSelector(
-  [selectScopedEvents, selectChatMessagesByScope, selectChatConversationScope],
-  (events, messages, scope) => {
+  [selectScopedEvents, selectChatMessagesByScope, selectChatConversationScope, selectVisibleEvents],
+  (events, messages, scope, filteredEvents) => {
     if (scope === ChatScope.Global) {
-      const filteredEvents = events.filter((event) => event.participationKind !== ParticipationKind.Recorder);
       return mergeAndSortMessagesEndEvents(messages, filteredEvents);
     }
     return messages;

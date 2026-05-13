@@ -10,6 +10,7 @@ import { CustomNotification } from './CustomNotification';
 import { TalkingStickMutedNotification } from './TalkingStickMutedNotification';
 import { TalkingStickUnmutedNotification } from './TalkingStickUnmutedNotification';
 import TimeLimitNotification, { startTimeLimitNotification, stopTimeLimitNotification } from './TimeLimitNotification';
+import { TranscriptionEnabledNotification } from './TranscriptionEnabledNotification';
 
 export { startTimeLimitNotification, stopTimeLimitNotification, showConsentNotification };
 interface NotistackCustomComponents {
@@ -18,6 +19,7 @@ interface NotistackCustomComponents {
   consent: typeof ConsentNotification;
   talkingStickMuted: typeof TalkingStickMutedNotification;
   talkingStickUnmuted: typeof TalkingStickUnmutedNotification;
+  transcriptionEnabled: typeof TranscriptionEnabledNotification;
   success: typeof CustomNotification;
   error: typeof CustomNotification;
   warning: typeof CustomNotification;
@@ -36,6 +38,7 @@ export function getNotistackComponents(components: ComponentsParameter = {}): No
     consent: ConsentNotification,
     talkingStickMuted: TalkingStickMutedNotification,
     talkingStickUnmuted: TalkingStickUnmutedNotification,
+    transcriptionEnabled: TranscriptionEnabledNotification,
     success: CustomNotification,
     error: CustomNotification,
     warning: CustomNotification,

@@ -41,7 +41,7 @@ describe('Layout selection menu', () => {
     const user = userEvent.setup();
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
     await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
-    const closeButton = getButtonSelector('global-close');
+    const closeButton = getButtonSelector('global-close-dialog');
     await user.click(closeButton);
     const dialog = screen.queryByRole('dialog', { name: 'layout-selection-title' });
     await waitFor(() => {
@@ -53,7 +53,7 @@ describe('Layout selection menu', () => {
     const user = userEvent.setup();
     renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
     await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
-    const closeButton = getButtonSelector('global-close');
+    const closeButton = getButtonSelector('global-close-dialog');
     const gridViewButton = getButtonSelector('layout-selection-grid');
     const speakerViewButton = getButtonSelector('layout-selection-speaker');
 

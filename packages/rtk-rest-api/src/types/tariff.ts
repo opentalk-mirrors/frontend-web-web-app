@@ -33,6 +33,7 @@ export enum BackendModules {
   SubroomAudio = 'subroomAudio',
   TrainingParticipationReport = 'trainingParticipationReport',
   Reaction = 'reaction',
+  Transcription = 'transcription',
 }
 
 /**
@@ -45,6 +46,10 @@ export enum RecordingFeatures {
   Record = 'record',
 }
 
+export enum TranscriptionFeatures {
+  Transcription = 'transcription',
+}
+
 export enum CoreFeatures {
   CallIn = 'call_in',
   StorageUpgradable = 'storage_upgradable',
@@ -53,7 +58,7 @@ export enum CoreFeatures {
 /**
  * Union type that contains features from different modules. Has to be manually extended.
  */
-export type BackendFeatures = RecordingFeatures | CoreFeatures;
+export type BackendFeatures = RecordingFeatures | TranscriptionFeatures | CoreFeatures;
 
 export type TariffId = Opaque<string, 'tariffId'>;
 

@@ -14,6 +14,7 @@ import {
   RecordingStatusInfo,
 } from '@opentalk/rest-api-rtk-query';
 
+import { TranscriptionStatus } from '../../api/types/incoming/transcription';
 import type {
   ParticipationLogging,
   ParticipationLoggingState,
@@ -72,6 +73,7 @@ export interface JoinSuccessInternalState {
   };
   trainingParticipationReport: ParticipationLogging | undefined;
   enabledModules: EnabledModules;
+  transcription?: TranscriptionJoinState;
 }
 
 export interface JoinSuccessRoomserver {
@@ -88,6 +90,7 @@ export interface JoinSuccessRoomserver {
   meetingDetails: MeetingDetails;
   roomInfo: RoomInfo;
   isRoomOwner: boolean;
+  transcription?: TranscriptionJoinState;
 }
 
 export type EnabledModules = { [value in BackendModules]?: Array<string> };
@@ -108,11 +111,16 @@ export interface ModuleData {
   timer?: TimerState;
   trainingParticipationReport?: TrainingParticipationReport;
   whiteboard?: WhiteboardState;
+  transcription?: TranscriptionJoinState;
 }
 
 export interface TrainingParticipationReport {
   state: ParticipationLoggingState;
   parameter?: TrainingParticipationReportParameterSet;
+}
+
+export interface TranscriptionJoinState {
+  status: TranscriptionStatus;
 }
 
 export interface WaitingRoomParticipant {

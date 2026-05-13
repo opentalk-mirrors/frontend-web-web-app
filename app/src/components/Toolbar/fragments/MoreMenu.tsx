@@ -13,11 +13,18 @@ import {
   Tooltip,
   Link,
 } from '@mui/material';
-import { BackendModules, CoreFeatures, RecordingFeatures, StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import {
+  BackendModules,
+  CoreFeatures,
+  RecordingFeatures,
+  StreamingStatus,
+  TranscriptionFeatures,
+} from '@opentalk/rest-api-rtk-query';
 import { truncate } from 'lodash';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { TranscriptionStatus } from '../../../api/types/incoming/transcription';
 import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
 import { generateAttendanceReport } from '../../../api/types/outgoing/meetingReport';
 import {
@@ -46,6 +53,9 @@ import {
   EditIcon,
   EditOffIcon,
   ErrorIcon,
+  Icon_cc_hideIcon,
+  Icon_cc_settingsIcon,
+  Icon_cc_showIcon,
   LiveIcon,
   MeetingRoomIcon,
   MicOffIcon,
@@ -92,6 +102,15 @@ import {
   selectInactiveStreamIds,
   selectRecordingTargetStatus,
 } from '../../../store/slices/streamingSlice';
+import {
+  hideSubtitles,
+  hideTranscriptionSettings,
+  selectShowSubtitles,
+  selectShowSubtitlesSettings,
+  selectTranscriptionStatus,
+  showSubtitles,
+  showTranscriptionSettings,
+} from '../../../store/slices/transcriptionSlice';
 import { setSelfRenameDialogVisible } from '../../../store/slices/uiSlice';
 import {
   selectAvatarUrl,
@@ -106,6 +125,7 @@ import { isDevMode } from '../../../utils/devMode';
 import DisableGuestAccessDialog from './DisableGuestAccessDialog';
 import InviteGuestDialog from './InviteGuestDialog';
 import SubmenuMenuItem, { type SubmenuEntry } from './SubMenuItem';
+import SubtitleSettingsDialog from './SubtitleSettingsDialog';
 import { ToolbarMenu, ToolbarMenuItem, ToolbarMenuProps } from './ToolbarMenuUtils';
 
 interface MenuEntry {
@@ -140,6 +160,8 @@ const Divider = styled(MuiDivider)({
 const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showDisableGuestAccessModal, setShowDisableGuestAccessModal] = useState(false);
+  const showSubtitleSettings = useAppSelector(selectShowSubtitlesSettings);
+
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
   const participantId = useAppSelector(selectOurUuid);
@@ -160,9 +182,14 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const recordingStatus = useAppSelector(selectRecordingTargetStatus);
   const activeStreamIds = useAppSelector(selectActiveStreamIds);
   const inactiveStreamIds = useAppSelector(selectInactiveStreamIds);
+  const hasSubtitlesOn = useAppSelector(selectShowSubtitles);
   const hasRecordingFeatureOn = useAppSelector(
     selectIsFeatureEnabled(BackendModules.Recording, RecordingFeatures.Record)
   );
+  const hasTranscriptionFeatureOn = useAppSelector(
+    selectIsFeatureEnabled(BackendModules.Transcription, TranscriptionFeatures.Transcription)
+  );
+  const transcriptionStatus = useAppSelector(selectTranscriptionStatus);
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
   const userMenuItems: Array<MenuEntry> = [];
@@ -424,6 +451,38 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         : undefined,
   };
 
+  const showSubtitlesItem = {
+    label: 'more-menu-show-subtitles',
+    icon: <Icon_cc_showIcon />,
+    action: () => {
+      onClose();
+      if (transcriptionStatus === TranscriptionStatus.Inactive) {
+        //in theory we should never see this notification because the button will be disabled anyways
+        notifications.warning(t('subtitle-notification-not-enabled-warning'));
+      }
+      dispatch(showSubtitles());
+    },
+    disabled: transcriptionStatus !== TranscriptionStatus.Running,
+  };
+
+  const hideSubtitlesItem = {
+    label: 'more-menu-hide-subtitles',
+    icon: <Icon_cc_hideIcon />,
+    action: () => {
+      onClose();
+      dispatch(hideSubtitles());
+    },
+  };
+
+  const subtitleSettingsItem = {
+    label: 'more-menu-subtitle-settings',
+    icon: <Icon_cc_settingsIcon />,
+    action: () => {
+      onClose();
+      dispatch(showTranscriptionSettings());
+    },
+  };
+
   const moderatorMenuItems: Array<MenuEntry> = [];
 
   // Only room owner is allowed to create invites
@@ -490,6 +549,15 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           icon: <RecordingsIcon disabled />,
         });
         break;
+    }
+  }
+
+  if (hasTranscriptionFeatureOn) {
+    moderatorMenuItems.push(subtitleSettingsItem);
+    if (hasSubtitlesOn) {
+      userMenuItems.push(hideSubtitlesItem);
+    } else {
+      userMenuItems.push(showSubtitlesItem);
     }
   }
 
@@ -716,6 +784,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         </MenuList>
       </ToolbarMenu>
       <InviteGuestDialog open={showInviteModal} onClose={() => setShowInviteModal(false)} />
+      <SubtitleSettingsDialog open={showSubtitleSettings} onClose={() => hideTranscriptionSettings()} />
       <DisableGuestAccessDialog
         open={showDisableGuestAccessModal}
         onClose={() => setShowDisableGuestAccessModal(false)}

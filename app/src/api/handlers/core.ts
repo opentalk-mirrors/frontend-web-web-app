@@ -31,6 +31,7 @@ import {
   selectLobbyParticipantId,
   selectParticipantLimit,
 } from '../../store/slices/roomSlice';
+import { showSubtitles } from '../../store/slices/transcriptionSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import { setEditRestrictions, setWhiteboardAvailable, updateRemoteScene } from '../../store/slices/whiteboardSlice';
 import {
@@ -244,6 +245,7 @@ export const handleRoomServerCoreMessage = async (
           timer: moduleData.timer,
           trainingParticipationReport: moduleData.trainingParticipationReport,
           votes: moduleData.legalVote?.votes,
+          transcription: moduleData.transcription,
         })
       );
 
@@ -315,6 +317,14 @@ export const handleRoomServerCoreMessage = async (
 
       if (moduleData.recording?.recordingState.status === RecordingStatus.Active && !state.streaming.consent) {
         showConsentNotification(dispatch);
+      }
+
+      if (moduleData.transcription?.status === 'running') {
+        notifications.showTranscriptionEnabledNotification({
+          onActivated: () => {
+            dispatch(showSubtitles());
+          },
+        });
       }
 
       // Switch to a breakout room, if a breakout session is active

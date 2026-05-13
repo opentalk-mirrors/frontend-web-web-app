@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
 import { joinSuccess } from '../../store/commonActions';
 import { waitingRoomJoined } from '../../store/slices/participantsSlice';
@@ -16,6 +17,7 @@ import type {
 } from '../../types';
 import { JoinedLobby, JoinedWaitingRoom } from '../types/incoming/core';
 import type { JoinSuccess } from '../types/incoming/core';
+import { TranscriptionStatus } from '../types/incoming/transcription';
 import { handleRoomServerCoreMessage } from './core';
 
 vi.mock('i18next', () => ({
@@ -34,6 +36,7 @@ vi.mock('../../commonComponents', () => ({
   notifications: {
     info: vi.fn(),
     warning: vi.fn(),
+    showTranscriptionEnabledNotification: vi.fn(),
   },
   setLibravatarOptions: vi.fn(() => 'mocked-avatar'),
 }));
@@ -138,6 +141,21 @@ describe('handleRoomServerCoreMessage', () => {
     );
   });
 
+  describe('join_success actions', () => {
+    it('dispatches a transcription enabled notification when the transcription module is running', () => {
+      const dispatch = vi.fn();
+      const moduleData = {
+        ...baseModuleData,
+        transcription: { status: TranscriptionStatus.Running, showSubtitles: false, segments: [] },
+      } as unknown as ModuleData;
+      handleRoomServerCoreMessage(dispatch, makeJoinSuccess(moduleData), timestamp, createState());
+
+      expect(notifications.showTranscriptionEnabledNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ onActivated: expect.any(Function) })
+      );
+    });
+  });
+
   describe('join_success module forwarding', () => {
     it('forwards the reaction restrictions from moduleData into the joinSuccess payload', () => {
       const dispatch = vi.fn();
@@ -169,6 +187,7 @@ describe('handleRoomServerCoreMessage', () => {
       trainingParticipationReport: (payload) => payload.trainingParticipationReport,
       reaction: (payload) => payload.reaction,
       raiseHands: (payload) => payload.raiseHands,
+      transcription: (payload) => payload.transcription,
       whiteboard: null, // applied via setWhiteboardAvailable, not the joinSuccess payload
       excalidraw: null, // applied via updateRemoteScene / setEditRestrictions
     };
@@ -187,6 +206,7 @@ describe('handleRoomServerCoreMessage', () => {
       polls: { id: 'poll-1' },
       sharedFolder: { read: {} },
       trainingParticipationReport: { state: 'disabled' },
+      transcription: { status: TranscriptionStatus.Inactive, showSubtitles: false, segments: [] },
       reaction: { restrictions: { type: 'disabled' } },
       whiteboard: { status: 'not_initialized' },
       excalidraw: { scene: {} },

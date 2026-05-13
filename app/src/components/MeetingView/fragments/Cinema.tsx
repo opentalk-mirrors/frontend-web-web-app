@@ -16,6 +16,7 @@ import FullscreenView from '../../FullscreenView';
 import GridView from '../../GridView';
 import MeetingNotesView from '../../MeetingNotesView';
 import SpeakerView from '../../SpeakerView';
+import TranscriptionSubtitlesDisplay from '../../TranscriptionSubtitlesDisplay';
 import WhiteboardView from '../../WhiteboardView';
 import Spacedeck from '../../WhiteboardView/fragments/Spacedeck';
 import MediaReconnectionDialog from './MediaReconnectionDialog';
@@ -26,6 +27,8 @@ const Container = styled('main')({
   overflow: 'hidden',
   position: 'relative',
   display: 'flex',
+  flexDirection: 'column',
+  gap: '1rem',
 });
 
 const Cinema = () => {
@@ -68,6 +71,7 @@ const Cinema = () => {
       {isLivekitUnavailable && <MediaReconnectionDialog />}
       {renderView()}
       <FloatingReactionsOverlay />
+      <TranscriptionSubtitlesDisplay />
     </Container>
   );
 };

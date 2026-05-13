@@ -13,6 +13,7 @@ import { startFloatingReactionListener, startReactionClearTimeoutListener } from
 import { startRoomListeners } from './slices/roomSlice';
 import { startSubroomListeners } from './slices/subroomAudioSlice';
 import { startTimerListeners } from './slices/timerSlice';
+import { startTranscriptionSliceListeners } from './slices/transcriptionSlice';
 import { startUiListeners } from './slices/uiSlice';
 import { startUserListeners } from './slices/userSlice';
 
@@ -35,6 +36,7 @@ export const startListening = () => {
   startUiListeners(startAppListening);
   startReactionClearTimeoutListener(startAppListening);
   startFloatingReactionListener(startAppListening);
+  startTranscriptionSliceListeners(startAppListening);
 };
 
 startListening();

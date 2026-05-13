@@ -36,6 +36,7 @@ import speedMeterReducer from './slices/speedMeterSlice';
 import streamingReducer from './slices/streamingSlice';
 import subroomAudioReducer from './slices/subroomAudioSlice';
 import timerReducer from './slices/timerSlice';
+import transcriptionReducer from './slices/transcriptionSlice';
 import uiReducer, {
   initialState as uiInitialState,
   loadCinemaLayoutSettingsFromLocalStorage as uiRehydrateSlice,
@@ -93,6 +94,7 @@ export const rootReducer = combineReducers({
   subroomAudio: subroomAudioReducer,
   fullscreen: fullscreenReducer,
   reaction: reactionReducer,
+  transcription: transcriptionReducer,
 });
 
 // disable action sanitizer for localTrack and room object to prevent Redux toolkit for doing excesive work

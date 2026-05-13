@@ -12,6 +12,7 @@ import {
   ChatMessage,
   ConnectionId,
   ConnectionIdentifier,
+  HiddenParticipationKinds,
   JoinedWaitingRoomParticipant,
   LegalVote,
   MeetingNotesAccess,
@@ -232,7 +233,7 @@ export const participantSelectors = participantAdapter.getSelectors<RootState>((
 export const selectAllParticipants = (state: RootState) => participantSelectors.selectAll(state);
 
 export const selectAllVisibleParticipants = createSelector([selectAllParticipants], (participants) =>
-  participants.filter((participant) => participant.participationKind !== ParticipationKind.Recorder)
+  participants.filter((participant) => !HiddenParticipationKinds.includes(participant.participationKind))
 );
 
 export const selectParticipantById = (participantId: ParticipantId) => (state: RootState) =>

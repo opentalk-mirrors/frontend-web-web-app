@@ -12,14 +12,12 @@ import {
   Select,
   selectClasses,
   MenuItem,
-  Box,
   FormControl,
   toggleButtonGroupClasses,
   ToggleButtonGroup,
   ToggleButton,
   toggleButtonClasses,
   Dialog,
-  DialogTitle,
 } from '@mui/material';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { useState, JSX } from 'react';
@@ -35,9 +33,9 @@ import {
   GridSize9Icon,
   GridSize16Icon,
   GridSize24Icon,
-  CloseIcon,
 } from '../../../assets/icons';
 import { IconButton } from '../../../commonComponents';
+import CommonDialogHeader from '../../../commonComponents/CommonDialogComponents/CommonDialogHeader';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { CinemaViewSortOrder } from '../../../store/slices/common';
@@ -187,26 +185,6 @@ const getLayoutIcon = (layout: LayoutOptions): JSX.Element | null => {
       return null;
   }
 };
-const MenuHeader = ({ closeMenu }: { closeMenu: () => void }) => {
-  const { t } = useTranslation();
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        paddingX: CUSTOM_PADDING,
-        paddingTop: 1,
-        gap: 2,
-      }}
-    >
-      <DialogTitle sx={{ padding: 0, flexGrow: 1 }}>{t('layout-selection-title')}</DialogTitle>
-      <IconButton size="small" onClick={closeMenu} aria-label={t('global-close')} sx={{ marginRight: -1 }}>
-        <CloseIcon />
-      </IconButton>
-    </Box>
-  );
-};
 
 const LayoutSelection = () => {
   const dispatch = useAppDispatch();
@@ -285,7 +263,7 @@ const LayoutSelection = () => {
         </IconButton>
       )}
       <Dialog open={isOpen} onClose={closeViewPopover} component="div" id="view-popover-menu">
-        <MenuHeader closeMenu={closeViewPopover} />
+        <CommonDialogHeader closeMenu={closeViewPopover} titleKey="layout-selection-title" />
 
         <Divider aria-hidden={true} />
 

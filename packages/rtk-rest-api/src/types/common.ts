@@ -36,7 +36,8 @@ export type Namespaces =
   | 'subroom_audio'
   | 'training_participation_report'
   | 'raise_hands'
-  | 'reaction';
+  | 'reaction'
+  | 'transcription';
 
 export enum Tag {
   Room = 'Room',

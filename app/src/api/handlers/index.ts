@@ -17,5 +17,6 @@ export { handleStreamingMessage } from './streaming';
 export { handleSubroomAudioMessage } from './subroomAudio';
 export { handleTimerMessage } from './timer';
 export { handleTrainingParticipationReportMessage } from './trainingParticipationReport';
+export { handleTranscriptionMessage } from './transcription';
 export { handleWhiteboardMessage } from './whiteboard';
 export { handleReactionMessage } from './reaction';

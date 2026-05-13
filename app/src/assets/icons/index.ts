@@ -52,6 +52,9 @@ import HelpIcon from './HelpIcon';
 import HelpSquareIcon from './HelpSquareIcon';
 import HiddenIcon from './HiddenIcon';
 import HomeIcon from './HomeIcon';
+import Icon_cc_hideIcon from './Icon_cc_hideIcon';
+import Icon_cc_settingsIcon from './Icon_cc_settingsIcon';
+import Icon_cc_showIcon from './Icon_cc_showIcon';
 import InfoIcon from './InfoIcon';
 import InfoOutlinedIcon from './InfoOutlinedIcon';
 import InviteIcon from './InviteIcon';
@@ -167,6 +170,9 @@ export {
   HelpSquareIcon,
   HiddenIcon,
   HomeIcon,
+  Icon_cc_hideIcon,
+  Icon_cc_settingsIcon,
+  Icon_cc_showIcon,
   InfoIcon,
   InfoOutlinedIcon,
   InviteIcon,

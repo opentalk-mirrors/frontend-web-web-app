@@ -34,3 +34,5 @@ export const getAvailableGridSizes = (maxGridTiles?: number | string): readonly 
 
 export const BREAKOUT_ROOM_CLOSE_DELAY = 60;
 export const BREAKOUT_ROOM_DEFAULT_COUNTDOWN_DURATION = 120;
+export const TRANSCRIPTION_SEGMENT_HISTORY_LIMIT = 20;
+export const TRANSCRIPTION_SEGMENT_EXPIRATION_TIME_MS = 5000;

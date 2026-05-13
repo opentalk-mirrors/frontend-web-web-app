@@ -34,6 +34,10 @@ declare module 'notistack' {
       isLastSpeaker: boolean;
       onNext(): void;
     };
+
+    transcriptionEnabled: {
+      onActivated(): void;
+    };
   }
   interface OptionsObject {
     minutes?: number;
