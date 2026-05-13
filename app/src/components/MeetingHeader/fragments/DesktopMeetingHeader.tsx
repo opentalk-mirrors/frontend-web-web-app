@@ -144,7 +144,7 @@ const DesktopMeetingHeader = () => {
   };
 
   const handleSelectedView = (layout: LayoutOptions) => {
-    dispatch(updatedCinemaLayout({ layout, cacheLastLayout: true }));
+    dispatch(updatedCinemaLayout({ layout }));
   };
 
   const handleMeetingNotesClick = () => {

@@ -381,6 +381,7 @@ export const selectIsCurrentMeetingNotesHighlighted = (state: RootState) => stat
 export const selectShowCoffeeBreakCurtain = (state: RootState) => state.ui.showCoffeeBreakCurtain;
 export const selectActiveTab = (state: RootState) => state.ui.activeTab;
 export const selectUiMode = (state: RootState) => state.ui.mode;
+export const selectLastCinemaLayout = (state: RootState) => state.ui.lastCinemaLayout;
 export const selectDefaultChatMessage = createSelector(
   [
     (state: RootState) => state.ui.chatAutosavedInputs,
