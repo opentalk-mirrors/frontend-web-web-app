@@ -184,6 +184,7 @@ export interface PeerModuleData {
   core: CorePeerState;
   meetingNotes?: MeetingNotesPeerState;
   timer?: TimerPeerState;
+  raiseHands?: RaiseHandsPeerState;
 }
 
 export interface CorePeerState {
@@ -213,6 +214,10 @@ export interface MeetingNotesPeerState {
 
 export interface TimerPeerState {
   readyStatus: boolean;
+}
+
+export interface RaiseHandsPeerState {
+  raisedAt: Timestamp;
 }
 
 export type JsonValue = number | string | boolean | JsonValue[] | { [key in string]?: JsonValue } | null;
