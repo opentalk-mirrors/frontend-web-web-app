@@ -21,6 +21,7 @@ export default defineConfig([
     'app/public/tflite/**',
     'app/public/config.js',
     'packages/rtk-rest-api/example/**',
+    'packages/wasm-bg-blur/pkg/**',
   ]),
   reactHooks.configs.flat.recommended,
   eslint.configs.recommended,
