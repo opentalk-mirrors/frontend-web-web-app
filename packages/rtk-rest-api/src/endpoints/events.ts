@@ -134,7 +134,13 @@ export const addEventsEndpoints = <
       method: 'PATCH',
       body: snakeCaseKeys(payload, { deep: true }),
     }),
-    invalidatesTags: (res, error, { eventId }) => [{ type: Tag.Event, id: eventId }],
+    invalidatesTags: (res, error, { eventId }) => {
+      return [
+        { type: Tag.Event, id: 'PARTIAL-LIST' },
+        { type: Tag.EventInstance, id: 'PARTIAL-LIST' },
+        { type: Tag.Event, id: eventId },
+      ];
+    },
   }),
   /**
    * Get a list of events with their instances
@@ -204,11 +210,13 @@ export const addEventsEndpoints = <
       method: 'PATCH',
       body: payload,
     }),
-    invalidatesTags: (result, error, { eventId, instanceId }) => [
-      { type: Tag.EventInstance, id: instanceId },
-      { type: Tag.Event, id: eventId },
-      { type: Tag.Event, id: 'PARTIAL-LIST' },
-    ],
+    invalidatesTags: (result, error, { eventId, instanceId }) => {
+      return [
+        { type: Tag.EventInstance, id: instanceId },
+        { type: Tag.Event, id: eventId },
+        { type: Tag.Event, id: 'PARTIAL-LIST' },
+      ];
+    },
   }),
   /**
    * Get invites for an specific Event
