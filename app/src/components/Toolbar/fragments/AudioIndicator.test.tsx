@@ -85,13 +85,19 @@ const createMockContext = (dimensions = { width: 120, height: 80 }) => {
 
 describe('<AudioIndicator />', () => {
   const mockTrack = {} as LocalAudioTrack;
-  const requestAnimationFrameMock = vi.fn().mockReturnValue(1);
+  let rafId = 0;
+  const requestAnimationFrameMock = vi.fn();
   const cancelAnimationFrameMock = vi.fn();
 
   beforeEach(() => {
     vi.useFakeTimers();
+    rafId = 0;
     requestAnimationFrameMock.mockReset();
-    requestAnimationFrameMock.mockReturnValue(1);
+    requestAnimationFrameMock.mockImplementation((cb: FrameRequestCallback) => {
+      rafId += 1;
+      setTimeout(() => cb(performance.now()), 16);
+      return rafId;
+    });
     cancelAnimationFrameMock.mockReset();
     vi.stubGlobal('requestAnimationFrame', requestAnimationFrameMock);
     vi.stubGlobal('cancelAnimationFrame', cancelAnimationFrameMock);
@@ -172,6 +178,10 @@ describe('<AudioIndicator />', () => {
     });
 
     renderWithProviders(<AudioIndicator shape="bar" localAudioTrack={mockTrack} />, { provider: { mui: true } });
+
+    act(() => {
+      vi.advanceTimersByTime(50);
+    });
 
     expect(widthAssignments.length).toBeGreaterThan(0);
     expect(widthAssignments[0]).toBe(ctx.canvas.width);
