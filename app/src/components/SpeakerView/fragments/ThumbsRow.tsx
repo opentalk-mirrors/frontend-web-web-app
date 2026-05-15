@@ -55,12 +55,12 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   );
 
   const participants = useMemo(() => {
+    if (!currentSpeakerId) {
+      return [];
+    }
     return cinemaViewParticipants.flatMap((participant) =>
       participant.connections
         .filter((connection) => {
-          if (!currentSpeakerId) {
-            return true;
-          }
           const combinedId = constructConnectionIdentifier(participant.id, connection);
           return combinedId !== currentSpeakerId;
         })
