@@ -759,6 +759,7 @@ global-meeting = { $count ->
 global-open-new-tab = In neuem Tab öffnen
 global-required-field = Dies ist ein Pflichtfeld
 global-unknown = Unbekannt
+global-disabled = Deaktivieren
 
 retry-available-in = Wiederholung verfügbar in {$seconds}
 
