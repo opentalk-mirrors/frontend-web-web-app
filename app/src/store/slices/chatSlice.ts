@@ -30,6 +30,11 @@ export type PrivateChatProps = {
   lastMessage: ChatMessage;
 };
 
+export enum MessageDelayType {
+  SlowDown = 'slow_down',
+  LimitReached = 'limit_reached',
+}
+
 const globalMessagesAdapter = createEntityAdapter<ChatMessage & { scope: ChatScope.Global }, ChatMessage['id']>({
   selectId: (message: ChatMessage) => `${message.source}@${message.timestamp}`,
   sortComparer: (a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp),
@@ -80,6 +85,10 @@ export interface ChatState {
   };
   isLoadingMoreChunks: boolean;
   searchResults: ChatMessage[];
+  messageSlowDown?: {
+    delayMs: number;
+    type: MessageDelayType;
+  };
 }
 
 const initialState: ChatState = {
@@ -240,6 +249,12 @@ export const chatSlice = createSlice({
     setIsLoadingMoreChunks: (state: ChatState, action: PayloadAction<boolean>) => {
       state.isLoadingMoreChunks = action.payload;
     },
+    setSlowDownDelay: (
+      state: ChatState,
+      action: PayloadAction<{ delayMs: number; type: MessageDelayType } | undefined>
+    ) => {
+      state.messageSlowDown = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state: ChatState, { payload: { chat, breakout } }) => {
@@ -289,6 +304,7 @@ export const {
   setChatSettings,
   clearGlobalChat,
   setIsLoadingMoreChunks,
+  setSlowDownDelay,
 } = chatSlice.actions;
 export const actions = chatSlice.actions;
 
@@ -300,6 +316,7 @@ export const selectChatState = (state: { chat: ChatState }) => state.chat;
 export const selectChatStateChunkScope = (state: { chat: ChatState }) => state.chat.scope;
 export const selectChatScopePrivate = (state: { chat: ChatState }) => state.chat.scope.private;
 export const selectChatScopeBreakout = (state: { chat: ChatState }) => state.chat.scope.breakout;
+export const selectChatMessageSlowDown = (state: { chat: ChatState }) => state.chat.messageSlowDown;
 
 export const selectHasAnyUnreadBreakoutChatMessage = createSelector([selectChatScopeBreakout], (breakouts) => {
   if (!breakouts) {

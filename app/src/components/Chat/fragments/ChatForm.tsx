@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { InputAdornment, Popover, Tooltip, styled, useTheme } from '@mui/material';
+import { CircularProgress, InputAdornment, Popover, Tooltip, styled, useTheme } from '@mui/material';
 import Picker, {
   EmojiClickData,
   SkinTones,
@@ -17,6 +17,7 @@ import {
   KeyboardEvent,
   KeyboardEventHandler,
   MouseEvent,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -26,10 +27,15 @@ import { useTranslation } from 'react-i18next';
 
 import { sendChatMessage } from '../../../api/types/outgoing/chat';
 import { EmojiIcon, SendMessageIcon } from '../../../assets/icons';
-import { AdornmentIconButton, CommonTextField, VisuallyHiddenTitle } from '../../../commonComponents';
+import { AdornmentIconButton, CommonTextField, ErrorFormMessage, VisuallyHiddenTitle } from '../../../commonComponents';
 import { CHAT_INPUT_ID } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectChatEnabledState } from '../../../store/slices/chatSlice';
+import {
+  MessageDelayType,
+  selectChatEnabledState,
+  selectChatMessageSlowDown,
+  setSlowDownDelay,
+} from '../../../store/slices/chatSlice';
 import {
   saveDefaultChatMessage,
   selectChatConversationScope,
@@ -107,6 +113,35 @@ const ChatForm = () => {
   const defaultChatMessage = useAppSelector((state) => selectDefaultChatMessage(state, chatIdentifier));
   const messageInputReference = useRef<HTMLInputElement>(null);
   const autoFocusMessageInputOnPrivateMessages = scope === ChatScope.Private && Boolean(target);
+  const chatSlowDownDelay = useAppSelector(selectChatMessageSlowDown);
+  const [chatInputLoading, setChatInputLoading] = useState(false);
+  const delayedSubmitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const freezeChatInput = chatInputLoading && chatSlowDownDelay?.type === MessageDelayType.SlowDown;
+  const isLimitReached = chatSlowDownDelay && chatSlowDownDelay.type === MessageDelayType.LimitReached;
+  const hasPositiveDelayMs =
+    typeof chatSlowDownDelay?.delayMs === 'number' &&
+    Number.isFinite(chatSlowDownDelay.delayMs) &&
+    chatSlowDownDelay.delayMs > 0;
+
+  const clearDelayedSubmitTimeout = () => {
+    if (delayedSubmitTimeoutRef.current) {
+      clearTimeout(delayedSubmitTimeoutRef.current);
+      delayedSubmitTimeoutRef.current = null;
+    }
+  };
+
+  const scheduleDelayedSubmit = (delay: number, submitAction: () => void) => {
+    clearDelayedSubmitTimeout();
+    delayedSubmitTimeoutRef.current = setTimeout(() => {
+      delayedSubmitTimeoutRef.current = null;
+      submitAction();
+    }, delay);
+  };
+
+  useEffect(() => {
+    return clearDelayedSubmitTimeout;
+  }, []);
+
   const dispatchSaveDefaultChatMessage = (input: string) => {
     dispatch(saveDefaultChatMessage({ ...chatIdentifier, input }));
   };
@@ -238,8 +273,7 @@ const ChatForm = () => {
     if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey) {
       event.preventDefault();
       event.stopPropagation();
-
-      formik.submitForm();
+      formik.handleSubmit();
     }
   };
 
@@ -247,16 +281,39 @@ const ChatForm = () => {
     message: yup.string().trim().maxBytes(MAX_CHAT_CHARS).required(t('chat-input-error-required')),
   });
 
+  const sendMessage = (message: string) => {
+    dispatch(
+      sendChatMessage.action({
+        ...chatIdentifier,
+        content: message,
+      })
+    );
+  };
+
   const formik = useFormik({
     initialValues: { message: defaultChatMessage },
     validationSchema,
     validateOnChange: true,
     validateOnBlur: false,
     enableReinitialize: true, // It is essential to reinitialize in order to pick up new default input message.
-    onSubmit: (values, { resetForm, setErrors, setTouched }) => {
-      dispatch(sendChatMessage.action({ ...chatIdentifier, content: values.message }));
-      setErrors({});
-      setTouched({});
+    onSubmit: (values, { resetForm }) => {
+      if (chatInputLoading) {
+        return;
+      }
+      if (hasPositiveDelayMs) {
+        setChatInputLoading(true);
+        const delay = isLimitReached ? Math.max(chatSlowDownDelay.delayMs, 3000) : chatSlowDownDelay.delayMs;
+        scheduleDelayedSubmit(delay, () => {
+          dispatch(setSlowDownDelay(undefined));
+          setChatInputLoading(false);
+          if (isLimitReached) {
+            return;
+          }
+          sendMessage(values.message);
+        });
+      } else {
+        sendMessage(values.message);
+      }
       resetForm();
       setOpenPicker(false);
       dispatchSaveDefaultChatMessage('');
@@ -301,7 +358,7 @@ const ChatForm = () => {
         onBlur={handleFormBlur}
         slotProps={{
           input: {
-            readOnly: !isChatEnabled,
+            readOnly: !isChatEnabled || freezeChatInput,
             endAdornment: (
               <InputAdornment position="end">
                 <SendMessageButton
@@ -309,11 +366,11 @@ const ChatForm = () => {
                   type="submit"
                   edge="end"
                   data-testid="send-message-button"
-                  disabled={!isChatEnabled}
+                  disabled={isLimitReached || !isChatEnabled || chatInputLoading}
                   parentHasFocus={hasFocus}
                   parentDisabled={!isChatEnabled}
                 >
-                  <SendMessageIcon />
+                  {chatInputLoading ? <CircularProgress size={24} /> : <SendMessageIcon />}
                 </SendMessageButton>
               </InputAdornment>
             ),
@@ -344,6 +401,11 @@ const ChatForm = () => {
         multiline
         fullWidth
       />
+      {isLimitReached && hasPositiveDelayMs && (
+        <ErrorFormMessage
+          helperText={t('chat-error-too-many-requests', { seconds: Math.round(chatSlowDownDelay.delayMs / 1000) })}
+        />
+      )}
     </Form>
   );
 

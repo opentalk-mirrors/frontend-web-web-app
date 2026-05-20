@@ -158,6 +158,7 @@ chat-submit-button = Chat Nachricht absenden
 chat-search-label = Im Chat suchen
 chat-search-placeholder = Einen Suchbegriff eingeben
 chat-live-message-announcemenet = Eine neue Nachricht von {$name} im öffentlichen Chat.
+chat-error-too-many-requests = Du schreibst zu schnell! Versuche es in {$seconds}s erneut.
 
 participant-search-label = Teilnehmer suchen
 

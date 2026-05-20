@@ -6,7 +6,7 @@ import { ChatIdentifier, ChatScope, Namespaced, Timestamp, createModule, TargetI
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { ClearGlobalMessages, sendMessage } from './common';
 
-type SendMessage = {
+export type SendMessage = {
   action: 'send_message';
   content: string;
 } & ChatIdentifier;

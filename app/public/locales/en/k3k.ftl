@@ -158,6 +158,7 @@ chat-submit-button = submit chat message
 chat-search-label = Search in chat
 chat-search-placeholder = Enter a search term
 chat-live-message-announcemenet = A new message from {$name} in the global chat.
+chat-error-too-many-requests = Sending too fast! Try again in {$seconds}s.
 
 participant-search-label = Search participant
 
