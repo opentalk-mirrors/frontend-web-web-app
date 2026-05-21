@@ -34,7 +34,7 @@ export function GuestAccessSelect({ formik }: GuestAccessSelectProps) {
         aria-label={t('guest-access-switch-label')}
         sx={{ mt: 1 }}
       >
-        <ToggleButton value={GuestAccess.Disabled}>Disabled</ToggleButton>
+        <ToggleButton value={GuestAccess.Disabled}>{t('global-disabled')}</ToggleButton>
         <ToggleButton value={GuestAccess.WaitingRoom}>{t('guest-access-select-waiting-room-option')}</ToggleButton>
         <ToggleButton value={GuestAccess.DirectAccess} disabled={formik.values.waitingRoom}>
           {t('guest-access-select-direct-access-option')}

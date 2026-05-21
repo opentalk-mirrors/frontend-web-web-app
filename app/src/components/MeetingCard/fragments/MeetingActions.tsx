@@ -10,6 +10,7 @@ import {
   isEvent,
   isRecurringEvent,
   getEventId,
+  GuestAccess,
 } from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/query';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -98,7 +99,8 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
   const isInviteAllowed = Boolean(
     roomTariff &&
     isFeatureEnabledPredicate(CoreFeatures.GuestsAllowed, roomTariff.modules) &&
-    !event.room?.e2eEncryption
+    !event.room?.e2eEncryption &&
+    event.room?.guestAccess !== GuestAccess.Disabled
   );
 
   const stopPropagation = useCallback(
