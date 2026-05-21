@@ -81,18 +81,29 @@ const PEAK_DECAY_RATE = 0.01;
 const MIN_PEAK_LEVEL = 0.05;
 
 const AudioIndicator = ({ shape, localAudioTrack }: AudioIndicatorProps) => {
-  const [signalLevel, setSignalLevel] = useState<SignalLevel>({
+  const signalLevel = useRef<SignalLevel>({
     peak: 0,
     level: 0,
     clip: false,
   });
 
   const theme = useTheme();
+  const themeRef = useRef(theme);
+  const shapeRef = useRef(shape);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const needsClearCanvasHack = useMemo(() => BrowserSupport.isSafari(), []);
   const [{ width, height }, setDimensions] = useState({ width: 2 * lineWidth, height: 2 * lineWidth });
+
+  // Sync theme and shape to refs to avoid them being dependencies of the animation effect,
+  // which would cause it to reset on every theme change otherwise
+  useEffect(() => {
+    themeRef.current = theme;
+  }, [theme]);
+  useEffect(() => {
+    shapeRef.current = shape;
+  }, [shape]);
 
   const handleResize = useCallback(() => {
     if (containerRef.current) {
@@ -120,16 +131,14 @@ const AudioIndicator = ({ shape, localAudioTrack }: AudioIndicatorProps) => {
         const a = dataArray[i];
         sum += a * a;
       }
-      setSignalLevel((prev) => {
-        const level = Math.sqrt(sum / dataArray.length) / 255;
-        const peak = prev.peak > level ? prev.peak : level;
+      const level = Math.sqrt(sum / dataArray.length) / 255;
+      const peak = signalLevel.current.peak > level ? signalLevel.current.peak : level;
 
-        return {
-          ...prev,
-          level,
-          peak,
-        };
-      });
+      signalLevel.current = {
+        ...signalLevel.current,
+        level,
+        peak,
+      };
     };
 
     const interval = setInterval(updateVolume, UPDATE_VOLUME_INTERVAL);
@@ -146,16 +155,15 @@ const AudioIndicator = ({ shape, localAudioTrack }: AudioIndicatorProps) => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationRef.current);
     };
   }, [handleResize]);
 
   useEffect(() => {
     const peakDecayInterval = setInterval(() => {
-      setSignalLevel((prev) => ({
-        ...prev,
-        peak: Math.max(prev.peak - PEAK_DECAY_RATE, MIN_PEAK_LEVEL),
-      }));
+      signalLevel.current = {
+        ...signalLevel.current,
+        peak: Math.max(signalLevel.current.peak - PEAK_DECAY_RATE, MIN_PEAK_LEVEL),
+      };
     }, 50);
 
     return () => {
@@ -163,52 +171,49 @@ const AudioIndicator = ({ shape, localAudioTrack }: AudioIndicatorProps) => {
     };
   }, []);
 
-  const render = useCallback(
+  useEffect(() => {
     function renderFrame() {
-      const ctx = canvasRef.current?.getContext('2d') || null;
+      const ctx = canvasRef.current?.getContext('2d') ?? null;
       if (ctx === null) {
+        animationRef.current = requestAnimationFrame(renderFrame);
         return;
       }
 
-      if (signalLevel === undefined) {
-        return;
-      }
       if (needsClearCanvasHack) {
-        // clearRect is broken so we need a hack:
+        // clearRect is broken in Safari so we need a hack:
         const width = ctx.canvas.width;
         ctx.canvas.width = width;
       }
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-      const { peak, level, clip } = signalLevel;
+      const { peak, level, clip } = signalLevel.current;
+      const currentTheme = themeRef.current;
 
       let barColor: string;
       if (clip) {
-        barColor = theme.palette.error.main;
+        barColor = currentTheme.palette.error.main;
       } else if (level > 0) {
-        barColor = theme.palette.secondary.main;
+        barColor = currentTheme.palette.secondary.main;
       } else {
-        barColor = theme.palette.text.disabled;
+        barColor = currentTheme.palette.text.disabled;
       }
-      const peakColor = theme.palette.background.customPaper.primary;
+      const peakColor = currentTheme.palette.background.customPaper.primary;
 
-      if (shape === 'circle') {
+      if (shapeRef.current === 'circle') {
         drawCircle({ peak, level, clip }, barColor, peakColor, ctx);
       } else {
         drawFillUp({ peak, level, clip }, barColor, peakColor, ctx);
       }
 
       animationRef.current = requestAnimationFrame(renderFrame);
-    },
-    [theme, shape, needsClearCanvasHack, signalLevel]
-  );
+    }
 
-  useEffect(() => {
-    render();
+    animationRef.current = requestAnimationFrame(renderFrame);
+
     return () => {
       cancelAnimationFrame(animationRef.current);
     };
-  }, [render]);
+  }, [needsClearCanvasHack]);
 
   return (
     <IndicatorContainer ref={containerRef}>
