@@ -4,8 +4,8 @@
 import { Button, styled, Switch, Typography, Tooltip, Grid, Stack } from '@mui/material';
 import { FormikValues, Formik } from 'formik';
 import i18next from 'i18next';
-import { isEmpty } from 'lodash';
-import { useCallback } from 'react';
+import { isEmpty, isEqual } from 'lodash';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 
@@ -14,7 +14,7 @@ import { BackIcon } from '../../../assets/icons';
 import { CommonFormItem, DurationField, notifications } from '../../../commonComponents';
 import { CommonTextField } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { PollFormValues, savePollFormValues } from '../../../store/slices/pollSlice';
+import { PollFormValues, savePollFormValues, selectSavedPollsCount } from '../../../store/slices/pollSlice';
 import { selectCurrentRoomMode } from '../../../store/slices/roomSlice';
 import { RoomMode } from '../../../types';
 import { formikDurationFieldProps, formikSwitchProps, formikProps } from '../../../utils/formikUtils';
@@ -73,20 +73,27 @@ const validationSchema = yup.object({
   multipleChoice: yup.boolean().optional(),
 });
 
+const isSaveAsTemplateInvalid = (values: PollFormValues) => isEmpty(values.topic);
+
 const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollFormProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const isEditing = initialValues?.id !== undefined;
   const isCoffeeBreakActive = useAppSelector(selectCurrentRoomMode) === RoomMode.CoffeeBreak;
+  const savedPollsCount = useAppSelector(selectSavedPollsCount);
+  const pollTemplateId = useRef(initialValues?.id ?? savedPollsCount);
+  const [lastSavedValues, setLastSavedValues] = useState<PollFormValues | null>(isEditing ? initialValues : null);
 
-  const isSaveAsTemplateInvalid = (values: PollFormValues) => isEmpty(values.topic);
+  const isSaveAsTemplateDisabled = (values: PollFormValues) =>
+    isSaveAsTemplateInvalid(values) || isEqual(values, lastSavedValues);
 
   const saveFormValues = useCallback(
     (values: PollFormValues) => {
       if (isSaveAsTemplateInvalid(values)) {
         notifications.error(t('poll-save-form-error'));
       } else {
-        dispatch(savePollFormValues(values));
+        dispatch(savePollFormValues({ id: pollTemplateId.current, ...values }));
+        setLastSavedValues(values);
         notifications.success(t('poll-save-form-success'));
       }
     },
@@ -181,7 +188,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
             <Stack direction="column" spacing={2} mt="auto">
               <SaveAsTemplateButton
                 onClick={() => saveFormValues(formik.values)}
-                disabled={isSaveAsTemplateInvalid(formik.values)}
+                disabled={isSaveAsTemplateDisabled(formik.values)}
               />
               <Stack direction="row" spacing={1} mt="auto">
                 <Button type="button" onClick={onClose} startIcon={<BackIcon />} fullWidth color="primary">

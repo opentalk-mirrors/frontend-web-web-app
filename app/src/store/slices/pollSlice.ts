@@ -141,6 +141,7 @@ export const selectPollToShow = createSelector([selectPollIdToShow, selectPollVo
   pollIdToShow !== undefined ? pollById[pollIdToShow] : undefined
 );
 export const selectAllSavedPolls = (state: { poll: State }) => state.poll.savedPolls;
+export const selectSavedPollsCount = (state: { poll: State }) => state.poll.savedPolls.length;
 export const selectSavedPollPerId = createSelector(
   [selectAllSavedPolls, (_, id: number | undefined) => id],
   (savedPolls, id) => savedPolls.find((savedPoll) => savedPoll.id === id)
