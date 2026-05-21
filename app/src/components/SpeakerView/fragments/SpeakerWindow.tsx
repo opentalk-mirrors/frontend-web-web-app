@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantContext, useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
+import { ParticipantContext } from '@livekit/components-react';
 import { styled } from '@mui/material';
-import { RoomEvent } from 'livekit-client';
+import { Participant } from 'livekit-client';
 import { useMemo } from 'react';
 
-import { useCurrentSpeaker } from '../../../hooks/useCurrentSpeaker';
+import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
 import ParticipantWindow from '../../ParticipantWindow';
 
 interface SpeakerViewProps {
@@ -26,21 +26,26 @@ const Container = styled('div', {
 }));
 
 const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerViewProps) => {
-  const remoteParticipants = useRemoteParticipants({
-    updateOnlyOn: [
-      RoomEvent.ParticipantConnected,
-      RoomEvent.ParticipantDisconnected,
-      RoomEvent.ActiveSpeakersChanged,
-      RoomEvent.TrackPublished,
-    ],
-  });
-  const sortedParticipants = useSortedParticipants(remoteParticipants);
-  const currentSpeakerId = useCurrentSpeaker();
+  const { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId } = useCinemaViewParticipants();
 
-  const selectedParticipant = useMemo(() => {
-    const selectedSpeaker = sortedParticipants.find((participant) => participant.identity === currentSpeakerId);
-    return selectedSpeaker || sortedParticipants[0];
-  }, [sortedParticipants, currentSpeakerId]);
+  const selectedParticipant = (() => {
+    if (currentSpeakerId) {
+      const remoteParticipant = remoteParticipantsMap.get(currentSpeakerId);
+      if (remoteParticipant) {
+        return remoteParticipant;
+      }
+
+      // Create a fallback participant when LiveKit data isn't available yet
+      const speaker = cinemaViewParticipants.find(
+        (p) => p.connections[0] && currentSpeakerId.includes(p.connections[0])
+      );
+      return new Participant(currentSpeakerId, currentSpeakerId, speaker?.displayName ?? '');
+    }
+
+    // Smooth out the transition between grid and speaker view by showing the first available participant
+    const firstRemote = remoteParticipantsMap.values().next();
+    return firstRemote.done ? undefined : firstRemote.value;
+  })();
 
   const { width, height } = useMemo(() => {
     if (speakerWindowWidth && speakerWindowHeight) {
