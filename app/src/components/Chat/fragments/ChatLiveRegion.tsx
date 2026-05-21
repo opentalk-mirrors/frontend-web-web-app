@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useAppSelector } from '../../../hooks';
 import { selectNotOwnGlobalChatMessages } from '../../../store/slices/chatSlice';
@@ -28,25 +28,15 @@ const ChatLiveRegion = () => {
   // So we don't add already announced messages to the list again.
   const [lastAnnouncedTimestamp, setLastAnnouncedTimestamp] = useState<string>(new Date().toISOString());
 
-  const [messagesToAnnounce, setMessagesToAnnounce] = useState<ChatMessage[]>(
-    filterAnnouncedMessages(messages, lastAnnouncedTimestamp)
-  );
+  const messagesToAnnounce = filterAnnouncedMessages(messages, lastAnnouncedTimestamp);
 
   // After current message has been announced, we remove it from the list.
   // Current message is always the first element of the list.
   const handleAnnouncementEnd = () => {
     if (messagesToAnnounce[0]) {
       setLastAnnouncedTimestamp(messagesToAnnounce[0].timestamp);
-      setMessagesToAnnounce((prevMessages) => prevMessages.slice(1));
     }
   };
-
-  useEffect(
-    function syncMessages() {
-      setMessagesToAnnounce(filterAnnouncedMessages(messages, lastAnnouncedTimestamp));
-    },
-    [messages, lastAnnouncedTimestamp]
-  );
 
   return (
     <Box sx={visuallyHidden} role="log">
