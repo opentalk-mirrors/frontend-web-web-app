@@ -194,6 +194,7 @@ moderation-rights-granted = Ihnen wurden die Moderatorenrechte gewährt
 moderation-rights-revoked = Ihnen wurden die Moderatorenrechte entzogen
 moderator-role-granted = Sie haben { $displayName } Moderatorenrechte gegeben
 moderator-role-revoked = Sie haben { $displayName } die Moderatorenrechte entzogen
+moderation-error-user-cannot-be-moderator = Diesem Teilnehmer können keine Moderatorrechte gegeben werden.
 presenter-role-granted = Sie haben { $displayName } die Rolle des Präsentators gegeben
 presenter-role-revoked = Sie haben { $displayName } die Rolle des Präsentators entzogen
 

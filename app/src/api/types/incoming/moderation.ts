@@ -131,6 +131,8 @@ export enum ModerationError {
   ConflictingTask = 'conflicting_task',
   /// The livekit server is not available
   LivekitUnavailable = 'livekit_unavailable',
+  /// The user cannot be assigned as a moderator
+  UserCannotBeModerator = 'user_cannot_be_moderator',
 }
 
 export type Message =
