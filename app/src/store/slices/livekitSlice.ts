@@ -972,9 +972,23 @@ const handleRemoteTrackUnpublished = (
   }
 };
 
-const handleTrackSubscribed = (_: RemoteTrack, pub: RemoteTrackPublication, participant: RemoteParticipant) => {
+const handleTrackSubscribed = async (
+  track: RemoteTrack,
+  pub: RemoteTrackPublication,
+  participant: RemoteParticipant
+) => {
   if (pub.isEncrypted) {
     log.debug(`subscribed encrypted ${pub.kind} stream from user with ID:`, participant.identity);
+  }
+  if (track.kind === Track.Kind.Audio) {
+    try {
+      const element = track.attach();
+      await element.play();
+    } catch (error) {
+      if (error instanceof Error && error.name === 'NotAllowedError') {
+        notifications.warning(t('failed-playback-audio-warning'));
+      }
+    }
   }
 };
 
