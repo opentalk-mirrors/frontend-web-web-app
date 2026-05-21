@@ -839,7 +839,6 @@ const detachRoomListeners = (room: Room) => {
 
 const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
   const state = getState();
-  console.log(state);
   const isWhisperRoom = state.livekit.whisperRoom?.name === room.name;
 
   if (isWhisperRoom) {

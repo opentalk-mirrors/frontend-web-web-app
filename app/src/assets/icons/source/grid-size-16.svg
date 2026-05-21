@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" viewBox="0 0 24 24" style="" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+
+  <g transform="matrix(1.205, 0, 0, 1.182, -2.427, -2.289)" data-editor-transform="true">
+    <path d="M 3.149 5.757 H 6.763 V 8.241 H 3.149 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 7.7 5.757 H 11.314 V 8.241 H 7.7 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 12.318 5.757 H 15.932 V 8.241 H 12.318 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 16.937 5.757 H 20.551 V 8.241 H 16.937 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 3.149 9.281 H 6.763 V 11.766 H 3.149 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 7.7 9.281 H 11.314 V 11.766 H 7.7 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 12.318 9.281 H 15.932 V 11.766 H 12.318 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 16.937 9.281 H 20.551 V 11.766 H 16.937 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 3.149 12.874 H 6.763 V 15.358 H 3.149 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 7.7 12.874 H 11.314 V 15.358 H 7.7 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 12.318 12.874 H 15.932 V 15.358 H 12.318 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 16.937 12.874 H 20.551 V 15.358 H 16.937 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 3.149 16.398 H 6.763 V 18.882 H 3.149 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 7.7 16.398 H 11.314 V 18.882 H 7.7 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 12.318 16.398 H 15.932 V 18.882 H 12.318 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+    <path d="M 16.937 16.398 H 20.551 V 18.882 H 16.937 Z" transform="matrix(1, 0, 0, 1, 0.149, -0.038)" />
+  </g>
+
+</svg>
