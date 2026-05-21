@@ -18,6 +18,7 @@ import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter
 import { updateRole } from '../../store/slices/userSlice';
 import { Role, Timestamp } from '../../types';
 import { moderation } from '../types/incoming';
+import { ModerationError } from '../types/incoming/moderation';
 import { participantRename } from './helpers';
 
 /**
@@ -134,6 +135,12 @@ export const handleModerationMessage = (
       dispatch(enabledSelfRename());
       notifications.info(i18next.t('renaming-enabled-notification'));
       break;
+    case 'error': {
+      if (data.error === ModerationError.UserCannotBeModerator) {
+        notifications.error(i18next.t('moderation-error-user-cannot-be-moderator'));
+      }
+      break;
+    }
     default: {
       const dataString = JSON.stringify(data, null, 2);
       log.error(`Unknown moderation message type: ${dataString}`);

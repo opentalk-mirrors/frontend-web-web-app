@@ -194,6 +194,7 @@ moderation-rights-granted = You have been granted moderation rights.
 moderation-rights-revoked = Your moderation rights have been revoked.
 moderator-role-granted = You have given { $displayName } moderator rights
 moderator-role-revoked = You have revoked moderator rights from { $displayName }
+moderation-error-user-cannot-be-moderator = This participant cannot be given moderator rights.
 presenter-role-granted = You gave { $displayName } the presenter role
 presenter-role-revoked = You have revoked the presenter role from { $displayName }
 
