@@ -20,6 +20,8 @@ import {
   PrivateRoom,
   PublicRoom,
   UpdateRoomPayload,
+  CreateRoomAssetPayload,
+  CreateRoomAssetResponse,
 } from '../types/room';
 import { StreamingTarget, StreamingTargetId, StreamingTargetInfo } from '../types/streaming';
 import { Tariff } from '../types/tariff';
@@ -133,7 +135,7 @@ export const addRoomEndpoints = <
           ]
         : [{ type: Tag.RoomInvite, id: 'PARTIAL-LIST' }],
   }),
-  /*
+  /**
    * get all assets for a room
    */
   getRoomAssets: builder.query<RoomAssets, RoomId>({
@@ -144,7 +146,27 @@ export const addRoomEndpoints = <
         : [{ type: Tag.Asset, id: 'PARTIAL-LIST' }];
     },
   }),
-  /*
+
+  /**
+   * Create a room asset
+   */
+  createRoomAsset: builder.mutation<CreateRoomAssetResponse, CreateRoomAssetPayload>({
+    query: ({ fileBlob, roomId, ...queryParams }) => ({
+      url: `rooms/${roomId}/assets`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+      body: fileBlob,
+      params: snakecaseKeys(queryParams),
+    }),
+    invalidatesTags: (response) => [
+      { type: Tag.Asset, id: response?.id },
+      { type: Tag.Asset, id: 'PARTIAL-LIST' },
+    ],
+  }),
+
+  /**
    * delete an asset from room
    */
   deleteRoomAsset: builder.mutation<void, { roomId: RoomId; assetId: AssetId }>({

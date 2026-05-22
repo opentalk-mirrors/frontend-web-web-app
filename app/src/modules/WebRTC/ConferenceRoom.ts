@@ -4,7 +4,8 @@
 import { generatePkceChallenge } from '@opentalk/redux-oidc';
 import { isEmpty } from 'lodash';
 
-import { ApiErrorWithBody, StartRoomError } from '../../api/rest';
+import type { ApiErrorWithBody } from '../../api/rest';
+import { StartRoomError } from '../../api/rest';
 import type { Message as IncomingMessage } from '../../api/types/incoming';
 import type { Message as RoomserverCoreMessage } from '../../api/types/incoming/core';
 import type { Message as OutgoingMessage } from '../../api/types/outgoing';

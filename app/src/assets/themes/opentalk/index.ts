@@ -855,7 +855,7 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
       MuiDialogActions: {
         styleOverrides: {
           root: ({ theme }) => ({
-            padding: theme.spacing(0, 3, 2, 3),
+            padding: theme.spacing(2, 3, 2, 3),
             '&> :not(:first-of-type)': {
               marginLeft: theme.spacing(1),
             },
@@ -953,6 +953,7 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
       },
     },
     typography: () => ({
+      fontFamily: ['Opentalk', 'serif'].join(','),
       allVariants: {
         fontFamily: ['Opentalk', 'serif'].join(','),
         fontWeight: 500,
@@ -968,22 +969,22 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
   theme.typography = {
     ...theme.typography,
     h1: {
+      ...theme.typography.h1,
       lineHeight: 1.3,
-      fontFamily: ['Opentalk', 'serif'].join(','),
       fontSize: theme.typography.pxToRem(22),
       [theme.breakpoints.down('md')]: {
         fontSize: theme.typography.pxToRem(18),
       },
     },
     h2: {
-      fontFamily: ['Opentalk', 'serif'].join(','),
+      ...theme.typography.h2,
       fontSize: theme.typography.pxToRem(16),
       [theme.breakpoints.down('md')]: {
         fontSize: theme.typography.pxToRem(14),
       },
     },
     body1: {
-      fontFamily: ['Opentalk', 'serif'].join(','),
+      ...theme.typography.body1,
       fontWeight: 500,
       fontSize: theme.typography.pxToRem(16),
       [theme.breakpoints.down('md')]: {
@@ -991,15 +992,15 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
       },
     },
     body2: {
+      ...theme.typography.body2,
       fontWeight: 400,
-      fontFamily: ['Opentalk', 'serif'].join(','),
       fontSize: theme.typography.pxToRem(16),
       [theme.breakpoints.down('md')]: {
         fontSize: theme.typography.pxToRem(14),
       },
     },
     caption: {
-      fontFamily: ['Opentalk', 'serif'].join(','),
+      ...theme.typography.caption,
       fontSize: theme.typography.pxToRem(12),
       fontWeight: 400,
       [theme.breakpoints.down('md')]: {

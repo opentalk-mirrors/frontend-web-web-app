@@ -1160,10 +1160,19 @@ debug-panel-outbound-label = Ausgehend (aktuell, durchschn., max):
 debug-panel-remote-count-label = Anzahl der Verbindungen:
 
 whiteboard-tab-title = Whiteboard
-whiteboard-create-pdf-button = PDF erstellen
+whiteboard-create-pdf-button = Erstelle PDF von Szene
 whiteboard-start-whiteboard-button = Whiteboard anzeigen
 whiteboard-new-pdf-message = Es wurde ein neues Whiteboard PDF erstellt
 whiteboard-hide = Whiteboard ausblenden
+whiteboard-edit-restrictions-menu-item = Bearbeitungsrechte verwalten
+whiteboard-dialog-edit-restrictions-title = Bearbeitungsrechte verwalten
+whiteboard-dialog-edit-restrictions-switch-label = Bearbeitung erlauben
+whiteboard-dialog-edit-restrictions-description = Teilnehmer mit Bearbeitungsrechten können das Whiteboard bearbeiten, Teilnehmer ohne Bearbeitungsrechte können das Whiteboard nur ansehen.
+whiteboard-dialog-edit-restrictions-empty = Keine(n) Teilnehmer gefunden
+whiteboard-dialog-edit-restrictions-search-label = Teilnehmer suchen
+whiteboard-upload-failed = Datei konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.
+whiteboard-upload-success = Whiteboard PDF erfolgreich hochgeladen.
+
 
 hotkey-hold-to-speak = Nicht stumm geschaltet, während gedrückt gehalten
 hotkey-disabled-message = Die Tastaturkürzel wurden deaktiviert
@@ -1276,6 +1285,7 @@ legal-vote-report-issue-description-placeholder = Beschreiben Sie das Problem...
 
 legal-vote-stopped-invalid-results-notification = Leider ist beim Abstimmen etwas schief gelaufen. Bitte informieren Sie den Moderator oder versuchen Sie es erneut.
 
+display-name-change-notification = Der Moderator {moderatorName} hat den Namen von {oldName} in {newName} geändert.
 display-name-character-limit-error = Der Name darf maximal { $limit } Zeichen umfassen.
 
 whisper-group-disbanded = Deine Flüstergruppe wurde aufgelöst.

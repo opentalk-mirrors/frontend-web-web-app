@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'react';
 import { VisuallyHiddenTitle } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { selectIsSpacedeckEnabled } from '../../../store/slices/configSlice';
 import { fullscreenActions, selectFullscreenActive } from '../../../store/slices/fullscreen/slice';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { selectCinemaLayout } from '../../../store/slices/uiSlice';
@@ -14,7 +15,8 @@ import FullscreenView from '../../FullscreenView';
 import GridView from '../../GridView';
 import MeetingNotesView from '../../MeetingNotesView';
 import SpeakerView from '../../SpeakerView';
-import WhiteboardView from '../../Whiteboard';
+import WhiteboardView from '../../WhiteboardView';
+import Spacedeck from '../../WhiteboardView/fragments/Spacedeck';
 import MediaReconnectionDialog from './MediaReconnectionDialog';
 
 const Container = styled('main')({
@@ -29,6 +31,7 @@ const Cinema = () => {
   const userLayout = useAppSelector(selectCinemaLayout);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
+  const isSpacedeckEnabled = useAppSelector(selectIsSpacedeckEnabled);
   const refForFullscreen = useRef<HTMLDivElement | null>(null);
   const dispatch = useAppDispatch();
 
@@ -50,7 +53,7 @@ const Cinema = () => {
       case LayoutOptions.Speaker:
         return <SpeakerView />;
       case LayoutOptions.Whiteboard:
-        return <WhiteboardView />;
+        return isSpacedeckEnabled ? <Spacedeck /> : <WhiteboardView />;
       case LayoutOptions.MeetingNotes:
         return <MeetingNotesView />;
       case LayoutOptions.Grid:

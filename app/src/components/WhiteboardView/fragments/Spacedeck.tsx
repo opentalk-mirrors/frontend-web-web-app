@@ -4,22 +4,23 @@
 import { styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../hooks';
-import { selectWhiteboardUrl } from '../../store/slices/whiteboardSlice';
+import { useAppSelector } from '../../../hooks';
+import { selectWhiteboardUrl } from '../../../store/slices/whiteboardSlice';
 
-const WhiteboardIframe = styled('iframe')({
+const SpacedeckIframe = styled('iframe')({
   height: '100%',
   width: '100%',
   display: 'block',
   border: 0,
 });
 
-const WhiteboardView = () => {
+const Spacedeck = () => {
   const { t } = useTranslation();
   const whiteboardUrl = useAppSelector(selectWhiteboardUrl);
 
   return (
-    <WhiteboardIframe
+    <SpacedeckIframe
+      data-testid="whiteboard-view"
       src={whiteboardUrl}
       title={t('moderationbar-button-whiteboard-tooltip')}
       aria-label={t('moderationbar-button-whiteboard-tooltip')}
@@ -27,4 +28,4 @@ const WhiteboardView = () => {
   );
 };
 
-export default WhiteboardView;
+export default Spacedeck;

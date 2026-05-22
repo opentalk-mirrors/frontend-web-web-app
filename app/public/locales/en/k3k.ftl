@@ -1162,10 +1162,18 @@ debug-panel-outbound-label = Outbound (current, avr, max):
 debug-panel-remote-count-label = Connection count:
 
 whiteboard-tab-title = Whiteboard
-whiteboard-create-pdf-button = Create pdf
+whiteboard-create-pdf-button = Create PDF from Scene
 whiteboard-start-whiteboard-button = Show whiteboard
 whiteboard-new-pdf-message = A new whiteboard pdf is available
 whiteboard-hide = Hide whiteboard
+whiteboard-edit-restrictions-menu-item = Edit permissions
+whiteboard-dialog-edit-restrictions-title = Edit whiteboard permissions
+whiteboard-dialog-edit-restrictions-switch-label = Grant edit permissions
+whiteboard-dialog-edit-restrictions-description = Only participants with edit permissions can edit the whiteboard. If you disable edit permissions, all participants can view the whiteboard but only moderators can edit it.
+whiteboard-dialog-edit-restrictions-empty = No participant(s) found
+whiteboard-dialog-edit-restrictions-search-label = Search participants
+whiteboard-upload-failed = Failed to upload whiteboard PDF. Please try again.
+whiteboard-upload-success = Whiteboard PDF uploaded successfully.
 
 hotkey-hold-to-speak = Hold to speak
 hotkey-disabled-message = Shortcuts disabled
@@ -1278,6 +1286,7 @@ legal-vote-report-issue-description-placeholder = Describe the problem...
 
 legal-vote-stopped-invalid-results-notification = Unfortunately something went wrong during the vote. Please inform the moderator or try again.
 
+display-name-change-notification = Moderator {moderatorName} changed the display name of {oldName} to {newName}
 display-name-character-limit-error = name must be at most { $limit } characters
 
 whisper-group-disbanded = Your whisper group has been disbanded.

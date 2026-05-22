@@ -8,7 +8,7 @@ import camelcaseKeys from 'camelcase-keys';
 import convertToSnakeCase from 'snakecase-keys';
 
 import type { RootState } from '../store';
-import { FetchRequestError, ParticipantId } from '../types';
+import { FetchRequestError, ParticipantId } from '../types/common';
 import { fetchWithAuth, getControllerBaseUrl } from '../utils/apiUtils';
 import { navigateTo } from '../utils/navigation';
 
@@ -221,4 +221,5 @@ export const {
   useLazyGetEventsWithInstancesQuery,
   useGetUserOwnedAssetsQuery,
   useGetColorSchemesQuery,
+  useCreateRoomAssetMutation,
 } = restApi;

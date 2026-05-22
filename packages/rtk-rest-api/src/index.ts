@@ -63,6 +63,8 @@ export type {
   CreateRoomPayload,
   RoomAssets,
   RoomInvite,
+  CreateRoomAssetPayload,
+  CreateRoomAssetResponse,
 } from './types/room';
 export type {
   Event,

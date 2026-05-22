@@ -22,6 +22,36 @@ vi.stubGlobal('Response', Response);
 vi.stubGlobal('Request', Request);
 vi.stubGlobal('fetch', fetch);
 
+vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(function getContext(this: HTMLCanvasElement) {
+  return {
+    canvas: this,
+    filter: 'none',
+    clearRect: vi.fn(),
+    drawImage: vi.fn(),
+    fillRect: vi.fn(),
+    getImageData: vi.fn(),
+    putImageData: vi.fn(),
+    createImageData: vi.fn(),
+    save: vi.fn(),
+    restore: vi.fn(),
+    scale: vi.fn(),
+    rotate: vi.fn(),
+    translate: vi.fn(),
+    beginPath: vi.fn(),
+    closePath: vi.fn(),
+    moveTo: vi.fn(),
+    lineTo: vi.fn(),
+    stroke: vi.fn(),
+    fill: vi.fn(),
+    arc: vi.fn(),
+    measureText: vi.fn(() => ({ width: 0 })),
+    fillText: vi.fn(),
+    strokeText: vi.fn(),
+    setTransform: vi.fn(),
+    resetTransform: vi.fn(),
+  } as unknown as ReturnType<HTMLCanvasElement['getContext']>;
+});
+
 const handlers = [
   http.get('http://OP/.well-known/openid-configuration', () => {
     return HttpResponse.json({
@@ -152,6 +182,9 @@ const config: ConfigState = {
   meetingInactivityMediaDisableSeconds: 120 as Seconds,
   meetingInactivityWarningSeconds: 900 as Seconds,
   meetingInactivityTerminationSeconds: 3600 as Seconds,
+  spacedeck: {
+    enabled: false,
+  },
 };
 
 window.config = config;

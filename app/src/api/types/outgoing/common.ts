@@ -4,7 +4,7 @@
 import { Namespaces } from '@opentalk/rest-api-rtk-query';
 
 import { getCurrentConferenceRoom } from '../../../modules/WebRTC/ConferenceRoom';
-import { Namespaced } from '../../../types';
+import type { Namespaced } from '../../../types';
 import type { Action as OutgoingActionType, Message as OutgoingMessageType } from './index';
 
 export interface ClearGlobalMessages {

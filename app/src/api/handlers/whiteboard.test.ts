@@ -1,26 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { AssetId } from '@opentalk/rest-api-rtk-query';
-import i18next from 'i18next';
-
-import { notificationAction } from '../../commonComponents';
 import type { RootState } from '../../store';
-import { addWhiteboardAsset } from '../../store/slices/whiteboardSlice';
+import { setEditRestrictions } from '../../store/slices/whiteboardSlice';
+import { ParticipantId } from '../../types';
 import { WhiteboardError } from '../types/incoming/whiteboard';
-import type { Message as WhiteboardMessage } from '../types/incoming/whiteboard';
+import type { ExcalidrawMessage as WhiteboardMessage } from '../types/incoming/whiteboard';
 import { handleStorageExceededError } from './helpers';
 import { handleWhiteboardMessage } from './whiteboard';
-
-vi.mock('i18next', () => ({
-  default: {
-    t: vi.fn((key: string) => key),
-  },
-}));
-
-vi.mock('../../commonComponents', () => ({
-  notificationAction: vi.fn(),
-}));
 
 vi.mock('./helpers', () => ({
   handleStorageExceededError: vi.fn(),
@@ -42,27 +29,6 @@ describe('handleWhiteboardMessage', () => {
     vi.clearAllMocks();
   });
 
-  it('adds pdf assets and notifies', () => {
-    const dispatch = vi.fn();
-    const state = createState();
-    const data: WhiteboardMessage = {
-      message: 'pdf_created',
-      assetId: 'asset-1' as AssetId,
-      filename: 'board.pdf',
-    };
-
-    handleWhiteboardMessage(dispatch, data, state);
-
-    expect(dispatch).toHaveBeenCalledExactlyOnceWith(
-      addWhiteboardAsset({ asset: { assetId: data.assetId, filename: data.filename } })
-    );
-    expect(notificationAction).toHaveBeenCalledExactlyOnceWith({
-      msg: i18next.t('whiteboard-new-pdf-message'),
-      variant: 'info',
-      ariaLive: 'polite',
-    });
-  });
-
   it('routes storage errors through helper', () => {
     const dispatch = vi.fn();
     const state = createState();
@@ -74,11 +40,30 @@ describe('handleWhiteboardMessage', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  it('throws on unknown message type', () => {
+  it('stores enabled edit restrictions in redux', () => {
     const dispatch = vi.fn();
     const state = createState();
-    const data = { message: 'unknown' } as unknown as WhiteboardMessage;
+    const data = {
+      message: 'edit_restrictions_enabled',
+      unrestrictedParticipants: ['participant-1' as ParticipantId, 'participant-2' as ParticipantId],
+    } satisfies WhiteboardMessage;
 
-    expect(() => handleWhiteboardMessage(dispatch, data, state)).toThrow(/Unknown message type/);
+    handleWhiteboardMessage(dispatch, data, state);
+
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(
+      setEditRestrictions({ enabled: true, participants: data.unrestrictedParticipants })
+    );
+  });
+
+  it('stores disabled edit restrictions in redux', () => {
+    const dispatch = vi.fn();
+    const state = createState();
+    const data = {
+      message: 'edit_restrictions_disabled',
+    } satisfies WhiteboardMessage;
+
+    handleWhiteboardMessage(dispatch, data, state);
+
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(setEditRestrictions({ enabled: false, participants: [] }));
   });
 });

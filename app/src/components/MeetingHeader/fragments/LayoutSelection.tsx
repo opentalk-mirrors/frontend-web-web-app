@@ -200,7 +200,7 @@ const LayoutSelection = () => {
   };
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isCompactLayout = useMediaQuery(theme.breakpoints.down('md'));
 
   const viewIcon = getLayoutIcon(selectedLayout);
 
@@ -209,7 +209,7 @@ const LayoutSelection = () => {
 
   return (
     <ViewPopperContainer>
-      {!isMobile && isMeetingNotes && (
+      {!isCompactLayout && isMeetingNotes && (
         <Button
           variant="text"
           color="inherit"
@@ -222,7 +222,7 @@ const LayoutSelection = () => {
           {t('meeting-notes-hide')}
         </Button>
       )}
-      {!isMobile && isWhiteBoard && (
+      {!isCompactLayout && isWhiteBoard && (
         <Button
           variant="text"
           color="inherit"
@@ -235,7 +235,7 @@ const LayoutSelection = () => {
           {t('whiteboard-hide')}
         </Button>
       )}
-      {(isMobile || (!isMobile && !(isWhiteBoard || isMeetingNotes))) && (
+      {(isCompactLayout || (!isCompactLayout && !(isWhiteBoard || isMeetingNotes))) && (
         <IconButton
           aria-expanded={isOpen}
           aria-haspopup="true"
@@ -244,7 +244,7 @@ const LayoutSelection = () => {
           onClick={openViewPopover}
         >
           {viewIcon}
-          {showButtonIndicator && isMobile && <ButtonIndicator />}
+          {showButtonIndicator && isCompactLayout && <ButtonIndicator />}
         </IconButton>
       )}
       <Dialog
@@ -291,7 +291,7 @@ const LayoutSelection = () => {
               {t('layout-selection-fullscreen')}
             </StyledToggleButton>
           )}
-          {((isMobile && isMeetingNotesFeatureAvailable) || (!isMobile && isMeetingNotes)) && (
+          {((isCompactLayout && isMeetingNotesFeatureAvailable) || (!isCompactLayout && isMeetingNotes)) && (
             <StyledToggleButton
               onClick={() =>
                 dispatch(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes, cacheLastLayout: true }))
@@ -303,7 +303,7 @@ const LayoutSelection = () => {
               {t('moderationbar-button-meeting-notes-tooltip')}
             </StyledToggleButton>
           )}
-          {((isMobile && isWhiteboardAvailable) || (!isMobile && isWhiteBoard)) && (
+          {((isCompactLayout && isWhiteboardAvailable) || (!isCompactLayout && isWhiteBoard)) && (
             <StyledToggleButton
               onClick={() => dispatch(updatedCinemaLayout({ layout: LayoutOptions.Whiteboard, cacheLastLayout: true }))}
               selected={selectedLayout === LayoutOptions.Whiteboard}

@@ -73,6 +73,14 @@ export const selectCombinedParticipantsAndUserInConference = createSelector(
   (participants, user) => (user ? [...participants, user] : participants)
 );
 
+export const selectModeratorParticipantIds = createSelector(
+  [selectCombinedParticipantsAndUserInConference],
+  (participants) =>
+    new Set(
+      participants.filter((participant) => participant.role === Role.Moderator).map((participant) => participant.id)
+    )
+);
+
 export const selectCombinedUserAndParticipants = createSelector(
   [selectAllOnlineParticipants, selectUserAsParticipant],
   (participants, user) => (user ? [user, ...participants] : participants)

@@ -14,13 +14,12 @@ import {
   forceMuteDisabled,
   forceMuteEnabled,
 } from '../../store/slices/moderationSlice';
-import { patch } from '../../store/slices/participantsSlice';
+import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
 import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
-import { updateRole } from '../../store/slices/userSlice';
+import { setDisplayName, updateRole } from '../../store/slices/userSlice';
 import { KickReason, Role, Timestamp } from '../../types';
 import { moderation } from '../types/incoming';
 import { ModerationError } from '../types/incoming/moderation';
-import { participantRename } from './helpers';
 
 /**
  * Handles messages in the moderation namespace.
@@ -71,10 +70,14 @@ export const handleModerationMessage = (
       notifications.info(i18next.t('debriefing-started-notification'));
       break;
     case 'display_name_changed': {
-      dispatch(participantRename({ id: data.target, newName: data.newName }));
+      dispatch(participantsRename({ id: data.target, displayName: data.newName }));
       const isSelf = data.target === state.user.uuid;
       const issuedBySelf = data.issuedBy === state.user.uuid;
       const actorName = state.participants.entities[data.issuedBy]?.displayName ?? 'unknown';
+
+      if (isSelf && issuedBySelf) {
+        dispatch(setDisplayName(data.newName));
+      }
 
       if (issuedBySelf && isSelf) {
         notifications.info(
@@ -105,7 +108,13 @@ export const handleModerationMessage = (
           })
         );
       }
-
+      notifications.info(
+        i18next.t('display-name-change-notification', {
+          moderatorName: state.participants.entities[data.issuedBy]?.displayName || '',
+          oldName: data.oldName,
+          newName: data.newName,
+        })
+      );
       break;
     }
     case 'muted': {

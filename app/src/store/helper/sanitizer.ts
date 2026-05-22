@@ -2,7 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { UnknownAction, Action } from '@reduxjs/toolkit';
+import { get, set } from 'lodash';
 
+import { broadcastVolatile, storeScene } from '../../api/types/outgoing/whiteboard';
 import { changeLocalMedia, connectRoom, switchLocalDevice } from '../commonActions';
 import type { RootState } from '../index';
 import { setLivekitRoom } from '../slices/livekitSlice';
@@ -67,12 +69,20 @@ export const stateSanitizer: <S>(genericState: S, _index: number) => S = <S>(gen
 
 function maskPayloadKey<T extends UnknownAction, K extends string>(action: T, key: K): T {
   const payload = (action as UnknownAction).payload as Record<string, unknown> | undefined;
-  if (!payload?.[key] || payload[key] === BLOB) {
+
+  if (payload === undefined) {
     return action;
   }
+
+  const value = get(payload, key);
+
+  if (!value || value === BLOB) {
+    return action;
+  }
+
   return {
     ...action,
-    payload: { ...payload, [key]: BLOB },
+    payload: set({ ...payload }, key, BLOB),
   } as T;
 }
 
@@ -85,6 +95,14 @@ export const actionSanitizer: <A extends Action>(genericAction: A, _id: number) 
 
   if (setLivekitRoom.match(action) || connectRoom.fulfilled.match(action)) {
     return maskPayloadKey(action, 'room') as A;
+  }
+
+  if (broadcastVolatile.action.match(action)) {
+    return maskPayloadKey(action, 'data.pointersMap') as A;
+  }
+
+  if (storeScene.action.match(action)) {
+    return maskPayloadKey(action, 'scene.appState.collaborators') as A;
   }
 
   return action as A;

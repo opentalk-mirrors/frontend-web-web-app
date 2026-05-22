@@ -27,7 +27,7 @@ vi.mock('../../SpeakerView', () => ({
   default: () => <div data-testid="speaker-view" />,
 }));
 
-vi.mock('../../Whiteboard', () => ({
+vi.mock('../../WhiteboardView', () => ({
   __esModule: true,
   default: () => <div data-testid="whiteboard-view" />,
 }));
@@ -90,7 +90,15 @@ describe('Cinema', () => {
   });
 
   it('renders media reconnection dialog when livekit is unavailable', () => {
-    const { store } = configureStore();
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          spacedeck: {
+            enabled: false,
+          },
+        },
+      },
+    });
     store.dispatch(setLivekitUnavailable(true));
 
     renderWithProviders(<Cinema />, { store, provider: { mui: true } });

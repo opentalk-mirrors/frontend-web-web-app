@@ -37,7 +37,6 @@ import { leave } from './participantsSlice';
 import { started as PollStarted } from './pollSlice';
 import { connectionClosed } from './roomSlice';
 import { timerStarted, timerStopped } from './timerSlice';
-import { setWhiteboardAvailable } from './whiteboardSlice';
 
 interface ErrorDialog {
   event: ErrorEvent | undefined;
@@ -266,10 +265,6 @@ export const uiSlice = createSlice({
       state.pinnedConnectionIdentifier = initialState.pinnedConnectionIdentifier;
       state.paginationPage = initialState.paginationPage;
       state.participantsSearchValue = initialState.participantsSearchValue;
-    });
-    builder.addCase(setWhiteboardAvailable, (state) => {
-      state.isCurrentWhiteboardHighlighted = true;
-      state.cinemaLayout = LayoutOptions.Whiteboard;
     });
     builder.addCase(setMeetingNotesReadUrl, (state) => {
       state.isCurrentMeetingNotesHighlighted = true;

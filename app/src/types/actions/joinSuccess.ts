@@ -151,6 +151,7 @@ export interface ModuleData {
   timer?: TimerState;
   legalVote?: LegalVoteJoinSuccess;
   whiteboard?: WhiteboardState;
+  excalidraw?: WhiteboardState;
   polls?: InitialPoll;
   automod?: InitialAutomod;
   sharedFolder?: SharedFolderData;
