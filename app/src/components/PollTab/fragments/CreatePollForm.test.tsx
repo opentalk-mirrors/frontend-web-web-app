@@ -74,7 +74,7 @@ describe('CreatePollForm', () => {
 
     await user.click(screen.getByRole('button', { name: 'save-as-template-button' }));
 
-    expect(dispatchSpy).toHaveBeenCalledWith(savePollFormValues(validValues));
+    expect(dispatchSpy).toHaveBeenCalledWith(savePollFormValues({ id: 0, ...validValues }));
     expect(notifications.success).toHaveBeenCalledExactlyOnceWith('poll-save-form-success');
   });
 
@@ -129,5 +129,44 @@ describe('CreatePollForm', () => {
     renderWithProviders(<CreatePollForm onClose={vi.fn()} />, { store, provider: { mui: true } });
 
     expect(screen.getByRole('button', { name: 'poll-form-button-submit' })).toBeDisabled();
+  });
+
+  it('disables save as template button after saving without changes', async () => {
+    const { store } = configureStore();
+    const user = userEvent.setup();
+
+    renderWithProviders(<CreatePollForm initialValues={validValues} onClose={vi.fn()} />, {
+      store,
+      provider: { mui: true },
+    });
+
+    const saveButton = screen.getByRole('button', { name: 'save-as-template-button' });
+    expect(saveButton).not.toBeDisabled();
+
+    await user.click(saveButton);
+
+    expect(notifications.success).toHaveBeenCalledWith('poll-save-form-success');
+    await waitFor(() => {
+      expect(saveButton).toBeDisabled();
+    });
+  });
+
+  it('does not create duplicate entries when save as template is clicked multiple times', async () => {
+    const { store, dispatchSpy } = configureStore();
+    const user = userEvent.setup();
+
+    renderWithProviders(<CreatePollForm initialValues={validValues} onClose={vi.fn()} />, {
+      store,
+      provider: { mui: true },
+    });
+
+    const saveButton = screen.getByRole('button', { name: 'save-as-template-button' });
+    await user.click(saveButton);
+
+    const saveCallCount = dispatchSpy.mock.calls.filter(([action]) => action.type === savePollFormValues.type).length;
+    expect(saveCallCount).toBe(1);
+
+    // Button should now be disabled — same values, no changes
+    expect(saveButton).toBeDisabled();
   });
 });
