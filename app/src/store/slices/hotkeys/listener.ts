@@ -23,6 +23,9 @@ const isTargetInputTypeAndContentEditable = (target: EventTarget | null) => {
   return false;
 };
 
+const isTargetMultilineInput = (target: EventTarget | null) =>
+  target instanceof HTMLElement && (target.tagName.toLowerCase() === 'textarea' || target.isContentEditable);
+
 const pushedKeyIsActive = new Set<Hotkey>();
 
 export const hotkeys: Hotkey[] = [];
@@ -126,12 +129,15 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
       if (hotkey?.canActivate && !hotkey.canActivate(state)) {
         isHotkeyEnabled = !isAudioEnabled;
       }
-      // safari and firefox do not emit focusout event when pressing enter in an input or contenteditable element
+      // safari and firefox do not emit focusout event when pressing enter in an input element
+      // (e.g. when submitting a form closes a dialog). Exclude textarea and contenteditable
+      // elements where Enter creates a newline and focus remains in the element.
       if (
         (browser.isSafari() || browser.isFirefox()) &&
         event.key === 'Enter' &&
         !event.shiftKey &&
-        isTargetInputTypeAndContentEditable(event.target)
+        isTargetInputTypeAndContentEditable(event.target) &&
+        !isTargetMultilineInput(event.target)
       ) {
         window.dispatchEvent(new CustomEvent('focusout', { detail: { target: event.target } }));
       }
