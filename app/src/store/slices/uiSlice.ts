@@ -432,8 +432,12 @@ const startLayoutChangeListener = (startAppListening: StartAppListening) =>
   startAppListening({
     matcher: isAnyOf(updatedCinemaLayout, updatedCinemaViewSortOrder, updatedCinemaGridSize),
     effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      const saveableLayouts = [LayoutOptions.Grid, LayoutOptions.Speaker];
+      const defaultLayout = initialState.cinemaLayout;
+      const { cinemaLayout } = listenerApi.getState().ui;
+
       const updatedLayoutSettings = {
-        cinemaLayout: listenerApi.getState().ui.cinemaLayout,
+        cinemaLayout: saveableLayouts.includes(cinemaLayout) ? cinemaLayout : defaultLayout,
         cinemaViewOrder: listenerApi.getState().ui.cinemaViewOrder,
         cinemaGridSize: listenerApi.getState().ui.cinemaGridSize,
       };
