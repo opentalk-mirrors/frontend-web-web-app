@@ -4,6 +4,7 @@
 import { Container, Stack, Typography, styled, useTheme } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import Color from 'colorjs.io';
+import { truncate } from 'lodash';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -154,7 +155,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
             <>
               {roomData?.title && (
                 <Typography variant="h2" textAlign="center" marginBottom={theme.spacing(5)} component="h1">
-                  {t('joinform-room-title', { title: roomData?.title })}
+                  {t('joinform-room-title', { title: truncate(roomData?.title, { length: 50 }) })}
                 </Typography>
               )}
               <Typography

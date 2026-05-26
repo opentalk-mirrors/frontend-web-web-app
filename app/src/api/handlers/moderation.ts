@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import i18next from 'i18next';
+import { truncate } from 'lodash';
 
 import { notifications } from '../../commonComponents';
 import log from '../../logger';
@@ -73,16 +74,32 @@ export const handleModerationMessage = (
       const actorName = state.participants.entities[data.issuedBy]?.displayName ?? 'unknown';
 
       if (issuedBySelf && isSelf) {
-        notifications.info(i18next.t('rename-self-notification', { newName: data.newName }));
+        notifications.info(
+          i18next.t('rename-self-notification', {
+            newName: truncate(data.newName, { length: 100 }),
+          })
+        );
       } else if (issuedBySelf) {
         notifications.info(
-          i18next.t('rename-other-feedback-notification', { oldName: data.oldName, newName: data.newName })
+          i18next.t('rename-other-feedback-notification', {
+            oldName: truncate(data.oldName, { length: 100 }),
+            newName: truncate(data.newName, { length: 100 }),
+          })
         );
       } else if (isSelf) {
-        notifications.info(i18next.t('rename-other-target-notification', { actorName, newName: data.newName }));
+        notifications.info(
+          i18next.t('rename-other-target-notification', {
+            actorName: truncate(actorName, { length: 100 }),
+            newName: truncate(data.newName, { length: 100 }),
+          })
+        );
       } else {
         notifications.info(
-          i18next.t('rename-general-notification', { oldName: data.oldName, newName: data.newName, actorName })
+          i18next.t('rename-general-notification', {
+            oldName: truncate(data.oldName, { length: 100 }),
+            newName: truncate(data.newName, { length: 100 }),
+            actorName: truncate(actorName, { length: 100 }),
+          })
         );
       }
 
@@ -91,7 +108,9 @@ export const handleModerationMessage = (
     case 'muted': {
       const participants = state.participants.entities;
       notifications.warning(
-        i18next.t('media-received-force-mute', { origin: participants[data.moderator]?.displayName || 'admin' })
+        i18next.t('media-received-force-mute', {
+          origin: truncate(participants[data.moderator]?.displayName || 'admin', { length: 50 }),
+        })
       );
       return;
     }

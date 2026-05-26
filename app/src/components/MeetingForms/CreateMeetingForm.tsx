@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { CreateEventPayload } from '@opentalk/rest-api-rtk-query';
+import { truncate } from 'lodash';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +29,11 @@ const CreateMeetingForm = () => {
     try {
       const payload = createPayload(values) as CreateEventPayload;
       const event = await createEvent(payload).unwrap();
-      notifications.success(t('dashboard-meeting-notification-success-create', { event: event.title }));
+      notifications.success(
+        t('dashboard-meeting-notification-success-create', {
+          event: truncate(event.title, { length: 50 }),
+        })
+      );
       navigate(`/dashboard/meetings/update/${event.id}/1`, {
         state: { ...getReferrerRouterState(window.location) },
       });

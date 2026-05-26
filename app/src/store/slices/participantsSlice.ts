@@ -4,6 +4,7 @@
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 import { createAction, createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import i18next from 'i18next';
+import { truncate } from 'lodash';
 
 import { participantRename } from '../../api/handlers/helpers';
 import { DisconnectReason } from '../../api/types/incoming/core';
@@ -336,7 +337,7 @@ export const handleParticipantJoinDuringVoteEffect = (
   const participantId = payload.participant.id;
 
   if (shouldShowNotification(state.user.role, participantId, activeVoteEntry)) {
-    const participantName = payload.participant.displayName;
+    const participantName = truncate(payload.participant.displayName, { length: 100 });
     notifications.warning(i18next.t('legal-vote-participant-joined-the-meeting', { participantName }));
   }
 };

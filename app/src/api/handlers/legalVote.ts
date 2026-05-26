@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import i18next from 'i18next';
+import { truncate } from 'lodash';
 
 import { notifications } from '../../commonComponents';
 import i18n from '../../i18n';
@@ -51,12 +52,15 @@ export const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMes
         const displayName = state.participants?.entities[data.participantId]?.displayName || i18n.t('global-someone');
         if (data.kind) {
           notifications.warning(
-            i18n.t('legal-vote-report-issue-kind-notification', { displayName: displayName, kind: data.kind })
+            i18n.t('legal-vote-report-issue-kind-notification', {
+              displayName: truncate(displayName, { length: 50 }),
+              kind: data.kind,
+            })
           );
         } else {
           notifications.warning(
             i18n.t('legal-vote-report-issue-description-notification', {
-              displayName: displayName,
+              displayName: truncate(displayName, { length: 50 }),
               description: data.description,
             })
           );
