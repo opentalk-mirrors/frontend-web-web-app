@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useMediaQuery } from '@mui/material';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Mock } from 'vitest';
 
@@ -35,6 +35,18 @@ describe('Layout selection menu', () => {
     await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
     const dialog = screen.getByRole('dialog', { name: 'layout-selection-title' });
     expect(dialog).toBeInTheDocument();
+  });
+
+  it('closes the dialog when the close button is clicked', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
+    const closeButton = getButtonSelector('global-close');
+    await user.click(closeButton);
+    const dialog = screen.queryByRole('dialog', { name: 'layout-selection-title' });
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
+    });
   });
 
   it('renders the correct buttons', async () => {
