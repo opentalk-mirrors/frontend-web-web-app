@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { ListItemText, Menu as MuiMenu, MenuItem as MuiMenuItem, styled } from '@mui/material';
+import { truncate } from 'lodash';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -63,7 +64,7 @@ function NewMessagePopover<T>({ setAnchorEl, anchorEl, open, participants }: INe
           </MenuItem>,
           participants.map((participant) => (
             <MenuItem key={participant.id} onClick={() => handleChatSelected(participant.id)}>
-              <ListItemText translate="no">{participant.displayName}</ListItemText>
+              <ListItemText translate="no">{truncate(participant.displayName, { length: 40 })}</ListItemText>
             </MenuItem>
           )),
         ]

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { List as MuiList, ListItem, ListItemAvatar, ListItemText, Stack, Typography, styled } from '@mui/material';
-import { uniqueId } from 'lodash';
+import { truncate, uniqueId } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, DoneIcon } from '../../../assets/icons';
@@ -50,7 +50,7 @@ const UserList = () => {
             <ListItemText
               primary={
                 <Typography noWrap translate="no">
-                  {participant.displayName}
+                  {truncate(participant.displayName, { length: 100 })}
                 </Typography>
               }
             />

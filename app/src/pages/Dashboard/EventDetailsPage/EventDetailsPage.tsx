@@ -4,6 +4,7 @@
 import { Box, Button, Stack, Typography, styled } from '@mui/material';
 import { EventId, InviteStatus, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/query';
+import { truncate } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -164,8 +165,8 @@ const EventDetailsPage = () => {
               mb: 4,
             }}
           >
-            <Typography variant="h1" fontWeight="bold">
-              {pageHeading}
+            <Typography variant="h1" fontWeight="bold" title={pageHeading} sx={{ wordBreak: 'break-word' }}>
+              {truncate(pageHeading, { length: 140 })}
             </Typography>
             <Typography
               variant="body1"

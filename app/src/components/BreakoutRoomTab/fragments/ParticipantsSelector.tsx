@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Typography, styled } from '@mui/material';
 import i18n from 'i18next';
-import { xorBy } from 'lodash';
+import { truncate, xorBy } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { AccordionItem } from '../../../commonComponents';
@@ -135,7 +135,7 @@ const ParticipantsSelector = ({
           <UserNameContainer>
             {assignments.map((assignment) => (
               <Typography key={assignment.id} variant="body1" translate="no">
-                {assignment.displayName}
+                {truncate(assignment.displayName, { length: 40 })}
               </Typography>
             ))}
           </UserNameContainer>

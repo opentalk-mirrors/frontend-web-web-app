@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Typography } from '@mui/material';
+import { truncate } from 'lodash';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +21,8 @@ const ChatAnnouncement = (props: ChatAnnouncementProps) => {
   const { t } = useTranslation();
 
   const author = useAppSelector((state) => selectParticipantName(state, message.source));
-  const announcement = t('chat-live-message-announcemenet', { name: author ?? t('global-participant') });
+  const displayName = truncate(author, { length: 30 });
+  const announcement = t('chat-live-message-announcemenet', { name: displayName ?? t('global-participant') });
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -17,7 +17,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { cloneDeep, isEmpty, some, differenceBy, uniqueId } from 'lodash';
+import { cloneDeep, isEmpty, some, differenceBy, uniqueId, truncate } from 'lodash';
 import { unionBy, intersectionBy } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -198,7 +198,7 @@ const MeetingNotesTab = () => {
             <ListItemText
               primary={
                 <Typography noWrap translate="no">
-                  {participant.displayName}
+                  {truncate(participant.displayName, { length: 100 })}
                 </Typography>
               }
             />
