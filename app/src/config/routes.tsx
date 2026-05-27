@@ -62,6 +62,7 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
         element: <ProtectedRoute />,
         children: [
           { index: true, element: <Redirect to="/room" /> },
+          // Kept for backwards compatibility with old invite links that included a breakout room ID in the path (ignored).
           { path: ':breakoutRoomId', element: <Redirect to="/room" />, key: 'breakoutRoom' },
         ],
       },
@@ -71,6 +72,7 @@ const routes: CreateRoutes = (redirectUri: string, popUpRedirect: string) => [
         element: <ProtectedRoute />,
         children: [
           { index: true, element: <RoomPage /> },
+          // Kept for backwards compatibility with old invite links that included a breakout room ID in the path (ignored).
           { path: ':breakoutRoomId', element: <RoomPage />, key: 'breakoutRoom' },
         ],
       },

@@ -23,7 +23,6 @@ import { useCreateRoomInviteMutation } from '../../../api/rest';
 import { CloseIcon } from '../../../assets/icons';
 import { notifications } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
-import { selectCurrentBreakoutRoomId } from '../../../store/slices/breakoutSlice';
 import { selectBaseUrl } from '../../../store/slices/configSlice';
 import { selectRoomId } from '../../../store/slices/roomSlice';
 import { composeInviteUrl } from '../../../utils/apiUtils';
@@ -41,10 +40,8 @@ const InviteGuestDialog = (props: Omit<DialogProps, 'children'>) => {
   const { t } = useTranslation();
   const baseUrl = useAppSelector(selectBaseUrl);
   const roomId = useAppSelector(selectRoomId);
-  const currentBreakoutRoomId = useAppSelector(selectCurrentBreakoutRoomId);
   const [createGuestLink, { data, reset, isSuccess }] = useCreateRoomInviteMutation();
-  const inviteUrl =
-    isSuccess && data && roomId ? composeInviteUrl(baseUrl, roomId, data.inviteCode, currentBreakoutRoomId) : null;
+  const inviteUrl = isSuccess && data && roomId ? composeInviteUrl(baseUrl, roomId, data.inviteCode) : null;
 
   const endOfToday = dateFns.endOfDay(new Date());
   const minTimeDate = dateFns.addMinutes(new Date(), 5);

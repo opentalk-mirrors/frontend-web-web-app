@@ -20,7 +20,6 @@ import { useIsMobile } from '../../hooks/useMediaQuery';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { selectConfigFeatures, selectSpeedTestConfig } from '../../store/slices/configSlice';
 import { selectLobbyAudioTrack, selectLobbyVideoEnabled } from '../../store/slices/livekitSlice';
-import { BreakoutRoomId } from '../../types';
 import MyMeetingMenu from '../MeetingHeader/fragments/MyMeetingMenu';
 import SpeedTestDialog from '../SpeedTestDialog';
 import EchoPlayBack from './fragments/EchoPlayback';
@@ -129,9 +128,8 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const videoEnabled = useAppSelector(selectLobbyVideoEnabled);
   const config = useAppSelector(selectSpeedTestConfig);
 
-  const { roomId } = useParams<'roomId' | 'breakoutRoomId'>() as {
+  const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
-    breakoutRoomId?: BreakoutRoomId;
   };
   const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
 
