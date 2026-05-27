@@ -17,7 +17,7 @@ import {
 import { patch } from '../../store/slices/participantsSlice';
 import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
 import { updateRole } from '../../store/slices/userSlice';
-import { Role, Timestamp } from '../../types';
+import { KickReason, Role, Timestamp } from '../../types';
 import { moderation } from '../types/incoming';
 import { ModerationError } from '../types/incoming/moderation';
 import { participantRename } from './helpers';
@@ -32,10 +32,23 @@ export const handleModerationMessage = (
   state: RootState
 ) => {
   switch (data.message) {
-    case 'kicked':
+    case 'kicked': {
       dispatch(hangUp());
-      notifications.warning(i18next.t('meeting-notification-kicked'));
+      switch (data.reason) {
+        case KickReason.Kicked:
+          notifications.warning(i18next.t('meeting-notification-kicked'));
+          break;
+        case KickReason.Debriefed: {
+          const isModerator = state.user.role === Role.Moderator;
+          const translationKey = isModerator
+            ? 'debriefing-session-ended-for-all-notification'
+            : 'debriefing-session-ended-notification';
+          notifications.info(i18next.t(translationKey));
+          break;
+        }
+      }
       break;
+    }
     case 'banned':
       dispatch(hangUp());
       notifications.warning(i18next.t('meeting-notification-banned'));
@@ -57,16 +70,6 @@ export const handleModerationMessage = (
     case 'debriefing_started':
       notifications.info(i18next.t('debriefing-started-notification'));
       break;
-    // case 'session_ended':
-    //   dispatch(hangUp());
-    //   notifications.info(
-    //     i18next.t(
-    //       state.user.role === Role.Moderator
-    //         ? 'debriefing-session-ended-for-all-notification'
-    //         : 'debriefing-session-ended-notification'
-    //     )
-    //   );
-    //   break;
     case 'display_name_changed': {
       dispatch(participantRename({ id: data.target, newName: data.newName }));
       const isSelf = data.target === state.user.uuid;

@@ -19,3 +19,4 @@ export * from './event';
 export * from './meetingNotes';
 export * from './legalVote';
 export * from './subroomAudio';
+export * from './moderation';
