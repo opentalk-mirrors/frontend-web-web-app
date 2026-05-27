@@ -10,7 +10,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import { CloseIcon } from '../../../assets/icons';
 import { CopyTextField, IconButton } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
-import { selectCurrentBreakoutRoomId } from '../../../store/slices/breakoutSlice';
 import { selectBaseUrl, selectIsFeatureEnabled } from '../../../store/slices/configSlice';
 import { selectE2EEncryption } from '../../../store/slices/roomSlice';
 import type { RoomInfo } from '../../../types';
@@ -45,13 +44,10 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
   const { title, roomId } = eventInfo;
   const { createdBy: roomOwner, password: roomPassword } = roomInfo;
   const baseUrl = useAppSelector(selectBaseUrl);
-  const currentBreakoutRoomId = useAppSelector(selectCurrentBreakoutRoomId);
   const isGuestsAllowedFeatureEnabled = useAppSelector(
     selectIsFeatureEnabled(BackendModules.Core, CoreFeatures.GuestsAllowed)
   );
-  const inviteUrl = roomId
-    ? composeInviteUrl(baseUrl, roomId, meetingDetails?.inviteCodeId, currentBreakoutRoomId)
-    : null;
+  const inviteUrl = roomId ? composeInviteUrl(baseUrl, roomId, meetingDetails?.inviteCodeId) : null;
   const streamingLinksExist = meetingDetails !== undefined && meetingDetails.streamingLinks.length > 0;
 
   const getRoomOwnerNameString = () => `${roomOwner.firstname} ${roomOwner.lastname}`;

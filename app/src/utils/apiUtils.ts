@@ -5,7 +5,6 @@ import { EventId, InviteCode, RoomId, RoomInvite } from '@opentalk/rest-api-rtk-
 
 import type { useLocale } from '../hooks';
 import type { ConfigState, DefaultAvatarImage } from '../store/slices/configSlice';
-import { BreakoutRoomId } from '../types';
 
 const createHeaders = (headers?: HeadersInit) => {
   let newHeaders;
@@ -32,17 +31,12 @@ export const getSignalingUrl = (roomserverAddress: string, token: string) => {
   return new URL(`${addEndingSlash(roomServer)}v1/signaling/${token}`);
 };
 
-export const composeRoomPath = (roomId: RoomId, inviteCode?: InviteCode, breakoutRoomId?: BreakoutRoomId) => {
-  return `/room/${roomId}${breakoutRoomId ? `/${breakoutRoomId}` : ``}${inviteCode ? `?invite=${inviteCode}` : ''}`;
+export const composeRoomPath = (roomId: RoomId, inviteCode?: InviteCode) => {
+  return `/room/${roomId}${inviteCode ? `?invite=${inviteCode}` : ''}`;
 };
 
-export const composeInviteUrl = (
-  baseUrl: string,
-  roomId: RoomId,
-  inviteCode?: InviteCode,
-  breakoutRoomId?: BreakoutRoomId
-) => {
-  const roomString = composeRoomPath(roomId, inviteCode, breakoutRoomId);
+export const composeInviteUrl = (baseUrl: string, roomId: RoomId, inviteCode?: InviteCode) => {
+  const roomString = composeRoomPath(roomId, inviteCode);
   return new URL(roomString, baseUrl);
 };
 
