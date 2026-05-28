@@ -619,7 +619,6 @@ review-app:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH &&
         $CI_PROJECT_ROOT_NAMESPACE == 'opentalk' &&
         $CI_PIPELINE_SOURCE == 'push'
-  allow_failure: true
   image:
     name: alpine/helm:4.1.4
     entrypoint: ['']
@@ -633,8 +632,11 @@ review-app:
   script:
     - API_MR_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests"
     - |
-      MERGE_REQUEST_IID=`curl --header "PRIVATE-TOKEN: ${READ_API_TOKEN}" "${API_MR_URL}?scope=all&state=merged" | \
-      jq --arg COMMIT_SHA $CI_COMMIT_SHA '.[] | select(.merge_commit_sha == $COMMIT_SHA).iid'`
-    - echo $MERGE_REQUEST_IID
-    - echo $CI_MERGE_REQUEST_IID
+      API_RESPONSE=$(curl --silent --fail --show-error \
+        --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+        "${API_MR_URL}?scope=all&state=merged")
+      MERGE_REQUEST_IID=$(echo "$API_RESPONSE" | \
+        jq --arg COMMIT_SHA "$CI_COMMIT_SHA" '.[] | objects | select(.merge_commit_sha == $COMMIT_SHA).iid')
+    - echo "MERGE_REQUEST_IID=$MERGE_REQUEST_IID"
+    - echo "CI_MERGE_REQUEST_IID=$CI_MERGE_REQUEST_IID"
     - helm uninstall frontend-$MERGE_REQUEST_IID -n review-latest
