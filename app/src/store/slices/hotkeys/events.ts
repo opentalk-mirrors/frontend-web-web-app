@@ -4,9 +4,13 @@
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { createLocalAudioTrack } from 'livekit-client';
 
+import { lowerHand, raiseHand } from '../../../api/types/outgoing/raiseHands';
 import { showConsentNotification } from '../../../commonComponents';
+import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import log from '../../../logger';
-import { changeLocalMedia, changeMedia } from '../../commonActions';
+import browser from '../../../modules/BrowserSupport';
+import { isModerator } from '../../../utils/userUtils';
+import { changeLocalMedia, changeMedia, setScreenShareEnabled } from '../../commonActions';
 import { selectIsUserMicDisabled } from '../../selectors';
 import { selectEnabledModulesList } from '../configSlice';
 import { fullscreenActions, selectFullscreenSupported } from '../fullscreen/slice';
@@ -17,8 +21,10 @@ import {
   selectLivekitWhisperRoom,
   selectLobbyAudioEnabled,
   selectLobbyVideoEnabled,
+  selectScreenShareEnabled,
   selectVideoEnabled,
 } from '../livekitSlice';
+import { selectHandUp, selectRaiseHandsEnabled } from '../moderationSlice';
 import { selectNeedRecordingConsent } from '../streamingSlice';
 import { selectIsWhisperActive, setIsWhisperActive } from '../subroomAudioSlice';
 import type { HotkeyCallbackParams } from './types';
@@ -157,8 +163,41 @@ export const toggleFullscreen = ({ state, dispatch }: HotkeyCallbackParams) => {
   const isFullscreenSupported = selectFullscreenSupported(state);
 
   if (!isFullscreenSupported) {
-    console.warn('Fullscreen is not supported on this browser.');
+    log.warn('Fullscreen is not supported on this browser.');
+    return;
   }
 
   dispatch(fullscreenActions.toggle());
+};
+
+export const raiseHandEvent = ({ state, dispatch }: HotkeyCallbackParams) => {
+  const isHandRaiseEnabled = selectRaiseHandsEnabled(state);
+  const isHandRaised = selectHandUp(state);
+
+  if (!isHandRaiseEnabled) {
+    log.warn('Raise hand is not enabled.');
+    return;
+  }
+
+  isHandRaised ? dispatch(lowerHand.action()) : dispatch(raiseHand.action());
+};
+
+export const screenShare = ({ state, dispatch }: HotkeyCallbackParams) => {
+  const isScreenShareSupported = browser.isScreenShareSupported();
+  const isScreenshareEnabled = selectScreenShareEnabled(state);
+  const canPublishScreenShare = selectLivekitRoom(state)?.localParticipant.permissions?.canPublishSources?.includes(
+    LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER
+  );
+  const isModeratorOrPresenter = isModerator || canPublishScreenShare;
+
+  if (!isScreenShareSupported) {
+    log.warn('Screen sharing is not supported on this browser.');
+    return;
+  }
+  if (!isModeratorOrPresenter) {
+    log.warn('You do not have permission to share your screen.');
+    return;
+  }
+
+  dispatch(setScreenShareEnabled({ enabled: !isScreenshareEnabled }));
 };
