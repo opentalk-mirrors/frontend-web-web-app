@@ -94,13 +94,13 @@ const WaitingParticipantItem = ({ participant }: ParticipantRowProps) => {
     <ListItem>
       <ListItemAvatar>
         <ParticipantAvatar src={participant.avatarUrl} alt={participant.displayName}>
-          {participant.displayName}
+          {truncate(participant.displayName, { length: 2 })}
         </ParticipantAvatar>
       </ListItemAvatar>
       <ListItemText
         primary={
           <Typography variant="body1" translate="no">
-            {participant.displayName}
+            {truncate(participant.displayName, { length: 100 })}
           </Typography>
         }
         secondary={

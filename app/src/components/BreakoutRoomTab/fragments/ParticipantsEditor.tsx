@@ -11,7 +11,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { concat, intersectionBy } from 'lodash';
+import { concat, intersectionBy, truncate } from 'lodash';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -129,7 +129,7 @@ const ParticipantsEditor = ({
           />
         }
         translate="no"
-        label={participant.displayName}
+        label={truncate(participant.displayName, { length: 40 })}
         labelPlacement="start"
       />
     ));

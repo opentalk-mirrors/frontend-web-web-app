@@ -16,7 +16,7 @@ import {
   styled,
 } from '@mui/material';
 import { useFormikContext } from 'formik';
-import { find, debounce } from 'lodash';
+import { find, debounce, truncate } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -194,7 +194,9 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
           </ListItemAvatar>
         </Grid>
         <Grid size="grow">
-          <ListItemText primary={<Typography noWrap>{participant.displayName}</Typography>} />
+          <ListItemText
+            primary={<Typography noWrap>{truncate(participant.displayName, { length: 100 })}</Typography>}
+          />
         </Grid>
         <Grid
           sx={{
