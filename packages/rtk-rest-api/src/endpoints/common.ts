@@ -32,13 +32,15 @@ type BeforeCursor = {
   before?: string;
 };
 
+type Cursors = AfterCursor & BeforeCursor;
+
 /**
  * Cursor based pagination parameters.
  *
  * In the default version only the after cursor is support.
  * If an endpoint needs the before cursor or both you need to specify the T generic bound explicitly.
  */
-export type CursorPaginationParams<T extends AfterCursor & BeforeCursor = AfterCursor> = {
+export type CursorPaginationParams<T extends Cursors = Cursors> = {
   /**
    * Results per Page (max 100)
    * @default 30

@@ -12,6 +12,7 @@ import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import { TimePerspectiveFilter } from '../../../utils/eventUtils';
 import EventsOverview from './fragments/EventsOverview';
 import EventsPageHeader from './fragments/EventsPageHeader';
+import TimeIndependentOverview from './fragments/TimeIndependentOverview';
 import { filterByTimePeriod } from './fragments/utils';
 import { DashboardEventsFilters, FilterChangeCallbackType, MeetingsProp, TimeFilter } from './types';
 
@@ -26,13 +27,15 @@ const EventsOverviewPage = () => {
     openInvitedMeeting: false,
     favoriteMeetings: false,
     timePerspective: TimePerspectiveFilter.TimeIndependent,
+    cursors: [],
+    currentCursorIndex: -1,
   });
 
   const { t } = useTranslation();
   const pageHeading = t('dashboard-events-my-meetings');
   useUpdateDocumentTitle(pageHeading);
 
-  const { favoriteMeetings, openInvitedMeeting, timePeriod, timePerspective } = filter;
+  const { favoriteMeetings, openInvitedMeeting, timePeriod, timePerspective, cursors, currentCursorIndex } = filter;
 
   const timeMinFilter = useMemo(() => {
     if (timePerspective === TimePerspectiveFilter.Future) {
@@ -48,7 +51,7 @@ const EventsOverviewPage = () => {
     }
   }, [timePerspective]);
 
-  const { events, isLoading, isFetching } = useGetEventsWithInstancesQuery(
+  const { groups, isLoading, isFetching } = useGetEventsWithInstancesQuery(
     {
       perPage: EVENTS_PER_REQUEST,
       instancesMax: MAX_INSTANCES_PER_RECURRING_EVENT,
@@ -56,12 +59,13 @@ const EventsOverviewPage = () => {
       timeIndependent: timePerspective === TimePerspectiveFilter.TimeIndependent,
       timeMin: timeMinFilter,
       timeMax: timeMaxFilter,
+      after: cursors[currentCursorIndex],
     },
     {
       selectFromResult: ({ data, ...props }) => {
         if (!data) {
           return {
-            events: EMPTY_MEETING_PROP_ARRAY,
+            groups: EMPTY_MEETING_PROP_ARRAY,
             ...props,
           };
         }
@@ -85,11 +89,13 @@ const EventsOverviewPage = () => {
         if (timePerspective === TimePerspectiveFilter.TimeIndependent) {
           return {
             ...props,
-            events: [
+            groups: [
               {
                 title: t('dashboard-meeting-details-page-timeindependent'),
                 events: orderedEventsWithInstances,
-              },
+                before: data.before,
+                after: data.after,
+              } satisfies MeetingsProp,
             ],
           };
         }
@@ -101,7 +107,7 @@ const EventsOverviewPage = () => {
           )
         );
 
-        const events = Object.entries(eventsGroupedByTimeFilter).map(
+        const groups = Object.entries(eventsGroupedByTimeFilter).map(
           ([title, groupedEvents]): MeetingsProp => ({
             title,
             events: groupedEvents,
@@ -110,7 +116,7 @@ const EventsOverviewPage = () => {
 
         return {
           ...props,
-          events,
+          groups,
         };
       },
     }
@@ -120,12 +126,34 @@ const EventsOverviewPage = () => {
     setFilter((prevFilters) => ({ ...prevFilters, [key]: value ? value : !prevFilters[key] }));
   }, []);
 
+  const onNextPage = useCallback((after: string) => {
+    setFilter((prev) => ({
+      ...prev,
+      cursors: prev.currentCursorIndex === prev.cursors.length - 1 ? [...prev.cursors, after] : prev.cursors,
+      currentCursorIndex: prev.currentCursorIndex + 1,
+    }));
+  }, []);
+
+  const onPreviousPage = useCallback(() => {
+    setFilter((prev) => ({ ...prev, currentCursorIndex: prev.currentCursorIndex - 1 }));
+  }, []);
+
   return (
     <>
-      <EventsPageHeader entries={events} filters={filter} onFilterChange={onFilterChange} title={pageHeading} />
-      {events.length !== 0 && (
-        <EventsOverview key={events[0].title} entries={events} isLoading={isLoading} isFetching={isFetching} />
-      )}
+      <EventsPageHeader entries={groups} filters={filter} onFilterChange={onFilterChange} title={pageHeading} />
+      {groups.length !== 0 &&
+        (timePerspective === TimePerspectiveFilter.TimeIndependent ? (
+          <TimeIndependentOverview
+            groups={groups}
+            isFetching={isFetching}
+            isLoading={isLoading}
+            onNextPage={onNextPage}
+            onPreviousPage={onPreviousPage}
+            currentCursorIndex={currentCursorIndex}
+          />
+        ) : (
+          <EventsOverview entries={groups} isLoading={isLoading} isFetching={isFetching} />
+        ))}
     </>
   );
 };

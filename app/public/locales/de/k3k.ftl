@@ -762,6 +762,8 @@ global-open-new-tab = In neuem Tab öffnen
 global-required-field = Dies ist ein Pflichtfeld
 global-unknown = Unbekannt
 global-disabled = Deaktivieren
+global-next = Weiter
+global-previous = Zurück
 
 retry-available-in = Wiederholung verfügbar in {$seconds}
 

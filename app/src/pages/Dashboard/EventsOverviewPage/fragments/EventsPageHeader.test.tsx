@@ -48,6 +48,8 @@ describe('Events Page Header tests', () => {
     openInvitedMeeting: false,
     favoriteMeetings: false,
     timePerspective: TimePerspectiveFilter.TimeIndependent,
+    cursors: [],
+    currentCursorIndex: -1,
   };
 
   afterEach(() => {

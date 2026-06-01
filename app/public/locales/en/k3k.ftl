@@ -764,6 +764,8 @@ global-required-field = This is a mandatory field
 global-unknown = Unknown
 global-rename = Rename
 global-disabled = Disabled
+global-next = Next
+global-previous = Previous
 
 retry-available-in = Retry available in {$seconds}
 
