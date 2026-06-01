@@ -11,6 +11,7 @@ import { MicOffIcon, MicOnIcon } from '../../../assets/icons';
 import { SuspenseLoading, showConsentNotification } from '../../../commonComponents';
 import { LIVEKIT_AUDIO_PERMISSION_NUMBER, ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useHotkeyCombination } from '../../../hooks/useHotkeyCombination';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { changeMedia } from '../../../store/commonActions';
 import {
@@ -47,6 +48,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
   const audioChangeInProgress = useAppSelector(selectAudioChangeInProgress);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const shouldForceMute = useAppSelector(selectShouldForceMuted);
+  const keyCombination = useHotkeyCombination('hotkey-microphone-toggle');
 
   const [showMenu, setShowMenu] = useState(false);
 
@@ -105,9 +107,9 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
       return t('toolbar-button-audio-disabled-tooltip');
     }
     if (microphoneEnabled) {
-      return t('toolbar-button-audio-turn-off-tooltip-title');
+      return t('toolbar-button-audio-turn-off-tooltip-title') + ` (${keyCombination})`;
     }
-    return t('toolbar-button-audio-turn-on-tooltip-title');
+    return t('toolbar-button-audio-turn-on-tooltip-title') + ` (${keyCombination})`;
   };
 
   useEffect(() => {
