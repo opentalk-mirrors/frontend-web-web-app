@@ -7,7 +7,6 @@ import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
 import type { RootState } from '../';
-import { participantRename } from '../../api/handlers/helpers';
 import { restApi } from '../../api/rest';
 import { sendChatMessage } from '../../api/types/outgoing/chat';
 import { lowerHand, raiseHand } from '../../api/types/outgoing/raiseHands';
@@ -112,11 +111,6 @@ export const userSlice = createSlice({
     });
     builder.addCase(setScreenShareEnabled.fulfilled, (state) => {
       state.lastActive = new Date().toISOString();
-    });
-    builder.addCase(participantRename, (state, { payload: { id, newName } }) => {
-      if (state.uuid === id) {
-        state.displayName = newName;
-      }
     });
   },
 });

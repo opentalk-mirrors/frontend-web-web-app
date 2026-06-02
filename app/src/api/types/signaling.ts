@@ -4,7 +4,7 @@
 import { Namespaces } from '@opentalk/rest-api-rtk-query';
 import { PayloadActionCreator } from '@reduxjs/toolkit';
 
-import { IfVoid, IsAny, IsEmptyObj, IsUnknownOrNonInferrable, Namespaced } from '../../types';
+import type { IfVoid, IsAny, IsEmptyObj, IsUnknownOrNonInferrable, Namespaced } from '../../types';
 
 export interface Action {
   action: string;

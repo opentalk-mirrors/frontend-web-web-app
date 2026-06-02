@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, Stack, Typography, styled } from '@mui/material';
-import { EventId, InviteStatus, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
+import { InviteStatus, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
+import type { EventId, RoomId } from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { truncate } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -85,7 +86,7 @@ const EventDetailsPage = () => {
       : undefined;
 
   const isMeetingCreator = me?.id === event?.createdBy.id;
-  const { data: tariff } = useGetRoomTariffQuery(event?.room.id ?? skipToken);
+  const { data: tariff } = useGetRoomTariffQuery(event?.room.id ?? (skipToken as unknown as RoomId));
   const roomParticipantLimit = tariff?.quotas.roomParticipantLimit;
   const navigate = useNavigate();
   const pageHeading = event?.title || t('fallback-room-title') || '';

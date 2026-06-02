@@ -16,8 +16,9 @@
     "caniuse-lite": "1.0.*",
     "lz-string": "1.4.4",
     "language-subtag-registry": "0.3.21",
-    "pako": "1.0.11",
-    "emoji-picker-react": "^3.4.8"
+    "pako": ">=1.0.11",
+    "emoji-picker-react": "^3.4.8",
+    "rgbcolor": ">=1.0.1"
   },
   "ignore": [
     {

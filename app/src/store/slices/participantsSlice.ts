@@ -6,7 +6,6 @@ import { createAction, createEntityAdapter, createSelector, createSlice, Payload
 import i18next from 'i18next';
 import { truncate } from 'lodash';
 
-import { participantRename } from '../../api/handlers/helpers';
 import { DisconnectReason } from '../../api/types/incoming/core';
 import { notifications } from '../../commonComponents';
 import {
@@ -194,6 +193,15 @@ export const participantsSlice = createSlice({
         });
       }
     },
+    rename: (state, { payload }: PayloadAction<Pick<Participant, 'id' | 'displayName'>>) => {
+      const { id, displayName } = payload;
+      participantAdapter.updateOne(state, {
+        id,
+        changes: {
+          displayName,
+        },
+      });
+    },
   },
 
   extraReducers: (builder) => {
@@ -212,19 +220,10 @@ export const participantsSlice = createSlice({
         });
       }
     );
-
-    builder.addCase(participantRename, (state, { payload: { id, newName } }) => {
-      participantAdapter.updateOne(state, {
-        id,
-        changes: {
-          displayName: newName,
-        },
-      });
-    });
   },
 });
 
-export const { join, leave, update, patch, waitingRoomJoined, waitingRoomLeft, approveToEnter, approvedAll } =
+export const { join, leave, update, patch, waitingRoomJoined, waitingRoomLeft, approveToEnter, approvedAll, rename } =
   participantsSlice.actions;
 export const actions = participantsSlice.actions;
 
@@ -302,6 +301,9 @@ export const selectRemoteParticipantsDisplayNameRecord = createSelector(
 export const selectAllModeratorParticipants = createSelector([selectAllOnlineParticipants], (participants) =>
   participants.filter((participant) => participant.role === Role.Moderator)
 );
+
+export const selectDisplayNameById = (state: RootState, participantId: ParticipantId) =>
+  selectParticipantById(participantId)(state)?.displayName;
 
 export default participantsSlice.reducer;
 

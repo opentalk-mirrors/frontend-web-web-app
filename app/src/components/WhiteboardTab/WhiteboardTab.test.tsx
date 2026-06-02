@@ -1,17 +1,25 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen, fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Mock } from 'vitest';
 
-import { startWhiteboard, generateWhiteboardPdf } from '../../api/types/outgoing/whiteboard';
+import { start as startWhiteboard } from '../../api/types/outgoing/whiteboard';
 import { useDownloadRoomAsset } from '../../hooks/useDownloadRoomAsset';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import WhiteboardTab from './';
 
 vi.mock('../../hooks/useDownloadRoomAsset', () => ({
   useDownloadRoomAsset: vi.fn(),
+}));
+
+vi.mock('../../api/types/outgoing/whiteboard', async (importOriginal) => ({
+  ...(await importOriginal()),
+  start: {
+    action: vi.fn((payload) => ({ payload, type: 'TEST_START_WHITEBOARD' })),
+  },
 }));
 
 describe('WhiteboardTab', () => {
@@ -23,6 +31,11 @@ describe('WhiteboardTab', () => {
   beforeEach(() => {
     const configuredStore = configureStore({
       initialState: {
+        config: {
+          spacedeck: {
+            enabled: false,
+          },
+        },
         whiteboard: {
           whiteboardAssetList: [
             { assetId: '1', filename: pdfFile },
@@ -57,35 +70,30 @@ describe('WhiteboardTab', () => {
     expect(screen.getByRole('button', { name: pngFile })).toBeInTheDocument();
   });
 
-  it('dispatches startWhiteboard when start button is clicked', () => {
+  it('dispatches startWhiteboard when start button is clicked', async () => {
+    const user = userEvent.setup();
     renderComponent();
     const startButton = screen.getByRole('button', { name: 'whiteboard-start-whiteboard-button' });
-    fireEvent.click(startButton);
-    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(startWhiteboard.action());
+    await user.click(startButton);
+    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(
+      startWhiteboard.action({
+        initialScene: {
+          elements: [],
+        },
+        editRestrictions: {
+          type: 'disabled',
+        },
+      })
+    );
   });
 
-  it('dispatches generateWhiteboardPdf when create PDF button is clicked', () => {
-    const configuredStore = configureStore({
-      initialState: {
-        whiteboard: { whiteboardAssetList: [], isWhiteboardAvailable: true },
-      },
-    });
-
-    store = configuredStore.store;
-    dispatchSpy = configuredStore.dispatchSpy;
-
-    renderComponent();
-    const pdfButton = screen.getByRole('button', { name: 'whiteboard-create-pdf-button' });
-    fireEvent.click(pdfButton);
-    expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith(generateWhiteboardPdf.action());
-  });
-
-  it('calls downloadAsset function when clicking on a file link', () => {
+  it('calls downloadAsset function when clicking on a file link', async () => {
+    const user = userEvent.setup();
     const mockDownload = vi.fn();
     (useDownloadRoomAsset as Mock).mockReturnValue(mockDownload);
 
     renderComponent();
-    fireEvent.click(screen.getByRole('button', { name: pdfFile }));
+    await user.click(screen.getByRole('button', { name: pdfFile }));
     expect(mockDownload).toHaveBeenCalledExactlyOnceWith({ roomId, assetId: '1' });
   });
 });

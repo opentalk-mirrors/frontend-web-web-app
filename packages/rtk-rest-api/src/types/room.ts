@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Opaque } from 'type-fest';
 
-import { CallIn, DateTime, BaseAsset } from './common';
+import { CallIn, DateTime, BaseAsset, AssetId } from './common';
 import { BaseUser } from './user';
 
 export type RoomId = Opaque<string, 'roomId'>;
@@ -93,4 +93,20 @@ export type CreateRoomInvitePayload = {
 export type RoomEventInfo = {
   id: RoomId;
   inviteCode?: InviteCode;
+};
+
+export type CreateRoomAssetPayload = {
+  roomId: RoomId;
+  fileBlob: Blob;
+  fileExtension: 'svg' | 'png' | 'jpg' | 'jpeg' | 'pdf';
+  kind: string;
+  eventTitle?: string;
+  namespace?: string;
+};
+
+export type CreateRoomAssetResponse = {
+  filename: string;
+  id: AssetId;
+  size: number;
+  remainingQuota: number | null;
 };

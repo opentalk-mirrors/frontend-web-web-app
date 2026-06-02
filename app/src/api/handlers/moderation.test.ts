@@ -6,12 +6,13 @@ import i18next from 'i18next';
 import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
 import { enabledSelfRename, forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
+import { rename } from '../../store/slices/participantsSlice';
 import { enteredWaitingRoom } from '../../store/slices/roomSlice';
+import { setDisplayName } from '../../store/slices/userSlice';
 import { Role } from '../../types';
 import type { ParticipantId, Timestamp } from '../../types';
 import { KickReason } from '../../types';
 import type { DisplayNameChanged, Message as ModerationMessage } from '../types/incoming/moderation';
-import { participantRename } from './helpers';
 import { handleModerationMessage } from './moderation';
 
 vi.mock('i18next', () => ({
@@ -96,7 +97,7 @@ describe('handleModerationMessage', () => {
     expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('meeting-notification-moved-to-waiting-room');
   });
 
-  it('updates display name when our user is renamed', () => {
+  it('updates display name when other user is renamed', () => {
     const dispatch = vi.fn();
     const userId = 'participant-1' as ParticipantId;
     const moderatorId = 'moderator-1' as ParticipantId;
@@ -123,12 +124,41 @@ describe('handleModerationMessage', () => {
     handleModerationMessage(dispatch, data, timestamp, state);
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenNthCalledWith(1, participantRename({ id: userId, newName: 'Jordan' }));
-    expect(i18next.t).toHaveBeenCalledExactlyOnceWith('rename-other-target-notification', {
+    expect(dispatch).toHaveBeenNthCalledWith(1, rename({ id: userId, displayName: 'Jordan' }));
+    expect(i18next.t).toHaveBeenCalledWith('rename-other-target-notification', {
       actorName: 'Moderator',
       newName: 'Jordan',
     });
-    expect(notifications.info).toHaveBeenCalledExactlyOnceWith('rename-other-target-notification');
+    expect(i18next.t).toHaveBeenCalledWith('display-name-change-notification', {
+      moderatorName: 'Moderator',
+      newName: 'Jordan',
+      oldName: 'Alex',
+    });
+    expect(notifications.info).toHaveBeenCalledWith('display-name-change-notification');
+    expect(notifications.info).toHaveBeenCalledWith('rename-other-target-notification');
+  });
+
+  it('updates display name when we rename ourselves', () => {
+    const dispatch = vi.fn();
+    const userId = 'participant-1' as ParticipantId;
+    const data: DisplayNameChanged = {
+      message: 'display_name_changed',
+      target: userId,
+      issuedBy: userId,
+      oldName: 'Alex',
+      newName: 'Jordan',
+    };
+    const state = createState({
+      user: {
+        uuid: userId,
+      },
+    });
+
+    handleModerationMessage(dispatch, data, timestamp, state);
+
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    expect(dispatch).toHaveBeenNthCalledWith(1, rename({ id: userId, displayName: 'Jordan' }));
+    expect(dispatch).toHaveBeenNthCalledWith(2, setDisplayName('Jordan'));
   });
 
   it('enables force mute and notifies restricted users', () => {

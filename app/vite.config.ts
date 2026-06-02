@@ -26,6 +26,7 @@ const monorepoPackageAliases = {
   '@opentalk/redux-oidc': path.resolve(__dirname, '../packages/redux-oidc/src/index.ts'),
   '@opentalk/fluent_conv': path.resolve(__dirname, '../packages/fluent_conv/src/index.ts'),
   '@opentalk/i18next-fluent': path.resolve(__dirname, '../packages/i18next-fluent/src/index.ts'),
+  'roughjs/bin/rough': path.resolve(__dirname, '../node_modules/roughjs/bin/rough.js'),
 };
 
 // This plugin is only for development.
@@ -153,6 +154,11 @@ export default defineConfig(({ command, mode }) => {
       globals: true,
       testTimeout: 10000,
       setupFiles: ['./src/setupTests.ts'],
+      server: {
+        deps: {
+          inline: ['@excalidraw/excalidraw', 'roughjs'],
+        },
+      },
       env: {
         TZ: 'UTC',
       },

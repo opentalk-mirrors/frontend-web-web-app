@@ -8,9 +8,14 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { AssetRef } from '../../api/types/incoming/whiteboard';
-import { generateWhiteboardPdf, startWhiteboard } from '../../api/types/outgoing/whiteboard';
+import {
+  generateWhiteboardPdf,
+  start as startWhiteboard,
+  startWhiteboard as startSpacedeck,
+} from '../../api/types/outgoing/whiteboard';
 import { useAppSelector } from '../../hooks';
 import { useDownloadRoomAsset } from '../../hooks/useDownloadRoomAsset';
+import { selectIsSpacedeckEnabled } from '../../store/slices/configSlice';
 import { selectIsWhiteboardAvailable, selectWhiteboardAssets } from '../../store/slices/whiteboardSlice';
 
 const Link = styled(MUILink)<LinkProps>(() => ({
@@ -21,12 +26,26 @@ const WhiteboardTab = () => {
   const { t } = useTranslation();
   const whiteboardAssets: ReturnType<typeof selectWhiteboardAssets> = useAppSelector(selectWhiteboardAssets);
   const showWhiteboard: ReturnType<typeof selectIsWhiteboardAvailable> = useAppSelector(selectIsWhiteboardAvailable);
+  const isSpacedeckEnabled = useAppSelector(selectIsSpacedeckEnabled);
   const dispatch = useDispatch();
   const downloadAsset = useDownloadRoomAsset();
   const { roomId } = useParams<'roomId'>() as { roomId: RoomId };
 
   const handleStartWhiteboard = () => {
-    dispatch(startWhiteboard.action());
+    if (isSpacedeckEnabled) {
+      dispatch(startSpacedeck.action());
+      return;
+    }
+    dispatch(
+      startWhiteboard.action({
+        initialScene: {
+          elements: [],
+        },
+        editRestrictions: {
+          type: 'disabled',
+        },
+      })
+    );
   };
 
   const createPdf = () => {
@@ -63,11 +82,12 @@ const WhiteboardTab = () => {
           })}
         </Stack>
       </Box>
-      {showWhiteboard ? (
+      {isSpacedeckEnabled && showWhiteboard && (
         <Button onClick={createPdf} color="secondary">
           {t('whiteboard-create-pdf-button')}
         </Button>
-      ) : (
+      )}
+      {!showWhiteboard && (
         <Button onClick={handleStartWhiteboard} color="secondary">
           {t('whiteboard-start-whiteboard-button')}
         </Button>

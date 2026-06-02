@@ -5,9 +5,11 @@ import { authReducer, setupAppDispatch } from '@opentalk/redux-oidc';
 import { Middleware, configureStore, combineReducers } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { merge } from 'lodash';
+import { useStore } from 'react-redux';
 
 import { apiMiddleware } from '../api';
 import { restApi, rtkQueryErrorLoggerMiddleware } from '../api/rest';
+import { broadcastVolatile, storeScene } from '../api/types/outgoing/whiteboard';
 import log, { setupLogLevel } from '../logger';
 import { actionSanitizer, stateSanitizer } from './helper/sanitizer';
 import { listenerMiddleware } from './listenerMiddleware';
@@ -120,6 +122,8 @@ export function setupStore(preloadedState?: Partial<RootState>) {
             domFocusOut.type,
             fullscreenActions.request.type,
             fullscreenActions.toggle.type,
+            broadcastVolatile.action.type,
+            storeScene.action.type,
           ],
           ignoredActionPaths: [
             'meta.arg',
@@ -157,3 +161,4 @@ export function setupStore(preloadedState?: Partial<RootState>) {
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppStore = ReturnType<typeof setupStore>;
 export type AppDispatch = AppStore['dispatch'];
+export const useAppStore = useStore.withTypes<AppStore>();
