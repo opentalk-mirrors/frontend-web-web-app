@@ -15,6 +15,7 @@ export interface HotkeyCallbackParams {
 export interface Hotkey {
   key: string;
   modifier?: HotkeyModifier;
+  canActivate?: (state: RootState) => boolean;
   onPress: (params: HotkeyCallbackParams) => void;
   onRelease?: (params: HotkeyCallbackParams) => void;
   descriptionKey: string;

@@ -6,6 +6,7 @@ import { debounce, isEqual } from 'lodash';
 
 import browser from '../../../modules/BrowserSupport';
 import type { AppDispatch, RootState } from '../../../store';
+import { selectAudioEnabled } from '../livekitSlice';
 import { domKeyDown, domKeyUp, domFocusIn, domFocusOut } from './slice';
 import type { Hotkey, HotkeyModifier, ModifierKey } from './types';
 
@@ -77,6 +78,7 @@ export const registerHotkey = ({
   descriptionKey,
   preventActiveMediaAfterPermissionPrompt,
   forcePreventDefault,
+  canActivate,
 }: Hotkey) => {
   const exists = hotkeys.some(
     (hotkey) => hotkey.key === key && isEqual(normalizeModifier(hotkey.modifier), normalizeModifier(modifier))
@@ -94,6 +96,7 @@ export const registerHotkey = ({
     descriptionKey,
     preventActiveMediaAfterPermissionPrompt,
     forcePreventDefault,
+    canActivate,
   });
 };
 
@@ -116,8 +119,13 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
     effect: async (action, listenerApi) => {
       const event = action.payload;
       const state = listenerApi.getState() as RootState;
+      const isAudioEnabled = selectAudioEnabled(state);
       const hotkey = findHotkey(event);
+      let isHotkeyEnabled = true;
 
+      if (hotkey?.canActivate && !hotkey.canActivate(state)) {
+        isHotkeyEnabled = !isAudioEnabled;
+      }
       // safari and firefox do not emit focusout event when pressing enter in an input or contenteditable element
       if (
         (browser.isSafari() || browser.isFirefox()) &&
@@ -144,7 +152,11 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
 
       const debouncedOnPress = debounce(
         async () => {
-          if (event.key.toLowerCase() === hotkey.key.toLowerCase() && modifiersMatch(event, hotkey.modifier)) {
+          if (
+            isHotkeyEnabled &&
+            event.key.toLowerCase() === hotkey.key.toLowerCase() &&
+            modifiersMatch(event, hotkey.modifier)
+          ) {
             hotkey.onPress({
               state,
               dispatch: listenerApi.dispatch as AppDispatch,

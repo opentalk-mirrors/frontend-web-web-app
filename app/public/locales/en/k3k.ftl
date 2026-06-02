@@ -1175,13 +1175,13 @@ whiteboard-dialog-edit-restrictions-search-label = Search participants
 whiteboard-upload-failed = Failed to upload whiteboard PDF. Please try again.
 whiteboard-upload-success = Whiteboard PDF uploaded successfully.
 
-hotkey-hold-to-speak = Hold to speak
+hotkey-hold-to-speak = Hold to speak (when muted)
 hotkey-disabled-message = Shortcuts disabled
 hotkey-table-summary = Table of available shortcuts
 hotkey-microphone-toggle = Microphone on / off
 hotkey-video-toggle = Video on / off
 hotkey-fullscreen-toggle = Fullscreen on / off
-hotkey-whisper-to-whisper-group = Whisper on / off
+hotkey-whisper-to-whisper-group = Whisper on / off (when active)
 
 meeting-required-start-date = Start date is required
 meeting-required-end-date = End date is required
@@ -1263,8 +1263,8 @@ landmark-complementary-toolbar = Personal control panel
 
 my-meeting-menu-accessibility = Accessibility
 my-meeting-menu = My meeting
-my-meeting-menu-keyboard-hotkeys = Shortcut Settings
-my-meeting-menu-activate-hotkeys = Activate shortcuts
+my-meeting-menu-keyboard-hotkeys = Keyboard Shortcuts
+my-meeting-menu-activate-hotkeys = Shortcuts
 my-meeting-menu-hotkeys-table-toggle-title = Toggle (on/off)
 my-meeting-menu-hotkeys-table-p2t-title = Push to Talk (Hold to activate)
 my-meeting-menu-user-manual = User manual

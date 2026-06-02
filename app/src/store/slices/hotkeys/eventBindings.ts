@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import type { AppDispatch } from '../../../store';
+import type { AppDispatch, RootState } from '../../../store';
 import { bindFullscreenEventsToRedux } from '../fullscreen/listener';
+import { selectAudioEnabled } from '../livekitSlice';
 import { setAudioToWhisperGroup, toggleFullscreen, toggleMicrophone, toggleVideo } from './events';
 import { registerHotkeys, resetHotkeys } from './listener';
 import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from './slice';
@@ -24,6 +25,7 @@ export class ReduxDomEvents {
         onPress: async (params) => await toggleMicrophone(params, true),
         onRelease: async (params) => await toggleMicrophone(params, false),
         descriptionKey: 'hotkey-hold-to-speak',
+        canActivate: (state: RootState) => !selectAudioEnabled(state),
         preventActiveMediaAfterPermissionPrompt: true,
       },
       {
