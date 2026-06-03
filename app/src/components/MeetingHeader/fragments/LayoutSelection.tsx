@@ -64,6 +64,8 @@ import {
 import { selectIsWhiteboardAvailable } from '../../../store/slices/whiteboardSlice';
 import { Indicator } from './Indicator';
 
+const CUSTOM_PADDING = 3;
+
 const GRID_ICON_MAP: Record<number, JSX.Element> = {
   6: <GridSize6Icon />,
   9: <GridSize9Icon />,
@@ -88,9 +90,9 @@ const SpacedToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   display: 'flex',
   flexWrap: 'wrap',
   gap: theme.spacing(2),
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
-  marginBottom: theme.spacing(2),
+  paddingLeft: theme.spacing(CUSTOM_PADDING),
+  paddingRight: theme.spacing(CUSTOM_PADDING),
+
   '& .MuiToggleButton-root': {
     flex: '1 1 auto',
     minWidth: 0,
@@ -110,15 +112,17 @@ const SpacedToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     },
 }));
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
-  padding: theme.spacing(1),
   flexDirection: 'column',
   alignItems: 'center',
+  gap: theme.spacing(0.5),
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
   border: '1px solid',
   borderRadius: '0.25rem',
   borderColor: theme.palette.divider,
   textAlign: 'center',
   backgroundColor: theme.palette.background.main.primary,
-  fontSize: '0.6rem',
+  fontSize: '0.75rem',
   '&:focus-visible': {
     outline: `2px solid ${theme.palette.focus.color}`,
   },
@@ -129,7 +133,7 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
 }));
 
 const StyledSelect = styled(Select)(({ theme }) => ({
-  margin: theme.spacing(2),
+  margin: theme.spacing(CUSTOM_PADDING),
   backgroundColor: theme.palette.background.main.primary,
   color: theme.palette.background.highlight.contrastText,
   [`& .${selectClasses.icon}`]: {
@@ -159,16 +163,18 @@ const getLayoutIcon = (layout: LayoutOptions): JSX.Element | null => {
 const MenuHeader = ({ closeMenu }: { closeMenu: () => void }) => {
   const { t } = useTranslation();
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', paddingX: 2, paddingTop: 1, gap: 2 }}>
-      <Box sx={{ flexGrow: 1 }}>
-        <DialogTitle variant="subtitle1" sx={{ flexGrow: 1, padding: 0, marginTop: 1 }}>
-          {t('layout-selection-title')}
-        </DialogTitle>
-        <Typography variant="caption" id="layout-selection-description">
-          {t('layout-selection-dialog-description')}
-        </Typography>
-      </Box>
-      <IconButton size="small" onClick={closeMenu} aria-label={t('global-close')}>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        paddingX: CUSTOM_PADDING,
+        paddingTop: 1,
+        gap: 2,
+      }}
+    >
+      <DialogTitle sx={{ padding: 0, flexGrow: 1 }}>{t('layout-selection-title')}</DialogTitle>
+      <IconButton size="small" onClick={closeMenu} aria-label={t('global-close')} sx={{ marginRight: -1 }}>
         <CloseIcon />
       </IconButton>
     </Box>
@@ -251,13 +257,7 @@ const LayoutSelection = () => {
           {showButtonIndicator && isCompactLayout && <ButtonIndicator />}
         </IconButton>
       )}
-      <Dialog
-        open={isOpen}
-        onClose={closeViewPopover}
-        component="div"
-        id="view-popover-menu"
-        aria-describedby="layout-selection-description"
-      >
+      <Dialog open={isOpen} onClose={closeViewPopover} component="div" id="view-popover-menu">
         <MenuHeader closeMenu={closeViewPopover} />
 
         <Divider aria-hidden={true} />
@@ -266,7 +266,7 @@ const LayoutSelection = () => {
           variant="caption"
           component="label"
           id="grid-view-group-label"
-          sx={{ paddingLeft: 2, marginBottom: 1 }}
+          sx={{ paddingLeft: CUSTOM_PADDING, marginBottom: 1 }}
         >
           {t('layout-selection-select-view')}
         </Typography>
@@ -326,7 +326,7 @@ const LayoutSelection = () => {
                 variant="caption"
                 component="label"
                 id="grid-size-label"
-                sx={{ paddingLeft: 2, marginBottom: 1 }}
+                sx={{ paddingLeft: CUSTOM_PADDING, marginBottom: 1, marginTop: 2 }}
               >
                 {t('layout-selection-grid-size')}
               </Typography>
@@ -345,13 +345,13 @@ const LayoutSelection = () => {
                   return (
                     <StyledToggleButton key={size} value={size}>
                       {icon}
-                      {`${size} ${t('layout-selection-tiles')}`}
+                      {size}
                     </StyledToggleButton>
                   );
                 })}
               </SpacedToggleButtonGroup>
             </FormControl>
-            <Box ml={3}>
+            <Box ml={5} mt={2}>
               <FormControlLabel
                 control={
                   <CommonSwitch
@@ -373,18 +373,14 @@ const LayoutSelection = () => {
         )}
         <Divider aria-hidden={true} />
 
-        <Typography
-          variant="caption"
-          component="label"
-          id="grid-sorting-label"
-          sx={{ paddingLeft: 2, marginBottom: 1 }}
-        >
+        <Typography variant="caption" component="label" id="grid-sorting-label" sx={{ paddingLeft: CUSTOM_PADDING }}>
           {t('layout-selection-sorting')}
         </Typography>
         <StyledSelect
           value={selectedGridViewOrder}
           onChange={(e) => dispatch(updatedCinemaViewSortOrder(e.target.value as CinemaViewSortOrder))}
           labelId="grid-sorting-label"
+          sx={{ marginTop: 1 }}
         >
           <MenuItem value={CinemaViewSortOrder.FirstJoined}>{t('layout-selection-grid-first-joined')}</MenuItem>
           <MenuItem value={CinemaViewSortOrder.VideoFirst}>{t('layout-selection-grid-camera-first')}</MenuItem>
