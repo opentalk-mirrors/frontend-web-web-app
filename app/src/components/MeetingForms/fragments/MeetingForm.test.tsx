@@ -95,10 +95,18 @@ describe('MeetingForm', () => {
     expect(screen.getByRole('textbox', { name: 'dashboard-meeting-textfield-details' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'dashboard-direct-meeting-password-label' })).toBeInTheDocument();
 
-    expect(screen.getAllByRole('switch')).toHaveLength(3); // Date/Time, Waiting Room, Details
+    expect(screen.getAllByRole('switch')).toHaveLength(3); // Date/Time, Details, Guest access
     expect(screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' })).toBeInTheDocument();
-    expect(screen.getByRole('switch', { name: 'dashboard-meeting-waiting-room-switch' })).toBeInTheDocument();
     expect(screen.getByRole('switch', { name: 'dashboard-meeting-details-tooltip' })).toBeInTheDocument();
+
+    expect(screen.getByRole('group', { name: 'dashboard-meeting-waiting-room-switch' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-disabled' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-all-participants' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-guests-only' })
+    ).toBeInTheDocument();
 
     expect(screen.getByTestId('date-time-section')).toBeInTheDocument();
     expect(screen.getByTestId('action-buttons')).toBeInTheDocument();
