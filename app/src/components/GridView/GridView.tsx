@@ -6,16 +6,11 @@ import { CircularProgress, Grid, styled } from '@mui/material';
 import { Participant, RemoteParticipant } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { MAX_GRID_TILES_DESKTOP, MAX_GRID_TILES_MOBILE, GRID_SIZES, GRID_VIDEO_WIDTHS } from '../../constants';
+import { GRID_SIZES, GRID_VIDEO_WIDTHS } from '../../constants';
 import { useAppSelector } from '../../hooks';
 import { CinemaViewParticipant, useCinemaViewParticipants } from '../../hooks/useCinemaViewParticipants';
-import { useIsMobile } from '../../hooks/useMediaQuery';
-import {
-  PaginationDirection,
-  selectCinemaGridSize,
-  selectPaginationDirectionState,
-  selectPaginationPageState,
-} from '../../store/slices/uiSlice';
+import { useCinemaViewParticipantsOrdering } from '../../hooks/useCinemaViewParticipantsOrdering';
+import { PaginationDirection, selectPaginationDirectionState } from '../../store/slices/uiSlice';
 import { ConnectionIdentifier } from '../../types';
 import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import GridCell from './fragments/GridCell';
@@ -42,67 +37,25 @@ export type GridViewProps = {
 };
 
 const GridView = () => {
-  const { cinemaViewParticipants: participants, remoteParticipantsMap } = useCinemaViewParticipants();
+  const { cinemaViewParticipants, remoteParticipantsMap } = useCinemaViewParticipants();
+  const participants = useCinemaViewParticipantsOrdering(cinemaViewParticipants);
   const [fallbackParticipantCache] = useState(() => new Map<ConnectionIdentifier, Participant>());
-
-  const isMobile = useIsMobile();
-  const lastSpokenParticipant = useMemo(() => {
-    return participants.reduce<CinemaViewParticipant | undefined>((latest, current) => {
-      if (!current.lastSpokeAt) {
-        return latest;
-      }
-      if (!latest?.lastSpokeAt) {
-        return current;
-      }
-      return current.lastSpokeAt > latest.lastSpokeAt ? current : latest;
-    }, undefined);
-  }, [participants]);
-  const pageNumber = useAppSelector(selectPaginationPageState);
   const direction = useAppSelector(selectPaginationDirectionState);
-  const selectedMaxGridTiles = useAppSelector(selectCinemaGridSize);
 
-  const gridViewParticipants = useMemo(() => {
-    const maxGridTiles = isMobile
-      ? Math.min(selectedMaxGridTiles, MAX_GRID_TILES_MOBILE)
-      : Math.min(selectedMaxGridTiles, MAX_GRID_TILES_DESKTOP);
-
-    if (!lastSpokenParticipant) {
-      return participants.slice((pageNumber - 1) * maxGridTiles, pageNumber * maxGridTiles);
-    }
-
-    // I need to place last spoken participant on the first page if not already present
-    // specifically on the last spot of the first page, pushing everyone else forward
-    const firstPageLastSpotIndex = maxGridTiles - 1;
-    const lastSpokenParticipantIndex = participants.findIndex((p) => p.id === lastSpokenParticipant!.id);
-    if (lastSpokenParticipantIndex >= 0 && lastSpokenParticipantIndex < maxGridTiles) {
-      // already on the first page
-      return participants.slice((pageNumber - 1) * maxGridTiles, pageNumber * maxGridTiles);
-    }
-
-    const participantsWithoutLastSpoken = participants.filter((p) => p.id !== lastSpokenParticipant.id);
-    const gridViewParticipants = [
-      ...participantsWithoutLastSpoken.slice(0, firstPageLastSpotIndex),
-      lastSpokenParticipant,
-      ...participantsWithoutLastSpoken.slice(firstPageLastSpotIndex),
-    ].slice((pageNumber - 1) * maxGridTiles, pageNumber * maxGridTiles);
-    return gridViewParticipants;
-  }, [participants, pageNumber, isMobile, lastSpokenParticipant, selectedMaxGridTiles]);
-
-  const videoWidthIndex = GRID_SIZES.findIndex((videoWidth) => gridViewParticipants.length <= videoWidth) ?? 0;
+  const videoWidthIndex = GRID_SIZES.findIndex((videoWidth) => participants.length <= videoWidth) ?? 0;
   const videoWidth = GRID_VIDEO_WIDTHS[videoWidthIndex];
-
-  const highlight = gridViewParticipants.length >= 2;
+  const highlight = participants.length >= 2;
 
   useEffect(() => {
     const activeIds = new Set(
-      gridViewParticipants.flatMap((p) => p.connections.map((c) => constructConnectionIdentifier(p.id, c)))
+      participants.flatMap((p) => p.connections.map((c) => constructConnectionIdentifier(p.id, c)))
     );
     for (const key of fallbackParticipantCache.keys()) {
       if (remoteParticipantsMap.has(key) || !activeIds.has(key)) {
         fallbackParticipantCache.delete(key);
       }
     }
-  }, [gridViewParticipants, remoteParticipantsMap, fallbackParticipantCache]);
+  }, [participants, remoteParticipantsMap, fallbackParticipantCache]);
 
   const createOrGetFallbackParticipant = useCallback(
     (connectionIdentifier: ConnectionIdentifier, displayName: string) => {
@@ -118,7 +71,7 @@ const GridView = () => {
   );
 
   const gridCells = useMemo(() => {
-    return gridViewParticipants.map((participant) => {
+    return participants.map((participant) => {
       return participant.connections.map((connection) => {
         const connectionIdentifier = constructConnectionIdentifier(participant.id, connection);
 
@@ -134,9 +87,9 @@ const GridView = () => {
         );
       });
     });
-  }, [gridViewParticipants, remoteParticipantsMap, createOrGetFallbackParticipant, direction, highlight]);
+  }, [participants, remoteParticipantsMap, createOrGetFallbackParticipant, direction, highlight]);
 
-  const areGridCellsLoading = gridViewParticipants.length > 1 && gridCells.length === 0;
+  const areGridCellsLoading = participants.length > 1 && gridCells.length === 0;
 
   const loadingGrids = (
     <Grid

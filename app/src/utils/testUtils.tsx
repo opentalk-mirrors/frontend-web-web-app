@@ -26,7 +26,12 @@ import {
   UserId,
 } from '@opentalk/rest-api-rtk-query';
 import { ConfigureStoreOptions, Store } from '@reduxjs/toolkit';
-import { RenderOptions, RenderResult, render as rtlRender, renderHook as rtlRenderHook } from '@testing-library/react';
+import {
+  RenderHookOptions,
+  RenderResult,
+  render as rtlRender,
+  renderHook as rtlRenderHook,
+} from '@testing-library/react';
 import i18n from 'i18next';
 import {
   Participant as LivekitParticipant,
@@ -119,8 +124,8 @@ export const configureStore = (options?: ConfigureStoreOptions['preloadedState']
   return { store, dispatchSpy };
 };
 
-interface Render {
-  options?: RenderOptions;
+interface Render<Props> {
+  options?: RenderHookOptions<Props>;
   store?: Store;
   provider?: {
     mui?: boolean;
@@ -134,9 +139,9 @@ const palette: ThemeBasePalette = {
   dark: defaultDarkModeColors,
 };
 
-export const renderWithProviders = (
+export const renderWithProviders = <Props,>(
   component: React.ReactElement,
-  { options, store, provider }: Render
+  { options, store, provider }: Render<Props>
 ): RenderResult => {
   const WrappedComponent = ({ children }: { children: React.ReactElement }): React.ReactElement => {
     let component = children;
@@ -160,7 +165,7 @@ export const renderWithProviders = (
 };
 export const renderHookWithProviders = <Props, Result>(
   render: (initialProps: Props) => Result,
-  { options, store }: Render
+  { options, store }: Render<Props>
 ) => {
   const WrappedComponent = ({ children }: PropsWithChildren<object>) =>
     store ? <Provider store={store}>{children}</Provider> : <>{children}</>;

@@ -20,6 +20,7 @@ import {
   toggleButtonClasses,
   Dialog,
   DialogTitle,
+  FormControlLabel,
 } from '@mui/material';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { useState, JSX } from 'react';
@@ -37,7 +38,7 @@ import {
   GridSize24Icon,
   CloseIcon,
 } from '../../../assets/icons';
-import { IconButton } from '../../../commonComponents';
+import { CommonSwitch, IconButton } from '../../../commonComponents';
 import { GRID_SIZES } from '../../../constants';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -49,11 +50,13 @@ import {
   selectFullscreenSupported,
 } from '../../../store/slices/fullscreen/slice';
 import {
+  selectActiveSpeakerFirstEnabled,
   selectCinemaGridSize,
   selectCinemaLayout,
   selectCinemaViewOrder,
   selectIsCurrentMeetingNotesHighlighted,
   selectLastCinemaLayout,
+  setActiveSpeakerFirstEnabled,
   updatedCinemaGridSize,
   updatedCinemaLayout,
   updatedCinemaViewSortOrder,
@@ -189,6 +192,7 @@ const LayoutSelection = () => {
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
   const selectedCinemaGridSize = useAppSelector(selectCinemaGridSize);
   const lastCinemaLayout = useAppSelector(selectLastCinemaLayout);
+  const activeSpeakerFirstEnabled = useAppSelector(selectActiveSpeakerFirstEnabled);
   /**
    * Placeholder condition for all features that has to show indicator.
    */
@@ -316,36 +320,56 @@ const LayoutSelection = () => {
         </SpacedToggleButtonGroup>
 
         {selectedLayout === LayoutOptions.Grid && (
-          <FormControl component="fieldset" variant="standard">
-            <Typography
-              variant="caption"
-              component="label"
-              id="grid-size-label"
-              sx={{ paddingLeft: 2, marginBottom: 1 }}
-            >
-              {t('layout-selection-grid-size')}
-            </Typography>
-            <SpacedToggleButtonGroup
-              value={selectedCinemaGridSize}
-              exclusive
-              onChange={(_, newSize) => {
-                if (newSize !== null) {
-                  dispatch(updatedCinemaGridSize(newSize));
+          <>
+            <FormControl component="fieldset" variant="standard">
+              <Typography
+                variant="caption"
+                component="label"
+                id="grid-size-label"
+                sx={{ paddingLeft: 2, marginBottom: 1 }}
+              >
+                {t('layout-selection-grid-size')}
+              </Typography>
+              <SpacedToggleButtonGroup
+                value={selectedCinemaGridSize}
+                exclusive
+                onChange={(_, newSize) => {
+                  if (newSize !== null) {
+                    dispatch(updatedCinemaGridSize(newSize));
+                  }
+                }}
+                aria-labelledby="grid-size-label"
+              >
+                {GRID_SIZES.map((size) => {
+                  const icon = GRID_ICON_MAP[size];
+                  return (
+                    <StyledToggleButton key={size} value={size}>
+                      {icon}
+                      {`${size} ${t('layout-selection-tiles')}`}
+                    </StyledToggleButton>
+                  );
+                })}
+              </SpacedToggleButtonGroup>
+            </FormControl>
+            <Box ml={3}>
+              <FormControlLabel
+                control={
+                  <CommonSwitch
+                    onChange={(_, enabled) => dispatch(setActiveSpeakerFirstEnabled(enabled))}
+                    value="activeSpeakerFirstEnabled"
+                    checked={activeSpeakerFirstEnabled}
+                    color="primary"
+                  />
                 }
-              }}
-              aria-labelledby="grid-size-label"
-            >
-              {GRID_SIZES.map((size) => {
-                const icon = GRID_ICON_MAP[size];
-                return (
-                  <StyledToggleButton key={size} value={size}>
-                    {icon}
-                    {`${size} ${t('layout-selection-tiles')}`}
-                  </StyledToggleButton>
-                );
-              })}
-            </SpacedToggleButtonGroup>
-          </FormControl>
+                label={
+                  <Typography component="span" fontWeight="normal" fontSize="small" ml={1}>
+                    {t('layout-selection-dynamic-sorting')}
+                  </Typography>
+                }
+                labelPlacement="end"
+              />
+            </Box>
+          </>
         )}
         <Divider aria-hidden={true} />
 
