@@ -10,6 +10,7 @@ import { ShareScreenOffIcon, ShareScreenOnIcon } from '../../../assets/icons';
 import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useHotkeyCombination } from '../../../hooks/useHotkeyCombination';
 import browser from '../../../modules/BrowserSupport';
 import { setScreenShareEnabled, switchScreenShare } from '../../../store/commonActions';
 import { selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
@@ -38,6 +39,7 @@ const ShareScreenButton = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const fullScreenElement = useAppSelector(selectFullscreenElement);
   const [showMenu, setShowMenu] = useState(false);
+  const keyCombination = useHotkeyCombination('hotkey-screen-share-toggle');
 
   const handleMenuRef = useCallback((node: HTMLDivElement | null) => {
     setAnchorEl(node);
@@ -94,7 +96,7 @@ const ShareScreenButton = () => {
   return (
     <div ref={handleMenuRef}>
       <ToolbarButton
-        tooltipTitle={getToolTipTitle()}
+        tooltipTitle={getToolTipTitle() + (isModeratorOrPresenter ? ` (${keyCombination})` : '')}
         onClick={onClick}
         active={isScreenshareEnabled && isModeratorOrPresenter}
         disabled={isScreenshareChangeInProgress || !isModeratorOrPresenter || isLivekitUnavailable || isRoomDeleted}

@@ -8,6 +8,7 @@ import { CameraOffIcon, CameraOnIcon } from '../../../assets/icons';
 import { SuspenseLoading, showConsentNotification } from '../../../commonComponents';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useHotkeyCombination } from '../../../hooks/useHotkeyCombination';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import {
   selectLivekitUnavailable,
@@ -32,6 +33,7 @@ const VideoButton = ({ isLobby = false, videoEnabled, onVideoButtonToggle }: Vid
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const cameraEnabled = (videoEnabled || false) && !isLivekitUnavailable;
+  const keyCombination = useHotkeyCombination('hotkey-video-toggle');
 
   const videoChangeInProgress = useAppSelector(selectVideoChangeInProgress);
   const videoPermissionDenied = useAppSelector(selectVideoPermissionDenied);
@@ -69,7 +71,7 @@ const VideoButton = ({ isLobby = false, videoEnabled, onVideoButtonToggle }: Vid
   return (
     <div ref={menuRef}>
       <ToolbarButton
-        tooltipTitle={tooltipText()}
+        tooltipTitle={tooltipText() + ` (${keyCombination})`}
         onClick={onClick}
         hasContext
         contextDisabled={videoChangeInProgress}

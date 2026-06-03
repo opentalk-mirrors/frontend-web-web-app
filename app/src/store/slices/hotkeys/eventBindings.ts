@@ -4,7 +4,14 @@
 import type { AppDispatch, RootState } from '../../../store';
 import { bindFullscreenEventsToRedux } from '../fullscreen/listener';
 import { selectAudioEnabled } from '../livekitSlice';
-import { setAudioToWhisperGroup, toggleFullscreen, toggleMicrophone, toggleVideo } from './events';
+import {
+  raiseHandEvent,
+  screenShare,
+  setAudioToWhisperGroup,
+  toggleFullscreen,
+  toggleMicrophone,
+  toggleVideo,
+} from './events';
 import { registerHotkeys, resetHotkeys } from './listener';
 import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from './slice';
 
@@ -51,6 +58,18 @@ export class ReduxDomEvents {
         modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
         onPress: toggleFullscreen,
         descriptionKey: 'hotkey-fullscreen-toggle',
+      },
+      {
+        key: 'h',
+        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
+        onPress: raiseHandEvent,
+        descriptionKey: 'hotkey-raise-hand-toggle',
+      },
+      {
+        key: 's',
+        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
+        onPress: screenShare,
+        descriptionKey: 'hotkey-screen-share-toggle',
       },
     ]);
   }
