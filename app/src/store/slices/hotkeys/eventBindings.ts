@@ -17,6 +17,8 @@ import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from './slice';
 
 const isMacOS = navigator.platform.startsWith('Mac');
 
+const toggleModifier: ['Control', 'Meta'] | ['Control', 'Shift'] = isMacOS ? ['Control', 'Meta'] : ['Control', 'Shift'];
+
 export class ReduxDomEvents {
   static #instance: ReduxDomEvents;
   static #dispatch: AppDispatch;
@@ -37,13 +39,13 @@ export class ReduxDomEvents {
       },
       {
         key: 'm',
-        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
+        modifier: toggleModifier,
         onPress: toggleMicrophone,
         descriptionKey: 'hotkey-microphone-toggle',
       },
       {
         key: 'v',
-        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
+        modifier: toggleModifier,
         onPress: toggleVideo,
         descriptionKey: 'hotkey-video-toggle',
       },
@@ -55,19 +57,19 @@ export class ReduxDomEvents {
       },
       {
         key: 'f',
-        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
+        modifier: toggleModifier,
         onPress: toggleFullscreen,
         descriptionKey: 'hotkey-fullscreen-toggle',
       },
       {
         key: 'h',
-        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
+        modifier: toggleModifier,
         onPress: raiseHandEvent,
         descriptionKey: 'hotkey-raise-hand-toggle',
       },
       {
         key: 's',
-        modifier: [isMacOS ? 'Meta' : 'Control', 'Shift'],
+        modifier: toggleModifier,
         onPress: screenShare,
         descriptionKey: 'hotkey-screen-share-toggle',
       },
@@ -110,7 +112,7 @@ export class ReduxDomEvents {
       window.removeEventListener('keyup', keyUp);
       window.removeEventListener('focusin', focusIn);
       window.removeEventListener('focusout', focusOut);
-      removeFullscreenEventsFromRedux && removeFullscreenEventsFromRedux();
+      removeFullscreenEventsFromRedux?.();
       resetHotkeys();
     };
   };

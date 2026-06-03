@@ -12,7 +12,7 @@ export const useHotkeyCombination = (descriptionKey: string) => {
   if (!hotkey) {
     return '';
   }
-  const key = hotkey.key === ' ' ? t('global-spacebar') : hotkey.key.toLowerCase();
+  const key = hotkey.key === ' ' ? t('global-spacebar') : hotkey.key.toUpperCase();
   const modifiers = hotkey.modifier ? [hotkey.modifier].flat() : [];
   const translatedModifiers = modifiers.map((modifier) => t(`modifier-${modifier.toLowerCase()}`));
   return [...translatedModifiers, key].join(' + ');
