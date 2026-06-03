@@ -74,6 +74,7 @@ toggle-password-visibility = toggle password visibility
 
 echotest-warn-no-echo-cancellation = Your Browser does not support echo canceling. Please use headphones to avoid audio feedback.
 audiomenu-choose-input = Choose Audio Input Device
+audiomenu-choose-output = Choose Audio Output Device
 screen-share-menu-choose-resolution = Choose Maximum Screen Resolution
 screen-share-menu-choose-resolution-subtitle = Higher resolutions can significantly increase CPU or GPU usage during encoding.
 screen-share-menu-choose-content-type = Encoding Optimization Profile

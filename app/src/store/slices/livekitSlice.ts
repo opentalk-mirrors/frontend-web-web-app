@@ -85,7 +85,8 @@ export type MediaSettings = {
   cameraEnabled: boolean;
   screenShareEnabled: boolean;
   videoDeviceId?: string;
-  audioDeviceId?: string;
+  audioInputDeviceId?: string;
+  audioOutputDeviceId?: string;
 };
 
 export type Lobby = {
@@ -133,7 +134,8 @@ export const initialState: LivekitState = {
     microphoneEnabled: false,
     cameraEnabled: false,
     screenShareEnabled: false,
-    audioDeviceId: 'default',
+    audioInputDeviceId: 'default',
+    audioOutputDeviceId: 'default',
     videoDeviceId: 'default',
   },
   lobby: {
@@ -334,7 +336,10 @@ export const livekitSlice = createSlice({
     });
     builder.addCase(switchActiveDevice.fulfilled, (state, { meta: { arg } }) => {
       if (arg.kind === 'audioinput') {
-        state.mediaSettings.audioDeviceId = arg.deviceId;
+        state.mediaSettings.audioInputDeviceId = arg.deviceId;
+      }
+      if (arg.kind === 'audiooutput') {
+        state.mediaSettings.audioOutputDeviceId = arg.deviceId;
       }
       if (arg.kind === 'videoinput') {
         state.mediaSettings.videoDeviceId = arg.deviceId;
@@ -399,7 +404,8 @@ export const selectScreenShareEnabled = (state: RootState) => state.livekit.medi
 export const selectAudioEnabled = (state: RootState) => state.livekit.mediaSettings.microphoneEnabled;
 export const selectVideoEnabled = (state: RootState) => state.livekit.mediaSettings.cameraEnabled;
 
-export const selectAudioDeviceId = (state: RootState) => state.livekit.mediaSettings?.audioDeviceId;
+export const selectAudioInputDeviceId = (state: RootState) => state.livekit.mediaSettings?.audioInputDeviceId;
+export const selectAudioOutputDeviceId = (state: RootState) => state.livekit.mediaSettings?.audioOutputDeviceId;
 export const selectVideoDeviceId = (state: RootState) => state.livekit.mediaSettings?.videoDeviceId;
 export const selectLobbyAudioTrack = (state: RootState) => state.livekit.lobby.audioTrackPublication;
 export const selectLobbyVideoTrack = (state: RootState) => state.livekit.lobby.videoTrackPublication;
@@ -449,12 +455,15 @@ function updateLobbyTrack(
   state: LivekitState
 ) {
   if (kind === 'audioinput') {
-    state.mediaSettings.audioDeviceId = deviceId;
+    state.mediaSettings.audioInputDeviceId = deviceId;
     lobby.audioTrackPublication?.stop();
     lobby.audioTrackPublication = undefined;
     if (track instanceof LocalAudioTrack) {
       lobby.audioTrackPublication = track;
     }
+  }
+  if (kind === 'audiooutput') {
+    state.mediaSettings.audioOutputDeviceId = deviceId;
   }
   if (kind === 'videoinput') {
     state.mediaSettings.videoDeviceId = deviceId;
@@ -606,12 +615,13 @@ const startMediaChoiceListener = (startAppListening: StartAppListening) =>
     matcher: isAnyOf(setBackgroundEffects.fulfilled, switchActiveDevice.fulfilled, switchLocalDevice.fulfilled),
     effect: (_, listenerApi) => {
       const { videoBackgroundEffects } = listenerApi.getState().livekit;
-      const { videoDeviceId, audioDeviceId } = listenerApi.getState().livekit.mediaSettings;
+      const { videoDeviceId, audioInputDeviceId, audioOutputDeviceId } = listenerApi.getState().livekit.mediaSettings;
       const updatedChoices = {
         videoBackgroundEffects,
         mediaSettings: {
           videoDeviceId,
-          audioDeviceId,
+          audioInputDeviceId,
+          audioOutputDeviceId,
         },
       };
       localStorage.setItem('mediaChoices', JSON.stringify(updatedChoices));

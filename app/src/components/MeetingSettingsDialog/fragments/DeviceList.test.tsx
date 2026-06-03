@@ -19,6 +19,7 @@ describe('DeviceList', () => {
         selectedDevice={undefined}
         onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
+        kind="audioinput"
       />
     );
     const deviceMenu = screen.getByRole('menu', { name: SUBHEADER_TITLE });
@@ -33,6 +34,7 @@ describe('DeviceList', () => {
         selectedDevice={mockedAudioInputs[0].deviceId as DeviceId}
         onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
+        kind="audioinput"
       />
     );
     const selectedDevice = screen.getByRole('menuitemradio', { name: mockedAudioInputs[0].label });
@@ -51,10 +53,14 @@ describe('DeviceList', () => {
         selectedDevice={undefined}
         onSelectDevice={mockedOnSelectDevice}
         subheader={{ title: SUBHEADER_TITLE }}
+        kind="audioinput"
       />
     );
     const selectedDevice = screen.getByRole('menuitemradio', { name: mockedAudioInputs[CLICKED_DEVICE_INDEX].label });
     await userEvent.click(selectedDevice);
-    expect(mockedOnSelectDevice).toHaveBeenCalledExactlyOnceWith(mockedAudioInputs[CLICKED_DEVICE_INDEX].deviceId);
+    expect(mockedOnSelectDevice).toHaveBeenCalledExactlyOnceWith(
+      mockedAudioInputs[CLICKED_DEVICE_INDEX].deviceId,
+      'audioinput'
+    );
   });
 });

@@ -10,7 +10,7 @@ import { mockedAudioInputs } from '../../../utils/testUtils';
 import AudioSettingsPanel from './AudioSettingsPanel';
 
 vi.mock('./DeviceManager', () => ({
-  default: () => <div data-testid="MockDeviceManager"></div>,
+  default: () => <div>MockDeviceManager</div>,
 }));
 
 vi.mock('../../../hooks/useMediaDevice', () => ({
@@ -27,10 +27,11 @@ describe('AudioSettingsPanel', () => {
       permissionDenied: false,
     }));
   });
-  it('renders title and device manager', async () => {
+
+  it('renders title and device managers for audio input and output', async () => {
     const { store } = configureStore();
     renderWithProviders(<AudioSettingsPanel />, { store });
     expect(screen.getByRole('heading', { name: 'audio-settings-title' })).toBeInTheDocument();
-    expect(screen.getByTestId('MockDeviceManager')).toBeInTheDocument();
+    expect(screen.getAllByText('MockDeviceManager')).toHaveLength(2);
   });
 });

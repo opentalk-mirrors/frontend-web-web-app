@@ -11,11 +11,26 @@ import { EchoTest, EchoTestState } from '../../../modules/WebRTC/EchoTest';
 
 interface EchoPlayBackProps {
   localAudioTrack?: LocalAudioTrack;
+  audioOutputDeviceId?: string;
 }
 
-const EchoPlayBack = ({ localAudioTrack }: EchoPlayBackProps) => {
+const EchoPlayBack = ({ localAudioTrack, audioOutputDeviceId }: EchoPlayBackProps) => {
   const { t } = useTranslation();
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  const applyAudioOutputDevice = useCallback(async () => {
+    const audioElement = audioRef.current;
+
+    if (!audioElement || !('setSinkId' in audioElement)) {
+      return;
+    }
+
+    try {
+      await audioElement.setSinkId(audioOutputDeviceId || 'default');
+    } catch (error) {
+      log.warn(`Failed to set audio output device: ${error}`);
+    }
+  }, [audioOutputDeviceId]);
 
   const changeHandler = useCallback(
     (instance: EchoTest) => (echoTestState: EchoTestState) => {
@@ -40,6 +55,10 @@ const EchoPlayBack = ({ localAudioTrack }: EchoPlayBackProps) => {
     },
     []
   );
+
+  useEffect(() => {
+    void applyAudioOutputDevice();
+  }, [applyAudioOutputDevice]);
 
   useEffect(() => {
     if (!localAudioTrack?.mediaStreamTrack) {

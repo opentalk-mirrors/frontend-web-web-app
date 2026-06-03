@@ -15,8 +15,8 @@ import { selectIsUserMicDisabled } from '../../selectors';
 import { selectEnabledModulesList } from '../configSlice';
 import { fullscreenActions, selectFullscreenSupported } from '../fullscreen/slice';
 import {
-  selectAudioDeviceId,
   selectAudioEnabled,
+  selectAudioInputDeviceId,
   selectLivekitRoom,
   selectLivekitWhisperRoom,
   selectLobbyAudioEnabled,
@@ -98,7 +98,7 @@ export const setAudioToWhisperGroup = async ({ state, dispatch }: HotkeyCallback
   const whisperRoom = selectLivekitWhisperRoom(state);
   const isWhisperActive = selectIsWhisperActive(state);
   const audioEnabled = selectAudioEnabled(state);
-  const deviceId = selectAudioDeviceId(state);
+  const audioInputDeviceId = selectAudioInputDeviceId(state);
 
   if (!subroomAudioEnabled || !whisperRoom || enable === isWhisperActive) {
     return;
@@ -121,7 +121,7 @@ export const setAudioToWhisperGroup = async ({ state, dispatch }: HotkeyCallback
 
     if (!hasMicPermission) {
       try {
-        const tempTrack = await createLocalAudioTrack({ deviceId });
+        const tempTrack = await createLocalAudioTrack({ deviceId: audioInputDeviceId });
         tempTrack.stop();
       } catch {
         log.warn('Microphone permission denied. Cannot enable whisper mode.');
@@ -131,7 +131,7 @@ export const setAudioToWhisperGroup = async ({ state, dispatch }: HotkeyCallback
     }
   }
 
-  await whisperRoom.localParticipant.setMicrophoneEnabled(enable, { deviceId });
+  await whisperRoom.localParticipant.setMicrophoneEnabled(enable, { deviceId: audioInputDeviceId });
   dispatch(setIsWhisperActive(enable));
 };
 
