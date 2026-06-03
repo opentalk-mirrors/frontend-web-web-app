@@ -802,6 +802,10 @@ conference-storage-almost-full-plan-upgrade = Attention: You are about to reach 
 conference-storage-almost-full-no-plan-upgrade = Attention: You are about to reach the maximum storage limit for your current plan. Please delete some of your stored files.
 conference-storage-full-no-plan-upgrade = Storage full. Please delete files in the dashboard.
 conference-storage-full-plan-upgrade = Storage full. Please delete files in the dashboard or upgrade your plan.
+conference-storage-near-limit-warning = Your storage is almost full. This asset might not be saved if the limit is reached.
+conference-storage-full-warning = Storage limit reached. You can still start this action, but it will likely fail to save.
+conference-storage-tooltip-upgradeable-full-storage = Your file storage is full. You cannot start this action. Upgrade your storage in <accountManagementLink>account management</accountManagementLink> to continue.
+conference-storage-tooltip-full-storage = Your file storage is full. You cannot start this action. Please contact your administrator to get more storage.
 
 dashboard-close-navbar = Close navigation
 dashboard-open-navbar = Open navigation

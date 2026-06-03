@@ -93,6 +93,7 @@ const config: ConfigState = {
     id: '' as TariffId,
     name: '',
     quotas: {},
+    usedQuota: {},
     disabledFeatures: [],
   },
   enabledModules: {},

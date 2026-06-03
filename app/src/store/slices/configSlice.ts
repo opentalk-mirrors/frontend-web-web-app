@@ -236,6 +236,7 @@ export const initialState: ConfigState = {
     id: '' as TariffId,
     name: '',
     quotas: {},
+    usedQuota: {},
     disabledFeatures: [],
   },
   glitchtip: {
@@ -254,6 +255,12 @@ export const configSlice = createSlice({
       merge(state, payload);
       log.debug('config updated to:', state, payload);
     },
+    setStorageQuota: (state, { payload }: PayloadAction<{ total?: number; used: number }>) => {
+      state.tariff.usedQuota['maxStorage'] = payload.used;
+      if (payload.total !== undefined) {
+        state.tariff.quotas['maxStorage'] = payload.total;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload }) => {
@@ -263,7 +270,7 @@ export const configSlice = createSlice({
   },
 });
 
-export const { update } = configSlice.actions;
+export const { update, setStorageQuota } = configSlice.actions;
 export const actions = configSlice.actions;
 
 export const selectController = (state: RootState) => state.config.controller;
@@ -311,5 +318,7 @@ export const selectMeetingInactivityWarningSeconds = (state: RootState) => state
 export const selectMeetingInactivityTerminationSeconds = (state: RootState) =>
   state.config.meetingInactivityTerminationSeconds;
 export const selectIsSpacedeckEnabled = (state: RootState) => state.config.spacedeck.enabled;
+export const selectStorageUsed = (state: RootState) => state.config.tariff?.usedQuota['maxStorage'];
+export const selectStorageTotal = (state: RootState) => state.config.tariff?.quotas['maxStorage'];
 
 export default configSlice.reducer;

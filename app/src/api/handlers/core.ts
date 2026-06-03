@@ -16,7 +16,7 @@ import { createStreamUpdatedNotification } from '../../components/StreamUpdatedN
 import type { AppDispatch, RootState } from '../../store';
 import { joinSuccess } from '../../store/commonActions';
 import { setChatSettings } from '../../store/slices/chatSlice';
-import { selectLibravatarDefaultImage } from '../../store/slices/configSlice';
+import { selectLibravatarDefaultImage, setStorageQuota } from '../../store/slices/configSlice';
 import {
   join,
   leave,
@@ -136,17 +136,6 @@ export const handleRoomServerCoreMessage = async (
       if (!chatEnabled) {
         dispatch(setChatSettings({ id: data.id, timestamp, enabled: chatEnabled }));
       }
-
-      // const maximumStorage = data.tariff.quotas?.maxStorage;
-      // const usedStorage = data.assetStorage?.usedStorage;
-
-      // if (usedStorage) {
-      //   if (usedStorage >= maximumStorage) {
-      //     showStorageNotification(state, 'error');
-      //   } else if (usedStorage >= maximumStorage * 0.95) {
-      //     showStorageNotification(state, 'warning');
-      //   }
-      // }
 
       // handles different connections(tabs) of your own user
       if (data.connections.length > 0) {
@@ -371,5 +360,8 @@ export const handleRoomServerCoreMessage = async (
       dispatch(roomParametersChanged(data.change));
       break;
     }
+    case RoomserverMessageKey.StorageQuotaChanged:
+      dispatch(setStorageQuota(data.quota));
+      break;
   }
 };

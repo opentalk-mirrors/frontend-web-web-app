@@ -88,6 +88,14 @@ export interface RoomParametersChanged {
   };
 }
 
+export interface StorageQuotaChanged {
+  message: RoomserverMessageKey.StorageQuotaChanged;
+  quota: {
+    total?: number;
+    used: number;
+  };
+}
+
 export const isError = isErrorStruct;
 
 export type Message =
@@ -99,7 +107,8 @@ export type Message =
   | JoinedWaitingRoom
   | LeftWaitingRoom
   | Closing
-  | RoomParametersChanged;
+  | RoomParametersChanged
+  | StorageQuotaChanged;
 
 export enum RoomserverMessageKey {
   JoinSuccess = 'join_success',
@@ -109,6 +118,7 @@ export enum RoomserverMessageKey {
   JoinedWaitingRoom = 'joined_waiting_room',
   LeftWaitingRoom = 'left_waiting_room',
   RoomParametersChanged = 'room_parameters_changed',
+  StorageQuotaChanged = 'storage_quota_changed',
 }
 
 export type RoomserverCore = NamespacedIncoming<Message, 'core'>;

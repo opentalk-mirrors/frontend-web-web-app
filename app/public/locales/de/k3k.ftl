@@ -800,6 +800,10 @@ conference-storage-almost-full-plan-upgrade = Achtung: Sie sind dabei, das maxim
 conference-storage-almost-full-no-plan-upgrade = Achtung: Sie sind dabei, das maximale Speicherkontingent Ihres aktuellen Tarifs zu erreichen. Bitte löschen Sie einige Ihrer gespeicherten Dateien.
 conference-storage-full-no-plan-upgrade = Speicher voll. Bitte löschen Sie Dateien im Dashboard.
 conference-storage-full-plan-upgrade = Speicher voll. Bitte löschen Sie Dateien im Dashboard oder führen Sie ein Tarifupgrade durch.
+conference-storage-near-limit-warning = Ihr Speicher ist fast voll. Diese Datei kann eventuell nicht gespeichert werden, falls das Limit erreicht wird.
+conference-storage-full-warning = Speicherlimit erreicht. Sie können die Aktion starten, aber sie wird wahrscheinlich nicht gespeichert werden können.
+conference-storage-tooltip-upgradeable-full-storage = Ihr Dateispeicher ist voll. Sie können diese Aktion nicht starten. Erweitern Sie Ihren Speicher im <accountManagementLink>Accountmanagement</accountManagementLink>, um fortzufahren.
+conference-storage-tooltip-full-storage = Ihr Dateispeicher ist voll. Sie können diese Aktion nicht starten. Bitte wenden Sie sich an Ihre Administratorin oder Ihren Administrator, um mehr Speicher zu erhalten.
 
 dashboard-close-navbar= Navigation schließen
 dashboard-open-navbar = Navigation aufklappen

@@ -1,10 +1,20 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, ListItemIcon, MenuList, Divider as MuiDivider, Stack, Typography, styled } from '@mui/material';
+import {
+  Box,
+  ListItemIcon,
+  MenuList,
+  Divider as MuiDivider,
+  Stack,
+  Typography,
+  styled,
+  Tooltip,
+  Link,
+} from '@mui/material';
 import { BackendModules, CoreFeatures, RecordingFeatures, StreamingStatus } from '@opentalk/rest-api-rtk-query';
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
 import { generateAttendanceReport } from '../../../api/types/outgoing/meetingReport';
@@ -48,9 +58,16 @@ import {
   notificationPersistent,
   notifications,
 } from '../../../commonComponents';
+import { showStorageNearLimitNotification } from '../../../commonComponents/Notistack/helper';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useStorageStatus } from '../../../hooks/useStorageStatus';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
-import { selectConfigFeatures, selectIsFeatureEnabled, selectIsModuleEnabled } from '../../../store/slices/configSlice';
+import {
+  selectAccountManagementUrl,
+  selectConfigFeatures,
+  selectIsFeatureEnabled,
+  selectIsModuleEnabled,
+} from '../../../store/slices/configSlice';
 import { selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
 import {
   selectMicrophonesEnabled,
@@ -83,6 +100,7 @@ interface MenuEntry {
   action: (e: React.MouseEvent) => void;
   icon: React.ReactNode;
   disabled?: boolean;
+  tooltip?: (children: React.ReactNode) => React.ReactNode;
 }
 
 const MenuTitleContainer = styled(Stack)(({ theme }) => ({
@@ -143,6 +161,8 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   );
   const isTrainingParticipationReportEnabled = useAppSelector(selectTrainingParticipationReportEnabled);
   const highSecurityEnabled = useAppSelector(selectE2EEncryption);
+  const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
+  const { storageStatus, canUpgrade } = useStorageStatus();
 
   const inviteGuestItem = {
     label: 'more-menu-create-invite',
@@ -230,7 +250,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         icon: <CloseIcon />,
       };
 
-  const togglePresenceLogging = isTrainingParticipationReportEnabled
+  const togglePresenceLogging: MenuEntry = isTrainingParticipationReportEnabled
     ? {
         label: 'training-participation-logging-disable-button',
         action: () => {
@@ -243,9 +263,41 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         label: 'training-participation-logging-enable-button',
         action: () => {
           onClose();
+          if (isModerator) {
+            showStorageNearLimitNotification({ storageStatus, canUpgrade, accountManagementUrl });
+          }
           dispatch(enablePresenceLogging.action({}));
         },
         icon: <DoneIcon />,
+        disabled: storageStatus === 'full',
+        tooltip:
+          storageStatus === 'full'
+            ? (children) => (
+                <Tooltip
+                  key="training-participation-logging-enable-button"
+                  describeChild
+                  title={
+                    <Trans
+                      i18nKey={
+                        canUpgrade && accountManagementUrl
+                          ? 'conference-storage-tooltip-upgradeable-full-storage'
+                          : 'conference-storage-tooltip-full-storage'
+                      }
+                      components={{
+                        accountManagementLink: accountManagementUrl ? (
+                          <Link href={accountManagementUrl} target="_blank" />
+                        ) : (
+                          <span />
+                        ),
+                      }}
+                    />
+                  }
+                  slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
+                >
+                  <span>{children}</span>
+                </Tooltip>
+              )
+            : undefined,
       };
 
   const toggleChatItem = isChatEnabled
@@ -275,13 +327,45 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     },
   };
 
-  const exportAttendanceReportItem = {
+  const exportAttendanceReportItem: MenuEntry = {
     label: 'more-menu-export-attendance-report',
     icon: <AttendanceReportIcon />,
     action: () => {
       onClose();
+      if (isModerator) {
+        showStorageNearLimitNotification({ storageStatus, canUpgrade, accountManagementUrl });
+      }
       dispatch(generateAttendanceReport.action({ includeEmailAddresses: false }));
     },
+    disabled: storageStatus === 'full',
+    tooltip:
+      storageStatus === 'full'
+        ? (children) => (
+            <Tooltip
+              key="training-participation-logging-enable-button"
+              describeChild
+              title={
+                <Trans
+                  i18nKey={
+                    canUpgrade && accountManagementUrl
+                      ? 'conference-storage-tooltip-upgradeable-full-storage'
+                      : 'conference-storage-tooltip-full-storage'
+                  }
+                  components={{
+                    accountManagementLink: accountManagementUrl ? (
+                      <Link href={accountManagementUrl} target="_blank" />
+                    ) : (
+                      <span />
+                    ),
+                  }}
+                />
+              }
+              slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
+            >
+              <span>{children}</span>
+            </Tooltip>
+          )
+        : undefined,
   };
 
   const moderatorMenuItems: Array<MenuEntry> = [];
@@ -323,10 +407,42 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         moderatorMenuItems.push({
           label: 'more-menu-start-recording',
           action: () => {
+            if (isModerator) {
+              showStorageNearLimitNotification({ storageStatus, canUpgrade, accountManagementUrl });
+            }
             dispatch(sendStartRecordingSignal.action());
             onClose();
           },
           icon: <RecordingsIcon />,
+          disabled: storageStatus === 'full',
+          tooltip:
+            storageStatus === 'full'
+              ? (children) => (
+                  <Tooltip
+                    key="more-menu-start-recording"
+                    describeChild
+                    title={
+                      <Trans
+                        i18nKey={
+                          canUpgrade && accountManagementUrl
+                            ? 'conference-storage-tooltip-upgradeable-full-storage'
+                            : 'conference-storage-tooltip-full-storage'
+                        }
+                        components={{
+                          accountManagementLink: accountManagementUrl ? (
+                            <Link href={accountManagementUrl} target="_blank" />
+                          ) : (
+                            <span />
+                          ),
+                        }}
+                      />
+                    }
+                    slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
+                  >
+                    <span>{children}</span>
+                  </Tooltip>
+                )
+              : undefined,
         });
         break;
       case StreamingStatus.Requested:
@@ -493,14 +609,17 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   }
 
   const renderMenuItems = (menuEntries: Array<MenuEntry>) =>
-    menuEntries.map(({ label, action, icon, disabled }) => (
-      <ToolbarMenuItem key={label} onClick={action} disabled={disabled}>
-        <ListItemIcon>{icon}</ListItemIcon>
-        <Typography variant="inherit" noWrap>
-          {t(label)}
-        </Typography>
-      </ToolbarMenuItem>
-    ));
+    menuEntries.map(({ label, action, icon, disabled, tooltip }) => {
+      const menuItem = (
+        <ToolbarMenuItem key={label} onClick={action} disabled={disabled}>
+          <ListItemIcon>{icon}</ListItemIcon>
+          <Typography variant="inherit" noWrap>
+            {t(label)}
+          </Typography>
+        </ToolbarMenuItem>
+      );
+      return tooltip ? tooltip(menuItem) : menuItem;
+    });
 
   return (
     <>

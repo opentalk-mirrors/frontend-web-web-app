@@ -73,6 +73,9 @@ describe('MoreMenu', () => {
       initialState: {
         ...moderatorState,
         config: {
+          provider: {
+            accountManagementUrl: 'https://account.opentalk.eu',
+          },
           enabledModules: {},
         },
       },
@@ -88,6 +91,9 @@ describe('MoreMenu', () => {
           initialState: {
             ...moderatorState,
             config: {
+              provider: {
+                accountManagementUrl: 'https://account.opentalk.eu',
+              },
               enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
             },
           },
@@ -110,6 +116,9 @@ describe('MoreMenu', () => {
           initialState: {
             ...moderatorState,
             config: {
+              provider: {
+                accountManagementUrl: 'https://account.opentalk.eu',
+              },
               enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
             },
           },
@@ -136,7 +145,12 @@ describe('MoreMenu', () => {
     });
     describe('training participation report options', () => {
       describe('if the module is enabled', () => {
-        const config = { enabledModules: { [BackendModules.TrainingParticipationReport]: [] } };
+        const config = {
+          provider: {
+            accountManagementUrl: 'https://account.opentalk.eu',
+          },
+          enabledModules: { [BackendModules.TrainingParticipationReport]: [] },
+        };
 
         it('shows the enable training participation logging button, if the logging is disabled, and does not show the disable button', () => {
           const { store: storeWithModules } = configureStore({ initialState: { ...moderatorState, config } });
@@ -232,7 +246,15 @@ describe('MoreMenu', () => {
 
     it('shows the meeting notes export option, if the meeting notes module is enabled', () => {
       const { store } = configureStore({
-        initialState: { ...moderatorState, config: { enabledModules: { [BackendModules.MeetingReport]: [] } } },
+        initialState: {
+          ...moderatorState,
+          config: {
+            provider: {
+              accountManagementUrl: 'https://account.opentalk.eu',
+            },
+            enabledModules: { [BackendModules.MeetingReport]: [] },
+          },
+        },
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
@@ -249,6 +271,9 @@ describe('MoreMenu', () => {
         initialState: {
           ...moderatorState,
           config: {
+            provider: {
+              accountManagementUrl: 'https://account.opentalk.eu',
+            },
             enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
           },
         },
@@ -298,7 +323,12 @@ describe('MoreMenu', () => {
         initialState: {
           user: { role: Role.Moderator },
           room: { isOwnedByCurrentUser: true },
-          config: { enabledModules: { [BackendModules.TrainingParticipationReport]: [] } },
+          config: {
+            provider: {
+              accountManagementUrl: 'https://account.opentalk.eu',
+            },
+            enabledModules: { [BackendModules.TrainingParticipationReport]: [] },
+          },
         },
       });
 

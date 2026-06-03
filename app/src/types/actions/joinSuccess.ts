@@ -245,6 +245,7 @@ export interface SignalingTariff {
   id: TariffId;
   name: string;
   quotas: Record<string, number>;
+  usedQuota: Record<string, number>;
   disabledFeatures: BackendFeatures[];
 }
 
