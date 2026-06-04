@@ -55,7 +55,7 @@ const SHARED_INITIAL_STATE = {
   initialState: {
     ui: {
       cinemaGridSize: 9,
-      activeSpeakerFirstEnabled: true,
+      cinemaViewOrder: CinemaViewSortOrder.ActivityFirst,
     },
   },
 } as const;
@@ -226,9 +226,9 @@ describe('useCinemaViewParticipantsOrdering', () => {
     useCurrentSpeakerMock.mockReturnValue('');
     const currentSortOrder = store.getState().ui.cinemaViewOrder;
     const nextSortOrder =
-      currentSortOrder === CinemaViewSortOrder.VideoFirst
+      currentSortOrder === CinemaViewSortOrder.ActivityFirst
         ? CinemaViewSortOrder.FirstJoined
-        : CinemaViewSortOrder.VideoFirst;
+        : CinemaViewSortOrder.ActivityFirst;
     act(() => {
       store.dispatch(updatedCinemaViewSortOrder(nextSortOrder));
     });
@@ -282,11 +282,12 @@ describe('useCinemaViewParticipantsOrdering', () => {
     const { store } = configureStore(SHARED_INITIAL_STATE);
     const { result } = renderHookWithProviders(() => useCinemaViewParticipantsOrdering(participants), { store });
     expect(result.current[0]).toEqual(participants[9]);
-    store.dispatch(updatedCinemaViewSortOrder(CinemaViewSortOrder.VideoFirst));
+    store.dispatch(updatedCinemaViewSortOrder(CinemaViewSortOrder.FirstJoined));
+    store.dispatch(updatedCinemaViewSortOrder(CinemaViewSortOrder.ActivityFirst));
     expect(result.current[0]).toEqual(participants[9]);
   });
 
-  it('does not perform any swap when activeSpeakerFirstEnabled is false', () => {
+  it('does not perform any swap when sort order is not ActivityFirst', () => {
     const participants = getMockedParticipants(10);
     for (let i = 0; i < 9; i++) {
       participants[i].lastSpokeAt = new Date(`2024-01-01T0${i + 1}:00:00Z`);
@@ -296,7 +297,7 @@ describe('useCinemaViewParticipantsOrdering', () => {
       initialState: {
         ui: {
           cinemaGridSize: 9,
-          activeSpeakerFirstEnabled: false,
+          cinemaViewOrder: CinemaViewSortOrder.VideoFirst,
         },
       },
     });

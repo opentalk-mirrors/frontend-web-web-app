@@ -1230,9 +1230,9 @@ layout-selection-sorting = Sort by
 layout-selection-grid-first-joined = Join time
 layout-selection-grid-camera-first = Camera status
 layout-selection-grid-moderators-first = Role
+layout-selection-grid-activity-first = Activity
 layout-selection-grid-size = Grid size
 layout-selection-tiles = tiles
-layout-selection-dynamic-sorting = Dynamic grid sorting
 shared-folder-open-label = Open shared folder
 shared-folder-password-label = Copy Folder-password
 

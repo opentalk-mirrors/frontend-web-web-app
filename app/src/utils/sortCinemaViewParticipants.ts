@@ -14,7 +14,8 @@ export function sortCinemaViewParticipants<T extends SortableCinemaViewParticipa
   participants: T[],
   order: CinemaViewSortOrder
 ): T[] {
-  if (order === CinemaViewSortOrder.VideoFirst) {
+  // `ActivityFirst` uses `VideoFirst` as the base ordering
+  if (order === CinemaViewSortOrder.VideoFirst || order === CinemaViewSortOrder.ActivityFirst) {
     return [...participants].sort((a, b) => {
       if (a.isCameraEnabled !== b.isCameraEnabled) {
         return a.isCameraEnabled ? -1 : 1;
