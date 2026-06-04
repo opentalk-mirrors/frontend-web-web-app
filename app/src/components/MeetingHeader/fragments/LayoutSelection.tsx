@@ -20,7 +20,6 @@ import {
   toggleButtonClasses,
   Dialog,
   DialogTitle,
-  FormControlLabel,
 } from '@mui/material';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { useState, JSX } from 'react';
@@ -38,7 +37,7 @@ import {
   GridSize24Icon,
   CloseIcon,
 } from '../../../assets/icons';
-import { CommonSwitch, IconButton } from '../../../commonComponents';
+import { IconButton } from '../../../commonComponents';
 import { GRID_SIZES } from '../../../constants';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -50,13 +49,11 @@ import {
   selectFullscreenSupported,
 } from '../../../store/slices/fullscreen/slice';
 import {
-  selectActiveSpeakerFirstEnabled,
   selectCinemaGridSize,
   selectCinemaLayout,
   selectCinemaViewOrder,
   selectIsCurrentMeetingNotesHighlighted,
   selectLastCinemaLayout,
-  setActiveSpeakerFirstEnabled,
   updatedCinemaGridSize,
   updatedCinemaLayout,
   updatedCinemaViewSortOrder,
@@ -198,7 +195,6 @@ const LayoutSelection = () => {
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
   const selectedCinemaGridSize = useAppSelector(selectCinemaGridSize);
   const lastCinemaLayout = useAppSelector(selectLastCinemaLayout);
-  const activeSpeakerFirstEnabled = useAppSelector(selectActiveSpeakerFirstEnabled);
   /**
    * Placeholder condition for all features that has to show indicator.
    */
@@ -351,24 +347,6 @@ const LayoutSelection = () => {
                 })}
               </SpacedToggleButtonGroup>
             </FormControl>
-            <Box ml={5} mt={2}>
-              <FormControlLabel
-                control={
-                  <CommonSwitch
-                    onChange={(_, enabled) => dispatch(setActiveSpeakerFirstEnabled(enabled))}
-                    value="activeSpeakerFirstEnabled"
-                    checked={activeSpeakerFirstEnabled}
-                    color="primary"
-                  />
-                }
-                label={
-                  <Typography component="span" fontWeight="normal" fontSize="small" ml={1}>
-                    {t('layout-selection-dynamic-sorting')}
-                  </Typography>
-                }
-                labelPlacement="end"
-              />
-            </Box>
           </>
         )}
         <Divider aria-hidden={true} />
@@ -382,6 +360,7 @@ const LayoutSelection = () => {
           labelId="grid-sorting-label"
           sx={{ marginTop: 1 }}
         >
+          <MenuItem value={CinemaViewSortOrder.ActivityFirst}>{t('layout-selection-grid-activity-first')}</MenuItem>
           <MenuItem value={CinemaViewSortOrder.FirstJoined}>{t('layout-selection-grid-first-joined')}</MenuItem>
           <MenuItem value={CinemaViewSortOrder.VideoFirst}>{t('layout-selection-grid-camera-first')}</MenuItem>
           <MenuItem value={CinemaViewSortOrder.ModeratorsFirst}>{t('layout-selection-grid-moderators-first')}</MenuItem>

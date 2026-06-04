@@ -4,12 +4,8 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
 import { MAX_GRID_TILES_DESKTOP, MAX_GRID_TILES_MOBILE } from '../constants';
-import {
-  selectActiveSpeakerFirstEnabled,
-  selectCinemaGridSize,
-  selectCinemaViewOrder,
-  selectPaginationPageState,
-} from '../store/slices/uiSlice';
+import { CinemaViewSortOrder } from '../store/slices/common';
+import { selectCinemaGridSize, selectCinemaViewOrder, selectPaginationPageState } from '../store/slices/uiSlice';
 import { ConnectionId, ConnectionIdentifier, ParticipantId } from '../types';
 import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
 import { useCurrentSpeaker } from './useCurrentSpeaker';
@@ -99,7 +95,6 @@ const indexParticipantsForOrdering = <T extends CinemaViewParticipantForOrdering
  */
 export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipantForOrdering>(participants: T[]) {
   const [hookInstanceId] = useState(() => `useCinemaViewParticipantsOrdering-${hookInstanceCounter++}`);
-  const activeSpeakerFirstEnabled = useAppSelector(selectActiveSpeakerFirstEnabled);
   const { participantKeys, participantsByKey } = useMemo(
     () => indexParticipantsForOrdering(participants),
     [participants]
@@ -141,7 +136,7 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
       currentSpeakerIndex === -1 ||
       currentSpeakerIndex < maxGridTiles ||
       currentPageIndex !== 0 ||
-      !activeSpeakerFirstEnabled
+      cinemaViewOrder !== CinemaViewSortOrder.ActivityFirst
     ) {
       return nextOrder;
     }
@@ -198,7 +193,6 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
     currentSpeaker,
     maxGridTiles,
     currentPageIndex,
-    activeSpeakerFirstEnabled,
   ]);
 
   useLayoutEffect(() => {
