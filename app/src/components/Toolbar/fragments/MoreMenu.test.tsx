@@ -133,9 +133,10 @@ describe('MoreMenu', () => {
       });
     });
 
-    it('shows the enable waiting room option and does not show the disable waiting room option, if the waiting room is inactive', () => {
+    it('shows the manage waiting room option, and the enable/disable items are not present directly', () => {
       setup();
-      checkMenuItem('more-menu-enable-waiting-room');
+      checkMenuItem('more-menu-manage-waiting-room');
+      checkMenuItem('more-menu-enable-waiting-room', true);
       checkMenuItem('more-menu-disable-waiting-room', true);
     });
 
@@ -229,19 +230,20 @@ describe('MoreMenu', () => {
       checkMenuItem('more-menu-enable-microphones');
     });
 
-    it('shows the disable waiting room option and does not show the enable waiting room option, if the waiting room is active', () => {
+    it('shows the manage waiting room option when the waiting room is active', () => {
       const { store } = configureStore({
         initialState: {
           user: { role: Role.Moderator },
-          room: { isOwnedByCurrentUser: true, waitingRoomEnabled: true },
+          room: { isOwnedByCurrentUser: true, waitingRoom: 'for_everyone' },
         },
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
         store,
         provider: { snackbar: true, mui: true },
       });
+      checkMenuItem('more-menu-manage-waiting-room');
       checkMenuItem('more-menu-enable-waiting-room', true);
-      checkMenuItem('more-menu-disable-waiting-room');
+      checkMenuItem('more-menu-disable-waiting-room', true);
     });
 
     it('shows the meeting notes export option, if the meeting notes module is enabled', () => {

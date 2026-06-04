@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { RootState } from '../../../store';
-import { createModule, KickScope, Namespaced, ParticipantId, Role } from '../../../types';
+import { createModule, KickScope, Namespaced, ParticipantId, Role, WaitingRoom } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
@@ -32,12 +32,17 @@ export interface Debrief {
   kickScope: KickScope;
 }
 
-export interface EnableWaitingRoom {
-  action: 'enable_waiting_room';
+export interface ChangeWaitingRoomState {
+  action: 'change_waiting_room_state';
+  newState: WaitingRoom;
 }
 
-export interface DisableWaitingRoom {
-  action: 'disable_waiting_room';
+export interface EnableGuestAccess {
+  action: 'enable_guest_access';
+}
+
+export interface DisableGuestAccess {
+  action: 'disable_guest_access';
 }
 
 export interface SendParticipantToWaitingRoom {
@@ -84,8 +89,9 @@ export type Action =
   | BanParticipant
   | UnbanParticipant
   | SendParticipantToWaitingRoom
-  | EnableWaitingRoom
-  | DisableWaitingRoom
+  | ChangeWaitingRoomState
+  | EnableGuestAccess
+  | DisableGuestAccess
   | AcceptParticipantFromWaitingRoomToRoom
   | Debrief
   | ChangeDisplayName
@@ -105,8 +111,12 @@ export const sendParticipantToWaitingRoom = createSignalingApiCall<SendParticipa
   'moderation',
   'send_to_waiting_room'
 );
-export const enableWaitingRoom = createSignalingApiCall<EnableWaitingRoom>('moderation', 'enable_waiting_room');
-export const disableWaitingRoom = createSignalingApiCall<DisableWaitingRoom>('moderation', 'disable_waiting_room');
+export const changeWaitingRoomState = createSignalingApiCall<ChangeWaitingRoomState>(
+  'moderation',
+  'change_waiting_room_state'
+);
+export const enableGuestAccess = createSignalingApiCall<EnableGuestAccess>('moderation', 'enable_guest_access');
+export const disableGuestAccess = createSignalingApiCall<DisableGuestAccess>('moderation', 'disable_guest_access');
 export const acceptParticipantFromWaitingRoomToRoom = createSignalingApiCall<AcceptParticipantFromWaitingRoomToRoom>(
   'moderation',
   'accept'
@@ -146,11 +156,14 @@ export const handler = createModule<RootState>((builder) => {
     .addCase(sendParticipantToWaitingRoom.action, (_state, action) => {
       sendMessage(sendParticipantToWaitingRoom(action.payload));
     })
-    .addCase(enableWaitingRoom.action, () => {
-      sendMessage(enableWaitingRoom());
+    .addCase(changeWaitingRoomState.action, (_state, action) => {
+      sendMessage(changeWaitingRoomState(action.payload));
     })
-    .addCase(disableWaitingRoom.action, () => {
-      sendMessage(disableWaitingRoom());
+    .addCase(enableGuestAccess.action, () => {
+      sendMessage(enableGuestAccess());
+    })
+    .addCase(disableGuestAccess.action, () => {
+      sendMessage(disableGuestAccess());
     })
     .addCase(acceptParticipantFromWaitingRoomToRoom.action, (_state, action) => {
       sendMessage(acceptParticipantFromWaitingRoomToRoom(action.payload));

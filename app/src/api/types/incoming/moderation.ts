@@ -1,7 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ErrorStruct, KickReason, NamespacedIncoming, ParticipantId, Role, Timestamp } from '../../../types';
+import {
+  ErrorStruct,
+  KickReason,
+  NamespacedIncoming,
+  ParticipantId,
+  Role,
+  Timestamp,
+  WaitingRoom,
+} from '../../../types';
 
 export interface KickedParticipant {
   message: 'kicked';
@@ -37,13 +45,17 @@ export interface DebriefStarted {
   issuedBy: ParticipantId;
 }
 
-export interface WaitingRoomEnabled {
-  message: 'waiting_room_enabled';
+export interface WaitingRoomUpdated {
+  message: 'waiting_room_updated';
+  newState: WaitingRoom;
 }
 
-export interface WaitingRoomDisabled {
-  message: 'waiting_room_disabled';
-  id: ParticipantId;
+export interface GuestAccessEnabled {
+  message: 'guest_access_enabled';
+}
+
+export interface GuestAccessDisabled {
+  message: 'guest_access_disabled';
 }
 
 export interface SentToWaitingRoom {
@@ -143,8 +155,9 @@ export type Message =
   | ParticipantUnbanned
   | RoleUpdated
   | DebriefStarted
-  | WaitingRoomEnabled
-  | WaitingRoomDisabled
+  | WaitingRoomUpdated
+  | GuestAccessEnabled
+  | GuestAccessDisabled
   | SentToWaitingRoom
   | AcceptedInMeeting
   | ParticipantAccepted

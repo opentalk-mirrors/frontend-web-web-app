@@ -20,12 +20,11 @@ import { Trans, useTranslation } from 'react-i18next';
 import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/types/outgoing/chat';
 import { generateAttendanceReport } from '../../../api/types/outgoing/meetingReport';
 import {
+  changeWaitingRoomState,
   disableDisplayNameChangeRestrictions,
   disableMicrophoneRestrictions,
-  disableWaitingRoom,
   enableDisplayNameChangeRestrictions,
   enableMicrophoneRestrictions,
-  enableWaitingRoom,
   mute,
 } from '../../../api/types/outgoing/moderation';
 import { disableRaiseHands, enableRaiseHands } from '../../../api/types/outgoing/raiseHands';
@@ -45,12 +44,13 @@ import {
   EditIcon,
   ErrorIcon,
   LiveIcon,
+  MeetingRoomIcon,
   MicOffIcon,
   MicOnIcon,
+  NoMeetingRoomIcon,
   RaiseHandOffIcon,
   RaiseHandOnIcon,
   RecordingsIcon,
-  TimerIcon,
   TrashIcon,
 } from '../../../assets/icons';
 import ReactionOffIcon from '../../../assets/icons/ReactionOffIcon';
@@ -96,16 +96,20 @@ import {
   selectOurUuid,
 } from '../../../store/slices/userSlice';
 import { ParticipantId } from '../../../types';
+import { WaitingRoom } from '../../../types/common';
 import { isDevMode } from '../../../utils/devMode';
+import DisableGuestAccessDialog from './DisableGuestAccessDialog';
 import InviteGuestDialog from './InviteGuestDialog';
+import SubmenuMenuItem, { type SubmenuEntry } from './SubMenuItem';
 import { ToolbarMenu, ToolbarMenuItem, ToolbarMenuProps } from './ToolbarMenuUtils';
 
 interface MenuEntry {
   label: string;
-  action: (e: React.MouseEvent) => void;
+  action?: (e: React.MouseEvent) => void;
   icon: React.ReactNode;
   disabled?: boolean;
   tooltip?: (children: React.ReactNode) => React.ReactNode;
+  submenu?: Array<SubmenuEntry>;
 }
 
 const MenuTitleContainer = styled(Stack)(({ theme }) => ({
@@ -130,6 +134,7 @@ const Divider = styled(MuiDivider)({
 
 const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showDisableGuestAccessModal, setShowDisableGuestAccessModal] = useState(false);
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
   const participantId = useAppSelector(selectOurUuid);
@@ -141,7 +146,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const displayName = useAppSelector(selectDisplayName);
   const avatarUrl = useAppSelector(selectAvatarUrl);
   const isRoomOwner = useAppSelector(selectIsRoomOwner);
-  const isWaitingRoomActive = useAppSelector(selectWaitingRoomState);
+  const waitingRoomState = useAppSelector(selectWaitingRoomState);
   const hasHandraisesEnabled = useAppSelector(selectRaiseHandsEnabled);
   const hasMicrophonesEnabled = useAppSelector(selectMicrophonesEnabled);
   const isChatEnabled = useAppSelector(selectChatEnabledState);
@@ -179,25 +184,36 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     icon: <AddUserIcon />,
   };
 
-  const toggleWaitingRoomItem = isWaitingRoomActive
-    ? {
-        label: 'more-menu-disable-waiting-room',
+  const toggleWaitingRoomItem: MenuEntry = {
+    label: 'more-menu-manage-waiting-room',
+    icon: waitingRoomState === WaitingRoom.Disabled ? <NoMeetingRoomIcon /> : <MeetingRoomIcon />,
+    submenu: [
+      {
+        label: 'more-menu-waiting-room-disabled',
+        selected: waitingRoomState === WaitingRoom.Disabled,
         action: () => {
           onClose();
-          dispatch(disableWaitingRoom.action());
-          notifications.info(t('waiting-room-disabled-message'));
+          dispatch(changeWaitingRoomState.action({ newState: WaitingRoom.Disabled }));
         },
-        icon: <TimerIcon />,
-      }
-    : {
-        label: 'more-menu-enable-waiting-room',
+      },
+      {
+        label: 'more-menu-waiting-room-for-guests',
+        selected: waitingRoomState === WaitingRoom.ForGuests,
         action: () => {
           onClose();
-          dispatch(enableWaitingRoom.action());
-          notifications.info(t('waiting-room-enabled-message'));
+          dispatch(changeWaitingRoomState.action({ newState: WaitingRoom.ForGuests }));
         },
-        icon: <TimerIcon />,
-      };
+      },
+      {
+        label: 'more-menu-waiting-room-for-everyone',
+        selected: waitingRoomState === WaitingRoom.ForEveryone,
+        action: () => {
+          onClose();
+          dispatch(changeWaitingRoomState.action({ newState: WaitingRoom.ForEveryone }));
+        },
+      },
+    ],
+  };
 
   const toggleHandraises = hasHandraisesEnabled
     ? {
@@ -398,11 +414,11 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
 
   // Only room owner is allowed to create invites
   if (isRoomOwner) {
-    if (isGuestsAllowedFeatureEnabled && !highSecurityEnabled) {
-      moderatorMenuItems.push(inviteGuestItem);
-    }
     if (isTrainingParticipationReportModuleOn) {
       moderatorMenuItems.push(togglePresenceLogging);
+    }
+    if (isGuestsAllowedFeatureEnabled && !highSecurityEnabled) {
+      moderatorMenuItems.push(inviteGuestItem);
     }
   }
 
@@ -639,7 +655,21 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   }
 
   const renderMenuItems = (menuEntries: Array<MenuEntry>) =>
-    menuEntries.map(({ label, action, icon, disabled, tooltip }) => {
+    menuEntries.map((entry) => {
+      const { label, action, icon, disabled, tooltip, submenu } = entry;
+      if (submenu) {
+        const menuItem = (
+          <SubmenuMenuItem
+            key={label}
+            label={t(label)}
+            icon={icon}
+            disabled={disabled}
+            container={fullScreenElement}
+            submenu={submenu.map((option) => ({ ...option, label: t(option.label) }))}
+          />
+        );
+        return tooltip ? tooltip(menuItem) : menuItem;
+      }
       const menuItem = (
         <ToolbarMenuItem key={label} onClick={action} disabled={disabled}>
           <ListItemIcon>{icon}</ListItemIcon>
@@ -696,6 +726,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         </MenuList>
       </ToolbarMenu>
       <InviteGuestDialog open={showInviteModal} onClose={() => setShowInviteModal(false)} />
+      <DisableGuestAccessDialog
+        open={showDisableGuestAccessModal}
+        onClose={() => setShowDisableGuestAccessModal(false)}
+      />
     </>
   );
 };

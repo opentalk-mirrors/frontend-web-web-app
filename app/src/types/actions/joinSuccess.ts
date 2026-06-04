@@ -32,6 +32,7 @@ import type {
   ParticipationKind,
   ConnectionId,
 } from '../common';
+import { WaitingRoom } from '../common';
 import { DeviceId } from '../device';
 import { RoomInfo } from '../event';
 import { LegalVoteJoinSuccess, VoteSummary } from '../legalVote';
@@ -55,7 +56,7 @@ export interface JoinSuccessInternalState {
   participants: Participant[];
   moderation?: {
     raiseHandsEnabled: boolean;
-    waitingRoomEnabled: boolean;
+    waitingRoom: WaitingRoom;
     waitingRoomParticipants: WaitingRoomParticipant[];
     displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
   };
@@ -98,7 +99,7 @@ export interface JoinSuccessIncoming {
   moderation?: {
     raiseHandsEnabled: boolean;
     waitingRoomParticipants: WaitingRoomParticipant[];
-    waitingRoomEnabled: boolean;
+    waitingRoom: WaitingRoom;
   };
   media?: ParticipantMediaState;
   recording?: RecordingState;
@@ -146,7 +147,7 @@ export interface ModuleData {
   moderation?: {
     raiseHandsEnabled: boolean;
     waitingRoomParticipants: WaitingRoomParticipant[];
-    waitingRoomEnabled: boolean;
+    waitingRoom: WaitingRoom;
     displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
   };
   recording?: RecordingState;

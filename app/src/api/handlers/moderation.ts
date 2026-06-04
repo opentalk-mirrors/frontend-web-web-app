@@ -15,9 +15,14 @@ import {
   forceMuteEnabled,
 } from '../../store/slices/moderationSlice';
 import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
-import { disableWaitingRoom, enableWaitingRoom, enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
+import {
+  enteredWaitingRoom,
+  readyToEnter,
+  setGuestAccessEnabled,
+  setWaitingRoomState,
+} from '../../store/slices/roomSlice';
 import { setDisplayName, updateRole } from '../../store/slices/userSlice';
-import { KickReason, Role, Timestamp } from '../../types';
+import { KickReason, Role, Timestamp, WaitingRoom } from '../../types';
 import { moderation } from '../types/incoming';
 import { ModerationError } from '../types/incoming/moderation';
 
@@ -57,11 +62,28 @@ export const handleModerationMessage = (
       notifications.warning(i18next.t('meeting-notification-moved-to-waiting-room'));
       break;
     }
-    case 'waiting_room_enabled':
-      dispatch(enableWaitingRoom());
+    case 'waiting_room_updated': {
+      dispatch(setWaitingRoomState(data.newState));
+      switch (data.newState) {
+        case WaitingRoom.Disabled:
+          notifications.info(i18next.t('waiting-room-disabled-message'));
+          break;
+        case WaitingRoom.ForGuests:
+          notifications.info(i18next.t('waiting-room-for-guests-message'));
+          break;
+        case WaitingRoom.ForEveryone:
+          notifications.info(i18next.t('waiting-room-enabled-message'));
+          break;
+      }
       break;
-    case 'waiting_room_disabled':
-      dispatch(disableWaitingRoom());
+    }
+    case 'guest_access_enabled':
+      dispatch(setGuestAccessEnabled(true));
+      notifications.info(i18next.t('guest-access-enabled-message'));
+      break;
+    case 'guest_access_disabled':
+      dispatch(setGuestAccessEnabled(false));
+      notifications.info(i18next.t('guest-access-disabled-message'));
       break;
     case 'accepted':
       dispatch(readyToEnter());

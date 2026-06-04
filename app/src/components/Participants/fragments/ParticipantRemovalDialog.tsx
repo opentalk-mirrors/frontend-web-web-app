@@ -16,7 +16,7 @@ import { format } from 'date-fns';
 import { truncate } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { enableWaitingRoom, kickParticipant } from '../../../api/types/outgoing/moderation';
+import { kickParticipant } from '../../../api/types/outgoing/moderation';
 import { CloseIcon } from '../../../assets/icons';
 import { notifications } from '../../../commonComponents';
 import { useAppDispatch } from '../../../hooks';
@@ -40,7 +40,6 @@ const ParticipantRemovalDialog = ({ open, onClose, participant }: ParticipantRem
 
   const handleConfirm = () => {
     dispatch(kickParticipant.action({ target: participant.id }));
-    dispatch(enableWaitingRoom.action());
     const formatKickedTime = format(Date.parse(new Date().toISOString()), 'HH:mm');
     const displayName = truncate(participant.displayName, { length: 100 });
     notifications.info(t('meeting-notification-user-was-kicked', { user: displayName, time: formatKickedTime }));

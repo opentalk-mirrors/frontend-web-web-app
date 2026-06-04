@@ -21,7 +21,7 @@ import {
   selectUnreadGlobalMessageCount,
 } from '../../../../store/slices/chatSlice';
 import { selectParticipantsWaitingCount } from '../../../../store/slices/participantsSlice';
-import { selectWaitingRoomState } from '../../../../store/slices/roomSlice';
+import { selectIsWaitingRoomActive } from '../../../../store/slices/roomSlice';
 import {
   selectActiveTab,
   selectHaveSeenMobilePollsAndVotes,
@@ -59,7 +59,7 @@ const Drawer = () => {
   const hasAnyUnreadPrivateChatMessage = useAppSelector(selectHasAnyUnreadPrivateChatMessage);
   const isModerator = useAppSelector(selectIsModerator);
   const participantsWaitingCount = useAppSelector(selectParticipantsWaitingCount);
-  const isWaitingRoomEnabled = useAppSelector(selectWaitingRoomState);
+  const isWaitingRoomEnabled = useAppSelector(selectIsWaitingRoomActive);
   const hasUnreadMessages = unreadGlobalMessageCount > 0 || hasAnyUnreadPrivateChatMessage;
   const voteAndPollCount = useAppSelector(selectPollsAndVotingCount);
   const activeVoteAndPollCount = useAppSelector(selectActivePollsAndVotingCount);
