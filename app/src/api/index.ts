@@ -29,6 +29,7 @@ import {
   handleWhiteboardMessage,
   handleRoomServerCoreMessage,
   handleRaiseHandsMessage,
+  handleReactionMessage,
 } from './handlers';
 import { Message as IncomingMessage } from './types/incoming';
 import * as outgoing from './types/outgoing';
@@ -80,6 +81,9 @@ const onMessage = (dispatch: AppDispatch, getState: () => RootState) => async (m
     case 'whiteboard':
     case 'excalidraw':
       handleWhiteboardMessage(dispatch, message.payload, getState());
+      break;
+    case 'reaction':
+      handleReactionMessage(dispatch, message.payload);
       break;
     case 'recording':
       await handleStreamingMessage(dispatch, message.payload, getState());
@@ -183,6 +187,7 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.whiteboard.handler(builder, dispatch))
       .addModule((builder) => outgoing.recording.handler(builder, dispatch))
       .addModule((builder) => outgoing.raiseHands.handler(builder, dispatch))
+      .addModule((builder) => outgoing.reaction.handler(builder, dispatch))
       .addModule((builder) => outgoing.trainingParticipationReport.handler(builder, dispatch));
   });
 

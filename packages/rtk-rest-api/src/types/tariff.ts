@@ -31,6 +31,7 @@ export enum BackendModules {
   SharedFolder = 'sharedFolder',
   SubroomAudio = 'subroomAudio',
   TrainingParticipationReport = 'trainingParticipationReport',
+  Reaction = 'reaction',
 }
 
 /**

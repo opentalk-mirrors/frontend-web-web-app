@@ -28,6 +28,7 @@ import meetingNotesReducer from './slices/meetingNotesSlice';
 import moderationReducer from './slices/moderationSlice';
 import participantsReducer from './slices/participantsSlice';
 import pollReducer from './slices/pollSlice';
+import reactionReducer from './slices/reactionSlice';
 import roomReducer from './slices/roomSlice';
 import sharedFolderReducer from './slices/sharedFolderSlice';
 import slotReducer from './slices/slotSlice';
@@ -91,6 +92,7 @@ export const rootReducer = combineReducers({
   livekit: livekitReducer,
   subroomAudio: subroomAudioReducer,
   fullscreen: fullscreenReducer,
+  reaction: reactionReducer,
 });
 
 // disable action sanitizer for localTrack and room object to prevent Redux toolkit for doing excesive work

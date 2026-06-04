@@ -25,6 +25,8 @@ import * as poll from './poll';
 import PollMessage from './poll';
 import * as raiseHands from './raiseHands';
 import RaiseHandsMessage from './raiseHands';
+import * as reaction from './reaction';
+import ReactionMessage from './reaction';
 import * as recording from './streaming';
 import RecordingMessage from './streaming';
 import * as subroomAudio from './subroomAudio';
@@ -53,6 +55,7 @@ export * as livekit from './livekit';
 export * as raiseHands from './raiseHands';
 export * as subroomAudio from './subroomAudio';
 export * as trainingParticipationReport from './trainingParticipationReport';
+export * as reaction from './reaction';
 
 export type Action =
   | automod.Action
@@ -71,7 +74,8 @@ export type Action =
   | livekit.Action
   | raiseHands.Action
   | subroomAudio.Action
-  | trainingParticipationReport.Action;
+  | trainingParticipationReport.Action
+  | reaction.Action;
 
 // we need to use type mapping, to convert `Namespaced` interface into types
 // otherwise we will have problems with `convertToCamelCase` function
