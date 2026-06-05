@@ -73,6 +73,10 @@ const WhiteboardTab = () => {
         </Button>
       );
     }
+    if (!isSpacedeckEnabled) {
+      return null;
+    }
+
     if (storageStatus === 'full') {
       return (
         <Tooltip
@@ -104,12 +108,9 @@ const WhiteboardTab = () => {
       );
     }
     return (
-      isSpacedeckEnabled &&
-      showWhiteboard && (
-        <Button onClick={createPdf} color="secondary">
-          {t('whiteboard-create-pdf-button')}
-        </Button>
-      )
+      <Button onClick={createPdf} color="secondary">
+        {t('whiteboard-create-pdf-button')}
+      </Button>
     );
   };
 
