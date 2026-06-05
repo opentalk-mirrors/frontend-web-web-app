@@ -23,10 +23,10 @@ import type {
   SocketId,
 } from '@excalidraw/excalidraw/types';
 import { Mutable } from '@excalidraw/excalidraw/utility-types';
-import { Link as MUILink, styled, Tooltip } from '@mui/material';
+import { styled } from '@mui/material';
 import { keyBy, throttle } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { useCreateRoomAssetMutation } from '../../api/rest';
 import { Message } from '../../api/types/incoming';
@@ -50,6 +50,7 @@ import {
   selectWhiteboardElements,
 } from '../../store/slices/whiteboardSlice';
 import { ParticipantId } from '../../types';
+import StorageTooltip from '../StorageTooltip';
 import RestrictionsDialog from './fragments/RestrictionsDialog';
 
 const CURSOR_SYNC_TIMEOUT = 33;
@@ -107,40 +108,16 @@ const WhiteboardView = () => {
   );
 
   const renderUploadMenuButton = () => {
-    if (storageStatus === 'full') {
-      return (
-        <Tooltip
-          describeChild
-          title={
-            <Trans
-              i18nKey={
-                canUpgrade
-                  ? 'conference-storage-tooltip-upgradeable-full-storage'
-                  : 'conference-storage-tooltip-full-storage'
-              }
-              components={{
-                accountManagementLink: accountManagementUrl ? (
-                  <MUILink href={accountManagementUrl} target="_blank" />
-                ) : (
-                  <span />
-                ),
-              }}
-            />
-          }
-          slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
-        >
-          <span>
-            <MainMenu.Item icon={<MeetingNotesIcon />} onSelect={uploadSceneAsPdf} disabled>
-              {t('whiteboard-create-pdf-button')}
-            </MainMenu.Item>
-          </span>
-        </Tooltip>
-      );
-    }
     return (
-      <MainMenu.Item icon={<MeetingNotesIcon />} onSelect={uploadSceneAsPdf} disabled={isUploading}>
-        {t('whiteboard-create-pdf-button')}
-      </MainMenu.Item>
+      <StorageTooltip>
+        <MainMenu.Item
+          icon={<MeetingNotesIcon />}
+          onSelect={uploadSceneAsPdf}
+          disabled={isUploading || storageStatus === 'full'}
+        >
+          {t('whiteboard-create-pdf-button')}
+        </MainMenu.Item>
+      </StorageTooltip>
     );
   };
 
