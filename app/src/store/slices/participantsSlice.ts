@@ -231,10 +231,14 @@ export const participantSelectors = participantAdapter.getSelectors<RootState>((
 
 export const selectAllParticipants = (state: RootState) => participantSelectors.selectAll(state);
 
+export const selectAllVisibleParticipants = createSelector([selectAllParticipants], (participants) =>
+  participants.filter((participant) => participant.participationKind !== ParticipationKind.Recorder)
+);
+
 export const selectParticipantById = (participantId: ParticipantId) => (state: RootState) =>
   participantSelectors.selectById(state, participantId);
 
-export const selectAllParticipantsInWaitingRoom = createSelector([selectAllParticipants], (participants) =>
+export const selectAllParticipantsInWaitingRoom = createSelector([selectAllVisibleParticipants], (participants) =>
   participants.filter((participant) => participant.waitingState !== WaitingState.Joined)
 );
 
@@ -247,13 +251,8 @@ export const selectNotApprovedParticipants = createSelector([selectAllParticipan
   participants.filter((participant) => participant.waitingState === WaitingState.Waiting)
 );
 
-export const selectAllOnlineParticipantsInConference = createSelector([selectAllParticipants], (participants) =>
-  participants.filter(
-    (participant) =>
-      participant.leftAt === null &&
-      participant.waitingState === WaitingState.Joined &&
-      participant.participationKind !== ParticipationKind.Recorder
-  )
+export const selectAllOnlineParticipantsInConference = createSelector([selectAllVisibleParticipants], (participants) =>
+  participants.filter((participant) => participant.leftAt === null && participant.waitingState === WaitingState.Joined)
 );
 
 export const selectAllOnlineParticipants = createSelector(

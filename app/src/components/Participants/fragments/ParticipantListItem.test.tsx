@@ -6,7 +6,7 @@ import { Store } from '@reduxjs/toolkit';
 import { screen, within, fireEvent } from '@testing-library/react';
 import { List } from 'react-window';
 
-import { selectAllParticipants } from '../../../store/slices/participantsSlice';
+import { selectAllVisibleParticipants } from '../../../store/slices/participantsSlice';
 import {
   Participant,
   ParticipantId,
@@ -65,7 +65,7 @@ describe('participant context menu', () => {
   let participants: Participant[];
 
   const renderEachParticipant = (store: Store) => {
-    participants = selectAllParticipants(store.getState());
+    participants = selectAllVisibleParticipants(store.getState());
     renderWithProviders(
       <List
         rowComponent={ParticipantListItem}

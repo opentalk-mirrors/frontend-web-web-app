@@ -38,7 +38,7 @@ import { selectForceMute, selectHandUp, selectHandUpdatedAt } from './slices/mod
 import {
   selectAllOnlineParticipants,
   selectAllOnlineParticipantsInConference,
-  selectAllParticipants,
+  selectAllVisibleParticipants,
 } from './slices/participantsSlice';
 import { selectAllPolls } from './slices/pollSlice';
 import { selectEventInfo } from './slices/roomSlice';
@@ -104,7 +104,7 @@ export const selectParticipantsWithoutGuestAndSip = createSelector(
 );
 
 export const selectJoinedFirstTimestamp = createSelector(
-  [selectAllParticipants, selectUserAsParticipant],
+  [selectAllVisibleParticipants, selectUserAsParticipant],
   (participants, user) =>
     (user ? [...participants, user] : participants)
       .map((participant) => participant.joinedAt)
@@ -329,8 +329,9 @@ export const selectRoomTitle = createSelector(
   }
 );
 
-export const selectOtherParticipants = createSelector([selectAllParticipants, selectOurUuid], (participants, ourUuid) =>
-  participants.filter((participant) => participant.id !== ourUuid)
+export const selectOtherParticipants = createSelector(
+  [selectAllVisibleParticipants, selectOurUuid],
+  (participants, ourUuid) => participants.filter((participant) => participant.id !== ourUuid)
 );
 
 export const selectOtherOnlineParticipants = createSelector([selectOtherParticipants], (participants) =>
