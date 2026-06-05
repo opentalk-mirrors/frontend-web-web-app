@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import i18next from 'i18next';
+
+import { notifications } from '../../commonComponents';
 import log from '../../logger';
 import type { AppDispatch } from '../../store';
 import { reacted, reactionRestrictionsDisabled, reactionRestrictionsEnabled } from '../../store/slices/reactionSlice';
@@ -15,9 +18,11 @@ export const handleReactionMessage = (dispatch: AppDispatch, data: reaction.Mess
       dispatch(reacted(data));
       break;
     case 'restrictions_enabled':
+      notifications.info(i18next.t('reaction-disabled-message'));
       dispatch(reactionRestrictionsEnabled({ unrestrictedParticipants: data.unrestrictedParticipants }));
       break;
     case 'restrictions_disabled':
+      notifications.info(i18next.t('reaction-enabled-message'));
       dispatch(reactionRestrictionsDisabled());
       break;
     case 'error':
