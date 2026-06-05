@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
+//
+// SPDX-License-Identifier: EUPL-1.2
 import { Link as MUILink, Tooltip } from '@mui/material';
 import { Trans } from 'react-i18next';
 
