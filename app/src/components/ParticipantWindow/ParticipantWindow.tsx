@@ -14,6 +14,7 @@ import type { ConnectionIdentifier } from '../../types';
 import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 import HandRaisedIndicator from './fragments/HandRaisedIndicator';
 import ParticipantVideo from './fragments/ParticipantVideo';
+import ReactionIndicator from './fragments/ReactionIndicator';
 import VideoOverlay from './fragments/VideoOverlay';
 
 const Container = styled(MuiBox)(({ theme }) => ({
@@ -74,6 +75,7 @@ const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: 
         />
       )}
       <HandRaisedIndicator participantId={participantId} />
+      <ReactionIndicator participantId={participantId} />
     </Container>
   );
 };
