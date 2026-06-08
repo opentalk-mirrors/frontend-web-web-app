@@ -83,7 +83,7 @@ const onMessage = (dispatch: AppDispatch, getState: () => RootState) => async (m
       handleWhiteboardMessage(dispatch, message.payload, getState());
       break;
     case 'reaction':
-      handleReactionMessage(dispatch, message.payload);
+      handleReactionMessage(dispatch, message.payload, message.timestamp);
       break;
     case 'recording':
       await handleStreamingMessage(dispatch, message.payload, getState());

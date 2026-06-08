@@ -7,6 +7,7 @@ export const CHAT_INPUT_ID = 'chat-input';
 
 export enum ToolbarButtonIds {
   Handraise = 'toolbar-handraise',
+  Reaction = 'toolbar-reaction',
   ShareScreen = 'toolbar-share-screen',
   Audio = 'toolbar-audio',
   Video = 'toolbar-video',

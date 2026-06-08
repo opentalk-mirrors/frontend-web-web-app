@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantId } from './common';
+import { ParticipantId, Timestamp } from './common';
 
 export enum ReactionEmoji {
   ThumbsUp = 'thumbs_up',
@@ -13,6 +13,17 @@ export enum ReactionEmoji {
   Tada = 'tada',
   Clap = 'clap',
 }
+
+export const REACTION_EMOJI_DISPLAY: Record<ReactionEmoji, string> = {
+  [ReactionEmoji.ThumbsUp]: '👍',
+  [ReactionEmoji.Clap]: '👏',
+  [ReactionEmoji.Heart]: '❤️',
+  [ReactionEmoji.Tada]: '🎉',
+  [ReactionEmoji.OpenMouth]: '😮',
+  [ReactionEmoji.Joy]: '😂',
+  [ReactionEmoji.SmilingFaceWithTear]: '🥲',
+  [ReactionEmoji.ThumbsDown]: '👎',
+};
 
 /**
  * JoinSuccess state of the Reaction SingalingModule.
@@ -31,3 +42,9 @@ type ReactionRestrictionDisabled = {
 };
 
 export type ReactionRestriction = ReactionRestrictionEnabled | ReactionRestrictionDisabled;
+
+export type ActiveReaction = {
+  timestamp: Timestamp;
+  reaction: ReactionEmoji;
+  participantId: ParticipantId;
+};

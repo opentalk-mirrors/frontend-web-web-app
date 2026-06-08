@@ -131,6 +131,9 @@ type SubroomAudioMessageMappedType = {
 type TrainingParticipationReportMappedType = {
   [P in keyof TrainingParticipationReportMessage]: TrainingParticipationReportMessage[P];
 };
+type ReactionMessageMappedType = {
+  [P in keyof ReactionMessage]: ReactionMessage[P];
+};
 
 export type Message =
   | AutomodMessageMappedType
@@ -149,4 +152,5 @@ export type Message =
   | LivekitMessageMappedType
   | RaiseHandsMessageMappedType
   | SubroomAudioMessageMappedType
-  | TrainingParticipationReportMappedType;
+  | TrainingParticipationReportMappedType
+  | ReactionMessageMappedType;

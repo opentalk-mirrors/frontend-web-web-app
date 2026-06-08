@@ -3,16 +3,19 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useLocalParticipant } from '@livekit/components-react';
 import { styled } from '@mui/material';
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { Track } from 'livekit-client';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { changeMedia } from '../../store/commonActions';
+import { selectIsModuleEnabled } from '../../store/slices/configSlice';
 import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/livekitSlice';
 import AudioButton from './fragments/AudioButton';
 import EndCallButton from './fragments/EndCallButton';
 import HandraiseButton from './fragments/HandraiseButton';
 import MoreButton from './fragments/MoreButton';
+import ReactionButton from './fragments/ReactionButton';
 import ShareScreenButton from './fragments/ShareScreenButton';
 import VideoButton from './fragments/VideoButton';
 
@@ -54,6 +57,7 @@ const Toolbar = ({ layout }: { layout?: LayoutTypes }) => {
   const audioEnabled = useAppSelector(selectAudioEnabled);
   const videoEnabled = useAppSelector(selectVideoEnabled);
   const dispatch = useAppDispatch();
+  const reactionModuleEnabled = useAppSelector(selectIsModuleEnabled(BackendModules.Reaction));
 
   const handleAudioButtonToggle = () => {
     dispatch(changeMedia({ kind: 'audioinput', enabled: !audioEnabled }));
@@ -73,6 +77,7 @@ const Toolbar = ({ layout }: { layout?: LayoutTypes }) => {
         audioEnabled={audioEnabled}
       />
       <VideoButton onVideoButtonToggle={handleVideoButtonToggle} videoEnabled={videoEnabled} />
+      {reactionModuleEnabled && <ReactionButton />}
       <MoreButton />
       <EndCallButton />
     </MainContainer>

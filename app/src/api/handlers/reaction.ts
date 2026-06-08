@@ -7,15 +7,16 @@ import { notifications } from '../../commonComponents';
 import log from '../../logger';
 import type { AppDispatch } from '../../store';
 import { reacted, reactionRestrictionsDisabled, reactionRestrictionsEnabled } from '../../store/slices/reactionSlice';
+import { Timestamp } from '../../types';
 import { reaction } from '../types/incoming';
 
 /**
  * Handles reaction messages.
  */
-export const handleReactionMessage = (dispatch: AppDispatch, data: reaction.Message) => {
+export const handleReactionMessage = (dispatch: AppDispatch, data: reaction.Message, timestamp: Timestamp) => {
   switch (data.message) {
     case 'reacted':
-      dispatch(reacted(data));
+      dispatch(reacted({ timestamp, participantId: data.participantId, reaction: data.reaction }));
       break;
     case 'restrictions_enabled':
       notifications.info(i18next.t('reaction-disabled-message'));

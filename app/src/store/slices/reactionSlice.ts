@@ -5,22 +5,29 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { RootState } from '..';
 import { ParticipantId } from '../../types';
-import { ReactionEmoji, ReactionRestriction } from '../../types/reaction';
+import { ActiveReaction, ReactionRestriction } from '../../types/reaction';
 import { joinSuccess } from '../commonActions';
 
 export type ReactionState = {
   /* The current state of the reaction restriction */
   restrictionsState: ReactionRestriction;
+  activeReactions: {
+    [key: ParticipantId]: Omit<ActiveReaction, 'participantId'>;
+  };
 };
 
 export const reactionSlice = createSlice({
   name: 'reaction',
   initialState: {
     restrictionsState: { type: 'disabled' },
+    activeReactions: {},
   } as ReactionState,
   reducers: {
-    reacted: (_state, _action: PayloadAction<{ participantId: ParticipantId; reaction: ReactionEmoji }>) => {
-      // TODO: No state change yet — incoming reactions are not surfaced in the UI.
+    reacted: (state, action: PayloadAction<ActiveReaction>) => {
+      state.activeReactions[action.payload.participantId] = {
+        timestamp: action.payload.timestamp,
+        reaction: action.payload.reaction,
+      };
     },
     reactionRestrictionsEnabled: (state, { payload }: PayloadAction<{ unrestrictedParticipants: ParticipantId[] }>) => {
       state.restrictionsState = {
@@ -30,6 +37,7 @@ export const reactionSlice = createSlice({
     },
     reactionRestrictionsDisabled: (state) => {
       state.restrictionsState = { type: 'disabled' };
+      state.activeReactions = {};
     },
   },
   extraReducers: (builder) => {
@@ -57,6 +65,14 @@ export const selectReactionAllowed = (state: RootState): boolean => {
  */
 export const selectReactionRestrictionsEnabled = (state: RootState): boolean =>
   state.reaction.restrictionsState.type === 'enabled';
+
+export const selectParticipantReaction = (
+  state: RootState,
+  participantId: ParticipantId
+): Omit<ActiveReaction, 'participantId'> | null => state.reaction.activeReactions[participantId] ?? null;
+
+export const selectHasOwnReaction = (state: RootState): boolean =>
+  state.user.uuid ? state.user.uuid in state.reaction.activeReactions : false;
 
 export const { reacted, reactionRestrictionsEnabled, reactionRestrictionsDisabled } = reactionSlice.actions;
 
