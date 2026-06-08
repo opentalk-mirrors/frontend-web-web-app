@@ -20,8 +20,8 @@ const HandIconContainer = styled('div', {
   shouldForwardProp: (prop) => prop !== 'display',
 })<{ display?: boolean }>(({ display, theme }) => ({
   background: theme.palette.primary.light,
-  width: theme.spacing(6),
-  height: theme.spacing(6),
+  width: 'clamp(24px, 10cqi, 48px)',
+  height: 'clamp(24px, 10cqi, 48px)',
   borderRadius: '100%',
   padding: theme.spacing(0.5),
   justifyContent: 'center',

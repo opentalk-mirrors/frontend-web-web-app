@@ -18,6 +18,8 @@ import ReactionIndicator from './fragments/ReactionIndicator';
 import VideoOverlay from './fragments/VideoOverlay';
 
 const Container = styled(MuiBox)(({ theme }) => ({
+  containerType: 'inline-size',
+
   position: 'relative',
   width: 'inherit',
   height: 'inherit',

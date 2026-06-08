@@ -15,13 +15,15 @@ import { useAppSelector } from '../../hooks';
 import useMediaDevice from '../../hooks/useMediaDevice';
 import { selectLivekitUnavailable } from '../../store/slices/livekitSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
-import { selectDisplayName } from '../../store/slices/userSlice';
+import { selectDisplayName, selectOurUuid } from '../../store/slices/userSlice';
 import { OverlayIconButton } from '../ParticipantWindow/fragments/OverlayIconButton';
+import ReactionIndicator from '../ParticipantWindow/fragments/ReactionIndicator';
 
 type PropsType = VideoHTMLAttributes<HTMLVideoElement>;
 
 const Container = styled(Grid)({
   position: 'relative',
+  containerType: 'inline-size',
 
   '&::before': {
     content: '""',
@@ -84,6 +86,7 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
     useLocalParticipant();
 
   const displayName = useAppSelector(selectDisplayName);
+  const ownParticipantId = useAppSelector(selectOurUuid);
   const mirroredVideoEnabled = useAppSelector(selectMirroredVideoEnabled);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const { devices } = useMediaDevice({ kind: 'videoinput' });
@@ -140,6 +143,7 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
           />
         </>
       )}
+      {ownParticipantId !== null && <ReactionIndicator participantId={ownParticipantId} />}
       {isCameraEnabled && !outgoingVideoStreamTrack && !isLivekitUnavailable && (
         <CircularProgress color="primary" size="2.5rem" />
       )}
