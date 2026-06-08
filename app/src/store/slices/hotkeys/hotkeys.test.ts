@@ -191,6 +191,29 @@ describe('hotkeys', () => {
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
+  it('calls hotkeys registered with Control + Meta (macOS toggle modifier)', () => {
+    const { store } = configureStore();
+    ReduxDomEvents.dispatchFunction = store.dispatch;
+    const onPress = vi.fn();
+
+    listener.registerHotkey({
+      key: 'm',
+      modifier: ['Control', 'Meta'],
+      onPress,
+      descriptionKey: 'hotkey-test',
+    });
+
+    // Cmd + Shift + M alone (the previous macOS combo) must no longer fire
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm', metaKey: true, shiftKey: true }));
+    vi.advanceTimersByTime(100);
+    expect(onPress).not.toHaveBeenCalled();
+
+    // Ctrl + Cmd + M fires
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm', ctrlKey: true, metaKey: true }));
+    vi.advanceTimersByTime(100);
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
   it('does not call single-modifier hotkeys when additional modifiers are active', () => {
     const { store } = configureStore();
     ReduxDomEvents.dispatchFunction = store.dispatch;

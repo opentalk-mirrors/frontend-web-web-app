@@ -4,10 +4,10 @@ SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 SPDX-License-Identifier: EUPL-1.2
 -->
 
-modifier-control = ctrl
-modifier-shift = shift
-modifier-alt = alt
-modifier-meta = cmd
+modifier-control = Ctrl
+modifier-shift = Shift
+modifier-alt = Alt
+modifier-meta = Cmd
 
 messages = Messages
 dismiss = Dismiss
