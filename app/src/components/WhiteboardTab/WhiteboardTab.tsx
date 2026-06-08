@@ -20,7 +20,7 @@ import { useStorageStatus } from '../../hooks/useStorageStatus';
 import { selectIsSpacedeckEnabled, selectAccountManagementUrl } from '../../store/slices/configSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import { selectIsWhiteboardAvailable, selectWhiteboardAssets } from '../../store/slices/whiteboardSlice';
-import StorageTooltip from '../StorageTooltip';
+import StorageFullTooltip from '../StorageFullTooltip';
 
 const Link = styled(MUILink)<LinkProps>(() => ({
   cursor: 'pointer',
@@ -79,11 +79,11 @@ const WhiteboardTab = () => {
     }
 
     return (
-      <StorageTooltip>
+      <StorageFullTooltip>
         <Button onClick={createPdf} color="secondary" disabled={storageStatus === 'full'} fullWidth>
           {t('whiteboard-create-pdf-button')}
         </Button>
-      </StorageTooltip>
+      </StorageFullTooltip>
     );
   };
 

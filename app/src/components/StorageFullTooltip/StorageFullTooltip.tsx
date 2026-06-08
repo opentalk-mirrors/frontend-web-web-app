@@ -8,11 +8,11 @@ import { useAppSelector } from '../../hooks';
 import { useStorageStatus } from '../../hooks/useStorageStatus';
 import { selectAccountManagementUrl } from '../../store/slices/configSlice';
 
-interface StorageTooltipProps {
+interface StorageFullTooltipProps {
   children: React.ReactNode;
 }
 
-const StorageTooltip = ({ children }: StorageTooltipProps) => {
+const StorageFullTooltip = ({ children }: StorageFullTooltipProps) => {
   const { storageStatus, canUpgrade } = useStorageStatus();
   const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
 
@@ -45,4 +45,4 @@ const StorageTooltip = ({ children }: StorageTooltipProps) => {
   return children;
 };
 
-export default StorageTooltip;
+export default StorageFullTooltip;

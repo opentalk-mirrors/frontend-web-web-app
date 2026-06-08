@@ -50,7 +50,7 @@ import {
   selectWhiteboardElements,
 } from '../../store/slices/whiteboardSlice';
 import { ParticipantId } from '../../types';
-import StorageTooltip from '../StorageTooltip';
+import StorageFullTooltip from '../StorageFullTooltip';
 import RestrictionsDialog from './fragments/RestrictionsDialog';
 
 const CURSOR_SYNC_TIMEOUT = 33;
@@ -109,7 +109,7 @@ const WhiteboardView = () => {
 
   const renderUploadMenuButton = () => {
     return (
-      <StorageTooltip>
+      <StorageFullTooltip>
         <MainMenu.Item
           icon={<MeetingNotesIcon />}
           onSelect={uploadSceneAsPdf}
@@ -117,7 +117,7 @@ const WhiteboardView = () => {
         >
           {t('whiteboard-create-pdf-button')}
         </MainMenu.Item>
-      </StorageTooltip>
+      </StorageFullTooltip>
     );
   };
 
