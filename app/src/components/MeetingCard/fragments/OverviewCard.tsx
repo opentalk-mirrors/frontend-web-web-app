@@ -4,7 +4,7 @@
 import { Grid, styled, Typography, Collapse, Tooltip } from '@mui/material';
 import { isTimelessEvent, isRecurringEvent, isPendingEvent, getEventId } from '@opentalk/rest-api-rtk-query';
 import { Property } from 'csstype';
-import { uniqueId } from 'lodash';
+import { uniqueId, truncate } from 'lodash';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -192,8 +192,15 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
           margin: 'auto',
         }}
       >
-        <MaxWidthTypography maxWidth="50ch" variant="body1" fontWeight={400} noWrap translate="no">
-          {t('dashboard-home-created-by', { author: createdBy.displayName })}
+        <MaxWidthTypography
+          maxWidth="50ch"
+          variant="body1"
+          fontWeight={400}
+          noWrap
+          translate="no"
+          title={createdBy.displayName}
+        >
+          {t('dashboard-home-created-by', { author: truncate(createdBy.displayName, { length: 30 }) })}
         </MaxWidthTypography>
       </Grid>
       <Grid size={{ xs: 16, sm: 4 }} container justifyContent="flex-end">

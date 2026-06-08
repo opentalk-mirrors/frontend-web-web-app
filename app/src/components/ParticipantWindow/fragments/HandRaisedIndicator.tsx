@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { keyframes, styled, Box as MuiBox } from '@mui/material';
+import { truncate } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { RaiseHandOnIcon } from '../../../assets/icons';
@@ -56,7 +57,9 @@ const HandRaisedIndicator = ({ participantId }: { participantId: ParticipantId }
         <HandIconContainer
           display
           translate="no"
-          aria-label={t('indicator-has-raised-hand', { participantName: participant.displayName || '' })}
+          aria-label={t('indicator-has-raised-hand', {
+            participantName: truncate(participant.displayName || '', { length: 100 }),
+          })}
         >
           <RaiseHandOnIcon type="decorative" />
         </HandIconContainer>

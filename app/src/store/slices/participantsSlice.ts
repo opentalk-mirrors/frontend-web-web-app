@@ -361,7 +361,9 @@ export const handleParticipantLeaveEffect = (
     const participantId = payload.id;
 
     if (shouldShowNotification(state.user.role, participantId, activeVoteEntry)) {
-      const participantName = participantSelectors.selectById(state, participantId).displayName;
+      const participantName = truncate(participantSelectors.selectById(state, participantId).displayName, {
+        length: 100,
+      });
       notifications.warning(i18next.t('legal-vote-participant-left-the-meeting', { participantName }));
     }
   }
