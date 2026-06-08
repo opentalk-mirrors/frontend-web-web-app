@@ -7,6 +7,9 @@ import type { RootState } from '..';
 import { ParticipantId } from '../../types';
 import { ActiveReaction, ReactionRestriction } from '../../types/reaction';
 import { joinSuccess } from '../commonActions';
+import type { StartAppListening } from '../listenerMiddleware';
+
+const REACTION_TIMEOUT_DURATION = 9000;
 
 export type ReactionState = {
   /* The current state of the reaction restriction */
@@ -34,10 +37,13 @@ export const reactionSlice = createSlice({
         type: 'enabled',
         unrestrictedParticipants: payload.unrestrictedParticipants,
       };
+      state.activeReactions = {};
     },
     reactionRestrictionsDisabled: (state) => {
       state.restrictionsState = { type: 'disabled' };
-      state.activeReactions = {};
+    },
+    reactionExpired: (state, action: PayloadAction<ParticipantId>) => {
+      delete state.activeReactions[action.payload];
     },
   },
   extraReducers: (builder) => {
@@ -74,6 +80,25 @@ export const selectParticipantReaction = (
 export const selectHasOwnReaction = (state: RootState): boolean =>
   state.user.uuid ? state.user.uuid in state.reaction.activeReactions : false;
 
-export const { reacted, reactionRestrictionsEnabled, reactionRestrictionsDisabled } = reactionSlice.actions;
+export const { reacted, reactionRestrictionsEnabled, reactionRestrictionsDisabled, reactionExpired } =
+  reactionSlice.actions;
+
+export const startReactionClearTimeoutListener = (startAppListening: StartAppListening) => {
+  startAppListening({
+    actionCreator: reacted,
+    effect: async (action, listenerApi) => {
+      const { participantId } = action.payload;
+
+      // Abort if same participant reacts again before timeout
+      const wasInterrupted = await listenerApi.condition((nextAction) => {
+        return reacted.match(nextAction) && nextAction.payload.participantId === participantId;
+      }, REACTION_TIMEOUT_DURATION);
+
+      if (!wasInterrupted) {
+        listenerApi.dispatch(reactionExpired(participantId));
+      }
+    },
+  });
+};
 
 export default reactionSlice.reducer;
