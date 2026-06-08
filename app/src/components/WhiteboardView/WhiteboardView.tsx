@@ -34,9 +34,12 @@ import { VolatileBroadcast } from '../../api/types/incoming/whiteboard';
 import { broadcast, broadcastVolatile, storeScene, follow, unfollow } from '../../api/types/outgoing/whiteboard';
 import { MeetingNotesIcon, EditIcon } from '../../assets/icons';
 import { notifications } from '../../commonComponents';
+import { showStorageNearLimitNotification } from '../../commonComponents/Notistack/helper';
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useStorageStatus } from '../../hooks/useStorageStatus';
 import { getCurrentConferenceRoom } from '../../modules/WebRTC/ConferenceRoom';
 import { useAppStore } from '../../store';
+import { selectAccountManagementUrl } from '../../store/slices/configSlice';
 import { selectDisplayNameById } from '../../store/slices/participantsSlice';
 import { selectRoomId } from '../../store/slices/roomSlice';
 import { selectIsModerator, selectOurUuid } from '../../store/slices/userSlice';
@@ -47,6 +50,7 @@ import {
   selectWhiteboardElements,
 } from '../../store/slices/whiteboardSlice';
 import { ParticipantId } from '../../types';
+import StorageFullTooltip from '../StorageFullTooltip';
 import RestrictionsDialog from './fragments/RestrictionsDialog';
 
 const CURSOR_SYNC_TIMEOUT = 33;
@@ -77,7 +81,6 @@ const WhiteboardView = () => {
   const broadcastedElementVersions = useRef<Map<string, number>>(new Map());
   const isFollowingRef = useRef(false);
   const store = useAppStore();
-
   const dispatch = useAppDispatch();
   const [createAsset] = useCreateRoomAssetMutation();
   const { t, i18n } = useTranslation();
@@ -89,6 +92,8 @@ const WhiteboardView = () => {
   const { enabled: editRestrictionsEnabled, unrestrictedParticipants } = useAppSelector(
     selectWhiteboardEditRestrictions
   );
+  const { storageStatus, canUpgrade } = useStorageStatus();
+  const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
 
   const excalidrawAPIRef = useRef<ExcalidrawImperativeAPI | null>(null);
 
@@ -101,6 +106,20 @@ const WhiteboardView = () => {
     () => `${isRestrictionsDialogOpen}:${editRestrictionsEnabled}:${[...unrestrictedParticipants].sort().join(',')}`,
     [editRestrictionsEnabled, isRestrictionsDialogOpen, unrestrictedParticipants]
   );
+
+  const renderUploadMenuButton = () => {
+    return (
+      <StorageFullTooltip>
+        <MainMenu.Item
+          icon={<MeetingNotesIcon />}
+          onSelect={uploadSceneAsPdf}
+          disabled={isUploading || storageStatus === 'full'}
+        >
+          {t('whiteboard-create-pdf-button')}
+        </MainMenu.Item>
+      </StorageFullTooltip>
+    );
+  };
 
   const convertSvgToPdfBlob = useCallback(async (svg: ReturnType<typeof exportToSvg>) => {
     await import('svg2pdf.js');
@@ -118,6 +137,7 @@ const WhiteboardView = () => {
     return doc.output('blob');
   }, []);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const uploadSceneAsPdf = useCallback(async () => {
     const excalidrawAPI = excalidrawAPIRef.current;
     if (!excalidrawAPI || isUploading) {
@@ -132,6 +152,10 @@ const WhiteboardView = () => {
 
     try {
       setIsUploading(true);
+      if (isModerator) {
+        showStorageNearLimitNotification({ storageStatus, canUpgrade, accountManagementUrl });
+      }
+
       const svg: ReturnType<typeof exportToSvg> = await exportToSvg({
         elements: excalidrawAPI.getSceneElements(),
         appState: excalidrawAPI.getAppState(),
@@ -152,7 +176,18 @@ const WhiteboardView = () => {
     } finally {
       setIsUploading(false);
     }
-  }, [isUploading, roomId, t, convertSvgToPdfBlob, createAsset, dispatch]);
+  }, [
+    isUploading,
+    roomId,
+    t,
+    isModerator,
+    convertSvgToPdfBlob,
+    createAsset,
+    dispatch,
+    storageStatus,
+    canUpgrade,
+    accountManagementUrl,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -526,11 +561,7 @@ const WhiteboardView = () => {
         }}
       >
         <MainMenu>
-          {isModerator && (
-            <MainMenu.Item icon={<MeetingNotesIcon />} onSelect={uploadSceneAsPdf} disabled={isUploading}>
-              {t('whiteboard-create-pdf-button')}
-            </MainMenu.Item>
-          )}
+          {isModerator && renderUploadMenuButton()}
 
           {canUserEdit && <MainMenu.DefaultItems.ClearCanvas />}
 

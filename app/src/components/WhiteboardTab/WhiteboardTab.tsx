@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, Button, Link as MUILink, LinkProps, Stack, styled, Tooltip } from '@mui/material';
+import { Box, Button, Link as MUILink, LinkProps, Stack, styled } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
@@ -20,6 +20,7 @@ import { useStorageStatus } from '../../hooks/useStorageStatus';
 import { selectIsSpacedeckEnabled, selectAccountManagementUrl } from '../../store/slices/configSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import { selectIsWhiteboardAvailable, selectWhiteboardAssets } from '../../store/slices/whiteboardSlice';
+import StorageFullTooltip from '../StorageFullTooltip';
 
 const Link = styled(MUILink)<LinkProps>(() => ({
   cursor: 'pointer',
@@ -73,43 +74,16 @@ const WhiteboardTab = () => {
         </Button>
       );
     }
-    if (storageStatus === 'full') {
-      return (
-        <Tooltip
-          describeChild
-          title={
-            <Trans
-              i18nKey={
-                canUpgrade
-                  ? 'conference-storage-tooltip-upgradeable-full-storage'
-                  : 'conference-storage-tooltip-full-storage'
-              }
-              components={{
-                accountManagementLink: accountManagementUrl ? (
-                  <MUILink href={accountManagementUrl} target="_blank" />
-                ) : (
-                  <span />
-                ),
-              }}
-            />
-          }
-          slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
-        >
-          <span>
-            <Button onClick={createPdf} color="secondary" disabled fullWidth>
-              {t('whiteboard-create-pdf-button')}
-            </Button>
-          </span>
-        </Tooltip>
-      );
+    if (!isSpacedeckEnabled) {
+      return null;
     }
+
     return (
-      isSpacedeckEnabled &&
-      showWhiteboard && (
-        <Button onClick={createPdf} color="secondary">
+      <StorageFullTooltip>
+        <Button onClick={createPdf} color="secondary" disabled={storageStatus === 'full'} fullWidth>
           {t('whiteboard-create-pdf-button')}
         </Button>
-      )
+      </StorageFullTooltip>
     );
   };
 
