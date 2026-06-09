@@ -143,6 +143,37 @@ const StyledSelect = styled(Select)(({ theme }) => ({
 
 const ButtonIndicator = styled(Indicator)({ position: 'absolute', top: '0.1rem', right: '0.1rem' });
 
+const SORT_OPTIONS: Array<{ value: CinemaViewSortOrder; labelKey: string; subtitleKey: string }> = [
+  {
+    value: CinemaViewSortOrder.ActivityFirst,
+    labelKey: 'layout-selection-grid-activity-first',
+    subtitleKey: 'layout-selection-grid-activity-first-subtitle',
+  },
+  {
+    value: CinemaViewSortOrder.FirstJoined,
+    labelKey: 'layout-selection-grid-first-joined',
+    subtitleKey: 'layout-selection-grid-first-joined-subtitle',
+  },
+  {
+    value: CinemaViewSortOrder.VideoFirst,
+    labelKey: 'layout-selection-grid-camera-first',
+    subtitleKey: 'layout-selection-grid-camera-first-subtitle',
+  },
+  {
+    value: CinemaViewSortOrder.ModeratorsFirst,
+    labelKey: 'layout-selection-grid-moderators-first',
+    subtitleKey: 'layout-selection-grid-moderators-first-subtitle',
+  },
+];
+
+const SORT_OPTION_LABEL_KEYS = SORT_OPTIONS.reduce<Record<CinemaViewSortOrder, string>>(
+  (acc, { value, labelKey }) => {
+    acc[value] = labelKey;
+    return acc;
+  },
+  {} as Record<CinemaViewSortOrder, string>
+);
+
 const getLayoutIcon = (layout: LayoutOptions): JSX.Element | null => {
   switch (layout) {
     case LayoutOptions.Grid:
@@ -359,11 +390,18 @@ const LayoutSelection = () => {
           onChange={(e) => dispatch(updatedCinemaViewSortOrder(e.target.value as CinemaViewSortOrder))}
           labelId="grid-sorting-label"
           sx={{ marginTop: 1 }}
+          renderValue={(value) => t(SORT_OPTION_LABEL_KEYS[value as CinemaViewSortOrder])}
         >
-          <MenuItem value={CinemaViewSortOrder.ActivityFirst}>{t('layout-selection-grid-activity-first')}</MenuItem>
-          <MenuItem value={CinemaViewSortOrder.FirstJoined}>{t('layout-selection-grid-first-joined')}</MenuItem>
-          <MenuItem value={CinemaViewSortOrder.VideoFirst}>{t('layout-selection-grid-camera-first')}</MenuItem>
-          <MenuItem value={CinemaViewSortOrder.ModeratorsFirst}>{t('layout-selection-grid-moderators-first')}</MenuItem>
+          {SORT_OPTIONS.map(({ value, labelKey, subtitleKey }) => (
+            <MenuItem key={value} value={value} sx={{ alignItems: 'flex-start', whiteSpace: 'normal' }}>
+              <Stack>
+                <Typography variant="body2">{t(labelKey)}</Typography>
+                <Typography variant="caption" color={theme.palette.text.disabled} aria-hidden="true">
+                  {t(subtitleKey)}
+                </Typography>
+              </Stack>
+            </MenuItem>
+          ))}
         </StyledSelect>
       </Dialog>
     </ViewPopperContainer>
