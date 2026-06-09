@@ -93,6 +93,7 @@ export const actions = whiteboardSlice.actions;
 
 export const selectWhiteboardUrl = (state: RootState) => state.whiteboard.spacedeck.url;
 export const selectIsWhiteboardAvailable = (state: RootState) => state.whiteboard.isWhiteboardAvailable;
+export const selectWhiteboardScene = (state: RootState) => state.whiteboard.scene;
 export const selectWhiteboardElements = (state: RootState) => state.whiteboard.scene.elements;
 export const selectWhiteboardAssets = (state: RootState) => state.whiteboard.whiteboardAssetList;
 export const selectWhiteboardEditRestrictions = (state: RootState) => state.whiteboard.editRestrictions;
