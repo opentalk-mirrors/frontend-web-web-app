@@ -150,7 +150,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
         }
         return (
           <EventTypography variant="body2" data-testid="user-event-message">
-            <EventNameTypography variant="caption" translate="no">
+            <EventNameTypography variant="caption" translate="no" title={sender?.displayName}>
               {truncate(sender?.displayName, { length: 30 })}
             </EventNameTypography>
             <EventMessageTypography variant="caption">
@@ -164,8 +164,8 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       case 'joined':
         return (
           <EventTypography variant="body2" data-testid="user-event-message">
-            <EventNameTypography variant="caption" translate="no">
-              {sender?.displayName}
+            <EventNameTypography variant="caption" translate="no" title={sender?.displayName}>
+              {truncate(sender?.displayName, { length: 30 })}
             </EventNameTypography>
             <EventMessageTypography variant="caption">
               {t('participant-joined-event', { time: getTimeStringFromTimestamp(message) })}

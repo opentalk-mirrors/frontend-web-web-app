@@ -100,9 +100,10 @@ const WaitingParticipantItem = ({ participant }: ParticipantRowProps) => {
       <ListItemText
         primary={
           <Typography variant="body1" translate="no">
-            {truncate(participant.displayName, { length: 100 })}
+            {truncate(participant.displayName, { length: 30 })}
           </Typography>
         }
+        title={participant.displayName}
         secondary={
           <JoinedText variant="caption">{t('participant-joined-text', { joinedTime: formattedTime })}</JoinedText>
         }

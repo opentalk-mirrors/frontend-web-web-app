@@ -11,6 +11,7 @@ import {
   styled,
 } from '@mui/material';
 import { RemoteParticipant } from 'livekit-client';
+import { truncate } from 'lodash';
 import React from 'react';
 
 import { ParticipantAvatar } from '../../';
@@ -59,7 +60,7 @@ const SelectParticipantsItem = ({ participant, onCheck }: SelectParticipantsItem
       <Grid container direction="row" wrap="nowrap" sx={{ flexGrow: 1 }}>
         <Grid sx={{ flexShrink: 0 }}>
           <ListItemAvatar>
-            <Avatar src={avatarUrl}>{displayName}</Avatar>
+            <Avatar src={avatarUrl}>{truncate(displayName, { length: 2 })}</Avatar>
           </ListItemAvatar>
         </Grid>
         <Grid size="grow">
@@ -69,10 +70,15 @@ const SelectParticipantsItem = ({ participant, onCheck }: SelectParticipantsItem
               <Checkbox
                 checked={participant.selected}
                 id={participant.identity}
+                slotProps={{ input: { 'aria-label': displayName } }}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => onCheck(event.target.checked)}
               />
             }
-            label={<ListItemText translate="no">{displayName}</ListItemText>}
+            label={
+              <ListItemText translate="no" title={displayName}>
+                {truncate(displayName, { length: 20 })}
+              </ListItemText>
+            }
             labelPlacement="start"
           />
         </Grid>

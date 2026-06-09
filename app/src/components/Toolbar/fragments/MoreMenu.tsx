@@ -13,6 +13,7 @@ import {
   Link,
 } from '@mui/material';
 import { BackendModules, CoreFeatures, RecordingFeatures, StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import { truncate } from 'lodash';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -652,7 +653,9 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
             }}
           >
             <Avatar src={avatarUrl}>{displayName}</Avatar>
-            <MenuTitle translate="no">{displayName}</MenuTitle>
+            <MenuTitle translate="no" title={displayName}>
+              {truncate(displayName, { length: 30 })}
+            </MenuTitle>
           </Box>
           <small>{window.config.version?.product || t('dev-version')}</small>
         </MenuTitleContainer>
