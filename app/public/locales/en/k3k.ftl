@@ -769,6 +769,7 @@ global-rename = Rename
 global-disabled = Disabled
 global-next = Next
 global-previous = Previous
+global-edit = Edit
 
 retry-available-in = Retry available in {$seconds}
 

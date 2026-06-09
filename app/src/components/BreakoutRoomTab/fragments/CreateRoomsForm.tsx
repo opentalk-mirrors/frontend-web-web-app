@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { start } from '../../../api/types/outgoing/breakout';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectPeopleTabParticipants } from '../../../store/selectors';
+import { selectBreakoutRoomSelectorParticipants } from '../../../store/selectors';
 import { ParticipantId } from '../../../types';
 import { Minutes, Seconds } from '../../../utils/tsUtils';
 import { DurationRow } from './DurationRow';
@@ -29,7 +29,7 @@ import { sortByDisplayName } from './utils/sortByDisplayName';
 const CreateRoomsForm = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const participants = useAppSelector(selectPeopleTabParticipants);
+  const participants = useAppSelector(selectBreakoutRoomSelectorParticipants);
   const sortedParticipants = useMemo(() => sortByDisplayName(participants), [participants]);
   const [containerReference, setContainerReference] = useState<HTMLElement | null>(null);
   const [editingRoomIndex, setEditingRoomIndex] = useState<number>(-1);
@@ -119,7 +119,6 @@ const CreateRoomsForm = () => {
 
   const handlePopoverCloseEvent = useCallback(() => {
     setOpenPopover(false);
-    // setEditingRoomIndex(-1);
   }, []);
 
   const openEditingPopover = useCallback((roomIndex: number) => {

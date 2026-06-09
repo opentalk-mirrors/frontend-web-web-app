@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, Typography } from '@mui/material';
 import { MouseEvent, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ArrowDownIcon, ArrowRightIcon } from '../../../assets/icons';
 
@@ -15,6 +16,7 @@ type RoomHeaderProps = {
 };
 
 export function RoomHeader(props: RoomHeaderProps) {
+  const { t } = useTranslation();
   const editButtonReference = useRef<HTMLButtonElement>(null);
 
   const handleRoomNameButtonClick = () => {
@@ -46,7 +48,7 @@ export function RoomHeader(props: RoomHeaderProps) {
         onClick={handleEditButtonClick}
         ref={editButtonReference}
       >
-        Edit
+        {t('global-edit')}
       </Button>
     </Box>
   );

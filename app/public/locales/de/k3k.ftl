@@ -767,6 +767,7 @@ global-unknown = Unbekannt
 global-disabled = Deaktivieren
 global-next = Weiter
 global-previous = Zurück
+global-edit = Bearbeiten
 
 retry-available-in = Wiederholung verfügbar in {$seconds}
 
