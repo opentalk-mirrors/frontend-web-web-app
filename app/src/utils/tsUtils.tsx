@@ -14,6 +14,10 @@ export type MilliSeconds = Unit<typeof MilliSecondsSymbol>;
 declare const SecondsSymbol: unique symbol;
 export type Seconds = Unit<typeof SecondsSymbol>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+declare const MinutesSymbol: unique symbol;
+export type Minutes = Unit<typeof MinutesSymbol>;
+
 export const isStringEnum =
   <T extends Record<string, unknown>>(e: T) =>
   (token: T[keyof T] | unknown): token is T[keyof T] =>

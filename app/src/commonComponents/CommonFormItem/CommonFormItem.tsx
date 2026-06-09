@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Stack } from '@mui/material';
 import type { TextFieldProps, CheckboxProps, SwitchProps } from '@mui/material';
+import type { FormikHandlers } from 'formik';
 import React from 'react';
 
 import ErrorFormMessage from '../ErrorFormMessage';
@@ -11,16 +12,8 @@ interface CommonFormItemProps {
   label: string;
   control: React.ReactElement<TextFieldProps | CheckboxProps | SwitchProps>;
   name: string;
-  onChange: {
-    (e: React.ChangeEvent<unknown>): void;
-    <T_1 = string | React.ChangeEvent<unknown>>(
-      field: T_1
-    ): T_1 extends React.ChangeEvent<unknown> ? void : (e: string | React.ChangeEvent<unknown>) => void;
-  };
-  onBlur: {
-    (e: React.FocusEvent<unknown>): void;
-    <T = unknown>(fieldOrEvent: T): T extends string ? (e: unknown) => void : void;
-  };
+  onChange: FormikHandlers['handleChange'];
+  onBlur?: FormikHandlers['handleBlur'];
   onKeyDown?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
   error?: boolean;
   helperText?: string;

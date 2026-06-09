@@ -477,7 +477,7 @@ room-title-info-button-aria-label = Share meeting details
 breakout-room-tab-title = Breakout rooms
 breakout-room-form-field-based-on = By number of
 breakout-room-form-field-rooms = Number of rooms
-breakout-room-form-field-participants-per-room = Participants per room
+breakout-room-form-field-participants-per-room = Min. participants
 breakout-room-form-field-random-distribution = Random distribution
 breakout-room-form-field-include-moderators = Include moderators
 
@@ -492,6 +492,9 @@ breakout-room-tab-by-participants = By No. of Participants
 breakout-room-tab-by-groups = By Groups
 breakout-room-tab-by-moderators = By No. of Moderators
 breakout-room-start-button = Start rooms
+breakout-room-start-button-disabled = Insufficient number of participants present in the conference
+breakout-room-insufficient-number-of-participants-warning = At least {$minimumNumberOfParticipants} participants are required to create breakout rooms in current setup.
+breakout-room-underpopulated-rooms-warning = Some rooms have fewer than the minimum participants required (at least {$minimumNumberOfParticipants} per room).
 
 breakout-room-rooms-created-by-participants = Create {$rooms} Rooms
 breakout-room-assignable-participants-per-rooms = Assign {$participantsPerRoom} participants per room
@@ -766,6 +769,7 @@ global-rename = Rename
 global-disabled = Disabled
 global-next = Next
 global-previous = Previous
+global-edit = Edit
 
 retry-available-in = Retry available in {$seconds}
 

@@ -40,7 +40,7 @@ import {
   Track,
 } from 'livekit-client';
 import { range } from 'lodash';
-import React, { PropsWithChildren } from 'react';
+import React, { createElement, PropsWithChildren } from 'react';
 import { initReactI18next } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
@@ -161,7 +161,14 @@ export const renderWithProviders = <Props,>(
     return component;
   };
 
-  return rtlRender(<WrappedComponent>{component}</WrappedComponent>, options);
+  const output = rtlRender(<WrappedComponent>{component}</WrappedComponent>, options);
+  return {
+    ...output,
+    rerender: (ui: React.ReactNode) =>
+      output.rerender(
+        <WrappedComponent>{React.isValidElement(ui) ? ui : createElement(React.Fragment, null, ui)}</WrappedComponent>
+      ),
+  };
 };
 export const renderHookWithProviders = <Props, Result>(
   render: (initialProps: Props) => Result,

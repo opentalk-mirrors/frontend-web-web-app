@@ -364,3 +364,8 @@ export const selectPeopleTabParticipants = createSelector(
     return sortAndFilterParticipants(allParticipants, sortOption, searchValue);
   }
 );
+
+export const selectBreakoutRoomSelectorParticipants = createSelector(
+  [selectOtherOnlineParticipantsInBreakoutRoom, selectUserAsParticipant],
+  (participants, user) => (user ? [user, ...participants] : participants)
+);
