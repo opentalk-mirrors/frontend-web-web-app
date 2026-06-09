@@ -71,7 +71,7 @@ const ReactionButton = () => {
         id={ToolbarButtonIds.Reaction}
         aria-expanded={popoverOpen && isReactionAllowed}
       >
-        {hasReaction ? <ReactionOnIcon /> : <ReactionOffIcon />}
+        {isReactionAllowed ? <ReactionOnIcon /> : <ReactionOffIcon />}
       </ToolbarButton>
       <ReactionPopover
         anchorEl={anchorEl}
