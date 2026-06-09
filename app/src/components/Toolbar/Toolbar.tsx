@@ -69,14 +69,14 @@ const Toolbar = ({ layout }: { layout?: LayoutTypes }) => {
 
   return (
     <MainContainer aria-label={t('landmark-complementary-toolbar')} className={layout}>
-      <HandraiseButton />
-      <ShareScreenButton />
       <AudioButton
         localAudioTrack={audioTrack}
         onAudioButtonToggle={handleAudioButtonToggle}
         audioEnabled={audioEnabled}
       />
       <VideoButton onVideoButtonToggle={handleVideoButtonToggle} videoEnabled={videoEnabled} />
+      <ShareScreenButton />
+      <HandraiseButton />
       {reactionModuleEnabled && <ReactionButton />}
       <MoreButton />
       <EndCallButton />
