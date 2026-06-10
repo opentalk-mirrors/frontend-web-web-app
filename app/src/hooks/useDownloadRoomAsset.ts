@@ -34,7 +34,9 @@ const downloadRoomAsset = async ({ baseURL, roomId, assetId }: AssetDownloadInfo
 
     const { url } = (await response.json()) as DownloadPathResponse;
     const downloadUrl = new URL(url, downloadUrlEndpoint).toString();
-    window.location.assign(downloadUrl);
+    // Open in a new browsing context so Firefox does not unload the current
+    // document (which would close the conference WebSocket)
+    window.open(downloadUrl, '_blank', 'noopener,noreferrer');
   } catch (e) {
     log.error('Signed URL download failed', e);
     throw e;
