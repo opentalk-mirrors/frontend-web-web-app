@@ -121,9 +121,7 @@ export const selectAllMeetingNotesParticipants = createSelector(
   (participants, user) => {
     if (user) {
       const allMeetingNotesParticipants = participants.filter(
-        (participant) =>
-          participant.participationKind !== ParticipationKind.Guest &&
-          participant.participationKind !== ParticipationKind.CallIn
+        (participant) => participant.participationKind !== ParticipationKind.CallIn
       );
       const newParticipants = allMeetingNotesParticipants.map((participant): MeetingNotesParticipant => {
         const isSelected = participant.meetingNotesAccess === MeetingNotesAccess.Write;

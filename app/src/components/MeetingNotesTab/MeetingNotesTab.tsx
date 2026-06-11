@@ -19,7 +19,7 @@ import {
   Tooltip,
   Link,
 } from '@mui/material';
-import { cloneDeep, isEmpty, some, differenceBy, uniqueId, truncate } from 'lodash';
+import { cloneDeep, isEmpty, some, uniqueId, truncate } from 'lodash';
 import { unionBy, intersectionBy } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -145,37 +145,34 @@ const MeetingNotesTab = () => {
     [mergedSelectedParticipants]
   );
 
+  // Always dispatch grant/revoke for the current selection. The controller is
+  // idempotent for both messages and we cannot rely on `allMeetingNotesParticipants`
+  // as a diff base because the `access_changed` incoming message is currently a no-op
+  // (see app/src/api/handlers/meetingNotes.ts), so the participant slice never reflects
+  // previously dispatched grant/revoke actions and a `differenceBy` would silently
+  // suppress every subsequent update.
   const sendInvitations = useCallback(() => {
-    const participantComparator = (participant: MeetingNotesParticipant) => {
-      return participant.id;
-    };
-    const differentParticipants = meetingNotesUrl
-      ? differenceBy(mergedParticipants, allMeetingNotesParticipants, participantComparator)
-      : mergedParticipants;
-
-    if (differentParticipants.length > 0) {
-      const selectedParticipantIds = differentParticipants
-        .filter((participant) => participant.isSelected)
-        .map((participant) => participant.id);
-      const deselectedParticipantIds = differentParticipants
-        .filter((participant) => !participant.isSelected)
-        .map((participant) => participant.id);
-      if (selectedParticipantIds.length > 0) {
-        dispatch(
-          grantWriteAccess.action({
-            participantIds: selectedParticipantIds,
-          })
-        );
-      }
-      if (deselectedParticipantIds.length > 0) {
-        dispatch(
-          revokeWriteAccess.action({
-            participantIds: deselectedParticipantIds,
-          })
-        );
-      }
+    const selectedParticipantIds = mergedParticipants
+      .filter((participant) => participant.isSelected)
+      .map((participant) => participant.id);
+    const deselectedParticipantIds = mergedParticipants
+      .filter((participant) => !participant.isSelected)
+      .map((participant) => participant.id);
+    if (selectedParticipantIds.length > 0) {
+      dispatch(
+        grantWriteAccess.action({
+          participantIds: selectedParticipantIds,
+        })
+      );
     }
-  }, [mergedParticipants, allMeetingNotesParticipants, dispatch, meetingNotesUrl]);
+    if (deselectedParticipantIds.length > 0) {
+      dispatch(
+        revokeWriteAccess.action({
+          participantIds: deselectedParticipantIds,
+        })
+      );
+    }
+  }, [mergedParticipants, dispatch]);
 
   const closeParticipantsListPanel = useCallback(() => {
     setAnchorEl(null);

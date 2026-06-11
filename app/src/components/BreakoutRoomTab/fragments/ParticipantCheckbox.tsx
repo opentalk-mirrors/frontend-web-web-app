@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Checkbox, FormControlLabel, Typography, useTheme } from '@mui/material';
+import { truncate } from 'lodash';
 import { ChangeEvent } from 'react';
 
 import { ParticipantId } from '../../../types';
@@ -33,11 +34,12 @@ export function ParticipantCheckbox(props: ParticipantCheckboxProps) {
       }
       label={
         <Typography translate="no" width="100%">
-          {props.displayName}
+          {truncate(props.displayName, { length: 30 })}
         </Typography>
       }
       labelPlacement="start"
       sx={{ width: '100%' }}
+      title={props.displayName}
     />
   );
 }

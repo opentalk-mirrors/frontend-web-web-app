@@ -130,6 +130,73 @@ describe('MeetingNotesTab', () => {
     );
   });
 
+  it('dispatches updates when editing an existing meeting notes assignment', async () => {
+    const participants: Participant[] = [
+      toParticipant(mockedParticipant(1), MeetingNotesAccess.None),
+      toParticipant(mockedParticipant(2), MeetingNotesAccess.Write),
+    ];
+    const { store, dispatchSpy } = createMeetingNotesStore({
+      participants,
+      meetingNotesUrl: '/notes',
+      userMeetingNotesAccess: MeetingNotesAccess.Write,
+    });
+    renderWithProviders(<MeetingNotesTab />, { store, provider: { mui: true } });
+
+    dispatchSpy.mockClear();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole('button', { name: /meeting-notes-edit-invite-button/i }));
+
+    const popover = await screen.findByRole('dialog');
+    const firstParticipantCheckbox = within(popover).getByRole('checkbox', { name: participants[0].displayName });
+    const writerCheckbox = within(popover).getByRole('checkbox', { name: participants[1].displayName });
+
+    // Swap the assignment: grant write to participant[0], revoke from participant[1].
+    await user.click(firstParticipantCheckbox);
+    await user.click(writerCheckbox);
+
+    await user.click(within(popover).getByRole('button', { name: 'poll-participant-list-button-select' }));
+
+    await user.click(screen.getByRole('button', { name: /meeting-notes-update-invite-send-button/i }));
+
+    // Always dispatches the full current selection, regardless of which entries actually
+    // changed (`access_changed` is currently a no-op handler so the slice cannot be used as
+    // a reliable diff base).
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      grantWriteAccess.action({ participantIds: [participants[0].id, userParticipant.id] })
+    );
+    expect(dispatchSpy).toHaveBeenCalledWith(revokeWriteAccess.action({ participantIds: [participants[1].id] }));
+  });
+
+  it('redispatches the current selection even when nothing was changed in the popover', async () => {
+    const participants: Participant[] = [
+      toParticipant(mockedParticipant(1), MeetingNotesAccess.None),
+      toParticipant(mockedParticipant(2), MeetingNotesAccess.Write),
+    ];
+    const { store, dispatchSpy } = createMeetingNotesStore({
+      participants,
+      meetingNotesUrl: '/notes',
+      userMeetingNotesAccess: MeetingNotesAccess.Write,
+    });
+    renderWithProviders(<MeetingNotesTab />, { store, provider: { mui: true } });
+
+    dispatchSpy.mockClear();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole('button', { name: /meeting-notes-edit-invite-button/i }));
+
+    const popover = await screen.findByRole('dialog');
+
+    await user.click(within(popover).getByRole('button', { name: 'poll-participant-list-button-select' }));
+
+    await user.click(screen.getByRole('button', { name: /meeting-notes-update-invite-send-button/i }));
+
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      grantWriteAccess.action({ participantIds: [participants[1].id, userParticipant.id] })
+    );
+    expect(dispatchSpy).toHaveBeenCalledWith(revokeWriteAccess.action({ participantIds: [participants[0].id] }));
+  });
+
   it('filters the selectable participants by search input', async () => {
     const participants: Participant[] = [
       toParticipant(mockedParticipant(3), MeetingNotesAccess.None),
