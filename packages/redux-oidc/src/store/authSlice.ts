@@ -71,16 +71,19 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(codeCallback.pending, (state) => {
+        state.state = SessionStatus.PENDING;
         state.error = undefined;
       })
       .addCase(codeCallback.fulfilled, (state) => {
         state.state = SessionStatus.AUTHORIZED;
         state.error = undefined;
         state.loginTimestamp = new Date().toISOString();
+        sessionStorage.removeItem('oidc_state_parameter');
       })
       .addCase(codeCallback.rejected, (state, { payload }) => {
         state.state = SessionStatus.ANONYMOUS;
         state.error = payload as SerializedError;
+        sessionStorage.removeItem('oidc_state_parameter');
       })
       .addCase(getNewToken.pending, (state) => {
         state.refreshTokenLoading = true;

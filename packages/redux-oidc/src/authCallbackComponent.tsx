@@ -58,8 +58,6 @@ const AuthCallbackComponent = ({ children, redirectUrl = '/' }: AuthCallbackCont
         code,
       })
     );
-
-    sessionStorage.removeItem('oidc_state_parameter');
   }, [auth, isAuthPending, isAuthenticated, redirectUrl, dispatch, navigate, searchParams]);
 
   return <>{children}</>;
