@@ -41,7 +41,7 @@ const HandraiseButton = () => {
       disabled={!hasHandraisesEnabled || isRoomDeleted}
       id={ToolbarButtonIds.Handraise}
     >
-      {hasHandUp ? <RaiseHandOnIcon /> : <RaiseHandOffIcon />}
+      {hasHandraisesEnabled ? <RaiseHandOnIcon /> : <RaiseHandOffIcon />}
     </ToolbarButton>
   );
 };

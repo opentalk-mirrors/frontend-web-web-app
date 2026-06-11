@@ -38,6 +38,7 @@ import { LegalVoteJoinSuccess, VoteSummary } from '../legalVote';
 import { InitialDisplayNameChangeRestrictions } from '../moderation';
 import { Participant } from '../participant';
 import { InitialPoll } from '../poll';
+import { ReactionJoinSuccess } from '../reaction';
 import { TimerState } from '../timer';
 import { WhiteboardState } from '../whiteboard';
 
@@ -63,6 +64,7 @@ export interface JoinSuccessInternalState {
   serverTimeOffset: number;
   tariff: SignalingTariff;
   timer?: TimerState;
+  reaction?: ReactionJoinSuccess;
   sharedFolder?: SharedFolderData;
   eventInfo?: EventInfo;
   meetingDetails?: MeetingDetails;

@@ -35,7 +35,8 @@ export type Namespaces =
   | 'livekit'
   | 'subroom_audio'
   | 'training_participation_report'
-  | 'raise_hands';
+  | 'raise_hands'
+  | 'reaction';
 
 export enum Tag {
   Room = 'Room',

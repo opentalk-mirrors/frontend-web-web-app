@@ -16,6 +16,7 @@ import MeetingReportMessage from './meetingReport';
 import ModerationMessage from './moderation';
 import PollMessage from './poll';
 import RaiseHandsMessage from './raiseHands';
+import ReactionMessage from './reaction';
 import SharedFolderMessage from './sharedFolder';
 import StreamingMessage from './streaming';
 import SubroomAudioMessage from './subroomAudio';
@@ -42,6 +43,7 @@ export * as trainingParticipationReport from './trainingParticipationReport';
 export * as core from './core';
 export * as e2ee from './e2ee';
 export * as raiseHands from './raiseHands';
+export * as reaction from './reaction';
 
 export type Message =
   | AutomodMessage
@@ -62,6 +64,7 @@ export type Message =
   | TrainingParticipationReport
   | RoomserverCoreMessage
   | RaiseHandsMessage
+  | ReactionMessage
   | E2eeMessage
   | RoomServerErrorMessage
   | AssetStorage;

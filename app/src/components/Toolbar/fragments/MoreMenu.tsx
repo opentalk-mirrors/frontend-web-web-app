@@ -29,6 +29,7 @@ import {
   mute,
 } from '../../../api/types/outgoing/moderation';
 import { disableRaiseHands, enableRaiseHands } from '../../../api/types/outgoing/raiseHands';
+import { disableReactionRestrictions, enableReactionRestrictions } from '../../../api/types/outgoing/reaction';
 import {
   sendStartRecordingSignal,
   sendStartStreamSignal,
@@ -52,6 +53,8 @@ import {
   TimerIcon,
   TrashIcon,
 } from '../../../assets/icons';
+import ReactionOffIcon from '../../../assets/icons/ReactionOffIcon';
+import ReactionOnIcon from '../../../assets/icons/ReactionOnIcon';
 import ShareScreenOnIcon from '../../../assets/icons/ShareScreenOnIcon';
 import {
   ParticipantAvatar,
@@ -77,6 +80,7 @@ import {
   selectTrainingParticipationReportEnabled,
 } from '../../../store/slices/moderationSlice';
 import { selectAllModeratorParticipants } from '../../../store/slices/participantsSlice';
+import { selectReactionRestrictionsEnabled } from '../../../store/slices/reactionSlice';
 import { selectE2EEncryption, selectIsRoomOwner, selectWaitingRoomState } from '../../../store/slices/roomSlice';
 import {
   selectActiveStreamIds,
@@ -156,7 +160,8 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const configFeatures = useAppSelector(selectConfigFeatures);
   const userMenuItems: Array<MenuEntry> = [];
   const fullScreenElement = useAppSelector(selectFullscreenElement);
-
+  const isReactionModuleEnabled = useAppSelector(selectIsModuleEnabled(BackendModules.Reaction));
+  const reactionRestrictionsEnabled = useAppSelector(selectReactionRestrictionsEnabled);
   const isTrainingParticipationReportModuleOn = useAppSelector(
     selectIsModuleEnabled(BackendModules.TrainingParticipationReport)
   );
@@ -210,6 +215,26 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           dispatch(enableRaiseHands.action());
         },
         icon: <RaiseHandOnIcon />,
+      };
+
+  const toggleReactionRestrictions = reactionRestrictionsEnabled
+    ? {
+        label: 'more-menu-enable-reaction',
+        action: () => {
+          onClose();
+          // Disable restrictions => enable the feature
+          dispatch(disableReactionRestrictions.action());
+        },
+        icon: <ReactionOnIcon />,
+      }
+    : {
+        label: 'more-menu-disable-reaction',
+        action: () => {
+          onClose();
+          // Enabling restrictions => disable the feature
+          dispatch(enableReactionRestrictions.action({ unrestrictedParticipants: [] }));
+        },
+        icon: <ReactionOffIcon />,
       };
 
   const toggleMicrophones = hasMicrophonesEnabled
@@ -387,6 +412,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   moderatorMenuItems.push(toggleSelfRename);
   moderatorMenuItems.push(toggleChatItem);
   moderatorMenuItems.push(deleteGlobalChatItem);
+
+  if (isReactionModuleEnabled) {
+    moderatorMenuItems.push(toggleReactionRestrictions);
+  }
 
   if (isMeetingReportAvailable) {
     moderatorMenuItems.push(exportAttendanceReportItem);
