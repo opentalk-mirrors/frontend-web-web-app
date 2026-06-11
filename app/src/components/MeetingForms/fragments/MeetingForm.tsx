@@ -83,16 +83,6 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
     formik.handleSubmit();
   };
 
-  const handleWaitingRoomChange = (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
-    formik.setFieldValue('waitingRoom', checked);
-    if (checked && formik.values.guestAccess !== GuestAccess.Disabled) {
-      formik.setFieldValue('guestAccess', GuestAccess.WaitingRoom);
-    }
-    if (!checked && formik.values.guestAccess === GuestAccess.WaitingRoom) {
-      formik.setFieldValue('guestAccess', GuestAccess.DirectAccess);
-    }
-  };
-
   const handleE2EEChange = (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
     formik.setFieldValue('e2eEncryption', checked);
     if (checked) {
@@ -178,14 +168,6 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
             onRecurrencePatternChange={setMemoizedRecurrencePattern}
           />
 
-          <MeetingFormSwitch
-            checked={formik.values.waitingRoom}
-            switchProps={{
-              ...formikSwitchProps('waitingRoom', formik),
-              onChange: handleWaitingRoomChange,
-            }}
-            switchValueLabel={t('dashboard-meeting-waiting-room-switch')}
-          />
           {isSharedFolderEnabled && (
             <MeetingFormSwitch
               checked={formik.values.sharedFolder}
@@ -216,7 +198,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
 
           {isStreamingEnabled && !formik.values.e2eEncryption && <StreamingOptions formik={formik} />}
 
-          {!formik.values.e2eEncryption && <GuestAccessSelect formik={formik} />}
+          <GuestAccessSelect formik={formik} guestAccessAllowed={!formik.values.e2eEncryption} />
         </Stack>
         <ActionButtons
           isExistingEvent={Boolean(existingEvent)}

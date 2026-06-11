@@ -1367,7 +1367,8 @@ rename-other-feedback-notification = Du hast den Namen von '{$oldName}' in '{$ne
 rename-general-notification = {$actorName} hat den Namen von '{$oldName}' in '{$newName}' geändert.
 
 guest-access-switch-label = Gastzugang
-guest-access-select-waiting-room-option = Warteraum
-guest-access-select-direct-access-option = Direkter Zugang
+dashboard-meeting-waiting-room-option-disabled = Aus
+dashboard-meeting-waiting-room-option-all-participants = Alle
+dashboard-meeting-waiting-room-option-guests-only = Nur Gäste
 
 failed-playback-audio-warning = Audio ist derzeit durch Ihre Browser-Einstellungen eingeschränkt. Bitte heben Sie die Stummschaltung auf, um den Ton zu aktivieren und Ihre Sitzung zu beginnen. Falls Sie weiterhin nichts hören, empfehlen wir Ihnen, Ihre Browser-Erweiterungen auf etwaige Wiedergabesperren zu überprüfen.

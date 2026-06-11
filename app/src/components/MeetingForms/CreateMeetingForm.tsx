@@ -44,11 +44,7 @@ const CreateMeetingForm = () => {
     }
   };
 
-  return (
-    <>
-      <MeetingForm onSubmit={handleCreateEvent} eventIsLoading={createEventIsLoading} />
-    </>
-  );
+  return <MeetingForm onSubmit={handleCreateEvent} eventIsLoading={createEventIsLoading} />;
 };
 
 export default CreateMeetingForm;
