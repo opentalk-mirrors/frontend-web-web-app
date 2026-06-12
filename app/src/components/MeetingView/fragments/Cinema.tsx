@@ -11,6 +11,7 @@ import { selectIsSpacedeckEnabled } from '../../../store/slices/configSlice';
 import { fullscreenActions, selectFullscreenActive } from '../../../store/slices/fullscreen/slice';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { selectCinemaLayout } from '../../../store/slices/uiSlice';
+import FloatingReactionsOverlay from '../../FloatingReactions/FloatingReactionsOverlay';
 import FullscreenView from '../../FullscreenView';
 import GridView from '../../GridView';
 import MeetingNotesView from '../../MeetingNotesView';
@@ -66,6 +67,7 @@ const Cinema = () => {
       <VisuallyHiddenTitle component="h2" label="videoroom-hidden-heading" />
       {isLivekitUnavailable && <MediaReconnectionDialog />}
       {renderView()}
+      <FloatingReactionsOverlay />
     </Container>
   );
 };
