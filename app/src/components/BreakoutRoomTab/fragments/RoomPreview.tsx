@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Collapse, List, ListItem } from '@mui/material';
+import { truncate } from 'lodash';
 
 import { Participant } from '../../../types';
 import { RoomHeader } from './RoomHeader';
@@ -28,7 +29,9 @@ export function RoomPreview(props: RoomPreviewProps) {
       <Collapse role="region" in={props.expanded}>
         <List>
           {props.participants.map(({ id, displayName }) => (
-            <ListItem key={id}>{displayName}</ListItem>
+            <ListItem title={displayName} key={id}>
+              {truncate(displayName, { length: 30 })}
+            </ListItem>
           ))}
         </List>
       </Collapse>
