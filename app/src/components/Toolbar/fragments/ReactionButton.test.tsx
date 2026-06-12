@@ -1,21 +1,31 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { fireEvent, screen } from '@testing-library/react';
 
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import ReactionButton from './ReactionButton';
 
+const reactionModuleEnabled = { config: { enabledModules: { [BackendModules.Reaction]: [] } } };
+
 describe('<ReactionButton />', () => {
+  it('should not render anything when the reaction module is disabled', () => {
+    const { store } = configureStore({ initialState: { config: { enabledModules: {} } } });
+    renderWithProviders(<ReactionButton />, { store, provider: { mui: true } });
+
+    expect(screen.queryByTestId('toolbarReactionButton')).not.toBeInTheDocument();
+  });
+
   it('should render ReactionButton component', () => {
-    const { store } = configureStore();
+    const { store } = configureStore({ initialState: { ...reactionModuleEnabled } });
     renderWithProviders(<ReactionButton />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('toolbarReactionButton')).toBeInTheDocument();
   });
 
   it('should open the reaction popover on click', () => {
-    const { store } = configureStore();
+    const { store } = configureStore({ initialState: { ...reactionModuleEnabled } });
     renderWithProviders(<ReactionButton />, { store, provider: { mui: true } });
 
     const button = screen.getByTestId('toolbarReactionButton');
@@ -26,7 +36,7 @@ describe('<ReactionButton />', () => {
   });
 
   it('should close the popover on second click', () => {
-    const { store } = configureStore();
+    const { store } = configureStore({ initialState: { ...reactionModuleEnabled } });
     renderWithProviders(<ReactionButton />, { store, provider: { mui: true } });
 
     const button = screen.getByTestId('toolbarReactionButton');
@@ -37,7 +47,7 @@ describe('<ReactionButton />', () => {
   });
 
   it('should dispatch reactCommand when selecting an emoji', () => {
-    const { store, dispatchSpy } = configureStore();
+    const { store, dispatchSpy } = configureStore({ initialState: { ...reactionModuleEnabled } });
     renderWithProviders(<ReactionButton />, { store, provider: { mui: true } });
 
     const button = screen.getByTestId('toolbarReactionButton');
@@ -52,7 +62,7 @@ describe('<ReactionButton />', () => {
   });
 
   it('should close the popover after selecting an emoji', () => {
-    const { store } = configureStore();
+    const { store } = configureStore({ initialState: { ...reactionModuleEnabled } });
     renderWithProviders(<ReactionButton />, { store, provider: { mui: true } });
 
     const button = screen.getByTestId('toolbarReactionButton');
@@ -65,7 +75,7 @@ describe('<ReactionButton />', () => {
   });
 
   it('should have aria-expanded true when popover is open', () => {
-    const { store } = configureStore();
+    const { store } = configureStore({ initialState: { ...reactionModuleEnabled } });
     renderWithProviders(<ReactionButton />, { store, provider: { mui: true } });
 
     const button = screen.getByTestId('toolbarReactionButton');
@@ -79,6 +89,7 @@ describe('<ReactionButton />', () => {
   it('should be disabled when reaction is not allowed', () => {
     const { store } = configureStore({
       initialState: {
+        ...reactionModuleEnabled,
         reaction: {
           restrictionsState: { type: 'enabled', unrestrictedParticipants: [] },
           activeReactions: {},

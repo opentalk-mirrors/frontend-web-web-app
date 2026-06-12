@@ -58,6 +58,11 @@ vi.mock('./fragments/HandraiseButton', () => ({
   default: () => <div data-testid="hand-raise-button"></div>,
 }));
 
+vi.mock('./fragments/ReactionButton', () => ({
+  __esModule: true,
+  default: () => <div data-testid="reaction-button"></div>,
+}));
+
 describe('Toolbar', () => {
   it('renders buttons', () => {
     const { store } = configureStore();
@@ -67,6 +72,7 @@ describe('Toolbar', () => {
     expect(container).toBeInTheDocument();
 
     expect(within(container).getByTestId('hand-raise-button')).toBeInTheDocument();
+    expect(within(container).getByTestId('reaction-button')).toBeInTheDocument();
     expect(within(container).getByTestId('share-screen-button')).toBeInTheDocument();
     expect(within(container).getByTestId('audio-button')).toBeInTheDocument();
     expect(within(container).getByTestId('video-button')).toBeInTheDocument();
