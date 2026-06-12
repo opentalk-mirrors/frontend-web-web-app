@@ -22,6 +22,7 @@ const ReactionContainer = styled('div', {
   justifyContent: 'center',
   alignItems: 'center',
   display: 'flex',
+  userSelect: 'none',
   fontSize: 'clamp(0.875rem, 5cqi, 1.75rem)',
   transform: `scale(${display ? 1 : 0})`,
   transition: `transform 300ms ${display ? 'ease-out' : 'ease-in'}`,

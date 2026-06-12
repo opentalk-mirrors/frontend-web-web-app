@@ -42,6 +42,7 @@ const Container = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
   gap: theme.spacing(0.25),
   transform: 'translateX(-50%)',
+  userSelect: 'none',
   animation: `${floatAndFade} ${FLOATING_REACTION_DURATION}ms linear forwards`,
   willChange: 'transform, opacity',
 }));
