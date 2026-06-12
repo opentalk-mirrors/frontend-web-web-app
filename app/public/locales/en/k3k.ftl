@@ -1196,6 +1196,8 @@ hotkey-microphone-toggle = Microphone on / off
 hotkey-video-toggle = Video on / off
 hotkey-fullscreen-toggle = Fullscreen on / off
 hotkey-whisper-to-whisper-group = Whisper on / off (when active)
+hotkey-raise-hand-toggle = Raise hand on / off
+hotkey-screen-share-toggle = Screen share on / off
 
 meeting-required-start-date = Start date is required
 meeting-required-end-date = End date is required
