@@ -131,6 +131,12 @@ export enum KickScope {
   UsersAndGuests = 'users_and_guests',
 }
 
+export enum WaitingRoom {
+  Disabled = 'disabled',
+  ForGuests = 'for_guests',
+  ForEveryone = 'for_everyone',
+}
+
 export enum RoomKind {
   Main = 'main',
   Breakout = 'breakout',

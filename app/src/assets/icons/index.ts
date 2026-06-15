@@ -59,6 +59,7 @@ import LiveIcon from './LiveIcon';
 import LockedIcon from './LockedIcon';
 import LogoIcon from './LogoIcon';
 import MeetingNotesIcon from './MeetingNotesIcon';
+import MeetingRoomIcon from './MeetingRoomIcon';
 import MeetingsIcon from './MeetingsIcon';
 import MenubookIcon from './MenubookIcon';
 import MicOffIcon from './MicOffIcon';
@@ -68,11 +69,14 @@ import MoreIcon from './MoreIcon';
 import MuteAllIcon from './MuteAllIcon';
 import MyAccountIcon from './MyAccountIcon';
 import NewMessageIcon from './NewMessageIcon';
+import NoMeetingRoomIcon from './NoMeetingRoomIcon';
 import NoMessagesIcon from './NoMessagesIcon';
 import NoOfParticipantsIcon from './NoOfParticipantsIcon';
 import NoOfRoomsIcon from './NoOfRoomsIcon';
 import NoPollsIcon from './NoPollsIcon';
 import NoVotesIcon from './NoVotesIcon';
+import PersonIcon from './PersonIcon';
+import PersonOffIcon from './PersonOffIcon';
 import PhoneIcon from './PhoneIcon';
 import PictureIcon from './PictureIcon';
 import PinIcon from './PinIcon';
@@ -167,6 +171,7 @@ export {
   LockedIcon,
   LogoIcon,
   MeetingNotesIcon,
+  MeetingRoomIcon,
   MeetingsIcon,
   MenubookIcon,
   MicOffIcon,
@@ -176,6 +181,7 @@ export {
   MuteAllIcon,
   MyAccountIcon,
   NewMessageIcon,
+  NoMeetingRoomIcon,
   NoMessagesIcon,
   NoOfParticipantsIcon,
   NoOfRoomsIcon,
@@ -185,6 +191,8 @@ export {
   PictureIcon,
   PinIcon,
   PollIcon,
+  PersonIcon,
+  PersonOffIcon,
   RaiseHandOffIcon,
   RaiseHandOnIcon,
   RecordingsIcon,

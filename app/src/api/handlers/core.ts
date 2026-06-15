@@ -39,6 +39,7 @@ import {
   RoomKind,
   RoomserverParticipant,
   Timestamp,
+  WaitingRoom,
   WaitingState,
 } from '../../types';
 import { core } from '../types/incoming';
@@ -158,7 +159,11 @@ export const handleRoomServerCoreMessage = async (
         return mapRoomserverParticipantToUi(state, participant, WaitingState.Joined);
       });
 
-      if (moduleData.moderation?.waitingRoomEnabled && moduleData.moderation.waitingRoomParticipants?.length > 0) {
+      if (
+        moduleData.moderation?.waitingRoom &&
+        moduleData.moderation.waitingRoom !== WaitingRoom.Disabled &&
+        moduleData.moderation.waitingRoomParticipants?.length > 0
+      ) {
         const waitingParticipants: Participant[] = moduleData.moderation.waitingRoomParticipants.map(
           (waitingParticipant) => {
             // TODO - still needed?

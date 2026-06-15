@@ -4,7 +4,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { enableWaitingRoom, kickParticipant } from '../../../api/types/outgoing/moderation';
+import { kickParticipant } from '../../../api/types/outgoing/moderation';
 import { notifications } from '../../../commonComponents';
 import { renderWithProviders, mockedParticipant, configureStore } from '../../../utils/testUtils';
 import ParticipantRemovalDialog from './ParticipantRemovalDialog';
@@ -57,7 +57,7 @@ describe('ParticipantRemovalDialog', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('dispatches kick and enableWaitingRoom, shows notification, and closes on confirm', async () => {
+  it('dispatches kick, shows notification, and closes on confirm', async () => {
     const { store, dispatchSpy } = configureStore();
     const spyNotificationInfo = vi.spyOn(notifications, 'info').mockImplementation(() => {});
     renderWithProviders(<ParticipantRemovalDialog open={true} onClose={onClose} participant={participant} />, {
@@ -65,9 +65,8 @@ describe('ParticipantRemovalDialog', () => {
       provider: { mui: true, snackbar: true },
     });
     await userEvent.click(screen.getByRole('button', { name: 'participant-remove-dialog-confirm' }));
-    // Check that dispatch was called for kick and enableWaitingRoom
+    // Server-side raises the waiting room state implicitly when kicking.
     expect(dispatchSpy.mock.calls).toContainEqual([kickParticipant.action({ target: participant.id })]);
-    expect(dispatchSpy.mock.calls).toContainEqual([enableWaitingRoom.action()]);
     expect(spyNotificationInfo).toHaveBeenCalled();
     expect(onClose).toHaveBeenCalled();
   });
