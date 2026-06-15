@@ -46,6 +46,7 @@ const EmojiRow = styled('div')(({ theme }) => ({
 const EmojiButton = styled('button')(({ theme }) => ({
   all: 'unset',
   cursor: 'pointer',
+  userSelect: 'none',
   fontSize: '1.5rem',
   lineHeight: 1,
   padding: theme.spacing(0.5),

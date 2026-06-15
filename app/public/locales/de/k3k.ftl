@@ -314,6 +314,7 @@ chat-enabled-message = Der Chat wurde durch den Moderator aktiviert
 chat-disabled-message = Der Chat wurde durch den Moderator deaktiviert
 reaction-enabled-message = Reaktionen wurden vom Moderator aktiviert
 reaction-disabled-message = Reaktionen wurden vom Moderator deaktiviert
+reaction-floating-self-label = Ich
 chat-disabled-tooltip = Der Chat wurde durch den Moderator deaktiviert
 more-menu-start-streaming = Livestream starten
 more-menu-stop-streaming = Livestream beenden
