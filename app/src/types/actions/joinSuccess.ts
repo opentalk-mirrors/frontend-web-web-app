@@ -119,6 +119,7 @@ export interface ModuleData {
   automod?: InitialAutomod;
   sharedFolder?: SharedFolderData;
   trainingParticipationReport?: TrainingParticipationReport;
+  reaction?: ReactionJoinSuccess;
 }
 
 export interface TrainingParticipationReport {

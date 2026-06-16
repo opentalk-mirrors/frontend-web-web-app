@@ -221,6 +221,7 @@ export const handleRoomServerCoreMessage = async (
           serverTimeOffset,
           tariff: data.tariff,
           timer: moduleData.timer,
+          reaction: moduleData.reaction,
           participantsReady,
           sharedFolder: moduleData.sharedFolder,
           eventInfo: data.eventInfo,
