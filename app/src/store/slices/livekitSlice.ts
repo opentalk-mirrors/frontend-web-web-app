@@ -108,6 +108,7 @@ export type LivekitState = {
   mediaSettings: MediaSettings;
   lobby: Lobby;
   isSwitchingRooms: boolean;
+  mediaSettingsBeforeRoomSwitch: Pick<MediaSettings, 'cameraEnabled' | 'microphoneEnabled'> | null;
   reconnectLoop: {
     active: boolean;
     attempt: number;
@@ -140,6 +141,7 @@ export const initialState: LivekitState = {
     videoTrackPublication: undefined,
   },
   isSwitchingRooms: false,
+  mediaSettingsBeforeRoomSwitch: null,
   reconnectLoop: { active: false, attempt: 0, timerId: null, nextDelayMs: null },
 };
 
@@ -239,6 +241,9 @@ export const livekitSlice = createSlice({
       state.mediaSettings.cameraEnabled = false;
       state.mediaSettings.microphoneEnabled = false;
       state.mediaSettings.screenShareEnabled = false;
+    },
+    clearMediaSettingsBeforeRoomSwitch: (state) => {
+      state.mediaSettingsBeforeRoomSwitch = null;
     },
     setMediaSettingsAudioEnabled: (state, { payload }: PayloadAction<boolean>) => {
       state.mediaSettings.microphoneEnabled = payload;
@@ -351,6 +356,10 @@ export const livekitSlice = createSlice({
     });
     builder.addCase(switchRoom.action, (state) => {
       state.isSwitchingRooms = true;
+      state.mediaSettingsBeforeRoomSwitch = {
+        cameraEnabled: state.mediaSettings.cameraEnabled,
+        microphoneEnabled: state.mediaSettings.microphoneEnabled,
+      };
     });
   },
 });
@@ -368,6 +377,7 @@ export const {
   abortReconnectLoop,
   finishReconnectLoop,
   cleanMediaSettingsState,
+  clearMediaSettingsBeforeRoomSwitch,
   setMediaSettingsAudioEnabled,
   setMediaSettingVideoEnabled,
   setMediaSettingScreenShareEnabled,
@@ -850,14 +860,22 @@ const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootSt
   const isLobbyCameraEnabled = selectLobbyVideoEnabled(state);
   const isLobbyMicrophoneEnabled = selectLobbyAudioEnabled(state);
   const isMicrophoneDisabledForRoomByModerator = selectShouldForceMuted(state) ?? true;
+  // On a room switch (e.g. breakout rooms) there are no lobby tracks, so fall
+  // back to the media intent captured before the switch started.
+  const mediaBeforeSwitch = state.livekit.mediaSettingsBeforeRoomSwitch;
+  const shouldEnableCamera = isLobbyCameraEnabled || Boolean(mediaBeforeSwitch?.cameraEnabled);
+  const shouldEnableMicrophone = isLobbyMicrophoneEnabled || Boolean(mediaBeforeSwitch?.microphoneEnabled);
 
-  if (isLobbyCameraEnabled) {
-    dispatch(changeMedia({ kind: 'videoinput', enabled: isLobbyCameraEnabled }));
+  if (shouldEnableCamera) {
+    dispatch(changeMedia({ kind: 'videoinput', enabled: true }));
   }
-  if (!isMicrophoneDisabledForRoomByModerator && isLobbyMicrophoneEnabled) {
-    dispatch(changeMedia({ kind: 'audioinput', enabled: isLobbyMicrophoneEnabled }));
+  if (!isMicrophoneDisabledForRoomByModerator && shouldEnableMicrophone) {
+    dispatch(changeMedia({ kind: 'audioinput', enabled: true }));
   }
   dispatch(cleanLocalTracks());
+  if (mediaBeforeSwitch) {
+    dispatch(clearMediaSettingsBeforeRoomSwitch());
+  }
 };
 
 const handleClientOrUserDisconnect = (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
