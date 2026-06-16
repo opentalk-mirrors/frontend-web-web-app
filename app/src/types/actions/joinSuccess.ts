@@ -47,24 +47,26 @@ export interface JoinSuccessInternalState {
   role: Role;
   avatarUrl?: string;
   chat: InitialChat;
-  automod?: InitialAutomod;
-  breakout?: InitialBreakout;
-  polls?: InitialPoll;
-  votes?: VoteSummary[];
+  automod: InitialAutomod | undefined;
+  breakout: InitialBreakout | undefined;
+  polls: InitialPoll | undefined;
+  votes: VoteSummary[] | undefined;
   participants: Participant[];
-  moderation?: {
-    raiseHandsEnabled: boolean;
-    waitingRoom: WaitingRoom;
-    waitingRoomParticipants: WaitingRoomParticipant[];
-    displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
-  };
-  forceMute?: ForceMute;
-  recording?: RecordingState;
+  moderation:
+    | {
+        raiseHandsEnabled: boolean;
+        waitingRoom: WaitingRoom;
+        waitingRoomParticipants: WaitingRoomParticipant[];
+        displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
+      }
+    | undefined;
+  forceMute: ForceMute | undefined;
+  recording: RecordingState | undefined;
   serverTimeOffset: number;
   tariff: SignalingTariff;
-  timer?: TimerState;
-  reaction?: ReactionJoinSuccess;
-  sharedFolder?: SharedFolderData;
+  timer: TimerState | undefined;
+  reaction: ReactionJoinSuccess | undefined;
+  sharedFolder: SharedFolderData | undefined;
   eventInfo?: EventInfo;
   meetingDetails?: MeetingDetails;
   roomInfo?: RoomInfo;
@@ -75,7 +77,7 @@ export interface JoinSuccessInternalState {
     token: string;
     publicUrl: string;
   };
-  trainingParticipationReport?: ParticipationLogging;
+  trainingParticipationReport: ParticipationLogging | undefined;
   enabledModules: EnabledModules;
 }
 
