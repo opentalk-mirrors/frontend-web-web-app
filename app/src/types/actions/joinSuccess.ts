@@ -22,11 +22,9 @@ import { InitialAutomod } from '../automod';
 import { InitialBreakout, RoomKindBreakout, RoomKindMain } from '../breakout';
 import { InitialChat } from '../chat';
 import type {
-  BackendParticipant,
   ForceMute,
   ForceMuteType,
   ParticipantId,
-  ParticipantMediaState,
   Role,
   Timestamp,
   ParticipationKind,
@@ -79,44 +77,6 @@ export interface JoinSuccessInternalState {
   };
   trainingParticipationReport?: ParticipationLogging;
   enabledModules: EnabledModules;
-}
-
-export interface JoinSuccessIncoming {
-  message: 'join_success';
-  id: ParticipantId;
-  role: Role;
-  avatarUrl?: string;
-  assetStorage?: {
-    usedStorage: number;
-  };
-  participants: Array<BackendParticipant>;
-  chat: InitialChat;
-  automod?: InitialAutomod;
-  breakout?: InitialBreakout;
-  polls: InitialPoll;
-  legalVote: LegalVoteJoinSuccess;
-  whiteboard?: WhiteboardState;
-  moderation?: {
-    raiseHandsEnabled: boolean;
-    waitingRoomParticipants: WaitingRoomParticipant[];
-    waitingRoom: WaitingRoom;
-  };
-  media?: ParticipantMediaState;
-  recording?: RecordingState;
-  timer?: TimerState;
-  tariff: SignalingTariff;
-  closesAt: Timestamp;
-  sharedFolder: SharedFolderData;
-  eventInfo?: EventInfo;
-  roomInfo?: RoomInfo;
-  isRoomOwner: boolean;
-  livekit: {
-    room: string;
-    token: string;
-    publicUrl: string;
-    microphoneRestrictionState?: ForceMute;
-  };
-  trainingParticipationReport?: ParticipationLogging;
 }
 
 export interface JoinSuccessRoomserver {
@@ -223,8 +183,6 @@ export interface TimerPeerState {
 export interface RaiseHandsPeerState {
   raisedAt: Timestamp;
 }
-
-export type JsonValue = number | string | boolean | JsonValue[] | { [key in string]?: JsonValue } | null;
 
 export interface Livekit {
   microphoneRestrictionState: MicrophoneRestrictionState;
