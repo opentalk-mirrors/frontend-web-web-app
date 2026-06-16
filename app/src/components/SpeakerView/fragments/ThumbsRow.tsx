@@ -7,6 +7,7 @@ import { Participant } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
+import { useCinemaViewParticipantsOrdering } from '../../../hooks/useCinemaViewParticipantsOrdering';
 import { ConnectionIdentifier } from '../../../types';
 import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import IconSlideButton from './IconSlideButton';
@@ -28,6 +29,7 @@ export interface ThumbsProps {
 
 const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   const { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId } = useCinemaViewParticipants();
+  const { orderedParticipants } = useCinemaViewParticipantsOrdering(cinemaViewParticipants, { unbounded: true });
   const [fallbackParticipantCache] = useState(() => new Map<ConnectionIdentifier, Participant>());
 
   useEffect(() => {
@@ -58,7 +60,7 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
     if (!currentSpeakerId) {
       return [];
     }
-    return cinemaViewParticipants.flatMap((participant) =>
+    return orderedParticipants.flatMap((participant) =>
       participant.connections
         .filter((connection) => {
           const combinedId = constructConnectionIdentifier(participant.id, connection);
@@ -71,7 +73,7 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
           );
         })
     );
-  }, [cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId, createOrGetFallbackParticipant]);
+  }, [orderedParticipants, remoteParticipantsMap, currentSpeakerId, createOrGetFallbackParticipant]);
 
   const [firstVisibleParticipantIndex, setFirstVisibleParticipantIndex] = useState(0);
 
