@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 
-import { ParticipantId, Timestamp } from '../../types';
-import { ActiveReaction, ReactionEmoji } from '../../types/reaction';
+import { JoinSuccessInternalState, ParticipantId, Timestamp } from '../../types';
+import { ActiveReaction, ReactionEmoji, ReactionJoinSuccess } from '../../types/reaction';
+import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import reducer, {
   FLOATING_REACTION_DURATION,
@@ -22,6 +23,9 @@ const buildReaction = (participantId: string, reaction: ReactionEmoji, timestamp
 
 const firstReaction = buildReaction('participant-1', ReactionEmoji.ThumbsUp, '2024-01-01T00:00:00Z');
 const secondReaction = buildReaction('participant-2', ReactionEmoji.Heart, '2024-01-01T00:00:01Z');
+
+const buildJoinSuccessPayload = (reaction?: ReactionJoinSuccess): JoinSuccessInternalState =>
+  ({ reaction }) as unknown as JoinSuccessInternalState;
 
 describe('reactionSlice', () => {
   describe('reducers', () => {
@@ -62,6 +66,33 @@ describe('reactionSlice', () => {
       expect(state.activeReactions).toEqual({});
       expect(state.floatingReaction).toEqual([firstReaction]);
       expect(state.restrictionsState).toEqual({ type: 'enabled', unrestrictedParticipants: [] });
+    });
+  });
+
+  describe('joinSuccess', () => {
+    it('applies the reaction restrictions received on join', () => {
+      const unrestrictedParticipants = [firstReaction.participantId];
+
+      const state = reducer(
+        undefined,
+        joinSuccess(buildJoinSuccessPayload({ restrictions: { type: 'enabled', unrestrictedParticipants } }))
+      );
+
+      expect(state.restrictionsState).toEqual({ type: 'enabled', unrestrictedParticipants });
+    });
+
+    it('keeps restrictions disabled when the join payload reports them as disabled', () => {
+      const state = reducer(undefined, joinSuccess(buildJoinSuccessPayload({ restrictions: { type: 'disabled' } })));
+
+      expect(state.restrictionsState).toEqual({ type: 'disabled' });
+    });
+
+    it('falls back to disabled restrictions when the join payload has no reaction module', () => {
+      const restrictedState = reducer(undefined, reactionRestrictionsEnabled({ unrestrictedParticipants: [] }));
+
+      const state = reducer(restrictedState, joinSuccess(buildJoinSuccessPayload()));
+
+      expect(state.restrictionsState).toEqual({ type: 'disabled' });
     });
   });
 

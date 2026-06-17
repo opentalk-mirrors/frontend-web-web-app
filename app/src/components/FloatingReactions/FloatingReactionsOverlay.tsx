@@ -13,7 +13,7 @@ const Overlay = styled('div')({
   position: 'absolute',
   bottom: 0,
   left: 0,
-  height: '30%',
+  height: '50%',
   width: '33%',
   pointerEvents: 'none',
   zIndex: 1,

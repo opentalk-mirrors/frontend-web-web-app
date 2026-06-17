@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { timerStarted, timerStopped, updateParticipantsReady } from '../../store/slices/timerSlice';
-import { ForceMuteType, ParticipantId, ParticipationKind, TimerStopKind, Timestamp } from '../../types';
+import { ParticipantId, TimerStopKind, Timestamp } from '../../types';
 import type { Message as TimerMessage, ReadyToContinue } from '../types/incoming/timer';
 import { handleTimerMessage } from './timer';
 
@@ -47,25 +47,8 @@ describe('handleTimerMessage', () => {
     const dispatch = vi.fn();
     const data: ReadyToContinue = {
       message: 'updated_ready_status',
-      id: 'participant-1' as ParticipantId,
       participantId: 'participant-1' as ParticipantId,
       status: true,
-      control: {
-        displayName: 'Alex',
-        avatarUrl: 'https://avatar.example',
-        handIsUp: false,
-        joinedAt: '2024-01-01T10:00:00Z',
-        leftAt: null,
-        handUpdatedAt: '2024-01-01T10:00:00Z',
-        participationKind: ParticipationKind.Registered,
-        isRoomOwner: false,
-      },
-      media: {
-        forceMute: {
-          type: ForceMuteType.Disabled,
-          unrestrictedParticipants: [],
-        },
-      },
     };
 
     handleTimerMessage(dispatch, data);

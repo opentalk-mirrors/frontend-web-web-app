@@ -5,8 +5,6 @@ import { Namespaces } from '@opentalk/rest-api-rtk-query';
 import { Track } from 'livekit-client';
 
 import { BreakoutRoomId } from './breakout';
-import type { MeetingNotesState } from './meetingNotes';
-import type { TimerIsReady } from './timer';
 
 export type ParticipantId = string & { readonly __tag: unique symbol };
 export type ConnectionId = string & { readonly __tag: unique symbol };
@@ -80,22 +78,6 @@ export enum ForceMuteType {
 export interface ForceMute {
   type: ForceMuteType;
   unrestrictedParticipants: Array<ParticipantId>;
-}
-
-export type ParticipantMediaState = {
-  screen?: MediaSessionState;
-  video?: MediaSessionState;
-  forceMute: ForceMute;
-};
-
-export interface BackendParticipant {
-  id: ParticipantId;
-  connectionId?: ParticipantId;
-  // Core fields are present in any case
-  control: IParticipantControl;
-  meetingNotes?: MeetingNotesState;
-  media: ParticipantMediaState;
-  timer?: TimerIsReady;
 }
 
 export interface ErrorStruct<E extends string> {

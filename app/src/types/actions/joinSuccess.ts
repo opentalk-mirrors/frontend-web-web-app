@@ -22,11 +22,9 @@ import { InitialAutomod } from '../automod';
 import { InitialBreakout, RoomKindBreakout, RoomKindMain } from '../breakout';
 import { InitialChat } from '../chat';
 import type {
-  BackendParticipant,
   ForceMute,
   ForceMuteType,
   ParticipantId,
-  ParticipantMediaState,
   Role,
   Timestamp,
   ParticipationKind,
@@ -49,24 +47,26 @@ export interface JoinSuccessInternalState {
   role: Role;
   avatarUrl?: string;
   chat: InitialChat;
-  automod?: InitialAutomod;
-  breakout?: InitialBreakout;
-  polls?: InitialPoll;
-  votes?: VoteSummary[];
+  automod: InitialAutomod | undefined;
+  breakout: InitialBreakout | undefined;
+  polls: InitialPoll | undefined;
+  votes: VoteSummary[] | undefined;
   participants: Participant[];
-  moderation?: {
-    raiseHandsEnabled: boolean;
-    waitingRoom: WaitingRoom;
-    waitingRoomParticipants: WaitingRoomParticipant[];
-    displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
-  };
-  forceMute?: ForceMute;
-  recording?: RecordingState;
+  moderation:
+    | {
+        raiseHandsEnabled: boolean;
+        waitingRoom: WaitingRoom;
+        waitingRoomParticipants: WaitingRoomParticipant[];
+        displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
+      }
+    | undefined;
+  forceMute: ForceMute | undefined;
+  recording: RecordingState | undefined;
   serverTimeOffset: number;
   tariff: SignalingTariff;
-  timer?: TimerState;
-  reaction?: ReactionJoinSuccess;
-  sharedFolder?: SharedFolderData;
+  timer: TimerState | undefined;
+  reaction: ReactionJoinSuccess | undefined;
+  sharedFolder: SharedFolderData | undefined;
   eventInfo?: EventInfo;
   meetingDetails?: MeetingDetails;
   roomInfo?: RoomInfo;
@@ -77,46 +77,8 @@ export interface JoinSuccessInternalState {
     token: string;
     publicUrl: string;
   };
-  trainingParticipationReport?: ParticipationLogging;
+  trainingParticipationReport: ParticipationLogging | undefined;
   enabledModules: EnabledModules;
-}
-
-export interface JoinSuccessIncoming {
-  message: 'join_success';
-  id: ParticipantId;
-  role: Role;
-  avatarUrl?: string;
-  assetStorage?: {
-    usedStorage: number;
-  };
-  participants: Array<BackendParticipant>;
-  chat: InitialChat;
-  automod?: InitialAutomod;
-  breakout?: InitialBreakout;
-  polls: InitialPoll;
-  legalVote: LegalVoteJoinSuccess;
-  whiteboard?: WhiteboardState;
-  moderation?: {
-    raiseHandsEnabled: boolean;
-    waitingRoomParticipants: WaitingRoomParticipant[];
-    waitingRoom: WaitingRoom;
-  };
-  media?: ParticipantMediaState;
-  recording?: RecordingState;
-  timer?: TimerState;
-  tariff: SignalingTariff;
-  closesAt: Timestamp;
-  sharedFolder: SharedFolderData;
-  eventInfo?: EventInfo;
-  roomInfo?: RoomInfo;
-  isRoomOwner: boolean;
-  livekit: {
-    room: string;
-    token: string;
-    publicUrl: string;
-    microphoneRestrictionState?: ForceMute;
-  };
-  trainingParticipationReport?: ParticipationLogging;
 }
 
 export interface JoinSuccessRoomserver {
@@ -159,6 +121,7 @@ export interface ModuleData {
   automod?: InitialAutomod;
   sharedFolder?: SharedFolderData;
   trainingParticipationReport?: TrainingParticipationReport;
+  reaction?: ReactionJoinSuccess;
 }
 
 export interface TrainingParticipationReport {
@@ -223,8 +186,6 @@ export interface TimerPeerState {
 export interface RaiseHandsPeerState {
   raisedAt: Timestamp;
 }
-
-export type JsonValue = number | string | boolean | JsonValue[] | { [key in string]?: JsonValue } | null;
 
 export interface Livekit {
   microphoneRestrictionState: MicrophoneRestrictionState;

@@ -103,4 +103,24 @@ describe('<ReactionPopover />', () => {
       expect(screen.getByLabelText(emoji)).toBeInTheDocument();
     });
   });
+
+  it('should render inside the fullscreen element when fullscreen is active', () => {
+    const fullscreenElement = document.createElement('div');
+    document.body.appendChild(fullscreenElement);
+
+    const { store: fullscreenStore } = configureStore({
+      initialState: { fullscreen: { supported: true, active: true, error: undefined, element: fullscreenElement } },
+    });
+
+    const anchor = document.createElement('div');
+    fullscreenElement.appendChild(anchor);
+
+    renderWithProviders(<ReactionPopover anchorEl={anchor} open onClose={onClose} onSelect={onSelect} />, {
+      store: fullscreenStore,
+      provider: { mui: true },
+    });
+
+    const group = screen.getByRole('group', { name: 'Reactions' });
+    expect(fullscreenElement).toContainElement(group);
+  });
 });
