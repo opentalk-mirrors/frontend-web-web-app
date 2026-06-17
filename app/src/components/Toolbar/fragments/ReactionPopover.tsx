@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Popover, popoverClasses, styled } from '@mui/material';
 
+import { useAppSelector } from '../../../hooks';
+import { selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
 import { REACTION_EMOJI_DISPLAY, ReactionEmoji } from '../../../types/reaction';
 
 const ArrowPopover = styled(Popover)(({ theme }) => ({
@@ -67,22 +69,27 @@ interface ReactionPopoverProps {
   onSelect: (emoji: ReactionEmoji) => void;
 }
 
-const ReactionPopover = ({ anchorEl, open, onClose, onSelect }: ReactionPopoverProps) => (
-  <ArrowPopover
-    open={open}
-    anchorEl={anchorEl}
-    onClose={onClose}
-    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-    transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-  >
-    <EmojiRow role="group" aria-label="Reactions">
-      {EMOJI_ORDER.map((emoji) => (
-        <EmojiButton key={emoji} onClick={() => onSelect(emoji)} aria-label={emoji} type="button">
-          {REACTION_EMOJI_DISPLAY[emoji]}
-        </EmojiButton>
-      ))}
-    </EmojiRow>
-  </ArrowPopover>
-);
+const ReactionPopover = ({ anchorEl, open, onClose, onSelect }: ReactionPopoverProps) => {
+  const fullscreenElement = useAppSelector(selectFullscreenElement);
+
+  return (
+    <ArrowPopover
+      open={open}
+      anchorEl={anchorEl}
+      onClose={onClose}
+      container={fullscreenElement}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <EmojiRow role="group" aria-label="Reactions">
+        {EMOJI_ORDER.map((emoji) => (
+          <EmojiButton key={emoji} onClick={() => onSelect(emoji)} aria-label={emoji} type="button">
+            {REACTION_EMOJI_DISPLAY[emoji]}
+          </EmojiButton>
+        ))}
+      </EmojiRow>
+    </ArrowPopover>
+  );
+};
 
 export default ReactionPopover;
