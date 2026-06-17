@@ -55,7 +55,7 @@ const Emoji = styled('span')({
 
 const Label = styled('span')(({ theme }) => ({
   ...theme.typography.caption,
-  maxWidth: '10ch',
+  maxWidth: '20ch',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
