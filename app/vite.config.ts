@@ -131,7 +131,9 @@ export default defineConfig(({ command, mode }) => {
     build: {
       outDir: buildPath,
       emptyOutDir: true,
-      sourcemap: true,
+      // Use 'hidden' for production builds so source maps are still emitted
+      // (and can be uploaded to Sentry) but the public bundles do not advertise them
+      sourcemap: command === 'build' ? 'hidden' : true,
       rollupOptions: {
         external: ['/config.js'],
       },
