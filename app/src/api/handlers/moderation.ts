@@ -130,13 +130,6 @@ export const handleModerationMessage = (
           })
         );
       }
-      notifications.info(
-        i18next.t('display-name-change-notification', {
-          moderatorName: truncate(state.participants.entities[data.issuedBy]?.displayName || '', { length: 100 }),
-          oldName: truncate(data.oldName, { length: 100 }),
-          newName: truncate(data.newName, { length: 100 }),
-        })
-      );
       break;
     }
     case 'muted': {

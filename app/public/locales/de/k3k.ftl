@@ -1321,7 +1321,6 @@ legal-vote-report-issue-description-placeholder = Beschreiben Sie das Problem...
 
 legal-vote-stopped-invalid-results-notification = Leider ist beim Abstimmen etwas schief gelaufen. Bitte informieren Sie den Moderator oder versuchen Sie es erneut.
 
-display-name-change-notification = Der Moderator {moderatorName} hat den Namen von {oldName} in {newName} geändert.
 display-name-character-limit-error = Der Name darf maximal { $limit } Zeichen umfassen.
 
 whisper-group-disbanded = Deine Flüstergruppe wurde aufgelöst.

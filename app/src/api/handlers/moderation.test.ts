@@ -129,12 +129,6 @@ describe('handleModerationMessage', () => {
       actorName: 'Moderator',
       newName: 'Jordan',
     });
-    expect(i18next.t).toHaveBeenCalledWith('display-name-change-notification', {
-      moderatorName: 'Moderator',
-      newName: 'Jordan',
-      oldName: 'Alex',
-    });
-    expect(notifications.info).toHaveBeenCalledWith('display-name-change-notification');
     expect(notifications.info).toHaveBeenCalledWith('rename-other-target-notification');
   });
 
