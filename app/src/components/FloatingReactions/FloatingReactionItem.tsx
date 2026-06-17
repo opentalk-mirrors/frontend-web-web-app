@@ -59,8 +59,13 @@ const Label = styled('span')(({ theme }) => ({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+  // Self-contained contrast pill so the label stays legible over any
+  // background (bright light-theme surfaces, video tiles, etc.) regardless
+  // of the user-selected color theme.
   color: theme.palette.common.white,
-  textShadow: '0 1px 2px rgba(0, 0, 0, 0.7)',
+  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  padding: theme.spacing(0.25, 0.75),
+  borderRadius: theme.shape.borderRadius,
 }));
 
 type FloatingReactionItemProps = {
