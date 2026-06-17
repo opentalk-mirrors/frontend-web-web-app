@@ -97,7 +97,7 @@ export const handleModerationMessage = (
       const issuedBySelf = data.issuedBy === state.user.uuid;
       const actorName = state.participants.entities[data.issuedBy]?.displayName ?? 'unknown';
 
-      if (isSelf && issuedBySelf) {
+      if (isSelf) {
         dispatch(setDisplayName(data.newName));
       }
 
