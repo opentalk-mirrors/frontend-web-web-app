@@ -35,6 +35,7 @@ describe('DeviceManager', () => {
         onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
         state={DevicePermissionState.Confirmed}
+        kind="audioinput"
       />
     );
     expect(screen.getByTestId('MockDeviceList')).toBeInTheDocument();
@@ -47,6 +48,7 @@ describe('DeviceManager', () => {
         onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
         state={DevicePermissionState.Pending}
+        kind="audioinput"
       />
     );
     expect(screen.getByText('device-permission-pending')).toBeInTheDocument();
@@ -60,6 +62,7 @@ describe('DeviceManager', () => {
         onSelectDevice={vi.fn()}
         subheader={{ title: SUBHEADER_TITLE }}
         state={DevicePermissionState.Denied}
+        kind="audioinput"
       />
     );
     expect(screen.getByText('device-permission-denied')).toBeInTheDocument();

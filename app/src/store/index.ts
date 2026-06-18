@@ -99,11 +99,21 @@ export const rootReducer = combineReducers({
 
 export const mediaRehydrateSlice = () => {
   const storageItem = localStorage.getItem('mediaChoices');
-  if (storageItem !== null) {
-    return JSON.parse(storageItem);
+  if (storageItem === null) {
+    return undefined;
   }
 
-  return undefined;
+  const parsed = JSON.parse(storageItem);
+  // Migration: `audioDeviceId` was renamed to `audioInputDeviceId` when the audio output picker was introduced
+  const legacyAudioDeviceId = parsed?.mediaSettings?.audioDeviceId;
+  if (legacyAudioDeviceId && !parsed.mediaSettings.audioInputDeviceId) {
+    parsed.mediaSettings.audioInputDeviceId = legacyAudioDeviceId;
+  }
+  if (parsed?.mediaSettings && 'audioDeviceId' in parsed.mediaSettings) {
+    delete parsed.mediaSettings.audioDeviceId;
+  }
+
+  return parsed;
 };
 
 export function setupStore(preloadedState?: Partial<RootState>) {

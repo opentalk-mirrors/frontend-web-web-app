@@ -105,6 +105,7 @@ import TimerIcon from './TimerIcon';
 import TrashIcon from './TrashIcon';
 import UnlockedIcon from './UnlockedIcon';
 import VisibleIcon from './VisibleIcon';
+import VolumeIcon from './VolumeIcon';
 import WarningIcon from './WarningIcon';
 import WheelOfNamesIcon from './WheelOfNamesIcon';
 import WhisperEmptyIcon from './WhisperEmptyIcon';
@@ -153,11 +154,11 @@ export {
   ForwardIcon,
   FullscreenViewIcon,
   GongIcon,
-  GridViewIcon,
-  GridSize6Icon,
-  GridSize9Icon,
   GridSize16Icon,
   GridSize24Icon,
+  GridSize6Icon,
+  GridSize9Icon,
+  GridViewIcon,
   HelpIcon,
   HelpSquareIcon,
   HiddenIcon,
@@ -199,13 +200,13 @@ export {
   RectAddPlusIcon,
   RemoveIcon,
   SearchIcon,
-  SecureIcon,
   SecureFilledIcon,
+  SecureIcon,
   SendMessageIcon,
   SettingsIcon,
+  SharedFolderIcon,
   ShareScreenOffIcon,
   ShareScreenOnIcon,
-  SharedFolderIcon,
   SignOutIcon,
   SortIcon,
   SpeakerQueueIcon,
@@ -217,6 +218,7 @@ export {
   TrashIcon,
   UnlockedIcon,
   VisibleIcon,
+  VolumeIcon,
   WarningIcon,
   WheelOfNamesIcon,
   WhisperEmptyIcon,

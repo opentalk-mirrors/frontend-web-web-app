@@ -89,7 +89,9 @@ export const changeLocalMedia = createAsyncThunk<
   let track: LocalAudioTrack | LocalVideoTrack | undefined;
   const state = thunkApi.getState();
   let trackDeviceId =
-    kind === 'audioinput' ? state.livekit.mediaSettings?.audioDeviceId : state.livekit.mediaSettings?.videoDeviceId;
+    kind === 'audioinput'
+      ? state.livekit.mediaSettings?.audioInputDeviceId
+      : state.livekit.mediaSettings?.videoDeviceId;
 
   try {
     if (enabled) {
@@ -184,7 +186,9 @@ export const changeMedia = createAsyncThunk<
   const state = thunkApi.getState();
   const room = state.livekit.room;
   const deviceId =
-    kind === 'audioinput' ? state.livekit.mediaSettings?.audioDeviceId : state.livekit.mediaSettings?.videoDeviceId;
+    kind === 'audioinput'
+      ? state.livekit.mediaSettings?.audioInputDeviceId
+      : state.livekit.mediaSettings?.videoDeviceId;
 
   try {
     if (kind === 'audioinput') {
@@ -360,7 +364,13 @@ export const connectRoom = createAsyncThunk<
     }
     const e2eeSalt = thunkApi.getState().config.livekit?.e2eeSalt;
     const preferredVideoCodec = thunkApi.getState().config.livekit?.preferredVideoCodec;
-    const room = await createRoom(e2eeSalt, eventInfo || thunkApi.getState().room.eventInfo, preferredVideoCodec);
+    const audioOutputDeviceId = thunkApi.getState().livekit.mediaSettings?.audioOutputDeviceId;
+    const room = await createRoom(
+      e2eeSalt,
+      eventInfo || thunkApi.getState().room.eventInfo,
+      preferredVideoCodec,
+      audioOutputDeviceId
+    );
 
     return { room };
   } catch (error) {
@@ -374,7 +384,8 @@ export const connectRoom = createAsyncThunk<
 export const createRoom = async (
   e2eeSalt: string | undefined,
   eventInfo?: EventInfo,
-  preferredVideoCodec?: VideoCodec.VP9 | VideoCodec.AV1
+  preferredVideoCodec?: VideoCodec.VP9 | VideoCodec.AV1,
+  audioOutputDeviceId?: string
 ) => {
   const e2eePassphrase = XORCipher.handle(`${eventInfo?.id}${eventInfo?.roomId}${e2eeSalt || ''}`);
 
@@ -417,6 +428,9 @@ export const createRoom = async (
           worker: mainWorker,
         } as E2EEOptions)
       : undefined,
+    audioOutput: {
+      deviceId: audioOutputDeviceId,
+    },
   };
 
   const room = new Room(roomOptions);

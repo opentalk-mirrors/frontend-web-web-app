@@ -171,6 +171,7 @@ const CameraSettingsPanel = () => {
           titleIcon: <CameraOnIcon />,
         }}
         state={getDevicesState()}
+        kind="videoinput"
       />
       <Divider variant="middle" />
 

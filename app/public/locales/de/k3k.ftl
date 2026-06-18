@@ -74,6 +74,7 @@ toggle-password-visibility = Passwortsichtbarkeit umschalten
 
 echotest-warn-no-echo-cancellation = Ihr Browser unterstützt keine Echo-Unterdrückung. Bitte nutzen Sie Kopfhörer um Rückkopplungen zu vermeiden.
 audiomenu-choose-input = Audioeingabegerät auswählen
+audiomenu-choose-output = Audioausgabegerät auswählen
 screen-share-menu-choose-resolution = Max. Bildschirmauflösung auswählen
 screen-share-menu-choose-resolution-subtitle = Höhere Auflösungen können die CPU- oder GPU-Auslastung beim Kodieren deutlich erhöhen.
 screen-share-menu-choose-optimization = Profil zur Kodierungsoptimierung

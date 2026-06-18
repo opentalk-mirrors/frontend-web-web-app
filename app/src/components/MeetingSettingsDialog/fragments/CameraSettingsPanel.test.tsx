@@ -30,7 +30,7 @@ vi.mock('./DeviceManager', () => ({
       <div data-testid="MockDeviceManager">
         <button
           data-testid="trigger-select"
-          onClick={() => firstDeviceId && props.onSelectDevice?.(firstDeviceId as DeviceId)}
+          onClick={() => firstDeviceId && props.onSelectDevice?.(firstDeviceId as DeviceId, 'videoinput')}
         >
           select
         </button>

@@ -19,7 +19,11 @@ import { useInviteCode } from '../../hooks/useInviteCode';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { selectConfigFeatures, selectSpeedTestConfig } from '../../store/slices/configSlice';
-import { selectLobbyAudioTrack, selectLobbyVideoEnabled } from '../../store/slices/livekitSlice';
+import {
+  selectAudioOutputDeviceId,
+  selectLobbyAudioTrack,
+  selectLobbyVideoEnabled,
+} from '../../store/slices/livekitSlice';
 import MyMeetingMenu from '../MeetingHeader/fragments/MyMeetingMenu';
 import SpeedTestDialog from '../SpeedTestDialog';
 import EchoPlayBack from './fragments/EchoPlayback';
@@ -124,6 +128,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const inviteCode = useInviteCode();
   const isMobile = useIsMobile();
   const localAudioTrack = useAppSelector(selectLobbyAudioTrack);
+  const audioOutputDeviceId = useAppSelector(selectAudioOutputDeviceId);
   const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
   const videoEnabled = useAppSelector(selectLobbyVideoEnabled);
   const config = useAppSelector(selectSpeedTestConfig);
@@ -172,7 +177,9 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
               </Typography>
             </>
           )}
-          {localAudioTrack && <EchoPlayBack localAudioTrack={localAudioTrack} />}
+          {localAudioTrack && (
+            <EchoPlayBack localAudioTrack={localAudioTrack} audioOutputDeviceId={audioOutputDeviceId} />
+          )}
         </MonitorContainer>
 
         <ToolbarContainer localAudioTrack={localAudioTrack} actionButton={actionButton} waitingRoom={waitingRoom}>

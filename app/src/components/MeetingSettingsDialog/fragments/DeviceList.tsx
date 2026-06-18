@@ -18,8 +18,9 @@ interface DeviceListSubheader {
 export interface DeviceListProps {
   devices: Array<MediaDeviceInfo> | undefined;
   selectedDevice: DeviceId | undefined;
-  onSelectDevice: (deviceId: DeviceId) => void;
+  onSelectDevice: (deviceId: DeviceId, kind: MediaDeviceKind) => void;
   subheader: DeviceListSubheader;
+  kind: MediaDeviceKind;
 }
 
 const DeviceList = (props: DeviceListProps) => {
@@ -28,6 +29,7 @@ const DeviceList = (props: DeviceListProps) => {
     selectedDevice,
     onSelectDevice,
     subheader: { title, titleIcon },
+    kind,
   } = props;
 
   const { t } = useTranslation();
@@ -40,7 +42,7 @@ const DeviceList = (props: DeviceListProps) => {
           <DeviceListMenuItem
             selected={isSelected}
             key={deviceId}
-            onClick={() => onSelectDevice(deviceId as DeviceId)}
+            onClick={() => onSelectDevice(deviceId as DeviceId, kind)}
             role="menuitemradio"
             aria-checked={isSelected}
           >
@@ -57,7 +59,7 @@ const DeviceList = (props: DeviceListProps) => {
           </DeviceListMenuItem>
         );
       }),
-    [devices, selectedDevice, onSelectDevice]
+    [devices, selectedDevice, onSelectDevice, kind]
   );
 
   return (
