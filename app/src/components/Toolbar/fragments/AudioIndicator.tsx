@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { LocalAudioTrack, createAudioAnalyser } from 'livekit-client';
+import { LocalAudioTrack, TrackEvent, createAudioAnalyser } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import BrowserSupport from '../../../modules/BrowserSupport';
@@ -119,35 +119,56 @@ const AudioIndicator = ({ shape, localAudioTrack }: AudioIndicatorProps) => {
       return;
     }
 
-    const { cleanup, analyser } = createAudioAnalyser(localAudioTrack);
+    let analyserCleanup: (() => void | Promise<void>) | undefined;
+    let interval: ReturnType<typeof setInterval> | undefined;
 
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-
-    const updateVolume = () => {
-      analyser.getByteFrequencyData(dataArray);
-      let sum = 0;
-      for (let i = 0; i < dataArray.length; i++) {
-        const a = dataArray[i];
-        sum += a * a;
+    const setupAnalyser = () => {
+      analyserCleanup?.();
+      if (interval !== undefined) {
+        clearInterval(interval);
       }
-      const level = Math.sqrt(sum / dataArray.length) / 255;
-      const peak = signalLevel.current.peak > level ? signalLevel.current.peak : level;
 
-      signalLevel.current = {
-        ...signalLevel.current,
-        level,
-        peak,
+      const { cleanup, analyser } = createAudioAnalyser(localAudioTrack);
+      analyserCleanup = cleanup;
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      const updateVolume = () => {
+        analyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          const a = dataArray[i];
+          sum += a * a;
+        }
+        const level = Math.sqrt(sum / dataArray.length) / 255;
+        const peak = signalLevel.current.peak > level ? signalLevel.current.peak : level;
+
+        signalLevel.current = {
+          ...signalLevel.current,
+          level,
+          peak,
+        };
       };
+
+      interval = setInterval(updateVolume, UPDATE_VOLUME_INTERVAL);
     };
 
-    const interval = setInterval(updateVolume, UPDATE_VOLUME_INTERVAL);
+    setupAnalyser();
+
+    // After switching the audio input device just the underlying MediaStreamTrack is swapped,
+    // the LocalAudioTrack instance remains the same - we need to listen for the restart event
+    // to know when to re-create the analyser with the new track.
+    localAudioTrack.on(TrackEvent.Restarted, setupAnalyser);
 
     return () => {
-      cleanup();
-      clearInterval(interval);
+      localAudioTrack.off(TrackEvent.Restarted, setupAnalyser);
+      analyserCleanup?.();
+      if (interval !== undefined) {
+        clearInterval(interval);
+      }
     };
-  }, [localAudioTrack, localAudioTrack?.mediaStreamTrack]);
+  }, [localAudioTrack]);
 
   useEffect(() => {
     handleResize();

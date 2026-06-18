@@ -15,6 +15,9 @@ import AudioIndicator from './AudioIndicator';
 vi.mock('livekit-client', () => ({
   createAudioAnalyser: vi.fn(),
   LocalAudioTrack: class {},
+  TrackEvent: {
+    Restarted: 'restarted',
+  },
 }));
 
 vi.mock('../../../modules/BrowserSupport', () => ({
@@ -84,7 +87,7 @@ const createMockContext = (dimensions = { width: 120, height: 80 }) => {
 };
 
 describe('<AudioIndicator />', () => {
-  const mockTrack = {} as LocalAudioTrack;
+  const mockTrack = { on: vi.fn(), off: vi.fn() } as unknown as LocalAudioTrack;
   let rafId = 0;
   const requestAnimationFrameMock = vi.fn();
   const cancelAnimationFrameMock = vi.fn();
@@ -208,5 +211,49 @@ describe('<AudioIndicator />', () => {
 
     expect(cleanup).toHaveBeenCalled();
     expect(cancelAnimationFrameMock).toHaveBeenCalled();
+  });
+
+  it('recreates the analyser when the track is restarted (e.g. on device change)', () => {
+    const { ctx } = createMockContext();
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(ctx);
+
+    const listeners = new Map<string, Set<() => void>>();
+    const trackOn = vi.fn((event: string, handler: () => void) => {
+      if (!listeners.has(event)) {
+        listeners.set(event, new Set());
+      }
+      listeners.get(event)?.add(handler);
+    });
+    const trackOff = vi.fn((event: string, handler: () => void) => {
+      listeners.get(event)?.delete(handler);
+    });
+    const restartingTrack = { on: trackOn, off: trackOff } as unknown as LocalAudioTrack;
+
+    const firstCleanup = vi.fn();
+    const secondCleanup = vi.fn();
+    createAudioAnalyserMock
+      .mockReturnValueOnce({
+        cleanup: firstCleanup,
+        analyser: { frequencyBinCount: 1, getByteFrequencyData: vi.fn() },
+      })
+      .mockReturnValueOnce({
+        cleanup: secondCleanup,
+        analyser: { frequencyBinCount: 1, getByteFrequencyData: vi.fn() },
+      });
+
+    renderWithProviders(<AudioIndicator shape="bar" localAudioTrack={restartingTrack} />, {
+      provider: { mui: true },
+    });
+
+    expect(createAudioAnalyserMock).toHaveBeenCalledTimes(1);
+    expect(trackOn).toHaveBeenCalledWith('restarted', expect.any(Function));
+
+    act(() => {
+      listeners.get('restarted')?.forEach((handler) => handler());
+    });
+
+    expect(firstCleanup).toHaveBeenCalled();
+    expect(createAudioAnalyserMock).toHaveBeenCalledTimes(2);
+    expect(createAudioAnalyserMock).toHaveBeenLastCalledWith(restartingTrack);
   });
 });
