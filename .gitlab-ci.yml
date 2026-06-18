@@ -55,6 +55,33 @@ variables:
     corepack prepare "pnpm@$PNPM_VERSION" --activate
   - pnpm config set store-dir .pnpm-store
 
+.upload-sourcemaps: &upload-sourcemaps
+  - |
+    if [ -n "${CI_COMMIT_TAG:-}" ] && [ "$CI_PROJECT_ROOT_NAMESPACE" = "opentalk" ]; then
+      pnpm add -w @sentry/cli
+      {
+        echo "[ defaults ]"
+        echo "url=${GLITCHTIP_URL}"
+        echo "org=${GLITCHTIP_ORG}"
+        echo "project=${GLITCHTIP_PROJECT}"
+      } >> .sentryclirc
+      node_modules/.bin/sentry-cli sourcemaps inject "$DIST_DIR"
+      node_modules/.bin/sentry-cli login --auth-token "$GLITCHTIP_AUTH_TOKEN"
+      node_modules/.bin/sentry-cli sourcemaps upload --release "$CI_COMMIT_TAG" "$DIST_DIR"
+    fi
+
+.strip-sourcemaps: &strip-sourcemaps
+  - |
+    find "$DIST_DIR" -name '*.map' -type f -delete
+    if find "$DIST_DIR" -name '*.map' -type f | grep -q .; then
+      echo "ERROR: source maps present in $DIST_DIR" >&2
+      exit 1
+    fi
+    if grep -rl "sourceMappingURL" "$DIST_DIR" --include='*.js'; then
+      echo "ERROR: sourceMappingURL reference present in $DIST_DIR" >&2
+      exit 1
+    fi
+
 include:
   - project: opentalk/ci/templates/collect-commit-evidence
     ref: v2
@@ -238,6 +265,8 @@ unit-tests:
 
 build:
   stage: prepare-artifact
+  variables:
+    DIST_DIR: dist
   rules:
     - !reference [.build-branch-rules, rules]
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -249,6 +278,8 @@ build:
   script:
     - pnpm build
     - echo v$(jq -r '.version' ./app/package.json) > ./dist/FRONTEND_VERSION
+    - *upload-sourcemaps
+    - *strip-sourcemaps
   artifacts:
     paths:
       - dist/*
@@ -256,6 +287,8 @@ build:
 
 build-profiling:
   stage: prepare-artifact
+  variables:
+    DIST_DIR: dist-profiling
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -267,41 +300,15 @@ build-profiling:
   script:
     - pnpm build:profiling
     - jq -r '.version' ./app/package.json > ./dist-profiling/FRONTEND_VERSION
+    - *strip-sourcemaps
   artifacts:
     paths:
       - dist-profiling/*
     expire_in: 1 days
 
-# Upload Source Maps to our glitchtip instance when a tag is created and pushed to main
-upload-sourcemaps:
-  stage: prepare-artifact
-  dependencies:
-    - build
-  needs:
-    - build
-  rules:
-    - if: $CI_COMMIT_TAG && $CI_PROJECT_ROOT_NAMESPACE == 'opentalk'
-  before_script:
-    - *setup-pnpm
-    - pnpm add -w @sentry/cli
-    - echo "[ defaults ]" >> .sentryclirc
-    - echo "url=${GLITCHTIP_URL}" >> .sentryclirc
-    - echo "org=${GLITCHTIP_ORG}" >> .sentryclirc
-    - echo "project=${GLITCHTIP_PROJECT}" >> .sentryclirc
-  script:
-    - RELEASE_TAG=${CI_COMMIT_TAG:-999.0.0-unreleased}
-    - node_modules/.bin/sentry-cli sourcemaps inject dist/
-    - node_modules/.bin/sentry-cli login --auth-token $GLITCHTIP_AUTH_TOKEN
-    - node_modules/.bin/sentry-cli sourcemaps upload --release $RELEASE_TAG dist/
-  artifacts:
-    paths:
-      - dist/*
-    expire_in: 1 days
-
 container-mr:
   stage: build
   dependencies:
-    - upload-sourcemaps
     - build
   rules:
     - if: $CI_PIPELINE_SOURCE == "pipeline"
