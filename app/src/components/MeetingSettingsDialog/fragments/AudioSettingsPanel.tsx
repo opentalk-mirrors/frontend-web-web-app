@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Divider, Typography } from '@mui/material';
-import { ConnectionState } from 'livekit-client';
+import { ConnectionState, supportsAudioOutputSelection } from 'livekit-client';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -63,6 +63,8 @@ const AudioSettingsPanel = () => {
   const room = useAppSelector(selectLivekitRoom);
   const roomState = room?.state;
 
+  const isAudioOutputSelectionSupported = useMemo(() => supportsAudioOutputSelection(), []);
+
   // Some browsers (e.g. Firefox) duplicate inputDevices, so we need to filter them out
   const filteredInputDevices = useMemo(() => sortDevicesByLabel(filterDuplicateDevices(inputDevices)), [inputDevices]);
   const filteredOutputDevices = useMemo(
@@ -83,8 +85,10 @@ const AudioSettingsPanel = () => {
 
   useEffect(() => {
     loadLocalInputDevices();
-    loadLocalOutputDevices();
-  }, [loadLocalInputDevices, loadLocalOutputDevices]);
+    if (isAudioOutputSelectionSupported) {
+      loadLocalOutputDevices();
+    }
+  }, [loadLocalInputDevices, loadLocalOutputDevices, isAudioOutputSelectionSupported]);
 
   const inputDevicePermissionState = useMemo(
     () => getDevicePermissionState(inputPermissionDenied, filteredInputDevices),
@@ -111,18 +115,22 @@ const AudioSettingsPanel = () => {
         }}
         state={inputDevicePermissionState}
       />
-      <Divider />
-      <DeviceManager
-        devices={filteredOutputDevices}
-        selectedDevice={audioOutputDeviceId as DeviceId | undefined}
-        onSelectDevice={handleSelectDevice}
-        kind="audiooutput"
-        subheader={{
-          title: t('audiomenu-choose-output'),
-          titleIcon: <VolumeIcon />,
-        }}
-        state={outputDevicePermissionState}
-      />
+      {isAudioOutputSelectionSupported && (
+        <>
+          <Divider />
+          <DeviceManager
+            devices={filteredOutputDevices}
+            selectedDevice={audioOutputDeviceId as DeviceId | undefined}
+            onSelectDevice={handleSelectDevice}
+            kind="audiooutput"
+            subheader={{
+              title: t('audiomenu-choose-output'),
+              titleIcon: <VolumeIcon />,
+            }}
+            state={outputDevicePermissionState}
+          />
+        </>
+      )}
     </>
   );
 };
