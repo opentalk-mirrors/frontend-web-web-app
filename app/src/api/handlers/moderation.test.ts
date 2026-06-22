@@ -100,10 +100,11 @@ describe('handleModerationMessage', () => {
   it('updates display name when other user is renamed', () => {
     const dispatch = vi.fn();
     const userId = 'participant-1' as ParticipantId;
+    const otherUserId = 'participant-2' as ParticipantId;
     const moderatorId = 'moderator-1' as ParticipantId;
     const data: DisplayNameChanged = {
       message: 'display_name_changed',
-      target: userId,
+      target: otherUserId,
       issuedBy: moderatorId,
       oldName: 'Alex',
       newName: 'Jordan',
@@ -124,18 +125,13 @@ describe('handleModerationMessage', () => {
     handleModerationMessage(dispatch, data, timestamp, state);
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenNthCalledWith(1, rename({ id: userId, displayName: 'Jordan' }));
-    expect(i18next.t).toHaveBeenCalledWith('rename-other-target-notification', {
+    expect(dispatch).toHaveBeenNthCalledWith(1, rename({ id: otherUserId, displayName: 'Jordan' }));
+    expect(i18next.t).toHaveBeenCalledWith('rename-general-notification', {
       actorName: 'Moderator',
-      newName: 'Jordan',
-    });
-    expect(i18next.t).toHaveBeenCalledWith('display-name-change-notification', {
-      moderatorName: 'Moderator',
       newName: 'Jordan',
       oldName: 'Alex',
     });
-    expect(notifications.info).toHaveBeenCalledWith('display-name-change-notification');
-    expect(notifications.info).toHaveBeenCalledWith('rename-other-target-notification');
+    expect(notifications.info).toHaveBeenCalledWith('rename-general-notification');
   });
 
   it('updates display name when we rename ourselves', () => {

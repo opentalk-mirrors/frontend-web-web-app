@@ -1322,7 +1322,6 @@ legal-vote-report-issue-description-placeholder = Describe the problem...
 
 legal-vote-stopped-invalid-results-notification = Unfortunately something went wrong during the vote. Please inform the moderator or try again.
 
-display-name-change-notification = Moderator {moderatorName} changed the display name of {oldName} to {newName}
 display-name-character-limit-error = name must be at most { $limit } characters
 
 whisper-group-disbanded = Your whisper group has been disbanded.

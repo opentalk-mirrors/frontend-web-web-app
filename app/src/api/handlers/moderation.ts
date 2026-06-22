@@ -97,7 +97,7 @@ export const handleModerationMessage = (
       const issuedBySelf = data.issuedBy === state.user.uuid;
       const actorName = state.participants.entities[data.issuedBy]?.displayName ?? 'unknown';
 
-      if (isSelf && issuedBySelf) {
+      if (isSelf) {
         dispatch(setDisplayName(data.newName));
       }
 
@@ -130,13 +130,6 @@ export const handleModerationMessage = (
           })
         );
       }
-      notifications.info(
-        i18next.t('display-name-change-notification', {
-          moderatorName: truncate(state.participants.entities[data.issuedBy]?.displayName || '', { length: 100 }),
-          oldName: truncate(data.oldName, { length: 100 }),
-          newName: truncate(data.newName, { length: 100 }),
-        })
-      );
       break;
     }
     case 'muted': {
