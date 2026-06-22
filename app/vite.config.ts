@@ -131,9 +131,11 @@ export default defineConfig(({ command, mode }) => {
     build: {
       outDir: buildPath,
       emptyOutDir: true,
-      // Use 'hidden' for production builds so source maps are still emitted
-      // (and can be uploaded to Sentry) but the public bundles do not advertise them
-      sourcemap: command === 'build' ? 'hidden' : true,
+      // Use 'hidden' for the public production build so source maps are still
+      // emitted (and can be uploaded to Sentry) but the bundles do not advertise
+      // them. The profiling build keeps full source maps with `sourceMappingURL`
+      // references so browser devtools map logs/stack traces to the source.
+      sourcemap: command === 'build' && mode !== 'profiling' ? 'hidden' : true,
       rollupOptions: {
         external: ['/config.js'],
       },
