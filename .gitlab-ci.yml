@@ -287,8 +287,6 @@ build:
 
 build-profiling:
   stage: prepare-artifact
-  variables:
-    DIST_DIR: dist-profiling
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -300,7 +298,6 @@ build-profiling:
   script:
     - pnpm build:profiling
     - jq -r '.version' ./app/package.json > ./dist-profiling/FRONTEND_VERSION
-    - *strip-sourcemaps
   artifacts:
     paths:
       - dist-profiling/*
