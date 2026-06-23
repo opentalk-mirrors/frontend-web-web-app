@@ -324,9 +324,7 @@ const LayoutSelection = () => {
           )}
           {((isCompactLayout && isMeetingNotesFeatureAvailable) || (!isCompactLayout && isMeetingNotes)) && (
             <StyledToggleButton
-              onClick={() =>
-                dispatch(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes, cacheLastLayout: true }))
-              }
+              onClick={() => dispatch(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes }))}
               selected={selectedLayout === LayoutOptions.MeetingNotes}
               value={LayoutOptions.MeetingNotes}
             >
@@ -336,7 +334,7 @@ const LayoutSelection = () => {
           )}
           {((isCompactLayout && isWhiteboardAvailable) || (!isCompactLayout && isWhiteBoard)) && (
             <StyledToggleButton
-              onClick={() => dispatch(updatedCinemaLayout({ layout: LayoutOptions.Whiteboard, cacheLastLayout: true }))}
+              onClick={() => dispatch(updatedCinemaLayout({ layout: LayoutOptions.Whiteboard }))}
               selected={selectedLayout === LayoutOptions.Whiteboard}
               value={LayoutOptions.Whiteboard}
             >
