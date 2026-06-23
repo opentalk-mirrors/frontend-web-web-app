@@ -100,9 +100,7 @@ describe('handleMeetingNotesMessage', () => {
     const onAction = vi.mocked(notificationAction).mock.calls[0]?.[0].onAction;
     onAction?.();
 
-    expect(dispatch).toHaveBeenCalledWith(
-      updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes, cacheLastLayout: true })
-    );
+    expect(dispatch).toHaveBeenCalledWith(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes }));
   });
 
   it('dispatches read URL without opening meeting notes when access already exists', () => {

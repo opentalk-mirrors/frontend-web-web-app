@@ -37,7 +37,7 @@ export const handleMeetingNotesMessage = (
           variant: 'info',
           ariaLive: 'polite',
           actionBtnText: i18next.t('meeting-notes-new-meeting-notes-message-button'),
-          onAction: () => dispatch(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes, cacheLastLayout: true })),
+          onAction: () => dispatch(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes })),
         });
       }
       dispatch(setMeetingNotesWriteUrl(data.url.toString()));
@@ -54,7 +54,7 @@ export const handleMeetingNotesMessage = (
           variant: 'info',
           ariaLive: 'polite',
           actionBtnText: i18next.t('meeting-notes-new-meeting-notes-message-button'),
-          onAction: () => dispatch(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes, cacheLastLayout: true })),
+          onAction: () => dispatch(updatedCinemaLayout({ layout: LayoutOptions.MeetingNotes })),
         });
       }
       dispatch(setMeetingNotesReadUrl(data.url.toString()));

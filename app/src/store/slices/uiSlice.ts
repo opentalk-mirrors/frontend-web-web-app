@@ -150,14 +150,19 @@ export const uiSlice = createSlice({
       state.cinemaViewOrder = action.payload;
     },
     updatedCinemaLayout: (state, action: PayloadAction<{ layout: LayoutOptions; cacheLastLayout?: boolean }>) => {
-      if (action.payload.cacheLastLayout) {
-        state.lastCinemaLayout = action.payload.layout;
+      const { layout, cacheLastLayout } = action.payload;
+
+      // Exclude overlay layouts from being cached as the last layout. This prevents the "Hide" button
+      // from returning to an overlay layout
+      const isOverlayLayout = layout === LayoutOptions.MeetingNotes || layout === LayoutOptions.Whiteboard;
+      if (cacheLastLayout && !isOverlayLayout) {
+        state.lastCinemaLayout = layout;
       }
-      state.cinemaLayout = action.payload.layout;
-      if (action.payload.layout === LayoutOptions.Whiteboard && state.isCurrentWhiteboardHighlighted) {
+      state.cinemaLayout = layout;
+      if (layout === LayoutOptions.Whiteboard && state.isCurrentWhiteboardHighlighted) {
         state.isCurrentWhiteboardHighlighted = false;
       }
-      if (action.payload.layout === LayoutOptions.MeetingNotes && state.isCurrentMeetingNotesHighlighted) {
+      if (layout === LayoutOptions.MeetingNotes && state.isCurrentMeetingNotesHighlighted) {
         state.isCurrentMeetingNotesHighlighted = false;
       }
     },
