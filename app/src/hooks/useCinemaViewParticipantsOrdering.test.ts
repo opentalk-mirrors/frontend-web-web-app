@@ -41,7 +41,7 @@ const getMockedParticipants = (count: number): Array<MockedParticipant> => {
 
 const useCurrentSpeakerMock = vi.fn().mockReturnValue(null);
 vi.mock('./useCurrentSpeaker', () => ({
-  useCurrentSpeaker: () => useCurrentSpeakerMock(),
+  useCurrentSpeaker: () => ({ currentSpeakerId: useCurrentSpeakerMock(), sustainedActivity: new Map() }),
 }));
 
 const useIsMobileMock = vi.fn().mockReturnValue(false);

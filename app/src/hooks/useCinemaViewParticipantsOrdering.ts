@@ -240,7 +240,7 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
     () => indexParticipantsForOrdering(participants),
     [participants]
   );
-  const currentSpeaker = useCurrentSpeaker();
+  const currentSpeaker = useCurrentSpeaker().currentSpeakerId;
 
   const currentPage = useAppSelector(selectPaginationPageState);
   const selectedGridSize = useAppSelector(selectCinemaGridSize);

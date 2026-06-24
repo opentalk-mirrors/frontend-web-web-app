@@ -1,15 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
+import { useRemoteParticipants } from '@livekit/components-react';
 import { RemoteParticipant, RoomEvent } from 'livekit-client';
 import { useMemo } from 'react';
 
 import { selectAllOnlineParticipants } from '../store/slices/participantsSlice';
-import { selectCinemaViewOrder, selectPinnedConnectionIdentifier } from '../store/slices/uiSlice';
+import { selectCinemaViewOrder } from '../store/slices/uiSlice';
 import { Participant } from '../types';
 import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
 import { sortCinemaViewParticipants } from '../utils/sortCinemaViewParticipants';
+import { useCurrentSpeaker } from './useCurrentSpeaker';
 import { useAppSelector } from './useCustomRedux';
 
 export type CinemaViewParticipant = Participant & {
@@ -40,9 +41,7 @@ export function useCinemaViewParticipants(): {
       RoomEvent.ActiveSpeakersChanged,
     ],
   });
-  const sortedParticipants = useSortedParticipants(remoteParticipants);
-  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
-  const currentSpeakerId = pinnedConnectionIdentifier || sortedParticipants[0]?.identity;
+  const { currentSpeakerId, sustainedActivity } = useCurrentSpeaker();
 
   const onlineParticipants = useAppSelector(selectAllOnlineParticipants);
   const remoteParticipantsMap = useMemo(
@@ -64,13 +63,13 @@ export function useCinemaViewParticipants(): {
           audioLevel: remoteParticipant?.audioLevel ?? 0,
           isCameraEnabled: remoteParticipant?.isCameraEnabled ?? false,
           isSpeaking: remoteParticipant?.isSpeaking ?? false,
-          lastSpokeAt: remoteParticipant?.lastSpokeAt,
+          lastSpokeAt: sustainedActivity.get(combinedId),
         };
       });
     });
 
     return sortCinemaViewParticipants(mergedParticipants, viewOrder);
-  }, [onlineParticipants, remoteParticipantsMap, viewOrder]);
+  }, [onlineParticipants, remoteParticipantsMap, viewOrder, sustainedActivity]);
 
   return { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId };
 }
