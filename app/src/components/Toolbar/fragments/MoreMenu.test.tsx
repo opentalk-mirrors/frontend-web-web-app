@@ -9,6 +9,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { notifications } from '../../../commonComponents';
+import { setGuestAccessEnabled } from '../../../store/slices/moderationSlice';
 import { ForceMuteType, Role } from '../../../types';
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import MenuButton from './MoreButton';
@@ -103,6 +104,27 @@ describe('MoreMenu', () => {
           provider: { snackbar: true, mui: true },
         });
         expect(screen.getByRole('menuitem', { name: 'more-menu-create-invite' })).toBeInTheDocument();
+      });
+      it('renders the invite guest option disabled when guest access is turned off', () => {
+        const { store: storeWithGuestAccessOff } = configureStore({
+          initialState: {
+            ...moderatorState,
+            config: {
+              provider: {
+                accountManagementUrl: 'https://account.opentalk.eu',
+              },
+              enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
+            },
+          },
+        });
+        storeWithGuestAccessOff.dispatch(setGuestAccessEnabled(false));
+        renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
+          store: storeWithGuestAccessOff,
+          provider: { snackbar: true, mui: true },
+        });
+        const inviteGuest = screen.getByRole('menuitem', { name: 'more-menu-create-invite' });
+        expect(inviteGuest).toBeInTheDocument();
+        expect(inviteGuest).toHaveAttribute('aria-disabled', 'true');
       });
       it('renders invite guest dialog and it"s closed by default', () => {
         setup();
@@ -234,7 +256,7 @@ describe('MoreMenu', () => {
       const { store } = configureStore({
         initialState: {
           user: { role: Role.Moderator },
-          room: { isOwnedByCurrentUser: true, waitingRoom: 'for_everyone' },
+          room: { isOwnedByCurrentUser: true },
         },
       });
       renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {

@@ -74,14 +74,16 @@ import {
 } from '../../../store/slices/configSlice';
 import { selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
 import {
+  selectGuestAccessEnabled,
   selectMicrophonesEnabled,
   selectRaiseHandsEnabled,
   selectSelfRenameEnabled,
   selectTrainingParticipationReportEnabled,
+  selectWaitingRoomState,
 } from '../../../store/slices/moderationSlice';
 import { selectAllModeratorParticipants } from '../../../store/slices/participantsSlice';
 import { selectReactionRestrictionsEnabled } from '../../../store/slices/reactionSlice';
-import { selectE2EEncryption, selectIsRoomOwner, selectWaitingRoomState } from '../../../store/slices/roomSlice';
+import { selectE2EEncryption, selectIsRoomOwner } from '../../../store/slices/roomSlice';
 import {
   selectActiveStreamIds,
   selectInactiveStreamIds,
@@ -158,9 +160,6 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const hasRecordingFeatureOn = useAppSelector(
     selectIsFeatureEnabled(BackendModules.Recording, RecordingFeatures.Record)
   );
-  const isGuestsAllowedFeatureEnabled = useAppSelector(
-    selectIsFeatureEnabled(BackendModules.Core, CoreFeatures.GuestsAllowed)
-  );
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
   const userMenuItems: Array<MenuEntry> = [];
@@ -173,15 +172,71 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const isTrainingParticipationReportEnabled = useAppSelector(selectTrainingParticipationReportEnabled);
   const highSecurityEnabled = useAppSelector(selectE2EEncryption);
   const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
+  const guestAccessEnabled = useAppSelector(selectGuestAccessEnabled);
+  const isGuestsAllowedFeatureEnabled = useAppSelector(
+    selectIsFeatureEnabled(BackendModules.Core, CoreFeatures.GuestsAllowed)
+  );
+  const isGuestAccessFeatureAvailable = isGuestsAllowedFeatureEnabled && !highSecurityEnabled;
   const { storageStatus, canUpgrade } = useStorageStatus();
 
-  const inviteGuestItem = {
+  const withGuestAccessDisabledTooltip = (key: string, children: React.ReactNode) => (
+    <Tooltip
+      key={key}
+      describeChild
+      title={t('enable-guest-access-first')}
+      placement="right"
+      slotProps={{
+        popper: {
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                offset: [0, -14],
+              },
+            },
+          ],
+        },
+      }}
+    >
+      <span>{children}</span>
+    </Tooltip>
+  );
+
+  const storageFullTooltipTitle = (
+    <Trans
+      i18nKey={
+        canUpgrade && accountManagementUrl
+          ? 'conference-storage-tooltip-upgradeable-full-storage'
+          : 'conference-storage-tooltip-full-storage'
+      }
+      components={{
+        accountManagementLink: accountManagementUrl ? <Link href={accountManagementUrl} target="_blank" /> : <span />,
+      }}
+    />
+  );
+
+  const withStorageFullTooltip = (key: string, children: React.ReactNode) => (
+    <Tooltip
+      key={key}
+      describeChild
+      title={storageFullTooltipTitle}
+      slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
+    >
+      <span>{children}</span>
+    </Tooltip>
+  );
+
+  const inviteGuestItem: MenuEntry = {
     label: 'more-menu-create-invite',
     action: () => {
       setShowInviteModal(true);
       onClose();
     },
     icon: <AddUserIcon />,
+    disabled: !guestAccessEnabled,
+    tooltip: guestAccessEnabled
+      ? undefined
+      : (children) => withGuestAccessDisabledTooltip('more-menu-create-invite', children),
   };
 
   const toggleWaitingRoomItem: MenuEntry = {
@@ -199,6 +254,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
       {
         label: 'more-menu-waiting-room-for-guests',
         selected: waitingRoomState === WaitingRoom.ForGuests,
+        disabled: !guestAccessEnabled,
+        tooltip: guestAccessEnabled
+          ? undefined
+          : (children) => withGuestAccessDisabledTooltip('more-menu-waiting-room-for-guests', children),
         action: () => {
           onClose();
           dispatch(changeWaitingRoomState.action({ newState: WaitingRoom.ForGuests }));
@@ -314,31 +373,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         disabled: storageStatus === 'full',
         tooltip:
           storageStatus === 'full'
-            ? (children) => (
-                <Tooltip
-                  key="training-participation-logging-enable-button"
-                  describeChild
-                  title={
-                    <Trans
-                      i18nKey={
-                        canUpgrade && accountManagementUrl
-                          ? 'conference-storage-tooltip-upgradeable-full-storage'
-                          : 'conference-storage-tooltip-full-storage'
-                      }
-                      components={{
-                        accountManagementLink: accountManagementUrl ? (
-                          <Link href={accountManagementUrl} target="_blank" />
-                        ) : (
-                          <span />
-                        ),
-                      }}
-                    />
-                  }
-                  slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
-                >
-                  <span>{children}</span>
-                </Tooltip>
-              )
+            ? (children) => withStorageFullTooltip('training-participation-logging-enable-button', children)
             : undefined,
       };
 
@@ -382,31 +417,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     disabled: storageStatus === 'full',
     tooltip:
       storageStatus === 'full'
-        ? (children) => (
-            <Tooltip
-              key="training-participation-logging-enable-button"
-              describeChild
-              title={
-                <Trans
-                  i18nKey={
-                    canUpgrade && accountManagementUrl
-                      ? 'conference-storage-tooltip-upgradeable-full-storage'
-                      : 'conference-storage-tooltip-full-storage'
-                  }
-                  components={{
-                    accountManagementLink: accountManagementUrl ? (
-                      <Link href={accountManagementUrl} target="_blank" />
-                    ) : (
-                      <span />
-                    ),
-                  }}
-                />
-              }
-              slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
-            >
-              <span>{children}</span>
-            </Tooltip>
-          )
+        ? (children) => withStorageFullTooltip('training-participation-logging-enable-button', children)
         : undefined,
   };
 
@@ -417,7 +428,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     if (isTrainingParticipationReportModuleOn) {
       moderatorMenuItems.push(togglePresenceLogging);
     }
-    if (isGuestsAllowedFeatureEnabled && !highSecurityEnabled) {
+    if (isGuestAccessFeatureAvailable) {
       moderatorMenuItems.push(inviteGuestItem);
     }
   }
@@ -463,31 +474,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           disabled: storageStatus === 'full',
           tooltip:
             storageStatus === 'full'
-              ? (children) => (
-                  <Tooltip
-                    key="more-menu-start-recording"
-                    describeChild
-                    title={
-                      <Trans
-                        i18nKey={
-                          canUpgrade && accountManagementUrl
-                            ? 'conference-storage-tooltip-upgradeable-full-storage'
-                            : 'conference-storage-tooltip-full-storage'
-                        }
-                        components={{
-                          accountManagementLink: accountManagementUrl ? (
-                            <Link href={accountManagementUrl} target="_blank" />
-                          ) : (
-                            <span />
-                          ),
-                        }}
-                      />
-                    }
-                    slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
-                  >
-                    <span>{children}</span>
-                  </Tooltip>
-                )
+              ? (children) => withStorageFullTooltip('more-menu-start-recording', children)
               : undefined,
         });
         break;

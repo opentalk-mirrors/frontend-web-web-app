@@ -107,8 +107,8 @@ describe('SubmenuMenuItem', () => {
     await user.hover(trigger);
     expect(screen.getByRole('menu', { name: TRIGGER_LABEL })).toBeInTheDocument();
 
-    // Leaving schedules a 150ms close. Re-entering before it elapses must
-    // clear the pending timeout so the menu stays open
+    // Leaving schedules a short close timeout. Re-entering before it elapses
+    // must clear the pending timeout so the menu stays open
     await user.unhover(trigger);
     await user.hover(trigger);
 
@@ -127,7 +127,7 @@ describe('SubmenuMenuItem', () => {
 
     await user.unhover(trigger);
 
-    // The component schedules close after 150ms
+    // The component schedules close after a short delay
     await waitFor(() => expect(screen.queryByRole('menu', { name: TRIGGER_LABEL })).not.toBeInTheDocument());
   });
 });

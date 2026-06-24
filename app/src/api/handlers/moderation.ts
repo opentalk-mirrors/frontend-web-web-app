@@ -13,14 +13,11 @@ import {
   enabledSelfRename,
   forceMuteDisabled,
   forceMuteEnabled,
-} from '../../store/slices/moderationSlice';
-import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
-import {
-  enteredWaitingRoom,
-  readyToEnter,
   setGuestAccessEnabled,
   setWaitingRoomState,
-} from '../../store/slices/roomSlice';
+} from '../../store/slices/moderationSlice';
+import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
+import { enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
 import { setDisplayName, updateRole } from '../../store/slices/userSlice';
 import { KickReason, Role, Timestamp, WaitingRoom } from '../../types';
 import { moderation } from '../types/incoming';
