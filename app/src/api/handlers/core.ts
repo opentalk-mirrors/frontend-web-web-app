@@ -301,10 +301,7 @@ export const handleRoomServerCoreMessage = async (
         });
       }
 
-      if (
-        moduleData.recording?.recordingState.status === RecordingStatus.Active &&
-        state.streaming.consent === undefined
-      ) {
+      if (moduleData.recording?.recordingState.status === RecordingStatus.Active && !state.streaming.consent) {
         showConsentNotification(dispatch);
       }
 
