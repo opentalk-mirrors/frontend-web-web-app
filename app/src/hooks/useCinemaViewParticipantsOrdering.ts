@@ -15,12 +15,32 @@ import { useIsMobile } from './useMediaQuery';
 type CinemaViewParticipantForOrdering = {
   id: ParticipantId;
   connections: ConnectionId[];
+  joinedAt: string;
   lastSpokeAt?: Date;
+  isCameraEnabled?: boolean;
+};
+
+/**
+ * Compute a "last activity" timestamp for a participant. Smaller values mean the
+ * participant has been inactive for longer and is therefore a better displacement
+ * target
+ */
+const getInactivityScore = (
+  participant: CinemaViewParticipantForOrdering,
+  cameraActivationAt: number | undefined
+): number => {
+  const joinedAtMs = new Date(participant.joinedAt).getTime();
+  return Math.max(
+    Number.isFinite(joinedAtMs) ? joinedAtMs : Number.NEGATIVE_INFINITY,
+    participant.lastSpokeAt?.getTime() ?? Number.NEGATIVE_INFINITY,
+    cameraActivationAt ?? Number.NEGATIVE_INFINITY
+  );
 };
 
 type PersistedOrderingState = {
   orderedKeys: ConnectionIdentifier[];
   sortOrder: unknown;
+  cameraActivationAt: Map<ConnectionIdentifier, number>;
 };
 
 type ParticipantsIndexingResult<T extends CinemaViewParticipantForOrdering> = {
@@ -30,6 +50,8 @@ type ParticipantsIndexingResult<T extends CinemaViewParticipantForOrdering> = {
 
 const persistedOrderByHookInstance = new Map<string, PersistedOrderingState>();
 let hookInstanceCounter = 0;
+
+const readNow = (): number => Date.now();
 
 const getParticipantKey = <T extends CinemaViewParticipantForOrdering>(participant: T): ConnectionIdentifier | null => {
   const [connectionId] = participant.connections;
@@ -89,11 +111,130 @@ const indexParticipantsForOrdering = <T extends CinemaViewParticipantForOrdering
   };
 };
 
+const computeCameraActivationAt = <T extends CinemaViewParticipantForOrdering>(
+  participantKeys: ConnectionIdentifier[],
+  participantsByKey: Map<ConnectionIdentifier, T>,
+  previous: Map<ConnectionIdentifier, number> | undefined,
+  now: number
+): Map<ConnectionIdentifier, number> => {
+  const cameraActivationAt = new Map<ConnectionIdentifier, number>();
+  for (const key of participantKeys) {
+    if (!participantsByKey.get(key)?.isCameraEnabled) {
+      continue;
+    }
+    cameraActivationAt.set(key, previous?.get(key) ?? now);
+  }
+  return cameraActivationAt;
+};
+
+// SpeakerView strip ordering: sort by most-recent activity first
+const orderStripByActivity = <T extends CinemaViewParticipantForOrdering>(
+  order: ConnectionIdentifier[],
+  participantsByKey: Map<ConnectionIdentifier, T>,
+  cameraActivationAt: Map<ConnectionIdentifier, number>
+): ConnectionIdentifier[] => {
+  const activityAt = (key: ConnectionIdentifier): number =>
+    Math.max(
+      participantsByKey.get(key)?.lastSpokeAt?.getTime() ?? Number.NEGATIVE_INFINITY,
+      cameraActivationAt.get(key) ?? Number.NEGATIVE_INFINITY
+    );
+
+  return order
+    .map((key, index) => ({ key, index, activity: activityAt(key) }))
+    .sort((a, b) => b.activity - a.activity || a.index - b.index)
+    .map((entry) => entry.key);
+};
+
+// Cinema-grid ordering: keep the grid tiles stable by only swapping participants
+// onto the first page instead of re-sorting everything
+const orderGridByPriority = <T extends CinemaViewParticipantForOrdering>(
+  order: ConnectionIdentifier[],
+  participantsByKey: Map<ConnectionIdentifier, T>,
+  cameraActivationAt: Map<ConnectionIdentifier, number>,
+  currentSpeaker: ConnectionIdentifier | null | undefined,
+  maxGridTiles: number
+): ConnectionIdentifier[] => {
+  const firstPageLimit = Math.min(order.length, maxGridTiles);
+  const scoreOf = (key: ConnectionIdentifier): number => {
+    const participant = participantsByKey.get(key);
+    return participant ? getInactivityScore(participant, cameraActivationAt.get(key)) : Number.POSITIVE_INFINITY;
+  };
+
+  // Index of the page-1 slot with the smallest score (= longest inactive)
+  const longestInactivePageOneSlot = (current: ConnectionIdentifier[]): { index: number | null; score: number } => {
+    let index: number | null = null;
+    let bestScore = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < firstPageLimit; i++) {
+      const key = current[i];
+      if (key === currentSpeaker || !participantsByKey.has(key)) {
+        continue;
+      }
+      const score = scoreOf(key);
+      if (score < bestScore) {
+        bestScore = score;
+        index = i;
+      }
+    }
+    return { index, score: bestScore };
+  };
+
+  const swap = (current: ConnectionIdentifier[], i: number, j: number): ConnectionIdentifier[] => {
+    const next = [...current];
+    [next[i], next[j]] = [next[j], next[i]];
+    return next;
+  };
+
+  let workingOrder = order;
+
+  // Pass 1: force the current speaker onto page 1
+  const speaker = currentSpeaker ? participantsByKey.get(currentSpeaker) : undefined;
+  if (currentSpeaker && (speaker?.lastSpokeAt || speaker?.isCameraEnabled)) {
+    const speakerIndex = workingOrder.indexOf(currentSpeaker);
+    if (speakerIndex >= firstPageLimit) {
+      const { index } = longestInactivePageOneSlot(workingOrder);
+      if (index !== null) {
+        workingOrder = swap(workingOrder, index, speakerIndex);
+      }
+    }
+  }
+
+  // Pass 2: promote other active participants from later pages
+  for (let i = firstPageLimit; i < workingOrder.length; i++) {
+    const candidateKey = workingOrder[i];
+    if (candidateKey === currentSpeaker) {
+      continue;
+    }
+    const candidate = participantsByKey.get(candidateKey);
+    if (!candidate?.isCameraEnabled && !candidate?.lastSpokeAt) {
+      continue;
+    }
+    const { index, score } = longestInactivePageOneSlot(workingOrder);
+    if (index === null || score >= scoreOf(candidateKey)) {
+      continue;
+    }
+    workingOrder = swap(workingOrder, index, i);
+  }
+
+  return workingOrder;
+};
+
+export type CinemaViewParticipantsOrderingOptions = {
+  // When true, ordering is computed for a single, scrollable strip (the
+  // SpeakerView `ThumbsRow`) instead of the paginated cinema grid
+  unbounded?: boolean;
+};
+
 /**
  *
  * @param participants - Pre sorted participants.
+ * @param options - Optional behavior switches; see
+ *   {@link CinemaViewParticipantsOrderingOptions}.
  */
-export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipantForOrdering>(participants: T[]) {
+export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipantForOrdering>(
+  participants: T[],
+  options?: CinemaViewParticipantsOrderingOptions
+) {
+  const unbounded = options?.unbounded === true;
   const [hookInstanceId] = useState(() => `useCinemaViewParticipantsOrdering-${hookInstanceCounter++}`);
   const { participantKeys, participantsByKey } = useMemo(
     () => indexParticipantsForOrdering(participants),
@@ -117,7 +258,7 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
     };
   }, [hookInstanceId]);
 
-  const orderedKeys = useMemo(() => {
+  const { orderedKeys, cameraActivationAt } = useMemo(() => {
     const persistedState = persistedOrderByHookInstance.get(hookInstanceId);
     const isSortOrderChanged = persistedState?.sortOrder !== cinemaViewOrder;
 
@@ -126,65 +267,23 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
         ? reconcileOrder(persistedState.orderedKeys, participantKeys)
         : participantKeys;
 
-    if (!currentSpeaker) {
-      return nextOrder;
+    const computedCameraActivationAt = computeCameraActivationAt(
+      participantKeys,
+      participantsByKey,
+      persistedState?.cameraActivationAt,
+      readNow()
+    );
+
+    const isActivityFirst = cinemaViewOrder === CinemaViewSortOrder.ActivityFirst;
+    if (!isActivityFirst || (!unbounded && currentPageIndex !== 0)) {
+      return { orderedKeys: nextOrder, cameraActivationAt: computedCameraActivationAt };
     }
 
-    const currentSpeakerIndex = nextOrder.indexOf(currentSpeaker);
+    const reordered = unbounded
+      ? orderStripByActivity(nextOrder, participantsByKey, computedCameraActivationAt)
+      : orderGridByPriority(nextOrder, participantsByKey, computedCameraActivationAt, currentSpeaker, maxGridTiles);
 
-    if (
-      currentSpeakerIndex === -1 ||
-      currentSpeakerIndex < maxGridTiles ||
-      currentPageIndex !== 0 ||
-      cinemaViewOrder !== CinemaViewSortOrder.ActivityFirst
-    ) {
-      return nextOrder;
-    }
-
-    let leastActiveParticipantIndex: number = -1;
-    const firstPageLimit = Math.min(nextOrder.length, maxGridTiles);
-    for (let i = 0; i < firstPageLimit; i++) {
-      const participantKey = nextOrder[i];
-      const participant = participantKey ? participantsByKey.get(participantKey) : undefined;
-      if (!participant) {
-        continue;
-      }
-
-      if (!participant.lastSpokeAt) {
-        leastActiveParticipantIndex = i;
-        break;
-      }
-
-      if (leastActiveParticipantIndex === -1) {
-        leastActiveParticipantIndex = i;
-      }
-
-      const leastActiveParticipantKey = nextOrder[leastActiveParticipantIndex];
-      const leastActiveParticipant = leastActiveParticipantKey
-        ? participantsByKey.get(leastActiveParticipantKey)
-        : undefined;
-
-      const bothParticipantsSpoke = participant.lastSpokeAt && leastActiveParticipant?.lastSpokeAt;
-      if (
-        bothParticipantsSpoke &&
-        leastActiveParticipant.lastSpokeAt &&
-        participant.lastSpokeAt < leastActiveParticipant.lastSpokeAt
-      ) {
-        leastActiveParticipantIndex = i;
-      }
-    }
-
-    if (leastActiveParticipantIndex === -1) {
-      return nextOrder;
-    }
-
-    const swappedOrder = [...nextOrder];
-    [swappedOrder[leastActiveParticipantIndex], swappedOrder[currentSpeakerIndex]] = [
-      swappedOrder[currentSpeakerIndex],
-      swappedOrder[leastActiveParticipantIndex],
-    ];
-
-    return swappedOrder;
+    return { orderedKeys: reordered, cameraActivationAt: computedCameraActivationAt };
   }, [
     participantKeys,
     participantsByKey,
@@ -193,18 +292,23 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
     currentSpeaker,
     maxGridTiles,
     currentPageIndex,
+    unbounded,
   ]);
 
   useLayoutEffect(() => {
     persistedOrderByHookInstance.set(hookInstanceId, {
       orderedKeys,
       sortOrder: cinemaViewOrder,
+      cameraActivationAt,
     });
-  }, [hookInstanceId, orderedKeys, cinemaViewOrder]);
+  }, [hookInstanceId, orderedKeys, cinemaViewOrder, cameraActivationAt]);
 
   const pageStartIndex = currentPageIndex * maxGridTiles;
   const pageEndIndex = (currentPageIndex + 1) * maxGridTiles;
   const pageKeys = orderedKeys.slice(pageStartIndex, pageEndIndex);
 
-  return mapKeysToParticipants(pageKeys, participantsByKey);
+  return {
+    pageParticipants: mapKeysToParticipants(pageKeys, participantsByKey),
+    orderedParticipants: mapKeysToParticipants(orderedKeys, participantsByKey),
+  };
 }

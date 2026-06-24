@@ -38,7 +38,7 @@ export type GridViewProps = {
 
 const GridView = () => {
   const { cinemaViewParticipants, remoteParticipantsMap } = useCinemaViewParticipants();
-  const participants = useCinemaViewParticipantsOrdering(cinemaViewParticipants);
+  const { pageParticipants: participants } = useCinemaViewParticipantsOrdering(cinemaViewParticipants);
   const [fallbackParticipantCache] = useState(() => new Map<ConnectionIdentifier, Participant>());
   const direction = useAppSelector(selectPaginationDirectionState);
 
