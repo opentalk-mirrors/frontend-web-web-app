@@ -107,13 +107,23 @@ export const selectInactiveStreamIds = createSelector([selectAllStreamingTargets
     .map((stream) => stream.targetId)
 );
 
-const selectHasActiveTarget = createSelector([selectAllStreamingTargets], (streamingTargets) =>
+const selectHasActiveStreamingTarget = createSelector([selectAllStreamingTargets], (streamingTargets) =>
   streamingTargets.some((streamingTarget) => streamingTarget.status === StreamStatus.Active)
 );
-const selectHasConsent = (state: RootState) => state.streaming.consent;
+
+const selectHasStreamingConsent = (state: RootState) => state.streaming.consent;
+
 export const selectNeedRecordingConsent = createSelector(
-  [selectHasActiveTarget, selectHasConsent],
-  (hasActiveTarget, hasConsent) => hasActiveTarget && !hasConsent
+  [selectHasActiveStreamingTarget, selectRecordingTargetStatus, selectHasStreamingConsent],
+  (hasActiveTarget, recordingTargetStatus, hasConsent) => {
+    if (!hasActiveTarget && recordingTargetStatus !== StreamingStatus.Active) {
+      return false;
+    }
+    if (!hasConsent) {
+      return true;
+    }
+    return false;
+  }
 );
 
 export default streamingSlice.reducer;
