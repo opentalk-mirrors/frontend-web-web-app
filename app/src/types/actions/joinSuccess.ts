@@ -52,14 +52,7 @@ export interface JoinSuccessInternalState {
   polls: InitialPoll | undefined;
   votes: VoteSummary[] | undefined;
   participants: Participant[];
-  moderation:
-    | {
-        raiseHandsEnabled: boolean;
-        waitingRoom: WaitingRoom;
-        waitingRoomParticipants: WaitingRoomParticipant[];
-        displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
-      }
-    | undefined;
+  moderation: ModerationState | undefined;
   forceMute: ForceMute | undefined;
   recording: RecordingState | undefined;
   serverTimeOffset: number;
@@ -106,12 +99,7 @@ export interface ModuleData {
   chat: InitialChat;
   livekit: Livekit;
   breakout?: InitialBreakout;
-  moderation?: {
-    raiseHandsEnabled: boolean;
-    waitingRoomParticipants: WaitingRoomParticipant[];
-    waitingRoom: WaitingRoom;
-    displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
-  };
+  moderation?: ModerationState;
   recording?: RecordingState;
   timer?: TimerState;
   legalVote?: LegalVoteJoinSuccess;
@@ -232,4 +220,12 @@ export interface RecordingState {
   recordingState: RecordingStatusInfo;
   streamStates: Record<StreamingTargetId, StreamingTarget>;
   service?: RecordingServiceState;
+}
+
+export interface ModerationState {
+  raiseHandsEnabled: boolean;
+  guestAccess: boolean;
+  waitingRoomParticipants: WaitingRoomParticipant[];
+  waitingRoom: WaitingRoom;
+  displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
 }

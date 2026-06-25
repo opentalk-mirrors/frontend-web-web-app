@@ -5,7 +5,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 import type { RootState } from '..';
 import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
-import { ForceMute, ForceMuteType } from '../../types';
+import { ForceMute, ForceMuteType, WaitingRoom } from '../../types';
 import { joinSuccess } from '../commonActions';
 
 export type ModerationState = {
@@ -15,6 +15,8 @@ export type ModerationState = {
   forceMute: ForceMute;
   trainingParticipationReportEnabled: boolean;
   selfRenameEnabled: boolean;
+  waitingRoom: WaitingRoom;
+  guestAccessEnabled: boolean;
 };
 
 const initialState: ModerationState = {
@@ -26,6 +28,8 @@ const initialState: ModerationState = {
   },
   trainingParticipationReportEnabled: false,
   selfRenameEnabled: false,
+  waitingRoom: WaitingRoom.Disabled,
+  guestAccessEnabled: true,
 };
 
 export const moderationSlice = createSlice({
@@ -83,14 +87,23 @@ export const moderationSlice = createSlice({
     disabledSelfRename: (state) => {
       state.selfRenameEnabled = false;
     },
+    setWaitingRoomState: (state, { payload }: PayloadAction<WaitingRoom>) => {
+      state.waitingRoom = payload;
+    },
+    setGuestAccessEnabled: (state, { payload }: PayloadAction<boolean>) => {
+      state.guestAccessEnabled = payload;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(joinSuccess, (state, action) => {
-      if (action.payload.trainingParticipationReport) {
+    builder.addCase(joinSuccess, (state, { payload }) => {
+      state.waitingRoom = payload.moderation?.waitingRoom ?? WaitingRoom.Disabled;
+      state.guestAccessEnabled = payload.moderation?.guestAccess ?? true;
+
+      if (payload.trainingParticipationReport) {
         state.trainingParticipationReportEnabled =
-          action.payload.trainingParticipationReport.state !== ParticipationLoggingState.Disabled;
+          payload.trainingParticipationReport.state !== ParticipationLoggingState.Disabled;
       }
-      const forceMute = action.payload.forceMute;
+      const forceMute = payload.forceMute;
       if (forceMute) {
         state.forceMute = forceMute;
       } else {
@@ -99,12 +112,12 @@ export const moderationSlice = createSlice({
           unrestrictedParticipants: [],
         };
       }
-      state.raiseHandsEnabled = action.payload.moderation?.raiseHandsEnabled ?? state.raiseHandsEnabled;
-      const displayNameChangeRestrictions = action.payload.moderation?.displayNameChangeRestrictions;
+      state.raiseHandsEnabled = payload.moderation?.raiseHandsEnabled ?? state.raiseHandsEnabled;
+      const displayNameChangeRestrictions = payload.moderation?.displayNameChangeRestrictions;
       if (displayNameChangeRestrictions) {
         const restricted =
           displayNameChangeRestrictions.type === 'enabled'
-            ? !displayNameChangeRestrictions.unrestrictedParticipants.includes(action.payload.participantId)
+            ? !displayNameChangeRestrictions.unrestrictedParticipants.includes(payload.participantId)
             : false;
 
         state.selfRenameEnabled = !restricted;
@@ -125,6 +138,8 @@ export const {
   trainingParticipationReportDisabled,
   disabledSelfRename,
   enabledSelfRename,
+  setWaitingRoomState,
+  setGuestAccessEnabled,
 } = moderationSlice.actions;
 export const actions = moderationSlice.actions;
 
@@ -141,5 +156,8 @@ export const selectMicrophonesEnabled = (state: RootState) =>
 export const selectTrainingParticipationReportEnabled = (state: RootState) =>
   state.moderation.trainingParticipationReportEnabled;
 export const selectSelfRenameEnabled = (state: RootState) => state.moderation.selfRenameEnabled;
+export const selectWaitingRoomState = (state: RootState) => state.moderation.waitingRoom;
+export const selectIsWaitingRoomActive = (state: RootState) => state.moderation.waitingRoom !== WaitingRoom.Disabled;
+export const selectGuestAccessEnabled = (state: RootState) => state.moderation.guestAccessEnabled;
 
 export default moderationSlice.reducer;

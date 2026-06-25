@@ -20,8 +20,8 @@ import {
   selectHasAnyUnreadPrivateChatMessage,
   selectUnreadGlobalMessageCount,
 } from '../../../../store/slices/chatSlice';
+import { selectIsWaitingRoomActive } from '../../../../store/slices/moderationSlice';
 import { selectParticipantsWaitingCount } from '../../../../store/slices/participantsSlice';
-import { selectIsWaitingRoomActive } from '../../../../store/slices/roomSlice';
 import {
   selectActiveTab,
   selectHaveSeenMobilePollsAndVotes,

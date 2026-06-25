@@ -11,6 +11,7 @@ import { CloseIcon } from '../../../assets/icons';
 import { CopyTextField, IconButton } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectBaseUrl, selectIsFeatureEnabled } from '../../../store/slices/configSlice';
+import { selectGuestAccessEnabled } from '../../../store/slices/moderationSlice';
 import { selectE2EEncryption } from '../../../store/slices/roomSlice';
 import type { RoomInfo } from '../../../types';
 import { composeInviteUrl } from '../../../utils/apiUtils';
@@ -47,6 +48,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
   const isGuestsAllowedFeatureEnabled = useAppSelector(
     selectIsFeatureEnabled(BackendModules.Core, CoreFeatures.GuestsAllowed)
   );
+  const guestAccessEnabled = useAppSelector(selectGuestAccessEnabled);
   const inviteUrl = roomId ? composeInviteUrl(baseUrl, roomId, meetingDetails?.inviteCodeId) : null;
   const streamingLinksExist = meetingDetails !== undefined && meetingDetails.streamingLinks.length > 0;
 
@@ -116,7 +118,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
       </Box>
       <DialogContent>
         <Stack spacing={2}>
-          {isGuestsAllowedFeatureEnabled && !highSecurityEnabled && (
+          {isGuestsAllowedFeatureEnabled && guestAccessEnabled && !highSecurityEnabled && (
             <CustomCopyTextField
               label={getLabelText(FieldKeys.InviteLink)}
               value={inviteUrl?.toString()}
@@ -126,7 +128,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
               onClick={() => setCopiedUrl(inviteUrl?.toString())}
             />
           )}
-          {sipLink && (
+          {sipLink && guestAccessEnabled && (
             <CustomCopyTextField
               label={getLabelText(FieldKeys.SipLink)}
               value={sipLink}
@@ -154,6 +156,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
         roomPassword={roomPassword}
         meetingDetails={meetingDetails}
         inviteUrl={inviteUrl}
+        guestAccessEnabled={guestAccessEnabled}
       />
     </Dialog>
   );

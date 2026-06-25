@@ -1387,6 +1387,7 @@ rename-other-feedback-notification = Du hast den Namen von '{$oldName}' in '{$ne
 rename-general-notification = {$actorName} hat den Namen von '{$oldName}' in '{$newName}' geändert.
 
 guest-access-switch-label = Gastzugang
+enable-guest-access-first = Aktivieren Sie zuerst den Gastzugang
 dashboard-meeting-waiting-room-option-disabled = Aus
 dashboard-meeting-waiting-room-option-all-participants = Alle
 dashboard-meeting-waiting-room-option-guests-only = Nur Gäste

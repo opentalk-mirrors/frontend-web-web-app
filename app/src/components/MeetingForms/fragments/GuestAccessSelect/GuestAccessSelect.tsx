@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import { FormikProps } from 'formik';
 import { ChangeEvent, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -64,9 +64,19 @@ export function GuestAccessSelect({ formik, guestAccessAllowed = true }: GuestAc
           <ToggleButton value={WaitingRoomMode.Inactive}>
             {t('dashboard-meeting-waiting-room-option-disabled')}
           </ToggleButton>
-          <ToggleButton value={WaitingRoomMode.GuestsOnly} disabled={!guestAccessEnabled}>
-            {t('dashboard-meeting-waiting-room-option-guests-only')}
-          </ToggleButton>
+          {guestAccessEnabled ? (
+            <ToggleButton value={WaitingRoomMode.GuestsOnly}>
+              {t('dashboard-meeting-waiting-room-option-guests-only')}
+            </ToggleButton>
+          ) : (
+            <Tooltip describeChild title={t('enable-guest-access-first')}>
+              <span>
+                <ToggleButton value={WaitingRoomMode.GuestsOnly} disabled>
+                  {t('dashboard-meeting-waiting-room-option-guests-only')}
+                </ToggleButton>
+              </span>
+            </Tooltip>
+          )}
           <ToggleButton value={WaitingRoomMode.AllParticipants}>
             {t('dashboard-meeting-waiting-room-option-all-participants')}
           </ToggleButton>

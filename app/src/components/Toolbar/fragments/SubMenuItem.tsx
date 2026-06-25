@@ -7,10 +7,14 @@ import React, { useRef, useState } from 'react';
 import { ArrowRightIcon, DoneIcon } from '../../../assets/icons';
 import { ToolbarMenuItem } from './ToolbarMenuUtils';
 
+const SUBMENU_CLOSE_DELAY_MS = 150;
+
 export interface SubmenuEntry {
   label: string;
   action: () => void;
   selected?: boolean;
+  disabled?: boolean;
+  tooltip?: (children: React.ReactNode) => React.ReactNode;
 }
 
 interface SubmenuMenuItemProps {
@@ -42,7 +46,7 @@ const SubmenuMenuItem = ({ label, icon, disabled, submenu, container }: SubmenuM
     if (closeTimeout.current) {
       clearTimeout(closeTimeout.current);
     }
-    closeTimeout.current = setTimeout(() => setSubmenuAnchor(null), 150);
+    closeTimeout.current = setTimeout(() => setSubmenuAnchor(null), SUBMENU_CLOSE_DELAY_MS);
   };
 
   const closeSubmenu = () => {
@@ -100,10 +104,12 @@ const SubmenuMenuItem = ({ label, icon, disabled, submenu, container }: SubmenuM
               {submenu.map((option) => {
                 const isSelected = option.selected ?? false;
 
-                return (
+                const menuItem = (
                   <ToolbarMenuItem
                     key={option.label}
-                    onClick={() => {
+                    disabled={option.disabled}
+                    onClick={(event) => {
+                      event.stopPropagation();
                       closeSubmenu();
 
                       if (!isSelected) {
@@ -117,6 +123,12 @@ const SubmenuMenuItem = ({ label, icon, disabled, submenu, container }: SubmenuM
                       {option.label}
                     </Typography>
                   </ToolbarMenuItem>
+                );
+
+                return option.tooltip ? (
+                  <React.Fragment key={option.label}>{option.tooltip(menuItem)}</React.Fragment>
+                ) : (
+                  menuItem
                 );
               })}
             </MenuList>

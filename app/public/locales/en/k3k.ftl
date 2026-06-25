@@ -1388,6 +1388,7 @@ rename-other-feedback-notification = You changed the name of '{$oldName}' to '{$
 rename-general-notification = {$actorName} changed the display name of '{$oldName}' to '{$newName}'.
 
 guest-access-switch-label = Guest access
+enable-guest-access-first = Enable guest access first
 dashboard-meeting-waiting-room-option-disabled = Off
 dashboard-meeting-waiting-room-option-all-participants = Everyone
 dashboard-meeting-waiting-room-option-guests-only = Guests only

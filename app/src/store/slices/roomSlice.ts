@@ -23,7 +23,6 @@ import {
   RoomKind,
   RoomMode,
   TimerStyle,
-  WaitingRoom,
 } from '../../types';
 import { fetchWithAuth, getControllerBaseUrl } from '../../utils/apiUtils';
 import { disconnectRoom, hangUp, joinSuccess, startRoom } from '../commonActions';
@@ -44,8 +43,6 @@ export type RoomState = {
   password?: string;
   invite: InviteState;
   connectionState: ConnectionState;
-  waitingRoom: WaitingRoom;
-  guestAccessEnabled: boolean;
   error?: string;
   serverTimeOffset: number;
   passwordRequired: boolean;
@@ -79,8 +76,6 @@ const initialState: RoomState = {
   password: undefined,
   invite: initialInviteState,
   connectionState: ConnectionState.Initial,
-  waitingRoom: WaitingRoom.Disabled,
-  guestAccessEnabled: true,
   serverTimeOffset: 0,
   passwordRequired: false,
   participantLimit: 0,
@@ -147,12 +142,6 @@ export const roomSlice = createSlice({
     },
     readyToEnter: (state) => {
       state.connectionState = ConnectionState.ReadyToEnter;
-    },
-    setWaitingRoomState: (state, { payload }: PayloadAction<WaitingRoom>) => {
-      state.waitingRoom = payload;
-    },
-    setGuestAccessEnabled: (state, { payload }: PayloadAction<boolean>) => {
-      state.guestAccessEnabled = payload;
     },
     updatedReconnectTimerId: (state, { payload: { reconnectTimerId } }) => {
       state.reconnectTimerId = reconnectTimerId;
@@ -233,7 +222,6 @@ export const roomSlice = createSlice({
       state.currentMode = undefined;
       state.serverTimeOffset = payload.serverTimeOffset;
       state.connectionState = ConnectionState.Online;
-      state.waitingRoom = payload.moderation?.waitingRoom ?? WaitingRoom.Disabled;
       state.participantLimit = payload.tariff.quotas?.roomParticipantLimit;
       state.isOwnedByCurrentUser = payload.isRoomOwner;
 
@@ -300,8 +288,6 @@ export const {
   connectionClosed,
   enteredWaitingRoom,
   readyToEnter,
-  setWaitingRoomState,
-  setGuestAccessEnabled,
   updatedReconnectTimerId,
   abortedReconnection,
   roomReset,
@@ -315,9 +301,6 @@ export const selectRoomPassword = (state: RootState) => state.room.password;
 export const selectRoomId = (state: RootState) => state.room.roomId;
 export const selectInviteState = (state: RootState) => state.room.invite;
 export const selectRoomConnectionState = (state: RootState) => state.room.connectionState;
-export const selectWaitingRoomState = (state: RootState) => state.room.waitingRoom;
-export const selectIsWaitingRoomActive = (state: RootState) => state.room.waitingRoom !== WaitingRoom.Disabled;
-export const selectGuestAccessEnabled = (state: RootState) => state.room.guestAccessEnabled;
 export const selectServerTimeOffset = (state: RootState) => state.room.serverTimeOffset;
 export const selectPasswordRequired = (state: RootState) => state.room.passwordRequired;
 export const selectParticipantLimit = (state: RootState) => state.room.participantLimit;
