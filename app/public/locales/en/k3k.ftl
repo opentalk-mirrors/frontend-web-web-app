@@ -1021,6 +1021,8 @@ dashboard-meeting-details-switch = Show meeting details
 dashboard-meeting-details-tooltip = Meeting details visible / shareable to / for all participants (also password if set).
 dashboard-meeting-e2ee-switch = Enable very high level of protection
 dashboard-meeting-e2ee-tooltip = Enable end-to-end encryption for a videoconference with a very high level of protection. Note: Dialing, use of video endpoints/room kits, streaming and recording of the conference will not be possible!
+dashboard-meeting-access-and-security = Access & Security
+dashboard-meeting-extras = Extras
 
 streaming-targets-request-error = Could not add streaming target
 

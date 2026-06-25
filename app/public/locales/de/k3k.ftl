@@ -1019,6 +1019,8 @@ dashboard-meeting-details-switch = Meetingdetails anzeigen
 dashboard-meeting-details-tooltip = Meetingdetails werden für alle Teilnehmer sichtbar und können geteilt werden (auch Passwort falls gesetzt).
 dashboard-meeting-e2ee-switch = Sehr hohes Schutzniveau aktivieren
 dashboard-meeting-e2ee-tooltip = Ende-zu-Ende Verschlüsselung für eine Videokonferenz mit sehr hohem Schutzniveau aktivieren. Hinweis: Die Telefoneinwahl, die Nutzung von Videoendgeräten/Roomkits sowie Streaming und Aufzeichnung der Konferenz sind dann nicht möglich!
+dashboard-meeting-access-and-security = Zugang & Sicherheit
+dashboard-meeting-extras = Extras
 
 streaming-targets-request-error = Streaming-Ziel konnte nicht hinzugefügt werden
 
