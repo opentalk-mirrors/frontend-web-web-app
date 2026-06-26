@@ -5,7 +5,7 @@ import { Autocomplete, CircularProgress, InputAdornment, TextField, styled } fro
 import { EventInvite } from '@opentalk/rest-api-rtk-query';
 import type { EventId, User, EmailUser, Email, ParticipantOption } from '@opentalk/rest-api-rtk-query';
 import { debounce, differenceBy } from 'lodash';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGetEventInvitesQuery, useGetMeQuery, useLazyFindUsersQuery } from '../../api/rest';
@@ -79,6 +79,8 @@ const SelectParticipants = ({
       }, 250),
     [findUsers]
   );
+
+  useEffect(() => () => debounceFindUsers.cancel(), [debounceFindUsers]);
 
   const suggestionsAreStale = searchValue !== lastSearchedValue;
 
