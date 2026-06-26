@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { kebabCase } from 'lodash';
+import { kebabCase } from 'es-toolkit';
 
 import { notifications } from '../../commonComponents';
 import log from '../../logger';

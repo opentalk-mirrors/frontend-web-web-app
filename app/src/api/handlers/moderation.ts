@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { truncate } from 'es-toolkit/compat';
 import i18next from 'i18next';
-import { truncate } from 'lodash';
 
 import { notifications } from '../../commonComponents';
 import log from '../../logger';

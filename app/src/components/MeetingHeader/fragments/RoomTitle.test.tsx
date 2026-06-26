@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import RoomTitle from './RoomTitle';

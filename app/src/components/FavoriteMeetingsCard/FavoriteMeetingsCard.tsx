@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, styled, Tooltip, Link as MuiLink, List, ListItem, Typography } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -80,7 +80,7 @@ export interface FavoriteMeetingProps {
 }
 
 const FavoriteMeetingsCard = ({ meetings }: { meetings: Array<FavoriteMeetingProps> }) => {
-  const sortedMeetings = _.sortBy(meetings, ['subject']);
+  const sortedMeetings = sortBy(meetings, ['subject']);
   const { t } = useTranslation();
 
   const renderFavorites = () => {

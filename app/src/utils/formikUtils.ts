@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { get } from 'es-toolkit/compat';
 import { FormikProps } from 'formik';
-import { get } from 'lodash';
 import * as React from 'react';
 
 type Primitive = string | number | null | undefined;

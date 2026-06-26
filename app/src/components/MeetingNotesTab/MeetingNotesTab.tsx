@@ -19,8 +19,8 @@ import {
   Tooltip,
   Link,
 } from '@mui/material';
-import { cloneDeep, isEmpty, some, uniqueId, truncate } from 'lodash';
-import { unionBy, intersectionBy } from 'lodash';
+import { cloneDeep } from 'es-toolkit';
+import { intersectionBy, isEmpty, some, truncate, unionBy, uniqueId } from 'es-toolkit/compat';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 

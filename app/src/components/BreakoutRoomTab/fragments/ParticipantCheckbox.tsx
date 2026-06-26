@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Checkbox, FormControlLabel, Typography, useTheme } from '@mui/material';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { ChangeEvent } from 'react';
 
 import { ParticipantId } from '../../../types';

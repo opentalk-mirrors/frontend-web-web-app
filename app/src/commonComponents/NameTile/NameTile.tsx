@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, BoxProps, Stack, Typography, styled } from '@mui/material';
 import Color from 'colorjs.io';
-import { omit } from 'lodash';
+import { omit } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { CameraOffIcon, MicOffIcon } from '../../assets/icons';

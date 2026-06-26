@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled, Button, Typography, Stack } from '@mui/material';
+import { isEmpty } from 'es-toolkit/compat';
 import { Formik, Form as FormikForm } from 'formik';
 import { FormikProps, FormikValues } from 'formik/dist/types';
-import { isEmpty } from 'lodash';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';

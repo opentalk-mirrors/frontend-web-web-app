@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 import { createAction, createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { truncate } from 'es-toolkit/compat';
 import i18next from 'i18next';
-import { truncate } from 'lodash';
 
 import { DisconnectReason } from '../../api/types/incoming/core';
 import { notifications } from '../../commonComponents';

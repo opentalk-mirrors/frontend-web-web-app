@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Stack, Typography, styled } from '@mui/material';
 import { format } from 'date-fns';
-import { truncate, uniqueId } from 'lodash';
+import { truncate, uniqueId } from 'es-toolkit/compat';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 

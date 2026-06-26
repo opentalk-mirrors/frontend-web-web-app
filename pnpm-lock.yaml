@@ -18,6 +18,9 @@ catalogs:
     camelcase-keys:
       specifier: ^10.0.2
       version: 10.0.2
+    es-toolkit:
+      specifier: ^1.52.0
+      version: 1.52.0
     i18next:
       specifier: ^26.3.6
       version: 26.4.0
@@ -222,6 +225,9 @@ importers:
       emoji-picker-react:
         specifier: ^4.19.1
         version: 4.19.1(react@19.2.8)
+      es-toolkit:
+        specifier: 'catalog:'
+        version: 1.52.0
       formik:
         specifier: ^2.4.9
         version: 2.4.9(@types/react@19.2.18)(react@19.2.8)
@@ -246,9 +252,6 @@ importers:
       livekit-client:
         specifier: 2.19.0
         version: 2.19.0(@types/dom-mediacapture-record@1.0.22)
-      lodash:
-        specifier: ^4.18.1
-        version: 4.18.1
       loglevel:
         specifier: ^1.9.2
         version: 1.9.2
@@ -316,9 +319,6 @@ importers:
       '@types/emscripten':
         specifier: ^1.41.5
         version: 1.41.5
-      '@types/lodash':
-        specifier: ^4.17.25
-        version: 4.17.25
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3
@@ -399,6 +399,9 @@ importers:
 
   packages/redux-oidc:
     dependencies:
+      es-toolkit:
+        specifier: 'catalog:'
+        version: 1.52.0
       jwt-decode:
         specifier: ^4.0.0
         version: 4.0.0
@@ -2688,9 +2691,6 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
-
-  '@types/lodash@4.17.25':
-    resolution: {integrity: sha512-+K1NIO8I+F9/wNulfVvu23QYd0Pe9/OCqRrim4NoYIf1VoEDL90Ve4ClzpyqBLc7NpGGWRvYNCKZ1BE/Jpf8dQ==}
 
   '@types/node@24.13.3':
     resolution: {integrity: sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==}
@@ -8688,8 +8688,6 @@ snapshots:
       hoist-non-react-statics: 3.3.2
 
   '@types/json-schema@7.0.15': {}
-
-  '@types/lodash@4.17.25': {}
 
   '@types/node@24.13.3':
     dependencies:

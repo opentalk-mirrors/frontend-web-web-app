@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { isEmpty } from 'es-toolkit/compat';
 import { castDraft } from 'immer';
-import { isEmpty } from 'lodash';
 
 import type { RootState } from '../';
 import {

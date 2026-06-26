@@ -4,7 +4,7 @@
 import { authReducer, setupAppDispatch } from '@opentalk/redux-oidc';
 import { Middleware, configureStore, combineReducers } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { merge } from 'lodash';
+import { merge } from 'es-toolkit/compat';
 import { useStore } from 'react-redux';
 
 import { apiMiddleware } from '../api';

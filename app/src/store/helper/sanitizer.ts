@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { UnknownAction, Action } from '@reduxjs/toolkit';
-import { get, set } from 'lodash';
+import { get, set } from 'es-toolkit/compat';
 
 import { broadcastVolatile } from '../../api/types/outgoing/whiteboard';
 import { changeLocalMedia, connectRoom, startRoom, switchLocalDevice } from '../commonActions';

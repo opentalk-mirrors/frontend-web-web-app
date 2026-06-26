@@ -10,8 +10,8 @@ import {
   ListItemAvatar as MuiListItemAvatar,
   styled,
 } from '@mui/material';
+import { truncate } from 'es-toolkit/compat';
 import { RemoteParticipant } from 'livekit-client';
-import { truncate } from 'lodash';
 import React from 'react';
 
 import { ParticipantAvatar } from '../../';

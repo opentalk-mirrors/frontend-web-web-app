@@ -25,7 +25,7 @@ import type {
 } from '@excalidraw/excalidraw/types';
 import { Mutable } from '@excalidraw/excalidraw/utility-types';
 import { styled } from '@mui/material';
-import { keyBy, throttle } from 'lodash';
+import { keyBy, throttle } from 'es-toolkit/compat';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

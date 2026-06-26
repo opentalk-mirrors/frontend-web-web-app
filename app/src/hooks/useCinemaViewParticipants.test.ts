@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { range } from 'lodash';
+import { range } from 'es-toolkit';
 
 import { CinemaViewSortOrder } from '../store/slices/common';
 import { ParticipationKind, Role } from '../types';

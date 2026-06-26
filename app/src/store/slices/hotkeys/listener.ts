@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { ListenerMiddlewareInstance } from '@reduxjs/toolkit';
-import { debounce, isEqual } from 'lodash';
+import { isEqual } from 'es-toolkit';
+import { debounce } from 'es-toolkit/compat';
 
 import browser from '../../../modules/BrowserSupport';
 import type { AppDispatch, RootState } from '../../../store';

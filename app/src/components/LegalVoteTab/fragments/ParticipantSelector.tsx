@@ -16,8 +16,8 @@ import {
   Stack,
   styled,
 } from '@mui/material';
+import { find, debounce, truncate } from 'es-toolkit/compat';
 import { useFormikContext } from 'formik';
-import { find, debounce, truncate } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

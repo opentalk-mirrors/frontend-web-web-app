@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { DateTime, InviteStatus, isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { formatRFC3339 } from 'date-fns';
-import { groupBy } from 'lodash';
+import { groupBy } from 'es-toolkit';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -109,10 +109,12 @@ const EventsOverviewPage = () => {
           )
         );
 
-        const groups = Object.entries(eventsGroupedByTimeFilter).map(([title, groupedEvents]): MeetingsProp => ({
-          title,
-          events: groupedEvents,
-        }));
+        const groups = Object.entries(eventsGroupedByTimeFilter).map(
+          ([title, groupedEvents]): MeetingsProp => ({
+            title,
+            events: groupedEvents,
+          })
+        );
 
         return {
           ...props,

@@ -15,7 +15,8 @@ import {
   EventInstance,
 } from '@opentalk/rest-api-rtk-query';
 import { Interval, isWithinInterval, areIntervalsOverlapping } from 'date-fns';
-import { memoize, sortBy } from 'lodash';
+import { sortBy } from 'es-toolkit';
+import { memoize } from 'es-toolkit/compat';
 
 import { RoomEvent } from '../store/slices/eventSlice';
 import { ChatMessage } from '../types/chat';

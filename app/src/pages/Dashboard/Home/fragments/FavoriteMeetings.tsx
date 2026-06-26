@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, Skeleton, Typography, useTheme } from '@mui/material';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
-import { isEmpty } from 'lodash';
+import { isEmpty } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { useGetEventsQuery } from '../../../../api/rest';

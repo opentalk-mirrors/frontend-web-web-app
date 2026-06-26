@@ -10,7 +10,7 @@ import {
 } from '@mui/x-date-pickers';
 import { isSameDay } from 'date-fns';
 import { t } from 'i18next';
-import { isEmpty } from 'lodash';
+import { isEmpty } from 'es-toolkit/compat';
 import React from 'react';
 
 import { ErrorFormMessage } from '../../commonComponents';

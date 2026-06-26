@@ -30,6 +30,7 @@ import {
   render as rtlRender,
   renderHook as rtlRenderHook,
 } from '@testing-library/react';
+import { range } from 'es-toolkit';
 import i18n from 'i18next';
 import {
   Participant as LivekitParticipant,
@@ -37,7 +38,6 @@ import {
   RemoteTrackPublication,
   Track,
 } from 'livekit-client';
-import { range } from 'lodash';
 import React, { createElement, PropsWithChildren } from 'react';
 import { initReactI18next } from 'react-i18next';
 import { Provider } from 'react-redux';

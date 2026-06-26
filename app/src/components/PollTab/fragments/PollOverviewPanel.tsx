@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled, Typography, Button, Grid, Stack, Box } from '@mui/material';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { finish } from '../../../api/types/outgoing/poll';

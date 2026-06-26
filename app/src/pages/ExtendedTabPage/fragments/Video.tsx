@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { VideoTrack, TrackReference } from '@livekit/components-react';
 import { styled, CircularProgress } from '@mui/material';
+import { debounce } from 'es-toolkit/compat';
 import { RemoteParticipant, RemoteTrackPublication } from 'livekit-client';
 import { Room } from 'livekit-client';
-import { debounce } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 
 import { MediaDescriptor } from '../../../modules/WebRTC';

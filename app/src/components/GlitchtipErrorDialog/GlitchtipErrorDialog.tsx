@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 import { SdkInfo } from '@sentry/browser';
+import { pick } from 'es-toolkit/compat';
 import { useFormik } from 'formik';
-import { pick } from 'lodash';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';

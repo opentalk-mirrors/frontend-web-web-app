@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
 import { RecurringEvent, SingleEvent } from '@opentalk/rest-api-rtk-query';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../../assets/icons';

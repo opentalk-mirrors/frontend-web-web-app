@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Collapse, List, ListItem } from '@mui/material';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 
 import { Participant } from '../../../types';
 import { RoomHeader } from './RoomHeader';

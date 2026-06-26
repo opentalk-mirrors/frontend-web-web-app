@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { isEmpty } from 'lodash';
+import { isEmpty } from 'es-toolkit/compat';
 
 /**
  * Return the initials split by whitespace or before any number

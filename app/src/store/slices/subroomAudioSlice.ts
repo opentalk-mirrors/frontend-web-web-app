@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { unionBy } from 'es-toolkit/compat';
 import i18next from 'i18next';
-import { unionBy } from 'lodash';
 
 import type { RootState } from '../';
 import { leaveWhisperGroup } from '../../api/types/outgoing/subroomAudio';

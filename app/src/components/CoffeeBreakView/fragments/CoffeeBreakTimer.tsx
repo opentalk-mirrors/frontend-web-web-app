@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Typography, styled } from '@mui/material';
-import { isNumber } from 'lodash';
+import { isNumber } from 'es-toolkit';
 import { useTranslation } from 'react-i18next';
 
 import AccessibleTimer from '../../../commonComponents/AccessibleTimer';

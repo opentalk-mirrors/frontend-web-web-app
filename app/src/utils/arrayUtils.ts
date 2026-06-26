@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { shuffle } from 'lodash';
+import { shuffle } from 'es-toolkit';
 
 export const spliceIntoChunks = <T>(array: T[], splitSize: number): T[][] => {
   if (splitSize >= array.length) {

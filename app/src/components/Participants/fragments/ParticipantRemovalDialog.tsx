@@ -13,7 +13,7 @@ import {
   styled,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { kickParticipant } from '../../../api/types/outgoing/moderation';

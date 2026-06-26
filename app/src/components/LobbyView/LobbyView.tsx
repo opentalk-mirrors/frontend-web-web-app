@@ -4,10 +4,10 @@
 import { Button, Container, Stack, styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
+import { uniqueId } from 'es-toolkit/compat';
 import { useFormik } from 'formik';
 import i18next from 'i18next';
 import { isE2EESupported } from 'livekit-client';
-import { uniqueId } from 'lodash';
 import { SnackbarKey } from 'notistack';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
