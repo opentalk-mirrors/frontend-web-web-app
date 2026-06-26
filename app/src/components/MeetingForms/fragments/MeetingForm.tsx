@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Stack, styled } from '@mui/material';
+import { Divider, Stack, styled } from '@mui/material';
 import {
   DateTime,
   Event,
@@ -129,7 +129,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
         onSubmit={handleSubmit}
         aria-label={existingEvent ? t('dashboard-meeting-update-form-title') : t('dashboard-meeting-create-form-title')}
       >
-        <Stack spacing={2}>
+        <Stack spacing={2} pb={2}>
           <CommonTextField
             {...formikProps('title', formik)}
             label={t('dashboard-meeting-textfield-title')}
@@ -168,21 +168,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
             onRecurrencePatternChange={setMemoizedRecurrencePattern}
           />
 
-          {isSharedFolderEnabled && (
-            <MeetingFormSwitch
-              checked={formik.values.sharedFolder}
-              switchProps={formikSwitchProps('sharedFolder', formik)}
-              switchValueLabel={t('dashboard-meeting-shared-folder-switch')}
-            />
-          )}
-          <MeetingFormSwitch
-            checked={formik.values.showMeetingDetails}
-            switchProps={formikSwitchProps('showMeetingDetails', formik)}
-            switchValueLabel={t('dashboard-meeting-details-switch')}
-            tooltipTitle={t('dashboard-meeting-details-tooltip')}
-          />
-
-          {isTrainingParticipationReportEnabled && <TrainingParticipationReportSelect formik={formik} />}
+          <Divider textAlign="left">{t('dashboard-meeting-access-and-security')}</Divider>
 
           {features.e2eEncryption && (
             <MeetingFormSwitch
@@ -196,9 +182,28 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
             />
           )}
 
-          {isStreamingEnabled && !formik.values.e2eEncryption && <StreamingOptions formik={formik} />}
-
           <GuestAccessSelect formik={formik} guestAccessAllowed={!formik.values.e2eEncryption} />
+
+          <Divider textAlign="left">{t('dashboard-meeting-extras')}</Divider>
+
+          <MeetingFormSwitch
+            checked={formik.values.showMeetingDetails}
+            switchProps={formikSwitchProps('showMeetingDetails', formik)}
+            switchValueLabel={t('dashboard-meeting-details-switch')}
+            tooltipTitle={t('dashboard-meeting-details-tooltip')}
+          />
+
+          {isSharedFolderEnabled && (
+            <MeetingFormSwitch
+              checked={formik.values.sharedFolder}
+              switchProps={formikSwitchProps('sharedFolder', formik)}
+              switchValueLabel={t('dashboard-meeting-shared-folder-switch')}
+            />
+          )}
+
+          {isTrainingParticipationReportEnabled && <TrainingParticipationReportSelect formik={formik} />}
+
+          {isStreamingEnabled && !formik.values.e2eEncryption && <StreamingOptions formik={formik} />}
         </Stack>
         <ActionButtons
           isExistingEvent={Boolean(existingEvent)}
