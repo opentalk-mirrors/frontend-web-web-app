@@ -9,8 +9,7 @@ export interface AutomodStartedEvent extends AutomodStartConfig {
 }
 
 export type AutomodStoppedEvent =
-  | ({ message: 'stopped' } & StoppedByModerator)
-  | ({ message: 'stopped' } & SessionFinished);
+  ({ message: 'stopped' } & StoppedByModerator) | ({ message: 'stopped' } & SessionFinished);
 
 export interface StoppedByModerator {
   reason: 'stopped_by_moderator';

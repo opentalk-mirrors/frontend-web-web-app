@@ -25,10 +25,7 @@ export interface CreateNewAccessToken {
 }
 
 export type Action =
-  | GrantScreenSharePermission
-  | RevokeScreenSharePermission
-  | RequestPopoutStreamAccessToken
-  | CreateNewAccessToken;
+  GrantScreenSharePermission | RevokeScreenSharePermission | RequestPopoutStreamAccessToken | CreateNewAccessToken;
 
 export type Livekit = Namespaced<Action, 'livekit'>;
 

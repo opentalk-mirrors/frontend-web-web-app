@@ -114,12 +114,10 @@ const SelectParticipants = ({
 
   const emailSuggestions: Array<EmailUser> = useMemo(() => {
     const lowercaseSearchValue = searchValue.toLowerCase();
-    if (
-      !(
-        selectedUsers.find((user) => user.email === lowercaseSearchValue) ||
-        invitees.find((invitee) => invitee.profile.email === lowercaseSearchValue)
-      )
-    ) {
+    if (!(
+      selectedUsers.find((user) => user.email === lowercaseSearchValue) ||
+      invitees.find((invitee) => invitee.profile.email === lowercaseSearchValue)
+    )) {
       return [{ email: lowercaseSearchValue as Email }];
     }
     return [];

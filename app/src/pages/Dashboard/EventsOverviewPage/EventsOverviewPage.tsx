@@ -107,12 +107,10 @@ const EventsOverviewPage = () => {
           )
         );
 
-        const groups = Object.entries(eventsGroupedByTimeFilter).map(
-          ([title, groupedEvents]): MeetingsProp => ({
-            title,
-            events: groupedEvents,
-          })
-        );
+        const groups = Object.entries(eventsGroupedByTimeFilter).map(([title, groupedEvents]): MeetingsProp => ({
+          title,
+          events: groupedEvents,
+        }));
 
         return {
           ...props,

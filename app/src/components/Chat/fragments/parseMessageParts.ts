@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 
 export type MessagePart =
-  | { type: 'text'; offset: number; content: string }
-  | { type: 'code'; offset: number; language: string; code: string };
+  { type: 'text'; offset: number; content: string } | { type: 'code'; offset: number; language: string; code: string };
 
 /// regex matching code blocks: ```lang\n...code\n```
 const CODE_FENCE_REGEX = /(```\w*\n[\s\S]*?```)/g;

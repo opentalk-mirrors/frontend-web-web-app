@@ -18,5 +18,4 @@ type InitialDisplayNameChangeRestrictionsDisabled = {
 };
 
 export type InitialDisplayNameChangeRestrictions =
-  | InitialDisplayNameChangeRestrictionsEnabled
-  | InitialDisplayNameChangeRestrictionsDisabled;
+  InitialDisplayNameChangeRestrictionsEnabled | InitialDisplayNameChangeRestrictionsDisabled;
