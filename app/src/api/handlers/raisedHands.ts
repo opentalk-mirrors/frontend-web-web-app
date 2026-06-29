@@ -35,48 +35,49 @@ export const handleRaiseHandsMessage = (
     case 'hand_raised': {
       if (state.user.uuid === data.participant) {
         dispatch(raisedHand({ timestamp: new Date().toISOString() }));
-      } else {
-        dispatch(
-          patch({
-            participantId: data.participant,
-            lastActive: timestamp,
-            handIsUp: true,
-            handUpdatedAt: timestamp,
-          })
-        );
       }
+
+      dispatch(
+        patch({
+          participantId: data.participant,
+          lastActive: timestamp,
+          handIsUp: true,
+          handUpdatedAt: timestamp,
+        })
+      );
+
       break;
     }
     case 'hand_lowered': {
       if (state.user.uuid === data.participant) {
         dispatch(loweredHand());
-      } else {
+      }
+
+      dispatch(
+        patch({
+          participantId: data.participant,
+          lastActive: timestamp,
+          handIsUp: false,
+          handUpdatedAt: timestamp,
+        })
+      );
+
+      break;
+    }
+    case 'raised_hand_reset_by_moderator':
+      data.participants.forEach((participantId) => {
         dispatch(
           patch({
-            participantId: data.participant,
+            participantId,
             lastActive: timestamp,
             handIsUp: false,
             handUpdatedAt: timestamp,
           })
         );
-      }
-      break;
-    }
-    case 'raised_hand_reset_by_moderator':
+      });
       if (state.user.uuid && data.participants.includes(state.user.uuid)) {
         notifications.info(i18next.t('reset-handraises-notification'));
         dispatch(forceLowerHand());
-      } else {
-        data.participants.forEach((participantId) => {
-          dispatch(
-            patch({
-              participantId,
-              lastActive: timestamp,
-              handIsUp: false,
-              handUpdatedAt: timestamp,
-            })
-          );
-        });
       }
       break;
     case 'error': {

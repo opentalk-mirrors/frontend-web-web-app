@@ -37,10 +37,19 @@ const ResetHandraisesTab = () => {
   );
 
   const searchFilteredParticipantsList = useMemo(() => {
+    const seenParticipantIds = new Set<ParticipantId>();
     return remoteParticipants
       .filter((participant) => {
         const displayName = participantNamesMap[participant.identity];
         return displayName?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
+      })
+      .filter((participant) => {
+        const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);
+        if (seenParticipantIds.has(participantId)) {
+          return false;
+        }
+        seenParticipantIds.add(participantId);
+        return true;
       })
       .map((participant) => {
         const { participantId } = deconstructConnectionIdentifier(participant.identity as ConnectionIdentifier);

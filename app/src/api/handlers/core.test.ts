@@ -163,7 +163,7 @@ describe('handleRoomServerCoreMessage', () => {
       reaction: { restrictions: { type: 'disabled' } },
       whiteboard: { status: 'not_initialized' },
       excalidraw: { scene: {} },
-      raiseHands: { raiseHandsEnabled: true, raisedParticipants: [] },
+      raiseHands: { raiseHandsEnabled: true, state: { raisedAt: new Date().toISOString() } },
     };
 
     const forwardedModules = Object.entries(moduleForwarding).filter(
