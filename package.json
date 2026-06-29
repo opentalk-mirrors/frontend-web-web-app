@@ -33,7 +33,7 @@
     "@eslint/js": "^9.39.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
-    "@types/node": "^24.13.2",
+    "@types/node": "catalog:",
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/eslint-plugin": "^1.6.20",
     "del-cli": "^7.0.0",
@@ -51,7 +51,7 @@
     "lint-staged": "^17.0.8",
     "madge": "^8.0.0",
     "prettier": "^3.9.1",
-    "typescript": "^6.0.3",
+    "typescript": "catalog:",
     "typescript-eslint": "^8.62.0",
     "vitest": "^4.1.9"
   },
