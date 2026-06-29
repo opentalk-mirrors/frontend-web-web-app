@@ -55,21 +55,14 @@ export interface AutomodSelectNextCommand extends AutomodSelectCommand {
 }
 
 export type SelectCommandType =
-  | AutomodSelectNoneCommand
-  | AutomodSelectRandomCommand
-  | AutomodSelectSpecificCommand
-  | AutomodSelectNextCommand;
+  AutomodSelectNoneCommand | AutomodSelectRandomCommand | AutomodSelectSpecificCommand | AutomodSelectNextCommand;
 
 export interface AutomodYieldCommand extends Command {
   action: 'yield';
 }
 
 export type Action =
-  | AutomodStartCommand
-  | AutomodStopCommand
-  | AutomodEditCommand
-  | AutomodSelectCommand
-  | AutomodYieldCommand;
+  AutomodStartCommand | AutomodStopCommand | AutomodEditCommand | AutomodSelectCommand | AutomodYieldCommand;
 
 type AutomodMessage = Namespaced<Action, 'automod'>;
 

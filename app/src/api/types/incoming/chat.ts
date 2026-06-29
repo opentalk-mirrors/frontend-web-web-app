@@ -62,9 +62,7 @@ type SetBreakoutLastSeenTimestamp = {
 } & SetLastSeenTimestampBase;
 
 export type SetLastSeenTimestamp =
-  | SetGlobalLastSeenTimestamp
-  | SetPrivateLastSeenTimestamp
-  | SetBreakoutLastSeenTimestamp;
+  SetGlobalLastSeenTimestamp | SetPrivateLastSeenTimestamp | SetBreakoutLastSeenTimestamp;
 
 export interface RoomChatHistoryChunk {
   message: 'room_chat_history_chunk';

@@ -33,11 +33,7 @@ export interface LeaveWhisperGroup {
 }
 
 export type Action =
-  | CreateWhisperGroup
-  | InviteToWhisperGroup
-  | AcceptWhisperInvite
-  | DeclineWhisperInvite
-  | LeaveWhisperGroup;
+  CreateWhisperGroup | InviteToWhisperGroup | AcceptWhisperInvite | DeclineWhisperInvite | LeaveWhisperGroup;
 
 export type SubroomAudio = Namespaced<Action, 'subroom_audio'>;
 

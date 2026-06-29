@@ -67,13 +67,7 @@ export enum BreakoutError {
 export const isError = isEnumErrorStruct(BreakoutError);
 
 export type Message =
-  | Started
-  | ParticipantSwitchedRoom
-  | SwitchedRoom
-  | CloseNotice
-  | Closing
-  | Closed
-  | ErrorStruct<BreakoutError>;
+  Started | ParticipantSwitchedRoom | SwitchedRoom | CloseNotice | Closing | Closed | ErrorStruct<BreakoutError>;
 export type Breakout = NamespacedIncoming<Message, 'breakout'>;
 
 export default Breakout;

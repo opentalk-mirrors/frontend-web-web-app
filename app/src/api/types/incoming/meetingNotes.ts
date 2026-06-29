@@ -49,11 +49,7 @@ export enum MeetingNotesError {
 export const isError = isEnumErrorStruct(MeetingNotesError);
 
 export type IncomingMeetingNotes =
-  | WriteAccessReceived
-  | ReadAccessReceived
-  | PdfCreated
-  | AccessChanged
-  | ErrorStruct<MeetingNotesError>;
+  WriteAccessReceived | ReadAccessReceived | PdfCreated | AccessChanged | ErrorStruct<MeetingNotesError>;
 export type MeetingNotes = NamespacedIncoming<IncomingMeetingNotes, 'meeting_notes'>;
 
 export default MeetingNotes;

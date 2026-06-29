@@ -46,10 +46,7 @@ const result: DelimiterCasedPropertiesDeep<UserWithFriends, '-'> = {
 @category Object
 */
 type DelimiterCasedPropertiesDeep<Value, Delimiter extends string> = Value extends
-  | Function
-  | Date
-  | RegExp
-  | Opaque<unknown>
+  Function | Date | RegExp | Opaque<unknown>
   ? Value
   : Value extends Array<infer U>
     ? Array<DelimiterCasedPropertiesDeep<U, Delimiter>>

@@ -60,14 +60,7 @@ interface StreamUpdated {
 }
 
 export type Action =
-  | StartRecording
-  | PauseRecording
-  | StopRecording
-  | StartStream
-  | StopStream
-  | PauseStream
-  | SetStreamConsent
-  | Service;
+  StartRecording | PauseRecording | StopRecording | StartStream | StopStream | PauseStream | SetStreamConsent | Service;
 
 export type Streaming = Namespaced<Action, 'recording'>;
 

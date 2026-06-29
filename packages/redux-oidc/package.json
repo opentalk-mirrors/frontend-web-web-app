@@ -11,18 +11,18 @@
     "build": "vite build"
   },
   "devDependencies": {
-    "@reduxjs/toolkit": "^2.11.2",
-    "react-redux": "^9.2.0",
-    "react-router-dom": "7.14.1",
-    "typescript": "^6.0.3",
-    "vite": "^7.3.3",
-    "vite-plugin-dts": "^4.5.4"
+    "@reduxjs/toolkit": "catalog:",
+    "react-redux": "catalog:",
+    "react-router-dom": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:"
   },
   "peerDependencies": {
-    "@reduxjs/toolkit": "^2.11.2",
-    "react": "^19.2.5",
-    "react-redux": "^9.2.0",
-    "react-router-dom": "7.14.1"
+    "@reduxjs/toolkit": "catalog:",
+    "react": "catalog:",
+    "react-redux": "catalog:",
+    "react-router-dom": "catalog:"
   },
   "dependencies": {
     "jwt-decode": "^4.0.0"
