@@ -112,7 +112,7 @@ export const moderationSlice = createSlice({
           unrestrictedParticipants: [],
         };
       }
-      state.raiseHandsEnabled = payload.moderation?.raiseHandsEnabled ?? state.raiseHandsEnabled;
+      state.raiseHandsEnabled = payload.raiseHands?.raiseHandsEnabled ?? state.raiseHandsEnabled;
       const displayNameChangeRestrictions = payload.moderation?.displayNameChangeRestrictions;
       if (displayNameChangeRestrictions) {
         const restricted =

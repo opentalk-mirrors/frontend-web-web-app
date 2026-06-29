@@ -148,10 +148,16 @@ export const handleRoomServerCoreMessage = async (
           isRoomOwner: data.isRoomOwner,
         };
 
+        const raiseHandsModuleData = moduleData.raiseHands?.state;
+
         participants.push({
           id: data.id,
           connections: data.connections,
-          moduleData: { ...moduleData, core: coreModuleData },
+          moduleData: {
+            ...moduleData,
+            core: coreModuleData,
+            raiseHands: raiseHandsModuleData ? { raisedAt: raiseHandsModuleData.raisedAt } : undefined,
+          },
         });
       }
 
@@ -208,29 +214,30 @@ export const handleRoomServerCoreMessage = async (
           participantId: data.id,
           connectionId: data.connectionId,
           avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
-          role: data.role,
-          chat: moduleData.chat,
           automod: moduleData.automod,
           breakout: moduleData.breakout,
-          polls: moduleData.polls,
-          votes: moduleData.legalVote?.votes,
-          participants: joinedParticipants,
-          moderation: moduleData.moderation,
-          forceMute: moduleData.livekit?.microphoneRestrictionState,
-          recording: moduleData.recording,
-          serverTimeOffset,
-          tariff: data.tariff,
-          timer: moduleData.timer,
-          reaction: moduleData.reaction,
-          participantsReady,
-          sharedFolder: moduleData.sharedFolder,
+          chat: moduleData.chat,
+          enabledModules,
           eventInfo: data.eventInfo,
-          meetingDetails: data.meetingDetails,
-          roomInfo: data.roomInfo,
+          forceMute: moduleData.livekit?.microphoneRestrictionState,
           isRoomOwner: data.isRoomOwner,
           livekit: moduleData.livekit,
-          enabledModules,
+          meetingDetails: data.meetingDetails,
+          moderation: moduleData.moderation,
+          participants: joinedParticipants,
+          participantsReady,
+          polls: moduleData.polls,
+          raiseHands: moduleData.raiseHands,
+          reaction: moduleData.reaction,
+          recording: moduleData.recording,
+          role: data.role,
+          roomInfo: data.roomInfo,
+          serverTimeOffset,
+          sharedFolder: moduleData.sharedFolder,
+          tariff: data.tariff,
+          timer: moduleData.timer,
           trainingParticipationReport: moduleData.trainingParticipationReport,
+          votes: moduleData.legalVote?.votes,
         })
       );
 

@@ -46,20 +46,21 @@ export interface JoinSuccessInternalState {
   connectionId?: string;
   role: Role;
   avatarUrl?: string;
-  chat: InitialChat;
   automod: InitialAutomod | undefined;
   breakout: InitialBreakout | undefined;
-  polls: InitialPoll | undefined;
-  votes: VoteSummary[] | undefined;
-  participants: Participant[];
-  moderation: ModerationState | undefined;
+  chat: InitialChat;
   forceMute: ForceMute | undefined;
+  moderation: ModerationState | undefined;
+  participants: Participant[];
+  polls: InitialPoll | undefined;
+  raiseHands: RaiseHandsState | undefined;
+  reaction: ReactionJoinSuccess | undefined;
   recording: RecordingState | undefined;
   serverTimeOffset: number;
+  sharedFolder: SharedFolderData | undefined;
   tariff: SignalingTariff;
   timer: TimerState | undefined;
-  reaction: ReactionJoinSuccess | undefined;
-  sharedFolder: SharedFolderData | undefined;
+  votes: VoteSummary[] | undefined;
   eventInfo?: EventInfo;
   meetingDetails?: MeetingDetails;
   roomInfo?: RoomInfo;
@@ -96,20 +97,21 @@ export interface JoinSuccessRoomserver {
 export type EnabledModules = { [value in BackendModules]?: Array<string> };
 
 export interface ModuleData {
-  chat: InitialChat;
-  livekit: Livekit;
-  breakout?: InitialBreakout;
-  moderation?: ModerationState;
-  recording?: RecordingState;
-  timer?: TimerState;
-  legalVote?: LegalVoteJoinSuccess;
-  whiteboard?: WhiteboardState;
-  excalidraw?: WhiteboardState;
-  polls?: InitialPoll;
   automod?: InitialAutomod;
-  sharedFolder?: SharedFolderData;
-  trainingParticipationReport?: TrainingParticipationReport;
+  breakout?: InitialBreakout;
+  chat: InitialChat;
+  excalidraw?: WhiteboardState;
+  legalVote?: LegalVoteJoinSuccess;
+  livekit: Livekit;
+  moderation?: ModerationState;
+  polls?: InitialPoll;
+  raiseHands?: RaiseHandsState;
   reaction?: ReactionJoinSuccess;
+  recording?: RecordingState;
+  sharedFolder?: SharedFolderData;
+  timer?: TimerState;
+  trainingParticipationReport?: TrainingParticipationReport;
+  whiteboard?: WhiteboardState;
 }
 
 export interface TrainingParticipationReport {
@@ -223,9 +225,13 @@ export interface RecordingState {
 }
 
 export interface ModerationState {
-  raiseHandsEnabled: boolean;
   guestAccess: boolean;
   waitingRoomParticipants: WaitingRoomParticipant[];
   waitingRoom: WaitingRoom;
   displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
+}
+
+export interface RaiseHandsState {
+  raiseHandsEnabled: boolean;
+  state?: RaiseHandsPeerState;
 }
