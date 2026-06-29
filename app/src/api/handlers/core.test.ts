@@ -141,6 +141,7 @@ describe('handleRoomServerCoreMessage', () => {
       sharedFolder: (payload) => payload.sharedFolder,
       trainingParticipationReport: (payload) => payload.trainingParticipationReport,
       reaction: (payload) => payload.reaction,
+      raiseHands: (payload) => payload.raiseHands,
       whiteboard: null, // applied via setWhiteboardAvailable, not the joinSuccess payload
       excalidraw: null, // applied via updateRemoteScene / setEditRestrictions
     };
@@ -162,6 +163,7 @@ describe('handleRoomServerCoreMessage', () => {
       reaction: { restrictions: { type: 'disabled' } },
       whiteboard: { status: 'not_initialized' },
       excalidraw: { scene: {} },
+      raiseHands: { raiseHandsEnabled: true, state: { raisedAt: new Date().toISOString() } },
     };
 
     const forwardedModules = Object.entries(moduleForwarding).filter(
