@@ -301,7 +301,7 @@ export interface StreamingLink {
 }
 
 export interface MeetingDetails {
-  inviteCodeId: InviteCode;
+  inviteCodeId?: InviteCode;
   callIn?: CallIn;
   streamingLinks: StreamingLink[];
 }

@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import type { EventId, EventInfo, InviteCode, MeetingDetails, RoomId } from '@opentalk/rest-api-rtk-query';
 import { BackendModules, CoreFeatures } from '@opentalk/rest-api-rtk-query';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 
+import { notifications } from '../../../commonComponents';
 import type { RoomInfo } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MeetingDetailsDialog from './MeetingDetailsDialog';
@@ -42,6 +43,10 @@ vi.mock('./MeetingDetailsDialogActions', () => ({
 }));
 
 describe('MeetingDetailsDialog', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   const { store } = configureStore({
     initialState: {
       config: {
@@ -96,7 +101,7 @@ describe('MeetingDetailsDialog', () => {
     expect(screen.queryByLabelText('meeting-details-dialog-label-room-password')).not.toBeInTheDocument();
   });
 
-  it('renders invite link when guests allowed feature is enabled', () => {
+  it('renders invite link label when invite code is provided', () => {
     renderWithProviders(
       <MeetingDetailsDialog
         open={true}
@@ -110,25 +115,64 @@ describe('MeetingDetailsDialog', () => {
     expect(screen.getByRole('textbox', { name: 'meeting-details-dialog-label-invite-link' })).toBeInTheDocument();
   });
 
-  it('does not render invite link when guests allowed feature is disabled', () => {
-    const { store: storeWithGuestsNotAllowed } = configureStore({
-      initialState: {
-        config: {
-          baseUrl: 'http://localhost:3000',
-          enabledModules: {},
-        },
-      },
-    });
+  it('renders meeting link label when no invite code is provided', () => {
+    renderWithProviders(
+      <MeetingDetailsDialog
+        open={true}
+        onClose={vi.fn()}
+        eventInfo={mockEventInfo}
+        meetingDetails={{ ...meetingDetails, inviteCodeId: undefined }}
+        roomInfo={mockRoomInfo}
+      />,
+      { store, provider: { snackbar: true, mui: true } }
+    );
+    expect(screen.getByRole('textbox', { name: 'meeting-details-dialog-label-meeting-link' })).toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: 'meeting-details-dialog-label-invite-link' })).not.toBeInTheDocument();
+  });
+
+  it('shows the invite link copy notification when copying with an invite code', async () => {
+    const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+    const success = vi.spyOn(notifications, 'success');
+
     renderWithProviders(
       <MeetingDetailsDialog
         open={true}
         onClose={vi.fn()}
         eventInfo={mockEventInfo}
         meetingDetails={meetingDetails}
-        roomInfo={{ ...mockRoomInfo, password: '' }}
+        roomInfo={mockRoomInfo}
       />,
-      { store: storeWithGuestsNotAllowed }
+      { store, provider: { snackbar: true, mui: true } }
     );
-    expect(screen.queryByRole('textbox', { name: 'meeting-details-dialog-label-invite-link' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'meeting-details-dialog-aria-label-invite-link' }));
+
+    expect(writeText).toHaveBeenCalledOnce();
+    await waitFor(() =>
+      expect(success).toHaveBeenCalledExactlyOnceWith('meeting-details-dialog-copy-invite-link-success')
+    );
+  });
+
+  it('shows the meeting link copy notification when copying without an invite code', async () => {
+    const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
+    const success = vi.spyOn(notifications, 'success');
+
+    renderWithProviders(
+      <MeetingDetailsDialog
+        open={true}
+        onClose={vi.fn()}
+        eventInfo={mockEventInfo}
+        meetingDetails={{ ...meetingDetails, inviteCodeId: undefined }}
+        roomInfo={mockRoomInfo}
+      />,
+      { store, provider: { snackbar: true, mui: true } }
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'meeting-details-dialog-aria-label-meeting-link' }));
+
+    expect(writeText).toHaveBeenCalledOnce();
+    await waitFor(() =>
+      expect(success).toHaveBeenCalledExactlyOnceWith('meeting-details-dialog-copy-meeting-link-success')
+    );
   });
 });
