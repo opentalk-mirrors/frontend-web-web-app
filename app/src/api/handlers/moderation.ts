@@ -14,6 +14,7 @@ import {
   forceMuteDisabled,
   forceMuteEnabled,
   setGuestAccessEnabled,
+  setModeratorData,
   setWaitingRoomState,
 } from '../../store/slices/moderationSlice';
 import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
@@ -154,6 +155,10 @@ export const handleModerationMessage = (
             role: data.newRole,
           })
         );
+      }
+
+      if (data.moderatorData) {
+        dispatch(setModeratorData({ moderatorData: data.moderatorData }));
       }
       break;
     case 'participant_accepted':
