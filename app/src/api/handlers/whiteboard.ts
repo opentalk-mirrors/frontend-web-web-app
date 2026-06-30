@@ -45,7 +45,6 @@ export const handleWhiteboardMessage = (
       dispatch(
         updateRemoteScene({
           elements: payload.scene.elements,
-          appState: payload.scene.appState,
         })
       );
       break;

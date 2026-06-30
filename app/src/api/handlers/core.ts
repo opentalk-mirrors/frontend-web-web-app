@@ -260,7 +260,6 @@ export const handleRoomServerCoreMessage = async (
         dispatch(
           updateRemoteScene({
             elements: moduleData.excalidraw.scene.elements,
-            appState: moduleData.excalidraw.scene.appState,
           })
         );
         dispatch(

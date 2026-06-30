@@ -10,7 +10,6 @@ import {
   AssetRef,
   WhiteboardEditRestrictions,
   ExcalidrawElements,
-  ExcalidrawAppState,
   ExcalidrawScene,
 } from '../../api/types/incoming/whiteboard';
 import { ParticipantId } from '../../types';
@@ -24,7 +23,6 @@ export interface WhiteboardState {
   whiteboardAssetList: Array<AssetRef>;
   scene: {
     elements: ExcalidrawElements;
-    appState?: ExcalidrawAppState;
   };
   collaborators: Record<ParticipantId, { pointer?: { x: number; y: number }; button?: string; displayName?: string }>;
   editRestrictions: {
@@ -40,7 +38,6 @@ const initialState: WhiteboardState = {
   whiteboardAssetList: [],
   scene: {
     elements: [],
-    appState: undefined,
   },
   editRestrictions: {
     enabled: false,
@@ -69,7 +66,6 @@ export const whiteboardSlice = createSlice({
     },
     updateRemoteScene(state, { payload }: PayloadAction<ExcalidrawScene>) {
       state.scene.elements = castDraft(payload.elements);
-      state.scene.appState = castDraft(payload.appState);
       state.isWhiteboardAvailable = true;
     },
     addWhiteboardAsset(state, { payload }: PayloadAction<{ asset: AssetRef }>) {
@@ -93,7 +89,6 @@ export const actions = whiteboardSlice.actions;
 
 export const selectWhiteboardUrl = (state: RootState) => state.whiteboard.spacedeck.url;
 export const selectIsWhiteboardAvailable = (state: RootState) => state.whiteboard.isWhiteboardAvailable;
-export const selectWhiteboardScene = (state: RootState) => state.whiteboard.scene;
 export const selectWhiteboardElements = (state: RootState) => state.whiteboard.scene.elements;
 export const selectWhiteboardAssets = (state: RootState) => state.whiteboard.whiteboardAssetList;
 export const selectWhiteboardEditRestrictions = (state: RootState) => state.whiteboard.editRestrictions;

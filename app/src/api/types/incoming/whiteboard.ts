@@ -13,7 +13,6 @@ export type ExcalidrawElements = readonly ExcalidrawElement[];
 export type ExcalidrawAppState = ReturnType<ExcalidrawImperativeAPI['getAppState']>;
 export type ExcalidrawScene = {
   elements: ExcalidrawElements;
-  appState: ExcalidrawAppState;
 };
 
 export type Token = string;
