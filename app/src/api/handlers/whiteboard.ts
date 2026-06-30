@@ -12,6 +12,7 @@ import {
   addWhiteboardAsset,
   setEditRestrictions,
   setStarted,
+  setStopped,
   setWhiteboardAvailable,
   updateRemoteScene,
 } from '../../store/slices/whiteboardSlice';
@@ -40,6 +41,12 @@ export const handleWhiteboardMessage = (
         setStarted({ initialElements: payload.initialScene.elements, editRestrictions: payload.editRestrictions })
       );
       dispatch(updatedCinemaLayout({ layout: LayoutOptions.Whiteboard, cacheLastLayout: false }));
+      break;
+    case 'stopped':
+      dispatch(setStopped());
+      if (state.ui.cinemaLayout === LayoutOptions.Whiteboard) {
+        dispatch(updatedCinemaLayout({ layout: state.ui.lastCinemaLayout, cacheLastLayout: false }));
+      }
       break;
     case 'scene_stored':
       dispatch(

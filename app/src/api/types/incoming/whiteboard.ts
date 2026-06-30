@@ -37,6 +37,10 @@ export type Started = {
   editRestrictions: WhiteboardEditRestrictions;
 };
 
+export type Stopped = {
+  message: 'stopped';
+};
+
 export type VolatileBroadcast = {
   message: 'volatile_broadcast';
   sender: ParticipantId;
@@ -117,6 +121,7 @@ export interface SpacedeckPdfCreated extends AssetRef {
 
 export type ExcalidrawMessage =
   | Started
+  | Stopped
   | VolatileBroadcast
   | Broadcast
   | SceneStored

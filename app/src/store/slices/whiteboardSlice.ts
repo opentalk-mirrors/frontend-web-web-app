@@ -64,6 +64,15 @@ export const whiteboardSlice = createSlice({
         unrestrictedParticipants: payload.editRestrictions?.unrestrictedParticipants ?? [],
       };
     },
+    setStopped(state) {
+      state.isWhiteboardAvailable = false;
+      state.scene.elements = [];
+      state.editRestrictions = {
+        enabled: false,
+        unrestrictedParticipants: [],
+      };
+      state.collaborators = {};
+    },
     updateRemoteScene(state, { payload }: PayloadAction<ExcalidrawScene>) {
       state.scene.elements = castDraft(payload.elements);
       state.isWhiteboardAvailable = true;
@@ -82,8 +91,14 @@ export const whiteboardSlice = createSlice({
   },
 });
 
-export const { setStarted, updateRemoteScene, addWhiteboardAsset, setEditRestrictions, setWhiteboardAvailable } =
-  whiteboardSlice.actions;
+export const {
+  setStarted,
+  setStopped,
+  updateRemoteScene,
+  addWhiteboardAsset,
+  setEditRestrictions,
+  setWhiteboardAvailable,
+} = whiteboardSlice.actions;
 
 export const actions = whiteboardSlice.actions;
 
