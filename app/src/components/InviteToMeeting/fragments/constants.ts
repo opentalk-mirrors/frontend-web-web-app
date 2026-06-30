@@ -4,6 +4,7 @@
 
 export enum FieldKeys {
   InviteLink = 'invite-link',
+  MeetingLink = 'meeting-link',
   RoomLink = 'room-link',
   SipLink = 'sip-link',
   GuestLink = 'guest-link',

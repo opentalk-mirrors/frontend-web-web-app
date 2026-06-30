@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Dialog, DialogContent, DialogTitle, Stack, Typography, styled } from '@mui/material';
-import { BackendModules, CoreFeatures, type EventInfo, type StreamingLink } from '@opentalk/rest-api-rtk-query';
+import { type EventInfo, type StreamingLink } from '@opentalk/rest-api-rtk-query';
 import { MeetingDetails } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { CloseIcon } from '../../../assets/icons';
 import { CopyTextField, IconButton } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
-import { selectBaseUrl, selectIsFeatureEnabled } from '../../../store/slices/configSlice';
+import { selectBaseUrl } from '../../../store/slices/configSlice';
 import { selectGuestAccessEnabled } from '../../../store/slices/moderationSlice';
 import { selectE2EEncryption } from '../../../store/slices/roomSlice';
 import type { RoomInfo } from '../../../types';
@@ -45,9 +45,6 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
   const { title, roomId } = eventInfo;
   const { createdBy: roomOwner, password: roomPassword } = roomInfo;
   const baseUrl = useAppSelector(selectBaseUrl);
-  const isGuestsAllowedFeatureEnabled = useAppSelector(
-    selectIsFeatureEnabled(BackendModules.Core, CoreFeatures.GuestsAllowed)
-  );
   const guestAccessEnabled = useAppSelector(selectGuestAccessEnabled);
   const inviteUrl = roomId ? composeInviteUrl(baseUrl, roomId, meetingDetails?.inviteCodeId) : null;
   const streamingLinksExist = meetingDetails !== undefined && meetingDetails.streamingLinks.length > 0;
@@ -118,12 +115,14 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
       </Box>
       <DialogContent>
         <Stack spacing={2}>
-          {isGuestsAllowedFeatureEnabled && guestAccessEnabled && !highSecurityEnabled && (
+          {!highSecurityEnabled && (
             <CustomCopyTextField
-              label={getLabelText(FieldKeys.InviteLink)}
+              label={getLabelText(meetingDetails?.inviteCodeId ? FieldKeys.InviteLink : FieldKeys.MeetingLink)}
               value={inviteUrl?.toString()}
-              ariaLabel={getAriaLabelText(FieldKeys.InviteLink)}
-              notificationText={getNotificationText(FieldKeys.InviteLink)}
+              ariaLabel={getAriaLabelText(meetingDetails?.inviteCodeId ? FieldKeys.InviteLink : FieldKeys.MeetingLink)}
+              notificationText={getNotificationText(
+                meetingDetails?.inviteCodeId ? FieldKeys.InviteLink : FieldKeys.MeetingLink
+              )}
               checked={inviteUrl ? copiedUrl === inviteUrl.toString() : false}
               onClick={() => setCopiedUrl(inviteUrl?.toString())}
             />
