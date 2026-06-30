@@ -5,7 +5,7 @@ import {
   Excalidraw,
   MainMenu,
   exportToSvg,
-  getSceneVersion,
+  hashElementsVersion,
   restoreElements,
   reconcileElements,
   CaptureUpdateAction,
@@ -17,6 +17,7 @@ import { SceneBounds } from '@excalidraw/excalidraw/element/bounds';
 import { ExcalidrawElement, OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import '@excalidraw/excalidraw/index.css';
 import type {
+  AppState,
   ExcalidrawImperativeAPI,
   ExcalidrawProps,
   OnUserFollowedPayload,
@@ -53,9 +54,14 @@ import { ParticipantId } from '../../types';
 import StorageFullTooltip from '../StorageFullTooltip';
 import RestrictionsDialog from './fragments/RestrictionsDialog';
 
+type ExcalidrawOnPointerUpdateType = ExcalidrawProps['onPointerUpdate'];
+type ExcalidrawOnPointerUpdatePayload =
+  NonNullable<ExcalidrawOnPointerUpdateType> extends (payload: infer P) => void ? P : never;
+
 const CURSOR_SYNC_TIMEOUT = 33;
 const PDF_PADDING = 64;
 const DELETED_ELEMENT_TIMEOUT = 24 * 60 * 60 * 1000; // 1 day
+const SYNC_SCENE_ELEMENTS_INTERVAL_MS = 50;
 const SYNC_FULL_SCENE_INTERVAL_MS = 20_000;
 
 const WhiteboardWrapper = styled('div')(({ theme }) => ({
@@ -76,15 +82,27 @@ const WhiteboardWrapper = styled('div')(({ theme }) => ({
   },
 }));
 
+function isSyncableElement(element: OrderedExcalidrawElement) {
+  if (element.isDeleted) {
+    return element.updated > Date.now() - DELETED_ELEMENT_TIMEOUT;
+  }
+  return true;
+}
+
+function getPersistedSceneAppState(appState: AppState): AppState {
+  const { collaborators: _collaborators, followedBy: _followedBy, ...persistedAppState } = appState;
+  return persistedAppState as AppState;
+}
+
 const WhiteboardView = () => {
   const lastBroadcastedOrReceivedSceneVersion = useRef(-1);
   const broadcastedElementVersions = useRef<Map<string, number>>(new Map());
-  const isFollowingRef = useRef(false);
   const store = useAppStore();
   const dispatch = useAppDispatch();
   const [createAsset] = useCreateRoomAssetMutation();
   const { t, i18n } = useTranslation();
   const initialElements = useAppSelector(selectWhiteboardElements);
+  const initialScene = useMemo(() => ({ elements: initialElements }), [initialElements]);
   const meUUID = useAppSelector(selectOurUuid);
   const isModerator = useAppSelector(selectIsModerator);
   const roomId = useAppSelector(selectRoomId);
@@ -100,12 +118,16 @@ const WhiteboardView = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isRestrictionsDialogOpen, setIsRestrictionsDialogOpen] = useState(false);
 
-  const initialData = useMemo(() => ({ elements: initialElements }), [initialElements]);
   const canUserEdit = isModerator || canUserEditByRestrictions;
   const restrictionsDialogKey = useMemo(
     () => `${isRestrictionsDialogOpen}:${editRestrictionsEnabled}:${[...unrestrictedParticipants].sort().join(',')}`,
     [editRestrictionsEnabled, isRestrictionsDialogOpen, unrestrictedParticipants]
   );
+
+  const lastThrottledPointerUpdate = useRef<ReturnType<typeof throttle> | null>(null);
+  const throttledRelayVisibleSceneBounds = useRef<ReturnType<typeof throttle> | null>(null);
+  const lastKnownElementsRef = useRef<readonly OrderedExcalidrawElement[]>([]);
+  const lastKnownAppStateRef = useRef<AppState | null>(null);
 
   const renderUploadMenuButton = () => {
     return (
@@ -191,39 +213,67 @@ const WhiteboardView = () => {
 
   useEffect(() => {
     return () => {
+      lastThrottledPointerUpdate.current?.cancel();
+      lastThrottledPointerUpdate.current = null;
+      throttledRelayVisibleSceneBounds.current?.cancel();
+      throttledRelayVisibleSceneBounds.current = null;
+
+      const room = getCurrentConferenceRoom();
+      if (!room) {
+        return;
+      }
+      const elements = lastKnownElementsRef.current;
+      const appState = lastKnownAppStateRef.current;
+      const syncableElements = elements.filter(isSyncableElement);
+      if (syncableElements.length === 0 || !appState) {
+        return;
+      }
+      const persistedAppState = getPersistedSceneAppState(appState);
       dispatch(
-        broadcastVolatile.action({
-          data: {
-            pointer: {
-              x: 0,
-              y: 0,
-              tool: 'pointer',
-            },
-            button: 'up',
-            selectedElementIds: {},
+        storeScene.action({
+          scene: {
+            elements: syncableElements,
+            appState: persistedAppState,
           },
         })
       );
     };
   }, [dispatch]);
 
-  // eslint-disable-next-line react-hooks/refs
-  const onPointerUpdate = throttle<NonNullable<ExcalidrawProps['onPointerUpdate']>>((payload) => {
-    const excalidrawAPI = excalidrawAPIRef.current;
-    if (payload.pointersMap.size < 1 || !excalidrawAPI) {
-      return;
-    }
-
-    dispatch(
-      broadcastVolatile.action({
-        data: {
-          pointer: payload.pointer,
-          button: payload.button,
-          selectedElementIds: excalidrawAPI.getAppState().selectedElementIds,
-        },
-      })
+  const throttledOnPointerUpdate = useMemo(() => {
+    return throttle(
+      (
+        pointer: ExcalidrawOnPointerUpdatePayload['pointer'],
+        button: ExcalidrawOnPointerUpdatePayload['button'],
+        selectedElementIds: AppState['selectedElementIds']
+      ) => {
+        dispatch(
+          broadcastVolatile.action({
+            data: {
+              pointer,
+              button,
+              selectedElementIds,
+            },
+          })
+        );
+      },
+      CURSOR_SYNC_TIMEOUT
     );
-  }, CURSOR_SYNC_TIMEOUT);
+  }, [dispatch]);
+
+  const onPointerUpdate: ExcalidrawProps['onPointerUpdate'] = useCallback(
+    (payload) => {
+      const excalidrawAPI = excalidrawAPIRef.current;
+      if (!payload || !excalidrawAPI) {
+        return;
+      }
+      const { pointer, button } = payload;
+      const selectedElementIds = excalidrawAPI.getAppState().selectedElementIds;
+      lastThrottledPointerUpdate.current = throttledOnPointerUpdate;
+      throttledOnPointerUpdate(pointer, button, selectedElementIds);
+    },
+    [throttledOnPointerUpdate]
+  );
 
   const randomInteger = () => Math.floor(Math.random() * 2 ** 31);
 
@@ -268,7 +318,7 @@ const WhiteboardView = () => {
       let reconciledElements = reconcileElements(existingElements, restoredRemoteElements, appState);
 
       reconciledElements = bumpElementVersions(reconciledElements, existingElements);
-      lastBroadcastedOrReceivedSceneVersion.current = getSceneVersion(reconciledElements);
+      lastBroadcastedOrReceivedSceneVersion.current = hashElementsVersion(reconciledElements);
 
       excalidrawAPI.updateScene({
         elements: reconciledElements,
@@ -375,15 +425,13 @@ const WhiteboardView = () => {
         case 'volatile_broadcast':
           handleReceivedVolatileBroadcastMessage(payload.sender, payload.data);
           break;
-        case 'followed':
-          isFollowingRef.current = true;
-          break;
-        case 'unfollowed':
-          isFollowingRef.current = false;
-          break;
         case 'follower_gained':
         case 'follower_lost':
           handleFollowerGainedLost(payload.message, payload.participantId);
+          break;
+        case 'error':
+          console.error(payload.error);
+          notifications.error('Whiteboard error: ' + payload.error, { preventDuplicate: true });
           break;
         default:
           break;
@@ -404,95 +452,92 @@ const WhiteboardView = () => {
     };
   }, [handleWhiteboardMessages]);
 
-  const isSyncableElement = useCallback((element: OrderedExcalidrawElement) => {
-    if (element.isDeleted) {
-      return element.updated > Date.now() - DELETED_ELEMENT_TIMEOUT;
-    }
-    return true;
-  }, []);
+  const queueStoreSceneToBackend = useMemo(() => {
+    return throttle(
+      (elementsIncludingDeleted: readonly OrderedExcalidrawElement[], appState: AppState) => {
+        dispatch(
+          storeScene.action({
+            scene: {
+              elements: elementsIncludingDeleted.filter(isSyncableElement),
+              appState: getPersistedSceneAppState(appState),
+            },
+          })
+        );
+      },
+      SYNC_FULL_SCENE_INTERVAL_MS,
+      { leading: false, trailing: true }
+    );
+  }, [dispatch]);
 
-  const broadcastScene = useCallback(
-    ({ elements }: { elements: readonly OrderedExcalidrawElement[] }) => {
-      for (const element of elements) {
-        broadcastedElementVersions.current.set(element.id, element.version);
-      }
+  const broadcastSceneDelta = useMemo(() => {
+    return throttle(
+      (elements: readonly OrderedExcalidrawElement[], sentVersions: Map<string, number>) => {
+        const syncableElements: OrderedExcalidrawElement[] = [];
+        for (const element of elements) {
+          const lastVersion = sentVersions.get(element.id);
+          if (lastVersion === undefined || element.version > lastVersion) {
+            syncableElements.push(element);
+          }
+        }
 
-      dispatch(
-        broadcast.action({
-          data: {
-            elements: elements,
-          },
-        })
-      );
-    },
-    [dispatch]
-  );
+        if (syncableElements.length === 0) {
+          return;
+        }
 
-  const queueStoreSceneToBackend = throttle(
-    // eslint-disable-next-line react-hooks/refs
-    () => {
-      const excalidrawAPI = excalidrawAPIRef.current;
-      if (!excalidrawAPI) {
+        for (const element of syncableElements) {
+          sentVersions.set(element.id, element.version);
+        }
+        dispatch(broadcast.action({ data: { elements: syncableElements } }));
+      },
+      SYNC_SCENE_ELEMENTS_INTERVAL_MS,
+      { leading: true, trailing: true }
+    );
+  }, [dispatch]);
+
+  const queueBroadcastAllElements = useMemo(() => {
+    return throttle(
+      (elementsIncludingDeleted: readonly OrderedExcalidrawElement[], sentVersions: Map<string, number>) => {
+        const syncableElements = elementsIncludingDeleted.filter(isSyncableElement);
+        if (syncableElements.length === 0) {
+          return;
+        }
+
+        for (const element of syncableElements) {
+          sentVersions.set(element.id, element.version);
+        }
+        dispatch(broadcast.action({ data: { elements: syncableElements } }));
+      },
+      SYNC_FULL_SCENE_INTERVAL_MS,
+      { leading: false, trailing: true }
+    );
+  }, [dispatch]);
+
+  const handleChange = useCallback<NonNullable<ExcalidrawProps['onChange']>>(
+    (elements, appState) => {
+      const elementsVersion = hashElementsVersion(elements);
+
+      if (elementsVersion === lastBroadcastedOrReceivedSceneVersion.current) {
         return;
       }
 
-      const elements = excalidrawAPI.getSceneElementsIncludingDeleted();
-      const appState = excalidrawAPI.getAppState();
+      lastBroadcastedOrReceivedSceneVersion.current = elementsVersion;
+      lastKnownElementsRef.current = elements;
+      lastKnownAppStateRef.current = appState;
 
-      dispatch(
-        storeScene.action({
-          scene: {
-            elements: elements.filter(isSyncableElement),
-            appState,
-          },
-        })
-      );
+      broadcastSceneDelta(elements, broadcastedElementVersions.current);
+      queueBroadcastAllElements(elements, broadcastedElementVersions.current);
+      queueStoreSceneToBackend(elements, appState);
     },
-    SYNC_FULL_SCENE_INTERVAL_MS,
-    { leading: false }
+    [broadcastSceneDelta, queueBroadcastAllElements, queueStoreSceneToBackend]
   );
 
-  // eslint-disable-next-line react-hooks/refs
-  const queueBroadcastAllElements = throttle(() => {
-    const excalidrawAPI = excalidrawAPIRef.current;
-    if (!excalidrawAPI) {
-      return;
-    }
-
-    const elementsIncludingDeleted = excalidrawAPI.getSceneElementsIncludingDeleted();
-
-    broadcastScene({
-      elements: elementsIncludingDeleted.filter(isSyncableElement),
-    });
-
-    lastBroadcastedOrReceivedSceneVersion.current = Math.max(
-      lastBroadcastedOrReceivedSceneVersion.current,
-      getSceneVersion(elementsIncludingDeleted)
-    );
-  }, SYNC_FULL_SCENE_INTERVAL_MS);
-
-  const handleChange = useCallback<NonNullable<ExcalidrawProps['onChange']>>(
-    (elements) => {
-      if (getSceneVersion(elements) > lastBroadcastedOrReceivedSceneVersion.current) {
-        const syncableElements = elements.reduce((acc, element) => {
-          if (
-            (!broadcastedElementVersions.current.has(element.id) ||
-              element.version > broadcastedElementVersions.current.get(element.id)!) &&
-            isSyncableElement(element)
-          ) {
-            acc.push(element);
-          }
-          return acc;
-        }, [] as OrderedExcalidrawElement[]);
-
-        broadcastScene({ elements: syncableElements });
-        lastBroadcastedOrReceivedSceneVersion.current = getSceneVersion(elements);
-        queueBroadcastAllElements();
-        queueStoreSceneToBackend();
-      }
-    },
-    [broadcastScene, isSyncableElement, queueBroadcastAllElements, queueStoreSceneToBackend]
-  );
+  useEffect(() => {
+    return () => {
+      broadcastSceneDelta.cancel();
+      queueBroadcastAllElements.cancel();
+      queueStoreSceneToBackend.cancel();
+    };
+  }, [broadcastSceneDelta, queueBroadcastAllElements, queueStoreSceneToBackend]);
 
   const handleOnUserFollow = ({ userToFollow, action }: OnUserFollowedPayload) => {
     switch (action) {
@@ -529,11 +574,11 @@ const WhiteboardView = () => {
     }
   };
 
-  const throttledRelayUserViewportBounds = () => throttle(relayVisibleSceneBounds, CURSOR_SYNC_TIMEOUT)();
-
   const setExcalidrawAPI = (api: ExcalidrawImperativeAPI) => {
+    const _throttledRelayVisibleSceneBounds = throttle(relayVisibleSceneBounds, 500);
+    throttledRelayVisibleSceneBounds.current = _throttledRelayVisibleSceneBounds;
     api.onUserFollow(handleOnUserFollow);
-    api.onScrollChange(throttledRelayUserViewportBounds);
+    api.onScrollChange(() => _throttledRelayVisibleSceneBounds());
     excalidrawAPIRef.current = api;
   };
 
@@ -550,7 +595,7 @@ const WhiteboardView = () => {
       <Excalidraw
         onChange={handleChange}
         onPointerUpdate={onPointerUpdate}
-        initialData={initialData}
+        initialData={initialScene}
         langCode={i18n.resolvedLanguage}
         excalidrawAPI={setExcalidrawAPI}
         viewModeEnabled={!canUserEdit}

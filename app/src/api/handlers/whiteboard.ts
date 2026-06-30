@@ -4,8 +4,10 @@
 import i18next from 'i18next';
 
 import { notificationAction } from '../../commonComponents';
+import LayoutOptions from '../../enums/LayoutOptions';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
+import { updatedCinemaLayout } from '../../store/slices/uiSlice';
 import {
   addWhiteboardAsset,
   setEditRestrictions,
@@ -27,6 +29,7 @@ export const handleWhiteboardMessage = (
   switch (payload.message) {
     case 'initialized':
       dispatch(setWhiteboardAvailable({ url: payload.url }));
+      dispatch(updatedCinemaLayout({ layout: LayoutOptions.Whiteboard, cacheLastLayout: false }));
       break;
     case 'pdf_created':
       dispatch(addWhiteboardAsset({ asset: { assetId: payload.assetId, filename: payload.filename } }));
@@ -36,6 +39,7 @@ export const handleWhiteboardMessage = (
       dispatch(
         setStarted({ initialElements: payload.initialScene.elements, editRestrictions: payload.editRestrictions })
       );
+      dispatch(updatedCinemaLayout({ layout: LayoutOptions.Whiteboard, cacheLastLayout: false }));
       break;
     case 'scene_stored':
       dispatch(
