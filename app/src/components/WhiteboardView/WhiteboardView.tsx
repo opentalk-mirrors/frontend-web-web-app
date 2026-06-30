@@ -455,10 +455,15 @@ const WhiteboardView = () => {
   const queueStoreSceneToBackend = useMemo(() => {
     return throttle(
       (elementsIncludingDeleted: readonly OrderedExcalidrawElement[], appState: AppState) => {
+        const syncableElements = elementsIncludingDeleted.filter(isSyncableElement);
+        // guard against persisting an empty scene
+        if (syncableElements.length === 0) {
+          return;
+        }
         dispatch(
           storeScene.action({
             scene: {
-              elements: elementsIncludingDeleted.filter(isSyncableElement),
+              elements: syncableElements,
               appState: getPersistedSceneAppState(appState),
             },
           })
