@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { ChatIcon } from '@livekit/components-react';
 import {
   Box,
   ListItemIcon,
@@ -21,10 +22,10 @@ import { clearGlobalChatMessages, disableChat, enableChat } from '../../../api/t
 import { generateAttendanceReport } from '../../../api/types/outgoing/meetingReport';
 import {
   changeWaitingRoomState,
-  disableDisplayNameChangeRestrictions,
   disableMicrophoneRestrictions,
-  enableDisplayNameChangeRestrictions,
+  disableSelfRename,
   enableMicrophoneRestrictions,
+  enableSelfRename,
   mute,
 } from '../../../api/types/outgoing/moderation';
 import { disableRaiseHands, enableRaiseHands } from '../../../api/types/outgoing/raiseHands';
@@ -39,9 +40,11 @@ import { disablePresenceLogging, enablePresenceLogging } from '../../../api/type
 import {
   AddUserIcon,
   AttendanceReportIcon,
+  ChatOffIcon,
   CloseIcon,
   DoneIcon,
   EditIcon,
+  EditOffIcon,
   ErrorIcon,
   LiveIcon,
   MeetingRoomIcon,
@@ -338,17 +341,17 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         label: 'more-menu-enable-display-name-change-restrictions',
         action: () => {
           onClose();
-          dispatch(disableDisplayNameChangeRestrictions.action());
+          dispatch(disableSelfRename.action({ unrestrictedParticipants }));
         },
-        icon: <DoneIcon />,
+        icon: <EditOffIcon />,
       }
     : {
         label: 'more-menu-disable-display-name-change-restrictions',
         action: () => {
           onClose();
-          dispatch(enableDisplayNameChangeRestrictions.action({ unrestrictedParticipants }));
+          dispatch(enableSelfRename.action());
         },
-        icon: <CloseIcon />,
+        icon: <EditIcon />,
       };
 
   const togglePresenceLogging: MenuEntry = isTrainingParticipationReportEnabled
@@ -384,7 +387,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           onClose();
           dispatch(disableChat.action());
         },
-        icon: <CloseIcon />,
+        icon: <ChatOffIcon />,
       }
     : {
         label: 'more-menu-enable-chat',
@@ -392,7 +395,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           onClose();
           dispatch(enableChat.action());
         },
-        icon: <DoneIcon />,
+        icon: <ChatIcon />,
       };
 
   const deleteGlobalChatItem = {

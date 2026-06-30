@@ -8,6 +8,7 @@ import { CoreFeatures, BackendModules } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { disableSelfRename, enableSelfRename } from '../../../api/types/outgoing/moderation';
 import { notifications } from '../../../commonComponents';
 import { setGuestAccessEnabled } from '../../../store/slices/moderationSlice';
 import { ForceMuteType, Role } from '../../../types';
@@ -362,6 +363,60 @@ describe('MoreMenu', () => {
       });
 
       expect(await screen.findByText('Test training participation report on')).toBeInTheDocument();
+    });
+  });
+
+  describe('self-rename toggle', () => {
+    const moderatorRoomOwnerState = { user: { role: Role.Moderator }, room: { isOwnedByCurrentUser: true } };
+
+    it('shows the enable renaming option and dispatches enableSelfRename when self-rename is disabled', async () => {
+      // eslint-disable-next-line testing-library/render-result-naming-convention
+      const user = userEvent.setup();
+      const { store, dispatchSpy } = configureStore({ initialState: moderatorRoomOwnerState });
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
+        store,
+        provider: { snackbar: true, mui: true },
+      });
+
+      const toggle = screen.getByRole('menuitem', { name: 'more-menu-disable-display-name-change-restrictions' });
+      expect(toggle).toBeInTheDocument();
+      expect(
+        screen.queryByRole('menuitem', { name: 'more-menu-enable-display-name-change-restrictions' })
+      ).not.toBeInTheDocument();
+
+      await user.click(toggle);
+
+      expect(dispatchSpy).toHaveBeenCalledWith(expect.objectContaining({ type: enableSelfRename.action.type }));
+      expect(dispatchSpy).not.toHaveBeenCalledWith(expect.objectContaining({ type: disableSelfRename.action.type }));
+    });
+
+    it('shows the disable renaming option and dispatches disableSelfRename when self-rename is enabled', async () => {
+      // eslint-disable-next-line testing-library/render-result-naming-convention
+      const user = userEvent.setup();
+      const { store, dispatchSpy } = configureStore({
+        initialState: {
+          ...moderatorRoomOwnerState,
+          moderation: {
+            forceMute: { type: ForceMuteType.Disabled, unrestrictedParticipants: [] },
+            selfRenameEnabled: true,
+          },
+        },
+      });
+      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
+        store,
+        provider: { snackbar: true, mui: true },
+      });
+
+      const toggle = screen.getByRole('menuitem', { name: 'more-menu-enable-display-name-change-restrictions' });
+      expect(toggle).toBeInTheDocument();
+      expect(
+        screen.queryByRole('menuitem', { name: 'more-menu-disable-display-name-change-restrictions' })
+      ).not.toBeInTheDocument();
+
+      await user.click(toggle);
+
+      expect(dispatchSpy).toHaveBeenCalledWith(expect.objectContaining({ type: disableSelfRename.action.type }));
+      expect(dispatchSpy).not.toHaveBeenCalledWith(expect.objectContaining({ type: enableSelfRename.action.type }));
     });
   });
 });

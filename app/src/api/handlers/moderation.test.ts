@@ -6,6 +6,7 @@ import i18next from 'i18next';
 import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
 import {
+  disabledSelfRename,
   enabledSelfRename,
   forceMuteDisabled,
   forceMuteEnabled,
@@ -228,11 +229,11 @@ describe('handleModerationMessage', () => {
   //   expect(notifications.info).toHaveBeenCalledExactlyOnceWith('debriefing-session-ended-for-all-notification');
   // });
 
-  it('notifies users when moderator enabled renaming', () => {
+  it('notifies users and enables self-rename when moderator enabled renaming', () => {
     const dispatch = vi.fn();
     const state = createState();
     const message: ModerationMessage = {
-      message: 'display_name_change_restrictions_enabled',
+      message: 'display_name_change_restrictions_disabled',
     };
     handleModerationMessage(dispatch, message, timestamp, state);
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(enabledSelfRename());
@@ -240,13 +241,14 @@ describe('handleModerationMessage', () => {
     expect(notifications.info).toHaveBeenCalledExactlyOnceWith('renaming-enabled-notification');
   });
 
-  it('notifies users when moderator disabled renaming', () => {
+  it('notifies users and disables self-rename when moderator disabled renaming', () => {
     const dispatch = vi.fn();
     const state = createState();
     const message: ModerationMessage = {
-      message: 'display_name_change_restrictions_disabled',
+      message: 'display_name_change_restrictions_enabled',
     };
     handleModerationMessage(dispatch, message, timestamp, state);
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(disabledSelfRename());
     expect(i18next.t).toHaveBeenCalledExactlyOnceWith('renaming-disabled-notification');
     expect(notifications.info).toHaveBeenCalledExactlyOnceWith('renaming-disabled-notification');
   });

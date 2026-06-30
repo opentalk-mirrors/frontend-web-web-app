@@ -182,12 +182,12 @@ export const handleModerationMessage = (
       }
       break;
     case 'display_name_change_restrictions_disabled':
-      dispatch(disabledSelfRename());
-      notifications.info(i18next.t('renaming-disabled-notification'));
-      break;
-    case 'display_name_change_restrictions_enabled':
       dispatch(enabledSelfRename());
       notifications.info(i18next.t('renaming-enabled-notification'));
+      break;
+    case 'display_name_change_restrictions_enabled':
+      dispatch(disabledSelfRename());
+      notifications.info(i18next.t('renaming-disabled-notification'));
       break;
     case 'error': {
       if (data.error === ModerationError.UserCannotBeModerator) {

@@ -133,11 +133,11 @@ export const disableMicrophoneRestrictions = createSignalingApiCall<DisableMicro
   'moderation',
   'disable_microphone_restrictions'
 );
-export const disableDisplayNameChangeRestrictions = createSignalingApiCall<DisableDisplayNameChangeRestrictions>(
+export const enableSelfRename = createSignalingApiCall<DisableDisplayNameChangeRestrictions>(
   'moderation',
   'disable_display_name_change_restrictions'
 );
-export const enableDisplayNameChangeRestrictions = createSignalingApiCall<EnableDisplayNameChangeRestrictions>(
+export const disableSelfRename = createSignalingApiCall<EnableDisplayNameChangeRestrictions>(
   'moderation',
   'enable_display_name_change_restrictions'
 );
@@ -174,11 +174,11 @@ export const handler = createModule<RootState>((builder) => {
     .addCase(changeDisplayName.action, (_state, action) => {
       sendMessage(changeDisplayName(action.payload));
     })
-    .addCase(disableDisplayNameChangeRestrictions.action, () => {
-      sendMessage(disableDisplayNameChangeRestrictions());
+    .addCase(enableSelfRename.action, () => {
+      sendMessage(enableSelfRename());
     })
-    .addCase(enableDisplayNameChangeRestrictions.action, (_state, action) => {
-      sendMessage(enableDisplayNameChangeRestrictions(action.payload));
+    .addCase(disableSelfRename.action, (_state, action) => {
+      sendMessage(disableSelfRename(action.payload));
     })
     .addCase(mute.action, (_state, action) => {
       sendMessage(mute(action.payload));
