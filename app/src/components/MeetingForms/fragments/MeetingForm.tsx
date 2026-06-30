@@ -66,6 +66,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
 
   const features = useAppSelector(selectConfigFeatures);
   const [memoizedRecurrencePattern, setMemoizedRecurrencePattern] = useState<RecurrencePattern | false>(false);
+  const [previousGuestAccess, setPreviousGuestAccess] = useState<GuestAccess>();
 
   const formik = useFormik<MeetingFormValues>({
     initialValues: getInitialValues(memoizedRecurrencePattern, isWaitingRoomEnabledByDefault, existingEvent),
@@ -86,8 +87,11 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
   const handleE2EEChange = (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
     formik.setFieldValue('e2eEncryption', checked);
     if (checked) {
+      setPreviousGuestAccess(formik.values.guestAccess);
       formik.setFieldValue('streaming', { enabled: false });
       formik.setFieldValue('guestAccess', GuestAccess.Disabled);
+    } else if (previousGuestAccess !== undefined) {
+      formik.setFieldValue('guestAccess', previousGuestAccess);
     }
   };
 
