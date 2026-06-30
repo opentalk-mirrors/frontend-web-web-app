@@ -80,6 +80,13 @@ const WhiteboardWrapper = styled('div')(({ theme }) => ({
   '& .sidebar-trigger__label-element': {
     display: 'none',
   },
+
+  // CSS-Hack to hide the footer help button. There is no UIOption to disable it, and the
+  // help dialog it opens contains external links to excalidraw.com, GitHub and YouTube
+  // that we do not want to surface to users.
+  '& .help-icon': {
+    display: 'none',
+  },
 }));
 
 function isSyncableElement(element: OrderedExcalidrawElement) {
