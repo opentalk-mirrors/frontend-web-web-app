@@ -64,6 +64,7 @@ window.config = {
   },
   videoBackgrounds: '${VIDEO_BACKGROUNDS}',
   maxVideoBandwidth: '${MAX_VIDEO_BANDWIDTH}',
+  maxGridTiles: '${MAX_GRID_TILES}',
   glitchtip: {
     dsn: '${SENTRY_DSN}',
   },

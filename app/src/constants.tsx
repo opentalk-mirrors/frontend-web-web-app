@@ -26,5 +26,14 @@ export const DISPLAY_NAME_MAX_CHARACTERS = 100;
 export const GRID_VIDEO_WIDTHS = [50, 33.33, 25, 25] as readonly number[];
 export const GRID_SIZES = [6, 9, 16, 24] as readonly number[];
 
+export const getAvailableGridSizes = (maxGridTiles?: number | string): readonly number[] => {
+  const maxTiles = Number(maxGridTiles);
+  if (maxGridTiles === undefined || maxGridTiles === '' || Number.isNaN(maxTiles)) {
+    return GRID_SIZES;
+  }
+  const availableSizes = GRID_SIZES.filter((size) => size <= maxTiles);
+  return availableSizes.length > 0 ? availableSizes : [GRID_SIZES[0]];
+};
+
 export const BREAKOUT_ROOM_CLOSE_DELAY = 60;
 export const BREAKOUT_ROOM_DEFAULT_COUNTDOWN_DURATION = 120;

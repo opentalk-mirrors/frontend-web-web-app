@@ -6,6 +6,7 @@ import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'lodash';
 
 import type { RootState } from '../';
+import { getAvailableGridSizes } from '../../constants';
 import log from '../../logger';
 import { EnabledModules, SignalingTariff } from '../../types';
 import type { VideoCodec } from '../../types/livekit';
@@ -90,6 +91,7 @@ export interface Config {
   };
   videoBackgrounds: VideoBackground[];
   maxVideoBandwidth: number;
+  maxGridTiles?: number;
   libravatarDefaultImage?: DefaultAvatarImage;
   tariff?: Tariff;
   provider: {
@@ -152,6 +154,7 @@ export type ConfigState = {
   };
   readonly videoBackgrounds: readonly VideoBackground[];
   maxVideoBandwidth: number;
+  maxGridTiles?: number;
   readonly features: Features;
   libravatarDefaultImage: DefaultAvatarImage;
   enabledModules: EnabledModules;
@@ -230,6 +233,7 @@ export const initialState: ConfigState = {
   },
   videoBackgrounds: [],
   maxVideoBandwidth: 600000,
+  maxGridTiles: undefined,
   libravatarDefaultImage: 'robohash',
   enabledModules: {},
   tariff: {
@@ -318,6 +322,10 @@ export const selectMeetingInactivityWarningSeconds = (state: RootState) => state
 export const selectMeetingInactivityTerminationSeconds = (state: RootState) =>
   state.config.meetingInactivityTerminationSeconds;
 export const selectIsSpacedeckEnabled = (state: RootState) => state.config.spacedeck.enabled;
+export const selectAvailableGridSizes = createSelector(
+  (state: RootState) => state.config.maxGridTiles,
+  (maxGridTiles) => getAvailableGridSizes(maxGridTiles)
+);
 export const selectStorageUsed = (state: RootState) => state.config.tariff?.usedQuota['maxStorage'];
 export const selectStorageTotal = (state: RootState) => state.config.tariff?.quotas['maxStorage'];
 

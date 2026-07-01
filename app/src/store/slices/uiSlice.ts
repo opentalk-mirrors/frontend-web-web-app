@@ -454,11 +454,26 @@ export const selectSelfRenameDialogVisible = (state: RootState) => state.ui.show
 
 export const loadCinemaLayoutSettingsFromLocalStorage = (): Partial<UIState> | undefined => {
   const storageItem = localStorage.getItem('cinemaLayoutSettings');
-  if (storageItem !== null) {
-    return JSON.parse(storageItem);
+  if (storageItem === null) {
+    return undefined;
   }
 
-  return undefined;
+  const cinemaLayoutSettings: Partial<UIState> = JSON.parse(storageItem);
+
+  // the available grid tile sizes can be restricted via the `maxGridTiles` config. If a previously
+  // stored grid size exceeds the configured maximum, drop the field from the stored settings
+  // (and persist the cleaned entry) so a valid default size is used instead.
+  const maxGridTiles = Number(window.config?.maxGridTiles);
+  if (
+    !Number.isNaN(maxGridTiles) &&
+    cinemaLayoutSettings.cinemaGridSize !== undefined &&
+    cinemaLayoutSettings.cinemaGridSize > maxGridTiles
+  ) {
+    delete cinemaLayoutSettings.cinemaGridSize;
+    localStorage.setItem('cinemaLayoutSettings', JSON.stringify(cinemaLayoutSettings));
+  }
+
+  return cinemaLayoutSettings;
 };
 
 export const storeCinemaLayoutSettingsToLocalStorage = (
