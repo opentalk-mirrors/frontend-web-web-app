@@ -5,14 +5,19 @@ import i18next from 'i18next';
 
 import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
-import { enabledSelfRename, forceMuteDisabled, forceMuteEnabled } from '../../store/slices/moderationSlice';
+import {
+  enabledSelfRename,
+  forceMuteDisabled,
+  forceMuteEnabled,
+  setModeratorData,
+} from '../../store/slices/moderationSlice';
 import { rename } from '../../store/slices/participantsSlice';
 import { enteredWaitingRoom } from '../../store/slices/roomSlice';
-import { setDisplayName } from '../../store/slices/userSlice';
-import { Role } from '../../types';
-import type { ParticipantId, Timestamp } from '../../types';
+import { setDisplayName, updateRole } from '../../store/slices/userSlice';
+import { Role, WaitingRoom } from '../../types';
+import type { ModeratorJoinInfo, ParticipantId, Timestamp } from '../../types';
 import { KickReason } from '../../types';
-import type { DisplayNameChanged, Message as ModerationMessage } from '../types/incoming/moderation';
+import type { DisplayNameChanged, Message as ModerationMessage, RoleUpdated } from '../types/incoming/moderation';
 import { handleModerationMessage } from './moderation';
 
 vi.mock('i18next', () => ({
@@ -242,5 +247,65 @@ describe('handleModerationMessage', () => {
     handleModerationMessage(dispatch, message, timestamp, state);
     expect(i18next.t).toHaveBeenCalledExactlyOnceWith('renaming-disabled-notification');
     expect(notifications.info).toHaveBeenCalledExactlyOnceWith('renaming-disabled-notification');
+  });
+
+  describe('role_updated', () => {
+    const moderatorData: ModeratorJoinInfo = {
+      raiseHandsEnabled: true,
+      guestAccess: false,
+      waitingRoomParticipants: [],
+      waitingRoom: WaitingRoom.ForEveryone,
+    };
+
+    it('consumes moderator data when the local user is promoted to moderator', () => {
+      const dispatch = vi.fn();
+      const userId = 'participant-1' as ParticipantId;
+      const state = createState({ user: { uuid: userId } });
+      const data: RoleUpdated = {
+        message: 'role_updated',
+        participantId: userId,
+        newRole: Role.Moderator,
+        moderatorData,
+      };
+
+      handleModerationMessage(dispatch, data, timestamp, state);
+
+      expect(dispatch).toHaveBeenCalledWith(updateRole(Role.Moderator));
+      expect(dispatch).toHaveBeenCalledWith(setModeratorData({ moderatorData }));
+      expect(notifications.info).toHaveBeenCalledExactlyOnceWith('moderation-rights-granted');
+    });
+
+    it('consumes moderator data for another participant carrying moderator data', () => {
+      const dispatch = vi.fn();
+      const userId = 'participant-1' as ParticipantId;
+      const otherUserId = 'participant-2' as ParticipantId;
+      const state = createState({ user: { uuid: userId } });
+      const data: RoleUpdated = {
+        message: 'role_updated',
+        participantId: otherUserId,
+        newRole: Role.Moderator,
+        moderatorData,
+      };
+
+      handleModerationMessage(dispatch, data, timestamp, state);
+
+      expect(dispatch).toHaveBeenCalledWith(setModeratorData({ moderatorData }));
+    });
+
+    it('does not dispatch moderator data when it is absent', () => {
+      const dispatch = vi.fn();
+      const userId = 'participant-1' as ParticipantId;
+      const state = createState({ user: { uuid: userId } });
+      const data: RoleUpdated = {
+        message: 'role_updated',
+        participantId: userId,
+        newRole: Role.User,
+      };
+
+      handleModerationMessage(dispatch, data, timestamp, state);
+
+      expect(dispatch).not.toHaveBeenCalledWith(setModeratorData(expect.anything()));
+      expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('moderation-rights-revoked');
+    });
   });
 });

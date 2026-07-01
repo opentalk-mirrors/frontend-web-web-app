@@ -5,7 +5,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 import type { RootState } from '..';
 import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
-import { ForceMute, ForceMuteType, WaitingRoom } from '../../types';
+import { ForceMute, ForceMuteType, ModeratorJoinInfo, WaitingRoom } from '../../types';
 import { joinSuccess } from '../commonActions';
 
 export type ModerationState = {
@@ -93,6 +93,10 @@ export const moderationSlice = createSlice({
     setGuestAccessEnabled: (state, { payload }: PayloadAction<boolean>) => {
       state.guestAccessEnabled = payload;
     },
+    setModeratorData: (state, { payload: { moderatorData } }: PayloadAction<{ moderatorData: ModeratorJoinInfo }>) => {
+      state.waitingRoom = moderatorData.waitingRoom;
+      state.guestAccessEnabled = moderatorData.guestAccess;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload }) => {
@@ -142,6 +146,7 @@ export const {
   enabledSelfRename,
   setWaitingRoomState,
   setGuestAccessEnabled,
+  setModeratorData,
 } = moderationSlice.actions;
 export const actions = moderationSlice.actions;
 

@@ -4,6 +4,7 @@
 import {
   ErrorStruct,
   KickReason,
+  ModeratorJoinInfo,
   NamespacedIncoming,
   ParticipantId,
   Role,
@@ -23,8 +24,8 @@ export interface BannedParticipant {
 export interface ParticipantBanned {
   message: 'participant_banned';
   participantId: ParticipantId;
-  display_name: string;
-  avatar_url: string;
+  displayName: string;
+  avatarUrl: string;
   bannedBy: ParticipantId;
   bannedAt: Timestamp;
 }
@@ -38,6 +39,7 @@ export interface RoleUpdated {
   message: 'role_updated';
   participantId: ParticipantId;
   newRole: Role;
+  moderatorData?: ModeratorJoinInfo;
 }
 
 export interface DebriefStarted {

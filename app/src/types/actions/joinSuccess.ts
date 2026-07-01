@@ -224,10 +224,14 @@ export interface RecordingState {
   service?: RecordingServiceState;
 }
 
-export interface ModerationState {
+export interface ModeratorJoinInfo {
+  raiseHandsEnabled: boolean;
   guestAccess: boolean;
   waitingRoomParticipants: WaitingRoomParticipant[];
   waitingRoom: WaitingRoom;
+}
+
+export interface ModerationState extends ModeratorJoinInfo {
   displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
 }
 
