@@ -48,6 +48,7 @@ const createUserState = (overrides: Partial<RootState['user']> = {}): RootState[
   displayName: '',
   isRoomOwner: false,
   participationKind: ParticipationKind.Registered,
+  joinedAsModerator: false,
   ...overrides,
 });
 

@@ -1206,6 +1206,8 @@ whiteboard-dialog-edit-restrictions-empty = Keine(n) Teilnehmer gefunden
 whiteboard-dialog-edit-restrictions-search-label = Teilnehmer suchen
 whiteboard-upload-failed = Datei konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.
 whiteboard-upload-success = Whiteboard PDF erfolgreich hochgeladen.
+whiteboard-error-insufficient-permissions = Sie haben keine Berechtigung, das Whiteboard zu bearbeiten.
+whiteboard-error-generic = Es ist ein Fehler im Whiteboard aufgetreten. Bitte versuchen Sie es erneut.
 
 
 hotkey-hold-to-speak = Nicht stumm geschaltet, während gedrückt gehalten

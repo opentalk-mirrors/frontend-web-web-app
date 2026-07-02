@@ -43,7 +43,7 @@ import { useAppStore } from '../../store';
 import { selectAccountManagementUrl } from '../../store/slices/configSlice';
 import { selectDisplayNameById } from '../../store/slices/participantsSlice';
 import { selectRoomId } from '../../store/slices/roomSlice';
-import { selectIsModerator, selectOurUuid } from '../../store/slices/userSlice';
+import { selectIsModerator, selectOurUuid, selectCanManageRoomAssets } from '../../store/slices/userSlice';
 import {
   addWhiteboardAsset,
   selectCanUserEdit,
@@ -62,7 +62,7 @@ const CURSOR_SYNC_TIMEOUT = 33;
 const PDF_PADDING = 64;
 const DELETED_ELEMENT_TIMEOUT = 24 * 60 * 60 * 1000; // 1 day
 const SYNC_SCENE_ELEMENTS_INTERVAL_MS = 50;
-const SYNC_FULL_SCENE_INTERVAL_MS = 20_000;
+const SYNC_FULL_SCENE_INTERVAL_MS = 10_000;
 
 const WhiteboardWrapper = styled('div')(({ theme }) => ({
   height: '100%',
@@ -96,6 +96,15 @@ function isSyncableElement(element: OrderedExcalidrawElement) {
   return true;
 }
 
+function getWhiteboardErrorMessageKey(error: string): string {
+  switch (error) {
+    case 'insufficient_permissions':
+      return 'whiteboard-error-insufficient-permissions';
+    default:
+      return 'whiteboard-error-generic';
+  }
+}
+
 const WhiteboardView = () => {
   const lastBroadcastedOrReceivedSceneVersion = useRef(-1);
   const broadcastedElementVersions = useRef<Map<string, number>>(new Map());
@@ -107,6 +116,7 @@ const WhiteboardView = () => {
   const initialScene = useMemo(() => ({ elements: initialElements }), [initialElements]);
   const meUUID = useAppSelector(selectOurUuid);
   const isModerator = useAppSelector(selectIsModerator);
+  const canManageRoomAssets = useAppSelector(selectCanManageRoomAssets);
   const roomId = useAppSelector(selectRoomId);
   const canUserEditByRestrictions = useAppSelector((state) => selectCanUserEdit(state, meUUID));
   const { enabled: editRestrictionsEnabled, unrestrictedParticipants } = useAppSelector(
@@ -429,13 +439,15 @@ const WhiteboardView = () => {
           break;
         case 'error':
           console.error(payload.error);
-          notifications.error('Whiteboard error: ' + payload.error, { preventDuplicate: true });
+          if (payload.error !== 'storage_exceeded') {
+            notifications.error(t(getWhiteboardErrorMessageKey(payload.error)), { preventDuplicate: true });
+          }
           break;
         default:
           break;
       }
     },
-    [handleReceivedBroadcastMessage, handleReceivedVolatileBroadcastMessage]
+    [handleReceivedBroadcastMessage, handleReceivedVolatileBroadcastMessage, t]
   );
 
   useEffect(() => {
@@ -540,6 +552,43 @@ const WhiteboardView = () => {
     };
   }, [broadcastSceneDelta, queueBroadcastAllElements, queueStoreSceneToBackend]);
 
+  const storeCurrentSceneImmediately = useCallback(() => {
+    const excalidrawAPI = excalidrawAPIRef.current;
+    if (!excalidrawAPI) {
+      return;
+    }
+
+    const syncableElements = excalidrawAPI.getSceneElementsIncludingDeleted().filter(isSyncableElement);
+    if (syncableElements.length === 0) {
+      return;
+    }
+
+    queueStoreSceneToBackend.cancel();
+    dispatch(
+      storeScene.action({
+        scene: {
+          elements: syncableElements,
+        },
+      })
+    );
+  }, [dispatch, queueStoreSceneToBackend]);
+
+  // When a moderator grants edit rights, immediately persist the current scene to the backend
+  const previousEditRestrictionsRef = useRef<string | null>(null);
+  useEffect(() => {
+    const signature = `${editRestrictionsEnabled}:${[...unrestrictedParticipants].sort().join(',')}`;
+    const previousSignature = previousEditRestrictionsRef.current;
+    previousEditRestrictionsRef.current = signature;
+
+    if (previousSignature === null || previousSignature === signature) {
+      return;
+    }
+
+    if (isModerator) {
+      storeCurrentSceneImmediately();
+    }
+  }, [editRestrictionsEnabled, unrestrictedParticipants, isModerator, storeCurrentSceneImmediately]);
+
   const handleOnUserFollow = ({ userToFollow, action }: OnUserFollowedPayload) => {
     switch (action) {
       case 'FOLLOW':
@@ -607,7 +656,7 @@ const WhiteboardView = () => {
         }}
       >
         <MainMenu>
-          {isModerator && renderUploadMenuButton()}
+          {canManageRoomAssets && renderUploadMenuButton()}
 
           {canUserEdit && <MainMenu.DefaultItems.ClearCanvas />}
 

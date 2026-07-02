@@ -28,6 +28,7 @@ export type UserState = {
   joinedAt?: string;
   meetingNotesAccess: MeetingNotesAccess;
   isRoomOwner: boolean;
+  joinedAsModerator: boolean;
   isTariffUpgradable?: boolean;
 };
 
@@ -38,6 +39,7 @@ const initialState: UserState = {
   participationKind: ParticipationKind.Registered,
   meetingNotesAccess: 'none' as MeetingNotesAccess.None, // this will be fixed with the next version of the ts-jest
   isRoomOwner: false,
+  joinedAsModerator: false,
 };
 
 export const userSlice = createSlice({
@@ -83,6 +85,7 @@ export const userSlice = createSlice({
         state.joinedAt = new Date().toISOString();
         state.lastActive = state.joinedAt;
         state.isRoomOwner = isRoomOwner;
+        state.joinedAsModerator = role === Role.Moderator;
         state.isTariffUpgradable = enabledModules[BackendModules.Core]?.includes(CoreFeatures.StorageUpgradable);
       }
     );
@@ -125,6 +128,19 @@ export const selectDisplayName = createSelector([userState], (state) => state.di
 export const selectAvatarUrl = createSelector([userState], (state) => state.avatarUrl);
 export const selectUserMeetingNotesAccess = createSelector([userState], (state) => state.meetingNotesAccess);
 export const selectIsModerator = createSelector([userState], (state) => state.role === Role.Moderator);
+
+/**
+ * Whether the user is allowed to create/upload room assets (e.g. whiteboard PDFs).
+ *
+ * The controller authorizes asset uploads against the persistent (database-level) role, so a user
+ * promoted to moderator only during the meeting is not permitted to upload. This selector therefore
+ * relies on the room owner flag and the join-time moderator role instead of the live role.
+ */
+export const selectCanManageRoomAssets = createSelector(
+  [userState],
+  (state) => state.isRoomOwner || state.joinedAsModerator
+);
+
 export const selectIsGuest = createSelector(
   [userState],
   (state) => state.participationKind === ParticipationKind.Guest
