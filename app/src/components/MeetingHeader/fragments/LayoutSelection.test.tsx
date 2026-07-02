@@ -168,4 +168,29 @@ describe('Layout selection menu', () => {
     expect(updatedCameraFirstOption).toHaveAttribute('aria-selected', 'true');
     expect(updatedFirstJoinedOption).toHaveAttribute('aria-selected', 'false');
   });
+
+  it('renders all grid sizes when no maxGridTiles is configured', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
+    await user.click(getButtonSelector('layout-selection-grid'));
+
+    expect(getButtonSelector('6')).toBeInTheDocument();
+    expect(getButtonSelector('9')).toBeInTheDocument();
+    expect(getButtonSelector('16')).toBeInTheDocument();
+    expect(getButtonSelector('24')).toBeInTheDocument();
+  });
+
+  it('hides grid sizes larger than the configured maxGridTiles', async () => {
+    const user = userEvent.setup();
+    const { store } = configureStore({ initialState: { config: { maxGridTiles: 9 } } });
+    renderWithProviders(<LayoutSelection />, { store, provider: { mui: true } });
+    await user.click(screen.getByRole('button', { name: 'layout-selection-trigger-button' }));
+    await user.click(getButtonSelector('layout-selection-grid'));
+
+    expect(getButtonSelector('6')).toBeInTheDocument();
+    expect(getButtonSelector('9')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '16' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '24' })).not.toBeInTheDocument();
+  });
 });

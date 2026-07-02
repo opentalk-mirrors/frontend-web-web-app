@@ -38,11 +38,10 @@ import {
   CloseIcon,
 } from '../../../assets/icons';
 import { IconButton } from '../../../commonComponents';
-import { GRID_SIZES } from '../../../constants';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { CinemaViewSortOrder } from '../../../store/slices/common';
-import { selectIsModuleEnabled } from '../../../store/slices/configSlice';
+import { selectAvailableGridSizes, selectIsModuleEnabled } from '../../../store/slices/configSlice';
 import {
   fullscreenActions,
   selectFullscreenActive,
@@ -225,6 +224,7 @@ const LayoutSelection = () => {
   const isFullscreenSupported = useAppSelector(selectFullscreenSupported);
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
   const selectedCinemaGridSize = useAppSelector(selectCinemaGridSize);
+  const availableGridSizes = useAppSelector(selectAvailableGridSizes);
   const lastCinemaLayout = useAppSelector(selectLastCinemaLayout);
   /**
    * Placeholder condition for all features that has to show indicator.
@@ -365,7 +365,7 @@ const LayoutSelection = () => {
                 }}
                 aria-labelledby="grid-size-label"
               >
-                {GRID_SIZES.map((size) => {
+                {availableGridSizes.map((size) => {
                   const icon = GRID_ICON_MAP[size];
                   return (
                     <StyledToggleButton key={size} value={size}>
