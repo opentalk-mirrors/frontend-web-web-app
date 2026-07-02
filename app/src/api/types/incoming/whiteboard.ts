@@ -13,7 +13,6 @@ export type ExcalidrawElements = readonly ExcalidrawElement[];
 export type ExcalidrawAppState = ReturnType<ExcalidrawImperativeAPI['getAppState']>;
 export type ExcalidrawScene = {
   elements: ExcalidrawElements;
-  appState: ExcalidrawAppState;
 };
 
 export type Token = string;
@@ -36,6 +35,10 @@ export type Started = {
   message: 'started';
   initialScene: WhiteboardScene;
   editRestrictions: WhiteboardEditRestrictions;
+};
+
+export type Stopped = {
+  message: 'stopped';
 };
 
 export type VolatileBroadcast = {
@@ -118,6 +121,7 @@ export interface SpacedeckPdfCreated extends AssetRef {
 
 export type ExcalidrawMessage =
   | Started
+  | Stopped
   | VolatileBroadcast
   | Broadcast
   | SceneStored

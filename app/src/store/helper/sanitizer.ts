@@ -4,7 +4,7 @@
 import type { UnknownAction, Action } from '@reduxjs/toolkit';
 import { get, set } from 'lodash';
 
-import { broadcastVolatile, storeScene } from '../../api/types/outgoing/whiteboard';
+import { broadcastVolatile } from '../../api/types/outgoing/whiteboard';
 import { changeLocalMedia, connectRoom, switchLocalDevice } from '../commonActions';
 import type { RootState } from '../index';
 import { setLivekitRoom } from '../slices/livekitSlice';
@@ -99,10 +99,6 @@ export const actionSanitizer: <A extends Action>(genericAction: A, _id: number) 
 
   if (broadcastVolatile.action.match(action)) {
     return maskPayloadKey(action, 'data.pointersMap') as A;
-  }
-
-  if (storeScene.action.match(action)) {
-    return maskPayloadKey(action, 'scene.appState.collaborators') as A;
   }
 
   return action as A;

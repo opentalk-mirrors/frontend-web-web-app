@@ -171,7 +171,6 @@ const renderWhiteboardView = ({
         whiteboardAssetList: [],
         scene: {
           elements: [],
-          appState: undefined,
         },
         editRestrictions: {
           enabled: editRestrictionsEnabled,

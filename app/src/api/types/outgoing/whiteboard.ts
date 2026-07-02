@@ -29,7 +29,7 @@ export interface Start {
 
 export interface Broadcast {
   action: 'broadcast';
-  data: Omit<ExcalidrawScene, 'appState'>;
+  data: Pick<ExcalidrawScene, 'elements'>;
 }
 
 export interface BroadcastVolatile {

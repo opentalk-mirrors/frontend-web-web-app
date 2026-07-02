@@ -80,6 +80,13 @@ const WhiteboardWrapper = styled('div')(({ theme }) => ({
   '& .sidebar-trigger__label-element': {
     display: 'none',
   },
+
+  // CSS-Hack to hide the footer help button. There is no UIOption to disable it, and the
+  // help dialog it opens contains external links to excalidraw.com, GitHub and YouTube
+  // that we do not want to surface to users.
+  '& .help-icon': {
+    display: 'none',
+  },
 }));
 
 function isSyncableElement(element: OrderedExcalidrawElement) {
@@ -87,11 +94,6 @@ function isSyncableElement(element: OrderedExcalidrawElement) {
     return element.updated > Date.now() - DELETED_ELEMENT_TIMEOUT;
   }
   return true;
-}
-
-function getPersistedSceneAppState(appState: AppState): AppState {
-  const { collaborators: _collaborators, followedBy: _followedBy, ...persistedAppState } = appState;
-  return persistedAppState as AppState;
 }
 
 const WhiteboardView = () => {
@@ -127,7 +129,6 @@ const WhiteboardView = () => {
   const lastThrottledPointerUpdate = useRef<ReturnType<typeof throttle> | null>(null);
   const throttledRelayVisibleSceneBounds = useRef<ReturnType<typeof throttle> | null>(null);
   const lastKnownElementsRef = useRef<readonly OrderedExcalidrawElement[]>([]);
-  const lastKnownAppStateRef = useRef<AppState | null>(null);
 
   const renderUploadMenuButton = () => {
     return (
@@ -223,17 +224,14 @@ const WhiteboardView = () => {
         return;
       }
       const elements = lastKnownElementsRef.current;
-      const appState = lastKnownAppStateRef.current;
       const syncableElements = elements.filter(isSyncableElement);
-      if (syncableElements.length === 0 || !appState) {
+      if (syncableElements.length === 0) {
         return;
       }
-      const persistedAppState = getPersistedSceneAppState(appState);
       dispatch(
         storeScene.action({
           scene: {
             elements: syncableElements,
-            appState: persistedAppState,
           },
         })
       );
@@ -454,12 +452,16 @@ const WhiteboardView = () => {
 
   const queueStoreSceneToBackend = useMemo(() => {
     return throttle(
-      (elementsIncludingDeleted: readonly OrderedExcalidrawElement[], appState: AppState) => {
+      (elementsIncludingDeleted: readonly OrderedExcalidrawElement[]) => {
+        const syncableElements = elementsIncludingDeleted.filter(isSyncableElement);
+        // guard against persisting an empty scene
+        if (syncableElements.length === 0) {
+          return;
+        }
         dispatch(
           storeScene.action({
             scene: {
-              elements: elementsIncludingDeleted.filter(isSyncableElement),
-              appState: getPersistedSceneAppState(appState),
+              elements: syncableElements,
             },
           })
         );
@@ -513,7 +515,7 @@ const WhiteboardView = () => {
   }, [dispatch]);
 
   const handleChange = useCallback<NonNullable<ExcalidrawProps['onChange']>>(
-    (elements, appState) => {
+    (elements) => {
       const elementsVersion = hashElementsVersion(elements);
 
       if (elementsVersion === lastBroadcastedOrReceivedSceneVersion.current) {
@@ -522,11 +524,10 @@ const WhiteboardView = () => {
 
       lastBroadcastedOrReceivedSceneVersion.current = elementsVersion;
       lastKnownElementsRef.current = elements;
-      lastKnownAppStateRef.current = appState;
 
       broadcastSceneDelta(elements, broadcastedElementVersions.current);
       queueBroadcastAllElements(elements, broadcastedElementVersions.current);
-      queueStoreSceneToBackend(elements, appState);
+      queueStoreSceneToBackend(elements);
     },
     [broadcastSceneDelta, queueBroadcastAllElements, queueStoreSceneToBackend]
   );
