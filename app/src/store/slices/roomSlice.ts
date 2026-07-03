@@ -134,7 +134,7 @@ export const roomSlice = createSlice({
       state.error = reason;
     },
     connectionClosed: (state, { payload: { errorCode } }: PayloadAction<{ errorCode?: number }>) => {
-      state.connectionState = errorCode ? ConnectionState.Failed : ConnectionState.Leaving;
+      state.connectionState = errorCode ? ConnectionState.Failed : ConnectionState.Left;
       state.error = `websocket_error_${errorCode}`;
     },
     enteredWaitingRoom: (state) => {
