@@ -7,6 +7,7 @@ import {
   type StreamUpdatedMessage,
   type StreamingTargetEntity,
   type StreamingTargetId,
+  StreamErrorReason,
 } from '@opentalk/rest-api-rtk-query';
 import i18next from 'i18next';
 
@@ -69,7 +70,7 @@ describe('handleStreamingMessage', () => {
     vi.clearAllMocks();
   });
 
-  it('dispatches stream updates and requests consent for active streams', async () => {
+  it('notifies and shows consent when a stream becomes active', async () => {
     const dispatch = vi.fn();
     const targetId = 'stream-1' as StreamingTargetId;
     const data: StreamUpdatedMessage = {
@@ -131,6 +132,86 @@ describe('handleStreamingMessage', () => {
     expect(createStreamUpdatedNotification).not.toHaveBeenCalled();
     expect(showConsentNotification).not.toHaveBeenCalled();
   });
+
+  it('notifies and does not show a consent, when a stream becomes inactive', async () => {
+    const dispatch = vi.fn();
+    const targetId = 'stream-3' as StreamingTargetId;
+    const data: StreamUpdatedMessage = {
+      message: 'stream_updated',
+      targetId,
+      status: StreamStatus.Inactive,
+    };
+    const streamTarget: StreamingTargetEntity = {
+      targetId,
+      status: StreamStatus.Inactive,
+      publicUrl: 'https://stream.example',
+      name: 'Livestream 1',
+    };
+    const state = createState({
+      streaming: {
+        consent: true,
+        streams: {
+          ids: [targetId],
+          entities: {
+            [targetId]: streamTarget,
+          },
+        },
+        recording: StreamingStatus.Inactive,
+      },
+    });
+
+    await handleStreamingMessage(dispatch, data, state);
+
+    expect(dispatch).toHaveBeenCalledWith(streamUpdated(data));
+    expect(createStreamUpdatedNotification).toHaveBeenCalledExactlyOnceWith({
+      status: StreamStatus.Inactive,
+      publicUrl: 'https://stream.example',
+    });
+    expect(showConsentNotification).not.toHaveBeenCalled();
+  });
+
+  it.each([StreamStatus.Requested, StreamStatus.InUse, StreamStatus.Paused, StreamStatus.Error])(
+    'does not notify for transient stream status "%s"',
+    async (status) => {
+      const dispatch = vi.fn();
+      const targetId = 'stream-4' as StreamingTargetId;
+      const reason: StreamErrorReason = {
+        code: 'some_error_code',
+        message: 'Some error message',
+      };
+      const data: StreamUpdatedMessage = {
+        message: 'stream_updated',
+        targetId,
+        status,
+        reason,
+      };
+      const streamTarget: StreamingTargetEntity = {
+        targetId,
+        status,
+        publicUrl: 'https://stream.example',
+        name: 'Livestream 1',
+        reason,
+      };
+      const state = createState({
+        streaming: {
+          consent: undefined,
+          streams: {
+            ids: [targetId],
+            entities: {
+              [targetId]: streamTarget,
+            },
+          },
+          recording: StreamingStatus.Inactive,
+        },
+      });
+
+      await handleStreamingMessage(dispatch, data, state);
+
+      expect(dispatch).toHaveBeenCalledWith(streamUpdated(data));
+      expect(createStreamUpdatedNotification).not.toHaveBeenCalled();
+      expect(showConsentNotification).not.toHaveBeenCalled();
+    }
+  );
 
   it('notifies on recorder timeouts', async () => {
     const dispatch = vi.fn();

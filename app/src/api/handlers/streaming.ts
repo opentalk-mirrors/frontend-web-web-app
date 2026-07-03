@@ -23,7 +23,8 @@ export const handleStreamingMessage = async (dispatch: AppDispatch, data: stream
       dispatch(streamUpdated(data));
 
       const streamTarget = state.streaming.streams.entities[data.targetId];
-      if (streamTarget) {
+      const isNotifiableStatus = data.status === StreamStatus.Active || data.status === StreamStatus.Inactive;
+      if (streamTarget && isNotifiableStatus) {
         createStreamUpdatedNotification({
           status: data.status,
           publicUrl: streamTarget.publicUrl,
