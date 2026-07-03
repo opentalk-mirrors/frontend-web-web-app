@@ -2,9 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useMaybeRoomContext } from '@livekit/components-react';
+import { ParticipantPermission } from '@livekit/protocol';
 import { styled } from '@mui/material';
-import { LocalAudioTrack } from 'livekit-client';
-import { useEffect, useMemo, useState } from 'react';
+import { LocalAudioTrack, Participant, RoomEvent } from 'livekit-client';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MicOffIcon, MicOnIcon } from '../../../assets/icons';
@@ -56,7 +57,36 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
     kind: 'audioinput',
   });
 
-  const canPublishAudio = useMemo(() => {
+  // Keep this useCallback, because useSyncExternalStore re-subscribes whenever the `subscribe` reference
+  // changes, so a fresh function each render would detach/re-attach the liveKit listener on every render
+  const subscribeAudioPermission = useCallback(
+    (onStoreChange: () => void) => {
+      if (!room) {
+        return () => undefined;
+      }
+      const { localParticipant } = room;
+      const handler = (_previousPermissions: ParticipantPermission | undefined, participant: Participant) => {
+        if (participant === localParticipant) {
+          onStoreChange();
+        }
+      };
+      room.on(RoomEvent.ParticipantPermissionsChanged, handler);
+      return () => {
+        room.off(RoomEvent.ParticipantPermissionsChanged, handler);
+      };
+    },
+    [room]
+  );
+
+  const getAudioPermissionSnapshot = () => {
+    const canPublishSources = room?.localParticipant.permissions?.canPublishSources;
+    return canPublishSources ? canPublishSources.includes(LIVEKIT_AUDIO_PERMISSION_NUMBER) : true;
+  };
+
+  // Bridges LiveKit's audio publish permission (an external store that LiveKit mutates in place)
+  const hasAudioPublishPermission = useSyncExternalStore(subscribeAudioPermission, getAudioPermissionSnapshot);
+
+  const canPublishAudio = (() => {
     if (isLobby) {
       return true;
     }
@@ -65,12 +95,8 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
       return false;
     }
 
-    const hasPermission = room?.localParticipant.permissions?.canPublishSources.includes(
-      LIVEKIT_AUDIO_PERMISSION_NUMBER
-    );
-
-    return hasPermission ?? true;
-  }, [isLobby, room, isLivekitUnavailable, shouldForceMute]);
+    return hasAudioPublishPermission;
+  })();
 
   const onClick = async () => {
     if (askConsent && !audioEnabled) {
@@ -82,7 +108,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
     onAudioButtonToggle();
   };
 
-  const indicator = useMemo(() => {
+  const renderIndicator = () => {
     if (audioChangeInProgress || (!localAudioTrack && microphoneEnabled)) {
       return <SuspenseLoading size="1rem" />;
     }
@@ -97,7 +123,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
     }
 
     return <MicOffIcon data-testid="toolbarAudioButtonOff" />;
-  }, [microphoneEnabled, localAudioTrack, audioChangeInProgress]);
+  };
 
   const tooltipText = () => {
     if (permissionDenied === true) {
@@ -137,7 +163,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
         contextMenuExpanded={showMenu}
         id={ToolbarButtonIds.Audio}
       >
-        {indicator}
+        {renderIndicator()}
       </ToolbarButton>
       <MeetingSettingsDialog open={showMenu} onClose={() => setShowMenu(false)} setting="audio" />
     </>
