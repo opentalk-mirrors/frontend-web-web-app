@@ -149,7 +149,7 @@ describe('handleAutomodMessage', () => {
     );
   });
 
-  it('shows talking stick notification when we become the speaker', () => {
+  it('shows the muted talking stick notification when we become the speaker', () => {
     const dispatch = vi.fn();
     const state = createState();
     const data: AutomodSpeakerUpdatedEvent = {
@@ -162,9 +162,10 @@ describe('handleAutomodMessage', () => {
 
     expect(dispatch).toHaveBeenCalledWith(setAsActiveSpeaker());
     expect(dispatch).toHaveBeenCalledWith(automodSpeakerUpdated(data));
-    expect(notifications.showTalkingStickUnmutedNotification).toHaveBeenCalledWith(
-      expect.objectContaining({ key: 'handleAutomodMessage-unmute-only-id' })
+    expect(notifications.showTalkingStickMutedNotification).toHaveBeenCalledWith(
+      expect.objectContaining({ key: 'handleAutomodMessage-current-id' })
     );
+    expect(notifications.showTalkingStickUnmutedNotification).not.toHaveBeenCalled();
   });
 
   it('throws on unknown message type', () => {
