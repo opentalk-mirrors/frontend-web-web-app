@@ -92,6 +92,7 @@ export interface Config {
   videoBackgrounds: VideoBackground[];
   maxVideoBandwidth: number;
   maxGridTiles?: number;
+  defaultGridSize?: number;
   libravatarDefaultImage?: DefaultAvatarImage;
   tariff?: Tariff;
   provider: {
@@ -155,6 +156,7 @@ export type ConfigState = {
   readonly videoBackgrounds: readonly VideoBackground[];
   maxVideoBandwidth: number;
   maxGridTiles?: number;
+  defaultGridSize?: number;
   readonly features: Features;
   libravatarDefaultImage: DefaultAvatarImage;
   enabledModules: EnabledModules;
@@ -234,6 +236,7 @@ export const initialState: ConfigState = {
   videoBackgrounds: [],
   maxVideoBandwidth: 600000,
   maxGridTiles: undefined,
+  defaultGridSize: undefined,
   libravatarDefaultImage: 'robohash',
   enabledModules: {},
   tariff: {
@@ -326,6 +329,10 @@ export const selectAvailableGridSizes = createSelector(
   (state: RootState) => state.config.maxGridTiles,
   (maxGridTiles) => getAvailableGridSizes(maxGridTiles)
 );
+export const selectDefaultGridSize = (state: RootState): number | undefined => {
+  const value = Number(state.config.defaultGridSize);
+  return Number.isFinite(value) && value > 0 ? value : undefined;
+};
 export const selectStorageUsed = (state: RootState) => state.config.tariff?.usedQuota['maxStorage'];
 export const selectStorageTotal = (state: RootState) => state.config.tariff?.quotas['maxStorage'];
 

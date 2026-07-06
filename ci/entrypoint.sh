@@ -125,6 +125,7 @@ window.config = {
   videoBackgrounds: ${VIDEO_BACKGROUNDS:-${DEFAULT_VIDEO_BACKGROUNDS}},
   maxVideoBandwidth: ${MAX_VIDEO_BANDWIDTH:-600000},
   maxGridTiles: ${MAX_GRID_TILES:-24},
+  defaultGridSize: ${DEFAULT_GRID_SIZE:-null},
   glitchtip: {
     dsn: "${SENTRY_DSN}",
   },
