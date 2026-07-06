@@ -9,7 +9,7 @@ import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { ModerationTabKey } from '../../config/constants';
-import { GRID_SIZES } from '../../constants';
+import { GRID_SIZES, getAvailableGridSizes } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import {
@@ -31,6 +31,7 @@ import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted } from './automodSlice';
 import { switchedRoom } from './breakoutSlice';
 import { CinemaViewSortOrder } from './common';
+import { selectDefaultGridSize } from './configSlice';
 import { started as legalVoteStarted } from './legalVoteSlice';
 import { setMeetingNotesReadUrl, setMeetingNotesWriteUrl } from './meetingNotesSlice';
 import { leave } from './participantsSlice';
@@ -432,22 +433,41 @@ const startLayoutChangeListener = (startAppListening: StartAppListening) =>
   startAppListening({
     matcher: isAnyOf(updatedCinemaLayout, updatedCinemaViewSortOrder, updatedCinemaGridSize),
     effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
-      const saveableLayouts = [LayoutOptions.Grid, LayoutOptions.Speaker];
-      const defaultLayout = initialState.cinemaLayout;
-      const { cinemaLayout } = listenerApi.getState().ui;
+      const state = listenerApi.getState();
+      persistCinemaLayoutSettings({
+        cinemaLayout: state.ui.cinemaLayout,
+        cinemaViewOrder: state.ui.cinemaViewOrder,
+        cinemaGridSize: state.ui.cinemaGridSize,
+        defaultGridSize: selectDefaultGridSize(state),
+        roomId: state.room.roomId,
+      });
+    },
+  });
 
-      const updatedLayoutSettings = {
-        cinemaLayout: saveableLayouts.includes(cinemaLayout) ? cinemaLayout : defaultLayout,
-        cinemaViewOrder: listenerApi.getState().ui.cinemaViewOrder,
-        cinemaGridSize: listenerApi.getState().ui.cinemaGridSize,
-      };
-      storeCinemaLayoutSettingsToLocalStorage(updatedLayoutSettings);
+const startGridSizeRestoreListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: joinSuccess,
+    effect: (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      const state = listenerApi.getState();
+      const defaultGridSize = selectDefaultGridSize(state);
+
+      // When no per-meeting default grid size is configured, the grid size is restored from the
+      // localStorage bundle in the `joinSuccess` reducer, so there is nothing to do here.
+      if (defaultGridSize === undefined) {
+        return;
+      }
+
+      const gridSize = resolveMeetingGridSize(defaultGridSize, state.room.roomId);
+      if (gridSize !== state.ui.cinemaGridSize) {
+        listenerApi.dispatch(updatedCinemaGridSize(gridSize));
+      }
     },
   });
 
 export const startUiListeners = (startAppListening: StartAppListening) => {
   startUiChangeModeListener(startAppListening);
   startLayoutChangeListener(startAppListening);
+  startGridSizeRestoreListener(startAppListening);
 };
 
 export const selectSelfRenameDialogVisible = (state: RootState) => state.ui.showSelfRenameDialog;
@@ -473,11 +493,67 @@ export const loadCinemaLayoutSettingsFromLocalStorage = (): Partial<UIState> | u
     localStorage.setItem('cinemaLayoutSettings', JSON.stringify(cinemaLayoutSettings));
   }
 
+  // when a per-meeting default grid size is configured, the grid size is persisted per meeting in sessionStorage instead
+  const defaultGridSize = Number(window.config?.defaultGridSize);
+  if (Number.isFinite(defaultGridSize) && defaultGridSize > 0) {
+    delete cinemaLayoutSettings.cinemaGridSize;
+  }
+
   return cinemaLayoutSettings;
 };
 
-export const storeCinemaLayoutSettingsToLocalStorage = (
-  cinemaLayoutSettings: Pick<UIState, 'cinemaLayout' | 'cinemaViewOrder' | 'cinemaGridSize'>
+const storeCinemaLayoutSettingsToLocalStorage = (
+  cinemaLayoutSettings: Pick<UIState, 'cinemaLayout' | 'cinemaViewOrder'> & Partial<Pick<UIState, 'cinemaGridSize'>>
 ) => {
   localStorage.setItem('cinemaLayoutSettings', JSON.stringify(cinemaLayoutSettings));
+};
+
+const gridSizeSessionStorageKey = (roomId: string) => `cinemaGridSize:${roomId}`;
+
+export const loadGridSizeFromSessionStorage = (roomId: string): number | undefined => {
+  const storageItem = sessionStorage.getItem(gridSizeSessionStorageKey(roomId));
+  if (storageItem === null) {
+    return undefined;
+  }
+
+  const gridSize = Number(JSON.parse(storageItem));
+  return Number.isFinite(gridSize) ? gridSize : undefined;
+};
+
+export const storeGridSizeToSessionStorage = (roomId: string, gridSize: number) => {
+  sessionStorage.setItem(gridSizeSessionStorageKey(roomId), JSON.stringify(gridSize));
+};
+
+export const resolveMeetingGridSize = (defaultGridSize: number, roomId?: string): number => {
+  const storedGridSize = roomId !== undefined ? loadGridSizeFromSessionStorage(roomId) : undefined;
+  const availableGridSizes = getAvailableGridSizes(window.config?.maxGridTiles);
+
+  return storedGridSize !== undefined && availableGridSizes.includes(storedGridSize) ? storedGridSize : defaultGridSize;
+};
+
+export const persistCinemaLayoutSettings = ({
+  cinemaLayout,
+  cinemaViewOrder,
+  cinemaGridSize,
+  defaultGridSize,
+  roomId,
+}: {
+  cinemaLayout: LayoutOptions;
+  cinemaViewOrder: CinemaViewSortOrder;
+  cinemaGridSize: number;
+  defaultGridSize?: number;
+  roomId?: string;
+}) => {
+  const saveableLayouts = [LayoutOptions.Grid, LayoutOptions.Speaker];
+  const layout = saveableLayouts.includes(cinemaLayout) ? cinemaLayout : initialState.cinemaLayout;
+
+  if (defaultGridSize !== undefined) {
+    storeCinemaLayoutSettingsToLocalStorage({ cinemaLayout: layout, cinemaViewOrder });
+    if (roomId !== undefined) {
+      storeGridSizeToSessionStorage(roomId, cinemaGridSize);
+    }
+    return;
+  }
+
+  storeCinemaLayoutSettingsToLocalStorage({ cinemaLayout: layout, cinemaViewOrder, cinemaGridSize });
 };

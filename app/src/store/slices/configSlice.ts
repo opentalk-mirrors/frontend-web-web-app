@@ -92,6 +92,7 @@ export interface Config {
   videoBackgrounds: VideoBackground[];
   maxVideoBandwidth: number;
   maxGridTiles?: number;
+  defaultGridSize?: number;
   libravatarDefaultImage?: DefaultAvatarImage;
   tariff?: Tariff;
   provider: {
@@ -155,6 +156,7 @@ export type ConfigState = {
   readonly videoBackgrounds: readonly VideoBackground[];
   maxVideoBandwidth: number;
   maxGridTiles?: number;
+  defaultGridSize?: number;
   readonly features: Features;
   libravatarDefaultImage: DefaultAvatarImage;
   enabledModules: EnabledModules;
@@ -234,6 +236,7 @@ export const initialState: ConfigState = {
   videoBackgrounds: [],
   maxVideoBandwidth: 600000,
   maxGridTiles: undefined,
+  defaultGridSize: undefined,
   libravatarDefaultImage: 'robohash',
   enabledModules: {},
   tariff: {
@@ -325,6 +328,19 @@ export const selectIsSpacedeckEnabled = (state: RootState) => state.config.space
 export const selectAvailableGridSizes = createSelector(
   (state: RootState) => state.config.maxGridTiles,
   (maxGridTiles) => getAvailableGridSizes(maxGridTiles)
+);
+export const selectDefaultGridSize = createSelector(
+  (state: RootState) => state.config.defaultGridSize,
+  selectAvailableGridSizes,
+  (defaultGridSize, availableGridSizes): number | undefined => {
+    const value = Number(defaultGridSize);
+    if (!Number.isFinite(value) || value <= 0) {
+      return undefined;
+    }
+    // `maxGridTiles` > `defaultGridSize`, so limit the default to the largest permitted grid size
+    const largestAvailableGridSize = availableGridSizes[availableGridSizes.length - 1];
+    return Math.min(value, largestAvailableGridSize);
+  }
 );
 export const selectStorageUsed = (state: RootState) => state.config.tariff?.usedQuota['maxStorage'];
 export const selectStorageTotal = (state: RootState) => state.config.tariff?.quotas['maxStorage'];
