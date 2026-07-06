@@ -1208,6 +1208,8 @@ whiteboard-dialog-edit-restrictions-empty = No participant(s) found
 whiteboard-dialog-edit-restrictions-search-label = Search participants
 whiteboard-upload-failed = Failed to upload whiteboard PDF. Please try again.
 whiteboard-upload-success = Whiteboard PDF uploaded successfully.
+whiteboard-error-insufficient-permissions = You do not have permission to edit the whiteboard.
+whiteboard-error-generic = A whiteboard error occurred. Please try again.
 
 hotkey-hold-to-speak = Hold to speak (when muted)
 hotkey-disabled-message = Shortcuts disabled
