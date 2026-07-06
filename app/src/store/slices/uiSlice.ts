@@ -9,7 +9,7 @@ import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { ModerationTabKey } from '../../config/constants';
-import { GRID_SIZES } from '../../constants';
+import { GRID_SIZES, getAvailableGridSizes } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import {
@@ -526,7 +526,9 @@ export const storeGridSizeToSessionStorage = (roomId: string, gridSize: number) 
 
 export const resolveMeetingGridSize = (defaultGridSize: number, roomId?: string): number => {
   const storedGridSize = roomId !== undefined ? loadGridSizeFromSessionStorage(roomId) : undefined;
-  return storedGridSize !== undefined && GRID_SIZES.includes(storedGridSize) ? storedGridSize : defaultGridSize;
+  const availableGridSizes = getAvailableGridSizes(window.config?.maxGridTiles);
+
+  return storedGridSize !== undefined && availableGridSizes.includes(storedGridSize) ? storedGridSize : defaultGridSize;
 };
 
 export const persistCinemaLayoutSettings = ({

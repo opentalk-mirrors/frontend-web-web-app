@@ -118,11 +118,13 @@ describe('loadCinemaLayoutSettingsFromLocalStorage', () => {
 describe('per-meeting default grid size', () => {
   const STORAGE_KEY = 'cinemaLayoutSettings';
   const originalDefaultGridSize = window.config.defaultGridSize;
+  const originalMaxGridTiles = window.config.maxGridTiles;
 
   afterEach(() => {
     localStorage.clear();
     sessionStorage.clear();
     window.config.defaultGridSize = originalDefaultGridSize;
+    window.config.maxGridTiles = originalMaxGridTiles;
   });
 
   describe('sessionStorage grid size helpers', () => {
@@ -163,6 +165,20 @@ describe('per-meeting default grid size', () => {
       storeGridSizeToSessionStorage('room-a', 7);
 
       expect(resolveMeetingGridSize(9, 'room-a')).toBe(9);
+    });
+
+    it('ignores a stored grid size that exceeds maxGridTiles and uses the default', () => {
+      window.config.maxGridTiles = 9;
+      storeGridSizeToSessionStorage('room-a', 24);
+
+      expect(resolveMeetingGridSize(9, 'room-a')).toBe(9);
+    });
+
+    it('keeps a stored grid size that is within maxGridTiles', () => {
+      window.config.maxGridTiles = 16;
+      storeGridSizeToSessionStorage('room-a', 16);
+
+      expect(resolveMeetingGridSize(9, 'room-a')).toBe(16);
     });
 
     it('reproduces the described end-to-end behaviour', () => {
