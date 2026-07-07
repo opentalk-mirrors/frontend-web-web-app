@@ -2,14 +2,15 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Skeleton, Stack, Typography, styled } from '@mui/material';
-import { GuestAccess } from '@opentalk/rest-api-rtk-query';
+import { CoreFeatures, GuestAccess } from '@opentalk/rest-api-rtk-query';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCreateEventMutation, useLazyGetEventQuery } from '../../../api/rest';
+import { useCreateEventMutation, useGetMeTariffQuery, useLazyGetEventQuery } from '../../../api/rest';
 import { notifications } from '../../../commonComponents';
 import InviteToMeeting from '../../../components/InviteToMeeting';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
+import { isFeatureEnabledPredicate } from '../../../utils/moduleUtils';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'grid',
@@ -30,6 +31,7 @@ const CreateDirectMeeting = () => {
   const [createEvent, { data: event, isLoading: createEventIsLoading, error }] = useCreateEventMutation();
   const { t } = useTranslation();
   const [getEvent, { data: updatedEvent, isLoading: getEventLoading, error: getEventError }] = useLazyGetEventQuery();
+  const { data: tariff } = useGetMeTariffQuery();
   const pageHeading = t('dashboard-direct-meeting-title');
 
   useUpdateDocumentTitle(pageHeading);
@@ -38,6 +40,10 @@ const CreateDirectMeeting = () => {
     const creationDate = new Date();
     const creationHours = creationDate.getHours().toString().padStart(2, '0');
     const creationMinutes = creationDate.getMinutes().toString().padStart(2, '0');
+
+    const isGuestAccessAllowedByTariff = Boolean(
+      tariff && isFeatureEnabledPredicate(CoreFeatures.GuestsAllowed, tariff.modules)
+    );
 
     try {
       await createEvent({
@@ -48,12 +54,12 @@ const CreateDirectMeeting = () => {
         isAdhoc: true,
         e2eEncryption: false,
         password: null,
-        guestAccess: GuestAccess.DirectAccess,
+        guestAccess: isGuestAccessAllowedByTariff ? GuestAccess.DirectAccess : GuestAccess.Disabled,
       }).unwrap();
     } catch (_err) {
       notifications.error(t('dashboard-meeting-notification-error'));
     }
-  }, [createEvent, t]);
+  }, [createEvent, t, tariff]);
 
   useEffect(() => {
     handleCreateRoom();

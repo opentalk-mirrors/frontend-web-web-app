@@ -10,6 +10,7 @@ import {
   SingleEvent,
   RecordingFeatures,
   GuestAccess,
+  CoreFeatures,
 } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
 import { ChangeEvent, FormEvent, useState } from 'react';
@@ -61,6 +62,9 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
   const isStreamingEnabled = tariff && isFeatureEnabledPredicate(RecordingFeatures.Stream, tariff.modules);
   const isSharedFolderEnabled = tariff?.modules.sharedFolder;
   const isTrainingParticipationReportEnabled = tariff?.modules.trainingParticipationReport;
+  const isGuestAccessAllowedByTariff = Boolean(
+    tariff && isFeatureEnabledPredicate(CoreFeatures.GuestsAllowed, tariff.modules)
+  );
 
   const [overlappingEvent, setOverlappingEvent] = useState<SingleEvent | RecurringEvent>();
 
@@ -186,7 +190,10 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
             />
           )}
 
-          <GuestAccessSelect formik={formik} guestAccessAllowed={!formik.values.e2eEncryption} />
+          <GuestAccessSelect
+            formik={formik}
+            guestAccessAllowed={!formik.values.e2eEncryption && isGuestAccessAllowedByTariff}
+          />
 
           <Divider textAlign="left">{t('dashboard-meeting-extras')}</Divider>
 

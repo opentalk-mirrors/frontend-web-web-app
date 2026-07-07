@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Tariff, TariffId, SingleEvent } from '@opentalk/rest-api-rtk-query';
+import { CoreFeatures, Tariff, TariffId, SingleEvent } from '@opentalk/rest-api-rtk-query';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { MockedFunction } from 'vitest';
 
@@ -13,7 +13,7 @@ import MeetingForm from './MeetingForm';
 const defaultTariff: Tariff = {
   id: 'mockedTariffId' as TariffId,
   name: 'Mocked Tariff',
-  modules: { recording: { features: [] } },
+  modules: { recording: { features: [] }, core: { features: [CoreFeatures.GuestsAllowed] } },
   quotas: {},
 };
 
@@ -130,7 +130,10 @@ describe('MeetingForm', () => {
           },
         },
       });
-      mockTariff = { ...defaultTariff, modules: { sharedFolder: { features: [] } } };
+      mockTariff = {
+        ...defaultTariff,
+        modules: { sharedFolder: { features: [] }, core: { features: [CoreFeatures.GuestsAllowed] } },
+      };
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
         store,
         provider: { mui: true },
@@ -175,6 +178,18 @@ describe('MeetingForm', () => {
       });
       expect(screen.getAllByRole('switch')).toHaveLength(4); // default + e2e encryption
       expect(screen.getByRole('switch', { name: 'dashboard-meeting-e2ee-tooltip' })).toBeInTheDocument();
+    });
+
+    it('hides the guest access switch when the tariff does not allow guests', () => {
+      const { store } = configureStore({});
+      mockTariff = { ...defaultTariff, modules: { recording: { features: [] } } };
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
+      expect(screen.queryByRole('switch', { name: 'guest-access-switch-label' })).not.toBeInTheDocument();
+
+      expect(screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-guests-only' })).toBeDisabled();
     });
   });
 

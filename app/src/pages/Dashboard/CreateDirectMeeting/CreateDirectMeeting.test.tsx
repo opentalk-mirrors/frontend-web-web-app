@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { RoomId } from '@opentalk/rest-api-rtk-query';
+import { GuestAccess, RoomId } from '@opentalk/rest-api-rtk-query';
 import { screen, waitFor, fireEvent } from '@testing-library/react';
 
 import {
@@ -12,15 +12,18 @@ import {
 } from '../../../utils/testUtils';
 import CreateDirectMeeting from './CreateDirectMeeting';
 
-const mockCreateEvent = () => ({
-  unwrap: vi.fn().mockResolvedValue(createMockEvent()),
-});
+const mockUnwrap = vi.fn(() => Promise.resolve(createMockEvent()));
+const mockCreateEvent = vi.fn(() => ({
+  unwrap: mockUnwrap,
+}));
 const mockCreateEventInvite = vi.fn();
 const mockCreateRoomInvite = () => ({
   unwrap: vi.fn().mockResolvedValue(createMockedPermanentRoomInvites()),
 });
 const mockCreateSipConfig = vi.fn();
 const mockCreateStreamingTarget = vi.fn();
+
+let mockMeTariff: { quotas: Record<string, number>; modules: Record<string, { features: string[] }> };
 
 const ROOM_ID = 'ROOM_ID' as RoomId;
 const MOCK_INVITE_CODE = 'MOCK_INVITE_CODE';
@@ -89,16 +92,9 @@ vi.mock('../../../api/rest', async (importOriginal) => ({
       status: 'uninitialized',
     },
   ],
-  useGetMeTariffQuery: () => [
-    mockCreateEvent,
-    {
-      data: {
-        quotas: {
-          roomParticipantLimit: 4,
-        },
-      },
-    },
-  ],
+  useGetMeTariffQuery: () => ({
+    data: mockMeTariff,
+  }),
   useGetStreamingTargetsQuery: () => [mockCreateStreamingTarget],
   useGetRoomTariffQuery: () => ({
     data: {
@@ -126,6 +122,20 @@ vi.mock('../../../components/SelectParticipants/SelectParticipants', () => ({
 }));
 
 describe('CreateDirectMeeting', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockMeTariff = {
+      quotas: {
+        roomParticipantLimit: 4,
+      },
+      modules: {
+        core: {
+          features: ['guests_allowed'],
+        },
+      },
+    };
+  });
+
   it('should render without crash', () => {
     const { store } = configureStore({
       initialState: {
@@ -218,5 +228,42 @@ describe('CreateDirectMeeting', () => {
       expect(mockWriteText).toHaveBeenCalledTimes(1);
     });
     expect(mockWriteText).toHaveBeenCalledExactlyOnceWith(INVITE_GUEST_LINK);
+  });
+
+  it('creates the meeting with direct guest access when the tariff allows guests', async () => {
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          baseUrl: 'http://localhost:3000',
+          features: {
+            userSearch: true,
+          },
+        },
+      },
+    });
+    renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true, mui: true } });
+
+    await waitFor(() => {
+      expect(mockCreateEvent).toHaveBeenCalledWith(expect.objectContaining({ guestAccess: GuestAccess.DirectAccess }));
+    });
+  });
+
+  it('creates the meeting with guest access disabled when the tariff does not allow guests', async () => {
+    mockMeTariff = { quotas: { roomParticipantLimit: 4 }, modules: { core: { features: [] } } };
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          baseUrl: 'http://localhost:3000',
+          features: {
+            userSearch: true,
+          },
+        },
+      },
+    });
+    renderWithProviders(<CreateDirectMeeting />, { store, provider: { router: true, snackbar: true, mui: true } });
+
+    await waitFor(() => {
+      expect(mockCreateEvent).toHaveBeenCalledWith(expect.objectContaining({ guestAccess: GuestAccess.Disabled }));
+    });
   });
 });

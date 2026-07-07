@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { FormControl, FormLabel, Stack, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+import { GuestAccess } from '@opentalk/rest-api-rtk-query';
 import { FormikProps } from 'formik';
-import { ChangeEvent, MouseEvent } from 'react';
+import { ChangeEvent, MouseEvent, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MeetingFormValues } from '../DashboardDateTimePicker';
@@ -17,6 +18,15 @@ interface GuestAccessSelectProps {
 
 export function GuestAccessSelect({ formik, guestAccessAllowed = true }: GuestAccessSelectProps) {
   const { t } = useTranslation();
+
+  const { guestAccess } = formik.values;
+  const { setFieldValue } = formik;
+
+  useEffect(() => {
+    if (!guestAccessAllowed && guestAccess !== GuestAccess.Disabled) {
+      setFieldValue('guestAccess', GuestAccess.Disabled);
+    }
+  }, [guestAccessAllowed, guestAccess, setFieldValue]);
 
   const derived = deriveUiState(formik.values);
   const guestAccessEnabled = guestAccessAllowed && derived.guestAccessEnabled;

@@ -25,13 +25,14 @@ const baseValues: MeetingFormValues = {
 
 const renderWithFormik = (
   initialValues: MeetingFormValues,
-  formikRef: { current: FormikProps<MeetingFormValues> | null }
+  formikRef: { current: FormikProps<MeetingFormValues> | null },
+  guestAccessAllowed = true
 ) =>
   render(
     <Formik initialValues={initialValues} onSubmit={() => {}}>
       {(formik) => {
         formikRef.current = formik;
-        return <GuestAccessSelect formik={formik} />;
+        return <GuestAccessSelect formik={formik} guestAccessAllowed={guestAccessAllowed} />;
       }}
     </Formik>
   );
@@ -99,6 +100,25 @@ describe('GuestAccessSelect — handleGuestAccessSwitchChange', () => {
     await waitFor(() => {
       expect(formikRef.current?.values.guestAccess).toBe(GuestAccess.DirectAccess);
       expect(formikRef.current?.values.waitingRoom).toBe(false);
+    });
+  });
+});
+
+describe('GuestAccessSelect - guestAccessAllowed=false', () => {
+  it('hides the guest access switch and disables the "guests only" option', () => {
+    const formikRef: { current: FormikProps<MeetingFormValues> | null } = { current: null };
+    renderWithFormik({ ...baseValues, guestAccess: GuestAccess.Disabled }, formikRef, false);
+
+    expect(screen.queryByRole('switch', { name: 'guest-access-switch-label' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-guests-only' })).toBeDisabled();
+  });
+
+  it('normalizes a stale guest access value to "Disabled"', async () => {
+    const formikRef: { current: FormikProps<MeetingFormValues> | null } = { current: null };
+    renderWithFormik({ ...baseValues, guestAccess: GuestAccess.DirectAccess }, formikRef, false);
+
+    await waitFor(() => {
+      expect(formikRef.current?.values.guestAccess).toBe(GuestAccess.Disabled);
     });
   });
 });
