@@ -22,6 +22,7 @@ type SelectParticipantsProps = {
   selectedUsers?: Array<ParticipantOption>;
   onParticipantSelect: (selectedUser: ParticipantOption) => void;
   eventId: EventId;
+  allowEmailInvites?: boolean;
 };
 
 const AutocompleteTextField = styled(TextField)(({ theme }) => ({
@@ -49,6 +50,7 @@ const SelectParticipants = ({
   placeholder,
   selectedUsers = [],
   eventId,
+  allowEmailInvites = true,
 }: SelectParticipantsProps) => {
   const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState('');
@@ -113,6 +115,9 @@ const SelectParticipants = ({
   };
 
   const emailSuggestions: Array<EmailUser> = useMemo(() => {
+    if (!allowEmailInvites) {
+      return [];
+    }
     const lowercaseSearchValue = searchValue.toLowerCase();
     if (!(
       selectedUsers.find((user) => user.email === lowercaseSearchValue) ||
@@ -121,7 +126,7 @@ const SelectParticipants = ({
       return [{ email: lowercaseSearchValue as Email }];
     }
     return [];
-  }, [searchValue, selectedUsers, invitees]);
+  }, [allowEmailInvites, searchValue, selectedUsers, invitees]);
 
   //Autocomplete's native behavior is like <select> where on click it sets the element as the input text.
   //We manually override that with value={null} and using the local searchValue as the input text, which is cleared after each selection.

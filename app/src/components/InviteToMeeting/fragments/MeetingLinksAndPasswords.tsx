@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Event, PlatformKind, CoreFeatures, GuestAccess } from '@opentalk/rest-api-rtk-query';
+import { Event, PlatformKind } from '@opentalk/rest-api-rtk-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useGetRoomTariffQuery } from '../../../api/rest';
 import { useAppSelector } from '../../../hooks';
+import useIsGuestAccessAllowed from '../../../hooks/useIsGuestAccessAllowed';
 import { selectBaseUrl } from '../../../store/slices/configSlice';
-import { isFeatureEnabledPredicate } from '../../../utils/moduleUtils';
 import GuestLinkField from './GuestLinkField';
 import MeetingLinkField from './MeetingLinkField';
 import { FieldKeys } from './constants';
@@ -23,13 +22,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
   const [highlightedField, setHighlightedField] = useState<FieldKeys>();
 
   const roomId = event.room.id;
-  const { data: roomTariff } = useGetRoomTariffQuery(roomId);
-  const isInviteAllowed = Boolean(
-    roomTariff &&
-    isFeatureEnabledPredicate(CoreFeatures.GuestsAllowed, roomTariff.modules) &&
-    !event.room.e2eEncryption &&
-    event.room.guestAccess !== GuestAccess.Disabled
-  );
+  const isInviteAllowed = useIsGuestAccessAllowed(event);
 
   const roomURL = useMemo(() => new URL(`/room/${roomId}`, baseURL), [baseURL, roomId]);
   const eventTitle = event?.title || t('fallback-room-title');

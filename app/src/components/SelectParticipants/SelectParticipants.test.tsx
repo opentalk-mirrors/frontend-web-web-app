@@ -22,6 +22,8 @@ const mockOtherUser = {
 
 const mockFindLazyUsersQuery = vi.fn();
 
+let mockFoundUsers: Array<typeof mockOtherUser> = [mockOtherUser];
+
 vi.mock('../../api/rest', async (importOriginal) => ({
   ...(await importOriginal()),
   useGetMeQuery: () => ({
@@ -30,7 +32,7 @@ vi.mock('../../api/rest', async (importOriginal) => ({
   useLazyFindUsersQuery: () => [
     mockFindLazyUsersQuery,
     {
-      foundUsers: [mockOtherUser],
+      foundUsers: mockFoundUsers,
       isLoading: false,
     },
   ],
@@ -43,11 +45,17 @@ describe('SelectParticipants', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.clearAllMocks();
+    mockFoundUsers = [mockOtherUser];
   });
 
-  const setupRender = () =>
+  const setupRender = (allowEmailInvites?: boolean) =>
     renderWithProviders(
-      <SelectParticipants label="Test" onParticipantSelect={mockOnChange} eventId={'id' as EventId} />,
+      <SelectParticipants
+        label="Test"
+        onParticipantSelect={mockOnChange}
+        eventId={'id' as EventId}
+        allowEmailInvites={allowEmailInvites}
+      />,
       { store, provider: { mui: true } }
     );
 
@@ -84,5 +92,33 @@ describe('SelectParticipants', () => {
     await waitFor(() => {
       expect(mockOnChange).toHaveBeenCalledExactlyOnceWith(mockOtherUser);
     });
+  });
+
+  it('offers a typed email address as an invite option when email invites are allowed', async () => {
+    mockFoundUsers = [];
+    setupRender(true);
+    const user = userEvent.setup();
+    const input = within(screen.getByTestId('SelectParticipants')).getByLabelText('Test');
+
+    await user.type(input, 'guest@example.com');
+
+    await waitFor(() => {
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+    expect(within(screen.getByRole('listbox')).getByText('guest@example.com')).toBeInTheDocument();
+  });
+
+  it('does not offer a typed email address when email invites are not allowed', async () => {
+    mockFoundUsers = [];
+    setupRender(false);
+    const user = userEvent.setup();
+    const input = within(screen.getByTestId('SelectParticipants')).getByLabelText('Test');
+
+    await user.type(input, 'guest@example.com');
+
+    await waitFor(() => {
+      expect(screen.getByText('global-no-result')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('guest@example.com')).not.toBeInTheDocument();
   });
 });

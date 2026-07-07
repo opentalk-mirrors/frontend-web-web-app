@@ -14,6 +14,7 @@ import { BackIcon } from '../../assets/icons';
 import { notifications } from '../../commonComponents';
 import SelectParticipants from '../../components/SelectParticipants';
 import { useAppSelector } from '../../hooks';
+import useIsGuestAccessAllowed from '../../hooks/useIsGuestAccessAllowed';
 import { selectConfigFeatures } from '../../store/slices/configSlice';
 import InvitedParticipants from '../InvitedParticipants';
 import MeetingLinksAndPasswords from './fragments/MeetingLinksAndPasswords';
@@ -50,6 +51,7 @@ const InviteToMeeting = ({
 
   const { data: tariff } = useGetMeTariffQuery();
   const userTariffLimit = tariff?.quotas.roomParticipantLimit;
+  const allowEmailInvites = useIsGuestAccessAllowed(existingEvent);
 
   const sendInvitations = async () => {
     const allInvites = selectedUsers.map(async (selectedUser) => {
@@ -143,6 +145,7 @@ const InviteToMeeting = ({
                   selectedUsers={selectedUsers}
                   invitees={existingEvent?.invitees}
                   eventId={existingEvent.id}
+                  allowEmailInvites={allowEmailInvites}
                 />
               )}
             </Grid>
