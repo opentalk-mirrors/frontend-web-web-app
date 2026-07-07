@@ -14,13 +14,13 @@ import { selectMeetingNotesUrl } from '../../../store/slices/meetingNotesSlice';
 import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
 import { selectIsSharedFolderAvailable } from '../../../store/slices/sharedFolderSlice';
 import {
+  selectCinemaGridSize,
   selectCinemaLayout,
   selectIsCurrentMeetingNotesHighlighted,
+  selectIsCurrentWhiteboardHighlighted,
   selectPaginationPageState,
   setPaginationPage,
   updatedCinemaLayout,
-  selectCinemaGridSize,
-  selectIsCurrentWhiteboardHighlighted,
 } from '../../../store/slices/uiSlice';
 import { selectIsWhiteboardAvailable } from '../../../store/slices/whiteboardSlice';
 import LayoutSelection from './LayoutSelection';
