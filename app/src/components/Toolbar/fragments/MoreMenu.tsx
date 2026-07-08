@@ -67,7 +67,7 @@ import {
 } from '../../../commonComponents';
 import { showStorageNearLimitNotification } from '../../../commonComponents/Notistack/helper';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useStorageStatus } from '../../../hooks/useStorageStatus';
+import { useStorageStatus, StorageStatus } from '../../../hooks/useStorageStatus';
 import { selectChatEnabledState } from '../../../store/slices/chatSlice';
 import {
   selectAccountManagementUrl,
@@ -373,9 +373,9 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           dispatch(enablePresenceLogging.action({}));
         },
         icon: <DoneIcon />,
-        disabled: storageStatus === 'full',
+        disabled: storageStatus === StorageStatus.Full,
         tooltip:
-          storageStatus === 'full'
+          storageStatus === StorageStatus.Full
             ? (children) => withStorageFullTooltip('training-participation-logging-enable-button', children)
             : undefined,
       };
@@ -417,9 +417,9 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
       }
       dispatch(generateAttendanceReport.action({ includeEmailAddresses: false }));
     },
-    disabled: storageStatus === 'full',
+    disabled: storageStatus === StorageStatus.Full,
     tooltip:
-      storageStatus === 'full'
+      storageStatus === StorageStatus.Full
         ? (children) => withStorageFullTooltip('training-participation-logging-enable-button', children)
         : undefined,
   };
@@ -474,9 +474,9 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
             onClose();
           },
           icon: <RecordingsIcon />,
-          disabled: storageStatus === 'full',
+          disabled: storageStatus === StorageStatus.Full,
           tooltip:
-            storageStatus === 'full'
+            storageStatus === StorageStatus.Full
               ? (children) => withStorageFullTooltip('more-menu-start-recording', children)
               : undefined,
         });

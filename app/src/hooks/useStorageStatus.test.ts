@@ -4,7 +4,7 @@
 import { BackendModules, CoreFeatures } from '@opentalk/rest-api-rtk-query';
 
 import { configureStore, renderHookWithProviders } from '../utils/testUtils';
-import { useStorageStatus } from './useStorageStatus';
+import { useStorageStatus, StorageStatus } from './useStorageStatus';
 
 type StorageState = {
   used?: number;
@@ -37,7 +37,7 @@ describe('useStorageStatus', () => {
 
     expect(result.current).toEqual({
       usagePercentage: 0,
-      storageStatus: 'ok',
+      storageStatus: StorageStatus.Ok,
       canUpgrade: false,
     });
   });
@@ -47,7 +47,7 @@ describe('useStorageStatus', () => {
 
     expect(result.current).toEqual({
       usagePercentage: 0,
-      storageStatus: 'ok',
+      storageStatus: StorageStatus.Ok,
       canUpgrade: false,
     });
   });
@@ -55,21 +55,28 @@ describe('useStorageStatus', () => {
   it('returns ok when storage usage is below the near-limit threshold', () => {
     const { result } = renderUseStorageStatus({ used: 94, total: 100 });
 
-    expect(result.current.storageStatus).toBe('ok');
+    expect(result.current.storageStatus).toBe(StorageStatus.Ok);
     expect(result.current.usagePercentage).toBe(94);
   });
 
   it('returns near_limit when storage usage reaches 95 percent', () => {
     const { result } = renderUseStorageStatus({ used: 95, total: 100 });
 
-    expect(result.current.storageStatus).toBe('near_limit');
+    expect(result.current.storageStatus).toBe(StorageStatus.NearLimit);
     expect(result.current.usagePercentage).toBe(95);
+  });
+
+  it('returns critical when storage usage reaches 99 percent', () => {
+    const { result } = renderUseStorageStatus({ used: 99, total: 100 });
+
+    expect(result.current.storageStatus).toBe(StorageStatus.Critical);
+    expect(result.current.usagePercentage).toBe(99);
   });
 
   it('returns full when storage usage reaches or exceeds total capacity', () => {
     const { result } = renderUseStorageStatus({ used: 101, total: 100 });
 
-    expect(result.current.storageStatus).toBe('full');
+    expect(result.current.storageStatus).toBe(StorageStatus.Full);
     expect(result.current.usagePercentage).toBe(101);
   });
 

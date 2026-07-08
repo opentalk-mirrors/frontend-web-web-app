@@ -5,18 +5,20 @@ import { Link as MUILink, Tooltip } from '@mui/material';
 import { Trans } from 'react-i18next';
 
 import { useAppSelector } from '../../hooks';
-import { useStorageStatus } from '../../hooks/useStorageStatus';
+import { StorageStatus, useStorageStatus } from '../../hooks/useStorageStatus';
 import { selectAccountManagementUrl } from '../../store/slices/configSlice';
 
 interface StorageFullTooltipProps {
   children: React.ReactNode;
+  show?: boolean;
 }
 
-const StorageFullTooltip = ({ children }: StorageFullTooltipProps) => {
+const StorageFullTooltip = ({ children, show }: StorageFullTooltipProps) => {
   const { storageStatus, canUpgrade } = useStorageStatus();
   const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
 
-  if (storageStatus === 'full') {
+  const shouldShow = show ?? storageStatus === StorageStatus.Full;
+  if (shouldShow) {
     return (
       <Tooltip
         describeChild

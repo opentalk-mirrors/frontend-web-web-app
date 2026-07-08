@@ -4,7 +4,7 @@
 import Button from '@mui/material/Button';
 import i18n from 'i18next';
 
-import { StorageStatusReturn } from '../../../hooks/useStorageStatus';
+import { StorageStatus, StorageStatusReturn } from '../../../hooks/useStorageStatus';
 import { notifications } from '../fragments';
 
 type ShowStorageNearLimitNotificationProps = Omit<StorageStatusReturn, 'usagePercentage'> & {
@@ -16,8 +16,8 @@ export const showStorageNearLimitNotification = ({
   accountManagementUrl,
   canUpgrade,
 }: ShowStorageNearLimitNotificationProps) => {
-  const isNearLimit = storageStatus === 'near_limit';
-  const isFull = storageStatus === 'full';
+  const isNearLimit = storageStatus === StorageStatus.NearLimit || storageStatus === StorageStatus.Critical;
+  const isFull = storageStatus === StorageStatus.Full;
 
   if (!isFull && !isNearLimit) {
     return;

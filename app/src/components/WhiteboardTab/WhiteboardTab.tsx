@@ -16,7 +16,7 @@ import {
 import { showStorageNearLimitNotification } from '../../commonComponents/Notistack/helper';
 import { useAppSelector } from '../../hooks';
 import { useDownloadRoomAsset } from '../../hooks/useDownloadRoomAsset';
-import { useStorageStatus } from '../../hooks/useStorageStatus';
+import { useStorageStatus, StorageStatus } from '../../hooks/useStorageStatus';
 import { selectIsSpacedeckEnabled, selectAccountManagementUrl } from '../../store/slices/configSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import { selectIsWhiteboardAvailable, selectWhiteboardAssets } from '../../store/slices/whiteboardSlice';
@@ -80,7 +80,7 @@ const WhiteboardTab = () => {
 
     return (
       <StorageFullTooltip>
-        <Button onClick={createPdf} color="secondary" disabled={storageStatus === 'full'} fullWidth>
+        <Button onClick={createPdf} color="secondary" disabled={storageStatus === StorageStatus.Full} fullWidth>
           {t('whiteboard-create-pdf-button')}
         </Button>
       </StorageFullTooltip>

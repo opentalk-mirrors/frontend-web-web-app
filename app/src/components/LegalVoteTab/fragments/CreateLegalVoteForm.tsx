@@ -13,10 +13,12 @@ import * as yup from 'yup';
 import { start } from '../../../api/types/outgoing/legalVote';
 import { BackIcon } from '../../../assets/icons';
 import { notifications } from '../../../commonComponents';
+import { StorageStatus, useStorageStatus } from '../../../hooks/useStorageStatus';
 import { savedLegalVoteForm, selectLegalVoteId } from '../../../store/slices/legalVoteSlice';
 import { LegalVoteFormValues, SavedLegalVoteForm } from '../../../types';
 import { getCurrentTimezone } from '../../../utils/timeFormatUtils';
 import SaveAsTemplateButton from '../../SaveAsTemplateButton';
+import StorageFullTooltip from '../../StorageFullTooltip';
 import LegalVoteSetupForm from './LegalVoteSetupForm';
 import ParticipantSelector, { AllowedParticipant } from './ParticipantSelector';
 
@@ -52,6 +54,8 @@ const CreateLegalVoteForm = ({
   const legalVoteId = useRef(useSelector(selectLegalVoteId));
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(0);
+  const { storageStatus } = useStorageStatus();
+  const isStorageFull = storageStatus === StorageStatus.Critical || storageStatus === StorageStatus.Full;
 
   const validationSchema = yup.object({
     name: yup.string().trim().required(t('legal-vote-input-title-required')),
@@ -139,6 +143,7 @@ const CreateLegalVoteForm = ({
 
   const renderButtons = (formik: FormikProps<LegalVoteFormValues>) => {
     const isLastStep = currentStep === 1;
+    const disableStartForStorage = isLastStep && isStorageFull;
     return (
       <>
         {!isLastStep && (
@@ -148,15 +153,17 @@ const CreateLegalVoteForm = ({
           <Button type="button" onClick={handlePrev} startIcon={<BackIcon />} fullWidth color="primary">
             {t('legal-vote-button-back')}
           </Button>
-          <Button
-            type="button"
-            disabled={isCoffeeBreakActive || !formik.isValid}
-            onClick={() => handleNext(formik)}
-            fullWidth
-            color="secondary"
-          >
-            {isLastStep ? t('poll-participant-list-button-start') : t('legal-vote-form-button-continue')}
-          </Button>
+          <StorageFullTooltip show={disableStartForStorage}>
+            <Button
+              type="button"
+              disabled={isCoffeeBreakActive || !formik.isValid || disableStartForStorage}
+              onClick={() => handleNext(formik)}
+              fullWidth
+              color="secondary"
+            >
+              {isLastStep ? t('poll-participant-list-button-start') : t('legal-vote-form-button-continue')}
+            </Button>
+          </StorageFullTooltip>
         </Stack>
       </>
     );
