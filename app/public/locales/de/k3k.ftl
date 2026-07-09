@@ -145,7 +145,6 @@ chat-global-scope = Raum
 chat-error-invalid-group-selection = Die Gruppe, an die die Nachricht gerichtet ist, ist nicht verfügbar.
 chat-error-invalid-participant-selection = Der Empfänger der Nachricht ist nicht mehr anwesend.
 chat-new-private-message = Sie haben eine neue Nachricht
-chat-new-group-message = Sie haben eine neue Nachricht
 chat-message-error-max-input = Die Nachricht ist zu lang (max {$maxCharacters} Zeichen)
 chat-input-label = Chat
 chat-input-placeholder = Schreiben Sie eine Nachricht

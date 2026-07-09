@@ -53,7 +53,7 @@ export const handleChatMessage = (
           scope,
           target: target as ParticipantId,
         };
-        if (target === userId) {
+        if (data.source !== userId) {
           notifications.info(i18next.t('chat-new-private-message'));
         }
       } else if (scope === ChatScope.Breakout) {
