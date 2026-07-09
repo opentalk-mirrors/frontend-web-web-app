@@ -15,9 +15,6 @@ export enum ToolbarButtonIds {
   EndCall = 'toolbar-endcall',
 }
 
-export const LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER = 3;
-export const LIVEKIT_AUDIO_PERMISSION_NUMBER = 2;
-
 export const MAX_GRID_TILES_DESKTOP = 24;
 export const MAX_GRID_TILES_MOBILE = 9;
 

@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useLocalParticipantPermissions } from '@livekit/components-react';
+import { TrackSource } from '@livekit/protocol';
 import { ListItemIcon, MenuList, Typography } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ShareScreenOffIcon, ShareScreenOnIcon } from '../../../assets/icons';
-import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useHotkeyCombination } from '../../../hooks/useHotkeyCombination';
@@ -46,7 +46,7 @@ const ShareScreenButton = () => {
   }, []);
 
   const canPublishScreenShare =
-    localParticipantPermissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
+    localParticipantPermissions?.canPublishSources?.includes(TrackSource.SCREEN_SHARE) || false;
   const isModeratorOrPresenter = isModerator || canPublishScreenShare;
 
   const getToolTipTitle = () => {

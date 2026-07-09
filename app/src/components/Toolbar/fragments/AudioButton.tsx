@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useMaybeRoomContext } from '@livekit/components-react';
-import { ParticipantPermission } from '@livekit/protocol';
+import { ParticipantPermission, TrackSource } from '@livekit/protocol';
 import { styled } from '@mui/material';
 import { LocalAudioTrack, Participant, RoomEvent } from 'livekit-client';
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MicOffIcon, MicOnIcon } from '../../../assets/icons';
 import { SuspenseLoading, showConsentNotification } from '../../../commonComponents';
-import { LIVEKIT_AUDIO_PERMISSION_NUMBER, ToolbarButtonIds } from '../../../constants';
+import { ToolbarButtonIds } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useHotkeyCombination } from '../../../hooks/useHotkeyCombination';
 import useMediaDevice from '../../../hooks/useMediaDevice';
@@ -80,7 +80,7 @@ const AudioButton = ({ localAudioTrack, isLobby = false, audioEnabled, onAudioBu
 
   const getAudioPermissionSnapshot = () => {
     const canPublishSources = room?.localParticipant.permissions?.canPublishSources;
-    return canPublishSources ? canPublishSources.includes(LIVEKIT_AUDIO_PERMISSION_NUMBER) : true;
+    return canPublishSources ? canPublishSources.includes(TrackSource.MICROPHONE) : true;
   };
 
   // Bridges LiveKit's audio publish permission (an external store that LiveKit mutates in place)

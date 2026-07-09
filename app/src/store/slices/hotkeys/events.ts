@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { TrackSource } from '@livekit/protocol';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { createLocalAudioTrack } from 'livekit-client';
 
 import { lowerHand, raiseHand } from '../../../api/types/outgoing/raiseHands';
 import { showConsentNotification } from '../../../commonComponents';
-import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import log from '../../../logger';
 import browser from '../../../modules/BrowserSupport';
 import { isModerator } from '../../../utils/userUtils';
@@ -186,7 +186,7 @@ export const screenShare = ({ state, dispatch }: HotkeyCallbackParams) => {
   const isScreenShareSupported = browser.isScreenShareSupported();
   const isScreenshareEnabled = selectScreenShareEnabled(state);
   const canPublishScreenShare = selectLivekitRoom(state)?.localParticipant.permissions?.canPublishSources?.includes(
-    LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER
+    TrackSource.SCREEN_SHARE
   );
   const isModeratorOrPresenter = isModerator || canPublishScreenShare;
 

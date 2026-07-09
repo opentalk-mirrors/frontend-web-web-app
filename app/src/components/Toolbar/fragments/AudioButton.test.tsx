@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useMaybeRoomContext } from '@livekit/components-react';
+import { TrackSource } from '@livekit/protocol';
 import { act, screen } from '@testing-library/react';
 import { RoomEvent } from 'livekit-client';
 import { Mock } from 'vitest';
 
-import { LIVEKIT_AUDIO_PERMISSION_NUMBER } from '../../../constants';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import AudioButton from './AudioButton';
 
@@ -68,7 +68,7 @@ describe('Audio Button', () => {
   });
 
   it('Button is enabled if microphones are enabled', () => {
-    (useMaybeRoomContext as Mock).mockReturnValue(createMockRoom([LIVEKIT_AUDIO_PERMISSION_NUMBER]));
+    (useMaybeRoomContext as Mock).mockReturnValue(createMockRoom([TrackSource.MICROPHONE]));
 
     renderWithProviders(<AudioButton audioEnabled={false} onAudioButtonToggle={vi.fn()} />, {
       store,
@@ -173,7 +173,7 @@ describe('Audio Button', () => {
 
     // Simulate LiveKit granting audio publish permission in place after the moderator re-enables microphones
     act(() => {
-      room.setAudioPermission([LIVEKIT_AUDIO_PERMISSION_NUMBER]);
+      room.setAudioPermission([TrackSource.MICROPHONE]);
       room.emit(RoomEvent.ParticipantPermissionsChanged, undefined, room.localParticipant);
     });
 

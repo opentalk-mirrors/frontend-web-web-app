@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useLocalParticipant, useRemoteParticipant } from '@livekit/components-react';
+import { TrackSource } from '@livekit/protocol';
 import {
   Badge,
   Box,
@@ -34,7 +35,6 @@ import {
   TelephoneStrokeIcon,
 } from '../../../assets/icons';
 import { IconButton, ParticipantAvatar, notifications } from '../../../commonComponents';
-import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectEnabledModulesList } from '../../../store/slices/configSlice';
 import { selectHandUp } from '../../../store/slices/moderationSlice';
@@ -170,7 +170,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   });
   const participantId = participant.id;
   const selectedParticipantCanPublishScreenShare =
-    selectedParticipant?.permissions?.canPublishSources?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
+    selectedParticipant?.permissions?.canPublishSources?.includes(TrackSource.SCREEN_SHARE) || false;
   const audioActive = selectedParticipant?.isMicrophoneEnabled || false;
   const screenShareActive = selectedParticipant?.isScreenShareEnabled || false;
 
