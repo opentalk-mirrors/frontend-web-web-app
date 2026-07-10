@@ -9,7 +9,9 @@ import {
   enabledSelfRename,
   forceMuteDisabled,
   forceMuteEnabled,
+  setDebriefingStarted,
   setModeratorData,
+  setWaitingRoomState,
 } from '../../store/slices/moderationSlice';
 import { rename } from '../../store/slices/participantsSlice';
 import { enteredWaitingRoom } from '../../store/slices/roomSlice';
@@ -306,6 +308,42 @@ describe('handleModerationMessage', () => {
 
       expect(dispatch).not.toHaveBeenCalledWith(setModeratorData(expect.anything()));
       expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('moderation-rights-revoked');
+    });
+  });
+
+  describe('waiting room notifications during debriefing', () => {
+    it('notifies about a manual waiting room change', () => {
+      const dispatch = vi.fn();
+      const state = createState({ moderation: { debriefingStarted: false } });
+      const data: ModerationMessage = { message: 'waiting_room_updated', newState: WaitingRoom.ForGuests };
+
+      handleModerationMessage(dispatch, data, timestamp, state);
+
+      expect(dispatch).toHaveBeenCalledExactlyOnceWith(setWaitingRoomState(WaitingRoom.ForGuests));
+      expect(notifications.info).toHaveBeenCalledExactlyOnceWith('waiting-room-for-guests-message');
+    });
+
+    it('flags debriefing so the follow-up waiting room notification can be suppressed', () => {
+      const dispatch = vi.fn();
+      const state = createState();
+      const data: ModerationMessage = { message: 'debriefing_started', issuedBy: 'participant' as ParticipantId };
+
+      handleModerationMessage(dispatch, data, timestamp, state);
+
+      expect(dispatch).toHaveBeenCalledExactlyOnceWith(setDebriefingStarted(true));
+      expect(notifications.info).toHaveBeenCalledExactlyOnceWith('debriefing-started-notification');
+    });
+
+    it('suppresses and consumes the redundant waiting room notification that follows debriefing', () => {
+      const dispatch = vi.fn();
+      const state = createState({ moderation: { debriefingStarted: true } });
+      const data: ModerationMessage = { message: 'waiting_room_updated', newState: WaitingRoom.ForEveryone };
+
+      handleModerationMessage(dispatch, data, timestamp, state);
+
+      expect(dispatch).toHaveBeenCalledWith(setWaitingRoomState(WaitingRoom.ForEveryone));
+      expect(dispatch).toHaveBeenCalledWith(setDebriefingStarted(false));
+      expect(notifications.info).not.toHaveBeenCalled();
     });
   });
 });

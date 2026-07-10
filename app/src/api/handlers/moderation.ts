@@ -13,6 +13,7 @@ import {
   enabledSelfRename,
   forceMuteDisabled,
   forceMuteEnabled,
+  setDebriefingStarted,
   setGuestAccessEnabled,
   setModeratorData,
   setWaitingRoomState,
@@ -62,16 +63,20 @@ export const handleModerationMessage = (
     }
     case 'waiting_room_updated': {
       dispatch(setWaitingRoomState(data.newState));
-      switch (data.newState) {
-        case WaitingRoom.Disabled:
-          notifications.info(i18next.t('waiting-room-disabled-message'));
-          break;
-        case WaitingRoom.ForGuests:
-          notifications.info(i18next.t('waiting-room-for-guests-message'));
-          break;
-        case WaitingRoom.ForEveryone:
-          notifications.info(i18next.t('waiting-room-enabled-message'));
-          break;
+      if (state.moderation.debriefingStarted) {
+        dispatch(setDebriefingStarted(false));
+      } else {
+        switch (data.newState) {
+          case WaitingRoom.Disabled:
+            notifications.info(i18next.t('waiting-room-disabled-message'));
+            break;
+          case WaitingRoom.ForGuests:
+            notifications.info(i18next.t('waiting-room-for-guests-message'));
+            break;
+          case WaitingRoom.ForEveryone:
+            notifications.info(i18next.t('waiting-room-enabled-message'));
+            break;
+        }
       }
       break;
     }
@@ -87,6 +92,7 @@ export const handleModerationMessage = (
       dispatch(readyToEnter());
       break;
     case 'debriefing_started':
+      dispatch(setDebriefingStarted(true));
       notifications.info(i18next.t('debriefing-started-notification'));
       break;
     case 'display_name_changed': {
