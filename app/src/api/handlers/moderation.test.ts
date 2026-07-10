@@ -15,12 +15,17 @@ import {
   setWaitingRoomState,
 } from '../../store/slices/moderationSlice';
 import { rename } from '../../store/slices/participantsSlice';
-import { enteredWaitingRoom } from '../../store/slices/roomSlice';
+import { enteredWaitingRoom, lobbyDisplayNameAssigned, setCanEnter } from '../../store/slices/roomSlice';
 import { setDisplayName, updateRole } from '../../store/slices/userSlice';
 import { Role, WaitingRoom } from '../../types';
 import type { ModeratorJoinInfo, ParticipantId, Timestamp } from '../../types';
 import { KickReason } from '../../types';
-import type { DisplayNameChanged, Message as ModerationMessage, RoleUpdated } from '../types/incoming/moderation';
+import type {
+  DisplayNameAssigned,
+  DisplayNameChanged,
+  Message as ModerationMessage,
+  RoleUpdated,
+} from '../types/incoming/moderation';
 import { handleModerationMessage } from './moderation';
 
 vi.mock('i18next', () => ({
@@ -163,6 +168,55 @@ describe('handleModerationMessage', () => {
     expect(dispatch).toHaveBeenCalledTimes(2);
     expect(dispatch).toHaveBeenNthCalledWith(1, rename({ id: userId, displayName: 'Jordan' }));
     expect(dispatch).toHaveBeenNthCalledWith(2, setDisplayName('Jordan'));
+  });
+
+  it('assigns the lobby display name when the server returns one', () => {
+    const dispatch = vi.fn();
+    const data: DisplayNameAssigned = {
+      message: 'display_name_assigned',
+      newName: 'Alex',
+    };
+
+    handleModerationMessage(dispatch, data, timestamp, createState());
+
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(lobbyDisplayNameAssigned({ displayName: 'Alex' }));
+  });
+
+  it('clears the assigned lobby display name when the server frees it', () => {
+    const dispatch = vi.fn();
+    const data: DisplayNameAssigned = {
+      message: 'display_name_assigned',
+    };
+
+    handleModerationMessage(dispatch, data, timestamp, createState());
+
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(lobbyDisplayNameAssigned({ displayName: undefined }));
+  });
+
+  it('allows entering the conference and notifies when entry permission is granted', () => {
+    const dispatch = vi.fn();
+    const data: ModerationMessage = {
+      message: 'entry_permission_changed',
+      canEnter: true,
+    };
+
+    handleModerationMessage(dispatch, data, timestamp, createState());
+
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(setCanEnter(true));
+    expect(notifications.info).toHaveBeenCalledExactlyOnceWith('waiting-room-disabled-message');
+  });
+
+  it('blocks entering the conference and notifies when entry permission is revoked', () => {
+    const dispatch = vi.fn();
+    const data: ModerationMessage = {
+      message: 'entry_permission_changed',
+      canEnter: false,
+    };
+
+    handleModerationMessage(dispatch, data, timestamp, createState());
+
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(setCanEnter(false));
+    expect(notifications.info).toHaveBeenCalledExactlyOnceWith('waiting-room-enabled-message');
   });
 
   it('enables force mute and notifies restricted users', () => {

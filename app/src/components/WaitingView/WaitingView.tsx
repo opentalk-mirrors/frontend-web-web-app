@@ -59,7 +59,7 @@ const WaitingView = () => {
       dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
       dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
     }
-    dispatch(enterRoom.action());
+    dispatch(enterRoom.action({}));
   }, [dispatch, joinWithoutMedia]);
 
   useEffect(() => {

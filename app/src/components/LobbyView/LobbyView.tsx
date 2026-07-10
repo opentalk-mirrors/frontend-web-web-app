@@ -9,12 +9,16 @@ import i18next from 'i18next';
 import { isE2EESupported } from 'livekit-client';
 import { uniqueId } from 'lodash';
 import { SnackbarKey } from 'notistack';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
 import { isApiError, StartRoomError, useGetMeQuery, useGetRoomEventInfoQuery } from '../../api/rest';
+import {
+  enterRoom as enterRoomCommand,
+  enterWaitingRoom as enterWaitingRoomCommand,
+} from '../../api/types/outgoing/core';
 import { HiddenIcon, VisibleIcon } from '../../assets/icons';
 import { CommonTextField as DefaultCommonTextField, notifications } from '../../commonComponents';
 import SuspenseLoading from '../../commonComponents/SuspenseLoading/SuspenseLoading';
@@ -31,10 +35,13 @@ import { selectDisallowCustomDisplayName, selectConfigFeatures } from '../../sto
 import {
   InviteCodeErrorEnum,
   fetchRoomByInviteId,
+  selectCanEnter,
   selectInviteState,
+  selectLobbyDisplayName,
   selectPasswordRequired,
   selectRoomConnectionState,
 } from '../../store/slices/roomSlice';
+import { setDisplayName } from '../../store/slices/userSlice';
 import { FetchRequestError } from '../../types';
 import { composeRoomPath } from '../../utils/apiUtils';
 import { formikProps } from '../../utils/formikUtils';
@@ -112,10 +119,12 @@ const LobbyView = () => {
   const dispatch = useAppDispatch();
   const inviteState = useAppSelector(selectInviteState);
   const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
-  const showPasswordField = useAppSelector(selectPasswordRequired);
   const disallowCustomDisplayName = useAppSelector(selectDisallowCustomDisplayName);
   const isLoggedIn = useAppSelector(selectIsAuthenticated);
   const connectionState = useAppSelector(selectRoomConnectionState);
+  const canEnter = useAppSelector(selectCanEnter);
+  const lobbyDisplayName = useAppSelector(selectLobbyDisplayName);
+  const showPasswordField = useAppSelector(selectPasswordRequired);
   const inviteStateCode = inviteState.inviteCode;
 
   const { data } = useGetMeQuery(undefined, { skip: !isLoggedIn });
@@ -178,79 +187,109 @@ const LobbyView = () => {
     [t]
   );
 
-  const enterRoom = useCallback(
-    async (displayName: string, password: string) => {
-      if (joinWithoutMedia) {
-        dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
-        dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
-      }
-      try {
-        return await dispatch(
-          startRoom({
-            roomId,
-            displayName,
-            password,
-            inviteCode,
-          })
-        ).unwrap();
-      } catch (e: unknown) {
-        if (isApiError<StartRoomError>(e)) {
-          switch (e.code) {
-            case StartRoomError.InvalidBreakoutRoomId:
-            case StartRoomError.NoBreakoutRooms:
-              notifications.info(t('breakout-notification-session-ended-header'));
-              navigate(composeRoomPath(roomId, inviteCode));
-              break;
-            case StartRoomError.InvalidJson:
-              log.error('invalid json request in startRoom', e);
-              notifications.error(t('error-general'));
-              break;
-            case StartRoomError.WrongRoomPassword:
-            case StartRoomError.InvalidCredentials:
-              showWrongPasswordNotification();
-              break;
-            case StartRoomError.NotFound:
-              notifications.error(t('joinform-room-not-found'));
-              navigateToHome();
-              break;
-            case StartRoomError.Forbidden:
-              notifications.error(t('joinform-access-denied'));
-              navigateToHome();
-              break;
-            case StartRoomError.BadRequest:
-              notifications.error(t('error-invalid-invitation-code'));
-              navigateToHome();
-              break;
-            default:
-              log.error(`unknown error code ${e.code} in startRoom`, e);
-              notifications.error(t('error-general'));
-          }
-        } else {
-          log.error('unknown error in startRoom', e);
-          notifications.error(t('error-general'));
+  const openLobbyConnection = useCallback(async () => {
+    if (joinWithoutMedia) {
+      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
+      dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
+    }
+    try {
+      return await dispatch(
+        startRoom({
+          roomId,
+          displayName: initialDisplayName || '',
+          inviteCode,
+        })
+      ).unwrap();
+    } catch (e: unknown) {
+      if (isApiError<StartRoomError>(e)) {
+        switch (e.code) {
+          case StartRoomError.InvalidBreakoutRoomId:
+          case StartRoomError.NoBreakoutRooms:
+            notifications.info(t('breakout-notification-session-ended-header'));
+            navigate(composeRoomPath(roomId, inviteCode));
+            break;
+          case StartRoomError.InvalidJson:
+            log.error('invalid json request in startRoom', e);
+            notifications.error(t('error-general'));
+            break;
+          case StartRoomError.WrongRoomPassword:
+          case StartRoomError.InvalidCredentials:
+            showWrongPasswordNotification();
+            break;
+          case StartRoomError.NotFound:
+            notifications.error(t('joinform-room-not-found'));
+            navigateToHome();
+            break;
+          case StartRoomError.Forbidden:
+            notifications.error(t('joinform-access-denied'));
+            navigateToHome();
+            break;
+          case StartRoomError.BadRequest:
+            notifications.error(t('error-invalid-invitation-code'));
+            navigateToHome();
+            break;
+          default:
+            log.error(`unknown error code ${e.code} in startRoom`, e);
+            notifications.error(t('error-general'));
         }
+      } else {
+        log.error('unknown error in startRoom', e);
+        notifications.error(t('error-general'));
+      }
+    }
+  }, [navigate, t, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, initialDisplayName]);
+
+  const submitLobby = useCallback(
+    (displayName?: string) => {
+      if (canEnter) {
+        dispatch(enterRoomCommand.action({ displayName }));
+      } else {
+        dispatch(enterWaitingRoomCommand.action({ displayName }));
       }
     },
-    [navigate, t, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia]
+    [dispatch, canEnter]
   );
+
+  const hasInitiatedConnect = useRef(false);
+  useEffect(() => {
+    if (hasInitiatedConnect.current || inviteState.loading || isRoomDataLoading || !roomData) {
+      return;
+    }
+    if (!(isLoggedIn || inviteCode !== undefined)) {
+      return;
+    }
+    if (connectionState !== ConnectionState.Initial && connectionState !== ConnectionState.Setup) {
+      return;
+    }
+    hasInitiatedConnect.current = true;
+    void openLobbyConnection();
+  }, [inviteState.loading, isRoomDataLoading, roomData, isLoggedIn, inviteCode, connectionState, openLobbyConnection]);
 
   const formik = useFormik({
     initialValues: {
-      name: initialDisplayName || '',
+      name: lobbyDisplayName ?? initialDisplayName ?? '',
       password: '',
     },
     enableReinitialize: true,
     validationSchema,
-    onSubmit: async (values) => {
-      if (isLoggedIn || inviteCode !== undefined) {
-        const name = disableDisplayNameField ? initialDisplayName || '' : values.name;
-        await enterRoom(name, values.password);
+    onSubmit: (values) => {
+      if (!(isLoggedIn || inviteCode !== undefined)) {
+        return;
       }
+      // don't send a displayName if its already set by the server (via display_name_assigned` or returned in `joined_lobby`)
+      if (lobbyDisplayName) {
+        submitLobby();
+        return;
+      }
+      const name = disableDisplayNameField ? initialDisplayName || '' : values.name;
+      dispatch(setDisplayName(name));
+      submitLobby(name);
     },
   });
 
-  const disableSubmitButton =
-    !(isLoggedIn || inviteCode !== undefined) || connectionState === ConnectionState.Starting || !formik.isValid;
+  const isInLobby = connectionState === ConnectionState.Lobby;
+  const disableSubmitButton = !isInLobby || !formik.isValid;
+  const submitButtonLabel = isInLobby && canEnter === false ? t('joinform-request-to-join') : t('joinform-enter-now');
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
@@ -278,7 +317,7 @@ const LobbyView = () => {
         <SelfTest
           actionButton={
             <ActionButton form={JOIN_FORM_ID} type="submit" disabled={disableSubmitButton} color="secondary">
-              {t('joinform-enter-now')}
+              {submitButtonLabel}
             </ActionButton>
           }
         >
@@ -299,7 +338,7 @@ const LobbyView = () => {
                 label={t('global-name')}
                 placeholder={t('lobby-name-placeholder')}
                 autoComplete="username"
-                disabled={disableDisplayNameField}
+                disabled={disableDisplayNameField || Boolean(lobbyDisplayName)}
               />
             </ConditionalToolTip>
             {showPasswordField && (

@@ -42,6 +42,7 @@ route-not-found = Route not found
 room = Room {$roomNumber}
 joinform-title = Enter Conference
 joinform-enter-now = Enter now
+joinform-request-to-join = Request to join
 joinform-waiting-room-enter = Please wait...
 joinform-wrong-room-password = The password you entered is incorrect.
 joinform-access-denied = Access denied: You were not invited to this meeting.

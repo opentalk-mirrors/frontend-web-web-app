@@ -81,6 +81,11 @@ export interface DisplayNameChanged {
   newName: string;
 }
 
+export interface DisplayNameAssigned {
+  message: 'display_name_assigned';
+  newName?: string;
+}
+
 export interface DisplayNameChangeRestrictionsDisabled {
   message: 'display_name_change_restrictions_disabled';
 }
@@ -101,6 +106,11 @@ export interface MicrophoneRestrictionsEnabled {
 
 export interface MicrophoneRestrictionsDisabled {
   message: 'microphone_restrictions_disabled';
+}
+
+export interface EntryPermissionChanged {
+  message: 'entry_permission_changed';
+  canEnter: boolean;
 }
 
 // export interface DebriefSessionEnded {
@@ -164,11 +174,13 @@ export type Message =
   | AcceptedInMeeting
   | ParticipantAccepted
   | DisplayNameChanged
+  | DisplayNameAssigned
   | DisplayNameChangeRestrictionsDisabled
   | DisplayNameChangeRestrictionsEnabled
   | Muted
   | MicrophoneRestrictionsEnabled
   | MicrophoneRestrictionsDisabled
+  | EntryPermissionChanged
   | ErrorStruct<ModerationError>;
 
 export type Moderation = NamespacedIncoming<Message, 'moderation'>;

@@ -7,6 +7,7 @@ import type {
   ParticipantId,
   PeerModuleData,
   ConnectionId,
+  DeviceId,
   JoinedWaitingRoomParticipant,
 } from '../../../types';
 import { isErrorStruct } from '../../../utils/tsUtils';
@@ -67,6 +68,15 @@ export interface InWaitingRoom {
   connectionId: ConnectionId;
 }
 
+export interface JoinedLobby {
+  message: 'joined_lobby';
+  participantId: ParticipantId;
+  connectionId: ConnectionId;
+  deviceId: DeviceId;
+  canEnter: boolean;
+  displayName?: string;
+}
+
 export interface Closing {
   message: 'closing';
   reason: RoomCloseReason;
@@ -104,6 +114,7 @@ export type Message =
   | JoinBlocked
   | ParticipantDisconnected
   | InWaitingRoom
+  | JoinedLobby
   | JoinedWaitingRoom
   | LeftWaitingRoom
   | Closing
@@ -115,6 +126,7 @@ export enum RoomserverMessageKey {
   ParticipantConnected = 'participant_connected',
   ParticipantDisconnected = 'participant_disconnected',
   InWaitingRoom = 'in_waiting_room',
+  JoinedLobby = 'joined_lobby',
   JoinedWaitingRoom = 'joined_waiting_room',
   LeftWaitingRoom = 'left_waiting_room',
   RoomParametersChanged = 'room_parameters_changed',

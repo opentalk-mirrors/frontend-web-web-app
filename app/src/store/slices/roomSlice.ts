@@ -19,6 +19,7 @@ import {
   AutomodSelectionStrategy,
   FetchRequestError,
   FetchRequestState,
+  ParticipantId,
   RoomInfo,
   RoomKind,
   RoomMode,
@@ -56,11 +57,15 @@ export type RoomState = {
   isPresenceConfirmationActive: boolean;
   isDeleted: boolean;
   roomKind: RoomKind;
+  canEnter?: boolean;
+  lobbyDisplayName?: string;
+  lobbyParticipantId?: ParticipantId;
+  hasJoinedConference: boolean;
 };
 
 export interface InviteRoomVerifyResponse {
   roomId: RoomId;
-  passwordRequired: boolean;
+  passwordRequired?: boolean;
 }
 
 const initialInviteState: InviteState = {
@@ -84,6 +89,7 @@ const initialState: RoomState = {
   isPresenceConfirmationActive: false,
   isDeleted: false,
   roomKind: RoomKind.Main,
+  hasJoinedConference: false,
 };
 
 export enum InviteCodeErrorEnum {
@@ -140,6 +146,20 @@ export const roomSlice = createSlice({
     enteredWaitingRoom: (state) => {
       state.connectionState = ConnectionState.Waiting;
     },
+    joinedLobby: (
+      state,
+      {
+        payload: { canEnter, displayName, participantId },
+      }: PayloadAction<{ canEnter: boolean; displayName?: string; participantId: ParticipantId }>
+    ) => {
+      state.connectionState = ConnectionState.Lobby;
+      state.canEnter = canEnter;
+      state.lobbyDisplayName = displayName;
+      state.lobbyParticipantId = participantId;
+    },
+    lobbyDisplayNameAssigned: (state, { payload: { displayName } }: PayloadAction<{ displayName?: string }>) => {
+      state.lobbyDisplayName = displayName;
+    },
     readyToEnter: (state) => {
       state.connectionState = ConnectionState.ReadyToEnter;
     },
@@ -162,6 +182,9 @@ export const roomSlice = createSlice({
     setIsRoomDeleted: (state, { payload }) => {
       state.isDeleted = payload;
     },
+    setCanEnter: (state, { payload }) => {
+      state.canEnter = payload;
+    },
     roomParametersChanged: (state, action: PayloadAction<RoomParametersChanged['change']>) => {
       const { password, title } = action.payload;
       if (password !== undefined && state.roomInfo) {
@@ -182,7 +205,7 @@ export const roomSlice = createSlice({
       state.invite.loading = false;
       state.invite.inviteCode = meta.arg;
       state.connectionState = ConnectionState.Setup;
-      state.passwordRequired = payload.passwordRequired;
+      state.passwordRequired = payload.passwordRequired ?? false;
     });
     builder.addCase(fetchRoomByInviteId.rejected, (state, { payload }) => {
       state.invite = {
@@ -222,6 +245,7 @@ export const roomSlice = createSlice({
       state.currentMode = undefined;
       state.serverTimeOffset = payload.serverTimeOffset;
       state.connectionState = ConnectionState.Online;
+      state.hasJoinedConference = true;
       state.participantLimit = payload.tariff.quotas?.roomParticipantLimit;
       state.isOwnedByCurrentUser = payload.isRoomOwner;
 
@@ -287,6 +311,8 @@ export const {
   joinBlocked,
   connectionClosed,
   enteredWaitingRoom,
+  joinedLobby,
+  lobbyDisplayNameAssigned,
   readyToEnter,
   updatedReconnectTimerId,
   abortedReconnection,
@@ -294,6 +320,7 @@ export const {
   presenceConfirmationRequested,
   presenceConfirmationDone,
   setIsRoomDeleted,
+  setCanEnter,
   roomParametersChanged,
 } = actions;
 
@@ -301,6 +328,10 @@ export const selectRoomPassword = (state: RootState) => state.room.password;
 export const selectRoomId = (state: RootState) => state.room.roomId;
 export const selectInviteState = (state: RootState) => state.room.invite;
 export const selectRoomConnectionState = (state: RootState) => state.room.connectionState;
+export const selectCanEnter = (state: RootState) => state.room.canEnter;
+export const selectHasJoinedConference = (state: RootState) => state.room.hasJoinedConference;
+export const selectLobbyDisplayName = (state: RootState) => state.room.lobbyDisplayName;
+export const selectLobbyParticipantId = (state: RootState) => state.room.lobbyParticipantId;
 export const selectServerTimeOffset = (state: RootState) => state.room.serverTimeOffset;
 export const selectPasswordRequired = (state: RootState) => state.room.passwordRequired;
 export const selectParticipantLimit = (state: RootState) => state.room.participantLimit;

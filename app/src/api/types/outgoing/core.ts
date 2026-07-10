@@ -10,18 +10,29 @@ export type DisplayName = string & { readonly __tag: unique symbol };
 
 export interface EnterRoom {
   action: 'enter_room';
+  displayName?: string;
 }
 
-export type Action = EnterRoom;
+export interface EnterWaitingRoom {
+  action: 'enter_waiting_room';
+  displayName?: string;
+}
+
+export type Action = EnterRoom | EnterWaitingRoom;
 
 export type Core = Namespaced<Action, 'core'>;
 
 export const enterRoom = createSignalingApiCall<EnterRoom>('core', 'enter_room');
+export const enterWaitingRoom = createSignalingApiCall<EnterWaitingRoom>('core', 'enter_waiting_room');
 
 export const handler = createModule<RootState>((builder) => {
-  builder.addCase(enterRoom.action, () => {
-    sendMessage(enterRoom());
-  });
+  builder
+    .addCase(enterRoom.action, (_state, action) => {
+      sendMessage(enterRoom(action.payload));
+    })
+    .addCase(enterWaitingRoom.action, (_state, action) => {
+      sendMessage(enterWaitingRoom(action.payload));
+    });
 });
 
 export default Core;
