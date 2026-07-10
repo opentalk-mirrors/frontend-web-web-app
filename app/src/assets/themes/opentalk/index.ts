@@ -235,6 +235,8 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
             // color: theme.palette.common.white,
             padding: theme.spacing(0.25),
             '&.Mui-checked': {
+              transform: 'translateX(100%)',
+              marginLeft: '-2px',
               // color: theme.palette.common.white,
               '& .MuiSwitch-thumb:before': {
                 backgroundColor: theme.palette.primary.contrastText,
