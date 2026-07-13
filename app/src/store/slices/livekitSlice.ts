@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 // Redux has limitations with non-serializable data, like the LiveKit room object, as it can cause issues with state persistence.
 // Either way room object would be kept in the store for reference. All updated on the room object should be listened and react to on the room middlware actions and listeners.
-import { ParticipantPermission } from '@livekit/protocol';
+import { ParticipantPermission, TrackSource } from '@livekit/protocol';
 import {
   createAction,
   createSelector,
@@ -38,7 +38,6 @@ import { switchRoom } from '../../api/types/outgoing/breakout';
 import { createNewAccessToken } from '../../api/types/outgoing/livekit';
 import { leaveWhisperGroup } from '../../api/types/outgoing/subroomAudio';
 import { notifications } from '../../commonComponents';
-import { LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import log from '../../logger';
 import { MediaDescriptor } from '../../modules/WebRTC';
@@ -1032,10 +1031,10 @@ const handlePermissionChanged = (
   if (previousPermissions && currentPermissions) {
     const changed = currentPermissions?.filter((item) => previousPermissions.canPublishSources.indexOf(item) < 0);
 
-    const hadScreenShare = previousPermissions.canPublishSources.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER);
-    const hasScreenShare = currentPermissions?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER) || false;
+    const hadScreenShare = previousPermissions.canPublishSources.includes(TrackSource.SCREEN_SHARE);
+    const hasScreenShare = currentPermissions?.includes(TrackSource.SCREEN_SHARE) || false;
 
-    if (changed?.includes(LIVEKIT_SCREEN_SHARE_PERMISSION_NUMBER)) {
+    if (changed?.includes(TrackSource.SCREEN_SHARE)) {
       notifications.close('control-participant-presenter-role-revoked');
       notifications.info(t('control-participant-presenter-role-granted'), {
         key: 'control-participant-presenter-role-granted',
