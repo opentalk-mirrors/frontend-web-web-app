@@ -8,19 +8,19 @@ import React, { Suspense } from 'react';
 import {
   AddUserIcon,
   BreakroomsIcon,
-  LegalBallotIcon,
-  MuteAllIcon,
-  PollIcon,
-  SpeakerQueueIcon,
-  TimerIcon,
-  WheelOfNamesIcon,
-  WoolBallIcon,
-  WhiteboardIcon,
-  RaiseHandOffIcon,
-  MeetingNotesIcon,
   CoffeeBreakIcon,
   DebriefingIcon,
+  LegalBallotIcon,
+  MeetingNotesIcon,
+  MuteAllIcon,
+  PollIcon,
+  RaiseHandOffIcon,
+  SpeakerQueueIcon,
   TalkingStickIcon,
+  TimerIcon,
+  WheelOfNamesIcon,
+  WhiteboardIcon,
+  WoolBallIcon,
 } from '../assets/icons';
 import SuspenseLoading from '../commonComponents/SuspenseLoading/SuspenseLoading';
 import DebriefingTab from '../components/DebriefingTab';
@@ -32,14 +32,14 @@ import { FeaturesKeys } from '../store/slices/configSlice';
 import { TimerStyle } from '../types';
 import { ModerationTabKey } from './constants';
 import {
-  MenuTabs,
   BreakoutRoomTab,
   LegalVoteTab,
-  TalkingStickTabPanel,
-  PollTab,
-  MuteParticipantsTab,
   MeetingNotesTab,
+  MenuTabs,
+  MuteParticipantsTab,
+  PollTab,
   ResetHandraisesTab,
+  TalkingStickTabPanel,
   TimerTab,
   WhiteboardTab,
 } from './fragments/lazyTabs';
@@ -162,6 +162,19 @@ export const tabs: Array<Tab> = [
       </Suspense>
     ),
     moduleKey: BackendModules.Whiteboard,
+    key: ModerationTabKey.Whiteboard,
+    titleKey: 'whiteboard-tab-title',
+  },
+  // TODO: dublicated whiteboard entry can be removed with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/321
+  {
+    icon: <WhiteboardIcon />,
+    tooltipTranslationKey: 'moderationbar-button-whiteboard-tooltip',
+    component: (
+      <Suspense fallback={<SuspenseLoading />}>
+        <WhiteboardTab />
+      </Suspense>
+    ),
+    moduleKey: BackendModules.Excalidraw,
     key: ModerationTabKey.Whiteboard,
     titleKey: 'whiteboard-tab-title',
   },

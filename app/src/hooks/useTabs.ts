@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { useMemo } from 'react';
 
 import { ModerationTabKey } from '../config/constants';
@@ -22,13 +23,17 @@ const useTabs = () => {
   const isTimerCoffee = timerStyle === TimerStyle.CoffeeBreak;
   const isTimerNormal = timerStyle === TimerStyle.Normal;
 
-  let tabs = initialTabs.filter(
-    (tab) =>
-      tab.divider ||
-      (tab.featureKey && features[tab.featureKey]) ||
-      (tab.moduleKey ? enabledModules.includes(tab.moduleKey) : false) ||
-      tab.key === ModerationTabKey.Home
-  );
+  let tabs = initialTabs
+    .filter(
+      (tab) =>
+        tab.divider ||
+        (tab.featureKey && features[tab.featureKey]) ||
+        (tab.moduleKey ? enabledModules.includes(tab.moduleKey) : false) ||
+        tab.key === ModerationTabKey.Home
+    )
+    .filter(
+      (tab) => !(tab.moduleKey === BackendModules.Whiteboard && enabledModules.includes(BackendModules.Excalidraw))
+    );
 
   if (currentRoomMode === RoomMode.TalkingStick) {
     const enabledModulesForTalkingStickRoomMode = [ModerationTabKey.Home, ModerationTabKey.TalkingStick];

@@ -14,10 +14,42 @@ import useTabs from './useTabs';
 vi.mock('../config/moderationTabs', async () => {
   return {
     tabs: [
-      { key: 'tab-home', featureKey: undefined, moduleKey: undefined, divider: false },
-      { key: 'tab-timer', featureKey: BackendModules.Timer, moduleKey: undefined, divider: false },
-      { key: 'tab-coffee-break', featureKey: BackendModules.Timer, moduleKey: undefined, divider: false },
-      { key: 'tab-talking-stick', featureKey: undefined, moduleKey: BackendModules.Automod, divider: false },
+      {
+        key: 'tab-home',
+        featureKey: undefined,
+        moduleKey: undefined,
+        divider: false,
+      },
+      {
+        key: 'tab-timer',
+        featureKey: BackendModules.Timer,
+        moduleKey: undefined,
+        divider: false,
+      },
+      {
+        key: 'tab-coffee-break',
+        featureKey: BackendModules.Timer,
+        moduleKey: undefined,
+        divider: false,
+      },
+      {
+        key: 'tab-talking-stick',
+        featureKey: undefined,
+        moduleKey: BackendModules.Automod,
+        divider: false,
+      },
+      {
+        key: 'tab-whiteboard',
+        featureKey: undefined,
+        moduleKey: BackendModules.Whiteboard,
+        divider: false,
+      },
+      {
+        key: 'tab-whiteboard',
+        featureKey: undefined,
+        moduleKey: BackendModules.Excalidraw,
+        divider: false,
+      },
     ],
     Tab: {},
   };
@@ -72,7 +104,10 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: true, talkingStick: true },
-          enabledModules: { [BackendModules.Automod]: [], [BackendModules.Timer]: [] },
+          enabledModules: {
+            [BackendModules.Automod]: [],
+            [BackendModules.Timer]: [],
+          },
         },
         room: {
           currentMode: RoomMode.TalkingStick,
@@ -100,7 +135,10 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: true },
-          enabledModules: { [BackendModules.Automod]: [], [BackendModules.Timer]: [] },
+          enabledModules: {
+            [BackendModules.Automod]: [],
+            [BackendModules.Timer]: [],
+          },
         },
         timer: {
           style: TimerStyle.Normal,
@@ -124,7 +162,10 @@ describe('useTabs', () => {
       initialState: {
         config: {
           features: { timer: true, coffee: true },
-          enabledModules: { [BackendModules.Automod]: [], [BackendModules.Timer]: [] },
+          enabledModules: {
+            [BackendModules.Automod]: [],
+            [BackendModules.Timer]: [],
+          },
         },
         timer: {
           style: TimerStyle.CoffeeBreak,
@@ -141,5 +182,48 @@ describe('useTabs', () => {
 
     expect(timerTab?.disabled).toBe(true);
     expect(coffeeBreakTab?.disabled).toBe(false);
+  });
+
+  it('shows the whiteboard tab when only the excalidraw module is enabled', () => {
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          features: {},
+          enabledModules: { [BackendModules.Excalidraw]: [] },
+        },
+      },
+    });
+
+    const { result } = renderHook(() => useTabs(), {
+      wrapper: ({ children }) => <ReduxProvider store={store}>{children}</ReduxProvider>,
+    });
+
+    const whiteboardTabs = result.current.filter((tab: Tab) => tab.key === ModerationTabKey.Whiteboard);
+
+    expect(whiteboardTabs).toHaveLength(1);
+    expect(whiteboardTabs[0].moduleKey).toBe(BackendModules.Excalidraw);
+  });
+
+  it('shows a single whiteboard tab when both whiteboard and excalidraw modules are enabled', () => {
+    const { store } = configureStore({
+      initialState: {
+        config: {
+          features: {},
+          enabledModules: {
+            [BackendModules.Whiteboard]: [],
+            [BackendModules.Excalidraw]: [],
+          },
+        },
+      },
+    });
+
+    const { result } = renderHook(() => useTabs(), {
+      wrapper: ({ children }) => <ReduxProvider store={store}>{children}</ReduxProvider>,
+    });
+
+    const whiteboardTabs = result.current.filter((tab: Tab) => tab.key === ModerationTabKey.Whiteboard);
+
+    expect(whiteboardTabs).toHaveLength(1);
+    expect(whiteboardTabs[0].moduleKey).toBe(BackendModules.Excalidraw);
   });
 });
