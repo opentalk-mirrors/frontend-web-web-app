@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import ParticipantSimpleList from './ParticipantSimpleList';
@@ -70,5 +71,51 @@ describe('ParticipantSimpleList', () => {
 
     expect(screen.getByRole('list')).toBeInTheDocument();
     expect(screen.queryByText(/Test User Randy Mock/)).not.toBeInTheDocument();
+  });
+
+  it('keeps an open participant menu open when the participants list changes (user joins/leaves)', async () => {
+    const user = userEvent.setup();
+    const { store, participants } = setup();
+
+    const { rerender } = renderWithProviders(<ParticipantSimpleList participants={participants} />, {
+      store,
+      provider: { mui: true },
+    });
+
+    const menuButton = screen.getAllByRole('button', { name: 'participant-menu-open-label' })[0];
+    await user.click(menuButton);
+
+    expect(screen.getByRole('menuitem', { name: 'participant-menu-send-message' })).toBeInTheDocument();
+
+    // Simulate a user joining
+    const participantsAfterJoin = [...participants, { ...mockedParticipant(3) }];
+    rerender(<ParticipantSimpleList participants={participantsAfterJoin} />);
+
+    expect(screen.getByRole('menuitem', { name: 'participant-menu-send-message' })).toBeInTheDocument();
+
+    // Simulate a user leaving
+    rerender(<ParticipantSimpleList participants={participants} />);
+
+    expect(screen.getByRole('menuitem', { name: 'participant-menu-send-message' })).toBeInTheDocument();
+  });
+
+  it('closes an open participant menu when the concerned user leaves', async () => {
+    const user = userEvent.setup();
+    const { store, participants } = setup();
+
+    const { rerender } = renderWithProviders(<ParticipantSimpleList participants={participants} />, {
+      store,
+      provider: { mui: true },
+    });
+
+    const menuButtons = screen.getAllByRole('button', { name: 'participant-menu-open-label' });
+    await user.click(menuButtons[1]);
+
+    expect(screen.getByRole('menuitem', { name: 'participant-menu-send-message' })).toBeInTheDocument();
+
+    const participantsAfterLeave = [participants[0], participants[2]];
+    rerender(<ParticipantSimpleList participants={participantsAfterLeave} />);
+
+    expect(screen.queryByRole('menuitem', { name: 'participant-menu-send-message' })).not.toBeInTheDocument();
   });
 });

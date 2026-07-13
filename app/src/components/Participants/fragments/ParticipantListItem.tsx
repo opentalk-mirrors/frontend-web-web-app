@@ -143,6 +143,7 @@ const PARTICIPANT_MENU_ID = 'participant_menu_id';
 
 const ParticipantListItem = ({ data, index, style }: RowComponentProps<ParticipantRowProps>) => {
   const participant = data[index];
+  const participantId = participant.id;
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const sortType = useAppSelector(selectParticipantsSortOption);
   const isCurrentUserModerator = useAppSelector(selectIsModerator);
@@ -151,15 +152,22 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   const dispatch = useAppDispatch();
   const open = Boolean(anchorEl);
   const ownId = useAppSelector(selectOurUuid);
-  const isParticipantSelf = participant.id === ownId;
+  const isParticipantSelf = participantId === ownId;
   const userMeetingNotesAccess = useAppSelector(selectUserMeetingNotesAccess);
   const ownHandRaised = useAppSelector(selectHandUp);
   const whisperRoomParticipants = useAppSelector(selectSubroomAudioParticipants);
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
   const [openRemovalDialog, setOpenRemovalDialog] = useState(false);
+  const [renderedParticipantId, setRenderedParticipantId] = useState(participantId);
+  if (participantId !== renderedParticipantId) {
+    setRenderedParticipantId(participantId);
+    setAnchorEl(undefined);
+    setOpenRenameDialog(false);
+    setOpenRemovalDialog(false);
+  }
 
   const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).includes(BackendModules.SubroomAudio);
-  const connectionIdentifier = constructConnectionIdentifier(participant.id, participant.connections[0]);
+  const connectionIdentifier = constructConnectionIdentifier(participantId, participant.connections[0]);
   const selectedParticipant = useRemoteParticipant(connectionIdentifier, {
     updateOnlyOn: [
       ParticipantEvent.TrackMuted,
@@ -168,7 +176,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
       ParticipantEvent.TrackUnsubscribed,
     ],
   });
-  const participantId = participant.id;
+
   const selectedParticipantCanPublishScreenShare =
     selectedParticipant?.permissions?.canPublishSources?.includes(TrackSource.SCREEN_SHARE) || false;
   const audioActive = selectedParticipant?.isMicrophoneEnabled || false;
