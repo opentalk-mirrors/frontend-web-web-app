@@ -27,7 +27,7 @@ const InvitePage = () => {
     dispatch(fetchRoomByInviteId(inviteCode))
       .unwrap()
       .then(({ roomId }: InviteRoomVerifyResponse) => {
-        navigate(composeRoomPath(roomId, inviteCode));
+        navigate(composeRoomPath(roomId));
       })
       .catch((error: FetchRequestError) => setError(error));
   }, [dispatch, navigate, inviteCode]);

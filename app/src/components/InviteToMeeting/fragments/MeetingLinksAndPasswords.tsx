@@ -6,9 +6,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../../hooks';
-import useIsGuestAccessAllowed from '../../../hooks/useIsGuestAccessAllowed';
 import { selectBaseUrl } from '../../../store/slices/configSlice';
-import GuestLinkField from './GuestLinkField';
 import MeetingLinkField from './MeetingLinkField';
 import { FieldKeys } from './constants';
 
@@ -22,7 +20,6 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
   const [highlightedField, setHighlightedField] = useState<FieldKeys>();
 
   const roomId = event.room.id;
-  const isInviteAllowed = useIsGuestAccessAllowed(event);
 
   const roomURL = useMemo(() => new URL(`/room/${roomId}`, baseURL), [baseURL, roomId]);
   const eventTitle = event?.title || t('fallback-room-title');
@@ -68,18 +65,6 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
           value={sipLink}
           setHighlightedField={setHighlightedField}
           eventTitle={eventTitle}
-        />
-      )}
-      {isInviteAllowed && (
-        <GuestLinkField
-          fieldKey={FieldKeys.GuestLink}
-          checked={highlightedField === FieldKeys.GuestLink}
-          setHighlightedField={setHighlightedField}
-          tooltip={t('dashboard-invite-to-meeting-guest-link-tooltip')}
-          eventTitle={eventTitle}
-          eventCreatorId={event.createdBy.id}
-          roomId={roomId}
-          baseURL={baseURL}
         />
       )}
       <MeetingLinkField

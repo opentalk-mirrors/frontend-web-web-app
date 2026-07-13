@@ -9,12 +9,9 @@ import { AssetId, Tags, Tag } from '../types/common';
 import { EventInfo } from '../types/event';
 import {
   CreateRoomPayload,
-  CreateRoomInvitePayload,
   RoomAssets,
   RoomEventInfo,
   RoomId,
-  RoomInvite,
-  RoomInvites,
   RoomSipConfigResponse,
   UpdateRoomSipConfigPayload,
   PrivateRoom,
@@ -52,15 +49,10 @@ export const addRoomEndpoints = <
     providesTags: (result) => (result ? [{ type: Tag.Tariff, id: result.id }] : []),
   }),
   getRoomEventInfo: builder.query<EventInfo, RoomEventInfo>({
-    query: ({ id, inviteCode }) => {
+    query: ({ id }) => {
       const queryPayload: FetchArgs = {
         url: `rooms/${id}/event`,
       };
-      if (inviteCode) {
-        queryPayload.headers = {
-          authorization: `InviteCode ${inviteCode}`,
-        };
-      }
       return queryPayload;
     },
     providesTags: (result) => (result ? [{ type: Tag.Room, id: result.id }] : []),
@@ -107,33 +99,6 @@ export const addRoomEndpoints = <
       { type: Tag.Room, id },
       { type: Tag.Room, id: 'PARTIAL-LIST' },
     ],
-  }),
-  /**
-   * Create an inviteId for a room
-   */
-  createRoomInvite: builder.mutation<RoomInvite, { id: RoomId } & CreateRoomInvitePayload>({
-    query: ({ id, ...payload }) => ({
-      url: `rooms/${id}/invites`,
-      method: 'POST',
-      body: snakecaseKeys(payload),
-    }),
-    invalidatesTags: (result, error, { id }) => [
-      { type: Tag.RoomInvite, id },
-      { type: Tag.RoomInvite, id: 'PARTIAL-LIST' },
-    ],
-  }),
-  /**
-   * get all invites for a room
-   */
-  getRoomInvites: builder.query<RoomInvites, { roomId: RoomId }>({
-    query: ({ roomId }) => `rooms/${roomId}/invites`,
-    providesTags: (result) =>
-      result
-        ? [
-            ...result.map(({ inviteCode }) => ({ type: Tag.RoomInvite, id: inviteCode })),
-            { type: Tag.RoomInvite, id: 'PARTIAL-LIST' },
-          ]
-        : [{ type: Tag.RoomInvite, id: 'PARTIAL-LIST' }],
   }),
   /**
    * get all assets for a room

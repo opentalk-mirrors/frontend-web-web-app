@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { BackendModules, CoreFeatures, InviteCode, SipId } from '@opentalk/rest-api-rtk-query';
+import { BackendModules, CoreFeatures, SipId } from '@opentalk/rest-api-rtk-query';
 import { MeetingDetails } from '@opentalk/rest-api-rtk-query/src/types/event';
 import { screen, fireEvent } from '@testing-library/react';
 import { Mock } from 'vitest';
@@ -23,8 +23,7 @@ const DEFAULT_PASSWORD = 'Password123';
 const DEFAULT_CALL_IN_ID = '123456' as SipId;
 const DEFAULT_CALL_IN_TEL = '+1234567890';
 const DEFAULT_CALL_IN_PASSWORD = 'Password456';
-const defaultMeeingDetails: MeetingDetails = {
-  inviteCodeId: '12345' as InviteCode,
+const defaultMeetingDetails: MeetingDetails = {
   callIn: {
     id: DEFAULT_CALL_IN_ID,
     tel: DEFAULT_CALL_IN_TEL,
@@ -37,7 +36,7 @@ const defaultMeeingDetails: MeetingDetails = {
     },
   ],
 };
-const mockInviteUrl = new URL('https://example.com/meeting');
+const mockMeetingLink = new URL('https://example.com/meeting');
 
 describe('message creation', () => {
   let clipboardWriteTextOriginal: Clipboard['writeText'];
@@ -95,8 +94,8 @@ describe('message creation', () => {
     const defaultProps: MeetingDetailsDialogActionsProps = {
       title: DEFAULT_TITLE,
       roomPassword: DEFAULT_PASSWORD,
-      meetingDetails: defaultMeeingDetails,
-      inviteUrl: mockInviteUrl,
+      meetingDetails: defaultMeetingDetails,
+      meetingLink: mockMeetingLink,
     };
 
     const setup = async (
@@ -127,34 +126,34 @@ describe('message creation', () => {
     });
 
     describe('participation means section', () => {
-      it('prints "you can join..." if guests are allowed, invite link is provided, call-in and streaming exist', async () => {
+      it('prints "you can join..." if guests are allowed, call-in and streaming exist', async () => {
         const clipboardArg = await setup();
         expect(clipboardArg).toContain(`meeting-details-dialog-join-line`);
         expect(clipboardArg).not.toContain(`meeting-details-dialog-join-prohibited-line`);
       });
-      it('prints "you can join..." if guests are allowed, invite link is provided, call-in exists and streaming does not exist', async () => {
+      it('prints "you can join..." if guests are allowed, call-in exists and streaming does not exist', async () => {
         const clipboardArg = await setup(defaultInitialState, {
           ...defaultProps,
           meetingDetails: {
-            ...defaultMeeingDetails,
+            ...defaultMeetingDetails,
             streamingLinks: [],
           },
         });
         expect(clipboardArg).toContain(`meeting-details-dialog-join-line`);
         expect(clipboardArg).not.toContain(`meeting-details-dialog-join-prohibited-line`);
       });
-      it('prints "you can join..." if guests are allowed, invite link is provided, call-in does not exist and streaming exists', async () => {
+      it('prints "you can join..." if guests are allowed, call-in does not exist and streaming exists', async () => {
         const clipboardArg = await setup(defaultInitialState, {
           ...defaultProps,
           meetingDetails: {
-            ...defaultMeeingDetails,
+            ...defaultMeetingDetails,
             callIn: undefined,
           },
         });
         expect(clipboardArg).toContain(`meeting-details-dialog-join-line`);
         expect(clipboardArg).not.toContain(`meeting-details-dialog-join-prohibited-line`);
       });
-      it('prints "guest access prohibited..." if guests are not allowed, invite link is provided, call-in and streaming do not exist', async () => {
+      it('prints "guest access prohibited..." if guests are not allowed, call-in and streaming do not exist', async () => {
         const clipboardArg = await setup(
           {
             ...defaultInitialState,
@@ -163,7 +162,7 @@ describe('message creation', () => {
           {
             ...defaultProps,
             meetingDetails: {
-              ...defaultMeeingDetails,
+              ...defaultMeetingDetails,
               callIn: undefined,
               streamingLinks: [],
             },
@@ -172,71 +171,52 @@ describe('message creation', () => {
         expect(clipboardArg).not.toContain(`meeting-details-dialog-join-line`);
         expect(clipboardArg).toContain(`meeting-details-dialog-join-prohibited-line`);
       });
-      it('prints "guest access prohibited..." if guests are allowed, invite link is not provided, call-in and streaming do not exist', async () => {
+      it('prints "guest access prohibited..." if guests are allowed, meeting link is not provided, call-in and streaming do not exist', async () => {
         const clipboardArg = await setup(defaultInitialState, {
           ...defaultProps,
-          inviteUrl: undefined,
+          meetingLink: undefined,
           meetingDetails: {
-            ...defaultMeeingDetails,
+            ...defaultMeetingDetails,
             callIn: undefined,
             streamingLinks: [],
           },
         });
-        expect(clipboardArg).not.toContain(`meeting-details-dialog-join-line`);
-        expect(clipboardArg).toContain(`meeting-details-dialog-join-prohibited-line`);
-      });
-      it('prints "guest access prohibited..." if guests are not allowed, invite link is not provided, call-in and streaming do not exist', async () => {
-        const clipboardArg = await setup(
-          {
-            ...defaultInitialState,
-            config: { enabledModules: {} },
-          },
-          {
-            ...defaultProps,
-            meetingDetails: {
-              ...defaultMeeingDetails,
-              callIn: undefined,
-              streamingLinks: [],
-            },
-            inviteUrl: undefined,
-          }
-        );
         expect(clipboardArg).not.toContain(`meeting-details-dialog-join-line`);
         expect(clipboardArg).toContain(`meeting-details-dialog-join-prohibited-line`);
       });
     });
 
-    describe('invite link', () => {
-      it('is printed if guests are allowed and invite link is provided', async () => {
+    describe('meeting link', () => {
+      it('is printed if guests are allowed and meeting link is provided', async () => {
         const clipboardArg = await setup();
         expect(clipboardArg).toContain(`global-meeting-link`);
-        expect(clipboardArg).toContain(mockInviteUrl.toString());
+        expect(clipboardArg).toContain(mockMeetingLink.toString());
       });
-      it('is not printed if guests are not allowed and invite link is provided', async () => {
+      it('is not printed if guests are not allowed and meeting link is provided', async () => {
         const clipboardArg = await setup({
           ...defaultInitialState,
           config: { enabledModules: {} },
         });
         expect(clipboardArg).not.toContain(`global-meeting-link`);
-        expect(clipboardArg).not.toContain(mockInviteUrl.toString());
+        expect(clipboardArg).not.toContain(mockMeetingLink.toString());
       });
-      it('is not printed if guests are allowed and no invite link is provided', async () => {
+      it('is not printed if guests are allowed and no meeting link is provided', async () => {
         const clipboardArg = await setup(defaultInitialState, {
           ...defaultProps,
-          inviteUrl: undefined,
+          meetingLink: undefined,
         });
         expect(clipboardArg).not.toContain(`global-meeting-link`);
-        expect(clipboardArg).not.toContain(mockInviteUrl.toString());
+        expect(clipboardArg).not.toContain(mockMeetingLink.toString());
       });
     });
 
     describe('password', () => {
-      it('is printed if guests are allowed, invite link is provided and password is provided', async () => {
+      it('is printed if guests are allowed and password is provided', async () => {
         const clipboardArg = await setup();
         expect(clipboardArg).toContain(`global-password`);
         expect(clipboardArg).toContain(DEFAULT_PASSWORD);
       });
-      it('is not printed if guests are allowed, invite link is provided and empty password is provided', async () => {
+      it('is not printed if guests are allowed and empty password is provided', async () => {
         const clipboardArg = await setup(defaultInitialState, {
           ...defaultProps,
           roomPassword: '',
@@ -244,7 +224,7 @@ describe('message creation', () => {
         expect(clipboardArg).not.toContain(`global-password`);
         expect(clipboardArg).not.toContain(DEFAULT_PASSWORD);
       });
-      it('is not printed if guests are not allowed, invite link is provided and password is provided', async () => {
+      it('is not printed if guests are not allowed and password is provided', async () => {
         const clipboardArg = await setup({
           ...defaultInitialState,
           config: { enabledModules: {} },
@@ -252,10 +232,10 @@ describe('message creation', () => {
         expect(clipboardArg).not.toContain(`global-password`);
         expect(clipboardArg).not.toContain(DEFAULT_PASSWORD);
       });
-      it('is not printed if guests are allowed, no invite link is provided and password is provided', async () => {
+      it('is not printed if guests are allowed, no meeting link is provided and password is provided', async () => {
         const clipboardArg = await setup(defaultInitialState, {
           ...defaultProps,
-          inviteUrl: undefined,
+          meetingLink: undefined,
         });
         expect(clipboardArg).not.toContain(`global-password`);
         expect(clipboardArg).not.toContain(DEFAULT_PASSWORD);

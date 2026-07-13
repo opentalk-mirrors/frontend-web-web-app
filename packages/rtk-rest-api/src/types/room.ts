@@ -73,26 +73,8 @@ export type RoomSipConfigResponse = {
 
 export type RoomAssets = Array<BaseAsset>;
 
-export type RoomInvite = {
-  inviteCode: InviteCode;
-  room: string;
-  active: boolean;
-  expiration: DateTime | null;
-  created: DateTime;
-  createdBy: BaseUser;
-  updated: DateTime;
-  updatedBy: BaseUser;
-};
-
-export type RoomInvites = Array<RoomInvite>;
-
-export type CreateRoomInvitePayload = {
-  expiration?: DateTime;
-};
-
 export type RoomEventInfo = {
   id: RoomId;
-  inviteCode?: InviteCode;
 };
 
 export type CreateRoomAssetPayload = {

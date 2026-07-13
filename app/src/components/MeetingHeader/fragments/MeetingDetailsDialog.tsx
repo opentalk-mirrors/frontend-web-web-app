@@ -46,11 +46,12 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
   const { createdBy: roomOwner, password: roomPassword } = roomInfo;
   const baseUrl = useAppSelector(selectBaseUrl);
   const guestAccessEnabled = useAppSelector(selectGuestAccessEnabled);
-  const inviteUrl = roomId ? composeInviteUrl(baseUrl, roomId, meetingDetails?.inviteCodeId) : null;
+  const highSecurityEnabled = useAppSelector(selectE2EEncryption);
+  // With the unified room link, guests join through the same link as invited participants.
+  const meetingLink = roomId ? composeInviteUrl(baseUrl, roomId) : null;
   const streamingLinksExist = meetingDetails !== undefined && meetingDetails.streamingLinks.length > 0;
 
   const getRoomOwnerNameString = () => `${roomOwner.firstname} ${roomOwner.lastname}`;
-  const highSecurityEnabled = useAppSelector(selectE2EEncryption);
 
   const renderStreamingLinks = (streamingLinks: StreamingLink[]) => (
     <>
@@ -62,7 +63,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
           value={streamingLink.url}
           ariaLabel={getAriaLabelText(FieldKeys.LivestreamLink, streamingLink.name)}
           notificationText={getNotificationText(FieldKeys.LivestreamLink)}
-          checked={inviteUrl ? copiedUrl === streamingLink.url : false}
+          checked={copiedUrl === streamingLink.url}
           onClick={() => setCopiedUrl(streamingLink.url)}
         />
       ))}
@@ -117,14 +118,12 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
         <Stack spacing={2}>
           {!highSecurityEnabled && (
             <CustomCopyTextField
-              label={getLabelText(meetingDetails?.inviteCodeId ? FieldKeys.InviteLink : FieldKeys.MeetingLink)}
-              value={inviteUrl?.toString()}
-              ariaLabel={getAriaLabelText(meetingDetails?.inviteCodeId ? FieldKeys.InviteLink : FieldKeys.MeetingLink)}
-              notificationText={getNotificationText(
-                meetingDetails?.inviteCodeId ? FieldKeys.InviteLink : FieldKeys.MeetingLink
-              )}
-              checked={inviteUrl ? copiedUrl === inviteUrl.toString() : false}
-              onClick={() => setCopiedUrl(inviteUrl?.toString())}
+              label={getLabelText(FieldKeys.MeetingLink)}
+              value={meetingLink?.toString()}
+              ariaLabel={getAriaLabelText(FieldKeys.MeetingLink)}
+              notificationText={getNotificationText(FieldKeys.MeetingLink)}
+              checked={meetingLink ? copiedUrl === meetingLink.toString() : false}
+              onClick={() => setCopiedUrl(meetingLink?.toString())}
             />
           )}
           {sipLink && guestAccessEnabled && (
@@ -133,7 +132,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
               value={sipLink}
               ariaLabel={getAriaLabelText(FieldKeys.SipLink)}
               notificationText={getNotificationText(FieldKeys.SipLink)}
-              checked={inviteUrl ? copiedUrl === sipLink : false}
+              checked={copiedUrl === sipLink}
               onClick={() => setCopiedUrl(sipLink)}
             />
           )}
@@ -143,7 +142,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
               value={roomPassword}
               ariaLabel={getAriaLabelText(FieldKeys.RoomPassword)}
               notificationText={getNotificationText(FieldKeys.RoomPassword)}
-              checked={inviteUrl ? copiedUrl === roomPassword : false}
+              checked={copiedUrl === roomPassword}
               onClick={() => setCopiedUrl(roomPassword)}
             />
           )}
@@ -154,7 +153,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
         title={title}
         roomPassword={roomPassword}
         meetingDetails={meetingDetails}
-        inviteUrl={inviteUrl}
+        meetingLink={meetingLink}
         guestAccessEnabled={guestAccessEnabled}
       />
     </Dialog>

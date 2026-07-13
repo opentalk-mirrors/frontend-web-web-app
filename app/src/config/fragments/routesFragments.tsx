@@ -9,12 +9,13 @@ import { Outlet, To, useLocation, useNavigate, useParams } from 'react-router-do
 
 import Error from '../../components/Error';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useInviteCode } from '../../hooks/useInviteCode';
 import log from '../../logger';
 import { selectUiMode, setUiMode, UiMode } from '../../store/slices/uiSlice';
 import { navigateTo } from '../../utils/navigation';
 
-type ProtectedRouteProps = PropsWithChildren;
+type ProtectedRouteProps = PropsWithChildren<{
+  allowGuests?: boolean;
+}>;
 
 export const AuthRedirect = ({ label }: { label: string }) => {
   return (
@@ -39,17 +40,16 @@ export const Redirect = ({ to }: { to: To }) => {
   return null;
 };
 
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({ children, allowGuests = false }: ProtectedRouteProps) => {
   const auth = useAuthContext();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isAuthPending = useAppSelector(selectAuthIsPending);
-  const inviteCode = useInviteCode();
 
   if (isAuthPending) {
     return null;
   }
 
-  if (!isAuthenticated && !inviteCode) {
+  if (!isAuthenticated && !allowGuests) {
     auth?.signIn().catch((error) => {
       log.error('failed to signIn:', error);
       navigateTo('server-issue');

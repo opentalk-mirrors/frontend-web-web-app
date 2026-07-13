@@ -70,7 +70,6 @@ describe('Room title', () => {
             title: 'some title',
           },
           meetingDetails: {
-            inviteCode: 'invite this',
             streamingLinks: [
               {
                 name: 'twitch',

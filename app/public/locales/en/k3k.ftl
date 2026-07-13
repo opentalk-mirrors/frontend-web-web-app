@@ -25,9 +25,6 @@ error-access-forbidden = You cannot join the meeting. Either the meeting link is
 signaling-subscription-failed = The connection to a participant failed.
 media-subscription-failed = No connection to the participant
 
-error-invalid-invitation-code = This invite code is invalid
-
-error-invalid-invitation-link = This invitation link is invalid
 
 error-system-currently-unavailable = The system is currently unavailable, please try again later.
 error-unauthorized = Unfortunately you do not have access, please contact the meeting moderator.
@@ -276,7 +273,6 @@ toolbar-button-end-call-tooltip-title = Leave Call
 toolbar-button-screen-share-tooltip-request-moderator-presenter-role = Ask a moderator to allow to share your screen
 
 more-menu-leave-call = Leave Call
-more-menu-create-invite = Invite guest
 more-menu-start-recording = Start recording
 more-menu-stop-recording = Stop recording
 more-menu-pause-recording = Pause recording
@@ -389,13 +385,6 @@ debriefing-session-ended-for-all-notification = The conference is ended for all.
 media-received-request-mute-ok = Mute
 media-received-force-mute = You were muted by {$origin}.
 media-received-request-mute = {$origin} requested to mute your self.
-
-dialog-invite-guest-title = Invite guest
-dialog-invite-guest-expiration-date = Expiration date
-dialog-invite-guest-no-expiration = No expiration date
-dialog-invite-guest-expiration-date-error = Expiration date must be at least 5 minutes from current time
-dialog-invite-guest-button-copy = Copy to Clipboard
-dialog-invite-guest-button-submit = Create
 
 statistics-video = video resolution
 statistics-fps = frame rate
@@ -750,7 +739,6 @@ global-me = Me
 global-copy = Copy
 global-copied = Copied
 global-copy-link-success = The link was copied to your clipboard
-global-copy-permanent-guest-link-error = No permanent guest link for this meeting has been created yet! Please, open the "Participants" section of this meeting and copy guest link from there.
 global-textfield-max-characters = {$remainingCharacters} characters remaining
 global-duration = Duration
 global-title = Title
@@ -918,8 +906,6 @@ dashboard-meeting-card-popover-decline = Decline
 dashboard-meeting-card-popover-decline-label = Decline {$title}
 dashboard-meeting-card-popover-copy-link = Copy Meeting-Link
 dashboard-meeting-card-popover-copy-link-label = Copy Meeting-Link for {$title}
-dashboard-meeting-card-popover-copy-guest-link = Copy Guest-Link
-dashboard-meeting-card-popover-copy-guest-link-label = Copy Guest-Link for {$title}
 
 dashboard-meeting-card-delete-dialog-title = Delete meeting
 dashboard-meeting-card-delete-dialog-message = Do you really want to delete the meeting "{$subject}" for all?
@@ -961,10 +947,6 @@ dashboard-invite-to-meeting-room-link-tooltip = Only for registered users
 dashboard-invite-to-meeting-sip-link-label = Phone Dial-in
 dashboard-invite-to-meeting-copy-sip-link-aria-label = Copy Phone Dial-in credentials for {$eventTitle}
 dashboard-invite-to-meeting-copy-sip-link-success = The Phone Dial-in was copied to your clipboard
-dashboard-invite-to-meeting-guest-link-label = Guest-Link
-dashboard-invite-to-meeting-copy-guest-link-aria-label = Copy guest room link for {$eventTitle}
-dashboard-invite-to-meeting-copy-guest-link-success = The link was copied to your clipboard
-dashboard-invite-to-meeting-guest-link-tooltip = For guests without an account
 dashboard-invite-to-meeting-room-password-label = Password
 dashboard-invite-to-meeting-copy-room-password-aria-label = Copy Room password for {$eventTitle}
 dashboard-invite-to-meeting-copy-room-password-success = The password was copied to your clipboard
@@ -1164,18 +1146,15 @@ meeting-delete-metadata-submit-error =
 meeting-delete-successfully-deleted = Meeting has been deleted.
 
 meeting-details-dialog-copy-success = Details were copied to your clipboard
-meeting-details-dialog-copy-invite-link-success = The link was copied to your clipboard
 meeting-details-dialog-copy-meeting-link-success = The link was copied to your clipboard
 meeting-details-dialog-copy-livestream-link-success = The link was copied to your clipboard
 meeting-details-dialog-copy-room-password-success = The password was copied to your clipboard
 meeting-details-dialog-copy-sip-link-success = The telephone dial-in was copied to the clipboard
 meeting-details-dialog-label-sip-link = Dial-in Number
-meeting-details-dialog-label-invite-link = Invite Link
 meeting-details-dialog-label-meeting-link = Meeting Link
 meeting-details-dialog-label-room-password = Password
 meeting-details-dialog-label-livestream-link = Streaming-Links
 meeting-details-dialog-aria-label-sip-link = Copy Dial-in Number for {$eventTitle}
-meeting-details-dialog-aria-label-invite-link = Copy Invite Link for {$eventTitle}
 meeting-details-dialog-aria-label-meeting-link = Copy Meeting Link for {$eventTitle}
 meeting-details-dialog-aria-label-room-password = Copy Password for {$eventTitle}
 meeting-details-dialog-aria-label-livestream-link = Copy {$name} Streaming-Link for {$eventTitle}

@@ -5,7 +5,7 @@ import { Opaque } from 'type-fest';
 
 import { CallIn, DateTimeWithTimezone, EntityBase, InviteStatus } from './common';
 import { EventInvite } from './eventInvite';
-import { InviteCode, RoomId } from './room';
+import { RoomId } from './room';
 import { StreamingTarget } from './streaming';
 
 export type EventId = Opaque<string, 'eventId'>;
@@ -301,7 +301,6 @@ export interface StreamingLink {
 }
 
 export interface MeetingDetails {
-  inviteCodeId?: InviteCode;
   callIn?: CallIn;
   streamingLinks: StreamingLink[];
 }

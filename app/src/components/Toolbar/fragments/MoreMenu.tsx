@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import {
   BackendModules,
-  CoreFeatures,
   RecordingFeatures,
   StreamingStatus,
   TranscriptionFeatures,
@@ -45,7 +44,6 @@ import {
 } from '../../../api/types/outgoing/streaming';
 import { disablePresenceLogging, enablePresenceLogging } from '../../../api/types/outgoing/trainingParticipationReport';
 import {
-  AddUserIcon,
   AttendanceReportIcon,
   ChatOffIcon,
   CloseIcon,
@@ -96,7 +94,7 @@ import {
 } from '../../../store/slices/moderationSlice';
 import { selectAllModeratorParticipants } from '../../../store/slices/participantsSlice';
 import { selectReactionRestrictionsEnabled } from '../../../store/slices/reactionSlice';
-import { selectE2EEncryption, selectIsRoomOwner } from '../../../store/slices/roomSlice';
+import { selectIsRoomOwner } from '../../../store/slices/roomSlice';
 import {
   selectActiveStreamIds,
   selectInactiveStreamIds,
@@ -123,7 +121,6 @@ import { ParticipantId } from '../../../types';
 import { WaitingRoom } from '../../../types/common';
 import { isDevMode } from '../../../utils/devMode';
 import DisableGuestAccessDialog from './DisableGuestAccessDialog';
-import InviteGuestDialog from './InviteGuestDialog';
 import SubmenuMenuItem, { type SubmenuEntry } from './SubMenuItem';
 import SubtitleSettingsDialog from './SubtitleSettingsDialog';
 import { ToolbarMenu, ToolbarMenuItem, ToolbarMenuProps } from './ToolbarMenuUtils';
@@ -158,7 +155,6 @@ const Divider = styled(MuiDivider)({
 });
 
 const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
-  const [showInviteModal, setShowInviteModal] = useState(false);
   const [showDisableGuestAccessModal, setShowDisableGuestAccessModal] = useState(false);
   const showSubtitleSettings = useAppSelector(selectShowSubtitlesSettings);
 
@@ -200,13 +196,8 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     selectIsModuleEnabled(BackendModules.TrainingParticipationReport)
   );
   const isTrainingParticipationReportEnabled = useAppSelector(selectTrainingParticipationReportEnabled);
-  const highSecurityEnabled = useAppSelector(selectE2EEncryption);
   const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
   const guestAccessEnabled = useAppSelector(selectGuestAccessEnabled);
-  const isGuestsAllowedFeatureEnabled = useAppSelector(
-    selectIsFeatureEnabled(BackendModules.Core, CoreFeatures.GuestsAllowed)
-  );
-  const isGuestAccessFeatureAvailable = isGuestsAllowedFeatureEnabled && !highSecurityEnabled;
   const { storageStatus, canUpgrade } = useStorageStatus();
 
   const withGuestAccessDisabledTooltip = (key: string, children: React.ReactNode) => (
@@ -255,19 +246,6 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
       <span>{children}</span>
     </Tooltip>
   );
-
-  const inviteGuestItem: MenuEntry = {
-    label: 'more-menu-create-invite',
-    action: () => {
-      setShowInviteModal(true);
-      onClose();
-    },
-    icon: <AddUserIcon />,
-    disabled: !guestAccessEnabled,
-    tooltip: guestAccessEnabled
-      ? undefined
-      : (children) => withGuestAccessDisabledTooltip('more-menu-create-invite', children),
-  };
 
   const toggleWaitingRoomItem: MenuEntry = {
     label: 'more-menu-manage-waiting-room',
@@ -489,9 +467,6 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   if (isRoomOwner) {
     if (isTrainingParticipationReportModuleOn) {
       moderatorMenuItems.push(togglePresenceLogging);
-    }
-    if (isGuestAccessFeatureAvailable) {
-      moderatorMenuItems.push(inviteGuestItem);
     }
   }
 
@@ -783,7 +758,6 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
           {isDevMode() && renderMenuItems(devMenuItems)}
         </MenuList>
       </ToolbarMenu>
-      <InviteGuestDialog open={showInviteModal} onClose={() => setShowInviteModal(false)} />
       <SubtitleSettingsDialog open={showSubtitleSettings} onClose={() => hideTranscriptionSettings()} />
       <DisableGuestAccessDialog
         open={showDisableGuestAccessModal}

@@ -3,10 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Mock } from 'vitest';
 
-import { useInviteCode } from '../../../hooks/useInviteCode';
-import { mockStore, renderWithProviders } from '../../../utils/testUtils';
+import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MeetingEndedDialog from './MeetingEndedDialog';
 
 const mockNavigate = vi.fn();
@@ -15,18 +13,13 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock('../../../hooks/useInviteCode', () => ({
-  useInviteCode: vi.fn(),
-}));
-
 describe('MeetingEndedDialog', () => {
-  const { store } = mockStore(0);
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('calls navigate when button is clicked', async () => {
+    const { store } = configureStore({ initialState: { auth: { state: 'authorized' } } });
     renderWithProviders(<MeetingEndedDialog />, {
       store,
       provider: { mui: true, snackbar: true },
@@ -39,6 +32,7 @@ describe('MeetingEndedDialog', () => {
   });
 
   it('cannot be closed by pressing escape', async () => {
+    const { store } = configureStore({ initialState: { auth: { state: 'authorized' } } });
     renderWithProviders(<MeetingEndedDialog />, {
       store,
       provider: { mui: true },
@@ -51,6 +45,7 @@ describe('MeetingEndedDialog', () => {
   });
 
   it('cannot be closed by clicking outside', async () => {
+    const { store } = configureStore({ initialState: { auth: { state: 'authorized' } } });
     renderWithProviders(<MeetingEndedDialog />, {
       store,
       provider: { mui: true },
@@ -62,8 +57,8 @@ describe('MeetingEndedDialog', () => {
     expect(title).toBeInTheDocument();
   });
 
-  it('shows no button when invite code is present', () => {
-    (useInviteCode as Mock).mockReturnValue('some-code');
+  it('shows no button for guests (not authenticated)', () => {
+    const { store } = configureStore({ initialState: { auth: { state: 'anonymous' } } });
     renderWithProviders(<MeetingEndedDialog />, {
       store,
       provider: { mui: true },

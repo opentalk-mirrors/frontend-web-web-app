@@ -2,10 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
+import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { EventId, RecordingStatus, StreamStatus } from '@opentalk/rest-api-rtk-query';
 import { Trans } from 'react-i18next';
 
-import { useInviteCode } from '../../hooks/useInviteCode';
+import { useAppSelector } from '../../hooks';
 
 const Link = styled('a')(({ theme }) => ({
   color: theme.palette.common.white,
@@ -40,8 +41,8 @@ export interface RecordingNotificationProps {
 
 export const RecordingUpdatedNotification = ({ status, eventId }: RecordingNotificationProps) => {
   const i18nKey = `recording-${status}-message`;
-  const inviteCode = useInviteCode();
-  const isGuest = inviteCode !== undefined;
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isGuest = !isAuthenticated;
 
   // For non-guests when a recording stops, show a link to the meeting details
   if (status === RecordingStatus.Inactive && !isGuest && eventId) {
