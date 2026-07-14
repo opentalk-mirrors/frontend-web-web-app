@@ -17,6 +17,7 @@ import BugIcon from './BugIcon';
 import BurgermenuIcon from './BurgermenuIcon';
 import CameraOffIcon from './CameraOffIcon';
 import CameraOnIcon from './CameraOnIcon';
+import ChatOffIcon from './ChatOffIcon';
 import CheckIcon from './CheckIcon';
 import ClockIcon from './ClockIcon';
 import CloseIcon from './CloseIcon';
@@ -31,6 +32,7 @@ import DebriefingIcon from './DebriefingIcon';
 import DoneIcon from './DoneIcon';
 import DurationIcon from './DurationIcon';
 import EditIcon from './EditIcon';
+import EditOffIcon from './EditOffIcon';
 import EmojiIcon from './EmojiIcon';
 import EncryptedMessagesIcon from './EncryptedMessagesIcon';
 import EndCallIcon from './EndCallIcon';
@@ -130,6 +132,7 @@ export {
   BurgermenuIcon,
   CameraOffIcon,
   CameraOnIcon,
+  ChatOffIcon,
   CheckIcon,
   ClockIcon,
   CloseIcon,
@@ -144,6 +147,7 @@ export {
   DoneIcon,
   DurationIcon,
   EditIcon,
+  EditOffIcon,
   EmojiIcon,
   EncryptedMessagesIcon,
   EndCallIcon,
