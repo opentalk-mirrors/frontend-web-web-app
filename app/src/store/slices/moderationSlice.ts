@@ -17,6 +17,7 @@ export type ModerationState = {
   selfRenameEnabled: boolean;
   waitingRoom: WaitingRoom;
   guestAccessEnabled: boolean;
+  debriefingStarted: boolean;
 };
 
 const initialState: ModerationState = {
@@ -30,6 +31,7 @@ const initialState: ModerationState = {
   selfRenameEnabled: false,
   waitingRoom: WaitingRoom.Disabled,
   guestAccessEnabled: true,
+  debriefingStarted: false,
 };
 
 export const moderationSlice = createSlice({
@@ -97,11 +99,15 @@ export const moderationSlice = createSlice({
       state.waitingRoom = moderatorData.waitingRoom;
       state.guestAccessEnabled = moderatorData.guestAccess;
     },
+    setDebriefingStarted: (state, { payload }: PayloadAction<boolean>) => {
+      state.debriefingStarted = payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload }) => {
       state.waitingRoom = payload.moderation?.waitingRoom ?? WaitingRoom.Disabled;
       state.guestAccessEnabled = payload.moderation?.guestAccess ?? true;
+      state.debriefingStarted = false;
 
       if (payload.trainingParticipationReport) {
         state.trainingParticipationReportEnabled =
@@ -147,6 +153,7 @@ export const {
   setWaitingRoomState,
   setGuestAccessEnabled,
   setModeratorData,
+  setDebriefingStarted,
 } = moderationSlice.actions;
 export const actions = moderationSlice.actions;
 
@@ -166,5 +173,6 @@ export const selectSelfRenameEnabled = (state: RootState) => state.moderation.se
 export const selectWaitingRoomState = (state: RootState) => state.moderation.waitingRoom;
 export const selectIsWaitingRoomActive = (state: RootState) => state.moderation.waitingRoom !== WaitingRoom.Disabled;
 export const selectGuestAccessEnabled = (state: RootState) => state.moderation.guestAccessEnabled;
+export const selectDebriefingStarted = (state: RootState) => state.moderation.debriefingStarted;
 
 export default moderationSlice.reducer;
