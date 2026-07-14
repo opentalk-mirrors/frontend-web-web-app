@@ -15,7 +15,6 @@ import {
   setAsActiveSpeaker,
   setAsInactiveSpeaker,
 } from '../../store/slices/automodSlice';
-import { selectAudioEnabled } from '../../store/slices/livekitSlice';
 import { selectParticipantsTotal } from '../../store/slices/participantsSlice';
 import { AutomodSelectionStrategy } from '../../types';
 import { AutomodEventType } from '../types/incoming/automod';
@@ -83,9 +82,6 @@ export const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventTy
 
       break;
     }
-    // case 'start_animation':
-    //   dispatch(slotStore.initLottery({ winner: data.result, pool: data.pool }));
-    //   break;
     case 'remaining_updated':
       dispatch(automodRemainingUpdated(data));
       break;
@@ -116,23 +112,18 @@ export const handleAutomodMessage = (dispatch: AppDispatch, data: AutomodEventTy
           isLastSpeaker: Boolean(data.remaining && data.remaining.length === 0),
           key: unmutedId,
         } as const;
-        const isMicrophoneEnabled = selectAudioEnabled(state);
-        if (isMicrophoneEnabled) {
-          notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
-        } else {
-          notifications.showTalkingStickMutedNotification({
-            onUnmute: async () => {
-              notifications.close(currentId);
-              dispatch(changeMedia({ kind: 'audioinput', enabled: true }));
-              notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
-            },
-            onNext: () => {
-              dispatch(automod.pass.action());
-              notifications.close(currentId);
-            },
-            key: currentId,
-          });
-        }
+        notifications.showTalkingStickMutedNotification({
+          onUnmute: async () => {
+            notifications.close(currentId);
+            dispatch(changeMedia({ kind: 'audioinput', enabled: true }));
+            notifications.showTalkingStickUnmutedNotification(unmutedNotificationOptions);
+          },
+          onNext: () => {
+            dispatch(automod.pass.action());
+            notifications.close(currentId);
+          },
+          key: currentId,
+        });
       }
       dispatch(automodSpeakerUpdated(data));
       break;
