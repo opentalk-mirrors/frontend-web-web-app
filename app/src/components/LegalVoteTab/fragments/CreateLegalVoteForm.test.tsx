@@ -186,4 +186,44 @@ describe('CreateLegalVoteForm', () => {
 
     expect(screen.getByRole('button', { name: 'legal-vote-form-button-continue' })).toBeDisabled();
   });
+
+  it('disables starting the vote when storage usage reaches the disabled threshold', async () => {
+    const participant = mockedParticipant(0);
+    const { store } = configureStore({
+      initialState: {
+        participants: {
+          ids: [participant.id],
+          entities: { [participant.id]: participant },
+        },
+        config: {
+          enabledModules: {},
+          provider: { active: false },
+          tariff: {
+            id: '',
+            name: '',
+            quotas: { maxStorage: 100 },
+            usedQuota: { maxStorage: 99 },
+            disabledFeatures: [],
+          },
+        },
+      },
+    });
+    const user = userEvent.setup({ delay: null });
+
+    renderWithProviders(
+      <CreateLegalVoteForm initialValues={buildInitialValues()} onClose={vi.fn()} isCoffeeBreakActive={false} />,
+      { store, provider: { mui: true } }
+    );
+
+    await user.type(screen.getByPlaceholderText('legal-vote-title-placeholder'), 'Board Vote');
+    await user.type(screen.getByPlaceholderText('legal-vote-topic-placeholder'), 'Approve minutes');
+    await user.click(screen.getByRole('button', { name: 'legal-vote-form-button-continue' }));
+
+    const selectAllButton = await screen.findByRole('button', {
+      name: 'poll-participant-list-button-select-all',
+    });
+    await user.click(selectAllButton);
+
+    expect(await screen.findByRole('button', { name: 'poll-participant-list-button-start' })).toBeDisabled();
+  });
 });

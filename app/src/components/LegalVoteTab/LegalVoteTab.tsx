@@ -6,8 +6,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../hooks';
+import { StorageStatus, useStorageStatus } from '../../hooks/useStorageStatus';
 import { selectSavedLegalVotePerId } from '../../store/slices/legalVoteSlice';
 import { selectCurrentRoomMode } from '../../store/slices/roomSlice';
+import StorageFullTooltip from '../StorageFullTooltip';
 import CreateLegalVoteForm from './fragments/CreateLegalVoteForm';
 import LegalVoteOverview from './fragments/LegalVoteOverview';
 
@@ -23,6 +25,8 @@ const LegalVoteTab = () => {
   const currentRoomMode = useAppSelector(selectCurrentRoomMode);
   const isCoffeeBreakActive = currentRoomMode === 'coffee-break';
   const formValues = useAppSelector((state) => selectSavedLegalVotePerId(state, savedLegalVoteFormId));
+  const { storageStatus } = useStorageStatus();
+  const isStorageFull = storageStatus === StorageStatus.Critical || storageStatus === StorageStatus.Full;
   const { t } = useTranslation();
 
   const handleOnClickSavedLegalVoteItem = (id: number | undefined) => {
@@ -39,9 +43,11 @@ const LegalVoteTab = () => {
     return (
       <LegalVoteOverviewContainer spacing={1}>
         <LegalVoteOverview onClickItem={handleOnClickSavedLegalVoteItem} />
-        <Button onClick={() => setShowLegalVoteForm(true)} color="secondary">
-          {t('legal-vote-overview-button-create-vote')}
-        </Button>
+        <StorageFullTooltip show={isStorageFull}>
+          <Button onClick={() => setShowLegalVoteForm(true)} color="secondary" disabled={isStorageFull} fullWidth>
+            {t('legal-vote-overview-button-create-vote')}
+          </Button>
+        </StorageFullTooltip>
       </LegalVoteOverviewContainer>
     );
   };

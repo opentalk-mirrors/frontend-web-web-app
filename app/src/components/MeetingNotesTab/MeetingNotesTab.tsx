@@ -29,7 +29,7 @@ import { DoneIcon, SearchIcon } from '../../assets/icons';
 import { CommonTextField, ParticipantAvatar } from '../../commonComponents';
 import { showStorageNearLimitNotification } from '../../commonComponents/Notistack/helper';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useStorageStatus } from '../../hooks/useStorageStatus';
+import { useStorageStatus, StorageStatus } from '../../hooks/useStorageStatus';
 import { selectAllMeetingNotesParticipants } from '../../store/selectors';
 import { selectAccountManagementUrl } from '../../store/slices/configSlice';
 import { selectMeetingNotesUrl } from '../../store/slices/meetingNotesSlice';
@@ -230,7 +230,7 @@ const MeetingNotesTab = () => {
     if (!meetingNotesUrl) {
       return null;
     }
-    if (storageStatus === 'full') {
+    if (storageStatus === StorageStatus.Full) {
       return (
         <Tooltip
           placement="top"

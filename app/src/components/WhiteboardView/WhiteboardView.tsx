@@ -37,7 +37,7 @@ import { MeetingNotesIcon, EditIcon } from '../../assets/icons';
 import { notifications } from '../../commonComponents';
 import { showStorageNearLimitNotification } from '../../commonComponents/Notistack/helper';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useStorageStatus } from '../../hooks/useStorageStatus';
+import { useStorageStatus, StorageStatus } from '../../hooks/useStorageStatus';
 import { getCurrentConferenceRoom } from '../../modules/WebRTC/ConferenceRoom';
 import { useAppStore } from '../../store';
 import { selectAccountManagementUrl } from '../../store/slices/configSlice';
@@ -146,7 +146,7 @@ const WhiteboardView = () => {
         <MainMenu.Item
           icon={<MeetingNotesIcon />}
           onSelect={uploadSceneAsPdf}
-          disabled={isUploading || storageStatus === 'full'}
+          disabled={isUploading || storageStatus === StorageStatus.Full}
         >
           {t('whiteboard-create-pdf-button')}
         </MainMenu.Item>
