@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { generatePkceChallenge } from '@opentalk/redux-oidc';
-import { isEmpty } from 'lodash';
 
 import type { ApiErrorWithBody } from '../../api/rest';
 import { StartRoomError } from '../../api/rest';
@@ -20,8 +19,11 @@ import { SignalingSocket, SignalingState } from './SignalingSocket';
  * ### State Machine Graph
  * - Initial -> Setup
  * - Setup -> Starting
+ * - Starting -> Lobby
  * - Starting -> Blocked
- * - Starting -> Waiting ->ReadyToEnter -> Online
+ * - Lobby -> Waiting -> ReadyToEnter -> Online
+ * - Lobby -> Online
+ * - Starting -> Waiting -> ReadyToEnter -> Online
  * - Starting -> Failed
  * - Starting -> Failed-credentials
  * - Starting -> Online
@@ -38,6 +40,7 @@ export enum ConnectionState {
   Initial = 'initial',
   Setup = 'setup',
   Starting = 'starting',
+  Lobby = 'lobby',
   Waiting = 'waiting',
   Online = 'online',
   Leaving = 'leaving',
@@ -179,9 +182,6 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
   public join(displayName: string) {
     if (!this.signaling.isOpen()) {
       throw new Error('can not join room when not connected');
-    }
-    if (isEmpty(displayName)) {
-      throw new Error('displayName must be not empty');
     }
 
     this.participantName = displayName;

@@ -135,33 +135,18 @@ export const apiMiddleware: Middleware = ({
   // matchBuilder acts similar to the builder for reducers and allows us to avoid a lot of if statements.
   const actionsMap = matchBuilder<RootState>((builder) => {
     builder
-      .addCase(
-        startRoom.fulfilled,
-        (
-          _state,
-          {
-            payload: { conferenceContext },
-            meta: {
-              arg: { displayName },
-            },
-          }
-        ) => {
-          const connectedHandler = () => conferenceContext.join(displayName);
-          const messageHandler = onMessage(dispatch, getState);
+      .addCase(startRoom.fulfilled, (_state, { payload: { conferenceContext } }) => {
+        const messageHandler = onMessage(dispatch, getState);
 
-          const shutdownHandler = ({ error }: { error?: number }) => {
-            dispatch(connectionClosed({ errorCode: error }));
-            conferenceContext.removeEventListener('message', messageHandler);
-            conferenceContext.removeEventListener('shutdown', shutdownHandler);
-            conferenceContext.removeEventListener('connected', connectedHandler);
-          };
+        const shutdownHandler = ({ error }: { error?: number }) => {
+          dispatch(connectionClosed({ errorCode: error }));
+          conferenceContext.removeEventListener('message', messageHandler);
+          conferenceContext.removeEventListener('shutdown', shutdownHandler);
+        };
 
-          conferenceContext.addEventListener('message', messageHandler);
-          conferenceContext.addEventListener('shutdown', shutdownHandler);
-
-          conferenceContext.addEventListener('connected', connectedHandler);
-        }
-      )
+        conferenceContext.addEventListener('message', messageHandler);
+        conferenceContext.addEventListener('shutdown', shutdownHandler);
+      })
       .addCase(startRoom.pending, () => {
         const conferenceContext = getCurrentConferenceRoom();
         if (conferenceContext !== undefined) {

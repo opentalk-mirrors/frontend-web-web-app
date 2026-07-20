@@ -6,6 +6,7 @@ export * from './automod';
 export * from './breakout';
 export * from './chat';
 export * from './common';
+export * from './device';
 export * from './timer';
 export * from './matchBuilder';
 export * from './participant';

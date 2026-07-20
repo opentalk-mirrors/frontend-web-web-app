@@ -24,7 +24,13 @@ import {
   waitingRoomJoined,
   waitingRoomLeft,
 } from '../../store/slices/participantsSlice';
-import { roomParametersChanged, enteredWaitingRoom, selectParticipantLimit } from '../../store/slices/roomSlice';
+import {
+  roomParametersChanged,
+  enteredWaitingRoom,
+  joinedLobby,
+  selectLobbyParticipantId,
+  selectParticipantLimit,
+} from '../../store/slices/roomSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import { setEditRestrictions, setWhiteboardAvailable, updateRemoteScene } from '../../store/slices/whiteboardSlice';
 import {
@@ -128,6 +134,7 @@ export const handleRoomServerCoreMessage = async (
     case RoomserverMessageKey.JoinSuccess: {
       const moduleData = data.moduleData;
       const participants = data.participants;
+      const ownParticipantId = selectLobbyParticipantId(state) as ParticipantId;
 
       const participantsReady = participants
         .filter((participant) => participant.moduleData.timer && participant.moduleData.timer.readyStatus === true)
@@ -135,7 +142,7 @@ export const handleRoomServerCoreMessage = async (
 
       const chatEnabled = moduleData.chat.enabled;
       if (!chatEnabled) {
-        dispatch(setChatSettings({ id: data.id, timestamp, enabled: chatEnabled }));
+        dispatch(setChatSettings({ id: ownParticipantId, timestamp, enabled: chatEnabled }));
       }
 
       // handles different connections(tabs) of your own user
@@ -151,7 +158,7 @@ export const handleRoomServerCoreMessage = async (
         const raiseHandsModuleData = moduleData.raiseHands?.state;
 
         participants.push({
-          id: data.id,
+          id: ownParticipantId,
           connections: data.connections,
           moduleData: {
             ...moduleData,
@@ -211,8 +218,7 @@ export const handleRoomServerCoreMessage = async (
       const enabledModules = data.enabledModules;
       dispatch(
         joinSuccess({
-          participantId: data.id,
-          connectionId: data.connectionId,
+          participantId: ownParticipantId,
           avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
           automod: moduleData.automod,
           breakout: moduleData.breakout,
@@ -356,6 +362,12 @@ export const handleRoomServerCoreMessage = async (
     }
     case RoomserverMessageKey.InWaitingRoom: {
       dispatch(enteredWaitingRoom());
+      break;
+    }
+    case RoomserverMessageKey.JoinedLobby: {
+      dispatch(
+        joinedLobby({ canEnter: data.canEnter, displayName: data.displayName, participantId: data.participantId })
+      );
       break;
     }
     case RoomserverMessageKey.JoinedWaitingRoom:

@@ -2,10 +2,16 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { InviteCode } from '@opentalk/rest-api-rtk-query';
-import { screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import {
+  enterRoom as enterRoomCommand,
+  enterWaitingRoom as enterWaitingRoomCommand,
+} from '../../api/types/outgoing/core';
 import * as UseInviteCodeModule from '../../hooks/useInviteCode';
+import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
+import { setDisplayName } from '../../store/slices/userSlice';
 import { ParticipationKind, Role } from '../../types/common';
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import LobbyView from './LobbyView';
@@ -40,7 +46,7 @@ describe('LobbyView', () => {
     initialState: {
       auth: { isAuthed: true },
       user: { loggedIdToken: undefined, role: Role.User, participantKind: ParticipationKind.Guest },
-      room: { passwordRequired: true, invite: { inviteCode: 'inviteCode' } },
+      room: { invite: { inviteCode: 'inviteCode' }, connectionState: ConnectionState.Lobby, canEnter: true },
     },
   });
   afterEach(() => {
@@ -56,26 +62,16 @@ describe('LobbyView', () => {
     expect(form).toBeInTheDocument();
   });
 
-  it('renders the form input fields correctly', () => {
+  it('renders the display name input field correctly', () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
     expect(userNameInput).toBeInTheDocument();
     expect(userNameInput).toHaveAttribute('type', 'text');
     expect(userNameInput).toHaveDisplayValue('Test');
-
-    const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
-    expect(passwordInput).toBeInTheDocument();
-    expect(passwordInput).toHaveAttribute('type', 'password');
-
-    const passVisibilityToggle = screen.getByRole('button', { name: 'toggle-password-visibility' });
-    expect(passVisibilityToggle).toBeInTheDocument();
   });
 
-  it('renders the submit button, which is enabled by default', () => {
-    const useInviteCodeMock = vi.spyOn(UseInviteCodeModule, 'useInviteCode');
-    useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
-
+  it('renders the submit button, enabled once the lobby is reached', () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     const submitButton = screen.getByRole('button', { name: 'joinform-enter-now' });
@@ -83,7 +79,7 @@ describe('LobbyView', () => {
     expect(submitButton).not.toHaveAttribute('disabled');
   });
 
-  it('disables submit button when user is not logged in', () => {
+  it('disables submit button before the lobby is reached', () => {
     const { store } = configureStore({
       initialState: {
         user: { loggedIn: false, role: Role.User },
@@ -96,50 +92,133 @@ describe('LobbyView', () => {
     expect(submitButton).toHaveAttribute('disabled');
   });
 
-  it('submits added values when input fields are filled and submit button is clicked', async () => {
-    const USERNAME = 'lobbyForm testUserName*7';
-    const PASSWORD = 'lobbyFormPassword (*';
-
-    const useInviteCodeMock = vi.spyOn(UseInviteCodeModule, 'useInviteCode');
-    useInviteCodeMock.mockReturnValue('invite-code' as InviteCode);
-    const user = userEvent.setup({ delay: null });
-    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
-
-    const userNameInput = screen.getByPlaceholderText('lobby-name-placeholder');
-    await user.clear(userNameInput);
-    await user.type(userNameInput, USERNAME);
-    expect(userNameInput).toHaveValue(USERNAME);
-
-    const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
-    await user.type(passwordInput, PASSWORD);
-    expect(passwordInput).toHaveValue(PASSWORD);
-
-    /* TODO the startRoom ('room/start/pending') async thunks is undefined here
-    const submitButton = screen.getByRole('button', { name: 'joinform-enter-now' });
-    await userEvent.click(submitButton);
-    await waitFor(() => {
-      expect(dispatch.mock.calls).toContain([
-        [{ payload: undefined, type: 'auth/loaded' }],
-        [{ payload: undefined, type: 'room/start/pending' }],
-      ]);
-    });
-    */
-  });
-
-  it('shows the password when toggle visibility button is clicked', async () => {
-    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
-
-    const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
-    expect(passwordInput).toHaveAttribute('type', 'password');
-
-    const toggleVisibilityBtn = screen.getByRole('button', { name: 'toggle-password-visibility' });
-    await userEvent.click(toggleVisibilityBtn);
-    expect(passwordInput).toHaveAttribute('type', 'text');
-  });
-
   it('prefills name field from displayName', () => {
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     expect(screen.getByPlaceholderText('lobby-name-placeholder')).toHaveDisplayValue('Test');
+  });
+});
+
+describe('LobbyView connect-first WS lobby', () => {
+  const setupLobbyStore = (roomOverrides: Record<string, unknown>) =>
+    configureStore({
+      initialState: {
+        auth: { isAuthed: true },
+        user: { role: Role.User, participantKind: ParticipationKind.Guest },
+        room: { passwordRequired: false, invite: { inviteCode: 'inviteCode' }, ...roomOverrides },
+      },
+    });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it('renders the password field when the room requires a password', () => {
+    const { store } = setupLobbyStore({
+      connectionState: ConnectionState.Lobby,
+      canEnter: true,
+      passwordRequired: true,
+    });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
+    expect(passwordInput).toBeInTheDocument();
+    expect(passwordInput).toHaveAttribute('type', 'password');
+    expect(screen.getByRole('button', { name: 'toggle-password-visibility' })).toBeInTheDocument();
+  });
+
+  it('shows the "enter now" label when the participant may enter directly', () => {
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Lobby, canEnter: true });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    expect(screen.getByRole('button', { name: 'joinform-enter-now' })).toBeEnabled();
+  });
+
+  it('shows the "request to join" label when a moderator has to admit the participant', () => {
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Lobby, canEnter: false });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    expect(screen.getByRole('button', { name: 'joinform-request-to-join' })).toBeInTheDocument();
+  });
+
+  it('disables submit while the lobby has not been reached yet', () => {
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Starting, canEnter: true });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    expect(screen.getByRole('button', { name: 'joinform-enter-now' })).toBeDisabled();
+  });
+
+  it('locks the name field to the server-assigned display name', () => {
+    const { store } = setupLobbyStore({
+      connectionState: ConnectionState.Lobby,
+      canEnter: true,
+      lobbyDisplayName: 'Assigned',
+    });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    const input = screen.getByPlaceholderText('lobby-name-placeholder');
+    expect(input).toHaveDisplayValue('Assigned');
+    expect(input).toBeDisabled();
+  });
+
+  it('sends enter_room with the entered name when the participant may enter directly', async () => {
+    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
+    const { store, dispatchSpy } = setupLobbyStore({ connectionState: ConnectionState.Lobby, canEnter: true });
+    const user = userEvent.setup({ delay: null });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    const input = screen.getByPlaceholderText('lobby-name-placeholder');
+    await user.clear(input);
+    await user.type(input, 'Guest');
+    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+
+    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(setDisplayName('Guest')));
+    expect(dispatchSpy).toHaveBeenCalledWith(enterRoomCommand.action({ displayName: 'Guest' }));
+  });
+
+  it('sends enter_waiting_room with the entered name', async () => {
+    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
+    const { store, dispatchSpy } = setupLobbyStore({ connectionState: ConnectionState.Lobby, canEnter: false });
+    const user = userEvent.setup({ delay: null });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    const input = screen.getByPlaceholderText('lobby-name-placeholder');
+    await user.clear(input);
+    await user.type(input, 'Guest');
+    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+
+    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(setDisplayName('Guest')));
+    expect(dispatchSpy).toHaveBeenCalledWith(enterWaitingRoomCommand.action({ displayName: 'Guest' }));
+  });
+
+  it('enters without a display name when the server already assigned one', async () => {
+    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
+    const { store, dispatchSpy } = setupLobbyStore({
+      connectionState: ConnectionState.Lobby,
+      canEnter: true,
+      lobbyDisplayName: 'Assigned',
+    });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+
+    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(enterRoomCommand.action({ displayName: undefined })));
+    expect(dispatchSpy).not.toHaveBeenCalledWith(setDisplayName('Assigned'));
+  });
+
+  it('requests to join without a display name when the server already assigned one', async () => {
+    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
+    const { store, dispatchSpy } = setupLobbyStore({
+      connectionState: ConnectionState.Lobby,
+      canEnter: false,
+      lobbyDisplayName: 'Assigned',
+    });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+
+    await waitFor(() =>
+      expect(dispatchSpy).toHaveBeenCalledWith(enterWaitingRoomCommand.action({ displayName: undefined }))
+    );
   });
 });

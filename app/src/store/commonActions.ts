@@ -62,9 +62,6 @@ export const startRoom = createAsyncThunk<
 >('room/start', async (credentials, { getState }) => {
   const config = getState().config;
   const user = getState().user;
-  if (credentials.displayName.length === 0) {
-    throw new Error('displayName must ne non empty');
-  }
   return ConferenceRoom.create(credentials, config, user.displayName);
 });
 

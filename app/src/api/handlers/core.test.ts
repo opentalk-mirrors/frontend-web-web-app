@@ -4,9 +4,17 @@
 import type { RootState } from '../../store';
 import { joinSuccess } from '../../store/commonActions';
 import { waitingRoomJoined } from '../../store/slices/participantsSlice';
+import { joinedLobby } from '../../store/slices/roomSlice';
 import { Role } from '../../types';
-import type { JoinSuccessInternalState, ModuleData, ParticipantId, Timestamp } from '../../types';
-import { JoinedWaitingRoom } from '../types/incoming/core';
+import type {
+  ConnectionId,
+  DeviceId,
+  JoinSuccessInternalState,
+  ModuleData,
+  ParticipantId,
+  Timestamp,
+} from '../../types';
+import { JoinedLobby, JoinedWaitingRoom } from '../types/incoming/core';
 import type { JoinSuccess } from '../types/incoming/core';
 import { handleRoomServerCoreMessage } from './core';
 
@@ -46,6 +54,9 @@ const createState = (overrides: DeepPartial<RootState> = {}): RootState =>
     participants: {
       entities: {},
     },
+    room: {
+      lobbyParticipantId: 'participant-1',
+    },
     user: {
       uuid: 'participant-1',
       role: Role.User,
@@ -63,8 +74,6 @@ const baseModuleData = {
 const makeJoinSuccess = (moduleData: ModuleData): JoinSuccess =>
   ({
     message: 'join_success',
-    id: 'participant-1' as ParticipantId,
-    connectionId: 'conn-1',
     connections: [],
     role: Role.User,
     displayName: 'Me',
@@ -108,6 +117,24 @@ describe('handleRoomServerCoreMessage', () => {
       waitingRoomJoined({
         ...data,
       })
+    );
+  });
+
+  it('dispatches joinedLobby with canEnter, displayName and participantId when the lobby is joined', () => {
+    const dispatch = vi.fn();
+    const data: JoinedLobby = {
+      message: 'joined_lobby',
+      participantId: 'participant-2' as ParticipantId,
+      connectionId: 'conn-2' as ConnectionId,
+      deviceId: 'device-2' as DeviceId,
+      canEnter: true,
+      displayName: 'Alex',
+    };
+
+    handleRoomServerCoreMessage(dispatch, data, timestamp, createState());
+
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(
+      joinedLobby({ canEnter: true, displayName: 'Alex', participantId: 'participant-2' as ParticipantId })
     );
   });
 
@@ -177,6 +204,15 @@ describe('handleRoomServerCoreMessage', () => {
       handleRoomServerCoreMessage(dispatch, makeJoinSuccess(moduleData), timestamp, createState());
 
       expect(select(getJoinSuccessPayload(dispatch))).toBeDefined();
+    });
+
+    it('sources the participant id from the stored lobby state (join_success no longer carries it)', () => {
+      const dispatch = vi.fn();
+      const state = createState({ room: { lobbyParticipantId: 'participant-9' as ParticipantId } });
+
+      handleRoomServerCoreMessage(dispatch, makeJoinSuccess(baseModuleData), timestamp, state);
+
+      expect(getJoinSuccessPayload(dispatch).participantId).toBe('participant-9');
     });
   });
 });

@@ -42,6 +42,7 @@ route-not-found = Pfad nicht verfügbar
 room = Raum {$roomNumber}
 joinform-title = Konferenz beitreten
 joinform-enter-now = Jetzt beitreten
+joinform-request-to-join = Beitritt anfragen
 joinform-waiting-room-enter = Bitte warten...
 joinform-wrong-room-password = Das eingegebene Passwort ist falsch.
 joinform-access-denied = Zugriff verweigert: Sie sind nicht berechtigt an diesem Meeting teilzunehmen.

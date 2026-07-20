@@ -19,7 +19,7 @@ import {
   setWaitingRoomState,
 } from '../../store/slices/moderationSlice';
 import { rename as participantsRename, patch } from '../../store/slices/participantsSlice';
-import { enteredWaitingRoom, readyToEnter } from '../../store/slices/roomSlice';
+import { enteredWaitingRoom, lobbyDisplayNameAssigned, readyToEnter, setCanEnter } from '../../store/slices/roomSlice';
 import { setDisplayName, updateRole } from '../../store/slices/userSlice';
 import { KickReason, Role, Timestamp, WaitingRoom } from '../../types';
 import { moderation } from '../types/incoming';
@@ -95,6 +95,10 @@ export const handleModerationMessage = (
       dispatch(setDebriefingStarted(true));
       notifications.info(i18next.t('debriefing-started-notification'));
       break;
+    case 'display_name_assigned': {
+      dispatch(lobbyDisplayNameAssigned({ displayName: data.newName }));
+      break;
+    }
     case 'display_name_changed': {
       dispatch(participantsRename({ id: data.target, displayName: data.newName }));
       const isSelf = data.target === state.user.uuid;
@@ -189,6 +193,15 @@ export const handleModerationMessage = (
       dispatch(disabledSelfRename());
       notifications.info(i18next.t('renaming-disabled-notification'));
       break;
+    case 'entry_permission_changed': {
+      dispatch(setCanEnter(data.canEnter));
+      if (data.canEnter) {
+        notifications.info(i18next.t('waiting-room-disabled-message'));
+      } else {
+        notifications.info(i18next.t('waiting-room-enabled-message'));
+      }
+      break;
+    }
     case 'error': {
       if (data.error === ModerationError.UserCannotBeModerator) {
         notifications.error(i18next.t('moderation-error-user-cannot-be-moderator'));
