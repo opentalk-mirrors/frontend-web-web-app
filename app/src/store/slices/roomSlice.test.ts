@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { ParticipantId } from '../../types';
+import { hangUp } from '../commonActions';
 import roomReducer, { connectionClosed, joinedLobby, setCanEnter } from './roomSlice';
 
 describe('roomSlice - connectionClosed', () => {
@@ -18,6 +19,15 @@ describe('roomSlice - connectionClosed', () => {
 
   it('transitions to "Failed" when the connection closes with an error code', () => {
     expect(getConnectionStateAfterClose(1006)).toBe(ConnectionState.Failed);
+  });
+
+  it('ignores a trailing close while already leaving so it does not turn into a failed connection', () => {
+    const leavingState = roomReducer(undefined, { type: hangUp.pending.type });
+    expect(leavingState.connectionState).toBe(ConnectionState.Leaving);
+
+    const afterClose = roomReducer(leavingState, connectionClosed({ errorCode: 1006 }));
+
+    expect(afterClose.connectionState).toBe(ConnectionState.Leaving);
   });
 });
 
