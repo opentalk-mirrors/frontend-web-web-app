@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { Store } from '@reduxjs/toolkit';
-import { screen, within, fireEvent } from '@testing-library/react';
+import { screen, within, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
 import { List } from 'react-window';
 
 import { selectAllVisibleParticipants } from '../../../store/slices/participantsSlice';
@@ -152,6 +152,14 @@ describe('participant context menu', () => {
           name: 'grant-presenter-role',
         });
         expect(grantPresenterRoleOption).toBeInTheDocument();
+      });
+      it('should close the menu after clicking the grant presenter role option', async () => {
+        const grantPresenterRoleOption = screen.getByRole('menuitem', {
+          name: 'grant-presenter-role',
+        });
+        fireEvent.click(grantPresenterRoleOption);
+        await waitForElementToBeRemoved(grantPresenterRoleOption);
+        expect(grantPresenterRoleOption).not.toBeInTheDocument();
       });
     });
     describe('and the participant is a user', () => {
