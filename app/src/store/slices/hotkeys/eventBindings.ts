@@ -13,7 +13,7 @@ import {
   toggleVideo,
 } from './events';
 import { registerHotkeys, resetHotkeys } from './listener';
-import { domFocusIn, domFocusOut, domKeyDown, domKeyUp } from './slice';
+import { domFocusIn, domFocusOut, domKeyDown, domKeyUp, domWindowBlur } from './slice';
 
 const isMacOS = navigator.platform.startsWith('Mac');
 
@@ -100,11 +100,13 @@ export class ReduxDomEvents {
     const keyUp = (e: KeyboardEvent) => this.#dispatch(domKeyUp(e));
     const focusIn = (e: FocusEvent) => this.#dispatch(domFocusIn(e));
     const focusOut = (e: FocusEvent) => this.#dispatch(domFocusOut(e));
+    const windowBlur = () => this.#dispatch(domWindowBlur());
 
     window.addEventListener('keydown', keyDown);
     window.addEventListener('keyup', keyUp);
     window.addEventListener('focusin', focusIn);
     window.addEventListener('focusout', focusOut);
+    window.addEventListener('blur', windowBlur);
     const removeFullscreenEventsFromRedux = bindFullscreenEventsToRedux(this.#dispatch);
 
     return () => {
@@ -112,6 +114,7 @@ export class ReduxDomEvents {
       window.removeEventListener('keyup', keyUp);
       window.removeEventListener('focusin', focusIn);
       window.removeEventListener('focusout', focusOut);
+      window.removeEventListener('blur', windowBlur);
       removeFullscreenEventsFromRedux?.();
       resetHotkeys();
     };

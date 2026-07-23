@@ -7,3 +7,4 @@ export const domKeyDown = createAction<KeyboardEvent>('hotkeys/domKeyDown');
 export const domKeyUp = createAction<KeyboardEvent>('hotkeys/domKeyUp');
 export const domFocusIn = createAction<FocusEvent>('hotkeys/domFocusIn');
 export const domFocusOut = createAction<FocusEvent>('hotkeys/domFocusOut');
+export const domWindowBlur = createAction('hotkeys/domWindowBlur');
