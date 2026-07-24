@@ -346,7 +346,7 @@ export const isTimelessEvent = (obj: BaseEvent): obj is TimelessEvent => {
 };
 
 export const isPendingEvent = (obj: BaseEvent) => {
-  return isEvent(obj) && obj.inviteStatus === InviteStatus.Pending;
+  return (isEvent(obj) || isEventInstance(obj)) && obj.inviteStatus === InviteStatus.Pending;
 };
 
 // For instances and exceptions we need to use the recurringEventId  as `event_id` query parameter in HTTP requests
