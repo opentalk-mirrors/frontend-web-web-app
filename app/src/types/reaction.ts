@@ -15,12 +15,12 @@ export enum ReactionEmoji {
 }
 
 export const REACTION_EMOJI_DISPLAY: Record<ReactionEmoji, string> = {
-  [ReactionEmoji.ThumbsUp]: '👍',
-  [ReactionEmoji.Clap]: '👏',
   [ReactionEmoji.Heart]: '❤️',
+  [ReactionEmoji.ThumbsUp]: '👍',
   [ReactionEmoji.Tada]: '🎉',
-  [ReactionEmoji.OpenMouth]: '😮',
+  [ReactionEmoji.Clap]: '👏',
   [ReactionEmoji.Joy]: '😂',
+  [ReactionEmoji.OpenMouth]: '😮',
   [ReactionEmoji.SmilingFaceWithTear]: '🥲',
   [ReactionEmoji.ThumbsDown]: '👎',
 };

@@ -39,7 +39,7 @@ describe('<ReactionPopover />', () => {
     renderPopover();
 
     const buttons = screen.getAllByRole('button');
-    const expectedEmojis = ['👍', '👏', '❤️', '🎉', '😮', '😂', '🥲', '👎'];
+    const expectedEmojis = ['❤️', '👍', '🎉', '👏', '😂', '😮', '🥲', '👎'];
 
     buttons.forEach((button, index) => {
       expect(button).toHaveTextContent(expectedEmojis[index]);

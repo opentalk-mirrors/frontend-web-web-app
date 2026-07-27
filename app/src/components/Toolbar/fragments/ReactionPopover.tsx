@@ -28,12 +28,12 @@ const ArrowPopover = styled(Popover)(({ theme }) => ({
 }));
 
 const EMOJI_ORDER: ReactionEmoji[] = [
-  ReactionEmoji.ThumbsUp,
-  ReactionEmoji.Clap,
   ReactionEmoji.Heart,
+  ReactionEmoji.ThumbsUp,
   ReactionEmoji.Tada,
-  ReactionEmoji.OpenMouth,
+  ReactionEmoji.Clap,
   ReactionEmoji.Joy,
+  ReactionEmoji.OpenMouth,
   ReactionEmoji.SmilingFaceWithTear,
   ReactionEmoji.ThumbsDown,
 ];
