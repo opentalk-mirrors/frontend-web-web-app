@@ -166,6 +166,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - (excalidraw) Prevent storing empty canvas ([!3481](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3481))
 - (excalidraw) Improve edit-rights, asset access and error handling ([!3485](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3485), [#3415](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3415))
 - Restrict defaultGridSize to maxGridTiles ([!3493](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3493), [#3421](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3421))
+- (invite) Prevent guest email invites when guest access is disabled ([!3496](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3496), [#3422](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3422))
+- (meeting-form) Hide guest access when tariff disallows guests ([!3497](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3497), [#3356](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3356))
 
 ### ⚡ Performance
 
