@@ -4,21 +4,40 @@
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { ParticipantId } from '../../types';
 import { hangUp } from '../commonActions';
-import roomReducer, { connectionClosed, joinedLobby, setCanEnter } from './roomSlice';
+import roomReducer, { connectionClosed, joinedLobby, setCanEnter, RoomState } from './roomSlice';
 
 describe('roomSlice - connectionClosed', () => {
-  const getConnectionStateAfterClose = (errorCode?: number) => {
-    const initState = roomReducer(undefined, { type: '@@INIT' });
+  const getStateAfterClose = (initState: RoomState, errorCode?: number) => {
     const afterCloseState = roomReducer(initState, connectionClosed({ errorCode }));
-    return afterCloseState.connectionState;
+    return afterCloseState;
   };
 
   it('transitions to "Left" on a graceful close (no error code) so the lobby is shown after debriefing', () => {
-    expect(getConnectionStateAfterClose(undefined)).toBe(ConnectionState.Left);
+    const initState = roomReducer(undefined, { type: '@@INIT' });
+    expect(getStateAfterClose(initState, undefined).connectionState).toBe(ConnectionState.Left);
   });
 
   it('transitions to "Failed" when the connection closes with an error code', () => {
-    expect(getConnectionStateAfterClose(1006)).toBe(ConnectionState.Failed);
+    const initState = roomReducer(undefined, { type: '@@INIT' });
+    expect(getStateAfterClose(initState, 1006).connectionState).toBe(ConnectionState.Failed);
+  });
+
+  it('resets the joined-conference flag on a graceful close (no error code)', () => {
+    const joinedState: RoomState = {
+      ...roomReducer(undefined, { type: '@@INIT' }),
+      hasJoinedConference: true,
+    };
+
+    expect(getStateAfterClose(joinedState, undefined).hasJoinedConference).toBe(false);
+  });
+
+  it('keeps the joined-conference flag when closing with an error code (silent reconnect)', () => {
+    const joinedState: RoomState = {
+      ...roomReducer(undefined, { type: '@@INIT' }),
+      hasJoinedConference: true,
+    };
+
+    expect(getStateAfterClose(joinedState, 1006).hasJoinedConference).toBe(true);
   });
 
   it('ignores a trailing close while already leaving so it does not turn into a failed connection', () => {

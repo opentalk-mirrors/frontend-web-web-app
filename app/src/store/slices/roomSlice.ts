@@ -143,9 +143,15 @@ export const roomSlice = createSlice({
       // When the user is already intentional leaving the railing websocket close must be ignored
       // Transitioning to `Failed` here would trigger the removal of all notifications
       if (state.connectionState === ConnectionState.Leaving || state.connectionState === ConnectionState.Left) {
+        state.hasJoinedConference = false;
         return;
       }
-      state.connectionState = errorCode ? ConnectionState.Failed : ConnectionState.Left;
+      if (errorCode) {
+        state.connectionState = ConnectionState.Failed;
+      } else {
+        state.connectionState = ConnectionState.Left;
+        state.hasJoinedConference = false;
+      }
       state.error = `websocket_error_${errorCode}`;
     },
     enteredWaitingRoom: (state) => {
@@ -177,6 +183,7 @@ export const roomSlice = createSlice({
       }
       state.reconnectTimerId = null;
       state.connectionState = ConnectionState.Left;
+      state.hasJoinedConference = false;
     },
     presenceConfirmationRequested: (state) => {
       state.isPresenceConfirmationActive = true;
@@ -281,9 +288,11 @@ export const roomSlice = createSlice({
     });
     builder.addCase(hangUp.fulfilled, (state) => {
       state.connectionState = ConnectionState.Left;
+      state.hasJoinedConference = false;
     });
     builder.addCase(hangUp.rejected, (state) => {
       state.connectionState = ConnectionState.Left;
+      state.hasJoinedConference = false;
     });
     builder.addCase(timerStarted, (state, { payload }) => {
       if (payload.style === TimerStyle.CoffeeBreak) {
