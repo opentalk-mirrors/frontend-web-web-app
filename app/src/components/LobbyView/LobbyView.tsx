@@ -111,6 +111,13 @@ const showWrongPasswordNotification = () => {
   });
 };
 
+const closeWrongPasswordNotification = () => {
+  if (wrongPasswordSnackBarKey) {
+    notifications.close(wrongPasswordSnackBarKey);
+    wrongPasswordSnackBarKey = undefined;
+  }
+};
+
 const JOIN_FORM_ID = 'join-form';
 
 const LobbyView = () => {
@@ -165,10 +172,7 @@ const LobbyView = () => {
   //Cleans up wrong password notification on dismount
   useEffect(() => {
     return () => {
-      if (wrongPasswordSnackBarKey) {
-        notifications.close(wrongPasswordSnackBarKey);
-        wrongPasswordSnackBarKey = undefined;
-      }
+      closeWrongPasswordNotification();
     };
   }, []);
 
@@ -183,61 +187,70 @@ const LobbyView = () => {
           .trim()
           .max(DISPLAY_NAME_MAX_CHARACTERS, t('lobby-name-max-error', { max: DISPLAY_NAME_MAX_CHARACTERS }))
           .required(t('field-error-required', { fieldName: 'Name' })),
+        password: showPasswordField
+          ? yup.string().required(t('field-error-required', { fieldName: t('global-password') }))
+          : yup.string(),
       }),
-    [t]
+    [t, showPasswordField]
   );
 
-  const openLobbyConnection = useCallback(async () => {
-    if (joinWithoutMedia) {
-      dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
-      dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
-    }
-    try {
-      return await dispatch(
-        startRoom({
-          roomId,
-          displayName: initialDisplayName || '',
-          inviteCode,
-        })
-      ).unwrap();
-    } catch (e: unknown) {
-      if (isApiError<StartRoomError>(e)) {
-        switch (e.code) {
-          case StartRoomError.InvalidBreakoutRoomId:
-          case StartRoomError.NoBreakoutRooms:
-            notifications.info(t('breakout-notification-session-ended-header'));
-            navigate(composeRoomPath(roomId, inviteCode));
-            break;
-          case StartRoomError.InvalidJson:
-            log.error('invalid json request in startRoom', e);
-            notifications.error(t('error-general'));
-            break;
-          case StartRoomError.WrongRoomPassword:
-          case StartRoomError.InvalidCredentials:
-            showWrongPasswordNotification();
-            break;
-          case StartRoomError.NotFound:
-            notifications.error(t('joinform-room-not-found'));
-            navigateToHome();
-            break;
-          case StartRoomError.Forbidden:
-            notifications.error(t('joinform-access-denied'));
-            navigateToHome();
-            break;
-          case StartRoomError.BadRequest:
-            notifications.error(t('error-invalid-invitation-code'));
-            navigateToHome();
-            break;
-          default:
-            log.error(`unknown error code ${e.code} in startRoom`, e);
-            notifications.error(t('error-general'));
-        }
-      } else {
-        log.error('unknown error in startRoom', e);
-        notifications.error(t('error-general'));
+  const openLobbyConnection = useCallback(
+    async (password?: string, displayName?: string) => {
+      if (joinWithoutMedia) {
+        dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
+        dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
       }
-    }
-  }, [navigate, t, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, initialDisplayName]);
+      try {
+        const result = await dispatch(
+          startRoom({
+            roomId,
+            displayName: displayName || initialDisplayName || '',
+            inviteCode,
+            password,
+          })
+        ).unwrap();
+        closeWrongPasswordNotification();
+        return result;
+      } catch (e: unknown) {
+        if (isApiError<StartRoomError>(e)) {
+          switch (e.code) {
+            case StartRoomError.InvalidBreakoutRoomId:
+            case StartRoomError.NoBreakoutRooms:
+              notifications.info(t('breakout-notification-session-ended-header'));
+              navigate(composeRoomPath(roomId, inviteCode));
+              break;
+            case StartRoomError.InvalidJson:
+              log.error('invalid json request in startRoom', e);
+              notifications.error(t('error-general'));
+              break;
+            case StartRoomError.WrongRoomPassword:
+            case StartRoomError.InvalidCredentials:
+              showWrongPasswordNotification();
+              break;
+            case StartRoomError.NotFound:
+              notifications.error(t('joinform-room-not-found'));
+              navigateToHome();
+              break;
+            case StartRoomError.Forbidden:
+              notifications.error(t('joinform-access-denied'));
+              navigateToHome();
+              break;
+            case StartRoomError.BadRequest:
+              notifications.error(t('error-invalid-invitation-code'));
+              navigateToHome();
+              break;
+            default:
+              log.error(`unknown error code ${e.code} in startRoom`, e);
+              notifications.error(t('error-general'));
+          }
+        } else {
+          log.error('unknown error in startRoom', e);
+          notifications.error(t('error-general'));
+        }
+      }
+    },
+    [navigate, t, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, initialDisplayName]
+  );
 
   const submitLobby = useCallback(
     (displayName?: string) => {
@@ -250,6 +263,21 @@ const LobbyView = () => {
     [dispatch, canEnter]
   );
 
+  // When the guest submits a password-protected room, the `/start` request is deferred until submit
+  // TODO: remove with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/333
+  const pendingEnter = useRef<{ displayName?: string } | undefined>(undefined);
+
+  useEffect(() => {
+    if (connectionState !== ConnectionState.Lobby || !pendingEnter.current) {
+      return;
+    }
+    const { displayName } = pendingEnter.current;
+    pendingEnter.current = undefined;
+
+    // don't send a displayName if the server already assigned one
+    submitLobby(lobbyDisplayName ? undefined : displayName);
+  }, [connectionState, lobbyDisplayName, submitLobby]);
+
   const hasInitiatedConnect = useRef(false);
   useEffect(() => {
     if (hasInitiatedConnect.current || inviteState.loading || isRoomDataLoading || !roomData) {
@@ -261,9 +289,25 @@ const LobbyView = () => {
     if (connectionState !== ConnectionState.Initial && connectionState !== ConnectionState.Setup) {
       return;
     }
+
+    // For password-protected rooms wait for the guest to submit the password before opening the
+    // connection, otherwise the initial `/start` request fails with a wrong-password error
+    // TODO: remove with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/333
+    if (showPasswordField) {
+      return;
+    }
     hasInitiatedConnect.current = true;
     void openLobbyConnection();
-  }, [inviteState.loading, isRoomDataLoading, roomData, isLoggedIn, inviteCode, connectionState, openLobbyConnection]);
+  }, [
+    inviteState.loading,
+    isRoomDataLoading,
+    roomData,
+    isLoggedIn,
+    inviteCode,
+    connectionState,
+    openLobbyConnection,
+    showPasswordField,
+  ]);
 
   const formik = useFormik({
     initialValues: {
@@ -271,9 +315,20 @@ const LobbyView = () => {
       password: '',
     },
     enableReinitialize: true,
+    validateOnMount: true,
     validationSchema,
     onSubmit: (values) => {
       if (!(isLoggedIn || inviteCode !== undefined)) {
+        return;
+      }
+      const name = disableDisplayNameField ? initialDisplayName || '' : values.name;
+      // Password-protected rooms defer the initial `/start` request until the guest submits the password,
+      // so open the connection here instead of sending the websocket enter command
+      // TODO: remove with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/333
+      if (connectionState !== ConnectionState.Lobby) {
+        dispatch(setDisplayName(name));
+        pendingEnter.current = { displayName: name };
+        void openLobbyConnection(values.password, name);
         return;
       }
       // don't send a displayName if its already set by the server (via display_name_assigned` or returned in `joined_lobby`)
@@ -281,14 +336,20 @@ const LobbyView = () => {
         submitLobby();
         return;
       }
-      const name = disableDisplayNameField ? initialDisplayName || '' : values.name;
       dispatch(setDisplayName(name));
       submitLobby(name);
     },
   });
 
   const isInLobby = connectionState === ConnectionState.Lobby;
-  const disableSubmitButton = !isInLobby || !formik.isValid;
+
+  // TODO: remove with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/333
+  const isAwaitingPasswordStart =
+    showPasswordField &&
+    (connectionState === ConnectionState.Setup || connectionState === ConnectionState.FailedCredentials);
+  const isStarting = connectionState === ConnectionState.Starting;
+
+  const disableSubmitButton = !formik.isValid || isStarting || (!isInLobby && !isAwaitingPasswordStart);
   const submitButtonLabel = isInLobby && canEnter === false ? t('joinform-request-to-join') : t('joinform-enter-now');
 
   const handleClickShowPassword = () => {
