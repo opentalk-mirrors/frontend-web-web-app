@@ -77,6 +77,28 @@ describe('ChatMessage', () => {
     expect(screen.getByText('participant-removed-event')).toBeInTheDocument();
   });
 
+  it('shows leave text when a user loses their connection', () => {
+    const participant = mockedParticipant(1);
+    const event: RoomEvent = {
+      id: 'event-3',
+      timestamp: '2024-02-01T08:00:00.000Z',
+      target: participant.id,
+      event: 'left',
+      reason: DisconnectReason.ConnectionLost,
+    };
+
+    renderComponent(event, {
+      participants: {
+        ids: [participant.id],
+        entities: { [participant.id]: participant },
+      },
+    });
+
+    expect(screen.getByTestId('user-event-message')).toBeInTheDocument();
+    expect(screen.getByText(participant.displayName)).toBeInTheDocument();
+    expect(screen.getByText('participant-left-event')).toBeInTheDocument();
+  });
+
   it('renders own messages with the current user name and timestamp', () => {
     const participant = mockedParticipant(2);
     const timestamp = '2024-03-05T10:15:00.000Z';
