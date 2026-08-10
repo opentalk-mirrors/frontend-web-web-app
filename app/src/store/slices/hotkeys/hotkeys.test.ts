@@ -276,6 +276,27 @@ describe('hotkeys', () => {
     expect(onRelease).toHaveBeenCalledTimes(1);
   });
 
+  it('releases active push-to-talk hotkeys when the window loses focus', () => {
+    const { store } = configureStore();
+    ReduxDomEvents.dispatchFunction = store.dispatch;
+    const onRelease = vi.fn();
+
+    listener.registerHotkey({
+      key: ' ',
+      onPress: vi.fn(),
+      onRelease,
+      descriptionKey: 'hotkey-test',
+    });
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
+    vi.advanceTimersByTime(100);
+
+    window.dispatchEvent(new Event('blur'));
+    vi.advanceTimersByTime(100);
+
+    expect(onRelease).toHaveBeenCalledTimes(1);
+  });
+
   it('disables hotkeys on focus in input', () => {
     const { store } = configureStore();
     ReduxDomEvents.dispatchFunction = store.dispatch;

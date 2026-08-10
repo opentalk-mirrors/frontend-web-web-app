@@ -7,7 +7,7 @@ import { debounce, isEqual } from 'lodash';
 import browser from '../../../modules/BrowserSupport';
 import type { AppDispatch, RootState } from '../../../store';
 import { selectAudioEnabled } from '../livekitSlice';
-import { domKeyDown, domKeyUp, domFocusIn, domFocusOut } from './slice';
+import { domKeyDown, domKeyUp, domFocusIn, domFocusOut, domWindowBlur } from './slice';
 import type { Hotkey, HotkeyModifier, ModifierKey } from './types';
 
 const INPUT_TYPES = ['input', 'textarea', 'select'];
@@ -240,6 +240,26 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
       if (isTargetInputTypeAndContentEditable(target)) {
         hotkeysDisabled = false;
       }
+    },
+  });
+
+  startListening({
+    actionCreator: domWindowBlur,
+    effect: (_action, listenerApi) => {
+      if (pushedKeyIsActive.size === 0) {
+        return;
+      }
+
+      const state = listenerApi.getState() as RootState;
+      const activeHotkeys = [...pushedKeyIsActive];
+      pushedKeyIsActive.clear();
+
+      activeHotkeys.forEach((hotkey) => {
+        hotkey.onRelease?.({
+          state,
+          dispatch: listenerApi.dispatch as AppDispatch,
+        });
+      });
     },
   });
 };
