@@ -156,15 +156,12 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   const userMeetingNotesAccess = useAppSelector(selectUserMeetingNotesAccess);
   const ownHandRaised = useAppSelector(selectHandUp);
   const whisperRoomParticipants = useAppSelector(selectSubroomAudioParticipants);
-  const [openRenameDialog, setOpenRenameDialog] = useState(false);
-  const [openRemovalDialog, setOpenRemovalDialog] = useState(false);
-  const [renderedParticipantId, setRenderedParticipantId] = useState(participantId);
-  if (participantId !== renderedParticipantId) {
-    setRenderedParticipantId(participantId);
-    setAnchorEl(undefined);
-    setOpenRenameDialog(false);
-    setOpenRemovalDialog(false);
-  }
+  const [renameParticipant, setRenameParticipant] = useState<Participant>();
+  const [removalParticipant, setRemovalParticipant] = useState<Participant>();
+
+  const isPresent = (target?: Participant) => target !== undefined && data.some(({ id }) => id === target.id);
+  const openRenameDialog = isPresent(renameParticipant);
+  const openRemovalDialog = isPresent(removalParticipant);
 
   const subroomAudioEnabled = useAppSelector(selectEnabledModulesList).includes(BackendModules.SubroomAudio);
   const connectionIdentifier = constructConnectionIdentifier(participantId, participant.connections[0]);
@@ -196,7 +193,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   };
 
   const handleRemoval = () => {
-    setOpenRemovalDialog(!openRemovalDialog);
+    setRemovalParticipant(openRemovalDialog ? undefined : participant);
     closePopover();
   };
 
@@ -230,7 +227,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   };
 
   const handleRenameParticipantDialog = () => {
-    setOpenRenameDialog(!openRenameDialog);
+    setRenameParticipant(openRenameDialog ? undefined : participant);
     setAnchorEl(undefined);
   };
 
@@ -562,9 +559,13 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
       <RenameParticipantDialog
         open={openRenameDialog}
         onClose={handleRenameParticipantDialog}
-        participant={participant}
+        participant={renameParticipant ?? participant}
       />
-      <ParticipantRemovalDialog open={openRemovalDialog} onClose={handleRemoval} participant={participant} />
+      <ParticipantRemovalDialog
+        open={openRemovalDialog}
+        onClose={handleRemoval}
+        participant={removalParticipant ?? participant}
+      />
     </ListItem>
   );
 };
