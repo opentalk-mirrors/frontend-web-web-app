@@ -218,6 +218,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   };
 
   const handlePresenterRoleRight = () => {
+    closePopover();
     selectedParticipantCanPublishScreenShare
       ? dispatch(revokeScreenSharePermission.action({ participants: [participantId] }))
       : dispatch(grantScreenSharePermission.action({ participants: [participantId] }));
