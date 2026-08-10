@@ -140,6 +140,11 @@ export const roomSlice = createSlice({
       state.error = reason;
     },
     connectionClosed: (state, { payload: { errorCode } }: PayloadAction<{ errorCode?: number }>) => {
+      // When the user is already intentional leaving the railing websocket close must be ignored
+      // Transitioning to `Failed` here would trigger the removal of all notifications
+      if (state.connectionState === ConnectionState.Leaving || state.connectionState === ConnectionState.Left) {
+        return;
+      }
       state.connectionState = errorCode ? ConnectionState.Failed : ConnectionState.Left;
       state.error = `websocket_error_${errorCode}`;
     },
@@ -433,6 +438,11 @@ const startReconnectOnConnectionClosedListener = (startAppListening: StartAppLis
   startAppListening({
     actionCreator: connectionClosed,
     effect: (action, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      // do not reconnect when the user is intentionally leaving (e.g. after being debriefed)
+      const { connectionState } = listenerApi.getState().room;
+      if (connectionState === ConnectionState.Leaving || connectionState === ConnectionState.Left) {
+        return;
+      }
       if (action.payload?.errorCode) {
         return reconnect(listenerApi);
       }
