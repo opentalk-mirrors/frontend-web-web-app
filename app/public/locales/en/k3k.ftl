@@ -570,8 +570,8 @@ secure-connection-high-security = High security mode is enabled.
 participant-joined-text = Joined {$joinedTime}
 participant-hand-raise-text = Hand raised {$handUpdated}
 participant-last-active-text = Last Active {$lastActive}
-participant-joined-event = joined the call at {$time}
-participant-left-event = left the call at {$time}
+participant-joined-event = joined the meeting at {$time}
+participant-left-event = left the meeting at {$time}
 participant-removed-event = was removed from the meeting at {$time}
 
 poll-overview-button-create-poll = Create new poll

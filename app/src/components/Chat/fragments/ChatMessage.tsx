@@ -11,6 +11,7 @@ import { DisconnectReason } from '../../../api/types/incoming/core';
 import { ModeratorIcon } from '../../../assets/icons';
 import { ParticipantAvatar } from '../../../commonComponents';
 import { useAppSelector, useDateFormat } from '../../../hooks';
+import log from '../../../logger';
 import { RoomEvent } from '../../../store/slices/eventSlice';
 import { selectParticipantById } from '../../../store/slices/participantsSlice';
 import { selectAvatarUrl, selectDisplayName, selectOurUuid } from '../../../store/slices/userSlice';
@@ -127,6 +128,8 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
     return format(date, 'HH:mm');
   };
 
+  const assertNever = (_n: never) => {};
+
   if (isEventMessage(message)) {
     switch (message.event) {
       case 'chat_enabled':
@@ -139,13 +142,28 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
           </EventTypography>
         );
       case 'left': {
-        let reason: string;
+        let reason: 'left' | 'removed';
         switch (message.reason) {
           case DisconnectReason.Leave:
+          case DisconnectReason.ConnectionLost:
+          case DisconnectReason.InternalError:
+            reason = 'left';
+            break;
+          case DisconnectReason.Banned:
+          case DisconnectReason.Kicked:
+          case DisconnectReason.Debriefed:
+          case DisconnectReason.SentToWaitingRoom:
+            reason = 'removed';
+            break;
+          case undefined:
+            log.warn('Disconnect message missing reason; defaulting to left', { message });
             reason = 'left';
             break;
           default:
-            reason = 'removed';
+            // Default set to ensure the variable is always assigned
+            reason = 'left';
+            // Throws compiler error if an enum variant is missing
+            assertNever(message.reason);
             break;
         }
         return (
