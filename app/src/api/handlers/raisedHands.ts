@@ -83,12 +83,14 @@ export const handleRaiseHandsMessage = (
     case 'error': {
       const error = data.error;
       switch (error) {
-        // TODO - handle cases
+        case 'raise_hands_disabled':
+          log.warn('Raised hands can not be reset, as handraises are disabled in the room');
+          break;
         default:
           log.error(`Raise Hands Error: ${data}`);
           throw new Error(`Raise Hands Error: ${error}`);
       }
-      // break;
+      break;
     }
     default: {
       const dataString = JSON.stringify(data, null, 2);
