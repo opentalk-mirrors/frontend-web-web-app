@@ -18,17 +18,24 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { TranscriptionStatus } from '../../../api/types/incoming/transcription';
-import { sendStartTranscriptionSignal, sendStopTranscriptionSignal } from '../../../api/types/outgoing/transcription';
+import {
+  TranscriptionStatus,
+  TranscriptionLanguage,
+  TranscriptionLanguageKey,
+} from '../../../api/types/incoming/transcription';
+import {
+  changeTranscriptionLanguageSignal,
+  sendStartTranscriptionSignal,
+  sendStopTranscriptionSignal,
+} from '../../../api/types/outgoing/transcription';
 import { CommonSwitch } from '../../../commonComponents';
 import CommonDialogHeader from '../../../commonComponents/CommonDialogComponents/CommonDialogHeader';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import {
   hideTranscriptionSettings,
-  TranscriptionLanguage,
-  selectLanguage,
+  saveTranscriptionLanguageToLocalStorage,
+  selectTranscriptionLanguage,
   selectTranscriptionStatus,
-  setTranscriptionLanguage,
 } from '../../../store/slices/transcriptionSlice';
 
 const PlaceholderText = styled(Typography)(() => ({
@@ -37,26 +44,47 @@ const PlaceholderText = styled(Typography)(() => ({
 
 const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
   const { t } = useTranslation();
-  const transcriptionLanguage = useAppSelector(selectLanguage);
+  const transcriptionLanguage = useAppSelector(selectTranscriptionLanguage);
   const transcriptionStatus = useAppSelector(selectTranscriptionStatus);
   const [desiredTranscriptionStatus, setDesiredTranscriptionStatus] = useState<boolean>(
     transcriptionStatus === TranscriptionStatus.Running
   ); // maps running to true, inactive to false
+  const [desiredTranscriptionLanguage, setDesiredTranscriptionLanguage] = useState<TranscriptionLanguageKey | ''>(
+    transcriptionLanguage || ''
+  );
   const dispatch = useAppDispatch();
+  const hasLanguageChanged = desiredTranscriptionLanguage && desiredTranscriptionLanguage !== transcriptionLanguage;
+  const hasStatusChanged = desiredTranscriptionStatus !== (transcriptionStatus === TranscriptionStatus.Running);
+
   const onClose = () => {
     dispatch(hideTranscriptionSettings());
     props.onClose?.({}, 'escapeKeyDown');
   };
+
+  const onLanguageSelectChange = (selectedLanguage: TranscriptionLanguageKey) => {
+    if (selectedLanguage === desiredTranscriptionLanguage) {
+      return;
+    }
+    setDesiredTranscriptionLanguage(selectedLanguage);
+  };
+
   const submit = () => {
-    // check if the desired status is the same as the current status, if so, just close the dialog
-    if (desiredTranscriptionStatus === (transcriptionStatus === TranscriptionStatus.Running)) {
+    if (hasLanguageChanged) {
+      saveTranscriptionLanguageToLocalStorage(desiredTranscriptionLanguage);
+      // check if the desired status is the same as the current status, if so, just close the dialog
+      if (!hasStatusChanged) {
+        // check if the language has changed, if so, send a change language signal
+        dispatch(changeTranscriptionLanguageSignal.action({ language: desiredTranscriptionLanguage }));
+      }
+    }
+    if (!hasStatusChanged) {
       onClose();
       return;
     }
     if (desiredTranscriptionStatus) {
       dispatch(
         sendStartTranscriptionSignal.action({
-          language: transcriptionLanguage?.toString(),
+          language: desiredTranscriptionLanguage.toString(),
         })
       );
     } else {
@@ -94,21 +122,21 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
               {t('subtitle-settings-input-language')}
             </Typography>
             <Select
-              renderValue={(lang) => {
+              renderValue={(lang: TranscriptionLanguageKey | '') => {
                 if (!lang) {
                   return <PlaceholderText>{t('subtitle-settings-input-language-error')}</PlaceholderText>;
                 }
-                return TranscriptionLanguage[lang as keyof typeof TranscriptionLanguage];
+                return TranscriptionLanguage[lang];
               }}
               disabled={!desiredTranscriptionStatus}
               displayEmpty
-              id="input-language-select"
-              value={transcriptionLanguage}
-              onChange={(e) => dispatch(setTranscriptionLanguage(e.target.value as keyof typeof TranscriptionLanguage))}
+              inputProps={{ id: 'input-language-select' }}
+              value={desiredTranscriptionLanguage}
+              onChange={(e) => onLanguageSelectChange(e.target.value as TranscriptionLanguageKey)}
             >
               {Object.keys(TranscriptionLanguage).map((key) => (
                 <MenuItem key={key} value={key.toString()}>
-                  {TranscriptionLanguage[key as keyof typeof TranscriptionLanguage]}
+                  {TranscriptionLanguage[key as TranscriptionLanguageKey]}
                 </MenuItem>
               ))}
             </Select>
@@ -119,7 +147,7 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
         <Button type="button" color="primary" onClick={onClose}>
           {t('global-cancel')}
         </Button>
-        <Button type="button" color="secondary" onClick={submit} disabled={!transcriptionLanguage}>
+        <Button type="button" color="secondary" onClick={submit} disabled={!desiredTranscriptionLanguage}>
           {t('global-save')}
         </Button>
       </DialogActions>

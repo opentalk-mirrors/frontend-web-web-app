@@ -26,12 +26,11 @@ const SubtitlesContainer = styled(Stack)(({ theme }) => ({
   borderRadius: theme.borderRadius.medium,
   position: 'relative',
   gap: theme.spacing(2),
-  bottom: theme.spacing(4),
+  margin: '0 auto',
   height: theme.spacing(22),
   overflowY: 'scroll',
   scrollbarWidth: 'none',
   width: '99%',
-  margin: 'auto',
   userSelect: 'none',
   boxShadow: '0 12px 12px 0 rgb(0 0 0 / 16%)',
 }));
@@ -66,7 +65,7 @@ const TranscriptionSubtitlesDisplay = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      dispatch(removeExpiredSegments(new Date()));
+      dispatch(removeExpiredSegments(new Date().toISOString()));
     }, REFRESH_INTERVAL);
 
     return () => clearInterval(interval);

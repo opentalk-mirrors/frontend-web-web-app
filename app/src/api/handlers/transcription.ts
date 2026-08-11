@@ -5,22 +5,40 @@ import i18next from 'i18next';
 
 import { notifications } from '../../commonComponents';
 import log from '../../logger';
-import type { AppDispatch } from '../../store';
+import type { AppDispatch, RootState } from '../../store';
 import {
   hideSubtitles,
   segmentReceived,
+  setTranscriptionLanguage,
   showSubtitles,
   transcriptionStatusUpdated,
 } from '../../store/slices/transcriptionSlice';
+import { TranscriptionLanguage } from '../types/incoming/transcription';
 import { TranscriptionStatus, TranscriptionMessage } from '../types/incoming/transcription';
 
 /**
  * Handles messages in the transcription namespace.
  */
-export const handleTranscriptionMessage = (dispatch: AppDispatch, data: TranscriptionMessage) => {
+export const handleTranscriptionMessage = (dispatch: AppDispatch, data: TranscriptionMessage, state: RootState) => {
   switch (data.message) {
     case 'state_updated': {
       dispatch(transcriptionStatusUpdated(data.status));
+      if (data.language in TranscriptionLanguage) {
+        dispatch(setTranscriptionLanguage(data.language));
+      }
+
+      // if the status has not changed but the language has, we also want to notify the user about the language change
+      if (
+        data.status === state.transcription.status &&
+        data.status === TranscriptionStatus.Running &&
+        data.language !== state.transcription.language &&
+        data.language in TranscriptionLanguage
+      ) {
+        notifications.info(
+          i18next.t('subtitle-notification-language-changed', { language: TranscriptionLanguage[data.language] })
+        );
+        break;
+      }
       switch (data.status) {
         case TranscriptionStatus.Inactive: {
           dispatch(hideSubtitles());

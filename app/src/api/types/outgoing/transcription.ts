@@ -4,6 +4,7 @@
 import type { RootState } from '../../../store';
 import { createModule, Namespaced } from '../../../types';
 import { createSignalingApiCall } from '../../createSignalingApiCall';
+import { TranscriptionLanguageKey } from '../incoming/transcription';
 import { sendMessage } from './common';
 
 export interface StartTranscription {
@@ -13,6 +14,11 @@ export interface StartTranscription {
 
 export interface StopTranscription {
   action: 'stop';
+}
+
+export interface ChangeTranscriptionLanguage {
+  action: 'change_language';
+  language: TranscriptionLanguageKey;
 }
 
 export interface TranscriptionStarted {
@@ -39,7 +45,7 @@ export interface SendTranscriptionEvent {
   event: TranscriptionEvent;
 }
 
-export type Action = StartTranscription | StopTranscription | SendTranscriptionEvent;
+export type Action = StartTranscription | StopTranscription | SendTranscriptionEvent | ChangeTranscriptionLanguage;
 
 export type Transcription = Namespaced<Action, 'transcription'>;
 
@@ -48,6 +54,10 @@ export const sendStopTranscriptionSignal = createSignalingApiCall<StopTranscript
 export const sendTranscriptionEventSignal = createSignalingApiCall<SendTranscriptionEvent>(
   'transcription',
   'transcription_service_event'
+);
+export const changeTranscriptionLanguageSignal = createSignalingApiCall<ChangeTranscriptionLanguage>(
+  'transcription',
+  'change_language'
 );
 
 export const handler = createModule<RootState>((builder) => {
@@ -60,6 +70,9 @@ export const handler = createModule<RootState>((builder) => {
     })
     .addCase(sendTranscriptionEventSignal.action, (_state, action) => {
       sendMessage(sendTranscriptionEventSignal(action.payload));
+    })
+    .addCase(changeTranscriptionLanguageSignal.action, (_state, action) => {
+      sendMessage(changeTranscriptionLanguageSignal(action.payload));
     });
 });
 
