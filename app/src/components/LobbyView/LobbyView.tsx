@@ -286,7 +286,12 @@ const LobbyView = () => {
     if (!(isLoggedIn || inviteCode !== undefined)) {
       return;
     }
-    if (connectionState !== ConnectionState.Initial && connectionState !== ConnectionState.Setup) {
+    // On successful hangup the connection state will be `Left`
+    const canInitiateStart =
+      connectionState === ConnectionState.Initial ||
+      connectionState === ConnectionState.Setup ||
+      connectionState === ConnectionState.Left;
+    if (!canInitiateStart) {
       return;
     }
 
@@ -346,7 +351,9 @@ const LobbyView = () => {
   // TODO: remove with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/333
   const isAwaitingPasswordStart =
     showPasswordField &&
-    (connectionState === ConnectionState.Setup || connectionState === ConnectionState.FailedCredentials);
+    (connectionState === ConnectionState.Setup ||
+      connectionState === ConnectionState.FailedCredentials ||
+      connectionState === ConnectionState.Left);
   const isStarting = connectionState === ConnectionState.Starting;
 
   const disableSubmitButton = !formik.isValid || isStarting || (!isInLobby && !isAwaitingPasswordStart);

@@ -246,9 +246,17 @@ describe('LobbyView connect-first WS lobby', () => {
     expect(startRoom).not.toHaveBeenCalled();
   });
 
-  it('opens the connection automatically when no password is required', async () => {
+  it('opens the connection automatically on refresh, when no password is required', async () => {
     vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
     const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup, passwordRequired: false });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    await waitFor(() => expect(startRoom).toHaveBeenCalled());
+  });
+
+  it('opens the connection automatically for after hang up from the meeting, when no password is required', async () => {
+    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Left, passwordRequired: false });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     await waitFor(() => expect(startRoom).toHaveBeenCalled());
