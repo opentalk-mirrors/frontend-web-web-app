@@ -20,8 +20,12 @@ import {
   enterWaitingRoom as enterWaitingRoomCommand,
 } from '../../api/types/outgoing/core';
 import { HiddenIcon, VisibleIcon } from '../../assets/icons';
-import { CommonTextField as DefaultCommonTextField, notifications } from '../../commonComponents';
-import SuspenseLoading from '../../commonComponents/SuspenseLoading/SuspenseLoading';
+import {
+  CommonTextField as DefaultCommonTextField,
+  ConditionalToolTip,
+  notifications,
+  SuspenseLoading,
+} from '../../commonComponents';
 import { DISPLAY_NAME_MAX_CHARACTERS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useDisplayName } from '../../hooks/useDisplayName';
@@ -45,7 +49,6 @@ import { setDisplayName } from '../../store/slices/userSlice';
 import { FetchRequestError } from '../../types';
 import { composeRoomPath } from '../../utils/apiUtils';
 import { formikProps } from '../../utils/formikUtils';
-import { ConditionalToolTip } from '../ConditionalToolTip/ConditionalToolTip';
 import OpentalkError from '../Error';
 import ImprintContainer from '../ImprintContainer';
 import SelfTest from '../SelfTest';
