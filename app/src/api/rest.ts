@@ -45,7 +45,6 @@ interface FeedbackFormData {
 
 export enum StartRoomError {
   WrongRoomPassword = 'wrong_room_password',
-  InvalidCredentials = 'invalid_credentials',
   InvalidBreakoutRoomId = 'invalid_breakout_room_id',
   NoBreakoutRooms = 'no_breakout_rooms',
   InvalidJson = 'invalid_json',

@@ -16,6 +16,7 @@ const mockEventInfo: EventInfo = {
   isAdhoc: false,
   roomId: '1' as RoomId,
   e2eEncryption: false,
+  passwordRequired: false,
 };
 
 const meetingDetails: MeetingDetails = {

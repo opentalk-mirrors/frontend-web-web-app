@@ -441,7 +441,6 @@ legal-vote-popover-results-button = Votingergebnisse anzeigen
 
 legal-vote-overview-button-create-vote = Abstimmung erstellen
 legal-vote-form-button-save = Speichern
-legal-vote-form-button-continue = Fortsetzen
 
 legal-vote-overview-panel-button-cancel = Abbrechen
 legal-vote-overview-panel-button-end = Beenden
@@ -706,7 +705,9 @@ selftest-header = Say hello to yourself.
 selftest-body = Kamera und Mikrofon können hier aktiviert und getestet werden.
 selftest-body-do-test = Kamera und Mikrofon können hier getestet werden.
 lobby-name-placeholder = Bitte Name eingeben
-lobby-password-placeholder = Passwort bitte
+lobby-password-placeholder = Passwort eingeben
+lobby-password-step-heading = Dieser Raum ist passwortgeschützt.
+lobby-password-step-subtext = Zugang nur mit gültigem Passwort möglich.
 lobby-name-max-error = Max. {$max} Buchstaben
 dashboard-home-join = Starten
 dashboard-home-join-label = {$title} starten
@@ -793,6 +794,7 @@ global-disabled = Deaktivieren
 global-next = Weiter
 global-previous = Zurück
 global-edit = Bearbeiten
+global-continue = Fortfahren
 
 retry-available-in = Wiederholung verfügbar in {$seconds}
 

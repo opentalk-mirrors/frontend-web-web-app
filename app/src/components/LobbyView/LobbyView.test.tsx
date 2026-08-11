@@ -18,6 +18,14 @@ import { ParticipationKind, Role } from '../../types/common';
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import LobbyView from './LobbyView';
 
+const mocks = vi.hoisted(() => ({
+  roomEventInfo: { data: {} as Record<string, unknown> },
+}));
+
+const setPasswordRequired = (passwordRequired: boolean) => {
+  mocks.roomEventInfo = { data: { passwordRequired } };
+};
+
 vi.mock('../SelfTest', () => ({
   __esModule: true,
   default: ({ children, actionButton }: { children?: React.ReactNode; actionButton?: React.ReactNode }) => {
@@ -38,9 +46,7 @@ vi.mock('../../api/rest', async (importOriginal) => ({
     },
     isLoading: false,
   }),
-  useGetRoomEventInfoQuery: () => ({
-    data: {},
-  }),
+  useGetRoomEventInfoQuery: () => mocks.roomEventInfo,
 }));
 
 vi.mock('../../store/commonActions', async (importOriginal) => {
@@ -66,6 +72,7 @@ describe('LobbyView', () => {
     },
   });
   afterEach(() => {
+    setPasswordRequired(false);
     vi.resetAllMocks();
   });
 
@@ -121,26 +128,13 @@ describe('LobbyView connect-first WS lobby', () => {
       initialState: {
         auth: { isAuthed: true },
         user: { role: Role.User, participantKind: ParticipationKind.Guest },
-        room: { passwordRequired: false, invite: { inviteCode: 'inviteCode' }, ...roomOverrides },
+        room: { invite: { inviteCode: 'inviteCode' }, ...roomOverrides },
       },
     });
 
   afterEach(() => {
+    setPasswordRequired(false);
     vi.resetAllMocks();
-  });
-
-  it('renders the password field when the room requires a password', () => {
-    const { store } = setupLobbyStore({
-      connectionState: ConnectionState.Lobby,
-      canEnter: true,
-      passwordRequired: true,
-    });
-    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
-
-    const passwordInput = screen.getByPlaceholderText('lobby-password-placeholder');
-    expect(passwordInput).toBeInTheDocument();
-    expect(passwordInput).toHaveAttribute('type', 'password');
-    expect(screen.getByRole('button', { name: 'toggle-password-visibility' })).toBeInTheDocument();
   });
 
   it('shows the "enter now" label when the participant may enter directly', () => {
@@ -238,17 +232,9 @@ describe('LobbyView connect-first WS lobby', () => {
     );
   });
 
-  it('does not open the connection automatically for password-protected rooms', () => {
-    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
-    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup, passwordRequired: true });
-    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
-
-    expect(startRoom).not.toHaveBeenCalled();
-  });
-
   it('opens the connection automatically on refresh, when no password is required', async () => {
     vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
-    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup, passwordRequired: false });
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     await waitFor(() => expect(startRoom).toHaveBeenCalled());
@@ -256,76 +242,127 @@ describe('LobbyView connect-first WS lobby', () => {
 
   it('opens the connection automatically for after hang up from the meeting, when no password is required', async () => {
     vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
-    const { store } = setupLobbyStore({ connectionState: ConnectionState.Left, passwordRequired: false });
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Left });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
     await waitFor(() => expect(startRoom).toHaveBeenCalled());
   });
+});
 
-  it('keeps the submit button disabled until the password is entered', async () => {
-    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
-    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup, passwordRequired: true });
-    const user = userEvent.setup({ delay: null });
-    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+describe('LobbyView password step', () => {
+  const setupLobbyStore = (roomOverrides: Record<string, unknown>) =>
+    configureStore({
+      initialState: {
+        auth: { isAuthed: true },
+        user: { role: Role.User, participantKind: ParticipationKind.Guest },
+        room: { invite: { inviteCode: 'inviteCode' }, ...roomOverrides },
+      },
+    });
 
-    await waitFor(() => expect(screen.getByRole('button', { name: 'joinform-enter-now' })).toBeDisabled());
-
-    await user.type(screen.getByPlaceholderText('lobby-password-placeholder'), 'secret');
-
-    await waitFor(() => expect(screen.getByRole('button', { name: 'joinform-enter-now' })).toBeEnabled());
+  afterEach(() => {
+    setPasswordRequired(false);
+    vi.resetAllMocks();
   });
 
-  it('starts the room with the entered password on submit', async () => {
-    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
-    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup, passwordRequired: true });
-    const user = userEvent.setup({ delay: null });
+  it('shows the dedicated password step for a password-protected room', () => {
+    setPasswordRequired(true);
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
-    const name = screen.getByPlaceholderText('lobby-name-placeholder');
-    await user.clear(name);
-    await user.type(name, 'Guest');
-    await user.type(screen.getByPlaceholderText('lobby-password-placeholder'), 'secret');
-    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
-
-    await waitFor(() =>
-      expect(startRoom).toHaveBeenCalledWith(expect.objectContaining({ password: 'secret', displayName: 'Guest' }))
-    );
+    expect(screen.getByText('lobby-password-step-heading')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('lobby-password-placeholder')).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText('lobby-name-placeholder')).not.toBeInTheDocument();
   });
 
-  it('re-enables the submit button after a wrong password so the guest can retry', async () => {
+  it('does not open the connection automatically for password-protected rooms', () => {
     vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
-    const { store } = setupLobbyStore({ connectionState: ConnectionState.FailedCredentials, passwordRequired: true });
+    setPasswordRequired(true);
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    expect(startRoom).not.toHaveBeenCalled();
+  });
+
+  it('keeps the continue button disabled until a password is entered', async () => {
+    setPasswordRequired(true);
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup });
     const user = userEvent.setup({ delay: null });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
+    expect(screen.getByRole('button', { name: 'global-continue' })).toBeDisabled();
+
     await user.type(screen.getByPlaceholderText('lobby-password-placeholder'), 'secret');
 
-    await waitFor(() => expect(screen.getByRole('button', { name: 'joinform-enter-now' })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'global-continue' })).toBeEnabled());
+  });
 
-    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+  it('opens the lobby connection with the entered password on continue, without a display name', async () => {
+    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
+    setPasswordRequired(true);
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup });
+    const user = userEvent.setup({ delay: null });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    expect(screen.queryByPlaceholderText('lobby-name-placeholder')).not.toBeInTheDocument();
+
+    await user.type(screen.getByPlaceholderText('lobby-password-placeholder'), 'secret');
+    await user.click(screen.getByRole('button', { name: 'global-continue' }));
 
     await waitFor(() => expect(startRoom).toHaveBeenCalledWith(expect.objectContaining({ password: 'secret' })));
   });
 
-  it('sends the enter command automatically once the deferred start reaches the lobby', async () => {
+  it('shows the standard join screen once the connection reaches the lobby', async () => {
     vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
-    const { store, dispatchSpy } = setupLobbyStore({
-      connectionState: ConnectionState.Setup,
-      passwordRequired: true,
-    });
+    setPasswordRequired(true);
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.Setup });
     const user = userEvent.setup({ delay: null });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
-    const name = screen.getByPlaceholderText('lobby-name-placeholder');
-    await user.clear(name);
-    await user.type(name, 'Guest');
     await user.type(screen.getByPlaceholderText('lobby-password-placeholder'), 'secret');
-    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
-
-    await waitFor(() => expect(startRoom).toHaveBeenCalled());
+    await user.click(screen.getByRole('button', { name: 'global-continue' }));
 
     store.dispatch(joinedLobby({ canEnter: true, displayName: undefined, participantId: 'participant-id' as never }));
 
-    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(enterRoomCommand.action({ displayName: 'Guest' })));
+    expect(await screen.findByPlaceholderText('lobby-name-placeholder')).toBeInTheDocument();
+    expect(screen.queryByText('lobby-password-step-heading')).not.toBeInTheDocument();
+  });
+
+  it('shows the password step again to retry after a failed credentials state', async () => {
+    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
+    setPasswordRequired(true);
+    const { store } = setupLobbyStore({ connectionState: ConnectionState.FailedCredentials });
+    const user = userEvent.setup({ delay: null });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    expect(screen.getByText('lobby-password-step-heading')).toBeInTheDocument();
+
+    await user.type(screen.getByPlaceholderText('lobby-password-placeholder'), 'secret');
+    await user.click(screen.getByRole('button', { name: 'global-continue' }));
+
+    await waitFor(() => expect(startRoom).toHaveBeenCalledWith(expect.objectContaining({ password: 'secret' })));
+  });
+
+  it('sends enter_room with the entered name after joining a password-protected room', async () => {
+    vi.spyOn(UseInviteCodeModule, 'useInviteCode').mockReturnValue('invite-code' as InviteCode);
+    setPasswordRequired(true);
+    const { store, dispatchSpy } = setupLobbyStore({ connectionState: ConnectionState.Setup });
+    const user = userEvent.setup({ delay: null });
+    renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
+
+    await user.type(screen.getByPlaceholderText('lobby-password-placeholder'), 'secret');
+    await user.click(screen.getByRole('button', { name: 'global-continue' }));
+
+    await waitFor(() => expect(startRoom).toHaveBeenCalled());
+
+    // Connection established: the standard join screen is shown, the guest enters a name and joins
+    store.dispatch(joinedLobby({ canEnter: true, displayName: undefined, participantId: 'participant-id' as never }));
+
+    const name = await screen.findByPlaceholderText('lobby-name-placeholder');
+    await user.clear(name);
+    await user.type(name, 'Guest');
+    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+
+    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(setDisplayName('Guest')));
+    expect(dispatchSpy).toHaveBeenCalledWith(enterRoomCommand.action({ displayName: 'Guest' }));
   });
 });

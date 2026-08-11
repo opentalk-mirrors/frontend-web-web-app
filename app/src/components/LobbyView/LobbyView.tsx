@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Container, IconButton, InputAdornment, Stack, styled } from '@mui/material';
+import { Button, Container, Stack, styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
@@ -19,7 +19,6 @@ import {
   enterRoom as enterRoomCommand,
   enterWaitingRoom as enterWaitingRoomCommand,
 } from '../../api/types/outgoing/core';
-import { HiddenIcon, VisibleIcon } from '../../assets/icons';
 import {
   CommonTextField as DefaultCommonTextField,
   ConditionalToolTip,
@@ -42,7 +41,6 @@ import {
   selectCanEnter,
   selectInviteState,
   selectLobbyDisplayName,
-  selectPasswordRequired,
   selectRoomConnectionState,
 } from '../../store/slices/roomSlice';
 import { setDisplayName } from '../../store/slices/userSlice';
@@ -52,6 +50,7 @@ import { formikProps } from '../../utils/formikUtils';
 import OpentalkError from '../Error';
 import ImprintContainer from '../ImprintContainer';
 import SelfTest from '../SelfTest';
+import LobbyPasswordStep from './fragments/LobbyPasswordStep';
 
 const CommonTextField = styled(DefaultCommonTextField)(({ theme }) => ({
   '& .MuiInputBase-root': {
@@ -123,6 +122,14 @@ const closeWrongPasswordNotification = () => {
 
 const JOIN_FORM_ID = 'join-form';
 
+const PASSWORD_STEP_CONNECTION_STATES = [
+  ConnectionState.Initial,
+  ConnectionState.Setup,
+  ConnectionState.Starting,
+  ConnectionState.Left,
+  ConnectionState.FailedCredentials,
+];
+
 const LobbyView = () => {
   const { t } = useTranslation();
 
@@ -134,7 +141,6 @@ const LobbyView = () => {
   const connectionState = useAppSelector(selectRoomConnectionState);
   const canEnter = useAppSelector(selectCanEnter);
   const lobbyDisplayName = useAppSelector(selectLobbyDisplayName);
-  const showPasswordField = useAppSelector(selectPasswordRequired);
   const inviteStateCode = inviteState.inviteCode;
 
   const { data } = useGetMeQuery(undefined, { skip: !isLoggedIn });
@@ -143,7 +149,6 @@ const LobbyView = () => {
   const navigate = useNavigate();
 
   const [inviteCodeError, setInviteCodeError] = useState<FetchRequestError>();
-  const [showPassword, setShowPassword] = useState(false);
 
   const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
@@ -155,6 +160,9 @@ const LobbyView = () => {
     isLoading: isRoomDataLoading,
   } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
 
+  const isPasswordRequired = Boolean(roomData?.passwordRequired);
+  const showPasswordStep = isPasswordRequired && PASSWORD_STEP_CONNECTION_STATES.includes(connectionState);
+
   if (roomData?.e2eEncryption && !isE2EESupported()) {
     notifications.error(t('unsupported-browser-e2e-encryption-dialog-message'));
   }
@@ -163,7 +171,6 @@ const LobbyView = () => {
     extension: '',
   });
 
-  // Temporary request to figure out if we need to show a password field until it is added in getEventInfo request - https://git.opentalk.dev/opentalk/backend/services/controller/-/issues/603
   useEffect(() => {
     if (inviteCode && !inviteStateCode) {
       dispatch(fetchRoomByInviteId(inviteCode))
@@ -190,30 +197,26 @@ const LobbyView = () => {
           .trim()
           .max(DISPLAY_NAME_MAX_CHARACTERS, t('lobby-name-max-error', { max: DISPLAY_NAME_MAX_CHARACTERS }))
           .required(t('field-error-required', { fieldName: 'Name' })),
-        password: showPasswordField
-          ? yup.string().required(t('field-error-required', { fieldName: t('global-password') }))
-          : yup.string(),
       }),
-    [t, showPasswordField]
+    [t]
   );
 
   const openLobbyConnection = useCallback(
-    async (password?: string, displayName?: string) => {
+    async (passwordValue?: string, displayName?: string) => {
       if (joinWithoutMedia) {
         dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
         dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
       }
       try {
-        const result = await dispatch(
+        await dispatch(
           startRoom({
             roomId,
             displayName: displayName || initialDisplayName || '',
             inviteCode,
-            password,
+            password: passwordValue,
           })
         ).unwrap();
         closeWrongPasswordNotification();
-        return result;
       } catch (e: unknown) {
         if (isApiError<StartRoomError>(e)) {
           switch (e.code) {
@@ -227,7 +230,7 @@ const LobbyView = () => {
               notifications.error(t('error-general'));
               break;
             case StartRoomError.WrongRoomPassword:
-            case StartRoomError.InvalidCredentials:
+              // Keep the guest on the password step so they can re-enter the password.
               showWrongPasswordNotification();
               break;
             case StartRoomError.NotFound:
@@ -266,21 +269,6 @@ const LobbyView = () => {
     [dispatch, canEnter]
   );
 
-  // When the guest submits a password-protected room, the `/start` request is deferred until submit
-  // TODO: remove with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/333
-  const pendingEnter = useRef<{ displayName?: string } | undefined>(undefined);
-
-  useEffect(() => {
-    if (connectionState !== ConnectionState.Lobby || !pendingEnter.current) {
-      return;
-    }
-    const { displayName } = pendingEnter.current;
-    pendingEnter.current = undefined;
-
-    // don't send a displayName if the server already assigned one
-    submitLobby(lobbyDisplayName ? undefined : displayName);
-  }, [connectionState, lobbyDisplayName, submitLobby]);
-
   const hasInitiatedConnect = useRef(false);
   useEffect(() => {
     if (hasInitiatedConnect.current || inviteState.loading || isRoomDataLoading || !roomData) {
@@ -298,10 +286,9 @@ const LobbyView = () => {
       return;
     }
 
-    // For password-protected rooms wait for the guest to submit the password before opening the
-    // connection, otherwise the initial `/start` request fails with a wrong-password error
-    // TODO: remove with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/333
-    if (showPasswordField) {
+    // Password-protected rooms open the connection from the dedicated password step instead, so the
+    // password can be passed to the initial `/start` request.
+    if (isPasswordRequired) {
       return;
     }
     hasInitiatedConnect.current = true;
@@ -314,13 +301,12 @@ const LobbyView = () => {
     inviteCode,
     connectionState,
     openLobbyConnection,
-    showPasswordField,
+    isPasswordRequired,
   ]);
 
   const formik = useFormik({
     initialValues: {
       name: lobbyDisplayName ?? initialDisplayName ?? '',
-      password: '',
     },
     enableReinitialize: true,
     validateOnMount: true,
@@ -330,15 +316,6 @@ const LobbyView = () => {
         return;
       }
       const name = disableDisplayNameField ? initialDisplayName || '' : values.name;
-      // Password-protected rooms defer the initial `/start` request until the guest submits the password,
-      // so open the connection here instead of sending the websocket enter command
-      // TODO: remove with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/333
-      if (connectionState !== ConnectionState.Lobby) {
-        dispatch(setDisplayName(name));
-        pendingEnter.current = { displayName: name };
-        void openLobbyConnection(values.password, name);
-        return;
-      }
       // don't send a displayName if its already set by the server (via display_name_assigned` or returned in `joined_lobby`)
       if (lobbyDisplayName) {
         submitLobby();
@@ -350,21 +327,10 @@ const LobbyView = () => {
   });
 
   const isInLobby = connectionState === ConnectionState.Lobby;
-
-  // TODO: remove with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/333
-  const isAwaitingPasswordStart =
-    showPasswordField &&
-    (connectionState === ConnectionState.Setup ||
-      connectionState === ConnectionState.FailedCredentials ||
-      connectionState === ConnectionState.Left);
   const isStarting = connectionState === ConnectionState.Starting;
 
-  const disableSubmitButton = !formik.isValid || isStarting || (!isInLobby && !isAwaitingPasswordStart);
+  const disableSubmitButton = !formik.isValid || !isInLobby;
   const submitButtonLabel = isInLobby && canEnter === false ? t('joinform-request-to-join') : t('joinform-enter-now');
-
-  const handleClickShowPassword = () => {
-    setShowPassword((prev) => !prev);
-  };
 
   if (inviteState.loading || isRoomDataLoading) {
     return <SuspenseLoading />;
@@ -380,6 +346,20 @@ const LobbyView = () => {
       return <OpentalkError title={t('error-invalid-invitation-link')} />;
     }
     return <OpentalkError title={t('error-invite-link')} />;
+  }
+
+  if (showPasswordStep) {
+    return (
+      <>
+        <LobbyPasswordStep
+          isSubmitting={isStarting}
+          onSubmit={(enteredPassword) => {
+            void openLobbyConnection(enteredPassword);
+          }}
+        />
+        <ImprintContainer />
+      </>
+    );
   }
 
   return (
@@ -412,30 +392,6 @@ const LobbyView = () => {
                 disabled={disableDisplayNameField || Boolean(lobbyDisplayName)}
               />
             </ConditionalToolTip>
-            {showPasswordField && (
-              <CommonTextField
-                {...formikProps('password', formik)}
-                label={t('global-password')}
-                placeholder={t('lobby-password-placeholder')}
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label={t('toggle-password-visibility')}
-                          onClick={handleClickShowPassword}
-                          edge="end"
-                        >
-                          {!showPassword ? <VisibleIcon /> : <HiddenIcon />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-              />
-            )}
           </Stack>
         </SelfTest>
       </Container>

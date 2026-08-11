@@ -161,7 +161,7 @@ const CreateLegalVoteForm = ({
               fullWidth
               color="secondary"
             >
-              {isLastStep ? t('poll-participant-list-button-start') : t('legal-vote-form-button-continue')}
+              {isLastStep ? t('poll-participant-list-button-start') : t('global-continue')}
             </Button>
           </StorageFullTooltip>
         </Stack>
