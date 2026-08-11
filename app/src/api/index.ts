@@ -26,6 +26,7 @@ import {
   handleSubroomAudioMessage,
   handleTimerMessage,
   handleTrainingParticipationReportMessage,
+  handleTranscriptionMessage,
   handleWhiteboardMessage,
   handleRoomServerCoreMessage,
   handleRaiseHandsMessage,
@@ -103,6 +104,9 @@ const onMessage = (dispatch: AppDispatch, getState: () => RootState) => async (m
     case 'training_participation_report':
       handleTrainingParticipationReportMessage(dispatch, message.payload, getState());
       break;
+    case 'transcription':
+      handleTranscriptionMessage(dispatch, message.payload);
+      break;
     case 'error':
       log.error('Received error message from RoomServer:', message.payload);
       break;
@@ -172,6 +176,7 @@ export const apiMiddleware: Middleware = ({
       .addModule((builder) => outgoing.whiteboard.handler(builder, dispatch))
       .addModule((builder) => outgoing.recording.handler(builder, dispatch))
       .addModule((builder) => outgoing.raiseHands.handler(builder, dispatch))
+      .addModule((builder) => outgoing.transcription.handler(builder, dispatch))
       .addModule((builder) => outgoing.reaction.handler(builder, dispatch))
       .addModule((builder) => outgoing.trainingParticipationReport.handler(builder, dispatch));
   });

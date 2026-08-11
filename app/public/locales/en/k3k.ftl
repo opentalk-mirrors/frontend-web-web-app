@@ -138,7 +138,6 @@ media-bad-connection = Your server connection is unstable; media performance or 
 
 chatbar-send-message = Send
 chatbar-input-placehoder = Type your message
-chatbar-unknown-username = unknown
 
 chat-private-scope = Send Private
 chat-group-scope = Group
@@ -281,6 +280,10 @@ more-menu-create-invite = Invite guest
 more-menu-start-recording = Start recording
 more-menu-stop-recording = Stop recording
 more-menu-pause-recording = Pause recording
+more-menu-start-transcription = Start transcription
+more-menu-stop-transcription = Stop transcription
+transcription-language = Language
+transcription-error = Transcription service error
 
 more-menu-enable-waiting-room = Enable waiting room
 more-menu-disable-waiting-room = Disable waiting room
@@ -292,7 +295,7 @@ more-menu-enable-guest-access = Enable guest access
 more-menu-disable-guest-access = Disable guest access
 more-menu-turn-handraises-on = Enable handraises
 more-menu-turn-handraises-off = Disable handraises
-more-menu-delete-global-chat = Clean global chat
+more-menu-delete-global-chat = Clear global chat
 waiting-room-enabled-message = Waiting room is enabled
 waiting-room-disabled-message = Waiting room is disabled
 waiting-room-for-guests-message = Waiting room is enabled for guests
@@ -786,6 +789,7 @@ global-meeting = { $count ->
 global-open-new-tab = Open in new tab
 global-required-field = This is a mandatory field
 global-unknown = Unknown
+global-unknown-username = Unknown
 global-rename = Rename
 global-disabled = Disabled
 global-next = Next
@@ -1401,3 +1405,17 @@ dashboard-meeting-waiting-room-option-all-participants = Everyone
 dashboard-meeting-waiting-room-option-guests-only = Guests only
 
 failed-playback-audio-warning = Audio is currently restricted by your browser settings. Please unmute to activate the sound and begin your session. If you continue to experience silence, we recommend reviewing your browser extensions for any playback blocks.
+
+subtitle-settings-dialog-title = Manage subtitles
+more-menu-subtitle-settings = Manage subtitles
+more-menu-show-subtitles = Show subtitles
+more-menu-hide-subtitles = Hide subtitles
+subtitle-settings-input-language = Select language...
+subtitle-settings-input-language-error = Please select an input language.
+subtitle-settings-enable-subtitles = Enable subtitles for everyone
+subtitle-notification-show = Show
+subtitle-notification-hide = Not now
+subtitle-notification-enabled = Subtitles are now available
+subtitle-notification-disabled = Subtitles have been turned off by the host
+subtitle-notification-not-enabled-warning = Subtitles are currently unavailable. Please try again later.
+subtitle-silence-placeholder = ...

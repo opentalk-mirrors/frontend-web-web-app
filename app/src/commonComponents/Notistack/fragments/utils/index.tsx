@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { OptionsObject, SnackbarKey, SnackbarMessage, closeSnackbar, enqueueSnackbar } from 'notistack';
+import { closeSnackbar, enqueueSnackbar, OptionsObject, SnackbarKey, SnackbarMessage } from 'notistack';
 
 import SnackbarActionButtons from '../SnackbarActionButtons';
 import type {
@@ -82,7 +82,12 @@ export const notifications = {
     });
   },
   info(msg: string, options: OptionsObject = {}): void {
-    this.toast(msg, { autoHideDuration: DEFAULT_AUTO_HIDE_DURATION, ...options, variant: 'info', ariaLive: 'polite' });
+    this.toast(msg, {
+      autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
+      ...options,
+      variant: 'info',
+      ariaLive: 'polite',
+    });
   },
   error(msg: string, options: OptionsObject = {}): void {
     this.toast(msg, {
@@ -146,6 +151,14 @@ export const notifications = {
       key: options.key,
       isLastSpeaker: options.isLastSpeaker,
       onNext: options.onNext,
+    });
+  },
+  showTranscriptionEnabledNotification: (options: { onActivated: () => void; key?: SnackbarKey }) => {
+    return enqueueSnackbar({
+      variant: 'transcriptionEnabled',
+      persist: true,
+      key: 'transcription-enabled',
+      onActivated: options.onActivated,
     });
   },
 };

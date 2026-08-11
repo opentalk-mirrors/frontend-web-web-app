@@ -23,8 +23,9 @@ const GridContainer = styled('div', {
   gridGap: theme.spacing(1),
   alignContent: 'center',
   gridAutoFlow: 'row',
+  minHeight: '80%',
   [theme.breakpoints.up('md')]: {
-    height: '100%',
+    flex: 1,
     gridTemplateColumns: `repeat(auto-fit, minmax(calc(${videoWidth}% - ${theme.spacing(1)}), 1fr))`,
   },
 }));

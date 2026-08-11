@@ -35,6 +35,8 @@ import * as timer from './timer';
 import TimerMessage from './timer';
 import * as trainingParticipationReport from './trainingParticipationReport';
 import TrainingParticipationReportMessage from './trainingParticipationReport';
+import * as transcription from './transcription';
+import TranscriptionMessage from './transcription';
 import * as whiteboard from './whiteboard';
 import WhiteboardMessage from './whiteboard';
 
@@ -56,6 +58,7 @@ export * as raiseHands from './raiseHands';
 export * as subroomAudio from './subroomAudio';
 export * as trainingParticipationReport from './trainingParticipationReport';
 export * as reaction from './reaction';
+export * as transcription from './transcription';
 
 export type Action =
   | automod.Action
@@ -75,7 +78,8 @@ export type Action =
   | raiseHands.Action
   | subroomAudio.Action
   | trainingParticipationReport.Action
-  | reaction.Action;
+  | reaction.Action
+  | transcription.Action;
 
 // we need to use type mapping, to convert `Namespaced` interface into types
 // otherwise we will have problems with `convertToCamelCase` function
@@ -134,6 +138,9 @@ type TrainingParticipationReportMappedType = {
 type ReactionMessageMappedType = {
   [P in keyof ReactionMessage]: ReactionMessage[P];
 };
+type TranscriptionMessageMappedType = {
+  [P in keyof TranscriptionMessage]: TranscriptionMessage[P];
+};
 
 export type Message =
   | AutomodMessageMappedType
@@ -153,4 +160,5 @@ export type Message =
   | RaiseHandsMessageMappedType
   | SubroomAudioMessageMappedType
   | TrainingParticipationReportMappedType
-  | ReactionMessageMappedType;
+  | ReactionMessageMappedType
+  | TranscriptionMessageMappedType;

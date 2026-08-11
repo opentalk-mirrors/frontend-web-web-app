@@ -38,7 +38,10 @@ export enum ParticipationKind {
   Recorder = 'recorder',
   CallIn = 'call_in',
   RegisteredCallIn = 'registered_call_in',
+  Transcription = 'transcription',
 }
+// these participant kinds are hidden from the global feed and should not be displayed in any participant list
+export const HiddenParticipationKinds = [ParticipationKind.Recorder, ParticipationKind.Transcription];
 
 export interface MediaSessionState {
   audio: boolean;

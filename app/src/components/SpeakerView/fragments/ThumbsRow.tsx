@@ -17,7 +17,6 @@ import { Thumbnail } from './Thumbnail';
 const ThumbsHolder = styled(Stack, {
   shouldForwardProp: (prop) => prop !== 'tracks',
 })<{ tracks: number }>(({ theme }) => ({
-  margin: theme.spacing(2, 0, 0, 0),
   gridGap: theme.spacing(2),
   width: '100%',
 }));

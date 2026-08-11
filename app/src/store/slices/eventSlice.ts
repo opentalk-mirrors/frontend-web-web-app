@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import type { RootState } from '..';
 import { DisconnectReason } from '../../api/types/incoming/core';
-import { ParticipantId, ParticipationKind } from '../../types';
+import { HiddenParticipationKinds, ParticipantId, ParticipationKind } from '../../types';
 import { setChatSettings } from './chatSlice';
 import { participantJoined, participantLeft, participantRejoined } from './participantsSlice';
 import { connectionClosed } from './roomSlice';
@@ -78,7 +78,7 @@ const eventSelector = eventAdapter.getSelectors<RootState>((state) => state.even
 export const selectAllEvents = (state: RootState) => eventSelector.selectAll(state);
 
 export const selectVisibleEvents = createSelector([selectAllEvents], (events) =>
-  events.filter((event) => event.participationKind !== ParticipationKind.Recorder)
+  events.filter((event) => event.participationKind && !HiddenParticipationKinds.includes(event.participationKind))
 );
 
 export const actions = eventSlice.actions;

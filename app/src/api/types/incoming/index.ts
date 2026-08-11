@@ -22,6 +22,7 @@ import StreamingMessage from './streaming';
 import SubroomAudioMessage from './subroomAudio';
 import TimerMessage from './timer';
 import TrainingParticipationReport from './trainingParticipationReport';
+import TranscriptionMessage from './transcription';
 import WhiteboardMessage from './whiteboard';
 
 export * as breakout from './breakout';
@@ -44,6 +45,7 @@ export * as core from './core';
 export * as e2ee from './e2ee';
 export * as raiseHands from './raiseHands';
 export * as reaction from './reaction';
+export * as transcription from './transcription';
 
 export type Message =
   | AutomodMessage
@@ -67,4 +69,5 @@ export type Message =
   | ReactionMessage
   | E2eeMessage
   | RoomServerErrorMessage
-  | AssetStorage;
+  | AssetStorage
+  | TranscriptionMessage;

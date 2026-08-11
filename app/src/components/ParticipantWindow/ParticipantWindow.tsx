@@ -30,6 +30,7 @@ const Container = styled(MuiBox)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   background: theme.palette.background.customPaper.primary,
+  flex: 1,
 }));
 
 interface ParticipantWindowProps {
