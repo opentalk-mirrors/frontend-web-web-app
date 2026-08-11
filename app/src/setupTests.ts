@@ -22,6 +22,30 @@ vi.stubGlobal('Response', Response);
 vi.stubGlobal('Request', Request);
 vi.stubGlobal('fetch', fetch);
 
+// Some test launchers (e.g. running a single file through an IDE) execute code in an
+// environment where `localStorage`/`sessionStorage` are not provided - so we provide
+// a fallback when missing
+const createMemoryStorage = (): Storage => {
+  const data = new Map<string, string>();
+  return {
+    get length() {
+      return data.size;
+    },
+    clear: () => data.clear(),
+    getItem: (key: string) => (data.has(key) ? (data.get(key) as string) : null),
+    key: (index: number) => Array.from(data.keys())[index] ?? null,
+    removeItem: (key: string) => void data.delete(key),
+    setItem: (key: string, value: string) => void data.set(key, String(value)),
+  };
+};
+
+if (typeof globalThis.localStorage === 'undefined') {
+  vi.stubGlobal('localStorage', createMemoryStorage());
+}
+if (typeof globalThis.sessionStorage === 'undefined') {
+  vi.stubGlobal('sessionStorage', createMemoryStorage());
+}
+
 vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(function getContext(this: HTMLCanvasElement) {
   return {
     canvas: this,
