@@ -150,7 +150,7 @@ const EventsOverviewPage = () => {
             currentCursorIndex={currentCursorIndex}
           />
         ) : (
-          <EventsOverview entries={groups} isLoading={isLoading} isFetching={isFetching} />
+          <EventsOverview key={groups[0].title} entries={groups} isLoading={isLoading} isFetching={isFetching} />
         ))}
     </>
   );
