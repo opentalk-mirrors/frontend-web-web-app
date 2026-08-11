@@ -268,21 +268,6 @@ describe('handleModerationMessage', () => {
     expect(notifications.warning).toHaveBeenCalledWith('media-received-force-mute');
   });
 
-  // it('notifies moderators when a debriefing session ends for all', () => {
-  //   const dispatch = vi.fn();
-  //   const state = createState({
-  //     user: {
-  //       role: Role.Moderator,
-  //     },
-  //   });
-  //   const data: ModerationMessage = { message: 'session_ended' };
-
-  //   handleModerationMessage(dispatch, data, timestamp, state);
-
-  //   expect(dispatch).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
-  //   expect(notifications.info).toHaveBeenCalledExactlyOnceWith('debriefing-session-ended-for-all-notification');
-  // });
-
   it('notifies users and enables self-rename when moderator enabled renaming', () => {
     const dispatch = vi.fn();
     const state = createState();
@@ -308,6 +293,10 @@ describe('handleModerationMessage', () => {
   });
 
   describe('role_updated', () => {
+    const issuer = 'issuer' as ParticipantId;
+    const updatedUser = 'participant-1' as ParticipantId;
+    const otherUser = 'participant-2' as ParticipantId;
+
     const moderatorData: ModeratorJoinInfo = {
       raiseHandsEnabled: true,
       guestAccess: false,
@@ -315,55 +304,92 @@ describe('handleModerationMessage', () => {
       waitingRoom: WaitingRoom.ForEveryone,
     };
 
-    it('consumes moderator data when the local user is promoted to moderator', () => {
+    const mockUpdatedToModeratorData: RoleUpdated = {
+      message: 'role_updated',
+      participantId: updatedUser,
+      newRole: Role.Moderator,
+      moderatorData,
+      issuedBy: issuer,
+    };
+
+    it('consumes moderator data, if moderator rights have been granted to self', () => {
       const dispatch = vi.fn();
-      const userId = 'participant-1' as ParticipantId;
-      const state = createState({ user: { uuid: userId } });
-      const data: RoleUpdated = {
-        message: 'role_updated',
-        participantId: userId,
-        newRole: Role.Moderator,
-        moderatorData,
+      const state = createState({ user: { uuid: updatedUser } });
+
+      handleModerationMessage(dispatch, mockUpdatedToModeratorData, timestamp, state);
+      expect(dispatch).toHaveBeenCalledWith(setModeratorData({ moderatorData }));
+    });
+
+    it('consumes moderator data, if moderator rights have been granted to another participant', () => {
+      const dispatch = vi.fn();
+      const state = createState({ user: { uuid: otherUser } });
+
+      handleModerationMessage(dispatch, mockUpdatedToModeratorData, timestamp, state);
+      expect(dispatch).toHaveBeenCalledWith(setModeratorData({ moderatorData }));
+    });
+
+    it('does not dispatch moderator data, if it is absent', () => {
+      const dispatch = vi.fn();
+      const state = createState({ user: { uuid: updatedUser } });
+      const mockNoModeratorData: RoleUpdated = {
+        ...mockUpdatedToModeratorData,
+        newRole: Role.User,
+        moderatorData: undefined,
       };
 
-      handleModerationMessage(dispatch, data, timestamp, state);
+      handleModerationMessage(dispatch, mockNoModeratorData, timestamp, state);
+      expect(dispatch).not.toHaveBeenCalledWith(setModeratorData(expect.anything()));
+    });
 
+    it('updates own role, if moderator rights have been granted to self', () => {
+      const dispatch = vi.fn();
+      const state = createState({ user: { uuid: updatedUser } });
+
+      handleModerationMessage(dispatch, mockUpdatedToModeratorData, timestamp, state);
       expect(dispatch).toHaveBeenCalledWith(updateRole(Role.Moderator));
-      expect(dispatch).toHaveBeenCalledWith(setModeratorData({ moderatorData }));
+    });
+
+    it('updates own role, if moderator rights have been revoked from self', () => {
+      const dispatch = vi.fn();
+      const state = createState({ user: { uuid: updatedUser } });
+      const mockUpdatedToUserData: RoleUpdated = { ...mockUpdatedToModeratorData, newRole: Role.User };
+
+      handleModerationMessage(dispatch, mockUpdatedToUserData, timestamp, state);
+      expect(dispatch).toHaveBeenCalledWith(updateRole(Role.User));
+    });
+
+    it('shows notification, if moderator rights have been granted to self', () => {
+      const dispatch = vi.fn();
+      const state = createState({ user: { uuid: updatedUser } });
+
+      handleModerationMessage(dispatch, mockUpdatedToModeratorData, timestamp, state);
       expect(notifications.info).toHaveBeenCalledExactlyOnceWith('moderation-rights-granted');
     });
 
-    it('consumes moderator data for another participant carrying moderator data', () => {
+    it('shows notification, if moderator rights have been revoked from self', () => {
       const dispatch = vi.fn();
-      const userId = 'participant-1' as ParticipantId;
-      const otherUserId = 'participant-2' as ParticipantId;
-      const state = createState({ user: { uuid: userId } });
-      const data: RoleUpdated = {
-        message: 'role_updated',
-        participantId: otherUserId,
-        newRole: Role.Moderator,
-        moderatorData,
-      };
+      const state = createState({ user: { uuid: updatedUser } });
+      const mockUpdatedToUserData: RoleUpdated = { ...mockUpdatedToModeratorData, newRole: Role.User };
 
-      handleModerationMessage(dispatch, data, timestamp, state);
-
-      expect(dispatch).toHaveBeenCalledWith(setModeratorData({ moderatorData }));
+      handleModerationMessage(dispatch, mockUpdatedToUserData, timestamp, state);
+      expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('moderation-rights-revoked');
     });
 
-    it('does not dispatch moderator data when it is absent', () => {
+    it('shows notification, if self has granted moderator rights to another participant', () => {
       const dispatch = vi.fn();
-      const userId = 'participant-1' as ParticipantId;
-      const state = createState({ user: { uuid: userId } });
-      const data: RoleUpdated = {
-        message: 'role_updated',
-        participantId: userId,
-        newRole: Role.User,
-      };
+      const state = createState({ user: { uuid: issuer } });
 
-      handleModerationMessage(dispatch, data, timestamp, state);
+      handleModerationMessage(dispatch, mockUpdatedToModeratorData, timestamp, state);
+      expect(notifications.info).toHaveBeenCalledExactlyOnceWith('moderator-role-granted');
+    });
 
-      expect(dispatch).not.toHaveBeenCalledWith(setModeratorData(expect.anything()));
-      expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('moderation-rights-revoked');
+    it('shows notification, if self has revoked moderator rights from another participant', () => {
+      const dispatch = vi.fn();
+      const state = createState({ user: { uuid: issuer } });
+      const mockUpdatedToUserData: RoleUpdated = { ...mockUpdatedToModeratorData, newRole: Role.User };
+
+      handleModerationMessage(dispatch, mockUpdatedToUserData, timestamp, state);
+      expect(notifications.info).toHaveBeenCalledExactlyOnceWith('moderator-role-revoked');
     });
   });
 

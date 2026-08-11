@@ -40,6 +40,7 @@ export interface RoleUpdated {
   participantId: ParticipantId;
   newRole: Role;
   moderatorData?: ModeratorJoinInfo;
+  issuedBy: ParticipantId;
 }
 
 export interface DebriefStarted {
@@ -112,10 +113,6 @@ export interface EntryPermissionChanged {
   message: 'entry_permission_changed';
   canEnter: boolean;
 }
-
-// export interface DebriefSessionEnded {
-//   message: 'session_ended';
-// }
 
 export enum ModerationError {
   /// Cannot change the display name of registered users

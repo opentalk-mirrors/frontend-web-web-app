@@ -158,6 +158,14 @@ export const handleModerationMessage = (
           notifications.warning(i18next.t('moderation-rights-revoked'));
         }
       } else {
+        if (data.issuedBy === state.user.uuid) {
+          const { displayName } = state.participants.entities[data.participantId] || {};
+          if (data.newRole === Role.Moderator) {
+            notifications.info(i18next.t('moderator-role-granted', { displayName }));
+          } else {
+            notifications.info(i18next.t('moderator-role-revoked', { displayName }));
+          }
+        }
         dispatch(
           patch({
             participantId: data.participantId,
