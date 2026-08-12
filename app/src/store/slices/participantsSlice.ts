@@ -29,6 +29,7 @@ import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { selectCurrentBreakoutRoomId } from './breakoutSlice';
 import { received } from './chatSlice';
+import { disableRaisedHands } from './moderationSlice';
 import { connectionClosed } from './roomSlice';
 import { removeParticipant } from './subroomAudioSlice';
 
@@ -174,10 +175,6 @@ export const participantsSlice = createSlice({
     patch: (state, { payload }: PayloadAction<{ participantId: ParticipantId } & Partial<PatchParticipant>>) => {
       const { participantId, ...changes } = payload;
 
-      // const changes = Object.fromEntries(
-      //   Object.entries(optionalChanges).filter(([_, v]) => v !== undefined)
-      // ) as Partial<Participant>;
-
       if (Object.keys(changes).length === 0) {
         return;
       }
@@ -209,6 +206,7 @@ export const participantsSlice = createSlice({
     builder.addCase(joinSuccess, (state, { payload: { participants } }) => {
       participantAdapter.setAll(state, participants);
     });
+
     builder.addCase(connectionClosed, () => participantAdapter.getInitialState());
 
     builder.addCase(
@@ -221,6 +219,18 @@ export const participantsSlice = createSlice({
         });
       }
     );
+
+    builder.addCase(disableRaisedHands, (state) => {
+      const participantSelectors = participantAdapter.getSelectors();
+      const changes = participantSelectors
+        .selectAll(state)
+        .filter((participant) => participant.handIsUp)
+        .map((participant) => ({
+          id: participant.id,
+          changes: { handIsUp: false },
+        }));
+      participantAdapter.updateMany(state, changes);
+    });
   },
 });
 
