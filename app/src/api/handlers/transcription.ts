@@ -13,8 +13,7 @@ import {
   showSubtitles,
   transcriptionStatusUpdated,
 } from '../../store/slices/transcriptionSlice';
-import { TranscriptionLanguage } from '../types/incoming/transcription';
-import { TranscriptionStatus, TranscriptionMessage } from '../types/incoming/transcription';
+import { TranscriptionLanguage, TranscriptionStatus, TranscriptionMessage } from '../types/incoming/transcription';
 
 /**
  * Handles messages in the transcription namespace.
