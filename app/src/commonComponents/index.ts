@@ -5,6 +5,7 @@ import AccordionItem from './AccordionItem';
 import CommonFormItem from './CommonFormItem';
 import CommonSwitch from './CommonSwitch';
 import CommonTextField from './CommonTextField';
+import ConditionalToolTip from './ConditionalToolTip';
 import CopyTextField from './CopyTextField';
 import DurationField, { DurationValueOptions } from './DurationField';
 import ErrorFormMessage from './ErrorFormMessage';
@@ -37,6 +38,7 @@ export {
   CommonFormItem,
   CommonTextField,
   CommonSwitch,
+  ConditionalToolTip,
   CopyTextField,
   DurationField,
   NameTile,
