@@ -16,6 +16,7 @@ import {
 import { patch } from '../../store/slices/participantsSlice';
 import { Timestamp } from '../../types';
 import { raiseHands } from '../types/incoming';
+import { RaiseHandsError } from '../types/incoming/raiseHands';
 
 export const handleRaiseHandsMessage = (
   dispatch: AppDispatch,
@@ -83,7 +84,7 @@ export const handleRaiseHandsMessage = (
     case 'error': {
       const error = data.error;
       switch (error) {
-        case 'raise_hands_disabled':
+        case RaiseHandsError.RaiseHandsDisabled:
           log.warn('Raised hands can not be reset, as handraises are disabled in the room');
           break;
         default:

@@ -4,18 +4,22 @@
 import { useRemoteParticipants } from '@livekit/components-react';
 import { RoomEvent } from 'livekit-client';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { resetRaisedHands } from '../../api/types/outgoing/raiseHands';
 import { SearchAndSelectParticipantsTab } from '../../commonComponents/SearchAndSelectParticipantsTab';
 import { toSelectableParticipant } from '../../commonComponents/SearchAndSelectParticipantsTab/fragments/utils';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectParticipantsWithRaisedHands } from '../../store/selectors';
+import { selectRaiseHandsEnabled } from '../../store/slices/moderationSlice';
 import { selectRemoteParticipantsDisplayNameRecord } from '../../store/slices/participantsSlice';
 import { ConnectionIdentifier, ParticipantId } from '../../types';
 import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 
 const ResetHandraisesTab = () => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+  const handRaiseDisabled = !useAppSelector(selectRaiseHandsEnabled);
   const activeParticipants = useAppSelector(selectParticipantsWithRaisedHands);
   const activeIds = new Set(activeParticipants.map((p) => p.id));
   const remoteParticipants = useRemoteParticipants({
@@ -28,7 +32,6 @@ const ResetHandraisesTab = () => {
     () => remoteParticipants.map((participant) => participant.identity),
     [remoteParticipants]
   );
-
   const [search, setSearch] = useState<string>('');
   const [selectedParticipants, setSelectedParticipants] = useState<ParticipantId[]>([]);
 
@@ -84,6 +87,8 @@ const ResetHandraisesTab = () => {
       handleSearchChange={setSearch}
       searchValue={search}
       participantsList={searchFilteredParticipantsList}
+      disableActions={handRaiseDisabled}
+      disableActionsTooltip={t('moderationbar-button-reset-handraises-disabled-tooltip')}
     />
   );
 };
