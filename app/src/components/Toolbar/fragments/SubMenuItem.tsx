@@ -93,6 +93,7 @@ const SubmenuMenuItem = ({ label, icon, disabled, submenu, container }: SubmenuM
           }}
         >
           <Paper
+            sx={{ overflow: 'hidden' }}
             onMouseEnter={() => openSubmenu(false)}
             onMouseLeave={scheduleClose}
             // Prevent keyboard events in the submenu from bubbling up the
