@@ -162,6 +162,36 @@ describe('participant context menu', () => {
         expect(grantPresenterRoleOption).not.toBeInTheDocument();
       });
     });
+    describe('and the participant is a callin user', () => {
+      const { store } = mockStore(2, {
+        role: [Role.Moderator, Role.User],
+        participantKinds: [ParticipationKind.Registered, ParticipationKind.CallIn],
+        store: USER_IS_MODERATOR_STORE,
+      });
+      beforeEach(() => {
+        openMenu(store);
+      });
+      it('should contain the rename participant option in the opened menu on a participant', () => {
+        const renameParticipantOption = screen.getByRole('menuitem', {
+          name: 'participant-menu-rename',
+        });
+        expect(renameParticipantOption).toBeInTheDocument();
+      });
+      it('should contain the grant presenter role option in the opened menu on a participant', () => {
+        const grantPresenterRoleOption = screen.getByRole('menuitem', {
+          name: 'grant-presenter-role',
+        });
+        expect(grantPresenterRoleOption).toBeInTheDocument();
+      });
+      it('should close the menu after clicking the grant presenter role option', async () => {
+        const grantPresenterRoleOption = screen.getByRole('menuitem', {
+          name: 'grant-presenter-role',
+        });
+        fireEvent.click(grantPresenterRoleOption);
+        await waitForElementToBeRemoved(grantPresenterRoleOption);
+        expect(grantPresenterRoleOption).not.toBeInTheDocument();
+      });
+    });
     describe('and the participant is a user', () => {
       const { store } = mockStore(2, { role: [Role.Moderator, Role.User], store: USER_IS_MODERATOR_STORE });
       beforeEach(() => {
