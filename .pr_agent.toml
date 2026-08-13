@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
+#
+# SPDX-License-Identifier: EUPL-1.2
+
+
+# The config for the PR Agent. For more information see https://github.com/The-PR-Agent/pr-agent/blob/main/pr_agent/settings/configuration.toml
+[config]
+# For all available models see https://github.com/The-PR-Agent/pr-agent/blob/main/pr_agent/algo/__init__.py
+model="anthropic/claude-sonnet-5"
+fallback_models = ["anthropic/claude-opus-5"]
+model_weak = "anthropic/claude-haiku-4-5-20251001"
+
+enable_claude_extended_thinking = true
+extended_thinking_budget_tokens = 4096
+extended_thinking_max_output_tokens = 8192
+
+allow_dynamic_context = true
+max_extra_lines_before_dynamic_context = 15
+patch_extra_lines_before = 8
+patch_extra_lines_after = 3
+
+git_provider = "gitlab"
+
+bot_user_indicators = ["bot_", "bot-", "_bot", "-bot"]
+
+# don't repeat inline suggestions across re-runs
+persistent_inline_comments = true
+
+# Don't comment with 'Work in progress ...'
+publish_output_progress = false
+
+ignore_pr_labels = ["pr-agent-ignore"]
+
+# Config for the /review command
+[pr_reviewer]
+# Remove intro text
+enable_intro_text = false
+# Check for unresolved todos in the code
+require_todo_scan = true
+# Maximum number of findings to report per PR (default 3), this might conflict with the max_model_tokens setting if set too high
+num_max_findings = 5
+# The gitlab `Reporter` role does not have permissions to add labels
+enable_review_labels_effort = false
+enable_review_labels_security = false
+
+extra_instructions = """
+TypeScript – prioritise: unhandled promise rejections; `any` or non-null `!` that
+hides a real nullable; state mutated across renders; missing cleanup in effects;
+user input rendered without escaping; missing i18n keys.
+
+Do NOT report: formatting, naming, import order, or eslint or tsc already enforce in CI.
+Do not suggest adding comments. Only report issues you can point to a concrete line for.
+"""
