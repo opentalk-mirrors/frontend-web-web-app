@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react';
 import { styled } from '@mui/material';
-import { memo, useRef, useState } from 'react';
+import { memo, useRef } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { selectUserAsParticipant } from '../../store/selectors';
@@ -15,7 +15,6 @@ import {
   selectLivekitWhisperRoom,
   selectVideoEnabled,
 } from '../../store/slices/livekitSlice';
-import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
 import { selectSubroomAudioToken } from '../../store/slices/subroomAudioSlice';
 import {
   selectSelfRenameDialogVisible,
@@ -28,7 +27,6 @@ import RenameParticipantDialog from '../Participants/fragments/RenameParticipant
 import TimerPopover from '../TimerPopover';
 import InactivityGuard from './fragments/InactivityGuard';
 import InnerLayout from './fragments/InnerLayout';
-import MeetingEndedDialog from './fragments/MeetingEndedDialog';
 import { ParticipationConfirmationDialog } from './fragments/ParticipationConfirmationDialog';
 
 const Container = styled('div')(({ theme }) => ({
@@ -69,7 +67,6 @@ const MeetingView = () => {
   const livekitAccessToken = useAppSelector(selectLivekitAccessToken);
   const publicUrl = useAppSelector(selectLivekitPublicUrl);
   const whisperToken = useAppSelector(selectSubroomAudioToken);
-  const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const showCoffeeBreakCurtain = useAppSelector(selectShowCoffeeBreakCurtain);
   const isModerator = useAppSelector(selectIsModerator);
   const enableAudio = isModerator || !showCoffeeBreakCurtain;
@@ -77,7 +74,6 @@ const MeetingView = () => {
   const isVideoEnabled = useAppSelector(selectVideoEnabled);
 
   const containerRef = useRef(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const room = useAppSelector(selectLivekitRoom);
   const whisperRoom = useAppSelector(selectLivekitWhisperRoom);
@@ -120,7 +116,7 @@ const MeetingView = () => {
             </>
           )}
         </Container>
-        {isRoomDeleted && !isDialogOpen && <MeetingEndedDialog setIsDialogOpen={setIsDialogOpen} />}
+
         <InactivityGuard />
         {isSelfRenameDialogVisible && participant && (
           <RenameParticipantDialog open onClose={close} participant={participant} selfRename />

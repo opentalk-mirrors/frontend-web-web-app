@@ -40,6 +40,7 @@ import {
   fetchRoomByInviteId,
   selectCanEnter,
   selectInviteState,
+  selectIsRoomDeleted,
   selectLobbyDisplayName,
   selectRoomConnectionState,
 } from '../../store/slices/roomSlice';
@@ -49,6 +50,7 @@ import { composeRoomPath } from '../../utils/apiUtils';
 import { formikProps } from '../../utils/formikUtils';
 import OpentalkError from '../Error';
 import ImprintContainer from '../ImprintContainer';
+import MeetingEndedDialog from '../MeetingView/fragments/MeetingEndedDialog';
 import SelfTest from '../SelfTest';
 import LobbyPasswordStep from './fragments/LobbyPasswordStep';
 
@@ -141,6 +143,7 @@ const LobbyView = () => {
   const connectionState = useAppSelector(selectRoomConnectionState);
   const canEnter = useAppSelector(selectCanEnter);
   const lobbyDisplayName = useAppSelector(selectLobbyDisplayName);
+  const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
   const inviteStateCode = inviteState.inviteCode;
 
   const { data } = useGetMeQuery(undefined, { skip: !isLoggedIn });
@@ -395,6 +398,7 @@ const LobbyView = () => {
           </Stack>
         </SelfTest>
       </Container>
+      {isRoomDeleted && <MeetingEndedDialog />}
       <ImprintContainer />
     </>
   );

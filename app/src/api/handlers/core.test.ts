@@ -5,7 +5,7 @@ import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
 import { joinSuccess } from '../../store/commonActions';
 import { waitingRoomJoined } from '../../store/slices/participantsSlice';
-import { joinedLobby } from '../../store/slices/roomSlice';
+import { joinedLobby, setIsRoomDeleted } from '../../store/slices/roomSlice';
 import { Role } from '../../types';
 import type {
   ConnectionId,
@@ -16,6 +16,7 @@ import type {
   Timestamp,
 } from '../../types';
 import { JoinedLobby, JoinedWaitingRoom } from '../types/incoming/core';
+import { RoomCloseReason } from '../types/incoming/core';
 import type { JoinSuccess } from '../types/incoming/core';
 import { TranscriptionStatus } from '../types/incoming/transcription';
 import { handleRoomServerCoreMessage } from './core';
@@ -88,7 +89,11 @@ const makeJoinSuccess = (moduleData: ModuleData): JoinSuccess =>
     roomInfo: {},
     moduleData,
   }) as unknown as JoinSuccess;
-
+const closeRoom = (reason: RoomCloseReason) =>
+  ({
+    message: 'closing',
+    reason,
+  }) as unknown as JoinSuccess;
 const getJoinSuccessPayload = (dispatch: ReturnType<typeof vi.fn>): JoinSuccessInternalState => {
   const call = dispatch.mock.calls.find(([action]) => joinSuccess.match(action));
   if (!call) {
@@ -153,6 +158,17 @@ describe('handleRoomServerCoreMessage', () => {
       expect(notifications.showTranscriptionEnabledNotification).toHaveBeenCalledWith(
         expect.objectContaining({ onActivated: expect.any(Function) })
       );
+    });
+  });
+
+  describe('room closing', () => {
+    it('dispatches setIsRoomDeleted when the room is closed with reason room_deleted', () => {
+      const dispatch = vi.fn();
+      const data = closeRoom(RoomCloseReason.RoomDeleted);
+
+      handleRoomServerCoreMessage(dispatch, data, timestamp, createState());
+
+      expect(dispatch).toHaveBeenCalledExactlyOnceWith(setIsRoomDeleted(true));
     });
   });
 

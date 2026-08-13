@@ -1378,7 +1378,8 @@ invalid-parameters-error = Ungültige Parameter
 storage-error = Zu wenig Speicherplatz
 
 meeting-ended-dialog-title = Meeting beendet
-meeting-ended-dialog-button-title = Konferenz verlassen
+meeting-ended-dialog-button-title = Zurück zum Dashboard
+meeting-ended-dialog-description = Die Konferenz wurde beendet. Sie können das Browsertab jetzt schließen.
 
 decline-meeting-series-button = Meetingserie ablehnen
 
