@@ -90,7 +90,7 @@ describe('CreateLegalVoteForm', () => {
       { store, provider: { mui: true } }
     );
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'legal-vote-form-button-continue' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'global-continue' })).toBeDisabled();
     });
   });
 
@@ -146,8 +146,8 @@ describe('CreateLegalVoteForm', () => {
     await user.type(screen.getByPlaceholderText('legal-vote-title-placeholder'), 'Board Vote');
     await user.type(screen.getByPlaceholderText('legal-vote-topic-placeholder'), 'Approve minutes');
 
-    expect(screen.getByRole('button', { name: 'legal-vote-form-button-continue' })).toBeEnabled();
-    await user.click(screen.getByRole('button', { name: 'legal-vote-form-button-continue' }));
+    expect(screen.getByRole('button', { name: 'global-continue' })).toBeEnabled();
+    await user.click(screen.getByRole('button', { name: 'global-continue' }));
     const selectAllButton = await screen.findByRole('button', {
       name: 'poll-participant-list-button-select-all',
     });
@@ -184,7 +184,7 @@ describe('CreateLegalVoteForm', () => {
       { store, provider: { mui: true } }
     );
 
-    expect(screen.getByRole('button', { name: 'legal-vote-form-button-continue' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'global-continue' })).toBeDisabled();
   });
 
   it('disables starting the vote when storage usage reaches the disabled threshold', async () => {
@@ -217,7 +217,7 @@ describe('CreateLegalVoteForm', () => {
 
     await user.type(screen.getByPlaceholderText('legal-vote-title-placeholder'), 'Board Vote');
     await user.type(screen.getByPlaceholderText('legal-vote-topic-placeholder'), 'Approve minutes');
-    await user.click(screen.getByRole('button', { name: 'legal-vote-form-button-continue' }));
+    await user.click(screen.getByRole('button', { name: 'global-continue' }));
 
     const selectAllButton = await screen.findByRole('button', {
       name: 'poll-participant-list-button-select-all',

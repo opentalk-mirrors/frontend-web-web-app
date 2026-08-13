@@ -312,6 +312,7 @@ export interface EventInfo {
   title: string;
   isAdhoc: boolean;
   e2eEncryption: boolean;
+  passwordRequired: boolean;
 }
 
 /**

@@ -46,7 +46,6 @@ export type RoomState = {
   connectionState: ConnectionState;
   error?: string;
   serverTimeOffset: number;
-  passwordRequired: boolean;
   participantLimit: number;
   currentMode?: RoomMode;
   eventInfo?: EventInfo;
@@ -65,7 +64,6 @@ export type RoomState = {
 
 export interface InviteRoomVerifyResponse {
   roomId: RoomId;
-  passwordRequired?: boolean;
 }
 
 const initialInviteState: InviteState = {
@@ -82,7 +80,6 @@ const initialState: RoomState = {
   invite: initialInviteState,
   connectionState: ConnectionState.Initial,
   serverTimeOffset: 0,
-  passwordRequired: false,
   participantLimit: 0,
   reconnectTimerId: null,
   isOwnedByCurrentUser: false,
@@ -217,7 +214,6 @@ export const roomSlice = createSlice({
       state.invite.loading = false;
       state.invite.inviteCode = meta.arg;
       state.connectionState = ConnectionState.Setup;
-      state.passwordRequired = payload.passwordRequired ?? false;
     });
     builder.addCase(fetchRoomByInviteId.rejected, (state, { payload }) => {
       state.invite = {
@@ -347,7 +343,6 @@ export const selectHasJoinedConference = (state: RootState) => state.room.hasJoi
 export const selectLobbyDisplayName = (state: RootState) => state.room.lobbyDisplayName;
 export const selectLobbyParticipantId = (state: RootState) => state.room.lobbyParticipantId;
 export const selectServerTimeOffset = (state: RootState) => state.room.serverTimeOffset;
-export const selectPasswordRequired = (state: RootState) => state.room.passwordRequired;
 export const selectParticipantLimit = (state: RootState) => state.room.participantLimit;
 export const selectCurrentRoomMode = (state: RootState) => state.room.currentMode;
 export const selectEventInfo = (state: RootState) => state.room.eventInfo;
