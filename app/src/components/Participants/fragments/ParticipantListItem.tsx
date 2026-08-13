@@ -263,7 +263,10 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
             },
             muteOption,
           ];
-        } else if (participant.participationKind === ParticipationKind.Guest) {
+        } else if (
+          participant.participationKind === ParticipationKind.Guest ||
+          participant.participationKind === ParticipationKind.CallIn
+        ) {
           options = [
             {
               i18nKey: 'participant-menu-rename',
