@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: EUPL-1.2
 
-FROM nginxinc/nginx-unprivileged:alpine-slim
+FROM docker.io/nginxinc/nginx-unprivileged:alpine-slim
 
 USER root
 RUN apk --no-cache update && apk --no-cache upgrade
@@ -29,9 +29,9 @@ COPY ./ci/nginx.conf /etc/nginx/
 RUN chown -R nobody:nobody /usr/share/nginx/html && \
         chmod -R 777 /usr/share/nginx/html && \
         chown -R nobody:nobody /var/cache/nginx && \
-        chown -R nobody:nobody  /var/log/nginx && \
-        chown -R nobody:nobody  /etc/nginx && \
-        chmod -Rf 777  /etc/nginx
+        chown -R nobody:nobody /var/log/nginx && \
+        chown -R nobody:nobody /etc/nginx && \
+        chmod -Rf 777 /etc/nginx
 
 USER $USERID:$GROUPID
 
