@@ -30,6 +30,7 @@ import {
   joinedLobby,
   selectLobbyParticipantId,
   selectParticipantLimit,
+  setIsRoomDeleted,
 } from '../../store/slices/roomSlice';
 import { showSubtitles } from '../../store/slices/transcriptionSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
@@ -132,6 +133,12 @@ export const handleRoomServerCoreMessage = async (
   state: RootState
 ) => {
   switch (data.message) {
+    case RoomserverMessageKey.Closing: {
+      if (data.reason === core.RoomCloseReason.RoomDeleted) {
+        dispatch(setIsRoomDeleted(true));
+      }
+      break;
+    }
     case RoomserverMessageKey.JoinSuccess: {
       const moduleData = data.moduleData;
       const participants = data.participants;

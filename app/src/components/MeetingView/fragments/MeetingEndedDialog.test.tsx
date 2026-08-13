@@ -6,18 +6,17 @@ import userEvent from '@testing-library/user-event';
 import { Mock } from 'vitest';
 
 import { useInviteCode } from '../../../hooks/useInviteCode';
-import * as commonActions from '../../../store/commonActions';
 import { mockStore, renderWithProviders } from '../../../utils/testUtils';
 import MeetingEndedDialog from './MeetingEndedDialog';
 
 const mockNavigate = vi.fn();
 
-vi.mock('../../../hooks/useInviteCode', () => ({
-  useInviteCode: vi.fn(),
-}));
-
 vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
+}));
+
+vi.mock('../../../hooks/useInviteCode', () => ({
+  useInviteCode: vi.fn(),
 }));
 
 describe('MeetingEndedDialog', () => {
@@ -27,36 +26,49 @@ describe('MeetingEndedDialog', () => {
     vi.clearAllMocks();
   });
 
-  it('dispatches hangUp and navigates when button is clicked', async () => {
-    const mockSetIsDialogOpen = vi.fn();
-    renderWithProviders(<MeetingEndedDialog setIsDialogOpen={mockSetIsDialogOpen} />, {
+  it('calls navigate when button is clicked', async () => {
+    renderWithProviders(<MeetingEndedDialog />, {
       store,
       provider: { mui: true, snackbar: true },
     });
-    const spyHangUp = vi.spyOn(commonActions, 'hangUp');
 
     const leaveButton = screen.getByRole('button', { name: /meeting-ended-dialog-button-title/i });
     await userEvent.click(leaveButton);
 
-    expect(spyHangUp).toHaveBeenCalledExactlyOnceWith();
     expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/dashboard');
   });
 
-  it('does not navigate if inviteCode is present', async () => {
-    (useInviteCode as Mock).mockReturnValue('some-code');
-    const mockSetIsDialogOpen = vi.fn();
-
-    renderWithProviders(<MeetingEndedDialog setIsDialogOpen={mockSetIsDialogOpen} />, {
+  it('cannot be closed by pressing escape', async () => {
+    renderWithProviders(<MeetingEndedDialog />, {
       store,
       provider: { mui: true },
     });
 
-    const spyHangUp = vi.spyOn(commonActions, 'hangUp');
+    await userEvent.keyboard('{Escape}');
 
-    const leaveButton = screen.getByRole('button', { name: /meeting-ended-dialog-button-title/i });
-    await userEvent.click(leaveButton);
+    const title = screen.getByText(/meeting-ended-dialog-title/i);
+    expect(title).toBeInTheDocument();
+  });
 
-    expect(spyHangUp).toHaveBeenCalledExactlyOnceWith();
-    expect(mockNavigate).not.toHaveBeenCalled();
+  it('cannot be closed by clicking outside', async () => {
+    renderWithProviders(<MeetingEndedDialog />, {
+      store,
+      provider: { mui: true },
+    });
+
+    await userEvent.click(document.body);
+
+    const title = screen.getByText(/meeting-ended-dialog-title/i);
+    expect(title).toBeInTheDocument();
+  });
+
+  it('shows no button when invite code is present', () => {
+    (useInviteCode as Mock).mockReturnValue('some-code');
+    renderWithProviders(<MeetingEndedDialog />, {
+      store,
+      provider: { mui: true },
+    });
+    const leaveButton = screen.queryByRole('button', { name: /meeting-ended-dialog-button-title/i });
+    expect(leaveButton).not.toBeInTheDocument();
   });
 });

@@ -1379,7 +1379,8 @@ invalid-parameters-error = Invalid parameters
 storage-error = Not enough storage
 
 meeting-ended-dialog-title = Meeting Ended
-meeting-ended-dialog-button-title = Leave Conference
+meeting-ended-dialog-button-title = Back to Dashboard
+meeting-ended-dialog-description = The meeting has ended. You can close this browser tab now.
 
 decline-meeting-series-button = Decline Meeting Series
 

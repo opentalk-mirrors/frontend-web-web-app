@@ -78,7 +78,7 @@ export interface JoinedLobby {
 }
 
 export interface Closing {
-  message: 'closing';
+  message: RoomserverMessageKey.Closing;
   reason: RoomCloseReason;
 }
 
@@ -88,6 +88,7 @@ export enum RoomCloseReason {
   FatalError = 'fatal_error',
   TimeLimitReached = 'time_limit_reached',
   IdleTimeoutReached = 'idle_timeout_reached',
+  RoomDeleted = 'room_deleted',
 }
 
 export interface RoomParametersChanged {
@@ -131,6 +132,7 @@ export enum RoomserverMessageKey {
   LeftWaitingRoom = 'left_waiting_room',
   RoomParametersChanged = 'room_parameters_changed',
   StorageQuotaChanged = 'storage_quota_changed',
+  Closing = 'closing',
 }
 
 export type RoomserverCore = NamespacedIncoming<Message, 'core'>;

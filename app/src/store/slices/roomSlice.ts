@@ -377,6 +377,9 @@ const reconnectExceptionErrorList: Array<string> = [
 function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
   const RECONNECT_DELAY = 5000; //ms
   const state = listenerApi.getState();
+  if (state.room.isDeleted) {
+    return;
+  }
   const { roomId, error } = state.room;
   const { inviteCode } = state.room.invite;
   const { displayName } = state.user;
