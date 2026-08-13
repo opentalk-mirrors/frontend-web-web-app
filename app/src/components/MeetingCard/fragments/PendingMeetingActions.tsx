@@ -2,20 +2,20 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Stack } from '@mui/material';
-import { Event, EventId } from '@opentalk/rest-api-rtk-query';
+import { Event, EventId, EventInstance, isEventInstance } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
 
 import { useAcceptEventInviteMutation, useDeclineEventInviteMutation } from '../../../api/rest';
 import { notifications } from '../../../commonComponents';
 
 interface PendingMeetingActionsProps {
-  event: Event;
+  event: Event | EventInstance;
 }
 
 export const PendingMeetingActions = ({ event }: PendingMeetingActionsProps) => {
   const { t } = useTranslation();
   const { title } = event;
-  const eventId = event.id as EventId;
+  const eventId = (isEventInstance(event) ? event.recurringEventId : event.id) as EventId;
 
   const [acceptEventInvitation] = useAcceptEventInviteMutation();
   const [declineEventInvitation] = useDeclineEventInviteMutation();

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Event, InviteStatus } from '@opentalk/rest-api-rtk-query';
+import { Event, EventType, InviteStatus } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 
 import { renderWithProviders, eventMockedData } from '../../../utils/testUtils';
@@ -17,6 +17,12 @@ const mockPendingMeeting = {
   endsAt: {
     datetime: '2022-08-31T16:47+00:00',
   },
+} as Event;
+
+const mockPendingRecurringMeeting = {
+  ...mockPendingMeeting,
+  type: EventType.Recurring,
+  recurrencePattern: ['RRULE:FREQ=DAILY'],
 } as Event;
 
 vi.mock('../../../commonComponents', () => ({
@@ -41,6 +47,14 @@ describe('PendingMeetingActions', () => {
   });
   it('renders pending actions when passed an event with pending invite status', () => {
     renderWithProviders(<MeetingCardActions event={mockPendingMeeting} isMeetingCreator={false} />, {
+      provider: { router: true, mui: true },
+    });
+
+    expect(screen.getByTestId('PendingMeetingActions')).toBeInTheDocument();
+  });
+
+  it('renders pending actions for a pending recurring event', () => {
+    renderWithProviders(<MeetingCardActions event={mockPendingRecurringMeeting} isMeetingCreator={false} />, {
       provider: { router: true, mui: true },
     });
 
