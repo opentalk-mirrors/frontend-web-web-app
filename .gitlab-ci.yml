@@ -388,7 +388,7 @@ container:
       -f "$CI_PROJECT_DIR/ci/Dockerfile"
       -t "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8}"
       "$CI_PROJECT_DIR"
-    - buildah push "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8}\"
+    - buildah push "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8}"
 
 container-profiling:
   extends: .buildah
@@ -407,7 +407,7 @@ container-profiling:
       -t "$CI_REGISTRY_IMAGE:profiling"
       "$CI_PROJECT_DIR"
     - buildah push "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8}-profiling"
-    - buildah push "$CI_REGISTRY_IMAGE:profiling\"
+    - buildah push "$CI_REGISTRY_IMAGE:profiling"
 
 read-tags:
   stage: push
