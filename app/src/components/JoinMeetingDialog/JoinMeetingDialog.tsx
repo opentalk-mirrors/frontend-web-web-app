@@ -71,7 +71,7 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
     initialValues: { roomId: '' },
     validationSchema,
     onSubmit: (values) => {
-      //If the user pasted/typed an old format invite link we treat it as such and navigate to the old invite page
+      // If the user pasted/typed an old format invite link we treat it as such and navigate to the old invite page
       if (invite?.isInviteLink && invite.inviteCode) {
         navigate(`/invite/${invite.inviteCode}`);
       } else {
@@ -87,15 +87,21 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
     formik.resetForm();
   };
 
+  // Touch the field so the error message is shown, without triggering validation that would overwrite it.
+  const showInvalidUrlError = () => {
+    formik.setFieldError('roomId', t('dashboard-join-meeting-dialog-invalid-url'));
+    formik.setFieldTouched('roomId', true, false);
+  };
+
   const parseRoomId = (event: ClipboardEvent | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     event.preventDefault();
     const isClipboardEvent = 'clipboardData' in event;
     const value = isClipboardEvent ? event.clipboardData.getData('text') : event.currentTarget.value;
 
     if (value) {
-      //Unless the user specifically typed/pasted a link from the old format (/invite/{invite_code})
-      //=> we assume the valid uuid code is a room id
-      //We still allow modifying the code manually, we just keep the state for it (if it is an invite code or roomId)
+      // Unless the user specifically typed/pasted a link from the old format (/invite/{invite_code})
+      // => we assume the valid uuid code is a room id
+      // We still allow modifying the code manually, we just keep the state for it (if it is an invite code or roomId)
       if (validateUUID(value)) {
         formik.setFieldValue('roomId', value);
         if (invite?.isInviteLink) {
@@ -110,8 +116,8 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
         if (parsedURL.pathname) {
           const segments = parsedURL.pathname.split('/').filter(Boolean);
 
-          //A room link takes precedence: the id is the segment right after `room`,
-          //ignoring any trailing breakout-room-id segment kept for backwards compatibility.
+          // A room link takes precedence: the id is the segment right after `room`,
+          // ignoring any trailing breakout-room-id segment kept for backwards compatibility.
           const roomIndex = segments.indexOf('room');
           const roomCode = roomIndex !== -1 ? segments[roomIndex + 1] : undefined;
           if (roomCode && validateUUID(roomCode)) {
@@ -120,7 +126,7 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
             return;
           }
 
-          //Old invite link format (`/invite/{invite_code}`) is redirected to the invite page that resolves the room.
+          // Old invite link format (`/invite/{invite_code}`) is redirected to the invite page that resolves the room.
           const inviteIndex = segments.indexOf('invite');
           if (inviteIndex !== -1) {
             const inviteCodeFromLink = segments[inviteIndex + 1];
@@ -130,15 +136,15 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
               return;
             }
 
-            formik.setFieldError('roomId', t('dashboard-join-meeting-dialog-invalid-url'));
+            showInvalidUrlError();
             return;
           }
         }
 
-        throw Error;
+        throw Error();
       } catch (_error) {
         if (isClipboardEvent || !formik.errors.roomId) {
-          formik.setFieldError('roomId', t('dashboard-join-meeting-dialog-invalid-url'));
+          showInvalidUrlError();
         }
       }
     }
@@ -149,7 +155,7 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
       <Button
         fullWidth
         {...openButtonProps}
-        //Props that can't be overriden
+        // Props that can't be overriden
         onClick={() => setIsDialogOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={isDialogOpen}
@@ -183,8 +189,8 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
         <DialogContent>
           <CommonTextField
             {...formikProps('roomId', formik)}
-            //Because the dialog will trap the focus and this input field is the expected starting point -
-            //this is the perfect use case for an exception to the no-autofocus rule.
+            // Because the dialog will trap the focus and this input field is the expected starting point -
+            // this is the perfect use case for an exception to the no-autofocus rule.
             autoFocus
             onBlur={parseRoomId}
             onPaste={parseRoomId}
