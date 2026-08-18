@@ -5,7 +5,9 @@ import i18next from 'i18next';
 
 import { notifications } from '../../commonComponents';
 import log from '../../logger';
+import { RootState } from '../../store';
 import { ParticipantId, Timestamp } from '../../types';
+import { TranscriptionLanguageKey } from '../types/incoming/transcription';
 import { TranscriptionStatus, TranscriptionMessage, TranscriptionError } from '../types/incoming/transcription';
 import { handleTranscriptionMessage } from './transcription';
 
@@ -48,71 +50,132 @@ export const transcriptionSegments: TranscriptionMessage[] = [
     text: 'This is another test segment.',
   },
 ];
+const createState = (overrides: Partial<RootState> = {}) =>
+  ({
+    ...overrides,
+  }) as RootState;
 
 describe('handleTranscriptionMessage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  it("dispatches a notification when the transcription status is updated to 'inactive'", () => {
-    const mockDispatch = vi.fn();
-    const message: TranscriptionMessage = {
-      message: 'state_updated',
-      status: 'inactive' as TranscriptionStatus,
-    };
-    handleTranscriptionMessage(mockDispatch, message);
-    expect(mockDispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'transcription/transcriptionStatusUpdated', payload: 'inactive' })
-    );
-    expect(i18next.t).toHaveBeenCalledWith('subtitle-notification-disabled');
-    expect(notifications.info).toHaveBeenCalledWith('subtitle-notification-disabled');
+  const defaultState = (status: TranscriptionStatus = TranscriptionStatus.Inactive) =>
+    createState({
+      transcription: {
+        status,
+        language: '',
+        showSubtitles: false,
+        showSettings: false,
+        segments: [],
+      },
+    });
+  describe('state_updated message received', () => {
+    it('dispatches transcriptionStatusUpdated and setTranscriptionLanguage', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'state_updated',
+        status: 'running' as TranscriptionStatus,
+        language: 'en' as TranscriptionLanguageKey,
+      };
+      handleTranscriptionMessage(mockDispatch, message, defaultState());
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'transcription/transcriptionStatusUpdated', payload: 'running' })
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'transcription/setTranscriptionLanguage', payload: 'en' })
+      );
+    });
+    it("dispatches a notification when the transcription status is updated to 'inactive'", () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'state_updated',
+        status: 'inactive' as TranscriptionStatus,
+        language: 'en' as TranscriptionLanguageKey,
+      };
+      handleTranscriptionMessage(mockDispatch, message, defaultState(TranscriptionStatus.Running));
+
+      expect(i18next.t).toHaveBeenCalledWith('subtitle-notification-disabled');
+      expect(notifications.info).toHaveBeenCalledWith('subtitle-notification-disabled');
+    });
+    it("turns subtitles off when the transcription status is updated to 'inactive'", () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'state_updated',
+        status: 'inactive' as TranscriptionStatus,
+        language: 'en' as TranscriptionLanguageKey,
+      };
+      handleTranscriptionMessage(mockDispatch, message, defaultState(TranscriptionStatus.Running));
+      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'transcription/hideSubtitles' }));
+    });
+    it("dispatches a notification when the transcription status is updated to 'running'", () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'state_updated',
+        status: 'running' as TranscriptionStatus,
+        language: 'en' as TranscriptionLanguageKey,
+      };
+      handleTranscriptionMessage(mockDispatch, message, defaultState());
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'transcription/transcriptionStatusUpdated', payload: 'running' })
+      );
+      expect(notifications.showTranscriptionEnabledNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ onActivated: expect.any(Function) })
+      );
+    });
+    describe('status stays the same but language changes', () => {
+      it('dispatches a notification when the transcription language changes', () => {
+        const mockDispatch = vi.fn();
+        const stateWithRunningTranscription = createState({
+          transcription: {
+            status: TranscriptionStatus.Running,
+            language: 'en' as TranscriptionLanguageKey,
+            showSubtitles: false,
+            showSettings: false,
+            segments: [],
+          },
+        });
+        const message: TranscriptionMessage = {
+          message: 'state_updated',
+          status: 'running' as TranscriptionStatus,
+          language: 'de' as TranscriptionLanguageKey,
+        };
+        handleTranscriptionMessage(mockDispatch, message, stateWithRunningTranscription);
+        expect(i18next.t).toHaveBeenCalledWith('subtitle-notification-language-changed', { language: 'Deutsch' });
+        expect(mockDispatch).toHaveBeenCalledWith(
+          expect.objectContaining({ type: 'transcription/setTranscriptionLanguage', payload: 'de' })
+        );
+        expect(notifications.info).toHaveBeenCalledWith('subtitle-notification-language-changed');
+      });
+    });
   });
-  it("turns subtitles off when the transcription status is updated to 'inactive'", () => {
-    const mockDispatch = vi.fn();
-    const message: TranscriptionMessage = {
-      message: 'state_updated',
-      status: 'inactive' as TranscriptionStatus,
-    };
-    handleTranscriptionMessage(mockDispatch, message);
-    expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'transcription/hideSubtitles' }));
+  describe('segment message received', () => {
+    it("stores a segment when a 'segment' message is received", () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = transcriptionSegments[0];
+      handleTranscriptionMessage(mockDispatch, message, defaultState());
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'transcription/segmentReceived', payload: message })
+      );
+    });
   });
-  it("dispatches a notification when the transcription status is updated to 'running'", () => {
-    const mockDispatch = vi.fn();
-    const message: TranscriptionMessage = {
-      message: 'state_updated',
-      status: 'running' as TranscriptionStatus,
-    };
-    handleTranscriptionMessage(mockDispatch, message);
-    expect(mockDispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'transcription/transcriptionStatusUpdated', payload: 'running' })
-    );
-    expect(notifications.showTranscriptionEnabledNotification).toHaveBeenCalledWith(
-      expect.objectContaining({ onActivated: expect.any(Function) })
-    );
-  });
-  it("stores a segment when a 'segment' message is received", () => {
-    const mockDispatch = vi.fn();
-    const message: TranscriptionMessage = transcriptionSegments[0];
-    handleTranscriptionMessage(mockDispatch, message);
-    expect(mockDispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'transcription/segmentReceived', payload: message })
-    );
-  });
-  it("dispatches a notification when an 'error' message is received", () => {
-    const mockDispatch = vi.fn();
-    const message: TranscriptionMessage = {
-      message: 'error',
-      error: 'service_request_failed' as TranscriptionError,
-    };
-    handleTranscriptionMessage(mockDispatch, message);
-    expect(notifications.error).toHaveBeenCalledWith('transcription-error');
-    expect(log.error).toHaveBeenCalledWith('transcription error:', 'service_request_failed');
-  });
-  it('logs unkown message types', () => {
-    const mockDispatch = vi.fn();
-    const message: TranscriptionMessage = {
-      message: 'unknown_message_type',
-    } as unknown as TranscriptionMessage;
-    expect(() => handleTranscriptionMessage(mockDispatch, message)).toThrow();
-    expect(log.error).toHaveBeenCalledWith(expect.stringContaining('Unknown transcription message type:'));
+  describe('error message received', () => {
+    it("dispatches a notification when an 'error' message is received", () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'error',
+        error: 'service_request_failed' as TranscriptionError,
+      };
+      handleTranscriptionMessage(mockDispatch, message, defaultState());
+      expect(notifications.error).toHaveBeenCalledWith('transcription-error');
+      expect(log.error).toHaveBeenCalledWith('transcription error:', 'service_request_failed');
+    });
+    it('logs unknown message types and throws an error', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'unknown_message_type',
+      } as unknown as TranscriptionMessage;
+      expect(() => handleTranscriptionMessage(mockDispatch, message, defaultState())).toThrow();
+      expect(log.error).toHaveBeenCalledWith(expect.stringContaining('Unknown transcription message type:'));
+    });
   });
 });

@@ -4,23 +4,22 @@
 import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import type { RootState } from '../';
-import { TranscriptionStatus, TranscriptionSegment } from '../../api/types/incoming/transcription';
+import {
+  TranscriptionStatus,
+  TranscriptionSegment,
+  TranscriptionLanguageKey,
+} from '../../api/types/incoming/transcription';
 import { TRANSCRIPTION_SEGMENT_HISTORY_LIMIT, TRANSCRIPTION_SEGMENT_EXPIRATION_TIME_MS } from '../../constants';
 import i18n from '../../i18n';
 import { hangUp, joinSuccess } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { selectBreakoutRoomSelectorParticipants } from '../selectors';
 
-export enum TranscriptionLanguage {
-  de = 'Deutsch',
-  en = 'English',
-}
-
 export interface TranscriptionState {
   status: TranscriptionStatus;
   showSubtitles: boolean;
   showSettings: boolean;
-  language: keyof typeof TranscriptionLanguage | null;
+  language: TranscriptionLanguageKey | '';
   segments: TranscriptionSegment[];
 }
 
@@ -35,7 +34,7 @@ const initialState: TranscriptionState = {
   status: TranscriptionStatus.Inactive,
   showSubtitles: false,
   showSettings: false,
-  language: null,
+  language: '',
   segments: [],
 };
 
@@ -52,8 +51,8 @@ const transcriptionSlice = createSlice({
         state.segments.shift();
       }
     },
-    removeExpiredSegments: (state, { payload }: PayloadAction<Date>) => {
-      const now = payload;
+    removeExpiredSegments: (state, { payload }: PayloadAction<string>) => {
+      const now = new Date(payload);
       state.segments = state.segments.filter((segment) => {
         const segmentEndTime = new Date(segment.endsAt);
         return now.getTime() - segmentEndTime.getTime() < TRANSCRIPTION_SEGMENT_EXPIRATION_TIME_MS;
@@ -65,7 +64,7 @@ const transcriptionSlice = createSlice({
     hideSubtitles: (state) => {
       state.showSubtitles = false;
     },
-    setTranscriptionLanguage: (state, { payload }: PayloadAction<keyof typeof TranscriptionLanguage>) => {
+    setTranscriptionLanguage: (state, { payload }: PayloadAction<TranscriptionLanguageKey>) => {
       state.language = payload;
     },
     showTranscriptionSettings: (state) => {
@@ -102,20 +101,11 @@ export const selectTranscriptionStatus = (state: RootState) => state.transcripti
 export const selectSegments = (state: RootState) => state.transcription.segments;
 export const selectShowSubtitles = (state: RootState) => state.transcription.showSubtitles;
 export const selectShowSubtitlesSettings = (state: RootState) => state.transcription.showSettings;
-export const selectLanguage = (state: RootState) => state.transcription.language;
+export const selectTranscriptionLanguage = (state: RootState) => state.transcription.language;
 export const selectSegmentsSortedByTimestamp = createSelector([selectSegments], (segments) => {
   return [...segments].sort((a, b) => new Date(a.endsAt).getTime() - new Date(b.endsAt).getTime());
 });
 
-const startLanguageChangeListener = (startAppListening: StartAppListening) => {
-  startAppListening({
-    actionCreator: setTranscriptionLanguage,
-    effect: (action) => {
-      const newLanguage = action.payload;
-      localStorage.setItem('transcription-language', newLanguage);
-    },
-  });
-};
 const startLanguageRestoreListener = (startAppListening: StartAppListening) => {
   startAppListening({
     actionCreator: joinSuccess,
@@ -128,16 +118,19 @@ const startLanguageRestoreListener = (startAppListening: StartAppListening) => {
   });
 };
 
-export function loadTranscriptionLanguageFromLocalStorage(): keyof typeof TranscriptionLanguage | null {
+export function loadTranscriptionLanguageFromLocalStorage(): TranscriptionLanguageKey | null {
   const language_str = localStorage.getItem('transcription-language');
   if ((language_str || []).length > 0) {
-    return language_str as keyof typeof TranscriptionLanguage;
+    return language_str as TranscriptionLanguageKey;
   }
   return null;
 }
 
+export function saveTranscriptionLanguageToLocalStorage(language: TranscriptionLanguageKey): void {
+  localStorage.setItem('transcription-language', language);
+}
+
 export const startTranscriptionSliceListeners = (startAppListening: StartAppListening) => {
-  startLanguageChangeListener(startAppListening);
   startLanguageRestoreListener(startAppListening);
 };
 export const selectSubtitles = createSelector(

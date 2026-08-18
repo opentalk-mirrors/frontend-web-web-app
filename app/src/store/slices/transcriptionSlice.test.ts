@@ -73,7 +73,7 @@ describe('transcriptionSlice', () => {
     const initialState = reducer(undefined, segmentReceived(expiredSegment));
     const stateWithExpiredAndValidSegment = reducer(initialState, segmentReceived(validSegment));
 
-    const newState = reducer(stateWithExpiredAndValidSegment, removeExpiredSegments(new Date()));
+    const newState = reducer(stateWithExpiredAndValidSegment, removeExpiredSegments(new Date().toISOString()));
 
     expect(newState.segments).toHaveLength(1);
     expect(newState.segments[0]).toEqual(validSegment);

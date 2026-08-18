@@ -50,11 +50,11 @@ describe('TranscriptionSubtitlesDisplay', () => {
       const { store } = configureStore({ initialState });
       renderWithProviders(<TranscriptionSubtitlesDisplay />, { store, provider: { mui: true } });
 
-      expect(mockDispatch).not.toHaveBeenCalledWith(removeExpiredSegments(new Date()));
+      expect(mockDispatch).not.toHaveBeenCalledWith(removeExpiredSegments(new Date().toISOString()));
 
       vi.advanceTimersByTime(1000);
 
-      expect(mockDispatch).toHaveBeenCalledWith(removeExpiredSegments(new Date()));
+      expect(mockDispatch).toHaveBeenCalledWith(removeExpiredSegments(new Date().toISOString()));
 
       vi.useRealTimers();
     });

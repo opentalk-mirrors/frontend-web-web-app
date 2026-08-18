@@ -21,17 +21,17 @@ import { selectIsModerator } from '../../store/slices/userSlice';
 
 const SubtitlesContainer = styled(Stack)(({ theme }) => ({
   padding: theme.spacing(2),
+  marginBottom: theme.spacing(-2),
   background: theme.palette.background.customPaper.primary,
   color: theme.palette.background.main.contrastText,
   borderRadius: theme.borderRadius.medium,
   position: 'relative',
   gap: theme.spacing(2),
-  bottom: theme.spacing(4),
+  margin: '0 auto',
   height: theme.spacing(22),
   overflowY: 'scroll',
   scrollbarWidth: 'none',
-  width: '99%',
-  margin: 'auto',
+  width: '100%',
   userSelect: 'none',
   boxShadow: '0 12px 12px 0 rgb(0 0 0 / 16%)',
 }));
@@ -66,7 +66,7 @@ const TranscriptionSubtitlesDisplay = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      dispatch(removeExpiredSegments(new Date()));
+      dispatch(removeExpiredSegments(new Date().toISOString()));
     }, REFRESH_INTERVAL);
 
     return () => clearInterval(interval);

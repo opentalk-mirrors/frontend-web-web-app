@@ -4,9 +4,9 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { TranscriptionStatus } from '../../../api/types/incoming/transcription';
+import { TranscriptionLanguageKey, TranscriptionStatus } from '../../../api/types/incoming/transcription';
+import { TranscriptionLanguage } from '../../../api/types/incoming/transcription';
 import * as reduxHooks from '../../../hooks/useCustomRedux';
-import { TranscriptionLanguage, setTranscriptionLanguage } from '../../../store/slices/transcriptionSlice';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import SubtitleSettingsDialog from './SubtitleSettingsDialog';
 
@@ -14,7 +14,7 @@ const mockDispatch = vi.fn();
 
 vi.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(mockDispatch);
 
-const buildInitialState = (language: keyof typeof TranscriptionLanguage | null = null) => ({
+const buildInitialState = (language: TranscriptionLanguageKey | null = null) => ({
   transcription: {
     status: TranscriptionStatus.Inactive,
     showSubtitles: false,
@@ -41,7 +41,7 @@ describe('SubtitleSettingsDialog', () => {
     expect(screen.getByRole('button', { name: 'global-cancel' })).toBeInTheDocument();
   });
 
-  it('dispatches setLanguage when a language option is selected', async () => {
+  it('does not dispatch setTranscriptionLanguage when a language option is selected', async () => {
     const { store } = configureStore({ initialState: buildInitialState() });
     renderWithProviders(<SubtitleSettingsDialog open />, { store, provider: { mui: true } });
     const user = userEvent.setup();
@@ -58,7 +58,42 @@ describe('SubtitleSettingsDialog', () => {
 
     await user.click(within(listbox).getByRole('option', { name: 'Deutsch' }));
 
-    expect(mockDispatch).toHaveBeenCalledWith(setTranscriptionLanguage('de'));
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
+
+  it('dispatches changeTranscriptionLanguageSignal when saving a running transcription service with a new language selected', async () => {
+    const { store } = configureStore({
+      initialState: {
+        transcription: {
+          status: TranscriptionStatus.Running,
+          showSubtitles: false,
+          language: 'en',
+          segments: [],
+        },
+      },
+    });
+    renderWithProviders(<SubtitleSettingsDialog open />, { store, provider: { mui: true } });
+    const user = userEvent.setup();
+
+    const languageSelect = screen.getByRole('combobox');
+    await user.click(languageSelect);
+
+    const listbox = await screen.findByRole('listbox');
+    const options = within(listbox).getAllByRole('option');
+    expect(options).toHaveLength(Object.keys(TranscriptionLanguage).length);
+
+    await user.click(within(listbox).getByRole('option', { name: 'Deutsch' }));
+
+    const saveButton = screen.getByRole('button', { name: 'global-save' });
+    expect(saveButton).toBeEnabled();
+    await user.click(saveButton);
+
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'signaling/transcription/change_language',
+        payload: expect.objectContaining({ language: 'de' }),
+      })
+    );
   });
 
   it('dispatches start transcription action with correct language when saving with enabled transcription', async () => {

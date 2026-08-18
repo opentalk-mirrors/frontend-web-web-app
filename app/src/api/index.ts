@@ -105,7 +105,7 @@ const onMessage = (dispatch: AppDispatch, getState: () => RootState) => async (m
       handleTrainingParticipationReportMessage(dispatch, message.payload, getState());
       break;
     case 'transcription':
-      handleTranscriptionMessage(dispatch, message.payload);
+      handleTranscriptionMessage(dispatch, message.payload, getState());
       break;
     case 'error':
       log.error('Received error message from RoomServer:', message.payload);

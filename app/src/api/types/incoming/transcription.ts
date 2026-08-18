@@ -12,6 +12,7 @@ export enum TranscriptionStatus {
 export interface TranscriptionStateUpdated {
   message: 'state_updated';
   status: TranscriptionStatus;
+  language: TranscriptionLanguageKey;
 }
 
 export interface TranscriptionSegment {
@@ -45,3 +46,10 @@ export type TranscriptionMessage =
 export type Transcription = NamespacedIncoming<TranscriptionMessage, 'transcription'>;
 
 export default Transcription;
+
+export enum TranscriptionLanguage {
+  de = 'Deutsch',
+  en = 'English',
+}
+
+export type TranscriptionLanguageKey = keyof typeof TranscriptionLanguage;
