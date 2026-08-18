@@ -108,28 +108,29 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
         const parsedURL = new URL(value);
 
         if (parsedURL.pathname) {
-          //If the user pastes/types a link containing `/invite/` (old invite link format)
-          //=> we use that link for redirecting to the old invite page that resolves the room
-          if (parsedURL.pathname.includes('/invite/')) {
-            const inviteCodeFromLink = parsedURL.pathname.replace('/invite/', '');
-            const isValidFormat = validateUUID(inviteCodeFromLink);
+          const segments = parsedURL.pathname.split('/').filter(Boolean);
 
-            if (isValidFormat) {
+          //A room link takes precedence: the id is the segment right after `room`,
+          //ignoring any trailing breakout-room-id segment kept for backwards compatibility.
+          const roomIndex = segments.indexOf('room');
+          const roomCode = roomIndex !== -1 ? segments[roomIndex + 1] : undefined;
+          if (roomCode && validateUUID(roomCode)) {
+            formik.setFieldValue('roomId', roomCode);
+            setInvite(undefined);
+            return;
+          }
+
+          //Old invite link format (`/invite/{invite_code}`) is redirected to the invite page that resolves the room.
+          const inviteIndex = segments.indexOf('invite');
+          if (inviteIndex !== -1) {
+            const inviteCodeFromLink = segments[inviteIndex + 1];
+            if (inviteCodeFromLink && validateUUID(inviteCodeFromLink)) {
               formik.setFieldValue('roomId', inviteCodeFromLink);
               setInvite({ inviteCode: inviteCodeFromLink as InviteCode, isInviteLink: true });
               return;
             }
 
             formik.setFieldError('roomId', t('dashboard-join-meeting-dialog-invalid-url'));
-            return;
-          }
-
-          const roomCode = parsedURL.pathname.replace('/room/', '');
-          const isValidFormat = validateUUID(roomCode);
-
-          if (isValidFormat) {
-            formik.setFieldValue('roomId', roomCode);
-            setInvite(undefined);
             return;
           }
         }
