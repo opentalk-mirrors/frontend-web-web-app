@@ -18,15 +18,11 @@ patch_extra_lines_after = 3
 
 git_provider = "gitlab"
 
-bot_user_indicators = ["bot_", "bot-", "_bot", "-bot"]
-
-# don't repeat inline suggestions across re-runs
+# try to not repeat inline suggestion threads across re-runs (doesn't work half the time)
 persistent_inline_comments = true
 
 # Don't comment with 'Work in progress ...'
 publish_output_progress = false
-
-ignore_pr_labels = ["pr-agent-ignore"]
 
 # Config for the /review command
 [pr_reviewer]
@@ -40,11 +36,28 @@ num_max_findings = 5
 enable_review_labels_effort = false
 enable_review_labels_security = false
 
+# web-app specific review instructions
 extra_instructions = """
 TypeScript – prioritise: unhandled promise rejections; `any` or non-null `!` that
 hides a real nullable; state mutated across renders; missing cleanup in effects;
 user input rendered without escaping; missing i18n keys.
 
-Do NOT report: formatting, naming, import order, or eslint or tsc already enforce in CI.
+Do NOT report: formatting, naming, import order, or things eslint or tsc already enforce in CI.
+Do not suggest adding comments. Only report issues you can point to a concrete line for.
+"""
+
+# Config for the /improve command
+[pr_code_suggestions]
+
+# Create threads instead of one big comment
+commitable_code_suggestions = true
+
+# web-app specific review instructions
+extra_instructions = """
+TypeScript – prioritise: unhandled promise rejections; `any` or non-null `!` that
+hides a real nullable; state mutated across renders; missing cleanup in effects;
+user input rendered without escaping; missing i18n keys.
+
+Do NOT report: formatting, naming, import order, or things eslint or tsc already enforce in CI.
 Do not suggest adding comments. Only report issues you can point to a concrete line for.
 """

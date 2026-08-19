@@ -104,6 +104,7 @@ code-review-agent:
   allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
   script:
     - echo "Running PR Agent..."
     - export MR_URL="$CI_MERGE_REQUEST_PROJECT_URL/-/merge_requests/$CI_MERGE_REQUEST_IID"
