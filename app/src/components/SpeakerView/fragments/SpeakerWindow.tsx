@@ -4,21 +4,29 @@
 import { ParticipantContext } from '@livekit/components-react';
 import { styled } from '@mui/material';
 import { Participant } from 'livekit-client';
+import { useMemo } from 'react';
 
 import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
 import ParticipantWindow from '../../ParticipantWindow';
 
-const Container = styled('div')(({ theme }) => ({
+interface SpeakerWindowProps {
+  speakerWindowWidth?: number;
+  speakerWindowHeight?: number;
+}
+
+const Container = styled('div', {
+  shouldForwardProp: (prop) => !['width', 'height'].includes(prop as string),
+})<{ width: number; height: number }>(({ theme, width, height }) => ({
   borderRadius: theme.borderRadius.medium,
   overflow: 'hidden',
-  aspectRatio: '16 / 9',
-  flex: 1,
+  width,
+  height,
   margin: 'auto',
   display: 'flex',
   flexDirection: 'column',
 }));
 
-const SpeakerWindow = () => {
+const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerWindowProps) => {
   const { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId } = useCinemaViewParticipants();
   const selectedParticipant = (() => {
     if (currentSpeakerId) {
@@ -39,8 +47,20 @@ const SpeakerWindow = () => {
     return firstRemote.done ? undefined : firstRemote.value;
   })();
 
+  // Fit a 16:9 box entirely within the available area (contain), preserving the
+  // aspect ratio so the video is never cropped or distorted when the window is resized.
+  const { width, height } = useMemo(() => {
+    if (speakerWindowWidth && speakerWindowHeight) {
+      const aspectRatio = 16 / 9;
+      const boxHeight = Math.min(speakerWindowWidth / aspectRatio, speakerWindowHeight);
+      const boxWidth = boxHeight * aspectRatio;
+      return { width: boxWidth, height: boxHeight };
+    }
+    return { width: 1, height: 1 };
+  }, [speakerWindowWidth, speakerWindowHeight]);
+
   return (
-    <Container>
+    <Container width={width} height={height}>
       {selectedParticipant && (
         <ParticipantContext.Provider value={selectedParticipant}>
           <ParticipantWindow alwaysShowOverlay />

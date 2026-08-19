@@ -29,24 +29,30 @@ const SpeakerView = () => {
   const theme: Theme = useTheme();
   const thumbWidth = useMediaQuery(theme.breakpoints.up('xl')) ? THUMB_WIDTH_XL : THUMB_WIDTH_LG;
   const [thumbsPerPage, setThumbsPerPage] = useState(1);
+  const [speakerWindowDimensions, setSpeakerWindowDimensions] = useState({ width: 0, height: 0 });
 
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const speakerWindowRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) {
+    if (!containerRef.current || !speakerWindowRef.current) {
       return;
     }
 
     const updateLayout = () => {
       const container = containerRef.current;
+      const speakerWindow = speakerWindowRef.current;
 
-      if (!container) {
+      if (!container || !speakerWindow) {
         return;
       }
 
       const containerWidth = container.clientWidth;
       const qtyParticipants = Math.max(1, Math.floor(containerWidth / thumbWidth));
       setThumbsPerPage(qtyParticipants);
+
+      const { clientWidth, clientHeight } = speakerWindow;
+      setSpeakerWindowDimensions({ width: clientWidth, height: clientHeight });
     };
 
     const observer = new ResizeObserver(() => {
@@ -54,6 +60,7 @@ const SpeakerView = () => {
     });
 
     observer.observe(containerRef.current);
+    observer.observe(speakerWindowRef.current);
 
     updateLayout();
 
@@ -62,8 +69,11 @@ const SpeakerView = () => {
 
   return (
     <Container ref={containerRef} data-testid="SpeakerView-Container">
-      <SpeakerWindowContainer>
-        <SpeakerWindow />
+      <SpeakerWindowContainer ref={speakerWindowRef}>
+        <SpeakerWindow
+          speakerWindowWidth={speakerWindowDimensions.width}
+          speakerWindowHeight={speakerWindowDimensions.height}
+        />
       </SpeakerWindowContainer>
       <ThumbsRow thumbsPerWindow={thumbsPerPage} thumbWidth={thumbWidth} />
     </Container>
