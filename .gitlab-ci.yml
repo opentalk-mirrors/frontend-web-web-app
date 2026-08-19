@@ -31,7 +31,6 @@ stages:
   - prepare-artifact
   - build
   - package
-  - pr-agent
   - push
   - scan
   - e2e
@@ -96,19 +95,31 @@ include:
     ref: v2
     file: .gitlab-ci-template.yml
 
-code_review:
+code-review-agent:
   stage: analyze
-  when: manual
+  image:
+    name: pragent/pr-agent:0.42.0
+    entrypoint: ['']
+  needs: []
+  allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  before_script:
-    - apk add --no-cache git
-    - GIT_URL=https://gitlab-ci-token:${CI_JOB_TOKEN}@git.opentalk.dev/opentalk/tools/coreebo.git
-    - git clone --depth 1 --branch $COREEBO_VERSION $GIT_URL
-    - cd coreebo
-    - npm ci
   script:
-    - npm run review -- -id $CI_MERGE_REQUEST_IID
+    - echo "Running PR Agent..."
+    - export MR_URL="$CI_MERGE_REQUEST_PROJECT_URL/-/merge_requests/$CI_MERGE_REQUEST_IID"
+    - echo "MR_URL=$MR_URL"
+    - export GITLAB__URL="$CI_SERVER_URL"
+    - export CONFIG__GIT_PROVIDER="gitlab"
+    - export GITLAB__AUTH_TYPE="private_token"
+
+    - test -n "$PR_AGENT_ACCESS_TOKEN" || { echo "PR_AGENT_ACCESS_TOKEN is not set"; exit 1; }
+    - export GITLAB__PERSONAL_ACCESS_TOKEN="$PR_AGENT_ACCESS_TOKEN"
+
+    - test -n "$PR_AGENT_ANTHROPIC_KEY" || { echo "PR_AGENT_ANTHROPIC_KEY is not set"; exit 1; }
+    - export ANTHROPIC__KEY="$PR_AGENT_ANTHROPIC_KEY"
+
+    - python -m pr_agent.cli --extra_config_url=.pr_agent.toml --pr_url="$MR_URL" review
+    - python -m pr_agent.cli --extra_config_url=.pr_agent.toml --pr_url="$MR_URL" improve
 
 prettier+eslint:
   stage: lint
@@ -409,32 +420,6 @@ container-profiling:
       "$CI_PROJECT_DIR"
     - buildah push "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8}-profiling"
     - buildah push "$CI_REGISTRY_IMAGE:profiling"
-
-pr-agent-review:
-  stage: pr-agent
-  image:
-    name: pragent/pr-agent:0.42.0
-    entrypoint: ['']
-  needs: []
-  allow_failure: true
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  script:
-    - echo "Running PR Agent..."
-    - export MR_URL="$CI_MERGE_REQUEST_PROJECT_URL/-/merge_requests/$CI_MERGE_REQUEST_IID"
-    - echo "MR_URL=$MR_URL"
-    - export GITLAB__URL="$CI_SERVER_URL"
-    - export CONFIG__GIT_PROVIDER="gitlab"
-    - export GITLAB__AUTH_TYPE="private_token"
-
-    - test -n "$PR_AGENT_ACCESS_TOKEN" || { echo "PR_AGENT_ACCESS_TOKEN is not set"; exit 1; }
-    - export GITLAB__PERSONAL_ACCESS_TOKEN="$PR_AGENT_ACCESS_TOKEN"
-
-    - test -n "$PR_AGENT_ANTHROPIC_KEY" || { echo "PR_AGENT_ANTHROPIC_KEY is not set"; exit 1; }
-    - export ANTHROPIC__KEY="$PR_AGENT_ANTHROPIC_KEY"
-
-    - python -m pr_agent.cli --extra_config_url=.pr_agent.toml --pr_url="$MR_URL" review
-    - python -m pr_agent.cli --extra_config_url=.pr_agent.toml --pr_url="$MR_URL" improve
 
 read-tags:
   stage: push
