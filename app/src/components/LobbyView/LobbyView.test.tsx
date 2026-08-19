@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import {
@@ -177,7 +177,7 @@ describe('LobbyView connect-first WS lobby', () => {
     const input = screen.getByPlaceholderText('lobby-name-placeholder');
     await user.clear(input);
     await user.type(input, 'Guest');
-    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+    await user.click(screen.getByRole('button', { name: 'joinform-enter-now' }));
 
     await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(setDisplayName('Guest')));
     expect(dispatchSpy).toHaveBeenCalledWith(enterRoomCommand.action({ displayName: 'Guest' }));
@@ -191,7 +191,7 @@ describe('LobbyView connect-first WS lobby', () => {
     const input = screen.getByPlaceholderText('lobby-name-placeholder');
     await user.clear(input);
     await user.type(input, 'Guest');
-    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+    await user.click(screen.getByRole('button', { name: 'joinform-request-to-join' }));
 
     await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(setDisplayName('Guest')));
     expect(dispatchSpy).toHaveBeenCalledWith(enterWaitingRoomCommand.action({ displayName: 'Guest' }));
@@ -203,9 +203,10 @@ describe('LobbyView connect-first WS lobby', () => {
       canEnter: true,
       lobbyDisplayName: 'Assigned',
     });
+    const user = userEvent.setup({ delay: null });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
-    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+    await user.click(screen.getByRole('button', { name: 'joinform-enter-now' }));
 
     await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(enterRoomCommand.action({ displayName: undefined })));
     expect(dispatchSpy).not.toHaveBeenCalledWith(setDisplayName('Assigned'));
@@ -217,9 +218,10 @@ describe('LobbyView connect-first WS lobby', () => {
       canEnter: false,
       lobbyDisplayName: 'Assigned',
     });
+    const user = userEvent.setup({ delay: null });
     renderWithProviders(<LobbyView />, { store, provider: { router: true, mui: true } });
 
-    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+    await user.click(screen.getByRole('button', { name: 'joinform-request-to-join' }));
 
     await waitFor(() =>
       expect(dispatchSpy).toHaveBeenCalledWith(enterWaitingRoomCommand.action({ displayName: undefined }))
@@ -347,7 +349,7 @@ describe('LobbyView password step', () => {
     const name = await screen.findByPlaceholderText('lobby-name-placeholder');
     await user.clear(name);
     await user.type(name, 'Guest');
-    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+    await user.click(screen.getByRole('button', { name: 'joinform-enter-now' }));
 
     await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(setDisplayName('Guest')));
     expect(dispatchSpy).toHaveBeenCalledWith(enterRoomCommand.action({ displayName: 'Guest' }));
@@ -387,7 +389,7 @@ describe('LobbyView guest join (not logged in)', () => {
     const submitButton = screen.getByRole('button', { name: 'joinform-enter-now' });
     await waitFor(() => expect(submitButton).toBeEnabled());
 
-    fireEvent.submit(screen.getByRole('form', { name: 'joinform-title' }));
+    await user.click(submitButton);
 
     await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(setDisplayName('Guest')));
     expect(dispatchSpy).toHaveBeenCalledWith(enterRoomCommand.action({ displayName: 'Guest' }));

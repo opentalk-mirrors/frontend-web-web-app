@@ -277,14 +277,7 @@ const LobbyView = () => {
     }
     hasInitiatedConnect.current = true;
     void openLobbyConnection();
-  }, [
-    isRoomDataLoading,
-    roomData,
-    connectionState,
-    openLobbyConnection,
-    isPasswordRequired,
-    isRoomDeleted,
-  ]);
+  }, [isRoomDataLoading, roomData, connectionState, openLobbyConnection, isPasswordRequired, isRoomDeleted]);
 
   const formik = useFormik({
     initialValues: {
