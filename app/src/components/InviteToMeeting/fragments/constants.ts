@@ -10,4 +10,5 @@ export enum FieldKeys {
   SharedFolderLink = 'shared-folder-link',
   SharedFolderPassword = 'shared-folder-password',
   LivestreamLink = 'livestream-link',
+  PersonalRoomLink = 'personal-room-link',
 }

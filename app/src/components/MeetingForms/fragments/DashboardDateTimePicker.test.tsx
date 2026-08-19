@@ -9,14 +9,14 @@ import { Formik } from 'formik';
 
 import roundToUpper30 from '../../../utils/roundToUpper30';
 import { renderWithProviders } from '../../../utils/testUtils';
-import { DashboardDateTimePicker } from './DashboardDateTimePicker';
+import { DashboardDateTimePicker, MeetingFormValues } from './DashboardDateTimePicker';
 
 const DEFAULT_MINUTES_DIFFERENCE = 30;
 
 const defaultStartDate = roundToUpper30();
 const defaultEndDate = addMinutes(defaultStartDate, DEFAULT_MINUTES_DIFFERENCE);
 
-const initialValues = {
+const initialValues: MeetingFormValues = {
   startDate: defaultStartDate.toISOString(),
   endDate: defaultEndDate.toISOString(),
   waitingRoom: false,
@@ -32,6 +32,7 @@ const initialValues = {
     enabled: false,
   },
   guestAccess: GuestAccess.DirectAccess,
+  personalRoom: false,
 };
 
 describe('DashboardDateTimePicker', () => {

@@ -26,6 +26,7 @@ const meetingDetails: MeetingDetails = {
 const mockRoomInfo: RoomInfo = {
   id: '1' as RoomId,
   password: 'password',
+  alias: 'my-personal-room',
   createdBy: {
     title: 'Mr.',
     firstname: 'John',
@@ -85,6 +86,42 @@ describe('MeetingDetailsDialog', () => {
       { store }
     );
     expect(screen.getByRole('textbox', { name: 'meeting-details-dialog-label-room-password' })).toBeInTheDocument();
+  });
+
+  it('renders personal room link text field when alias exists', () => {
+    renderWithProviders(
+      <MeetingDetailsDialog
+        open={true}
+        onClose={vi.fn()}
+        eventInfo={mockEventInfo}
+        meetingDetails={meetingDetails}
+        roomInfo={mockRoomInfo}
+      />,
+      { store }
+    );
+
+    const personalRoomLinkField = screen.getByRole('textbox', {
+      name: 'meeting-details-dialog-label-personal-room-link',
+    });
+    expect(personalRoomLinkField).toBeInTheDocument();
+    expect(personalRoomLinkField).toHaveValue('http://localhost:3000/room/my-personal-room');
+  });
+
+  it('does not render personal room link text field when alias is missing', () => {
+    renderWithProviders(
+      <MeetingDetailsDialog
+        open={true}
+        onClose={vi.fn()}
+        eventInfo={mockEventInfo}
+        meetingDetails={meetingDetails}
+        roomInfo={{ ...mockRoomInfo, alias: undefined }}
+      />,
+      { store }
+    );
+
+    expect(
+      screen.queryByRole('textbox', { name: 'meeting-details-dialog-label-personal-room-link' })
+    ).not.toBeInTheDocument();
   });
 
   it('does not render room password text field when password not provided', () => {

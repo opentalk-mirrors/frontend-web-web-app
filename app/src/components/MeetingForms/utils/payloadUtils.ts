@@ -28,6 +28,7 @@ export const createPayload = (
       existingEvent?.trainingParticipationReport
     ),
     guestAccess: values.guestAccess,
+    roomName: values.personalRoom && values.personalRoomName ? values.personalRoomName : undefined,
   };
 
   if (values.isTimeDependent) {

@@ -36,6 +36,8 @@ export interface MeetingFormValues {
   showMeetingDetails: boolean;
   e2eEncryption: boolean;
   guestAccess: GuestAccess;
+  personalRoom: boolean;
+  personalRoomName?: string;
 }
 
 export type DashboardDateTimePickerProps = {

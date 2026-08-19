@@ -129,10 +129,11 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
 
   const copyMeetingLink = useCallback(async () => {
     handleClose();
-    const link = `${baseUrl}/room/${roomId}`;
+    const roomAliasOrId = event.room?.alias ?? roomId;
+    const link = `${baseUrl}/room/${roomAliasOrId}`;
     await navigator.clipboard.writeText(link);
     notifications.success(t('global-copy-link-success'));
-  }, [baseUrl, handleClose, roomId, t]);
+  }, [baseUrl, event.room?.alias, handleClose, roomId, t]);
 
   const showDialog = useCallback(() => {
     showConfirmDialog(true);

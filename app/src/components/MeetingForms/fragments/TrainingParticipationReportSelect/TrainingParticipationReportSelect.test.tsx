@@ -23,6 +23,7 @@ const initialValues = {
   showMeetingDetails: false,
   e2eEncryption: false,
   guestAccess: GuestAccess.DirectAccess,
+  personalRoom: false,
 };
 
 describe('Training participation report select', () => {

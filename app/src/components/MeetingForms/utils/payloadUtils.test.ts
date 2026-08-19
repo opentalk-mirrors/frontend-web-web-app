@@ -89,6 +89,21 @@ describe('createPayload', () => {
     expect(payload.e2eEncryption).toBe(mockedMeetingFormValues.e2eEncryption);
   });
 
+  it('should include roomName when personal room is enabled with a name', () => {
+    const payload = createPayload({ ...mockedMeetingFormValues, personalRoom: true, personalRoomName: 'my-room' });
+    expect(payload.roomName).toBe('my-room');
+  });
+
+  it('should not include roomName when personal room is disabled', () => {
+    const payload = createPayload({ ...mockedMeetingFormValues, personalRoom: false, personalRoomName: 'my-room' });
+    expect(payload.roomName).toBeUndefined();
+  });
+
+  it('should not include roomName when personal room is enabled but name is empty', () => {
+    const payload = createPayload({ ...mockedMeetingFormValues, personalRoom: true, personalRoomName: '' });
+    expect(payload.roomName).toBeUndefined();
+  });
+
   it('should set streaming target to empty array if streaming is disabled', () => {
     const payload = createPayload({
       ...mockedMeetingFormValues,

@@ -43,12 +43,13 @@ const CustomCopyTextField = styled(CopyTextField)(({ theme }) => ({
 const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomInfo }: MeetingDetailsDialogProps) => {
   const { t } = useTranslation();
   const { title, roomId } = eventInfo;
-  const { createdBy: roomOwner, password: roomPassword } = roomInfo;
+  const { createdBy: roomOwner, password: roomPassword, alias } = roomInfo;
   const baseUrl = useAppSelector(selectBaseUrl);
   const guestAccessEnabled = useAppSelector(selectGuestAccessEnabled);
   const highSecurityEnabled = useAppSelector(selectE2EEncryption);
   // With the unified room link, guests join through the same link as invited participants.
   const meetingLink = roomId ? composeInviteUrl(baseUrl, roomId) : null;
+  const personalRoomUrl = alias ? new URL(`/room/${alias}`, baseUrl).toString() : undefined;
   const streamingLinksExist = meetingDetails !== undefined && meetingDetails.streamingLinks.length > 0;
 
   const getRoomOwnerNameString = () => `${roomOwner.firstname} ${roomOwner.lastname}`;
@@ -126,6 +127,18 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
               onClick={() => setCopiedUrl(meetingLink?.toString())}
             />
           )}
+
+          {personalRoomUrl && (
+            <CustomCopyTextField
+              label={getLabelText(FieldKeys.PersonalRoomLink)}
+              value={personalRoomUrl}
+              ariaLabel={getAriaLabelText(FieldKeys.PersonalRoomLink)}
+              notificationText={getNotificationText(FieldKeys.PersonalRoomLink)}
+              checked={copiedUrl === personalRoomUrl}
+              onClick={() => setCopiedUrl(personalRoomUrl)}
+            />
+          )}
+
           {sipLink && guestAccessEnabled && (
             <CustomCopyTextField
               label={getLabelText(FieldKeys.SipLink)}

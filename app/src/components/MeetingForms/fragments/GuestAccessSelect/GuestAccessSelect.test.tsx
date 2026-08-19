@@ -21,6 +21,7 @@ const baseValues: MeetingFormValues = {
   showMeetingDetails: false,
   e2eEncryption: false,
   guestAccess: GuestAccess.DirectAccess,
+  personalRoom: false,
 };
 
 const renderWithFormik = (

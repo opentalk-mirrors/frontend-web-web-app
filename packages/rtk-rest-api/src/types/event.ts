@@ -71,6 +71,7 @@ type EventRoomInfo = {
   e2eEncryption: boolean;
   callIn?: CallIn;
   guestAccess: GuestAccess;
+  alias?: string;
 };
 
 /**
@@ -103,6 +104,7 @@ export enum EventType {
 export interface CreateBaseEventPayload {
   title: string;
   description: string;
+  roomName?: string;
   waitingRoom: boolean;
   e2eEncryption: boolean;
   password: string | null;
@@ -165,6 +167,7 @@ export interface UpdateEventPayload {
   streamingTargets?: Array<StreamingTarget>;
   trainingParticipationReport?: TrainingParticipationReportParameterSet | null;
   guestAccess?: GuestAccess;
+  roomName?: string;
 }
 
 /**

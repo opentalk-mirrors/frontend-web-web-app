@@ -101,6 +101,9 @@ const CommonTextField = ({
 
     // if helper text is specified by the parent component it will overwrite the remaining characters text
     if (helperText) {
+      if (typeof helperText !== 'string') {
+        return helperText;
+      }
       return prefix + helperText;
     }
 

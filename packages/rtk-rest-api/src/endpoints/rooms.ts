@@ -9,6 +9,8 @@ import { AssetId, Tags, Tag } from '../types/common';
 import { EventInfo } from '../types/event';
 import {
   CreateRoomPayload,
+  RoomAliasExistsResponse,
+  VerifyRoomNamePayload,
   RoomAssets,
   RoomEventInfo,
   RoomId,
@@ -198,6 +200,16 @@ export const addRoomEndpoints = <
       { type: Tag.StreamingTargets, id },
       { type: Tag.StreamingTargets, id: 'PARTIAL-LIST' },
     ],
+  }),
+  /**
+   * Verify whether a room name is available
+   */
+  verifyRoomName: builder.mutation<RoomAliasExistsResponse, VerifyRoomNamePayload>({
+    query: (payload) => ({
+      url: 'rooms/name/verify',
+      method: 'POST',
+      body: snakecaseKeys(payload),
+    }),
   }),
   /**
    * Delete specific streaming target

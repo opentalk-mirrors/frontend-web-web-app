@@ -55,6 +55,8 @@ export type {
 export { UserRole } from './types/user';
 export type {
   RoomId,
+  RoomAliasExistsResponse,
+  VerifyRoomNamePayload,
   InviteCode,
   SipId,
   PublicRoom,
