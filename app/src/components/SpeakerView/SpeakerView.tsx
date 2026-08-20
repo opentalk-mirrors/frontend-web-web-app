@@ -13,12 +13,14 @@ const Container = styled(Stack)(({ theme }) => ({
   width: '100%',
   flexDirection: 'column',
   flex: 1,
+  minHeight: 0,
   gap: theme.spacing(2),
 }));
 
 const SpeakerWindowContainer = styled('div')({
   overflow: 'hidden',
   flex: 1,
+  minHeight: 0,
   justifyContent: 'center',
   alignContent: 'center',
   display: 'flex',
