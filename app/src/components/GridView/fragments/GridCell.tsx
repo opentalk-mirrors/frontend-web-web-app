@@ -2,9 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useParticipantContext, useSpeakingParticipants } from '@livekit/components-react';
-import { Slide, keyframes, styled } from '@mui/material';
+import { Slide, keyframes, styled, Box } from '@mui/material';
 
 import ParticipantWindow from '../../ParticipantWindow';
+import { GRID_CELL_WIDTH } from '../gridLayout';
 
 const breathe = keyframes`
   0% {
@@ -16,25 +17,21 @@ const breathe = keyframes`
   }
 `;
 
-const CinemaCell = styled('div', {
+const CinemaCell = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'highlight',
 })<{ highlight: boolean }>(({ theme, highlight }) => ({
-  width: '100%',
-  height: '100%',
+  width: GRID_CELL_WIDTH,
+  height: 'auto',
+  aspectRatio: '16 / 9',
+  flex: '0 0 auto',
   boxSizing: 'border-box',
   display: 'flex',
-  alignItems: 'center',
+  // Stretch so the child fills the aspect-ratio height; it inherits height from here and
+  // would otherwise collapse to its content because the cell has no definite pixel height.
+  alignItems: 'stretch',
   overflow: 'hidden',
   borderRadius: theme.borderRadius.card,
   position: 'relative',
-
-  '&::before': {
-    content: '""',
-    display: 'block',
-    height: 0,
-    width: 0,
-    paddingBottom: 'calc(9/16 * 100%)',
-  },
 
   '&::after': {
     content: '""',

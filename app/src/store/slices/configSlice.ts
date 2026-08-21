@@ -6,10 +6,10 @@ import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 import { merge } from 'es-toolkit';
 
 import type { RootState } from '../';
-import { getAvailableGridSizes } from '../../constants';
 import log from '../../logger';
 import { EnabledModules, SignalingTariff } from '../../types';
 import type { VideoCodec } from '../../types/livekit';
+import { getAvailableGridSizes } from '../../utils/getAvailableGridSizes';
 import { Seconds } from '../../utils/tsUtils';
 import { joinSuccess } from '../commonActions';
 

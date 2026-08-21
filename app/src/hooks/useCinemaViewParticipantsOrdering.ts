@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
-import { MAX_GRID_TILES_DESKTOP, MAX_GRID_TILES_MOBILE } from '../constants';
 import { CinemaViewSortOrder } from '../store/slices/common';
-import { selectCinemaGridSize, selectCinemaViewOrder, selectPaginationPageState } from '../store/slices/uiSlice';
+import { selectCinemaViewOrder, selectPaginationPageState } from '../store/slices/uiSlice';
 import { ConnectionId, ConnectionIdentifier, ParticipantId } from '../types';
 import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
 import { useCurrentSpeaker } from './useCurrentSpeaker';
 import { useAppSelector } from './useCustomRedux';
-import { useIsMobile } from './useMediaQuery';
+import { useGridPageSize } from './useGridPageSize';
 
 type CinemaViewParticipantForOrdering = {
   id: ParticipantId;
@@ -243,11 +242,7 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
   const currentSpeaker = useCurrentSpeaker().currentSpeakerId;
 
   const currentPage = useAppSelector(selectPaginationPageState);
-  const selectedGridSize = useAppSelector(selectCinemaGridSize);
-  const isMobile = useIsMobile();
-  const maxGridTiles = isMobile
-    ? Math.min(selectedGridSize, MAX_GRID_TILES_MOBILE)
-    : Math.min(selectedGridSize, MAX_GRID_TILES_DESKTOP);
+  const maxGridTiles = useGridPageSize();
 
   const cinemaViewOrder = useAppSelector(selectCinemaViewOrder);
   const currentPageIndex = Math.max(currentPage - 1, 0);

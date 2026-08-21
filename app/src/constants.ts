@@ -15,22 +15,14 @@ export enum ToolbarButtonIds {
   EndCall = 'toolbar-endcall',
 }
 
-export const MAX_GRID_TILES_DESKTOP = 24;
-export const MAX_GRID_TILES_MOBILE = 9;
-
 export const DISPLAY_NAME_MAX_CHARACTERS = 100;
 
-export const GRID_VIDEO_WIDTHS = [50, 33.33, 25, 25] as readonly number[];
-export const GRID_SIZES = [6, 9, 16, 24] as readonly number[];
+export const MAX_GRID_TILES_DESKTOP = 24;
+export const MAX_GRID_TILES_MOBILE = 9;
+export const MIN_TILE_WIDTH_PX = 160;
+export const MAX_SCROLL_GRID_COLUMNS = 3;
 
-export const getAvailableGridSizes = (maxGridTiles?: number | string): readonly number[] => {
-  const maxTiles = Number(maxGridTiles);
-  if (maxGridTiles === undefined || maxGridTiles === '' || Number.isNaN(maxTiles)) {
-    return GRID_SIZES;
-  }
-  const availableSizes = GRID_SIZES.filter((size) => size <= maxTiles);
-  return availableSizes.length > 0 ? availableSizes : [GRID_SIZES[0]];
-};
+export const GRID_SIZES = [6, 9, 16, 24] as readonly number[];
 
 export const BREAKOUT_ROOM_CLOSE_DELAY = 60;
 export const BREAKOUT_ROOM_DEFAULT_COUNTDOWN_DURATION = 120;

@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Popover, Stack, styled } from '@mui/material';
-import { useMemo, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { MAX_GRID_TILES_MOBILE } from '../../../../constants';
 import LayoutOptions from '../../../../enums/LayoutOptions';
 import { useAppSelector, useAppDispatch } from '../../../../hooks';
+import { useGridPageSize } from '../../../../hooks/useGridPageSize';
 import { selectAllOnlineParticipants } from '../../../../store/slices/participantsSlice';
 import { setPaginationPage, selectCinemaLayout, selectPaginationPageState } from '../../../../store/slices/uiSlice';
 import PageIndex from './PageIndex';
@@ -43,12 +43,11 @@ const MobilePagination = () => {
   const participants = useAppSelector(selectAllOnlineParticipants);
   const selectedPage = useAppSelector(selectPaginationPageState);
   const selectedLayout = useAppSelector(selectCinemaLayout);
+  const gridPageSize = useGridPageSize();
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const isPopoverOpen = Boolean(anchorElement);
 
-  const pageCount = useMemo(() => {
-    return Math.ceil(participants.length / MAX_GRID_TILES_MOBILE);
-  }, [participants]);
+  const pageCount = Math.ceil(participants.length / gridPageSize);
 
   useEffect(() => {
     if (selectedPage > pageCount || selectedPage === 0) {
