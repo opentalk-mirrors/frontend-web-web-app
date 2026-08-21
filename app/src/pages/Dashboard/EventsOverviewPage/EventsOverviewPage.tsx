@@ -4,7 +4,7 @@
 import { DateTime, InviteStatus, isTimelessEvent } from '@opentalk/rest-api-rtk-query';
 import { formatRFC3339 } from 'date-fns';
 import { groupBy } from 'lodash';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGetEventsWithInstancesQuery } from '../../../api/rest';
@@ -13,22 +13,25 @@ import { TimePerspectiveFilter } from '../../../utils/eventUtils';
 import EventsOverview from './fragments/EventsOverview';
 import EventsPageHeader from './fragments/EventsPageHeader';
 import TimeIndependentOverview from './fragments/TimeIndependentOverview';
-import { filterByTimePeriod } from './fragments/utils';
-import { DashboardEventsFilters, FilterChangeCallbackType, MeetingsProp, TimeFilter } from './types';
+import { filterByTimePeriod, readStoredMeetingsFilter, writeStoredMeetingsFilter } from './fragments/utils';
+import { DashboardEventsFilters, FilterChangeCallbackType, MeetingsProp } from './types';
 
 const EMPTY_MEETING_PROP_ARRAY: Array<MeetingsProp> = [];
 const EVENTS_PER_REQUEST = 100;
 const MAX_INSTANCES_PER_RECURRING_EVENT = 100;
 
 const EventsOverviewPage = () => {
-  const [filter, setFilter] = useState<DashboardEventsFilters>({
-    timePeriod: TimeFilter.Month,
-    timeMin: new Date().toTimeString() as DateTime,
-    openInvitedMeeting: false,
-    favoriteMeetings: false,
-    timePerspective: TimePerspectiveFilter.TimeIndependent,
-    cursors: [],
-    currentCursorIndex: -1,
+  const [filter, setFilter] = useState<DashboardEventsFilters>(() => {
+    const stored = readStoredMeetingsFilter();
+    return {
+      timePeriod: stored.timePeriod,
+      timeMin: new Date().toTimeString() as DateTime,
+      openInvitedMeeting: false,
+      favoriteMeetings: false,
+      timePerspective: stored.timePerspective,
+      cursors: [],
+      currentCursorIndex: -1,
+    };
   });
 
   const { t } = useTranslation();
@@ -123,6 +126,10 @@ const EventsOverviewPage = () => {
   const onFilterChange: FilterChangeCallbackType = useCallback((key, value) => {
     setFilter((prevFilters) => ({ ...prevFilters, [key]: value ? value : !prevFilters[key] }));
   }, []);
+
+  useEffect(() => {
+    writeStoredMeetingsFilter({ timePerspective, timePeriod });
+  }, [timePerspective, timePeriod]);
 
   const onNextPage = useCallback((after: string) => {
     setFilter((prev) => ({

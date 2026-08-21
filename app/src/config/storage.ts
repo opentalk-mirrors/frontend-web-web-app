@@ -9,4 +9,5 @@ export enum localStorageItems {
   browserConfirmed = 'browser-confirmed',
   safariNotificationKey = 'safari-warning-notification',
   devMode = 'devMode',
+  meetingsFilter = 'dashboard-meetings-filter',
 }
