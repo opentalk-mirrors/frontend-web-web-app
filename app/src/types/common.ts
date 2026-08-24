@@ -119,7 +119,7 @@ export enum KickScope {
 export enum WaitingRoom {
   Disabled = 'disabled',
   ForGuests = 'for_guests',
-  ForEveryone = 'for_everyone',
+  ForAll = 'for_all',
 }
 
 export enum RoomKind {

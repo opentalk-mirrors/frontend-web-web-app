@@ -73,7 +73,7 @@ export const handleModerationMessage = (
           case WaitingRoom.ForGuests:
             notifications.info(i18next.t('waiting-room-for-guests-message'));
             break;
-          case WaitingRoom.ForEveryone:
+          case WaitingRoom.ForAll:
             notifications.info(i18next.t('waiting-room-enabled-message'));
             break;
         }

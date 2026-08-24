@@ -284,9 +284,6 @@ transcription-error = Transcription service error
 more-menu-enable-waiting-room = Enable waiting room
 more-menu-disable-waiting-room = Disable waiting room
 more-menu-manage-waiting-room = Manage waiting room
-more-menu-waiting-room-disabled = Inactive
-more-menu-waiting-room-for-guests = For guests only
-more-menu-waiting-room-for-everyone = For all participants
 more-menu-enable-guest-access = Enable guest access
 more-menu-disable-guest-access = Disable guest access
 more-menu-turn-handraises-on = Enable handraises
@@ -792,6 +789,8 @@ global-next = Next
 global-previous = Previous
 global-edit = Edit
 global-continue = Continue
+global-for-all = For all
+global-for-guests = For guests
 
 retry-available-in = Retry available in {$seconds}
 
@@ -1389,9 +1388,6 @@ rename-general-notification = {$actorName} changed the display name of '{$oldNam
 
 guest-access-switch-label = Guest access
 enable-guest-access-first = Enable guest access first
-dashboard-meeting-waiting-room-option-disabled = Off
-dashboard-meeting-waiting-room-option-all-participants = Everyone
-dashboard-meeting-waiting-room-option-guests-only = Guests only
 
 failed-playback-audio-warning = Audio is currently restricted by your browser settings. Please unmute to activate the sound and begin your session. If you continue to experience silence, we recommend reviewing your browser extensions for any playback blocks.
 

@@ -252,7 +252,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     icon: waitingRoomState === WaitingRoom.Disabled ? <NoMeetingRoomIcon /> : <MeetingRoomIcon />,
     submenu: [
       {
-        label: 'more-menu-waiting-room-disabled',
+        label: 'global-off',
         selected: waitingRoomState === WaitingRoom.Disabled,
         action: () => {
           onClose();
@@ -260,23 +260,23 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         },
       },
       {
-        label: 'more-menu-waiting-room-for-guests',
+        label: 'global-for-all',
+        selected: waitingRoomState === WaitingRoom.ForAll,
+        action: () => {
+          onClose();
+          dispatch(changeWaitingRoomState.action({ newState: WaitingRoom.ForAll }));
+        },
+      },
+      {
+        label: 'global-for-guests',
         selected: waitingRoomState === WaitingRoom.ForGuests,
         disabled: !guestAccessEnabled,
         tooltip: guestAccessEnabled
           ? undefined
-          : (children) => withGuestAccessDisabledTooltip('more-menu-waiting-room-for-guests', children),
+          : (children) => withGuestAccessDisabledTooltip('global-for-guests', children),
         action: () => {
           onClose();
           dispatch(changeWaitingRoomState.action({ newState: WaitingRoom.ForGuests }));
-        },
-      },
-      {
-        label: 'more-menu-waiting-room-for-everyone',
-        selected: waitingRoomState === WaitingRoom.ForEveryone,
-        action: () => {
-          onClose();
-          dispatch(changeWaitingRoomState.action({ newState: WaitingRoom.ForEveryone }));
         },
       },
     ],

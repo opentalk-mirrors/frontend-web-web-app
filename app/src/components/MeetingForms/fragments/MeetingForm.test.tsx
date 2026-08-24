@@ -100,13 +100,9 @@ describe('MeetingForm', () => {
     expect(screen.getByRole('switch', { name: 'dashboard-meeting-details-tooltip' })).toBeInTheDocument();
 
     expect(screen.getByRole('group', { name: 'dashboard-meeting-waiting-room-switch' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-disabled' })).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-all-participants' })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-guests-only' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'global-off' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'global-for-all' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'global-for-guests' })).toBeInTheDocument();
 
     expect(screen.getByTestId('date-time-section')).toBeInTheDocument();
     expect(screen.getByTestId('action-buttons')).toBeInTheDocument();
@@ -189,7 +185,7 @@ describe('MeetingForm', () => {
       });
       expect(screen.queryByRole('switch', { name: 'guest-access-switch-label' })).not.toBeInTheDocument();
 
-      expect(screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-guests-only' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'global-for-guests' })).toBeDisabled();
     });
   });
 
