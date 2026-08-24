@@ -76,7 +76,14 @@ export const LegalVoteSetupForm = () => {
           {...formikSwitchProps('autoClose', formik)}
           control={
             <Tooltip title={`${t('legal-vote-form-auto-stop-tooltip')}`}>
-              <Switch color="primary" />
+              <Switch
+                color="primary"
+                slotProps={{
+                  input: {
+                    'aria-label': t('legal-vote-form-auto-stop'),
+                  },
+                }}
+              />
             </Tooltip>
           }
           label={t('legal-vote-form-auto-stop')}
