@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { NamespacedIncoming, ParticipantId, TimerStarted, TimerStopped } from '../../../types';
+import { ErrorStruct, NamespacedIncoming, ParticipantId, TimerStarted, TimerStopped } from '../../../types';
+import { isEnumErrorStruct } from '../../../utils/tsUtils';
 
 /* MODERATOR ONLY */
 
@@ -12,7 +13,18 @@ export interface ReadyToContinue {
   participantId: ParticipantId;
 }
 
-export type Message = TimerStarted | TimerStopped | ReadyToContinue;
+export enum TimerError {
+  InvalidDuration = 'invalid_duration',
+  InsufficientPermissions = 'insufficient_permissions',
+  TimerAlreadyRunning = 'timer_already_running',
+  Internal = 'internal',
+  TimerNotRunning = 'timer_not_running',
+  ReadyCheckNotEnabled = 'ready_check_not_enabled',
+}
+
+export const isError = isEnumErrorStruct(TimerError);
+
+export type Message = TimerStarted | TimerStopped | ReadyToContinue | ErrorStruct<TimerError>;
 
 export type Timer = NamespacedIncoming<Message, 'timer'>;
 
