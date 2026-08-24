@@ -31,7 +31,7 @@ const useRemainingDurationOfTimer = () => {
 
     if (startDate === undefined) {
       notifications.error(t('timer-notification-error'));
-      throw Error('There was an issue with the start time');
+      return;
     }
     //When timer has an end date from the backend it is standard.
     //For that situation we use the end date and count down from now, otherwise we count up from start date.
