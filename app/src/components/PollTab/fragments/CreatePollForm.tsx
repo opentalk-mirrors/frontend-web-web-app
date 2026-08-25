@@ -150,7 +150,14 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
                   {...formikSwitchProps('live', formik)}
                   control={
                     <Tooltip title={`${t('poll-form-switch-live-tooltip')}`}>
-                      <Switch color="primary" />
+                      <Switch
+                        color="primary"
+                        slotProps={{
+                          input: {
+                            'aria-label': t('poll-form-switch-live'),
+                          },
+                        }}
+                      />
                     </Tooltip>
                   }
                   label={t('poll-form-switch-live')}
@@ -161,7 +168,14 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
                   {...formikSwitchProps('multipleChoice', formik)}
                   control={
                     <Tooltip title={`${t('poll-form-switch-multiple-choice-tooltip')}`}>
-                      <Switch color="primary" />
+                      <Switch
+                        color="primary"
+                        slotProps={{
+                          input: {
+                            'aria-label': t('poll-form-switch-multiple-choice'),
+                          },
+                        }}
+                      />
                     </Tooltip>
                   }
                   label={t('poll-form-switch-multiple-choice')}
