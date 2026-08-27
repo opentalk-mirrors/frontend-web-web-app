@@ -65,7 +65,10 @@ vi.mock('../../../api/rest', async (importOriginal) => ({
       displayName: 'Test',
     },
   }),
-  useGetMeTariffQuery: () => meTariff,
+  useGetMeTariffQuery: () => ({
+    data: meTariff.data,
+    isSuccess: true,
+  }),
   useGetStreamingTargetsQuery: () => [mockCreateStreamingTarget],
   useGetRoomTariffQuery: () => ({
     data: {
