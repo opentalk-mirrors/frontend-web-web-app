@@ -19,6 +19,18 @@ import { cleanPackageVersion } from './utils/build';
 const DEFAULT_BUILD_PATH = '../dist';
 const WARNINGS_TO_IGNORE = [['SOURCEMAP_ERROR', "Can't resolve original location of error"]];
 
+const EXCALIDRAW_FONTS_SRC_DIR = path.resolve(
+  import.meta.dirname,
+  '../node_modules/@excalidraw/excalidraw/dist/prod/fonts'
+);
+const EXCALIDRAW_FONTS_DEST_DIR = path.resolve(import.meta.dirname, 'public/excalidraw-assets/fonts');
+const EXCALIDRAW_LICENSES_SRC_DIR = path.resolve(import.meta.dirname, '../LICENSES');
+const EXCALIDRAW_LICENSES_DEST_DIR = path.resolve(import.meta.dirname, 'public/excalidraw-assets/licenses');
+
+// Exclude: Xiaolai (~12 MB)
+const EXCALIDRAW_FONT_FAMILIES = ['Excalifont', 'Nunito', 'ComicShanns', 'Lilita', 'Virgil', 'Cascadia'];
+const EXCALIDRAW_LICENSE_FILES = ['OFL-1.1.txt', 'MIT.txt'];
+
 const isProduction = process.env.NODE_ENV === 'production';
 
 const sentryVersion = JSON.parse(fs.readFileSync('./package.json', 'utf-8')).dependencies?.['@sentry/react'] ?? '0.0.0';
@@ -72,6 +84,59 @@ const ignoreWarningsPlugin = () => ({
   },
 });
 
+// Copies a subset of Excalidraw's bundled fonts into our public dir so they are
+// served from our own origin. Without this, Excalidraw lazy-loads them from the
+// esm.sh CDN, which is unreachable in network-restricted deployments. Paired with
+// window.EXCALIDRAW_ASSET_PATH in index.html. The font binaries and license copies
+// are gitignored and regenerated here; their licenses are documented in
+// public/excalidraw-assets/THIRD-PARTY-FONT-LICENSES.txt.
+const excalidrawAssetsPlugin = (): Plugin => {
+  let isBuild = false;
+  let copied = false;
+  return {
+    name: 'opentalk-excalidraw-assets',
+    configResolved(config) {
+      isBuild = config.command === 'build';
+    },
+    buildStart() {
+      // buildStart runs again for watch rebuilds; the dependency assets do not change.
+      if (copied) {
+        return;
+      }
+      const missing = EXCALIDRAW_FONT_FAMILIES.filter(
+        (family) => !fs.existsSync(path.join(EXCALIDRAW_FONTS_SRC_DIR, family))
+      );
+      if (missing.length > 0) {
+        const message = `Excalidraw font families missing under ${EXCALIDRAW_FONTS_SRC_DIR}: ${missing.join(', ')}`;
+        // index.html hard-codes EXCALIDRAW_ASSET_PATH, so a missing copy would ship a
+        // broken font path. Fail the build; only warn during dev serve.
+        if (isBuild) {
+          this.error(`${message}; cannot self-host fonts`);
+        }
+        this.warn(`${message}; skipping self-host copy`);
+        return;
+      }
+      if (isBuild) {
+        fs.rmSync(EXCALIDRAW_FONTS_DEST_DIR, { recursive: true, force: true });
+      }
+      for (const family of EXCALIDRAW_FONT_FAMILIES) {
+        fs.cpSync(path.join(EXCALIDRAW_FONTS_SRC_DIR, family), path.join(EXCALIDRAW_FONTS_DEST_DIR, family), {
+          recursive: true,
+          force: true,
+        });
+      }
+      fs.mkdirSync(EXCALIDRAW_LICENSES_DEST_DIR, { recursive: true });
+      for (const license of EXCALIDRAW_LICENSE_FILES) {
+        fs.copyFileSync(
+          path.join(EXCALIDRAW_LICENSES_SRC_DIR, license),
+          path.join(EXCALIDRAW_LICENSES_DEST_DIR, license)
+        );
+      }
+      copied = true;
+    },
+  };
+};
+
 export default defineConfig(({ command, mode }) => {
   const hmr = process.env.HMR === 'true';
   const buildPath = process.env.BUILD_PATH ?? DEFAULT_BUILD_PATH;
@@ -97,6 +162,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       hmr && packagesHmrPlugin(),
       i18nHotReloadPlugin(),
+      excalidrawAssetsPlugin(),
       replacePlugin(
         {
           VITE_APP_VERSION: getAppVersion(),

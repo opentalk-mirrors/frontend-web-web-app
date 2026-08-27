@@ -170,6 +170,10 @@ public/*config.js
 **/public/*config.json
 **/public/*config.js
 
+### Excalidraw fonts (copied from node_modules at build time, see app/vite.config.ts)
+app/public/excalidraw-assets/fonts/
+app/public/excalidraw-assets/licenses/
+
 ### Sentry/Glitchtip Config
 .sentryclirc
 

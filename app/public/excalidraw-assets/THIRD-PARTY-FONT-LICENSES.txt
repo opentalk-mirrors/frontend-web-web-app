@@ -1,0 +1,48 @@
+Third-party fonts bundled with the OpenTalk whiteboard (Excalidraw)
+===================================================================
+
+These fonts are redistributed with the OpenTalk whiteboard from the
+`@excalidraw/excalidraw` package. Most are self-hosted under
+/excalidraw-assets/fonts/ (copied at build time by app/vite.config.ts);
+Assistant is bundled via Excalidraw's stylesheet. Self-hosting avoids
+Excalidraw's external CDN (esm.sh), which is unreachable in
+network-restricted deployments.
+
+Each font is redistributed under its own license. The full license texts are
+shipped under /excalidraw-assets/licenses/ and maintained in the LICENSES/
+directory of this repository.
+
+Fonts and their copyright holders
+---------------------------------
+
+Excalifont          SIL Open Font License 1.1 (OFL-1.1)
+                    Copyright (c) 2024 by Excalidraw.
+                    Based on Virgil by Your Own Font Foundry; modifications by
+                    Ján Filípek / DizajnDesign.
+
+Virgil              SIL Open Font License 1.1 (OFL-1.1)
+                    Copyright (c) 2011 by Your Own Font Foundry.
+
+Nunito              SIL Open Font License 1.1 (OFL-1.1)
+                    Copyright 2014 The Nunito Project Authors
+                    (https://github.com/googlefonts/nunito).
+
+Lilita One          SIL Open Font License 1.1 (OFL-1.1)
+                    Copyright (c) 2011 Juan Montoreano (juan@remolacha.biz),
+                    with Reserved Font Name "Lilita One".
+
+Cascadia Code       SIL Open Font License 1.1 (OFL-1.1)
+                    Copyright (c) 2020 Microsoft Corporation.
+
+Assistant           SIL Open Font License 1.1 (OFL-1.1)
+                    Copyright 2020 The Assistant Project Authors
+                    (https://github.com/hafontia/Assistant).
+                    Copyright 2010 The Source Sans Pro Authors, with Reserved
+                    Font Name 'Source'.
+
+Comic Shanns Mono   MIT License
+                    Copyright (c) 2018 Shannon Miwa
+                    Copyright (c) 2023 Jesus Gonzalez
+                    Copyright (c) 2023 Rodrigo Batista de Moraes
+                    Copyright (c) 2024 Fini Jastrow
+                    Copyright (c) 2024 Kyle Beechly
