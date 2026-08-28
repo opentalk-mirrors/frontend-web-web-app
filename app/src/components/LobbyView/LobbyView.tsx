@@ -206,6 +206,9 @@ const LobbyView = () => {
 
   const openLobbyConnection = useCallback(
     async (passwordValue?: string, displayName?: string) => {
+      if (isRoomDeleted) {
+        return;
+      }
       if (joinWithoutMedia) {
         dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
         dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
@@ -238,15 +241,21 @@ const LobbyView = () => {
               break;
             case StartRoomError.NotFound:
               notifications.error(t('joinform-room-not-found'));
-              navigateToHome();
+              if (!isRoomDeleted) {
+                navigateToHome();
+              }
               break;
             case StartRoomError.Forbidden:
               notifications.error(t('joinform-access-denied'));
-              navigateToHome();
+              if (!isRoomDeleted) {
+                navigateToHome();
+              }
               break;
             case StartRoomError.BadRequest:
               notifications.error(t('error-invalid-invitation-code'));
-              navigateToHome();
+              if (!isRoomDeleted) {
+                navigateToHome();
+              }
               break;
             default:
               log.error(`unknown error code ${e.code} in startRoom`, e);
@@ -258,7 +267,7 @@ const LobbyView = () => {
         }
       }
     },
-    [navigate, t, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, initialDisplayName]
+    [navigate, t, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, initialDisplayName, isRoomDeleted]
   );
 
   const submitLobby = useCallback(
@@ -274,7 +283,7 @@ const LobbyView = () => {
 
   const hasInitiatedConnect = useRef(false);
   useEffect(() => {
-    if (hasInitiatedConnect.current || inviteState.loading || isRoomDataLoading || !roomData) {
+    if (isRoomDeleted || hasInitiatedConnect.current || inviteState.loading || isRoomDataLoading || !roomData) {
       return;
     }
     if (!(isLoggedIn || inviteCode !== undefined)) {
@@ -305,6 +314,7 @@ const LobbyView = () => {
     connectionState,
     openLobbyConnection,
     isPasswordRequired,
+    isRoomDeleted,
   ]);
 
   const formik = useFormik({
