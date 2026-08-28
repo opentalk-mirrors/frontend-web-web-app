@@ -60,16 +60,6 @@ const ToolbarIconButton = styled(IconButton, {
     '& .off-line': {
       fill: theme.palette.background.main.contrastText,
     },
-    '&::after': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      background: 'rgba(0.5, 0.5, 0.5, 0.2)',
-      borderRadius: theme.borderRadius.large,
-    },
   },
   [theme.breakpoints.down('sm')]: {
     width: '3.25rem',
@@ -79,6 +69,15 @@ const ToolbarIconButton = styled(IconButton, {
     background: theme.palette.primary.main,
     '& svg': {
       fill: theme.palette.primary.contrastText,
+    },
+    ':disabled': {
+      backgroundColor: theme.palette.primary.main,
+      '& svg': {
+        fill: theme.palette.primary.contrastText,
+      },
+      '& .off-line': {
+        fill: theme.palette.primary.contrastText,
+      },
     },
   }),
   ...(isLobby && {
@@ -164,10 +163,10 @@ const ToolbarButton = ({
   tooltipTitle,
   isLobby,
   ...props
-}: ToolbarButtonProps) => (
-  <>
-    <Tooltip placement="top" title={tooltipTitle}>
-      <ButtonContainer>
+}: ToolbarButtonProps) => {
+  return (
+    <ButtonContainer>
+      <Tooltip placement="top" title={tooltipTitle}>
         <ToolbarIconButton
           isActive={active}
           disabled={disabled || undefined}
@@ -178,7 +177,9 @@ const ToolbarButton = ({
         >
           {children}
         </ToolbarIconButton>
-        {hasContext && !contextDisabled && (
+      </Tooltip>
+      {hasContext && !contextDisabled && (
+        <Tooltip placement="top" title={contextTitle}>
           <ToggleButton
             isActive={active}
             onClick={(event) => {
@@ -194,10 +195,10 @@ const ToolbarButton = ({
           >
             <ArrowDownIcon />
           </ToggleButton>
-        )}
-      </ButtonContainer>
-    </Tooltip>
-  </>
-);
+        </Tooltip>
+      )}
+    </ButtonContainer>
+  );
+};
 
 export default ToolbarButton;

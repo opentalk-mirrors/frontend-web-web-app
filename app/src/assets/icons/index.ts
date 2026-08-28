@@ -96,7 +96,6 @@ import SecureFilledIcon from './SecureFilledIcon';
 import SecureIcon from './SecureIcon';
 import SendMessageIcon from './SendMessageIcon';
 import SettingsIcon from './SettingsIcon';
-import ShareScreenOffIcon from './ShareScreenOffIcon';
 import ShareScreenOnIcon from './ShareScreenOnIcon';
 import SharedFolderIcon from './SharedFolderIcon';
 import SignOutIcon from './SignOutIcon';
@@ -215,7 +214,6 @@ export {
   SendMessageIcon,
   SettingsIcon,
   SharedFolderIcon,
-  ShareScreenOffIcon,
   ShareScreenOnIcon,
   SignOutIcon,
   SortIcon,
