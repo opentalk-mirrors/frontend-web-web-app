@@ -4,14 +4,13 @@
 // Switch off the rule, as it doesn't recognize assertion in the utility helper function
 // Maybe it's a bug or maybe it's not a good practice to use this kind of helper function
 /* eslint-disable vitest/expect-expect */
-import { CoreFeatures, BackendModules, TranscriptionFeatures } from '@opentalk/rest-api-rtk-query';
+import { BackendModules, TranscriptionFeatures } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { TranscriptionStatus } from '../../../api/types/incoming/transcription';
 import { disableSelfRename, enableSelfRename } from '../../../api/types/outgoing/moderation';
 import { notifications } from '../../../commonComponents';
-import { setGuestAccessEnabled } from '../../../store/slices/moderationSlice';
 import { ForceMuteType, Role } from '../../../types';
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import MenuButton from './MoreButton';
@@ -22,17 +21,6 @@ vi.mock('../../../commonComponents', async (importOriginal) => ({
   notifications: {
     success: vi.fn(),
     error: vi.fn(),
-  },
-}));
-
-vi.mock('./InviteGuestDialog', () => ({
-  __esModule: true,
-  default: ({ open }: { open: boolean }) => {
-    return (
-      <div data-testid="invite-guest-dialog">
-        <span>{open ? 'Invite Guest Open' : undefined}</span>
-      </div>
-    );
   },
 }));
 
@@ -85,79 +73,6 @@ describe('MoreMenu', () => {
           enabledModules: {},
         },
       },
-    });
-
-    describe('invite guest options', () => {
-      it('does not render invite guest options if the guests allowed feature is not enabled', () => {
-        setup();
-        expect(screen.queryByRole('menuitem', { name: 'more-menu-create-invite' })).not.toBeInTheDocument();
-      });
-      it('renders invite guest options if the guests allowed feature is enabled', () => {
-        const { store: storeWithGuestsAllowed } = configureStore({
-          initialState: {
-            ...moderatorState,
-            config: {
-              provider: {
-                accountManagementUrl: 'https://account.opentalk.eu',
-              },
-              enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
-            },
-          },
-        });
-        renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
-          store: storeWithGuestsAllowed,
-          provider: { snackbar: true, mui: true },
-        });
-        expect(screen.getByRole('menuitem', { name: 'more-menu-create-invite' })).toBeInTheDocument();
-      });
-      it('renders the invite guest option disabled when guest access is turned off', () => {
-        const { store: storeWithGuestAccessOff } = configureStore({
-          initialState: {
-            ...moderatorState,
-            config: {
-              provider: {
-                accountManagementUrl: 'https://account.opentalk.eu',
-              },
-              enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
-            },
-          },
-        });
-        storeWithGuestAccessOff.dispatch(setGuestAccessEnabled(false));
-        renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
-          store: storeWithGuestAccessOff,
-          provider: { snackbar: true, mui: true },
-        });
-        const inviteGuest = screen.getByRole('menuitem', { name: 'more-menu-create-invite' });
-        expect(inviteGuest).toBeInTheDocument();
-        expect(inviteGuest).toHaveAttribute('aria-disabled', 'true');
-      });
-      it('renders invite guest dialog and it"s closed by default', () => {
-        setup();
-        expect(screen.getByTestId('invite-guest-dialog')).toBeInTheDocument();
-        expect(screen.queryByText('Invite Guest Open')).not.toBeInTheDocument();
-      });
-      it('opens invite guest dialog when user clicks on invite guest menu option', async () => {
-        // eslint-disable-next-line testing-library/render-result-naming-convention
-        const user = userEvent.setup();
-        const { store: storeWithGuestsAllowed } = configureStore({
-          initialState: {
-            ...moderatorState,
-            config: {
-              provider: {
-                accountManagementUrl: 'https://account.opentalk.eu',
-              },
-              enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
-            },
-          },
-        });
-        renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
-          store: storeWithGuestsAllowed,
-          provider: { snackbar: true, mui: true },
-        });
-        const inviteGuest = screen.getByRole('menuitem', { name: 'more-menu-create-invite' });
-        await user.click(inviteGuest);
-        expect(screen.getByText('Invite Guest Open')).toBeInTheDocument();
-      });
     });
 
     it('shows the manage waiting room option, and the enable/disable items are not present directly', () => {
@@ -347,28 +262,6 @@ describe('MoreMenu', () => {
         provider: { snackbar: true, mui: true },
       });
       checkMenuItem('more-menu-export-attendance-report');
-    });
-  });
-
-  describe('if the user is a moderator and not a room owner', () => {
-    const moderatorState = { user: { role: Role.Moderator }, room: { isOwnedByCurrentUser: false } };
-    it('does not render invite guest options even if the guests allowed feature is enabled', () => {
-      const { store: storeWithGuestsAllowed } = configureStore({
-        initialState: {
-          ...moderatorState,
-          config: {
-            provider: {
-              accountManagementUrl: 'https://account.opentalk.eu',
-            },
-            enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
-          },
-        },
-      });
-      renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
-        store: storeWithGuestsAllowed,
-        provider: { snackbar: true, mui: true },
-      });
-      expect(screen.queryByRole('menuitem', { name: 'more-menu-create-invite' })).not.toBeInTheDocument();
     });
   });
 

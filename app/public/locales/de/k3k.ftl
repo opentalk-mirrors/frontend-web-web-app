@@ -25,10 +25,6 @@ error-access-forbidden = Sie können dem Meeting nicht beitreten. Entweder ist d
 signaling-subscription-failed = Die Verbindung zu einen Teilnehmer ist leider fehlgeschlagen.
 media-subscription-failed = Keine Verbindung zum Teilnehmer
 
-error-invalid-invitation-code = Dieser Einladungscode ist ungültig
-
-error-invalid-invitation-link = Dieser Einladungs-Link ist ungültig
-
 error-system-currently-unavailable = Das System ist zur Zeit nicht erreichbar, bitte versuchen sie es später nochmal.
 error-unauthorized = Sie haben leider keinen Zugriff, bitte kontaktieren Sie den Moderator des Meetings.
 error-livekit-unavailable = Livekit ist nicht verfügbar, bitte kontaktieren Sie Ihren Administrator.
@@ -276,7 +272,6 @@ toolbar-button-end-call-tooltip-title = Raum verlassen
 toolbar-button-screen-share-tooltip-request-moderator-presenter-role = Frage einen Moderator um deinen Bildschirm zu teilen
 
 more-menu-leave-call = Anruf beenden
-more-menu-create-invite = Gast einladen
 more-menu-start-recording = Aufnahme starten
 more-menu-stop-recording = Aufnahme beenden
 more-menu-pause-recording = Aufnahme pausieren
@@ -389,13 +384,6 @@ debriefing-session-ended-for-all-notification = Die Konferenz ist für alle been
 media-received-request-mute-ok = Stummschalten
 media-received-force-mute = Sie sind von {$origin} stummgeschaltet worden.
 media-received-request-mute = {$origin} möchte, dass Sie sich stummschalten.
-
-dialog-invite-guest-title = Gast einladen
-dialog-invite-guest-expiration-date = Ablaufdatum
-dialog-invite-guest-no-expiration = Kein Ablaufdatum
-dialog-invite-guest-expiration-date-error = Das Ablaufdatum muss mindestens um 5 Minuten in der Zukunft liegen
-dialog-invite-guest-button-copy = Link kopieren
-dialog-invite-guest-button-submit = Erstellen
 
 statistics-video = Videoauflösung
 statistics-fps = Bildrate
@@ -749,7 +737,6 @@ global-me = Ich
 global-copy = Kopieren
 global-copied = Kopiert
 global-copy-link-success = Der Link wurde erfolgreich kopiert
-global-copy-permanent-guest-link-error = Es wurde noch keinen permanenten Gast-Link für dieses Meeting erstellt! Bitte, öffnen Sie den "Teilnehmer" Einstellungen von diesem Meeting und kopieren Sie den Gast-Link von dort aus.
 global-textfield-max-characters = {$remainingCharacters} Zeichen übrig
 global-duration = Dauer
 global-title = Titel
@@ -916,8 +903,6 @@ dashboard-meeting-card-popover-decline = Ablehnen
 dashboard-meeting-card-popover-decline-label = {$title} ablehnen
 dashboard-meeting-card-popover-copy-link = Meeting-Link kopieren
 dashboard-meeting-card-popover-copy-link-label = Meeting-Link für {$title} kopieren
-dashboard-meeting-card-popover-copy-guest-link = Gast-Link kopieren
-dashboard-meeting-card-popover-copy-guest-link-label = Gast-Link für {$title} kopieren
 
 dashboard-meeting-card-delete-dialog-title = Meeting löschen
 dashboard-meeting-card-delete-dialog-message = Soll dieses Meeting „{$subject}“ für alle gelöscht werden?
@@ -959,10 +944,6 @@ dashboard-invite-to-meeting-room-link-tooltip = Nur für registrierte Nutzer
 dashboard-invite-to-meeting-sip-link-label = Telefoneinwahl
 dashboard-invite-to-meeting-copy-sip-link-aria-label = Telefoneinwahl-Informationen für {$eventTitle} kopieren
 dashboard-invite-to-meeting-copy-sip-link-success = Die Telefoneinwahl wurde in die Zwischenablage kopiert
-dashboard-invite-to-meeting-guest-link-label = Gast-Link
-dashboard-invite-to-meeting-copy-guest-link-aria-label = Gast Raum Link kopieren für {$eventTitle}
-dashboard-invite-to-meeting-copy-guest-link-success = Der Link wurde erfolgreich kopiert
-dashboard-invite-to-meeting-guest-link-tooltip = Für Gäste ohne Account
 dashboard-invite-to-meeting-room-password-label = Passwort
 dashboard-invite-to-meeting-copy-room-password-aria-label = Raum Passwort kopieren für {$eventTitle}
 dashboard-invite-to-meeting-copy-room-password-success = Das Passwort wurde erfolgreich kopiert
@@ -1162,18 +1143,15 @@ meeting-delete-metadata-submit-error =
 meeting-delete-successfully-deleted = Das Meeting wurde gelöscht.
 
 meeting-details-dialog-copy-success = Details wurden erfolgreich in die Zwischenablage kopiert
-meeting-details-dialog-copy-invite-link-success = Der Link wurde erfolgreich kopiert
 meeting-details-dialog-copy-meeting-link-success = Der Link wurde erfolgreich kopiert
 meeting-details-dialog-copy-room-password-success = Das Passwort wurde erfolgreich kopiert
 meeting-details-dialog-copy-sip-link-success = Die Telefoneinwahl wurde in die Zwischenablage kopiert
 meeting-details-dialog-copy-livestream-link-success = Der Link wurde erfolgreich kopiert
 meeting-details-dialog-label-sip-link = Telefoneinwahlnummer
-meeting-details-dialog-label-invite-link = Einladungslink
 meeting-details-dialog-label-meeting-link = Meeting-Link
 meeting-details-dialog-label-room-password = Passwort
 meeting-details-dialog-label-livestream-link = Streaminglinks
 meeting-details-dialog-aria-label-sip-link = Telefoneinwahlnummer kopieren für {$eventTitle}
-meeting-details-dialog-aria-label-invite-link = Einladungslink kopieren für {$eventTitle}
 meeting-details-dialog-aria-label-meeting-link = Meeting-Link kopieren für {$eventTitle}
 meeting-details-dialog-aria-label-room-password = Passwort kopieren für {$eventTitle}
 meeting-details-dialog-aria-label-livestream-link = {$name} Streaminglink kopieren für {$eventTitle}

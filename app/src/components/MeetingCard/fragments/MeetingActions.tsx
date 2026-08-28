@@ -3,34 +3,27 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, MenuList, MenuItem as MuiMenuItem, Popover as MuiPopover, Stack, styled } from '@mui/material';
 import {
-  CoreFeatures,
   Event,
   EventInstance,
   InviteStatus,
   isEvent,
   isRecurringEvent,
   getEventId,
-  GuestAccess,
 } from '@opentalk/rest-api-rtk-query';
-import { skipToken } from '@reduxjs/toolkit/query';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate, createSearchParams } from 'react-router-dom';
 
 import {
   useDeclineEventInviteMutation,
-  useLazyGetRoomInvitesQuery,
   useMarkFavoriteEventMutation,
   useUnmarkFavoriteEventMutation,
-  useGetRoomTariffQuery,
 } from '../../../api/rest';
 import { MoreIcon } from '../../../assets/icons';
 import { IconButton, notifications } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectBaseUrl } from '../../../store/slices/configSlice';
-import { composeInviteUrl, findPermanentRoomInvite } from '../../../utils/apiUtils';
 import getReferrerRouterState from '../../../utils/getReferrerRouterState';
-import { isFeatureEnabledPredicate } from '../../../utils/moduleUtils';
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
 export interface MeetingCardBaseProps {
@@ -93,16 +86,6 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
   const baseUrl = useAppSelector(selectBaseUrl);
   const popoverOpen = Boolean(popoverAnchor);
 
-  const [getRoomInvites, { data: invites, isLoading: isGetInvitesLoading }] = useLazyGetRoomInvitesQuery();
-
-  const { data: roomTariff } = useGetRoomTariffQuery(roomId ?? skipToken);
-  const isInviteAllowed = Boolean(
-    roomTariff &&
-    isFeatureEnabledPredicate(CoreFeatures.GuestsAllowed, roomTariff.modules) &&
-    !event.room?.e2eEncryption &&
-    event.room?.guestAccess !== GuestAccess.Disabled
-  );
-
   const stopPropagation = useCallback(
     (mouseEvent: React.MouseEvent<HTMLDivElement | HTMLButtonElement | HTMLAnchorElement>) => {
       mouseEvent.stopPropagation();
@@ -150,26 +133,6 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
     await navigator.clipboard.writeText(link);
     notifications.success(t('global-copy-link-success'));
   }, [baseUrl, handleClose, roomId, t]);
-
-  const getGuestLink = useCallback(async () => {
-    if (roomId) {
-      try {
-        const invitesList = invites ? invites : await getRoomInvites({ roomId }).unwrap();
-        const permanentInvite = findPermanentRoomInvite(invitesList);
-
-        if (permanentInvite) {
-          handleClose();
-          const inviteURLString = composeInviteUrl(baseUrl, roomId, permanentInvite.inviteCode).toString();
-          await navigator.clipboard.writeText(inviteURLString);
-          notifications.success(t('global-copy-link-success'));
-        } else {
-          notifications.error(t('global-copy-permanent-guest-link-error'), { persist: true });
-        }
-      } catch (_error) {
-        notifications.error(t('global-copy-permanent-guest-link-error'));
-      }
-    }
-  }, [baseUrl, getRoomInvites, handleClose, invites, roomId, t]);
 
   const showDialog = useCallback(() => {
     showConfirmDialog(true);
@@ -249,16 +212,6 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
     viewMeetingDetails,
   ]);
 
-  const copyGuestLinkOption = useMemo<IMeetingCardOptionItem>(
-    () => ({
-      i18nKey: 'dashboard-meeting-card-popover-copy-guest-link',
-      action: getGuestLink,
-      // Prevent doing multiple requests while loading
-      disabled: isGetInvitesLoading,
-    }),
-    [getGuestLink, isGetInvitesLoading]
-  );
-
   const deleteMeetingOption = useMemo<IMeetingCardOptionItem>(
     () => ({
       i18nKey: 'dashboard-meeting-card-popover-delete',
@@ -273,14 +226,10 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
       ...meetingOptionItems,
     ];
 
-    if (isInviteAllowed) {
-      creatorOptions.push(copyGuestLinkOption);
-    }
-
     creatorOptions.push(deleteMeetingOption);
 
     return creatorOptions;
-  }, [copyGuestLinkOption, deleteMeetingOption, isInviteAllowed, meetingOptionItems, updateMeeting]);
+  }, [deleteMeetingOption, meetingOptionItems, updateMeeting]);
 
   const menuOptions = useMemo(
     () => (isMeetingCreator ? creatorMeetingOptionItems : meetingOptionItems),

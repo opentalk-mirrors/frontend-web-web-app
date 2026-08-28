@@ -10,7 +10,6 @@ import { useParams } from 'react-router-dom';
 
 import { useGetRoomEventInfoQuery } from '../../api/rest';
 import { useAppSelector } from '../../hooks';
-import { useInviteCode } from '../../hooks/useInviteCode';
 import { selectConfigFeatures } from '../../store/slices/configSlice';
 import {
   selectAudioOutputDeviceId,
@@ -31,7 +30,6 @@ interface SelftestProps {
 const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const inviteCode = useInviteCode();
   const localAudioTrack = useAppSelector(selectLobbyAudioTrack);
   const audioOutputDeviceId = useAppSelector(selectAudioOutputDeviceId);
   const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
@@ -40,7 +38,7 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
   const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
   };
-  const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
+  const { data: roomData } = useGetRoomEventInfoQuery({ id: roomId }, { skip: !roomId });
 
   return (
     <LobbyLayout

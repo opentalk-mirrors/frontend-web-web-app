@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
+import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { ConfigureStoreOptions } from '@reduxjs/toolkit';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -11,7 +11,6 @@ import { Mock } from 'vitest';
 import { stop, switchRoom } from '../../../../api/types/outgoing/breakout';
 import { BREAKOUT_ROOM_CLOSE_DELAY } from '../../../../constants';
 import * as reduxHooks from '../../../../hooks/useCustomRedux';
-import * as InviteCodeModule from '../../../../hooks/useInviteCode';
 import { BreakoutRoomId, MeetingNotesAccess, Participant, Role, RoomKind } from '../../../../types';
 import { renderWithProviders, configureStore, mockedParticipant } from '../../../../utils/testUtils';
 import RoomOverview from '../RoomOverview';
@@ -46,10 +45,8 @@ vi.mock('../RoomOverviewListItem', () => ({
 const breakoutRoomOne = { id: 1 as BreakoutRoomId, name: 'Room 1' };
 const breakoutRoomTwo = { id: 2 as BreakoutRoomId, name: 'Room 2' };
 const roomId = 'room-id' as RoomId;
-const inviteCode = 'invite-code' as InviteCode;
 
 const mockUseParams = useParams as Mock;
-const inviteCodeSpy = vi.spyOn(InviteCodeModule, 'useInviteCode');
 
 const buildBaseState = () => {
   const participantOne = { ...mockedParticipant(1), breakoutRoomId: breakoutRoomOne.id };
@@ -131,7 +128,6 @@ describe('RoomOverview', () => {
     vi.useRealTimers();
     vi.clearAllMocks();
     mockUseParams.mockReturnValue({ roomId });
-    inviteCodeSpy.mockReturnValue(inviteCode);
   });
 
   afterEach(() => {

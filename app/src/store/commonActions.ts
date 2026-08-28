@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { XORCipher } from '@opentalk/redux-oidc';
-import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
+import { EventInfo, RoomId } from '@opentalk/rest-api-rtk-query';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   BackupCodecPolicy,
@@ -37,7 +37,6 @@ import { ScreenShareResolutionValues } from './slices/mediaSlice';
 export type RoomCredentials = {
   roomId: RoomId;
   password?: string;
-  inviteCode?: InviteCode;
   breakoutRoomId?: BreakoutRoomId;
 };
 

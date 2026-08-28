@@ -37,6 +37,7 @@ interface Invite {
   inviteCode: InviteCode;
   isInviteLink?: boolean;
 }
+
 interface JoinMeetingDialogProps extends Omit<DialogProps, 'open'> {
   /**
    * Props that are passed down to the button that controls when the dialog opens
@@ -74,7 +75,7 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
       if (invite?.isInviteLink && invite.inviteCode) {
         navigate(`/invite/${invite.inviteCode}`);
       } else {
-        const roomPath = composeRoomPath(values.roomId as RoomId, invite?.inviteCode);
+        const roomPath = composeRoomPath(values.roomId as RoomId);
         navigate(roomPath);
       }
     },
@@ -128,13 +129,8 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
 
           if (isValidFormat) {
             formik.setFieldValue('roomId', roomCode);
-
-            const parsedInviteCode = parsedURL.searchParams.get('invite');
-            const isInviteCodeValidFormat = parsedInviteCode && validateUUID(parsedInviteCode);
-            if (isInviteCodeValidFormat) {
-              setInvite({ inviteCode: parsedInviteCode as InviteCode, isInviteLink: false });
-              return;
-            }
+            setInvite(undefined);
+            return;
           }
         }
 

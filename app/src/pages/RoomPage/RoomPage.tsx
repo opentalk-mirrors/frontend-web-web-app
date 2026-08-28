@@ -1,12 +1,10 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import React from 'react';
 
 import LobbyView from '../../components/LobbyView';
 import { useAppSelector } from '../../hooks';
-import { useInviteCode } from '../../hooks/useInviteCode';
 import log from '../../logger';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { selectHasJoinedConference, selectRoomConnectionState } from '../../store/slices/roomSlice';
@@ -15,15 +13,8 @@ import RoomLoadingView from './fragments/RoomLoadingView';
 const MeetingView = React.lazy(() => import('../../components/MeetingView'));
 const WaitingView = React.lazy(() => import('../../components/WaitingView'));
 const RoomPage = () => {
-  const inviteCode = useInviteCode();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const connectionState: ConnectionState = useAppSelector(selectRoomConnectionState);
   const hasJoinedConference = useAppSelector(selectHasJoinedConference);
-
-  if (!isAuthenticated && !inviteCode) {
-    log.warn('meeting page - not logged in - redirect');
-    return <LobbyView />;
-  }
 
   log.debug('connection: ', connectionState);
 

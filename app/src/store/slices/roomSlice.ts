@@ -18,7 +18,6 @@ import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import {
   AutomodSelectionStrategy,
   FetchRequestError,
-  FetchRequestState,
   ParticipantId,
   RoomInfo,
   RoomKind,
@@ -33,16 +32,9 @@ import { started as automodStarted, stopped as automodStopped } from './automodS
 import { switchedRoom } from './breakoutSlice';
 import { timerStarted, timerStopped } from './timerSlice';
 
-interface InviteState extends FetchRequestState {
-  active?: boolean;
-  expiration?: string;
-  inviteCode?: InviteCode;
-}
-
 export type RoomState = {
   roomId?: RoomId;
   password?: string;
-  invite: InviteState;
   connectionState: ConnectionState;
   error?: string;
   serverTimeOffset: number;
@@ -66,18 +58,9 @@ export interface InviteRoomVerifyResponse {
   roomId: RoomId;
 }
 
-const initialInviteState: InviteState = {
-  loading: false,
-  error: undefined,
-  active: undefined,
-  expiration: undefined,
-  inviteCode: undefined,
-};
-
 const initialState: RoomState = {
   roomId: undefined,
   password: undefined,
-  invite: initialInviteState,
   connectionState: ConnectionState.Initial,
   serverTimeOffset: 0,
   participantLimit: 0,
@@ -88,10 +71,6 @@ const initialState: RoomState = {
   roomKind: RoomKind.Main,
   hasJoinedConference: false,
 };
-
-export enum InviteCodeErrorEnum {
-  InvalidJson = 'invalid_json',
-}
 
 export const fetchRoomByInviteId = createAsyncThunk<
   InviteRoomVerifyResponse,
@@ -206,21 +185,9 @@ export const roomSlice = createSlice({
     roomReset: () => initialState,
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchRoomByInviteId.pending, (state) => {
-      state.invite.loading = true;
-    });
-    builder.addCase(fetchRoomByInviteId.fulfilled, (state, { payload, meta }) => {
+    builder.addCase(fetchRoomByInviteId.fulfilled, (state, { payload }) => {
       state.roomId = payload.roomId;
-      state.invite.loading = false;
-      state.invite.inviteCode = meta.arg;
       state.connectionState = ConnectionState.Setup;
-    });
-    builder.addCase(fetchRoomByInviteId.rejected, (state, { payload }) => {
-      state.invite = {
-        ...initialInviteState,
-        error: payload,
-        loading: false,
-      };
     });
     builder.addCase(
       startRoom.pending,
@@ -228,7 +195,7 @@ export const roomSlice = createSlice({
         state,
         {
           meta: {
-            arg: { roomId, password, inviteCode },
+            arg: { roomId, password },
           },
         }
       ) => {
@@ -236,7 +203,6 @@ export const roomSlice = createSlice({
         state.connectionState = ConnectionState.Starting;
         state.roomId = roomId;
         state.password = password;
-        state.invite = { inviteCode, loading: false };
       }
     );
     builder.addCase(startRoom.rejected, (state, payload) => {
@@ -336,7 +302,6 @@ export const {
 
 export const selectRoomPassword = (state: RootState) => state.room.password;
 export const selectRoomId = (state: RootState) => state.room.roomId;
-export const selectInviteState = (state: RootState) => state.room.invite;
 export const selectRoomConnectionState = (state: RootState) => state.room.connectionState;
 export const selectCanEnter = (state: RootState) => state.room.canEnter;
 export const selectHasJoinedConference = (state: RootState) => state.room.hasJoinedConference;
@@ -381,7 +346,6 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
     return;
   }
   const { roomId, error } = state.room;
-  const { inviteCode } = state.room.invite;
   const { displayName } = state.user;
   const { assignment: breakoutRoomId } = state.breakout;
 
@@ -394,7 +358,6 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
   if (error === StartRoomError.NoBreakoutRooms) {
     const roomId = state.room.roomId;
     const roomPassword = state.room.password;
-    const isLoggedIn = state.auth.state === 'authorized';
 
     // if no breakout rooms move participant to the main room
     roomId &&
@@ -405,7 +368,6 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
             password: roomPassword,
             breakoutRoomId: undefined,
             displayName,
-            inviteCode: isLoggedIn ? undefined : inviteCode,
           })
         )
         .then(() => notifications.info(t('breakout-notification-session-ended-header')));
@@ -426,7 +388,6 @@ function reconnect(listenerApi: ListenerEffectAPI<RootState, AppDispatch>) {
           roomId,
           breakoutRoomId,
           displayName,
-          inviteCode,
         })
       );
     }, RECONNECT_DELAY);

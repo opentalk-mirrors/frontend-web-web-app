@@ -42,7 +42,6 @@ export type Namespaces =
 export enum Tag {
   Room = 'Room',
   Tariff = 'Tariff',
-  RoomInvite = 'RoomInvite',
   User = 'User',
   FindUser = 'FindUser',
   Event = 'Event',

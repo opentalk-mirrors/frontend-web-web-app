@@ -62,7 +62,6 @@ export type {
   UpdateRoomPayload,
   CreateRoomPayload,
   RoomAssets,
-  RoomInvite,
   CreateRoomAssetPayload,
   CreateRoomAssetResponse,
 } from './types/room';

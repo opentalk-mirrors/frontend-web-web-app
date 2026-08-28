@@ -24,7 +24,7 @@ export interface MeetingDetailsDialogActionsProps {
   title: string;
   roomPassword?: string;
   meetingDetails?: MeetingDetails;
-  inviteUrl?: URL | null;
+  meetingLink?: URL | null;
   guestAccessEnabled?: boolean;
 }
 
@@ -32,7 +32,7 @@ const MeetingDetailsDialogActions = ({
   title,
   roomPassword,
   meetingDetails,
-  inviteUrl,
+  meetingLink,
   guestAccessEnabled = true,
 }: MeetingDetailsDialogActionsProps) => {
   const { t } = useTranslation();
@@ -76,7 +76,7 @@ ${t('global-call-in-pin')}: ${callIn.password}
   `;
 
   const createJoinMeetingString = () => {
-    const isGuestParticipationAvailable = isGuestsAllowedFeatureEnabled && guestAccessEnabled && inviteUrl;
+    const isGuestParticipationAvailable = isGuestsAllowedFeatureEnabled && guestAccessEnabled && meetingLink;
     const isCallInAvailable = meetingDetails?.callIn !== undefined && guestAccessEnabled;
     const isAnyStreamingLinkAvailable = meetingDetails !== undefined && meetingDetails.streamingLinks.length > 0;
     const isAnyParticipationMeanAvailable =
@@ -87,7 +87,7 @@ ${t('global-call-in-pin')}: ${callIn.password}
 
     let joinString = `${t('meeting-details-dialog-join-line\n')}`;
     if (isGuestParticipationAvailable) {
-      joinString += `${t('global-meeting-link')}: ${inviteUrl}\n`;
+      joinString += `${t('global-meeting-link')}: ${meetingLink}\n`;
       if (roomPassword) {
         joinString += `${t('global-password')}: ${roomPassword}\n`;
       }

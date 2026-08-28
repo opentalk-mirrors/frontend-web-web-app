@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { EventId, InviteCode, RoomId, RoomInvite } from '@opentalk/rest-api-rtk-query';
+import { EventId, RoomId } from '@opentalk/rest-api-rtk-query';
 
 import type { useLocale } from '../hooks';
 import type { ConfigState, DefaultAvatarImage } from '../store/slices/configSlice';
@@ -31,17 +31,13 @@ export const getSignalingUrl = (roomserverAddress: string, token: string) => {
   return new URL(`${addEndingSlash(roomServer)}v1/signaling/${token}`);
 };
 
-export const composeRoomPath = (roomId: RoomId, inviteCode?: InviteCode) => {
-  return `/room/${roomId}${inviteCode ? `?invite=${inviteCode}` : ''}`;
+export const composeRoomPath = (roomId: RoomId) => {
+  return `/room/${roomId}`;
 };
 
-export const composeInviteUrl = (baseUrl: string, roomId: RoomId, inviteCode?: InviteCode) => {
-  const roomString = composeRoomPath(roomId, inviteCode);
+export const composeInviteUrl = (baseUrl: string, roomId: RoomId) => {
+  const roomString = composeRoomPath(roomId);
   return new URL(roomString, baseUrl);
-};
-
-export const findPermanentRoomInvite = (invites: RoomInvite[]): RoomInvite | undefined => {
-  return invites.find((invite) => invite.active && invite.expiration === null);
 };
 
 export const composeMeetingDetailsUrl = (baseUrl: string, eventId: EventId) => {
@@ -65,38 +61,15 @@ const fetchWithAccessToken = (
   return window.fetch(url as RequestInfo, { ...data, headers });
 };
 
-const fetchWithInviteCode = (
-  url: RequestInfo | URL,
-  data: RequestInit = { method: 'GET' },
-  inviteCode: InviteCode
-): Promise<Response> => {
-  const headers = createHeaders(data.headers);
-
-  headers.set('Authorization', `InviteCode ${inviteCode}`);
-  if (!data.credentials) {
-    data.credentials = 'same-origin';
-  }
-
-  return window.fetch(url as RequestInfo, { ...data, headers });
-};
-
 // Relies on the access_token to be published at localStorage('access_token')
 // This allows the usage in parts where we have no access to the redux context or the store.
 // Always tries to authorize with the access token first.
-// If the token is not available, will try to authorize with the invite code, if provided
-// Otherwise still tries to authorize with undefined token, to run into defined auth rejection from the server side
+// If the token is undefined, it will run into defined auth rejection from the server side
 export const fetchWithAuth = async (
   url: RequestInfo | URL,
-  data: RequestInit = { method: 'GET' },
-  inviteCode?: InviteCode
+  data: RequestInit = { method: 'GET' }
 ): Promise<Response> => {
   const accessToken = window.localStorage.getItem('access_token') || undefined;
-  if (accessToken) {
-    return fetchWithAccessToken(url, data, accessToken);
-  }
-  if (inviteCode) {
-    return fetchWithInviteCode(url, data, inviteCode);
-  }
   return fetchWithAccessToken(url, data, accessToken);
 };
 

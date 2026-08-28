@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import type { EventId, EventInfo, InviteCode, MeetingDetails, RoomId } from '@opentalk/rest-api-rtk-query';
+import type { EventId, EventInfo, MeetingDetails, RoomId } from '@opentalk/rest-api-rtk-query';
 import { BackendModules, CoreFeatures } from '@opentalk/rest-api-rtk-query';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 
@@ -20,7 +20,6 @@ const mockEventInfo: EventInfo = {
 };
 
 const meetingDetails: MeetingDetails = {
-  inviteCodeId: '12345' as InviteCode,
   streamingLinks: [],
 };
 
@@ -102,27 +101,13 @@ describe('MeetingDetailsDialog', () => {
     expect(screen.queryByLabelText('meeting-details-dialog-label-room-password')).not.toBeInTheDocument();
   });
 
-  it('renders invite link label when invite code is provided', () => {
+  it('renders meeting link label', () => {
     renderWithProviders(
       <MeetingDetailsDialog
         open={true}
         onClose={vi.fn()}
         eventInfo={mockEventInfo}
-        meetingDetails={meetingDetails}
-        roomInfo={mockRoomInfo}
-      />,
-      { store, provider: { snackbar: true, mui: true } }
-    );
-    expect(screen.getByRole('textbox', { name: 'meeting-details-dialog-label-invite-link' })).toBeInTheDocument();
-  });
-
-  it('renders meeting link label when no invite code is provided', () => {
-    renderWithProviders(
-      <MeetingDetailsDialog
-        open={true}
-        onClose={vi.fn()}
-        eventInfo={mockEventInfo}
-        meetingDetails={{ ...meetingDetails, inviteCodeId: undefined }}
+        meetingDetails={{ ...meetingDetails }}
         roomInfo={mockRoomInfo}
       />,
       { store, provider: { snackbar: true, mui: true } }
@@ -131,7 +116,7 @@ describe('MeetingDetailsDialog', () => {
     expect(screen.queryByRole('textbox', { name: 'meeting-details-dialog-label-invite-link' })).not.toBeInTheDocument();
   });
 
-  it('shows the invite link copy notification when copying with an invite code', async () => {
+  it('shows the meeting link copy notification even when an invite code is provided', async () => {
     const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
     const success = vi.spyOn(notifications, 'success');
 
@@ -146,15 +131,15 @@ describe('MeetingDetailsDialog', () => {
       { store, provider: { snackbar: true, mui: true } }
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'meeting-details-dialog-aria-label-invite-link' }));
+    fireEvent.click(screen.getByRole('button', { name: 'meeting-details-dialog-aria-label-meeting-link' }));
 
     expect(writeText).toHaveBeenCalledOnce();
     await waitFor(() =>
-      expect(success).toHaveBeenCalledExactlyOnceWith('meeting-details-dialog-copy-invite-link-success')
+      expect(success).toHaveBeenCalledExactlyOnceWith('meeting-details-dialog-copy-meeting-link-success')
     );
   });
 
-  it('shows the meeting link copy notification when copying without an invite code', async () => {
+  it('shows the meeting link copy notification when copying', async () => {
     const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
     const success = vi.spyOn(notifications, 'success');
 
@@ -163,7 +148,7 @@ describe('MeetingDetailsDialog', () => {
         open={true}
         onClose={vi.fn()}
         eventInfo={mockEventInfo}
-        meetingDetails={{ ...meetingDetails, inviteCodeId: undefined }}
+        meetingDetails={{ ...meetingDetails }}
         roomInfo={mockRoomInfo}
       />,
       { store, provider: { snackbar: true, mui: true } }

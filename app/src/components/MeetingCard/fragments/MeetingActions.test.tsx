@@ -47,12 +47,6 @@ vi.mock('../../../api/rest', async (importOriginal) => ({
       isLoading: false,
     },
   ],
-  useLazyGetRoomInvitesQuery: () => [
-    vi.fn(),
-    {
-      isLoading: false,
-    },
-  ],
   useDeclineEventInviteMutation: () => [
     mockDeclineEventInvite,
     {

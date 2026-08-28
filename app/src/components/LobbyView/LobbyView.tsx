@@ -9,7 +9,7 @@ import i18next from 'i18next';
 import { isE2EESupported } from 'livekit-client';
 import { uniqueId } from 'lodash';
 import { SnackbarKey } from 'notistack';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
@@ -28,7 +28,6 @@ import {
 import { DISPLAY_NAME_MAX_CHARACTERS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useDisplayName } from '../../hooks/useDisplayName';
-import { useInviteCode } from '../../hooks/useInviteCode';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
 import log from '../../logger';
@@ -36,16 +35,12 @@ import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { changeMedia, startRoom } from '../../store/commonActions';
 import { selectDisallowCustomDisplayName, selectConfigFeatures } from '../../store/slices/configSlice';
 import {
-  InviteCodeErrorEnum,
-  fetchRoomByInviteId,
   selectCanEnter,
-  selectInviteState,
   selectIsRoomDeleted,
   selectLobbyDisplayName,
   selectRoomConnectionState,
 } from '../../store/slices/roomSlice';
 import { setDisplayName } from '../../store/slices/userSlice';
-import { FetchRequestError } from '../../types';
 import { composeRoomPath } from '../../utils/apiUtils';
 import { formikProps } from '../../utils/formikUtils';
 import OpentalkError from '../Error';
@@ -136,7 +131,6 @@ const LobbyView = () => {
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
-  const inviteState = useAppSelector(selectInviteState);
   const { joinWithoutMedia } = useAppSelector(selectConfigFeatures);
   const disallowCustomDisplayName = useAppSelector(selectDisallowCustomDisplayName);
   const isLoggedIn = useAppSelector(selectIsAuthenticated);
@@ -144,14 +138,10 @@ const LobbyView = () => {
   const canEnter = useAppSelector(selectCanEnter);
   const lobbyDisplayName = useAppSelector(selectLobbyDisplayName);
   const isRoomDeleted = useAppSelector(selectIsRoomDeleted);
-  const inviteStateCode = inviteState.inviteCode;
 
   const { data } = useGetMeQuery(undefined, { skip: !isLoggedIn });
   const navigateToHome = useNavigateToHome();
-  const inviteCode = useInviteCode();
   const navigate = useNavigate();
-
-  const [inviteCodeError, setInviteCodeError] = useState<FetchRequestError>();
 
   const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
@@ -161,7 +151,7 @@ const LobbyView = () => {
     data: roomData,
     error: roomDataError,
     isLoading: isRoomDataLoading,
-  } = useGetRoomEventInfoQuery({ id: roomId, inviteCode: inviteCode }, { skip: !roomId });
+  } = useGetRoomEventInfoQuery({ id: roomId }, { skip: !roomId });
 
   const isPasswordRequired = Boolean(roomData?.passwordRequired);
   const showPasswordStep = isPasswordRequired && PASSWORD_STEP_CONNECTION_STATES.includes(connectionState);
@@ -174,14 +164,6 @@ const LobbyView = () => {
     extension: '',
   });
 
-  useEffect(() => {
-    if (inviteCode && !inviteStateCode) {
-      dispatch(fetchRoomByInviteId(inviteCode))
-        .unwrap()
-        .catch((error) => setInviteCodeError(error));
-    }
-  }, [dispatch, inviteCode, inviteStateCode]);
-
   //Cleans up wrong password notification on dismount
   useEffect(() => {
     return () => {
@@ -189,7 +171,7 @@ const LobbyView = () => {
     };
   }, []);
 
-  const disableDisplayNameField = disallowCustomDisplayName && !inviteCode;
+  const disableDisplayNameField = disallowCustomDisplayName && isLoggedIn;
   const initialDisplayName = useDisplayName(data);
 
   const validationSchema = useMemo(
@@ -218,7 +200,6 @@ const LobbyView = () => {
           startRoom({
             roomId,
             displayName: displayName || initialDisplayName || '',
-            inviteCode,
             password: passwordValue,
           })
         ).unwrap();
@@ -229,7 +210,7 @@ const LobbyView = () => {
             case StartRoomError.InvalidBreakoutRoomId:
             case StartRoomError.NoBreakoutRooms:
               notifications.info(t('breakout-notification-session-ended-header'));
-              navigate(composeRoomPath(roomId, inviteCode));
+              navigate(composeRoomPath(roomId));
               break;
             case StartRoomError.InvalidJson:
               log.error('invalid json request in startRoom', e);
@@ -251,12 +232,6 @@ const LobbyView = () => {
                 navigateToHome();
               }
               break;
-            case StartRoomError.BadRequest:
-              notifications.error(t('error-invalid-invitation-code'));
-              if (!isRoomDeleted) {
-                navigateToHome();
-              }
-              break;
             default:
               log.error(`unknown error code ${e.code} in startRoom`, e);
               notifications.error(t('error-general'));
@@ -267,7 +242,7 @@ const LobbyView = () => {
         }
       }
     },
-    [navigate, t, roomId, inviteCode, dispatch, navigateToHome, joinWithoutMedia, initialDisplayName, isRoomDeleted]
+    [navigate, t, roomId, dispatch, navigateToHome, joinWithoutMedia, initialDisplayName, isRoomDeleted]
   );
 
   const submitLobby = useCallback(
@@ -283,10 +258,7 @@ const LobbyView = () => {
 
   const hasInitiatedConnect = useRef(false);
   useEffect(() => {
-    if (isRoomDeleted || hasInitiatedConnect.current || inviteState.loading || isRoomDataLoading || !roomData) {
-      return;
-    }
-    if (!(isLoggedIn || inviteCode !== undefined)) {
+    if (hasInitiatedConnect.current || isRoomDataLoading || !roomData) {
       return;
     }
     // On successful hangup the connection state will be `Left`
@@ -305,17 +277,7 @@ const LobbyView = () => {
     }
     hasInitiatedConnect.current = true;
     void openLobbyConnection();
-  }, [
-    inviteState.loading,
-    isRoomDataLoading,
-    roomData,
-    isLoggedIn,
-    inviteCode,
-    connectionState,
-    openLobbyConnection,
-    isPasswordRequired,
-    isRoomDeleted,
-  ]);
+  }, [isRoomDataLoading, roomData, connectionState, openLobbyConnection, isPasswordRequired, isRoomDeleted]);
 
   const formik = useFormik({
     initialValues: {
@@ -325,9 +287,6 @@ const LobbyView = () => {
     validateOnMount: true,
     validationSchema,
     onSubmit: (values) => {
-      if (!(isLoggedIn || inviteCode !== undefined)) {
-        return;
-      }
       const name = disableDisplayNameField ? initialDisplayName || '' : values.name;
       // don't send a displayName if its already set by the server (via display_name_assigned` or returned in `joined_lobby`)
       if (lobbyDisplayName) {
@@ -345,20 +304,13 @@ const LobbyView = () => {
   const disableSubmitButton = !formik.isValid || !isInLobby;
   const submitButtonLabel = isInLobby && canEnter === false ? t('joinform-request-to-join') : t('joinform-enter-now');
 
-  if (inviteState.loading || isRoomDataLoading) {
+  if (isRoomDataLoading) {
     return <SuspenseLoading />;
   }
 
   const isRoomAccessForbidden = roomDataError && 'status' in roomDataError && roomDataError.status === 403;
   if (isRoomAccessForbidden) {
     return <OpentalkError title={t('error-access-forbidden')} />;
-  }
-
-  if (inviteCodeError) {
-    if (inviteCodeError?.statusText === InviteCodeErrorEnum.InvalidJson) {
-      return <OpentalkError title={t('error-invalid-invitation-link')} />;
-    }
-    return <OpentalkError title={t('error-invite-link')} />;
   }
 
   if (showPasswordStep) {

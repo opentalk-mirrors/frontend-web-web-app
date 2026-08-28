@@ -102,30 +102,20 @@ const createOrGenerateDeviceSecret = async () => {
 export const startRoom = async (credentials: RoomCredentials, config: ConfigState, displayName: string) => {
   const roomPath = `v1/rooms/${credentials.roomId}`;
 
-  let authUrl: URL;
-  if (credentials.inviteCode !== undefined) {
-    authUrl = new URL(`${roomPath}/start_invited`, getControllerBaseUrl(config));
-  } else {
-    authUrl = new URL(`${roomPath}/start`, getControllerBaseUrl(config));
-  }
+  const authUrl = new URL(`${roomPath}/start`, getControllerBaseUrl(config));
 
-  const { inviteCode, password } = credentials;
+  const { password } = credentials;
   const body = JSON.stringify({
     device_secret: await createOrGenerateDeviceSecret(),
     display_name: displayName,
-    invite_code: inviteCode,
     password: password || undefined,
   });
 
-  const response = await fetchWithAuth(
-    authUrl,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body,
-    },
-    inviteCode
-  );
+  const response = await fetchWithAuth(authUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body,
+  });
 
   if (!response.ok) {
     if (response.status === 403) {
