@@ -1406,6 +1406,7 @@ failed-playback-audio-warning = Audio ist derzeit durch Ihre Browser-Einstellung
 
 subtitle-settings-dialog-title = Untertitel verwalten
 more-menu-subtitle-settings = Untertitel verwalten
+more-menu-subtitle-enable = Untertitel einschalten
 more-menu-show-subtitles = Untertitel einblenden
 more-menu-hide-subtitles = Untertitel ausblenden
 subtitle-settings-input-language = Sprache wählen...

@@ -1408,6 +1408,7 @@ failed-playback-audio-warning = Audio is currently restricted by your browser se
 
 subtitle-settings-dialog-title = Manage subtitles
 more-menu-subtitle-settings = Manage subtitles
+more-menu-subtitle-enable = Enable subtitles
 more-menu-show-subtitles = Show subtitles
 more-menu-hide-subtitles = Hide subtitles
 subtitle-settings-input-language = Select language...

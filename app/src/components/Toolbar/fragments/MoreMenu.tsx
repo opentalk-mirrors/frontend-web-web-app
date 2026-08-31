@@ -157,6 +157,7 @@ const Divider = styled(MuiDivider)({
 const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const [showDisableGuestAccessModal, setShowDisableGuestAccessModal] = useState(false);
   const showSubtitleSettings = useAppSelector(selectShowSubtitlesSettings);
+  const subtitlesEnabled = useAppSelector(selectTranscriptionStatus) === TranscriptionStatus.Running;
 
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
@@ -453,7 +454,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   };
 
   const subtitleSettingsItem = {
-    label: 'more-menu-subtitle-settings',
+    label: subtitlesEnabled ? 'more-menu-subtitle-settings' : 'more-menu-subtitle-enable',
     icon: <Icon_cc_settingsIcon />,
     action: () => {
       onClose();
