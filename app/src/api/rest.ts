@@ -218,4 +218,5 @@ export const {
   useGetUserOwnedAssetsQuery,
   useGetColorSchemesQuery,
   useCreateRoomAssetMutation,
+  useVerifyRoomNameMutation,
 } = restApi;

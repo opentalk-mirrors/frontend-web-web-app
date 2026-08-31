@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { CoreFeatures, Tariff, TariffId, SingleEvent } from '@opentalk/rest-api-rtk-query';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MockedFunction } from 'vitest';
 
 import { renderWithProviders, configureStore, mockedSingleEvent } from '../../../utils/testUtils';
@@ -19,12 +20,15 @@ const defaultTariff: Tariff = {
 
 let mockTariff: Tariff;
 let mockGetEventsWithInstances: MockedFunction<() => SingleEvent[]>;
+let mockCheckAlias: MockedFunction<(payload: { name: string }) => void>;
+let mockAliasResult: Record<string, unknown>;
 vi.mock('../../../api/rest', async (importOriginal) => ({
   ...(await importOriginal()),
   useLazyGetEventsWithInstancesQuery: () => [mockGetEventsWithInstances],
   useGetMeTariffQuery: () => ({
     data: mockTariff,
   }),
+  useVerifyRoomNameMutation: () => [mockCheckAlias, mockAliasResult],
 }));
 
 vi.mock('./DateTimeSection', () => ({
@@ -82,6 +86,8 @@ describe('MeetingForm', () => {
     mockTariff = defaultTariff;
     mockInitialValues = defaultValues;
     mockGetEventsWithInstances = vi.fn().mockReturnValue({});
+    mockCheckAlias = vi.fn();
+    mockAliasResult = { isUninitialized: true };
     vi.clearAllMocks();
   });
 
@@ -95,7 +101,7 @@ describe('MeetingForm', () => {
     expect(screen.getByRole('textbox', { name: 'dashboard-meeting-textfield-details' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'dashboard-direct-meeting-password-label' })).toBeInTheDocument();
 
-    expect(screen.getAllByRole('switch')).toHaveLength(3); // Date/Time, Details, Guest access
+    expect(screen.getAllByRole('switch')).toHaveLength(4); // Date/Time, Details, Guest access
     expect(screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' })).toBeInTheDocument();
     expect(screen.getByRole('switch', { name: 'dashboard-meeting-details-tooltip' })).toBeInTheDocument();
 
@@ -134,7 +140,7 @@ describe('MeetingForm', () => {
         store,
         provider: { mui: true },
       });
-      expect(screen.getAllByRole('switch')).toHaveLength(4); // default + shared folder
+      expect(screen.getAllByRole('switch')).toHaveLength(5); // default + shared folder
       expect(screen.getByRole('switch', { name: 'dashboard-meeting-shared-folder-switch' })).toBeInTheDocument();
     });
     it('renders streaming options section if streaming feature is enabled', () => {
@@ -172,7 +178,7 @@ describe('MeetingForm', () => {
         store,
         provider: { mui: true },
       });
-      expect(screen.getAllByRole('switch')).toHaveLength(4); // default + e2e encryption
+      expect(screen.getAllByRole('switch')).toHaveLength(5); // default + e2e encryption
       expect(screen.getByRole('switch', { name: 'dashboard-meeting-e2ee-tooltip' })).toBeInTheDocument();
     });
 
@@ -191,6 +197,7 @@ describe('MeetingForm', () => {
 
   describe('form submit', () => {
     it('submits if the meeting is time independent', async () => {
+      const user = userEvent.setup();
       const { store } = configureStore({});
       renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
         store,
@@ -198,7 +205,7 @@ describe('MeetingForm', () => {
       });
 
       const timeSwitch = screen.getByRole('switch', { name: 'dashboard-meeting-date-and-time-switch' });
-      fireEvent.click(timeSwitch);
+      await user.click(timeSwitch);
 
       await waitFor(() => {
         expect(timeSwitch).not.toBeChecked();
@@ -287,6 +294,7 @@ describe('MeetingForm', () => {
     });
 
     it('submits form on conflict confirm', async () => {
+      const user = userEvent.setup();
       const mockStartDate = new Date('2023-10-01T10:00:00Z').toISOString();
       const mockEndDate = new Date('2023-10-01T10:30:00Z').toISOString();
       mockInitialValues = { ...defaultValues, startDate: mockStartDate, endDate: mockEndDate };
@@ -310,11 +318,147 @@ describe('MeetingForm', () => {
       });
 
       const confirmButton = screen.getByRole('button', { name: 'confirm-conflict' });
-      fireEvent.click(confirmButton);
+      await user.click(confirmButton);
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('personal room', () => {
+    beforeEach(() => {
+      mockInitialValues = { ...defaultValues, personalRoom: true };
+    });
+
+    const getPersonalRoomNameInput = () => {
+      const { store } = configureStore({});
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
+      return screen.getByRole('textbox', { name: 'dashboard-meeting-personal-room-name-label' });
+    };
+
+    it('debounces the availability check and fires it once after typing stops', async () => {
+      const user = userEvent.setup();
+      const input = getPersonalRoomNameInput();
+
+      await user.type(input, 'abc');
+
+      await waitFor(() => {
+        expect(mockCheckAlias).toHaveBeenCalledTimes(1);
+      });
+      expect(mockCheckAlias).toHaveBeenCalledWith({ name: 'abc' });
+    });
+
+    it('does not trigger the availability check for names shorter than the minimum length', async () => {
+      const user = userEvent.setup();
+      const input = getPersonalRoomNameInput();
+
+      await user.type(input, 'ab');
+
+      expect(mockCheckAlias).not.toHaveBeenCalled();
+    });
+
+    it('shows invalid character feedback for disallowed characters', async () => {
+      const user = userEvent.setup();
+      const input = getPersonalRoomNameInput();
+
+      await user.type(input, 'ab_');
+
+      expect(screen.getByText('dashboard-meeting-personal-room-name-invalid-chars')).toBeInTheDocument();
+    });
+
+    it('auto-suggests the personal room name from the title as a slug', async () => {
+      const user = userEvent.setup();
+      getPersonalRoomNameInput();
+
+      const titleInput = screen.getByRole('textbox', { name: 'dashboard-meeting-textfield-title' });
+      await user.type(titleInput, 'Wöchentliches Meeting!');
+
+      expect(screen.getByRole('textbox', { name: 'dashboard-meeting-personal-room-name-label' })).toHaveValue(
+        'woechentliches-meeting'
+      );
+    });
+
+    it('stops syncing the name from the title after a manual edit', async () => {
+      const user = userEvent.setup();
+      const nameInput = getPersonalRoomNameInput();
+      const titleInput = screen.getByRole('textbox', { name: 'dashboard-meeting-textfield-title' });
+
+      await user.type(titleInput, 'First');
+      expect(nameInput).toHaveValue('first');
+
+      await user.clear(nameInput);
+      await user.type(nameInput, 'custom-name');
+      await user.type(titleInput, 'Second Title');
+
+      expect(nameInput).toHaveValue('custom-name');
+    });
+
+    it('does not overwrite a pre-filled name from an existing alias', async () => {
+      const user = userEvent.setup();
+      mockInitialValues = { ...defaultValues, personalRoom: true, personalRoomName: 'existing-room' };
+      getPersonalRoomNameInput();
+
+      const titleInput = screen.getByRole('textbox', { name: 'dashboard-meeting-textfield-title' });
+      await user.type(titleInput, 'A New Title');
+
+      expect(screen.getByRole('textbox', { name: 'dashboard-meeting-personal-room-name-label' })).toHaveValue(
+        'existing-room'
+      );
+    });
+
+    it('shows availability feedback once the result matches the current input', () => {
+      mockAliasResult = { isSuccess: true, data: { available: true }, originalArgs: { name: 'abc' } };
+      mockInitialValues = { ...defaultValues, personalRoom: true, personalRoomName: 'abc' };
+      getPersonalRoomNameInput();
+
+      expect(screen.getByText('dashboard-meeting-personal-room-name-available')).toBeInTheDocument();
+    });
+
+    it('shows taken feedback when the name is not available', () => {
+      mockAliasResult = { isSuccess: true, data: { available: false }, originalArgs: { name: 'abc' } };
+      mockInitialValues = { ...defaultValues, personalRoom: true, personalRoomName: 'abc' };
+      getPersonalRoomNameInput();
+
+      expect(screen.getByText('dashboard-meeting-personal-room-name-taken')).toBeInTheDocument();
+    });
+
+    it('marks the name field as invalid when the name is taken', () => {
+      mockAliasResult = { isSuccess: true, data: { available: false }, originalArgs: { name: 'abc' } };
+      mockInitialValues = { ...defaultValues, personalRoom: true, personalRoomName: 'abc' };
+      const input = getPersonalRoomNameInput();
+
+      expect(input).toHaveAttribute('aria-invalid', 'true');
+    });
+
+    it('shows a character counter in the x/max format', async () => {
+      const user = userEvent.setup();
+      const input = getPersonalRoomNameInput();
+
+      await user.type(input, 'abc');
+
+      expect(screen.getByText('3/40')).toBeInTheDocument();
+    });
+
+    it('shows the checking state while a check is pending for the typed value', async () => {
+      const user = userEvent.setup();
+      mockAliasResult = { isSuccess: true, data: { available: true }, originalArgs: { name: 'abc' } };
+      const input = getPersonalRoomNameInput();
+
+      await user.type(input, 'abcd');
+
+      expect(screen.getByText('dashboard-meeting-personal-room-name-checking')).toBeInTheDocument();
+    });
+
+    it('does not get stuck on checking for a name pre-filled from an existing alias', () => {
+      mockAliasResult = { isUninitialized: true };
+      mockInitialValues = { ...defaultValues, personalRoom: true, personalRoomName: 'existing-room' };
+      getPersonalRoomNameInput();
+
+      expect(screen.queryByText('dashboard-meeting-personal-room-name-checking')).not.toBeInTheDocument();
     });
   });
 });

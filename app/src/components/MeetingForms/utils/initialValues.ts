@@ -28,6 +28,8 @@ export const defaultValues = {
     enabled: false,
   },
   guestAccess: GuestAccess.DirectAccess,
+  personalRoom: false,
+  personalRoomName: '',
 };
 
 export const getDefaultEventDates = () => {
@@ -77,6 +79,8 @@ export const getInitialValuesForExisting = (
     showMeetingDetails: Boolean(existingEvent.showMeetingDetails),
     streaming: getStreamingInitialValue(existingEvent),
     e2eEncryption: existingEvent.room.e2eEncryption,
+    personalRoom: Boolean(existingEvent.room.alias),
+    personalRoomName: existingEvent.room.alias?.split('_')[0] || defaultValues.personalRoomName,
     trainingParticipationReport: existingEvent?.trainingParticipationReport
       ? {
           enabled: true,
@@ -107,6 +111,8 @@ export const getInitialValuesForNew = (
     showMeetingDetails: defaultValues.showMeetingDetails,
     streaming: getStreamingInitialValue(),
     e2eEncryption: defaultValues.e2eEncryption,
+    personalRoom: defaultValues.personalRoom,
+    personalRoomName: defaultValues.personalRoomName,
     trainingParticipationReport: defaultValues.trainingParticipationReport,
     guestAccess: isWaitingRoomEnabledByDefault ? GuestAccess.WaitingRoom : GuestAccess.DirectAccess,
   };

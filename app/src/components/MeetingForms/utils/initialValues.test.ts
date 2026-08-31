@@ -118,5 +118,35 @@ describe('MeetingForms initialValues utils', () => {
       expect(values.startDate).toBe('2025-06-04T10:30:00.000Z');
       expect(values.endDate).toBe('2025-06-04T11:00:00.000Z');
     });
+
+    it('should enable the personal room and strip the suffix from the alias', () => {
+      const values = getInitialValuesForExisting(false, {
+        ...mockedSingleEvent,
+        room: { ...mockedSingleEvent.room, alias: 'my-room_abc123' },
+      });
+
+      expect(values.personalRoom).toBe(true);
+      expect(values.personalRoomName).toBe('my-room');
+    });
+
+    it('should use the whole alias as the name when no suffix is present', () => {
+      const values = getInitialValuesForExisting(false, {
+        ...mockedSingleEvent,
+        room: { ...mockedSingleEvent.room, alias: 'my-room' },
+      });
+
+      expect(values.personalRoom).toBe(true);
+      expect(values.personalRoomName).toBe('my-room');
+    });
+
+    it('should keep the personal room disabled when no alias is set', () => {
+      const values = getInitialValuesForExisting(false, {
+        ...mockedSingleEvent,
+        room: { ...mockedSingleEvent.room, alias: undefined },
+      });
+
+      expect(values.personalRoom).toBe(false);
+      expect(values.personalRoomName).toBe('');
+    });
   });
 });

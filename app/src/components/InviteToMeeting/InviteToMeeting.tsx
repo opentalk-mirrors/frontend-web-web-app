@@ -192,7 +192,12 @@ const InviteToMeeting = ({
               </Button>
             </Grid>
             <Grid>
-              <Button component={Link} to={`/room/${existingEvent?.room.id}`} fullWidth target="_blank">
+              <Button
+                component={Link}
+                to={`/room/${existingEvent?.room.alias ?? existingEvent?.room.id}`}
+                fullWidth
+                target="_blank"
+              >
                 {t('dashboard-direct-meeting-button-open-room')}
               </Button>
             </Grid>

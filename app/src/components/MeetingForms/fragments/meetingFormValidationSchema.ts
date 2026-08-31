@@ -6,7 +6,14 @@ import { t } from 'i18next';
 
 import { isInvalidDate } from '../../../utils/typeGuardUtils';
 import yup from '../../../utils/yupUtils';
-import { MAX_CHARACTERS_TITLE, MAX_CHARACTERS_DESCRIPTION, MAX_CHARACTERS_PASSWORD } from '../constants';
+import {
+  MAX_CHARACTERS_TITLE,
+  MAX_CHARACTERS_DESCRIPTION,
+  MAX_CHARACTERS_PASSWORD,
+  MAX_CHARACTERS_ALIAS,
+  MIN_CHARACTERS_ALIAS,
+  VALID_ALIAS_PATTERN,
+} from '../constants';
 import { MeetingFormValues, Streaming } from './DashboardDateTimePicker';
 
 // Yup has some limitations regarding TypeScript:
@@ -178,4 +185,11 @@ export const meetingFormValidationSchema: yup.ObjectSchema<MeetingFormValues> = 
   isTimeDependent: yup.boolean().required(),
   recurrencePattern: yup.mixed<MeetingFormValues['recurrencePattern']>().required(),
   guestAccess: yup.mixed<MeetingFormValues['guestAccess']>().required(),
+  personalRoom: yup.boolean().required(),
+  personalRoomName: yup.string().when('personalRoom', {
+    is: true,
+    then: (schema) =>
+      schema.required().min(MIN_CHARACTERS_ALIAS).max(MAX_CHARACTERS_ALIAS).matches(VALID_ALIAS_PATTERN),
+    otherwise: (schema) => schema.optional(),
+  }),
 });

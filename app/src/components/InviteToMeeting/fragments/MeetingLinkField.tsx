@@ -15,6 +15,7 @@ export type MeetingLinkFieldProps = {
   tooltip?: string;
   isLoading?: boolean;
   eventTitle?: string;
+  helperText?: React.ReactNode;
 };
 
 const CustomCopyTextField = styled(CopyTextField)(({ theme }) => ({
@@ -32,6 +33,7 @@ const MeetingLinkField = ({
   tooltip,
   isLoading,
   eventTitle = '',
+  helperText,
 }: MeetingLinkFieldProps) => {
   const { t } = useTranslation();
 
@@ -46,6 +48,7 @@ const MeetingLinkField = ({
           notificationText={t(`dashboard-invite-to-meeting-copy-${fieldKey}-success`)}
           checked={checked}
           value={value}
+          helperText={helperText}
         />
       </Tooltip>
     </Grid>

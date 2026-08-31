@@ -30,6 +30,7 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
   const sipLink = callInDetails ? `${callInDetails.tel},,${callInDetails.id},,${callInDetails.password}` : undefined;
 
   const roomPassword = event.room.password?.trim() || undefined;
+  const roomAlias = event.room.alias;
 
   const streamingTargets = event.streamingTargets;
   const streamingTargetURL = useMemo(() => {
@@ -58,6 +59,15 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
         tooltip={t('dashboard-invite-to-meeting-room-link-tooltip')}
         eventTitle={eventTitle}
       />
+      {roomAlias && (
+        <MeetingLinkField
+          fieldKey={FieldKeys.PersonalRoomLink}
+          checked={highlightedField === FieldKeys.PersonalRoomLink}
+          value={new URL(`/room/${roomAlias}`, baseURL)}
+          setHighlightedField={setHighlightedField}
+          eventTitle={eventTitle}
+        />
+      )}
       {callInDetails && sipLink && (
         <MeetingLinkField
           fieldKey={FieldKeys.SipLink}

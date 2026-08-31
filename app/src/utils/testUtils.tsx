@@ -601,4 +601,5 @@ export const mockedMeetingFormValues: MeetingFormValues = {
   trainingParticipationReport: { enabled: false, parameter: undefined },
   recurrencePattern: CommonFrequencies.NONE,
   guestAccess: GuestAccess.DirectAccess,
+  personalRoom: false,
 };

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Divider, Stack, styled } from '@mui/material';
+import { Divider, Stack, Typography, styled } from '@mui/material';
 import {
   DateTime,
   Event,
@@ -13,18 +13,29 @@ import {
   CoreFeatures,
 } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { debounce } from 'lodash';
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useLazyGetEventsWithInstancesQuery, useGetMeTariffQuery } from '../../../api/rest';
+import { useLazyGetEventsWithInstancesQuery, useGetMeTariffQuery, useVerifyRoomNameMutation } from '../../../api/rest';
 import { CommonTextField } from '../../../commonComponents';
+import CustomHelperText from '../../../commonComponents/CommonTextField/CustomHelperText';
 import { useAppSelector } from '../../../hooks';
 import { selectConfigFeatures, selectWaitingRoomDefault } from '../../../store/slices/configSlice';
 import { findOverlappingEvent } from '../../../utils/eventUtils';
 import { formikProps, formikSwitchProps } from '../../../utils/formikUtils';
 import { isFeatureEnabledPredicate } from '../../../utils/moduleUtils';
-import { MAX_CHARACTERS_TITLE, MAX_CHARACTERS_DESCRIPTION, MAX_CHARACTERS_PASSWORD } from '../constants';
+import {
+  MAX_CHARACTERS_TITLE,
+  MAX_CHARACTERS_DESCRIPTION,
+  MAX_CHARACTERS_PASSWORD,
+  MAX_CHARACTERS_ALIAS,
+  MIN_CHARACTERS_ALIAS,
+  VALID_ALIAS_PATTERN,
+  ALIAS_CHECK_DEBOUNCE_MS,
+} from '../constants';
 import { getInitialValues } from '../utils/initialValues';
+import { slugifyRoomName } from '../utils/slugifyRoomName';
 import ActionButtons from './ActionButtons';
 import { MeetingFormValues } from './DashboardDateTimePicker';
 import DateTimeSection from './DateTimeSection';
@@ -56,6 +67,7 @@ const MAX_INSTANCES_PER_RECURRING_EVENT = 100;
 const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonClick }: MeetingFormProps) => {
   const { t } = useTranslation();
   const [getEventsWithInstances] = useLazyGetEventsWithInstancesQuery();
+  const [checkAliasExists, aliasExistsResult] = useVerifyRoomNameMutation();
   const isWaitingRoomEnabledByDefault = useAppSelector(selectWaitingRoomDefault);
 
   const { data: tariff } = useGetMeTariffQuery();
@@ -71,6 +83,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
   const features = useAppSelector(selectConfigFeatures);
   const [memoizedRecurrencePattern, setMemoizedRecurrencePattern] = useState<RecurrencePattern | false>(false);
   const [previousGuestAccess, setPreviousGuestAccess] = useState<GuestAccess>();
+  const [pendingCheckName, setPendingCheckName] = useState<string>();
 
   const formik = useFormik<MeetingFormValues>({
     initialValues: getInitialValues(memoizedRecurrencePattern, isWaitingRoomEnabledByDefault, existingEvent),
@@ -82,6 +95,11 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
       await onSubmit(values, formik.handleSubmit);
     },
   });
+  const { setFieldValue } = formik;
+
+  const [isPersonalRoomNameManuallyEdited, setIsPersonalRoomNameManuallyEdited] = useState(() =>
+    Boolean(formik.initialValues.personalRoomName)
+  );
 
   const handleConfirmOverlappingEvents = () => {
     setOverlappingEvent(undefined);
@@ -89,14 +107,107 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
   };
 
   const handleE2EEChange = (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
-    formik.setFieldValue('e2eEncryption', checked);
+    setFieldValue('e2eEncryption', checked);
     if (checked) {
       setPreviousGuestAccess(formik.values.guestAccess);
-      formik.setFieldValue('streaming', { enabled: false });
-      formik.setFieldValue('guestAccess', GuestAccess.Disabled);
+      setFieldValue('streaming', { enabled: false });
+      setFieldValue('guestAccess', GuestAccess.Disabled);
     } else if (previousGuestAccess !== undefined) {
-      formik.setFieldValue('guestAccess', previousGuestAccess);
+      setFieldValue('guestAccess', previousGuestAccess);
     }
+  };
+
+  const personalRoomName = formik.values.personalRoomName ?? '';
+  const hasValidAliasChars = VALID_ALIAS_PATTERN.test(personalRoomName);
+  const isPersonalRoomNameValid = hasValidAliasChars && personalRoomName.length >= MIN_CHARACTERS_ALIAS;
+  const isPersonalRoomNameTaken =
+    aliasExistsResult.originalArgs?.name === personalRoomName && aliasExistsResult.data?.available === false;
+  const personalRoomNameHasError = personalRoomName.length > 0 && (!hasValidAliasChars || isPersonalRoomNameTaken);
+  const findFirstInvalidChar = (value: string) => value.split('').find((char) => !VALID_ALIAS_PATTERN.test(char));
+
+  const debouncedCheckAliasExists = useMemo(
+    () => debounce((name: string) => checkAliasExists({ name }), ALIAS_CHECK_DEBOUNCE_MS),
+    [checkAliasExists]
+  );
+
+  useEffect(() => () => debouncedCheckAliasExists.cancel(), [debouncedCheckAliasExists]);
+
+  // auto-suggest the personal room name from the meeting title until the organizer edits it manually
+  useEffect(() => {
+    if (isPersonalRoomNameManuallyEdited || !formik.values.personalRoom) {
+      return;
+    }
+    const suggestion = slugifyRoomName(formik.values.title ?? '');
+    setFieldValue('personalRoomName', suggestion);
+    if (suggestion.length >= MIN_CHARACTERS_ALIAS) {
+      debouncedCheckAliasExists(suggestion);
+    } else {
+      debouncedCheckAliasExists.cancel();
+    }
+  }, [
+    formik.values.title,
+    formik.values.personalRoom,
+    isPersonalRoomNameManuallyEdited,
+    debouncedCheckAliasExists,
+    setFieldValue,
+  ]);
+
+  const handlePersonalRoomNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setIsPersonalRoomNameManuallyEdited(true);
+    setFieldValue('personalRoomName', value);
+    if (value.length >= MIN_CHARACTERS_ALIAS) {
+      setPendingCheckName(value);
+      debouncedCheckAliasExists(value);
+    } else {
+      setPendingCheckName(undefined);
+      debouncedCheckAliasExists.cancel();
+    }
+  };
+
+  const renderPersonalRoomNameFeedback = () => {
+    const value = formik.values.personalRoomName ?? '';
+
+    if (!hasValidAliasChars) {
+      return (
+        <Typography variant="caption" color="textError">
+          {t('dashboard-meeting-personal-room-name-invalid-chars', {
+            char: findFirstInvalidChar(value),
+          })}
+        </Typography>
+      );
+    }
+
+    if (value.length < MIN_CHARACTERS_ALIAS) {
+      return null;
+    }
+
+    const resultMatchesInput = aliasExistsResult.originalArgs?.name === value;
+    const isCheckPendingForValue = pendingCheckName === value && !resultMatchesInput;
+    if (aliasExistsResult.isLoading || isCheckPendingForValue) {
+      return (
+        <Typography variant="caption" color="text.secondary">
+          {t('dashboard-meeting-personal-room-name-checking')}
+        </Typography>
+      );
+    }
+    if (aliasExistsResult.isSuccess) {
+      return (
+        <Typography variant="caption" color={aliasExistsResult.data.available ? 'success.main' : 'textError'}>
+          {aliasExistsResult.data.available
+            ? t('dashboard-meeting-personal-room-name-available')
+            : t('dashboard-meeting-personal-room-name-taken')}
+        </Typography>
+      );
+    }
+    if (aliasExistsResult.isError) {
+      return (
+        <Typography variant="caption" color="textError">
+          {t('dashboard-meeting-personal-room-name-check-error')}
+        </Typography>
+      );
+    }
+    return null;
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -178,6 +289,35 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
 
           <Divider textAlign="left">{t('dashboard-meeting-access-and-security')}</Divider>
 
+          <MeetingFormSwitch
+            checked={formik.values.personalRoom}
+            switchProps={formikSwitchProps('personalRoom', formik)}
+            switchValueLabel={t('dashboard-meeting-personal-room-switch')}
+          />
+
+          {formik.values.personalRoom && (
+            <Stack spacing={0.5}>
+              <CommonTextField
+                {...formikProps('personalRoomName', formik)}
+                label={t('dashboard-meeting-personal-room-name-label')}
+                placeholder={t('dashboard-meeting-personal-room-name-placeholder')}
+                fullWidth
+                maxCharacters={MAX_CHARACTERS_ALIAS}
+                error={personalRoomNameHasError}
+                onChange={handlePersonalRoomNameChange}
+                helperText={
+                  <CustomHelperText
+                    helperText={t('dashboard-meeting-personal-room-name-helper-text')}
+                    characterCount={formik.values.personalRoomName?.length ?? 0}
+                    maxCharacters={MAX_CHARACTERS_ALIAS}
+                  />
+                }
+                required
+              />
+              {(formik.values.personalRoomName?.length ?? 0) > 0 && renderPersonalRoomNameFeedback()}
+            </Stack>
+          )}
+
           {features.e2eEncryption && (
             <MeetingFormSwitch
               checked={formik.values.e2eEncryption}
@@ -218,7 +358,12 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
         </Stack>
         <ActionButtons
           isExistingEvent={Boolean(existingEvent)}
-          disableSaveButton={formik.isSubmitting || eventIsLoading || formik.dirty === false}
+          disableSaveButton={
+            formik.isSubmitting ||
+            eventIsLoading ||
+            formik.dirty === false ||
+            (formik.values.personalRoom && (!isPersonalRoomNameValid || isPersonalRoomNameTaken))
+          }
           disableCancelButton={formik.isSubmitting || eventIsLoading}
           onForwardButtonClick={onForwardButtonClick}
         />

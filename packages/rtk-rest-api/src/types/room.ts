@@ -42,6 +42,7 @@ export type PublicRoom = {
   id: RoomId;
   createdAt: DateTime;
   createdBy: BaseUser;
+  alias?: string;
 };
 
 // TODO(r.floren): Should we put them here into the same interface?
@@ -91,4 +92,12 @@ export type CreateRoomAssetResponse = {
   id: AssetId;
   size: number;
   remainingQuota: number | null;
+};
+
+export type RoomAliasExistsResponse = {
+  available: boolean;
+};
+
+export type VerifyRoomNamePayload = {
+  name: string;
 };
