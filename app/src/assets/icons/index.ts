@@ -106,6 +106,8 @@ import SpeedTestIcon from './SpeedTestIcon';
 import TalkingStickIcon from './TalkingStickIcon';
 import TelephoneStrokeIcon from './TelephoneStrokeIcon';
 import TimerIcon from './TimerIcon';
+import TranscriptionSettingsIcon from './TranscriptionSettingsIcon';
+import TranscriptionShowIcon from './TranscriptionShowIcon';
 import TrashIcon from './TrashIcon';
 import UnlockedIcon from './UnlockedIcon';
 import VisibleIcon from './VisibleIcon';
@@ -172,6 +174,8 @@ export {
   Icon_cc_hideIcon,
   Icon_cc_settingsIcon,
   Icon_cc_showIcon,
+  TranscriptionSettingsIcon,
+  TranscriptionShowIcon,
   InfoIcon,
   InfoOutlinedIcon,
   InviteIcon,

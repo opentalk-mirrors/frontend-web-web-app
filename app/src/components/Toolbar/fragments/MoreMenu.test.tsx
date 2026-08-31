@@ -95,7 +95,7 @@ describe('MoreMenu', () => {
           },
           enabledModules: { [BackendModules.Transcription]: [TranscriptionFeatures.Transcription] },
         };
-        it('shows the subtitle settings option', () => {
+        it('shows the subtitle enable option when the transcription service is inactive', () => {
           const initialState = {
             ...moderatorState,
             transcription: { status: TranscriptionStatus.Inactive, segments: [], showSubtitles: false },
@@ -106,7 +106,22 @@ describe('MoreMenu', () => {
             store,
             provider: { mui: true, snackbar: true },
           });
+          checkMenuItem('more-menu-subtitle-enable');
+          checkMenuItem('more-menu-subtitle-settings', { falsify: true });
+        });
+        it('shows the subtitle settings option when the transcription service is active', () => {
+          const initialState = {
+            ...moderatorState,
+            transcription: { status: TranscriptionStatus.Running, segments: [], showSubtitles: false },
+            config,
+          };
+          const { store } = configureStore({ initialState });
+          renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
+            store,
+            provider: { mui: true, snackbar: true },
+          });
           checkMenuItem('more-menu-subtitle-settings');
+          checkMenuItem('more-menu-subtitle-enable', { falsify: true });
         });
         it('opens the subtitle settings when the option is clicked', async () => {
           // eslint-disable-next-line testing-library/render-result-naming-convention
@@ -121,7 +136,7 @@ describe('MoreMenu', () => {
             store,
             provider: { mui: true, snackbar: true },
           });
-          const subtitleSettingsButton = screen.getByRole('menuitem', { name: 'more-menu-subtitle-settings' });
+          const subtitleSettingsButton = screen.getByRole('menuitem', { name: 'more-menu-subtitle-enable' });
           await user.click(subtitleSettingsButton);
           expect(screen.getByText('subtitle-settings-dialog-title')).toBeInTheDocument();
         });

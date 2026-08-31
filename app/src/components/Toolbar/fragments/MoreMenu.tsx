@@ -157,7 +157,6 @@ const Divider = styled(MuiDivider)({
 const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const [showDisableGuestAccessModal, setShowDisableGuestAccessModal] = useState(false);
   const showSubtitleSettings = useAppSelector(selectShowSubtitlesSettings);
-  const subtitlesEnabled = useAppSelector(selectTranscriptionStatus) === TranscriptionStatus.Running;
 
   const { t } = useTranslation();
   const isModerator = useAppSelector(selectIsModerator);
@@ -187,6 +186,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     selectIsFeatureEnabled(BackendModules.Transcription, TranscriptionFeatures.Transcription)
   );
   const transcriptionStatus = useAppSelector(selectTranscriptionStatus);
+  const subtitlesEnabled = transcriptionStatus === TranscriptionStatus.Running;
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
   const userMenuItems: Array<MenuEntry> = [];
