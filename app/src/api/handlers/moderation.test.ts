@@ -301,7 +301,7 @@ describe('handleModerationMessage', () => {
       raiseHandsEnabled: true,
       guestAccess: false,
       waitingRoomParticipants: [],
-      waitingRoom: WaitingRoom.ForEveryone,
+      waitingRoom: WaitingRoom.ForAll,
     };
 
     const mockUpdatedToModeratorData: RoleUpdated = {
@@ -419,11 +419,11 @@ describe('handleModerationMessage', () => {
     it('suppresses and consumes the redundant waiting room notification that follows debriefing', () => {
       const dispatch = vi.fn();
       const state = createState({ moderation: { debriefingStarted: true } });
-      const data: ModerationMessage = { message: 'waiting_room_updated', newState: WaitingRoom.ForEveryone };
+      const data: ModerationMessage = { message: 'waiting_room_updated', newState: WaitingRoom.ForAll };
 
       handleModerationMessage(dispatch, data, timestamp, state);
 
-      expect(dispatch).toHaveBeenCalledWith(setWaitingRoomState(WaitingRoom.ForEveryone));
+      expect(dispatch).toHaveBeenCalledWith(setWaitingRoomState(WaitingRoom.ForAll));
       expect(dispatch).toHaveBeenCalledWith(setDebriefingStarted(false));
       expect(notifications.info).not.toHaveBeenCalled();
     });

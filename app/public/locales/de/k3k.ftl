@@ -283,9 +283,6 @@ transcription-error = Transkriptionsdienst-Fehler
 more-menu-enable-waiting-room = Warteraum aktivieren
 more-menu-disable-waiting-room = Warteraum deaktivieren
 more-menu-manage-waiting-room = Warteraum verwalten
-more-menu-waiting-room-disabled = Inaktiv
-more-menu-waiting-room-for-guests = Nur für Gäste
-more-menu-waiting-room-for-everyone = Für alle Teilnehmer
 more-menu-enable-guest-access = Gastzugang aktivieren
 more-menu-disable-guest-access = Gastzugang deaktivieren
 more-menu-turn-handraises-on = Handheben aktivieren
@@ -789,6 +786,8 @@ global-next = Weiter
 global-previous = Zurück
 global-edit = Bearbeiten
 global-continue = Fortfahren
+global-for-all = Für alle
+global-for-guests = Für Gäste
 
 retry-available-in = Wiederholung verfügbar in {$seconds}
 
@@ -1387,9 +1386,6 @@ rename-general-notification = {$actorName} hat den Namen von '{$oldName}' in '{$
 
 guest-access-switch-label = Gastzugang
 enable-guest-access-first = Aktivieren Sie zuerst den Gastzugang
-dashboard-meeting-waiting-room-option-disabled = Aus
-dashboard-meeting-waiting-room-option-all-participants = Alle
-dashboard-meeting-waiting-room-option-guests-only = Nur Gäste
 
 failed-playback-audio-warning = Audio ist derzeit durch Ihre Browser-Einstellungen eingeschränkt. Bitte heben Sie die Stummschaltung auf, um den Ton zu aktivieren und Ihre Sitzung zu beginnen. Falls Sie weiterhin nichts hören, empfehlen wir Ihnen, Ihre Browser-Erweiterungen auf etwaige Wiedergabesperren zu überprüfen.
 

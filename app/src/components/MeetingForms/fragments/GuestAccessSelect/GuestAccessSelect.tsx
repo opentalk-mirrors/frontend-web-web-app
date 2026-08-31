@@ -55,7 +55,7 @@ export function GuestAccessSelect({ formik, guestAccessAllowed = true }: GuestAc
   };
 
   return (
-    <Stack spacing={1}>
+    <Stack spacing={3}>
       {guestAccessAllowed && (
         <MeetingFormSwitch
           checked={guestAccessEnabled}
@@ -71,25 +71,19 @@ export function GuestAccessSelect({ formik, guestAccessAllowed = true }: GuestAc
           {t('dashboard-meeting-waiting-room-switch')}
         </FormLabel>
         <ToggleButtonGroup value={waitingRoomMode} exclusive onChange={handleWaitingRoomModeChange} sx={{ mt: 1 }}>
-          <ToggleButton value={WaitingRoomMode.Inactive}>
-            {t('dashboard-meeting-waiting-room-option-disabled')}
-          </ToggleButton>
+          <ToggleButton value={WaitingRoomMode.Inactive}>{t('global-off')}</ToggleButton>
+          <ToggleButton value={WaitingRoomMode.AllParticipants}>{t('global-for-all')}</ToggleButton>
           {guestAccessEnabled ? (
-            <ToggleButton value={WaitingRoomMode.GuestsOnly}>
-              {t('dashboard-meeting-waiting-room-option-guests-only')}
-            </ToggleButton>
+            <ToggleButton value={WaitingRoomMode.GuestsOnly}>{t('global-for-guests')}</ToggleButton>
           ) : (
             <Tooltip describeChild title={t('enable-guest-access-first')}>
               <span>
                 <ToggleButton value={WaitingRoomMode.GuestsOnly} disabled>
-                  {t('dashboard-meeting-waiting-room-option-guests-only')}
+                  {t('global-for-guests')}
                 </ToggleButton>
               </span>
             </Tooltip>
           )}
-          <ToggleButton value={WaitingRoomMode.AllParticipants}>
-            {t('dashboard-meeting-waiting-room-option-all-participants')}
-          </ToggleButton>
         </ToggleButtonGroup>
       </FormControl>
     </Stack>

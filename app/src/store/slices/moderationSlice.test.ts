@@ -16,13 +16,13 @@ describe('moderationSlice', () => {
   describe('setModeratorData', () => {
     it('hydrates the waiting room and guest access from the moderator data', () => {
       const moderatorData = buildModeratorData({
-        waitingRoom: WaitingRoom.ForEveryone,
+        waitingRoom: WaitingRoom.ForAll,
         guestAccess: false,
       });
 
       const state = reducer(undefined, setModeratorData({ moderatorData }));
 
-      expect(state.waitingRoom).toBe(WaitingRoom.ForEveryone);
+      expect(state.waitingRoom).toBe(WaitingRoom.ForAll);
       expect(state.guestAccessEnabled).toBe(false);
     });
 

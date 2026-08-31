@@ -44,7 +44,7 @@ describe('GuestAccessSelect — handleGuestAccessSwitchChange', () => {
     renderWithFormik({ ...baseValues, waitingRoom: false, guestAccess: GuestAccess.WaitingRoom }, formikRef);
 
     const guestsOnlyButton = screen.getByRole('button', {
-      name: 'dashboard-meeting-waiting-room-option-guests-only',
+      name: 'global-for-guests',
     });
     expect(guestsOnlyButton).toHaveAttribute('aria-pressed', 'true');
     expect(guestsOnlyButton).not.toBeDisabled();
@@ -59,10 +59,10 @@ describe('GuestAccessSelect — handleGuestAccessSwitchChange', () => {
     });
 
     const inactiveButton = screen.getByRole('button', {
-      name: 'dashboard-meeting-waiting-room-option-disabled',
+      name: 'global-off',
     });
     expect(inactiveButton).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-guests-only' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'global-for-guests' })).toBeDisabled();
   });
 
   it('preserves the current waiting-room mode when guest access is disabled from a non-"GuestsOnly" mode', async () => {
@@ -71,7 +71,7 @@ describe('GuestAccessSelect — handleGuestAccessSwitchChange', () => {
     renderWithFormik({ ...baseValues, waitingRoom: true, guestAccess: GuestAccess.WaitingRoom }, formikRef);
 
     const allParticipantsButton = screen.getByRole('button', {
-      name: 'dashboard-meeting-waiting-room-option-all-participants',
+      name: 'global-for-all',
     });
     expect(allParticipantsButton).toHaveAttribute('aria-pressed', 'true');
 
@@ -82,9 +82,7 @@ describe('GuestAccessSelect — handleGuestAccessSwitchChange', () => {
       expect(formikRef.current?.values.waitingRoom).toBe(true);
       expect(formikRef.current?.values.guestAccess).toBe(GuestAccess.Disabled);
     });
-    expect(
-      screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-all-participants' })
-    ).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'global-for-all' })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('preserves the current waiting-room mode when guest access is enabled (checked=true branch)', async () => {
@@ -110,7 +108,7 @@ describe('GuestAccessSelect - guestAccessAllowed=false', () => {
     renderWithFormik({ ...baseValues, guestAccess: GuestAccess.Disabled }, formikRef, false);
 
     expect(screen.queryByRole('switch', { name: 'guest-access-switch-label' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'dashboard-meeting-waiting-room-option-guests-only' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'global-for-guests' })).toBeDisabled();
   });
 
   it('normalizes a stale guest access value to "Disabled"', async () => {
