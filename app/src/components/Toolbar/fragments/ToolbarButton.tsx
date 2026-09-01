@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { styled, Tooltip, IconButtonProps, IconButton } from '@mui/material';
+import { styled, Tooltip, IconButtonProps, IconButton, Theme } from '@mui/material';
 import { MouseEvent, ReactNode } from 'react';
 
 import { ArrowDownIcon } from '../../../assets/icons';
@@ -10,6 +10,18 @@ interface IButtonProps {
   isActive?: boolean;
   isLobby?: boolean;
 }
+
+const disabledOverlay = (theme: Theme) =>
+  ({
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    background: 'rgba(0.5, 0.5, 0.5, 0.2)',
+    borderRadius: theme.borderRadius.large,
+  }) as const;
 
 const ButtonContainer = styled('div')(() => ({
   cursor: 'pointer',
@@ -60,6 +72,7 @@ const ToolbarIconButton = styled(IconButton, {
     '& .off-line': {
       fill: theme.palette.background.main.contrastText,
     },
+    '&::after': disabledOverlay(theme),
   },
   [theme.breakpoints.down('sm')]: {
     width: '3.25rem',
@@ -78,6 +91,7 @@ const ToolbarIconButton = styled(IconButton, {
       '& .off-line': {
         fill: theme.palette.primary.contrastText,
       },
+      '&::after': disabledOverlay(theme),
     },
   }),
   ...(isLobby && {
@@ -167,16 +181,18 @@ const ToolbarButton = ({
   return (
     <ButtonContainer>
       <Tooltip placement="top" title={tooltipTitle}>
-        <ToolbarIconButton
-          isActive={active}
-          disabled={disabled || undefined}
-          aria-label={tooltipTitle}
-          onClick={(event) => onClick(event)}
-          isLobby={isLobby}
-          {...props}
-        >
-          {children}
-        </ToolbarIconButton>
+        <span>
+          <ToolbarIconButton
+            isActive={active}
+            disabled={disabled || undefined}
+            aria-label={tooltipTitle}
+            onClick={(event) => onClick(event)}
+            isLobby={isLobby}
+            {...props}
+          >
+            {children}
+          </ToolbarIconButton>
+        </span>
       </Tooltip>
       {hasContext && !contextDisabled && (
         <Tooltip placement="top" title={contextTitle}>
