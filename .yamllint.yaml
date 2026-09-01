@@ -27,6 +27,9 @@ rules:
   document-end: disable
   document-start:
     level: error
+    ignore: |
+      # Can be removed after https://github.com/renovatebot/renovate/discussions/41756 is fixed
+      pnpm-workspace.yaml
   empty-lines: enable
   empty-values: disable
   hyphens: enable

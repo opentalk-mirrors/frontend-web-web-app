@@ -28,6 +28,7 @@ path = [
     "e2e/.env-example",
     "packages/**/**.snap",
     "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
     "renovate.json",
     ".knip.json",
 ]
