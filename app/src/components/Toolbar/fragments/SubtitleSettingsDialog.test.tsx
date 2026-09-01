@@ -61,6 +61,58 @@ describe('SubtitleSettingsDialog', () => {
     expect(mockDispatch).not.toHaveBeenCalled();
   });
 
+  it('resets the state when the dialog is closed without saving', async () => {
+    const { store } = configureStore({ initialState: buildInitialState('en') });
+    const { rerender } = renderWithProviders(<SubtitleSettingsDialog open />, { store, provider: { mui: true } });
+    const user = userEvent.setup();
+
+    const enableSubtitlesSwitch = screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' });
+    await user.click(enableSubtitlesSwitch);
+
+    const languageSelect = screen.getByRole('combobox');
+    await user.click(languageSelect);
+
+    const listbox = await screen.findByRole('listbox');
+    const options = within(listbox).getAllByRole('option');
+    expect(options).toHaveLength(Object.keys(TranscriptionLanguage).length);
+
+    await user.click(within(listbox).getByRole('option', { name: 'Deutsch' }));
+    expect(languageSelect).toHaveTextContent('Deutsch');
+
+    const cancelButton = screen.getByRole('button', { name: 'global-cancel' });
+    await user.click(cancelButton);
+
+    rerender(<SubtitleSettingsDialog open={false} />);
+    rerender(<SubtitleSettingsDialog open />);
+
+    expect(screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' })).not.toBeChecked();
+    expect(screen.getByRole('combobox')).toHaveTextContent('English');
+  });
+
+  it('keeps the selected state when the dialog is saved', async () => {
+    const { store } = configureStore({ initialState: buildInitialState('en') });
+    const { rerender } = renderWithProviders(<SubtitleSettingsDialog open />, { store, provider: { mui: true } });
+    const user = userEvent.setup();
+
+    const enableSubtitlesSwitch = screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' });
+    await user.click(enableSubtitlesSwitch);
+
+    const languageSelect = screen.getByRole('combobox');
+    await user.click(languageSelect);
+
+    const listbox = await screen.findByRole('listbox');
+    await user.click(within(listbox).getByRole('option', { name: 'Deutsch' }));
+
+    const saveButton = screen.getByRole('button', { name: 'global-save' });
+    await user.click(saveButton);
+
+    rerender(<SubtitleSettingsDialog open={false} />);
+    rerender(<SubtitleSettingsDialog open />);
+
+    expect(screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' })).toBeChecked();
+    expect(screen.getByRole('combobox')).toHaveTextContent('Deutsch');
+  });
+
   it('dispatches changeTranscriptionLanguageSignal when saving a running transcription service with a new language selected', async () => {
     const { store } = configureStore({
       initialState: {

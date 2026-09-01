@@ -186,6 +186,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
     selectIsFeatureEnabled(BackendModules.Transcription, TranscriptionFeatures.Transcription)
   );
   const transcriptionStatus = useAppSelector(selectTranscriptionStatus);
+  const subtitlesEnabled = transcriptionStatus === TranscriptionStatus.Running;
   const isMeetingReportAvailable = useAppSelector(selectIsModuleEnabled(BackendModules.MeetingReport));
   const configFeatures = useAppSelector(selectConfigFeatures);
   const userMenuItems: Array<MenuEntry> = [];
@@ -453,7 +454,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   };
 
   const subtitleSettingsItem = {
-    label: 'more-menu-subtitle-settings',
+    label: subtitlesEnabled ? 'more-menu-subtitle-settings' : 'more-menu-subtitle-enable',
     icon: <Icon_cc_settingsIcon />,
     action: () => {
       onClose();

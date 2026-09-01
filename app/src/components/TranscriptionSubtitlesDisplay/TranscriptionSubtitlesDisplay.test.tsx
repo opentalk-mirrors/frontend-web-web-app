@@ -59,14 +59,6 @@ describe('TranscriptionSubtitlesDisplay', () => {
       vi.useRealTimers();
     });
 
-    it('shows a placeholder when there are no subtitles to display', () => {
-      const { store } = configureStore({
-        initialState: { ...initialState, transcription: { ...initialState.transcription, segments: [] } },
-      });
-      renderWithProviders(<TranscriptionSubtitlesDisplay />, { store, provider: { mui: true } });
-      expect(screen.getByText('subtitle-silence-placeholder')).toBeInTheDocument();
-    });
-
     it('does not show a settings button', () => {
       const { store } = configureStore({
         initialState: {

@@ -56,9 +56,19 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
   const hasLanguageChanged = desiredTranscriptionLanguage && desiredTranscriptionLanguage !== transcriptionLanguage;
   const hasStatusChanged = desiredTranscriptionStatus !== (transcriptionStatus === TranscriptionStatus.Running);
 
-  const onClose = () => {
+  const resetDraftState = () => {
+    setDesiredTranscriptionStatus(transcriptionStatus === TranscriptionStatus.Running);
+    setDesiredTranscriptionLanguage(transcriptionLanguage || '');
+  };
+
+  const closeDialog = () => {
     dispatch(hideTranscriptionSettings());
     props.onClose?.({}, 'escapeKeyDown');
+  };
+
+  const onClose = () => {
+    resetDraftState();
+    closeDialog();
   };
 
   const onLanguageSelectChange = (selectedLanguage: TranscriptionLanguageKey) => {
@@ -78,7 +88,7 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
       }
     }
     if (!hasStatusChanged) {
-      onClose();
+      closeDialog();
       return;
     }
     if (desiredTranscriptionStatus) {
@@ -90,7 +100,7 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
     } else {
       dispatch(sendStopTranscriptionSignal.action());
     }
-    onClose();
+    closeDialog();
   };
 
   return (

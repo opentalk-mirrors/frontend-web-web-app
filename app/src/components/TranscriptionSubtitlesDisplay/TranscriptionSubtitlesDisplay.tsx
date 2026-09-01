@@ -98,23 +98,17 @@ const TranscriptionSubtitlesDisplay = () => {
               </IconButton>
             </Tooltip>
           </SubtitlesContainerHeader>
-          {activeSubtitles.length > 0 ? (
-            activeSubtitles.map((subtitle: TranscriptionSubtitle) => (
-              <Subtitle key={`${subtitle.displayName}-${subtitle.timestamp}`}>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <ParticipantAvatar src={subtitle.avatarUrl} alt={subtitle.displayName} />
-                  <Box>
-                    <DisplayName variant="body2">{subtitle.displayName}</DisplayName>
-                  </Box>
-                  <Typography>{subtitle.text}</Typography>
-                </Stack>
-              </Subtitle>
-            ))
-          ) : (
-            <Subtitle>
-              <Typography>{t('subtitle-silence-placeholder')}</Typography>
+          {activeSubtitles.map((subtitle: TranscriptionSubtitle) => (
+            <Subtitle key={`${subtitle.displayName}-${subtitle.timestamp}`}>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <ParticipantAvatar src={subtitle.avatarUrl} alt={subtitle.displayName} />
+                <Box>
+                  <DisplayName variant="body2">{subtitle.displayName}</DisplayName>
+                </Box>
+                <Typography>{subtitle.text}</Typography>
+              </Stack>
             </Subtitle>
-          )}
+          ))}
         </SubtitlesContainer>
       </>
     )

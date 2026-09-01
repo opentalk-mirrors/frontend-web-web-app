@@ -1408,6 +1408,7 @@ failed-playback-audio-warning = Audio is currently restricted by your browser se
 
 subtitle-settings-dialog-title = Manage subtitles
 more-menu-subtitle-settings = Manage subtitles
+more-menu-subtitle-enable = Enable subtitles
 more-menu-show-subtitles = Show subtitles
 more-menu-hide-subtitles = Hide subtitles
 subtitle-settings-input-language = Select language...
@@ -1419,4 +1420,3 @@ subtitle-notification-enabled = Subtitles are now available
 subtitle-notification-disabled = Subtitles have been turned off by the host
 subtitle-notification-not-enabled-warning = Subtitles are currently unavailable. Please try again later.
 subtitle-notification-language-changed = The subtitle language was changed to {$language}.
-subtitle-silence-placeholder = ...
