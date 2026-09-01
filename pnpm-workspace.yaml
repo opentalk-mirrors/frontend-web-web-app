@@ -22,7 +22,15 @@ catalog:
   vite: ^8.2.2
   vite-plugin-dts: ^4.5.4
 
+overrides:
+  dompurify@<3.4.13: '>=3.4.13'
+  lodash-es@<4.17.23: '>=4.17.23'
+  mermaid@>=11.0.0-alpha.1 <11.16.1: '>=11.16.1'
+  nanoid@<5.1.16: '>=5.1.16'
+  react-router@>=7.12.0 <7.18.2: '>=7.18.2'
+
 nodeLinker: hoisted
+
 allowBuilds:
   msw: false
   '@sentry/cli': false
