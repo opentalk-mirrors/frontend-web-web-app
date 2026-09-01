@@ -23,6 +23,7 @@ const DialogActionsLeftAligned = styled(DialogActions)({ justifyContent: 'start'
 export interface MeetingDetailsDialogActionsProps {
   title: string;
   roomPassword?: string;
+  personalRoomLink?: string;
   meetingDetails?: MeetingDetails;
   meetingLink?: URL | null;
   guestAccessEnabled?: boolean;
@@ -33,6 +34,7 @@ const MeetingDetailsDialogActions = ({
   roomPassword,
   meetingDetails,
   meetingLink,
+  personalRoomLink,
   guestAccessEnabled = true,
 }: MeetingDetailsDialogActionsProps) => {
   const { t } = useTranslation();
@@ -85,11 +87,14 @@ ${t('global-call-in-pin')}: ${callIn.password}
       return t('meeting-details-dialog-join-prohibited-line');
     }
 
-    let joinString = `${t('meeting-details-dialog-join-line\n')}`;
+    let joinString = `${t('meeting-details-dialog-join-line')}\n`;
     if (isGuestParticipationAvailable) {
       joinString += `${t('global-meeting-link')}: ${meetingLink}\n`;
       if (roomPassword) {
         joinString += `${t('global-password')}: ${roomPassword}\n`;
+      }
+      if (personalRoomLink) {
+        joinString += `${t('meeting-details-dialog-label-personal-room-link')}: ${personalRoomLink}\n`;
       }
     }
 
