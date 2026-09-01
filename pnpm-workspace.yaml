@@ -26,10 +26,13 @@ catalog:
   vite: ^7.3.6
   vite-plugin-dts: ^4.5.4
 
-onlyBuiltDependencies:
-  - msw
-
 # can be removed when the following issue with tinypool is resolved:
 # https://github.com/vitest-dev/vitest/issues/8201
 overrides:
   "vitest>tinypool": 1.0.2
+nodeLinker: hoisted
+allowBuilds:
+  msw: false
+  '@sentry/cli': false
+  core-js: false
+  esbuild: false
