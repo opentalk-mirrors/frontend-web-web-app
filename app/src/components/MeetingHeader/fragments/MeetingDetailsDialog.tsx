@@ -49,7 +49,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
   const highSecurityEnabled = useAppSelector(selectE2EEncryption);
   // With the unified room link, guests join through the same link as invited participants.
   const meetingLink = roomId ? composeInviteUrl(baseUrl, roomId) : null;
-  const personalRoomUrl = alias ? new URL(`/room/${alias}`, baseUrl).toString() : undefined;
+  const personalRoomLink = alias ? new URL(`/room/${alias}`, baseUrl).toString() : undefined;
   const streamingLinksExist = meetingDetails !== undefined && meetingDetails.streamingLinks.length > 0;
 
   const getRoomOwnerNameString = () => `${roomOwner.firstname} ${roomOwner.lastname}`;
@@ -128,14 +128,14 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
             />
           )}
 
-          {personalRoomUrl && (
+          {personalRoomLink && (
             <CustomCopyTextField
               label={getLabelText(FieldKeys.PersonalRoomLink)}
-              value={personalRoomUrl}
+              value={personalRoomLink}
               ariaLabel={getAriaLabelText(FieldKeys.PersonalRoomLink)}
               notificationText={getNotificationText(FieldKeys.PersonalRoomLink)}
-              checked={copiedUrl === personalRoomUrl}
-              onClick={() => setCopiedUrl(personalRoomUrl)}
+              checked={copiedUrl === personalRoomLink}
+              onClick={() => setCopiedUrl(personalRoomLink)}
             />
           )}
 
@@ -167,6 +167,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
         roomPassword={roomPassword}
         meetingDetails={meetingDetails}
         meetingLink={meetingLink}
+        personalRoomLink={personalRoomLink}
         guestAccessEnabled={guestAccessEnabled}
       />
     </Dialog>
