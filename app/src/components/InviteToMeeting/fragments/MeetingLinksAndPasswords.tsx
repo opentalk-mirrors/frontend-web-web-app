@@ -56,7 +56,6 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
         checked={highlightedField === FieldKeys.RoomLink}
         value={roomURL}
         setHighlightedField={setHighlightedField}
-        tooltip={t('dashboard-invite-to-meeting-room-link-tooltip')}
         eventTitle={eventTitle}
       />
       {roomAlias && (

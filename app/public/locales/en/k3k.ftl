@@ -945,7 +945,6 @@ dashboard-invite-to-meeting-copy-personal-room-link-aria-label = Copy Personal R
 dashboard-invite-to-meeting-copy-personal-room-link-success = The link was copied to your clipboard
 dashboard-invite-to-meeting-copy-room-link-aria-label = Copy Room link for {$eventTitle}
 dashboard-invite-to-meeting-copy-room-link-success = The link was copied to your clipboard
-dashboard-invite-to-meeting-room-link-tooltip = Only for registered users
 dashboard-invite-to-meeting-sip-link-label = Phone Dial-in
 dashboard-invite-to-meeting-copy-sip-link-aria-label = Copy Phone Dial-in credentials for {$eventTitle}
 dashboard-invite-to-meeting-copy-sip-link-success = The Phone Dial-in was copied to your clipboard
