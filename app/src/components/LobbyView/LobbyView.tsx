@@ -313,6 +313,12 @@ const LobbyView = () => {
     return <OpentalkError title={t('error-access-forbidden')} />;
   }
 
+  // A guest trying to join a room with guest access disabled receives a 401 from the room event endpoint.
+  const isRoomAccessUnauthorized = roomDataError && 'status' in roomDataError && roomDataError.status === 401;
+  if (isRoomAccessUnauthorized) {
+    return <OpentalkError title={t('error-unauthorized')} />;
+  }
+
   if (showPasswordStep) {
     return (
       <>
