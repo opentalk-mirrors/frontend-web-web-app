@@ -17,7 +17,7 @@ export default defineConfig({
         return 'main.js';
       },
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: ['i18next'],
       output: {
         exports: 'named',

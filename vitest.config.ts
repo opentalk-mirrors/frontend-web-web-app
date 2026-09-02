@@ -33,7 +33,6 @@ export default defineConfig({
         '**/*.d.ts',
         '**/setupTests.{ts,js}',
         '**/.eslintrc.{ts,js,cjs}',
-        '**/rollup.config.js',
         '**/banner.js',
         '**/tsHelper.ts',
         '**/setupProxy.ts',
