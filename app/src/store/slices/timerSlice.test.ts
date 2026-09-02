@@ -2,12 +2,44 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
+import { intervalToDuration } from 'date-fns';
 
 import { notifications } from '../../commonComponents';
-import { TimerStyle, TimerStopKind } from '../../types';
+import {
+  JoinSuccessInternalState,
+  ParticipantId,
+  TimerKind,
+  TimerState,
+  TimerStyle,
+  TimerStopKind,
+  Timestamp,
+} from '../../types';
+import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
-import { timerStopped } from './timerSlice';
+import reducer, { timerStopped } from './timerSlice';
 import { handleNotificationOnTimerStoppedEffect } from './timerSlice';
+
+const buildTimer = (overrides: Partial<TimerState> = {}): TimerState => ({
+  startedAt: '2024-01-01T00:00:00Z' as Timestamp,
+  endsAt: '2024-01-01T00:05:00Z' as Timestamp,
+  kind: TimerKind.Countdown,
+  readyCheckEnabled: true,
+  readyStatus: false,
+  style: TimerStyle.Normal,
+  title: 'Focus time',
+  ...overrides,
+});
+
+const buildJoinSuccessPayload = (
+  overrides: { timer?: TimerState; participantId?: ParticipantId; participantsReady?: ParticipantId[] } = {}
+): JoinSuccessInternalState =>
+  ({
+    participantId: overrides.participantId ?? ('participant-1' as ParticipantId),
+    participantsReady: overrides.participantsReady ?? [],
+    timer: overrides.timer,
+  }) as unknown as JoinSuccessInternalState;
+
+const initialState = reducer(undefined, { type: '@@INIT' });
 
 vi.mock('../../commonComponents', () => ({
   notifications: {
@@ -29,6 +61,65 @@ const getMockListenerApi = (style: TimerStyle) =>
   }) as unknown as ListenerEffectAPI<RootState, AppDispatch>;
 
 describe('timer slice', () => {
+  describe('joinSuccess', () => {
+    it('sets the timer state to the values received in the join payload', () => {
+      const timer = buildTimer();
+
+      const state = reducer(
+        undefined,
+        joinSuccess(
+          buildJoinSuccessPayload({
+            timer,
+            participantId: 'participant-1' as ParticipantId,
+            participantsReady: ['participant-2' as ParticipantId],
+          })
+        )
+      );
+
+      expect(state).toEqual({
+        startedAt: timer.startedAt,
+        endsAt: timer.endsAt,
+        kind: timer.kind,
+        readyCheckEnabled: timer.readyCheckEnabled,
+        style: timer.style,
+        title: timer.title,
+        participantsReady: ['participant-2'],
+        totalDuration: intervalToDuration({ start: new Date(timer.startedAt), end: new Date(timer.endsAt) }),
+        timerStopKind: undefined,
+      });
+    });
+
+    it('marks the joining participant as ready when the join payload reports readyStatus', () => {
+      const timer = buildTimer({ readyStatus: true });
+
+      const state = reducer(
+        undefined,
+        joinSuccess(
+          buildJoinSuccessPayload({
+            timer,
+            participantId: 'participant-1' as ParticipantId,
+            participantsReady: ['participant-2' as ParticipantId],
+          })
+        )
+      );
+
+      expect(state.participantsReady).toEqual(['participant-2', 'participant-1']);
+    });
+
+    it('clears the timer state when the join payload has no timer', () => {
+      const populatedState = reducer(
+        undefined,
+        joinSuccess(
+          buildJoinSuccessPayload({ timer: buildTimer(), participantsReady: ['participant-2' as ParticipantId] })
+        )
+      );
+
+      const state = reducer(populatedState, joinSuccess(buildJoinSuccessPayload()));
+
+      expect(state).toEqual(initialState);
+    });
+  });
+
   describe('timer listeners', () => {
     describe('handleNotificationOnTimerStoppedEffect', () => {
       beforeEach(() => {
