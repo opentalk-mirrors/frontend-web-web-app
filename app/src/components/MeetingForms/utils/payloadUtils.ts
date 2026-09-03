@@ -28,7 +28,7 @@ export const createPayload = (
       existingEvent?.trainingParticipationReport
     ),
     guestAccess: values.guestAccess,
-    roomName: values.personalRoom && values.personalRoomName ? values.personalRoomName : undefined,
+    roomName: createRoomNamePayload(values.personalRoom, values.personalRoomName),
   };
 
   if (values.isTimeDependent) {
@@ -47,6 +47,14 @@ export const createPayload = (
   }
 
   return payload;
+};
+
+const createRoomNamePayload = (personalRoom?: boolean, personalRoomName?: string) => {
+  if (personalRoom && personalRoomName) {
+    return personalRoomName;
+  } else {
+    return null;
+  }
 };
 
 const createPasswordPayload = (password?: string) => {
