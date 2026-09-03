@@ -26,7 +26,7 @@ signaling-subscription-failed = Die Verbindung zu einen Teilnehmer ist leider fe
 media-subscription-failed = Keine Verbindung zum Teilnehmer
 
 error-system-currently-unavailable = Das System ist zur Zeit nicht erreichbar, bitte versuchen sie es später nochmal.
-error-unauthorized = Sie haben leider keinen Zugriff, bitte kontaktieren Sie den Moderator des Meetings.
+error-unauthorized = Möglicherweise müssen Sie sich anmelden, um diesem Meeting beizutreten.<br />Wenn Sie bereits angemeldet sind, kontaktieren Sie bitte die Moderation des Meetings.
 error-livekit-unavailable = Livekit ist nicht verfügbar, bitte kontaktieren Sie Ihren Administrator.
 
 login-form-title = Anmeldung
@@ -709,6 +709,7 @@ global-state-started = aktiv
 global-state-finished = beendet
 global-state-canceled = abgebrochen
 global-logout = Abmelden
+global-login = Anmelden
 global-accept = Annehmen
 global-cancel = Abbrechen
 global-decline = Ablehnen

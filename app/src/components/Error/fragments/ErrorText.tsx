@@ -9,7 +9,7 @@ const Container = styled(Stack)({
   textAlign: 'center',
 });
 interface ErrorTextProps {
-  title: string;
+  title: React.ReactNode;
   description?: string;
 }
 

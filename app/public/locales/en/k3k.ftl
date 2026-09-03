@@ -27,7 +27,7 @@ media-subscription-failed = No connection to the participant
 
 
 error-system-currently-unavailable = The system is currently unavailable, please try again later.
-error-unauthorized = Unfortunately you do not have access, please contact the meeting moderator.
+error-unauthorized = You may need to log in to join this meeting.<br />If already logged in, please contact the meeting moderator.
 error-livekit-unavailable = Livekit is not available, please contact your administrator.
 
 login-form-title = Login
@@ -711,6 +711,7 @@ global-state-started = active
 global-state-finished = finished
 global-state-canceled = canceled
 global-logout = Logout
+global-login = Login
 global-accept = Accept
 global-cancel = Cancel
 global-decline = Decline
