@@ -14,6 +14,8 @@ vi.mock('react-router-dom', () => ({
 }));
 
 const ROOM_ID = '30034152-6216-4d46-942d-465dc5918595';
+const ROOM_ALIAS = 'test-room.1';
+const SECURE_ROOM_ALIAS = 'test-room.1_djflksdj89fu3';
 const INVITE_CODE = '22adb8b2-d93a-403d-b6b1-b90eb5db4afe';
 const BREAKOUT_ROOM_ID = 'b1a2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d';
 
@@ -69,6 +71,30 @@ describe('JoinMeetingDialog', () => {
     });
   });
 
+  it('navigates to the room path for a room URL with a room alias', async () => {
+    renderWithProviders(<JoinMeetingDialog />, { provider: { mui: true } });
+
+    await openDialog();
+    pasteIntoInput(`https://testing.opentalk.eu/room/${ROOM_ALIAS}`);
+    await submitDialog();
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(`/room/${ROOM_ALIAS}`);
+    });
+  });
+
+  it('navigates to the room path for a room URL with a secure room alias', async () => {
+    renderWithProviders(<JoinMeetingDialog />, { provider: { mui: true } });
+
+    await openDialog();
+    pasteIntoInput(`https://testing.opentalk.eu/room/${SECURE_ROOM_ALIAS}`);
+    await submitDialog();
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(`/room/${SECURE_ROOM_ALIAS}`);
+    });
+  });
+
   it('redirects an old invite URL to the verify page', async () => {
     renderWithProviders(<JoinMeetingDialog />, { provider: { mui: true } });
 
@@ -121,7 +147,7 @@ describe('JoinMeetingDialog', () => {
 
   describe.each([
     ['a URL without a room or invite path', 'https://testing.opentalk.eu/not-a-room'],
-    ['a room URL with a non-UUID room id', 'https://testing.opentalk.eu/room/not-a-uuid'],
+    ['a room URL with an invalid alias', 'https://testing.opentalk.eu/room/Nope'],
     ['an invite URL with a non-UUID invite code', 'https://testing.opentalk.eu/invite/not-a-uuid'],
     ['a string that is not a URL', 'this is not a url'],
   ])('with %s', (_description, invalidValue) => {
