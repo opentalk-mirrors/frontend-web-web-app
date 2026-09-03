@@ -27,6 +27,7 @@ export interface AuthenticationProviderUrls {
 export class AuthAdapter {
   private _configuration: AuthAdapterConfiguration;
   private _oidcConfiguration?: AuthenticationProviderUrls;
+  private _signInInProgress = false;
   private static _instance: AuthAdapter;
 
   private constructor(configuration: AuthAdapterConfiguration) {
@@ -97,7 +98,20 @@ export class AuthAdapter {
    * Redirect user to sign in provider
    */
   public async startOidcSignIn() {
-    window.location.replace(await this.getLoginUrl());
+    // Guard against concurrent redirects (e.g. React StrictMode double-invocation): a second call
+    // would generate and store a new PKCE verifier/state, overwriting the ones tied to the URL we
+    // navigate to, which makes the callback state check fail and produces a login redirect loop.
+    if (this._signInInProgress) {
+      return;
+    }
+    this._signInInProgress = true;
+    try {
+      const loginUrl = await this.getLoginUrl();
+      window.location.replace(loginUrl);
+    } catch (error) {
+      this._signInInProgress = false;
+      throw error;
+    }
   }
 
   public getAccessToken = () => localStorage.getItem('access_token');

@@ -44,16 +44,24 @@ export const ProtectedRoute = ({ children, allowGuests = false }: ProtectedRoute
   const auth = useAuthContext();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isAuthPending = useAppSelector(selectAuthIsPending);
+  const shouldSignIn = !isAuthPending && !isAuthenticated && !allowGuests;
+
+  // Trigger sign-in from an effect rather than during render, so the redirect side effect is not
+  // invoked twice under React StrictMode (which would race two PKCE/state pairs and loop the login).
+  useEffect(() => {
+    if (shouldSignIn) {
+      auth?.signIn().catch((error) => {
+        log.error('failed to signIn:', error);
+        navigateTo('server-issue');
+      });
+    }
+  }, [shouldSignIn, auth]);
 
   if (isAuthPending) {
     return null;
   }
 
   if (!isAuthenticated && !allowGuests) {
-    auth?.signIn().catch((error) => {
-      log.error('failed to signIn:', error);
-      navigateTo('server-issue');
-    });
     return null;
   }
 
