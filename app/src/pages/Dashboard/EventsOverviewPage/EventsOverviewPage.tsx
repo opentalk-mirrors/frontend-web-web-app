@@ -10,15 +10,14 @@ import { useTranslation } from 'react-i18next';
 import { useGetEventsWithInstancesQuery } from '../../../api/rest';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 import { TimePerspectiveFilter } from '../../../utils/eventUtils';
-import EventsOverview from './fragments/EventsOverview';
 import EventsPageHeader from './fragments/EventsPageHeader';
-import TimeIndependentOverview from './fragments/TimeIndependentOverview';
+import PaginatedEventsOverview from './fragments/PaginatedEventsOverview';
 import { filterByTimePeriod, readStoredMeetingsFilter, writeStoredMeetingsFilter } from './fragments/utils';
 import { DashboardEventsFilters, FilterChangeCallbackType, MeetingsProp } from './types';
 
 const EMPTY_MEETING_PROP_ARRAY: Array<MeetingsProp> = [];
 const EVENTS_PER_REQUEST = 100;
-const MAX_INSTANCES_PER_RECURRING_EVENT = 100;
+const MAX_INSTANCES_PER_RECURRING_EVENT = 101;
 
 const EventsOverviewPage = () => {
   const [filter, setFilter] = useState<DashboardEventsFilters>(() => {
@@ -54,7 +53,7 @@ const EventsOverviewPage = () => {
     }
   }, [timePerspective]);
 
-  const { groups, isLoading, isFetching } = useGetEventsWithInstancesQuery(
+  const { groups, isLoading, isFetching, after } = useGetEventsWithInstancesQuery(
     {
       perPage: EVENTS_PER_REQUEST,
       instancesMax: MAX_INSTANCES_PER_RECURRING_EVENT,
@@ -69,6 +68,7 @@ const EventsOverviewPage = () => {
         if (!data) {
           return {
             groups: EMPTY_MEETING_PROP_ARRAY,
+            after: undefined,
             ...props,
           };
         }
@@ -92,12 +92,11 @@ const EventsOverviewPage = () => {
         if (timePerspective === TimePerspectiveFilter.TimeIndependent) {
           return {
             ...props,
+            after: data.after,
             groups: [
               {
                 title: t('dashboard-meeting-details-page-timeindependent'),
                 events: orderedEventsWithInstances,
-                before: data.before,
-                after: data.after,
               } satisfies MeetingsProp,
             ],
           };
@@ -117,6 +116,7 @@ const EventsOverviewPage = () => {
 
         return {
           ...props,
+          after: data.after,
           groups,
         };
       },
@@ -124,7 +124,13 @@ const EventsOverviewPage = () => {
   );
 
   const onFilterChange: FilterChangeCallbackType = useCallback((key, value) => {
-    setFilter((prevFilters) => ({ ...prevFilters, [key]: value ? value : !prevFilters[key] }));
+    setFilter((prevFilters) => ({
+      ...prevFilters,
+      [key]: value ? value : !prevFilters[key],
+      // Cursors are only valid for the query they were fetched with, so any filter change invalidates them.
+      cursors: [],
+      currentCursorIndex: -1,
+    }));
   }, []);
 
   useEffect(() => {
@@ -146,19 +152,17 @@ const EventsOverviewPage = () => {
   return (
     <>
       <EventsPageHeader entries={groups} filters={filter} onFilterChange={onFilterChange} title={pageHeading} />
-      {groups.length !== 0 &&
-        (timePerspective === TimePerspectiveFilter.TimeIndependent ? (
-          <TimeIndependentOverview
-            groups={groups}
-            isFetching={isFetching}
-            isLoading={isLoading}
-            onNextPage={onNextPage}
-            onPreviousPage={onPreviousPage}
-            currentCursorIndex={currentCursorIndex}
-          />
-        ) : (
-          <EventsOverview key={groups[0].title} entries={groups} isLoading={isLoading} isFetching={isFetching} />
-        ))}
+      {groups.length !== 0 && (
+        <PaginatedEventsOverview
+          groups={groups}
+          isFetching={isFetching}
+          isLoading={isLoading}
+          after={after}
+          onNextPage={onNextPage}
+          onPreviousPage={onPreviousPage}
+          currentCursorIndex={currentCursorIndex}
+        />
+      )}
     </>
   );
 };

@@ -30,6 +30,4 @@ export type FilterChangeCallbackType = <K extends keyof DashboardEventsFilters>(
 export interface MeetingsProp {
   title: string;
   events: Array<Event | EventInstance>;
-  after?: string;
-  before?: string;
 }
