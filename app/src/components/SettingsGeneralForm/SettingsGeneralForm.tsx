@@ -15,8 +15,8 @@ import { SaveButton } from './fragments/SaveButton';
 import { ThemeSelect } from './fragments/ThemeSelect';
 
 const DEFAULT_DASHBOARD_LANGUAGE: DashboardLanguage = 'de-DE';
-const DEFAULT_DASHBOARD_THEME: ThemeMode = ThemeMode.Light;
-const DEFAULT_CONFERENCE_THEME: ThemeMode = ThemeMode.Dark;
+const DEFAULT_DASHBOARD_THEME: ThemeMode = ThemeMode.System;
+const DEFAULT_CONFERENCE_THEME: ThemeMode = ThemeMode.System;
 
 type SettingsGeneralFormProps = {
   dashboardTheme?: ThemeMode;
