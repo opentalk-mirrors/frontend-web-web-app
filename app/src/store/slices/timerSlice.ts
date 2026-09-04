@@ -100,6 +100,8 @@ export const timerSlice = createSlice({
           });
         }
         state.timerStopKind = undefined;
+      } else {
+        return initialState;
       }
     });
     builder.addCase(hangUp.fulfilled, () => initialState);
