@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import type { RootState } from '../../store';
 import * as breakoutStore from '../../store/slices/breakoutSlice';
 import { patch } from '../../store/slices/participantsSlice';
 import { BreakoutRoomId, ParticipantId, RoomKind, Timestamp } from '../../types';
@@ -28,6 +29,8 @@ const createStartedMessage = (): BreakoutStartedMessage => ({
   expiresAt: '2024-01-01T10:00:00Z' as Timestamp,
 });
 
+const createState = (uuid?: ParticipantId): RootState => ({ user: { uuid: uuid ?? null } }) as unknown as RootState;
+
 describe('handleBreakoutMessage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,7 +41,7 @@ describe('handleBreakoutMessage', () => {
     const data = createStartedMessage();
     const timestamp = '2024-01-01T10:00:00Z' as Timestamp;
 
-    handleBreakoutMessage(dispatch, data, timestamp);
+    handleBreakoutMessage(dispatch, data, timestamp, createState());
 
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(breakoutStore.started(data));
   });
@@ -59,7 +62,7 @@ describe('handleBreakoutMessage', () => {
       moduleData: undefined,
     };
 
-    handleBreakoutMessage(dispatch, data, timestamp);
+    handleBreakoutMessage(dispatch, data, timestamp, createState());
 
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(
       patch({
@@ -86,9 +89,11 @@ describe('handleBreakoutMessage', () => {
       peerData: undefined,
     };
 
-    handleBreakoutMessage(dispatch, data, timestamp);
+    handleBreakoutMessage(dispatch, data, timestamp, createState('own-participant' as ParticipantId));
 
-    expect(dispatch).toHaveBeenCalledExactlyOnceWith(breakoutStore.switchedRoom(data));
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(
+      breakoutStore.switchedRoom({ ...data, ownParticipantId: 'own-participant' as ParticipantId })
+    );
   });
 
   it('sets loading when closing', () => {
@@ -99,7 +104,7 @@ describe('handleBreakoutMessage', () => {
       issuedBy: 'participant-9' as ParticipantId,
     };
 
-    handleBreakoutMessage(dispatch, data, timestamp);
+    handleBreakoutMessage(dispatch, data, timestamp, createState());
 
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(breakoutStore.closing(data));
   });
@@ -111,7 +116,7 @@ describe('handleBreakoutMessage', () => {
       message: 'closed',
     };
 
-    handleBreakoutMessage(dispatch, data, timestamp);
+    handleBreakoutMessage(dispatch, data, timestamp, createState());
 
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(breakoutStore.closed(data));
   });
@@ -121,7 +126,7 @@ describe('handleBreakoutMessage', () => {
     const timestamp = '2024-01-01T10:00:00Z' as Timestamp;
     const data: BreakoutMessage = { message: 'error', error: BreakoutError.InsufficientPermission };
 
-    handleBreakoutMessage(dispatch, data, timestamp);
+    handleBreakoutMessage(dispatch, data, timestamp, createState());
 
     expect(showErrorNotification).toHaveBeenCalledExactlyOnceWith(BreakoutError.InsufficientPermission);
   });
@@ -131,6 +136,6 @@ describe('handleBreakoutMessage', () => {
     const timestamp = '2024-01-01T10:00:00Z' as Timestamp;
     const data = { message: 'unknown' } as unknown as BreakoutMessage;
 
-    expect(() => handleBreakoutMessage(dispatch, data, timestamp)).toThrow(/Unknown message type/);
+    expect(() => handleBreakoutMessage(dispatch, data, timestamp, createState())).toThrow(/Unknown message type/);
   });
 });

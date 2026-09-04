@@ -53,7 +53,7 @@ const onMessage = (dispatch: AppDispatch, getState: () => RootState) => async (m
       log.error('E2EE module is not implemented yet');
       break;
     case 'breakout':
-      handleBreakoutMessage(dispatch, message.payload, message.timestamp);
+      handleBreakoutMessage(dispatch, message.payload, message.timestamp, getState());
       break;
     case 'automod':
       handleAutomodMessage(dispatch, message.payload, getState());

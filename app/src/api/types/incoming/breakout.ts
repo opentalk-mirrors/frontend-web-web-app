@@ -9,6 +9,7 @@ import {
   ModuleData,
   NamespacedIncoming,
   ParticipantId,
+  PeerModuleData,
   RoomKindBreakout,
   RoomKindMain,
   Timestamp,
@@ -36,7 +37,8 @@ export interface SwitchedRoom {
   ownData?: ModuleData;
   oldRoom: RoomKindMain | RoomKindBreakout;
   newRoom: RoomKindMain | RoomKindBreakout;
-  peerData?: ModuleData;
+  // Per-participant module data of everyone in the destination room, keyed by participant id.
+  peerData?: Record<ParticipantId, Partial<PeerModuleData>>;
 }
 
 export interface CloseNotice {

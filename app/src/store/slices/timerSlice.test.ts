@@ -4,7 +4,6 @@
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 import { intervalToDuration } from 'date-fns';
 
-import { SwitchedRoom } from '../../api/types/incoming/breakout';
 import { notifications } from '../../commonComponents';
 import {
   JoinSuccessInternalState,
@@ -17,11 +16,9 @@ import {
 } from '../../types';
 import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
-import { switchedRoom } from './breakoutSlice';
+import { switchedRoom, SwitchedRoomPayload } from './breakoutSlice';
 import reducer, { timerStopped } from './timerSlice';
 import { handleNotificationOnTimerStoppedEffect } from './timerSlice';
-
-type SwitchedRoomPayload = Omit<SwitchedRoom, 'message'>;
 
 const buildTimer = (overrides: Partial<TimerState> = {}): TimerState => ({
   startedAt: '2024-01-01T00:00:00Z' as Timestamp,
@@ -155,10 +152,45 @@ describe('timer slice', () => {
         readyCheckEnabled: timer.readyCheckEnabled,
         style: timer.style,
         title: timer.title,
-        participantsReady: [],
+        participantsReady: ['participant-1'],
         totalDuration: intervalToDuration({ start: new Date(timer.startedAt), end: new Date(timer.endsAt) }),
         timerStopKind: undefined,
       });
+    });
+
+    it('marks the local user as ready when the destination timer reports their readyStatus', () => {
+      const timer = buildTimer({ readyStatus: true });
+
+      const state = reducer(
+        initialState,
+        switchedRoom({
+          ownParticipantId: 'own-participant',
+          ownData: { timer },
+          peerData: {
+            'participant-1': { timer: { readyStatus: true } },
+            'participant-2': { timer: { readyStatus: false } },
+          },
+        } as unknown as SwitchedRoomPayload)
+      );
+
+      expect(state.participantsReady).toEqual(['participant-1', 'own-participant']);
+    });
+
+    it('does not mark the local user as ready when the destination timer reports them not ready', () => {
+      const timer = buildTimer({ readyStatus: false });
+
+      const state = reducer(
+        initialState,
+        switchedRoom({
+          ownParticipantId: 'own-participant',
+          ownData: { timer },
+          peerData: {
+            'participant-1': { timer: { readyStatus: true } },
+          },
+        } as unknown as SwitchedRoomPayload)
+      );
+
+      expect(state.participantsReady).toEqual(['participant-1']);
     });
   });
 

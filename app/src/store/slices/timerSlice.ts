@@ -112,7 +112,15 @@ export const timerSlice = createSlice({
         return initialState;
       }
       applyTimerState(state, timer);
-      state.participantsReady = [];
+      const peerData = payload.peerData ?? {};
+      const participantsReady = (Object.keys(peerData) as ParticipantId[]).filter(
+        (participantId) => peerData[participantId]?.timer?.readyStatus === true
+      );
+      // `peerData` only covers peers, so seed the local user from `ownData` to mirror `joinSuccess`.
+      if (timer.readyStatus === true && payload.ownParticipantId) {
+        participantsReady.push(payload.ownParticipantId);
+      }
+      state.participantsReady = participantsReady;
     });
     builder.addCase(hangUp.fulfilled, () => initialState);
   },
