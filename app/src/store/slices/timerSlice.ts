@@ -8,10 +8,11 @@ import i18next from 'i18next';
 
 import { ReadyToContinue } from '../../api/types/incoming/timer';
 import { notifications } from '../../commonComponents';
-import { ParticipantId, TimerKind, TimerStopKind, TimerStyle, Timestamp } from '../../types';
+import { ParticipantId, TimerKind, TimerState, TimerStopKind, TimerStyle, Timestamp } from '../../types';
 import { hangUp, joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
+import { switchedRoom } from './breakoutSlice';
 
 export type State = {
   startedAt?: Timestamp;
@@ -35,6 +36,21 @@ const initialState: State = {
   style: undefined,
   totalDuration: undefined,
   timerStopKind: undefined,
+};
+
+// Maps a room's timer onto the slice. Callers set `participantsReady`
+// afterwards, as it is not part of the per-room timer payload.
+const applyTimerState = (state: State, timer: TimerState) => {
+  state.startedAt = timer.startedAt;
+  state.endsAt = timer.endsAt;
+  state.kind = timer.kind;
+  state.readyCheckEnabled = timer.readyCheckEnabled;
+  state.style = timer.style;
+  state.title = timer.title;
+  state.timerStopKind = undefined;
+  state.totalDuration = timer.endsAt
+    ? intervalToDuration({ start: new Date(timer.startedAt), end: new Date(timer.endsAt) })
+    : undefined;
 };
 
 export const timerSlice = createSlice({
@@ -82,27 +98,21 @@ export const timerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload: { participantId, participantsReady, timer } }) => {
-      if (timer) {
-        state.startedAt = timer.startedAt;
-        state.endsAt = timer.endsAt;
-        state.kind = timer.kind;
-        state.readyCheckEnabled = timer.readyCheckEnabled;
-        state.style = timer.style;
-        state.participantsReady = participantsReady;
-        state.title = timer.title;
-        if (timer.readyStatus === true) {
-          state.participantsReady.push(participantId);
-        }
-        if (timer.endsAt) {
-          state.totalDuration = intervalToDuration({
-            start: new Date(timer.startedAt),
-            end: new Date(timer.endsAt),
-          });
-        }
-        state.timerStopKind = undefined;
-      } else {
+      if (!timer) {
         return initialState;
       }
+      applyTimerState(state, timer);
+      state.participantsReady = timer.readyStatus === true ? [...participantsReady, participantId] : participantsReady;
+    });
+    // Switching rooms does not re-emit `joinSuccess`, so apply the destination
+    // room's own timer state (or clear a stale one) on the breakout switch.
+    builder.addCase(switchedRoom, (state, { payload }) => {
+      const timer = payload.ownData?.timer;
+      if (!timer) {
+        return initialState;
+      }
+      applyTimerState(state, timer);
+      state.participantsReady = [];
     });
     builder.addCase(hangUp.fulfilled, () => initialState);
   },

@@ -4,6 +4,7 @@
 import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 import { intervalToDuration } from 'date-fns';
 
+import { SwitchedRoom } from '../../api/types/incoming/breakout';
 import { notifications } from '../../commonComponents';
 import {
   JoinSuccessInternalState,
@@ -16,8 +17,11 @@ import {
 } from '../../types';
 import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
+import { switchedRoom } from './breakoutSlice';
 import reducer, { timerStopped } from './timerSlice';
 import { handleNotificationOnTimerStoppedEffect } from './timerSlice';
+
+type SwitchedRoomPayload = Omit<SwitchedRoom, 'message'>;
 
 const buildTimer = (overrides: Partial<TimerState> = {}): TimerState => ({
   startedAt: '2024-01-01T00:00:00Z' as Timestamp,
@@ -117,6 +121,44 @@ describe('timer slice', () => {
       const state = reducer(populatedState, joinSuccess(buildJoinSuccessPayload()));
 
       expect(state).toEqual(initialState);
+    });
+  });
+
+  describe('switchedRoom', () => {
+    it('clears the timer when switching to a room without a timer', () => {
+      const populatedState = reducer(undefined, joinSuccess(buildJoinSuccessPayload({ timer: buildTimer() })));
+
+      const state = reducer(populatedState, switchedRoom({ ownData: undefined } as unknown as SwitchedRoomPayload));
+
+      expect(state).toEqual(initialState);
+    });
+
+    it('applies the destination room timer when switching to a room that has one', () => {
+      const timer = buildTimer({ title: 'Breakout timer' });
+
+      const state = reducer(
+        initialState,
+        switchedRoom({
+          ownData: { timer },
+          peerData: {
+            'participant-1': { timer: { readyStatus: true } },
+            'participant-2': { timer: { readyStatus: false } },
+            'participant-3': {},
+          },
+        } as unknown as SwitchedRoomPayload)
+      );
+
+      expect(state).toEqual({
+        startedAt: timer.startedAt,
+        endsAt: timer.endsAt,
+        kind: timer.kind,
+        readyCheckEnabled: timer.readyCheckEnabled,
+        style: timer.style,
+        title: timer.title,
+        participantsReady: [],
+        totalDuration: intervalToDuration({ start: new Date(timer.startedAt), end: new Date(timer.endsAt) }),
+        timerStopKind: undefined,
+      });
     });
   });
 
