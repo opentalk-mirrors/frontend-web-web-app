@@ -247,10 +247,14 @@ export const selectNextIndex = createSelector(
   }
 );
 
+/**
+ * Participants of the active room/breakout room for the timer module's ready-check list,
+ * each annotated with whether they have marked themselves ready to continue.
+ */
 export const selectParticipantsReadyList = createSelector(
-  [selectAllOnlineParticipantsInConference, selectParticipantsReady],
-  (selectCombinedParticipantsAndUser, participantsReady) =>
-    selectCombinedParticipantsAndUser.map((participant) => ({
+  [selectAllOnlineParticipants, selectParticipantsReady],
+  (participants, participantsReady) =>
+    participants.map((participant) => ({
       isReady: participantsReady.includes(participant.id),
       ...participant,
     }))
