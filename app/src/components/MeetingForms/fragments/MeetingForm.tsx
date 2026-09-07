@@ -9,7 +9,6 @@ import {
   RecurrencePattern,
   SingleEvent,
   RecordingFeatures,
-  GuestAccess,
   CoreFeatures,
 } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
@@ -83,7 +82,6 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
 
   const features = useAppSelector(selectConfigFeatures);
   const [memoizedRecurrencePattern, setMemoizedRecurrencePattern] = useState<RecurrencePattern | false>(false);
-  const [previousGuestAccess, setPreviousGuestAccess] = useState<GuestAccess>();
   const [pendingCheckName, setPendingCheckName] = useState<string>();
 
   const formik = useFormik<MeetingFormValues>({
@@ -110,11 +108,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
   const handleE2EEChange = (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
     setFieldValue('e2eEncryption', checked);
     if (checked) {
-      setPreviousGuestAccess(formik.values.guestAccess);
       setFieldValue('streaming', { enabled: false });
-      setFieldValue('guestAccess', GuestAccess.Disabled);
-    } else if (previousGuestAccess !== undefined) {
-      setFieldValue('guestAccess', previousGuestAccess);
     }
   };
 
@@ -342,10 +336,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
             />
           )}
 
-          <GuestAccessSelect
-            formik={formik}
-            guestAccessAllowed={!formik.values.e2eEncryption && isGuestAccessAllowedByTariff}
-          />
+          <GuestAccessSelect formik={formik} guestAccessAllowed={isGuestAccessAllowedByTariff} />
 
           <Divider textAlign="left">{t('dashboard-meeting-extras')}</Divider>
 
