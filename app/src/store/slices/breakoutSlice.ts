@@ -4,8 +4,11 @@
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
 import { CloseNotice, Closing, Started, SwitchedRoom } from '../../api/types/incoming/breakout';
-import { BreakoutRoomId, Timestamp } from '../../types';
+import { BreakoutRoomId, ParticipantId, Timestamp } from '../../types';
 import { joinSuccess, startRoom } from '../commonActions';
+
+// `ownParticipantId` is added client-side; the incoming `switched_room` message omits it.
+export type SwitchedRoomPayload = Omit<SwitchedRoom, 'message'> & { ownParticipantId?: ParticipantId };
 
 export interface Room {
   id: BreakoutRoomId;
@@ -51,7 +54,7 @@ export const breakoutSlice = createSlice({
       breakoutRooms.setAll(state.breakoutRooms, rooms);
       state.assignment = payload.assignment;
     },
-    switchedRoom: (state, { payload, type }: PayloadAction<Omit<SwitchedRoom, 'message'>>) => {
+    switchedRoom: (state, { payload, type }: PayloadAction<SwitchedRoomPayload>) => {
       state.action = type;
       state.loading = false;
       state.currentBreakoutRoomId = payload.newRoom.id;

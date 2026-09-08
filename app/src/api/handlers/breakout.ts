@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import log from '../../logger';
-import type { AppDispatch } from '../../store';
+import type { AppDispatch, RootState } from '../../store';
 import * as breakoutStore from '../../store/slices/breakoutSlice';
 import { patch } from '../../store/slices/participantsSlice';
 import { Timestamp } from '../../types';
@@ -12,7 +12,12 @@ import { showErrorNotification } from './helpers';
 /**
  * Handles messages in the breakout namespace.
  */
-export const handleBreakoutMessage = (dispatch: AppDispatch, data: breakout.Message, timestamp: Timestamp) => {
+export const handleBreakoutMessage = (
+  dispatch: AppDispatch,
+  data: breakout.Message,
+  timestamp: Timestamp,
+  state: RootState
+) => {
   switch (data.message) {
     case 'started':
       dispatch(breakoutStore.started(data));
@@ -38,7 +43,7 @@ export const handleBreakoutMessage = (dispatch: AppDispatch, data: breakout.Mess
       );
       break;
     case 'switched_room':
-      dispatch(breakoutStore.switchedRoom(data));
+      dispatch(breakoutStore.switchedRoom({ ...data, ownParticipantId: state.user.uuid ?? undefined }));
       break;
     case 'error':
       showErrorNotification(data.error);

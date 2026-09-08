@@ -16,6 +16,7 @@ import {
 } from '../../types';
 import { joinSuccess } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
+import { switchedRoom, SwitchedRoomPayload } from './breakoutSlice';
 import reducer, { timerStopped } from './timerSlice';
 import { handleNotificationOnTimerStoppedEffect } from './timerSlice';
 
@@ -117,6 +118,79 @@ describe('timer slice', () => {
       const state = reducer(populatedState, joinSuccess(buildJoinSuccessPayload()));
 
       expect(state).toEqual(initialState);
+    });
+  });
+
+  describe('switchedRoom', () => {
+    it('clears the timer when switching to a room without a timer', () => {
+      const populatedState = reducer(undefined, joinSuccess(buildJoinSuccessPayload({ timer: buildTimer() })));
+
+      const state = reducer(populatedState, switchedRoom({ ownData: undefined } as unknown as SwitchedRoomPayload));
+
+      expect(state).toEqual(initialState);
+    });
+
+    it('applies the destination room timer when switching to a room that has one', () => {
+      const timer = buildTimer({ title: 'Breakout timer' });
+
+      const state = reducer(
+        initialState,
+        switchedRoom({
+          ownData: { timer },
+          peerData: {
+            'participant-1': { timer: { readyStatus: true } },
+            'participant-2': { timer: { readyStatus: false } },
+            'participant-3': {},
+          },
+        } as unknown as SwitchedRoomPayload)
+      );
+
+      expect(state).toEqual({
+        startedAt: timer.startedAt,
+        endsAt: timer.endsAt,
+        kind: timer.kind,
+        readyCheckEnabled: timer.readyCheckEnabled,
+        style: timer.style,
+        title: timer.title,
+        participantsReady: ['participant-1'],
+        totalDuration: intervalToDuration({ start: new Date(timer.startedAt), end: new Date(timer.endsAt) }),
+        timerStopKind: undefined,
+      });
+    });
+
+    it('marks the local user as ready when the destination timer reports their readyStatus', () => {
+      const timer = buildTimer({ readyStatus: true });
+
+      const state = reducer(
+        initialState,
+        switchedRoom({
+          ownParticipantId: 'own-participant',
+          ownData: { timer },
+          peerData: {
+            'participant-1': { timer: { readyStatus: true } },
+            'participant-2': { timer: { readyStatus: false } },
+          },
+        } as unknown as SwitchedRoomPayload)
+      );
+
+      expect(state.participantsReady).toEqual(['participant-1', 'own-participant']);
+    });
+
+    it('does not mark the local user as ready when the destination timer reports them not ready', () => {
+      const timer = buildTimer({ readyStatus: false });
+
+      const state = reducer(
+        initialState,
+        switchedRoom({
+          ownParticipantId: 'own-participant',
+          ownData: { timer },
+          peerData: {
+            'participant-1': { timer: { readyStatus: true } },
+          },
+        } as unknown as SwitchedRoomPayload)
+      );
+
+      expect(state.participantsReady).toEqual(['participant-1']);
     });
   });
 
