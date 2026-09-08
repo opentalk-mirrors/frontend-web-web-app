@@ -108,7 +108,7 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
 
     if (value) {
       // Unless the user specifically typed/pasted a link from the old format (/invite/{invite_code})
-      // => we assume the valid uuid code is a room id
+      // => we assume the uri part is a room id if it is a valid uuid or an alias
       // We still allow modifying the code manually, we just keep the state for it (if it is an invite code or roomId)
       if (isValidRoomIdentifier(value)) {
         formik.setFieldValue('roomId', value);

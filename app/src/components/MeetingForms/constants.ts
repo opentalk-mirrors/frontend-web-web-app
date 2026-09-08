@@ -10,4 +10,5 @@ export const MAX_CHARACTERS_ALIAS = 40;
 export const MIN_CHARACTERS_ALIAS = 3;
 export const VALID_ALIAS_INPUT_PATTERN = /^[0-9a-z.-]*$/;
 export const VALID_ALIAS_PATTERN = /^[0-9a-z.-]*(?:_[0-9a-z]+)?$/;
+export const ALIAS_REQUIRES_ALPHANUMERIC_PATTERN = /[0-9a-z]/;
 export const ALIAS_CHECK_DEBOUNCE_MS = 333;
