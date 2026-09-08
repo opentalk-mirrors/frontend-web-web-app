@@ -58,10 +58,16 @@ type ExcalidrawOnPointerUpdateType = ExcalidrawProps['onPointerUpdate'];
 type ExcalidrawOnPointerUpdatePayload =
   NonNullable<ExcalidrawOnPointerUpdateType> extends (payload: infer P) => void ? P : never;
 
-const CURSOR_SYNC_TIMEOUT = 33;
+// roomserver relays pointer broadcasts immediately and unconditionally, but every message on a
+// participant's connection (pointer updates included) draws from one shared per-connection rate
+// limit budget of ~10 msgs/sec sustained (burst 30, see opentalk-roomserver-types::rate_limit).
+// Keep drawing responsive, since that traffic is naturally bounded by hand movement, but throttle
+// idle hover updates much harder so they don't eat the whole budget and starve other messages.
+const CURSOR_SYNC_TIMEOUT_DRAWING_MS = 150;
+const CURSOR_SYNC_TIMEOUT_IDLE_MS = 10000;
 const PDF_PADDING = 64;
-const DELETED_ELEMENT_TIMEOUT = 24 * 60 * 60 * 1000; // 1 day
-const SYNC_SCENE_ELEMENTS_INTERVAL_MS = 50;
+const DELETED_ELEMENT_TIMEOUT_MS = 24 * 60 * 60 * 1000; // 1 day
+const SYNC_SCENE_ELEMENTS_INTERVAL_MS = 150;
 const SYNC_FULL_SCENE_INTERVAL_MS = 10_000;
 
 const WhiteboardWrapper = styled('div')(({ theme }) => ({
@@ -91,7 +97,7 @@ const WhiteboardWrapper = styled('div')(({ theme }) => ({
 
 function isSyncableElement(element: OrderedExcalidrawElement) {
   if (element.isDeleted) {
-    return element.updated > Date.now() - DELETED_ELEMENT_TIMEOUT;
+    return element.updated > Date.now() - DELETED_ELEMENT_TIMEOUT_MS;
   }
   return true;
 }
@@ -136,7 +142,8 @@ const WhiteboardView = () => {
     [editRestrictionsEnabled, isRestrictionsDialogOpen, unrestrictedParticipants]
   );
 
-  const lastThrottledPointerUpdate = useRef<ReturnType<typeof throttle> | null>(null);
+  const throttledOnPointerUpdateDrawingRef = useRef<ReturnType<typeof throttle> | null>(null);
+  const throttledOnPointerUpdateIdleRef = useRef<ReturnType<typeof throttle> | null>(null);
   const throttledRelayVisibleSceneBounds = useRef<ReturnType<typeof throttle> | null>(null);
   const lastKnownElementsRef = useRef<readonly OrderedExcalidrawElement[]>([]);
 
@@ -224,8 +231,10 @@ const WhiteboardView = () => {
 
   useEffect(() => {
     return () => {
-      lastThrottledPointerUpdate.current?.cancel();
-      lastThrottledPointerUpdate.current = null;
+      throttledOnPointerUpdateDrawingRef.current?.cancel();
+      throttledOnPointerUpdateDrawingRef.current = null;
+      throttledOnPointerUpdateIdleRef.current?.cancel();
+      throttledOnPointerUpdateIdleRef.current = null;
       throttledRelayVisibleSceneBounds.current?.cancel();
       throttledRelayVisibleSceneBounds.current = null;
 
@@ -248,26 +257,41 @@ const WhiteboardView = () => {
     };
   }, [dispatch]);
 
-  const throttledOnPointerUpdate = useMemo(() => {
-    return throttle(
-      (
-        pointer: ExcalidrawOnPointerUpdatePayload['pointer'],
-        button: ExcalidrawOnPointerUpdatePayload['button'],
-        selectedElementIds: AppState['selectedElementIds']
-      ) => {
-        dispatch(
-          broadcastVolatile.action({
-            data: {
-              pointer,
-              button,
-              selectedElementIds,
-            },
-          })
-        );
-      },
-      CURSOR_SYNC_TIMEOUT
-    );
-  }, [dispatch]);
+  const sendPointerUpdate = useCallback(
+    (
+      pointer: ExcalidrawOnPointerUpdatePayload['pointer'],
+      button: ExcalidrawOnPointerUpdatePayload['button'],
+      selectedElementIds: AppState['selectedElementIds']
+    ) => {
+      dispatch(
+        broadcastVolatile.action({
+          data: {
+            pointer,
+            button,
+            selectedElementIds,
+          },
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  const throttledOnPointerUpdateDrawing = useMemo(
+    () => throttle(sendPointerUpdate, CURSOR_SYNC_TIMEOUT_DRAWING_MS),
+    [sendPointerUpdate]
+  );
+
+  const throttledOnPointerUpdateIdle = useMemo(
+    () => throttle(sendPointerUpdate, CURSOR_SYNC_TIMEOUT_IDLE_MS),
+    [sendPointerUpdate]
+  );
+
+  useEffect(() => {
+    throttledOnPointerUpdateDrawingRef.current = throttledOnPointerUpdateDrawing;
+    throttledOnPointerUpdateIdleRef.current = throttledOnPointerUpdateIdle;
+  }, [throttledOnPointerUpdateDrawing, throttledOnPointerUpdateIdle]);
+
+  const lastPointerButtonRef = useRef<string | null>(null);
 
   const onPointerUpdate: ExcalidrawProps['onPointerUpdate'] = useCallback(
     (payload) => {
@@ -277,10 +301,20 @@ const WhiteboardView = () => {
       }
       const { pointer, button } = payload;
       const selectedElementIds = excalidrawAPI.getAppState().selectedElementIds;
-      lastThrottledPointerUpdate.current = throttledOnPointerUpdate;
-      throttledOnPointerUpdate(pointer, button, selectedElementIds);
+      // While actively drawing (button down), sync at a tight interval for responsiveness.
+      // While just hovering (button up), sync far less often since idle movement can go on
+      // indefinitely and would otherwise eat into the shared per-connection rate limit budget.
+      const throttledUpdate = button === 'down' ? throttledOnPointerUpdateDrawing : throttledOnPointerUpdateIdle;
+      const lastPointerButton = lastPointerButtonRef.current;
+      if (lastPointerButton !== null && lastPointerButton !== button) {
+        const previousThrottledUpdate =
+          lastPointerButton === 'down' ? throttledOnPointerUpdateDrawing : throttledOnPointerUpdateIdle;
+        previousThrottledUpdate.cancel();
+      }
+      lastPointerButtonRef.current = button;
+      throttledUpdate(pointer, button, selectedElementIds);
     },
-    [throttledOnPointerUpdate]
+    [throttledOnPointerUpdateDrawing, throttledOnPointerUpdateIdle]
   );
 
   const randomInteger = () => Math.floor(Math.random() * 2 ** 31);
