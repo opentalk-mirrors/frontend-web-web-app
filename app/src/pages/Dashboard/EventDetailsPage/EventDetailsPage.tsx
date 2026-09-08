@@ -97,7 +97,7 @@ const EventDetailsPage = () => {
   }
 
   if (isError) {
-    notifications.error(t('error-unauthorized'));
+    notifications.error(t('error-loading-event'));
     navigate('/dashboard');
     return null;
   }
