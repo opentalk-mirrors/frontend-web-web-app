@@ -12,7 +12,8 @@ import {
   MAX_CHARACTERS_PASSWORD,
   MAX_CHARACTERS_ALIAS,
   MIN_CHARACTERS_ALIAS,
-  VALID_ALIAS_PATTERN,
+  VALID_ALIAS_INPUT_PATTERN,
+  ALIAS_REQUIRES_ALPHANUMERIC_PATTERN,
 } from '../constants';
 import { MeetingFormValues, Streaming } from './DashboardDateTimePicker';
 
@@ -189,7 +190,12 @@ export const meetingFormValidationSchema: yup.ObjectSchema<MeetingFormValues> = 
   personalRoomName: yup.string().when('personalRoom', {
     is: true,
     then: (schema) =>
-      schema.required().min(MIN_CHARACTERS_ALIAS).max(MAX_CHARACTERS_ALIAS).matches(VALID_ALIAS_PATTERN),
+      schema
+        .required()
+        .min(MIN_CHARACTERS_ALIAS)
+        .max(MAX_CHARACTERS_ALIAS)
+        .matches(VALID_ALIAS_INPUT_PATTERN)
+        .matches(ALIAS_REQUIRES_ALPHANUMERIC_PATTERN, () => t('dashboard-meeting-personal-room-name-no-alphanumeric')),
     otherwise: (schema) => schema.optional(),
   }),
 });

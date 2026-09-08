@@ -26,12 +26,20 @@ import { useIsDesktop } from '../../hooks/useMediaQuery';
 import { composeRoomPath } from '../../utils/apiUtils';
 import { formikProps } from '../../utils/formikUtils';
 import yup from '../../utils/yupUtils';
+import { MAX_CHARACTERS_ALIAS, MIN_CHARACTERS_ALIAS, VALID_ALIAS_PATTERN } from '../MeetingForms/constants';
 
 const CloseIconButton = styled(IconButton)({
   position: 'absolute',
   top: 5,
   right: 5,
 });
+
+const isValidRoomIdentifier = (value: string) => {
+  return (
+    validateUUID(value) ||
+    (VALID_ALIAS_PATTERN.test(value) && value.length >= MIN_CHARACTERS_ALIAS && value.length <= MAX_CHARACTERS_ALIAS)
+  );
+};
 
 interface Invite {
   inviteCode: InviteCode;
@@ -60,7 +68,7 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
       .trim()
       .required(t('field-error-required', { fieldName: t('dashboard-join-meeting-dialog-label') }))
       .test('is valid', t('dashboard-join-meeting-dialog-invalid-id'), function (value) {
-        if (value && validateUUID(value)) {
+        if (value && isValidRoomIdentifier(value)) {
           return true;
         }
         return false;
@@ -100,12 +108,14 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
 
     if (value) {
       // Unless the user specifically typed/pasted a link from the old format (/invite/{invite_code})
-      // => we assume the valid uuid code is a room id
+      // => we assume the uri part is a room id if it is a valid uuid or an alias
       // We still allow modifying the code manually, we just keep the state for it (if it is an invite code or roomId)
-      if (validateUUID(value)) {
+      if (isValidRoomIdentifier(value)) {
         formik.setFieldValue('roomId', value);
-        if (invite?.isInviteLink) {
+        if (invite?.isInviteLink && validateUUID(value)) {
           setInvite((state) => ({ ...state, inviteCode: value as InviteCode }));
+        } else {
+          setInvite(undefined);
         }
         return;
       }
@@ -120,7 +130,7 @@ const JoinMeetingDialog = ({ openButtonProps, ...props }: JoinMeetingDialogProps
           // ignoring any trailing breakout-room-id segment kept for backwards compatibility.
           const roomIndex = segments.indexOf('room');
           const roomCode = roomIndex !== -1 ? segments[roomIndex + 1] : undefined;
-          if (roomCode && validateUUID(roomCode)) {
+          if (roomCode && isValidRoomIdentifier(roomCode)) {
             formik.setFieldValue('roomId', roomCode);
             setInvite(undefined);
             return;

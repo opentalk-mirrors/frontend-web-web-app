@@ -1004,6 +1004,7 @@ dashboard-meeting-personal-room-name-available = Verfügbar
 dashboard-meeting-personal-room-name-taken = Dieser Raumname ist bereits vergeben. Bitte einen anderen wählen.
 dashboard-meeting-personal-room-name-checking = Verfügbarkeit wird geprüft ...
 dashboard-meeting-personal-room-name-invalid-chars = Ungültiges Zeichen: "{$char}"
+dashboard-meeting-personal-room-name-no-alphanumeric = Muss mindestens einen Buchstaben oder eine Zahl enthalten
 dashboard-meeting-personal-room-name-check-error = Verfügbarkeit des Raumnamens konnte nicht geprüft werden
 dashboard-meeting-grant-moderator-rights = Moderatorenrechte gewähren
 dashboard-meeting-revoke-moderator-rights = Moderatorenrechte entziehen

@@ -1007,6 +1007,7 @@ dashboard-meeting-personal-room-name-available = Available
 dashboard-meeting-personal-room-name-taken = This room name is already taken. Please choose a different one.
 dashboard-meeting-personal-room-name-checking = Checking availability ...
 dashboard-meeting-personal-room-name-invalid-chars = Invalid character: "{$char}"
+dashboard-meeting-personal-room-name-no-alphanumeric = Must contain at least one letter or number
 dashboard-meeting-personal-room-name-check-error = Could not check room name availability
 dashboard-meeting-grant-moderator-rights = Grant moderator rights
 dashboard-meeting-revoke-moderator-rights = Revoke moderator rights

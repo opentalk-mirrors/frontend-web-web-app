@@ -31,7 +31,8 @@ import {
   MAX_CHARACTERS_PASSWORD,
   MAX_CHARACTERS_ALIAS,
   MIN_CHARACTERS_ALIAS,
-  VALID_ALIAS_PATTERN,
+  VALID_ALIAS_INPUT_PATTERN,
+  ALIAS_REQUIRES_ALPHANUMERIC_PATTERN,
   ALIAS_CHECK_DEBOUNCE_MS,
 } from '../constants';
 import { getInitialValues } from '../utils/initialValues';
@@ -118,12 +119,15 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
   };
 
   const personalRoomName = formik.values.personalRoomName ?? '';
-  const hasValidAliasChars = VALID_ALIAS_PATTERN.test(personalRoomName);
-  const isPersonalRoomNameValid = hasValidAliasChars && personalRoomName.length >= MIN_CHARACTERS_ALIAS;
+  const hasValidAliasChars = VALID_ALIAS_INPUT_PATTERN.test(personalRoomName);
+  const hasAlphanumericChar = ALIAS_REQUIRES_ALPHANUMERIC_PATTERN.test(personalRoomName);
+  const isPersonalRoomNameValid =
+    hasValidAliasChars && hasAlphanumericChar && personalRoomName.length >= MIN_CHARACTERS_ALIAS;
   const isPersonalRoomNameTaken =
     aliasExistsResult.originalArgs?.name === personalRoomName && aliasExistsResult.data?.available === false;
-  const personalRoomNameHasError = personalRoomName.length > 0 && (!hasValidAliasChars || isPersonalRoomNameTaken);
-  const findFirstInvalidChar = (value: string) => value.split('').find((char) => !VALID_ALIAS_PATTERN.test(char));
+  const personalRoomNameHasError =
+    personalRoomName.length > 0 && (!hasValidAliasChars || !hasAlphanumericChar || isPersonalRoomNameTaken);
+  const findFirstInvalidChar = (value: string) => value.split('').find((char) => !VALID_ALIAS_INPUT_PATTERN.test(char));
 
   const debouncedCheckAliasExists = useMemo(
     () => debounce((name: string) => checkAliasExists({ name }), ALIAS_CHECK_DEBOUNCE_MS),
@@ -174,6 +178,14 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
           {t('dashboard-meeting-personal-room-name-invalid-chars', {
             char: findFirstInvalidChar(value),
           })}
+        </Typography>
+      );
+    }
+
+    if (!hasAlphanumericChar) {
+      return (
+        <Typography variant="caption" color="textError">
+          {t('dashboard-meeting-personal-room-name-no-alphanumeric')}
         </Typography>
       );
     }
