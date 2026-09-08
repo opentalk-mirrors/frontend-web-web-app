@@ -121,8 +121,8 @@ importers:
         specifier: ^6.32.2
         version: 6.33.0
       licensee:
-        specifier: ^12.0.1
-        version: 12.0.1(supports-color@8.1.1)
+        specifier: ^12.0.2
+        version: 12.0.2(supports-color@8.1.1)
       lint-staged:
         specifier: ^17.3.0
         version: 17.4.1
@@ -4725,8 +4725,8 @@ packages:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
 
-  licensee@12.0.1:
-    resolution: {integrity: sha512-LMSs1+p7Gnqw4efSFaJPJJphn6QwugzXP0hD1VupIlGamkSvdxYm0asP3BVpM+DGJ5Bs3Cv1uwYhZokSNOwyPA==}
+  licensee@12.0.2:
+    resolution: {integrity: sha512-hf70KuwXtkMDTFjETF6D4uq1w4d7fWRq9LQD6vLP0hkNhPZJFJ4k8eaDW97xc7fNYxzPRt7Y5ARpTnGmz2Tamg==}
     engines: {node: ^20.20 || ^22.22 || ^24.13 || >= 25.4}
     hasBin: true
 
@@ -10988,13 +10988,12 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
-  licensee@12.0.1(supports-color@8.1.1):
+  licensee@12.0.2(supports-color@8.1.1):
     dependencies:
       '@blueoak/list': 15.0.0
       '@npmcli/arborist': 9.9.1(supports-color@8.1.1)
       correct-license-metadata: 1.5.0
       docopt: 0.6.2
-      hasown: 2.0.4
       npm-license-corrections: 1.9.0
       semver: 7.8.5
       spdx-expression-parse: 4.0.0
