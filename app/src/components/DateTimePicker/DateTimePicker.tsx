@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { DateTimePicker as MuiDateTimePicker, PickersActionBarAction, PickersLocaleText } from '@mui/x-date-pickers';
 import { isSameDay } from 'date-fns';
+import { t } from 'i18next';
 import { isEmpty } from 'lodash';
 import React from 'react';
 
@@ -166,7 +167,11 @@ const DateTimePicker = ({
               helperText: !error && helperText,
             },
             actionBar: { actions },
-            popper: { placement: 'bottom-start', modifiers: [getOffsetModifier()] },
+            popper: {
+              placement: 'bottom-start',
+              'aria-label': t('date-time-picker'),
+              modifiers: [getOffsetModifier()],
+            },
           }}
         />
       </PickerLocalizationProvider>

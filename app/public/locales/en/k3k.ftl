@@ -837,6 +837,7 @@ conference-storage-tooltip-full-storage = Your file storage is full. You cannot 
 dashboard-close-navbar = Close navigation
 dashboard-open-navbar = Open navigation
 dashboard-join-meeting = Join the meeting
+date-time-picker = Date and time picker
 
 dashboard-sign-in = Sign in
 
