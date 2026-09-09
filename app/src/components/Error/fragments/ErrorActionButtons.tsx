@@ -9,9 +9,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { BackIcon } from '../../../assets/icons';
 import useNavigateToHome from '../../../hooks/useNavigateToHome';
+import log from '../../../logger';
 
 interface ErrorActionButtonsProps {
   logout?: boolean;
+  login?: boolean;
   retry?: boolean;
 }
 
@@ -34,7 +36,7 @@ const IconButton = styled(MuiIconButton)(({ theme }) => ({
 
 const SECONDS_UNTIL_RETRY = 3;
 
-const ErrorActionButtons = ({ logout, retry }: ErrorActionButtonsProps) => {
+const ErrorActionButtons = ({ logout, login, retry }: ErrorActionButtonsProps) => {
   const { t } = useTranslation();
   const navigateToHome = useNavigateToHome();
   const navigate = useNavigate();
@@ -69,6 +71,17 @@ const ErrorActionButtons = ({ logout, retry }: ErrorActionButtonsProps) => {
       return (
         <Button onClick={() => auth.signOut()}>
           <Typography>{t('global-logout')}</Typography>
+        </Button>
+      );
+    }
+    return null;
+  }
+
+  if (login) {
+    if (auth) {
+      return (
+        <Button onClick={() => auth.signIn().catch((error) => log.error('failed to signIn:', error))}>
+          <Typography>{t('global-login')}</Typography>
         </Button>
       );
     }

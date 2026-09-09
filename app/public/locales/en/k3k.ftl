@@ -20,6 +20,7 @@ global-upgrade = Upgrade
 
 error-fetch-4xx = error loading resource
 error-general = Ups, something went wrong. Please try again.
+error-loading-event = Could not load the meeting details.
 error-invite-link = This invite-link is not active anymore.
 error-access-forbidden = You cannot join the meeting. Either the meeting link is invalid or you were not invited to this meeting. Please check the meeting link or contact the moderator.
 signaling-subscription-failed = The connection to a participant failed.
@@ -27,7 +28,7 @@ media-subscription-failed = No connection to the participant
 
 
 error-system-currently-unavailable = The system is currently unavailable, please try again later.
-error-unauthorized = Unfortunately you do not have access, please contact the meeting moderator.
+error-unauthorized = You may need to log in to join this meeting.<br />If already logged in, please contact the meeting moderator.
 error-livekit-unavailable = Livekit is not available, please contact your administrator.
 
 login-form-title = Login
@@ -711,6 +712,7 @@ global-state-started = active
 global-state-finished = finished
 global-state-canceled = canceled
 global-logout = Logout
+global-login = Login
 global-accept = Accept
 global-cancel = Cancel
 global-decline = Decline
@@ -945,7 +947,6 @@ dashboard-invite-to-meeting-copy-personal-room-link-aria-label = Copy Personal R
 dashboard-invite-to-meeting-copy-personal-room-link-success = The link was copied to your clipboard
 dashboard-invite-to-meeting-copy-room-link-aria-label = Copy Room link for {$eventTitle}
 dashboard-invite-to-meeting-copy-room-link-success = The link was copied to your clipboard
-dashboard-invite-to-meeting-room-link-tooltip = Only for registered users
 dashboard-invite-to-meeting-sip-link-label = Phone Dial-in
 dashboard-invite-to-meeting-copy-sip-link-aria-label = Copy Phone Dial-in credentials for {$eventTitle}
 dashboard-invite-to-meeting-copy-sip-link-success = The Phone Dial-in was copied to your clipboard

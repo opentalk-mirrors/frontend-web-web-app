@@ -10,7 +10,7 @@ import { isE2EESupported } from 'livekit-client';
 import { uniqueId } from 'lodash';
 import { SnackbarKey } from 'notistack';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
@@ -311,6 +311,13 @@ const LobbyView = () => {
   const isRoomAccessForbidden = roomDataError && 'status' in roomDataError && roomDataError.status === 403;
   if (isRoomAccessForbidden) {
     return <OpentalkError title={t('error-access-forbidden')} />;
+  }
+
+  // A guest trying to join a room with guest access disabled receives a 401 from the room event endpoint.
+  // Logging in might grant them access, so offer a login option unless they are already authenticated.
+  const isRoomAccessUnauthorized = roomDataError && 'status' in roomDataError && roomDataError.status === 401;
+  if (isRoomAccessUnauthorized) {
+    return <OpentalkError title={<Trans i18nKey="error-unauthorized" />} login={!isLoggedIn} />;
   }
 
   if (showPasswordStep) {

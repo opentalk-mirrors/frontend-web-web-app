@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { AuthContext } from '@opentalk/redux-oidc';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -17,12 +18,18 @@ import { renderWithProviders, configureStore } from '../../utils/testUtils';
 import LobbyView from './LobbyView';
 
 const mocks = vi.hoisted(() => ({
-  roomEventInfo: { data: {} as Record<string, unknown> },
+  roomEventInfo: { data: {} as Record<string, unknown> } as
+    { data: Record<string, unknown> } | { error: { status: number } },
 }));
 
 const setPasswordRequired = (passwordRequired: boolean) => {
   mocks.roomEventInfo = { data: { passwordRequired } };
 };
+
+vi.mock('../../templates/fragments/BrowserCompatibilityInfo', () => ({
+  __esModule: true,
+  default: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+}));
 
 vi.mock('../SelfTest', () => ({
   __esModule: true,
@@ -367,6 +374,7 @@ describe('LobbyView guest join (not logged in)', () => {
     });
 
   afterEach(() => {
+    setPasswordRequired(false);
     vi.resetAllMocks();
   });
 
@@ -393,5 +401,19 @@ describe('LobbyView guest join (not logged in)', () => {
 
     await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith(setDisplayName('Guest')));
     expect(dispatchSpy).toHaveBeenCalledWith(enterRoomCommand.action({ displayName: 'Guest' }));
+  });
+
+  it('shows the unauthorized error with a login option when the room event endpoint returns 401', () => {
+    mocks.roomEventInfo = { error: { status: 401 } };
+    const { store } = setupGuestStore({ connectionState: ConnectionState.Setup });
+    renderWithProviders(
+      <AuthContext.Provider value={{ signIn: vi.fn(), signOut: vi.fn() } as never}>
+        <LobbyView />
+      </AuthContext.Provider>,
+      { store, provider: { router: true, mui: true } }
+    );
+
+    expect(screen.getByText('error-unauthorized')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'global-login' })).toBeInTheDocument();
   });
 });

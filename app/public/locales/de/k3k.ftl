@@ -20,13 +20,14 @@ global-upgrade = Upgrade
 
 error-fetch-4xx = Ladefehler
 error-general = Ups, hier ist leider etwas schiefgelaufen. Bitte versuche es erneut.
+error-loading-event = Die Meeting-Details konnten nicht geladen werden.
 error-invite-link = Dieser Einladungs-Link ist nicht mehr aktiv.
 error-access-forbidden = Sie können dem Meeting nicht beitreten. Entweder ist der Meeting-Link ungültig oder Sie sind nicht berechtigt an diesem Meeting teilzunehmen. Bitte überprüfen Sie den Meeting-Link oder kontaktieren Sie den Moderator.
 signaling-subscription-failed = Die Verbindung zu einen Teilnehmer ist leider fehlgeschlagen.
 media-subscription-failed = Keine Verbindung zum Teilnehmer
 
 error-system-currently-unavailable = Das System ist zur Zeit nicht erreichbar, bitte versuchen sie es später nochmal.
-error-unauthorized = Sie haben leider keinen Zugriff, bitte kontaktieren Sie den Moderator des Meetings.
+error-unauthorized = Möglicherweise müssen Sie sich anmelden, um diesem Meeting beizutreten.<br />Wenn Sie bereits angemeldet sind, kontaktieren Sie bitte die Moderation des Meetings.
 error-livekit-unavailable = Livekit ist nicht verfügbar, bitte kontaktieren Sie Ihren Administrator.
 
 login-form-title = Anmeldung
@@ -709,6 +710,7 @@ global-state-started = aktiv
 global-state-finished = beendet
 global-state-canceled = abgebrochen
 global-logout = Abmelden
+global-login = Anmelden
 global-accept = Annehmen
 global-cancel = Abbrechen
 global-decline = Ablehnen
@@ -942,7 +944,6 @@ dashboard-invite-to-meeting-copy-personal-room-link-aria-label = Persönlichen R
 dashboard-invite-to-meeting-copy-personal-room-link-success = Der Link wurde erfolgreich kopiert
 dashboard-invite-to-meeting-copy-room-link-aria-label = Raum Link kopieren für {$eventTitle}
 dashboard-invite-to-meeting-copy-room-link-success = Der Link wurde erfolgreich kopiert
-dashboard-invite-to-meeting-room-link-tooltip = Nur für registrierte Nutzer
 dashboard-invite-to-meeting-sip-link-label = Telefoneinwahl
 dashboard-invite-to-meeting-copy-sip-link-aria-label = Telefoneinwahl-Informationen für {$eventTitle} kopieren
 dashboard-invite-to-meeting-copy-sip-link-success = Die Telefoneinwahl wurde in die Zwischenablage kopiert

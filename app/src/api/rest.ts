@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { AuthTypeError, authError, saveLocationRedirect } from '@opentalk/redux-oidc';
+import { AuthTypeError, authError, saveLocationRedirect, selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId, createOpenTalkApiWithReactHooks, fetchQuery } from '@opentalk/rest-api-rtk-query';
 import { Middleware, createAsyncThunk, isAction, isRejectedWithValue } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
@@ -55,7 +55,7 @@ export enum StartRoomError {
 }
 
 export enum AuthTypeErrorMessage {
-  InvalidTokenOrInvite = 'Unable to parse access token or invite code',
+  InvalidToken = 'Unable to parse access token',
 }
 
 export enum ErrorCode {
@@ -124,27 +124,37 @@ const baseQuery = fetchQuery({
 export const restApi = createOpenTalkApiWithReactHooks(baseQuery);
 
 export const rtkQueryErrorLoggerMiddleware: Middleware =
-  ({ dispatch }) =>
+  ({ dispatch, getState }) =>
   (next) =>
   (action) => {
     // Auth library is handling only auth errors with name: AuthTypeError.RefreshTokenFailed && AuthTypeError.SessionExpired
     // If rtk query get rejected dispatch auth error
     if (isAction(action) && isRejectedWithValue(action)) {
       // At some point we could define a common type for rejected payload
-      const payload = action.payload as { status: number | string; data: { message: string; code?: ErrorCode } };
+      const payload = action.payload as {
+        status: number | string;
+        data: { message: string; code?: ErrorCode } | null;
+      };
 
       if (payload.status === 401) {
-        if (payload.data.message === AuthTypeErrorMessage.InvalidTokenOrInvite) {
+        if (payload.data?.message === AuthTypeErrorMessage.InvalidToken) {
           // Don't dispatch any auth error since this is an exeption. Is not auth error, it's wrong Url and or/invite code.
           return next(action);
         }
-        dispatch(
-          authError({
-            status: payload.status,
-            name: AuthTypeError.SessionExpired,
-            message: payload.data.message,
-          })
-        );
+
+        // Only an authenticated session can expire. For an unauthenticated user a 401 is an access
+        // decision (e.g. guest access disabled), so don't trigger a token renewal — let the requesting
+        // component render its own error state.
+        if (selectIsAuthenticated(getState() as RootState)) {
+          dispatch(
+            authError({
+              status: payload.status,
+              name: AuthTypeError.SessionExpired,
+              message: payload.data?.message,
+            })
+          );
+        }
+
         return next(action);
       }
       if (payload.status === 403) {

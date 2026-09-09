@@ -28,7 +28,7 @@ const WarningIcon = styled(DefaultWarningIcon)(({ theme }) => ({
 }));
 
 interface ErrorProps {
-  title: string;
+  title: React.ReactNode;
   description?: string;
   /**
    * Pass to add diagnostics
@@ -44,12 +44,16 @@ interface ErrorProps {
    */
   logout?: boolean;
   /**
+   * Adds a login button, e.g. for guests who need to authenticate to join
+   */
+  login?: boolean;
+  /**
    * Adds option to manually retry the last action on every 3 seconds
    */
   retry?: boolean;
 }
 
-const Error = ({ title, description, error, errorInfo, isCrashError, logout, retry }: ErrorProps) => {
+const Error = ({ title, description, error, errorInfo, isCrashError, logout, login, retry }: ErrorProps) => {
   return (
     //Explicitly provide theme and css baseline
     //Potentially should be hoisted up to a root level
@@ -61,7 +65,7 @@ const Error = ({ title, description, error, errorInfo, isCrashError, logout, ret
 
         {error && <DiagnosticDetails error={error} errorInfo={errorInfo} />}
 
-        <ErrorActionButtons logout={logout} retry={retry} />
+        <ErrorActionButtons logout={logout} login={login} retry={retry} />
       </Container>
     </LobbyTemplate>
   );
