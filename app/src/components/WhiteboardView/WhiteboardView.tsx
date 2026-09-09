@@ -64,11 +64,11 @@ type ExcalidrawOnPointerUpdatePayload =
 // Keep drawing responsive, since that traffic is naturally bounded by hand movement, but throttle
 // idle hover updates much harder so they don't eat the whole budget and starve other messages.
 const CURSOR_SYNC_TIMEOUT_DRAWING_MS = 150;
-const CURSOR_SYNC_TIMEOUT_IDLE_MS = 10000;
+const CURSOR_SYNC_TIMEOUT_IDLE_MS = 150;
 const PDF_PADDING = 64;
 const DELETED_ELEMENT_TIMEOUT_MS = 24 * 60 * 60 * 1000; // 1 day
 const SYNC_SCENE_ELEMENTS_INTERVAL_MS = 150;
-const SYNC_FULL_SCENE_INTERVAL_MS = 10_000;
+const SYNC_FULL_SCENE_INTERVAL_MS = 10000;
 
 const WhiteboardWrapper = styled('div')(({ theme }) => ({
   height: '100%',
@@ -410,7 +410,8 @@ const WhiteboardView = () => {
         return;
       }
 
-      const collaborators = excalidrawAPI.getAppState().collaborators;
+      // clone the map so excalidraw's memoized canvas sees a new reference and re-renders
+      const collaborators = new Map(excalidrawAPI.getAppState().collaborators);
 
       if (updates.pointer.x === 0 && updates.pointer.y === 0) {
         // delete pointer when a user unmount the whiteboard
