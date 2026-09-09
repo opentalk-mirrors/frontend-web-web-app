@@ -69,7 +69,13 @@ const TalkingStickTabPanel = () => {
     <Stack spacing={2} sx={{ flex: 1, overflow: 'hidden' }}>
       {!isAutomodActive && (
         <Stack spacing={2}>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography>{t('sort-label')}</Typography>
             {/* Component auto closes when selected sort type changes. */}
             <TalkingStickSortButton
@@ -78,13 +84,21 @@ const TalkingStickTabPanel = () => {
               onChange={setSelectedSortType}
             />
           </Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography
               id={INCLUDE_MODERATOR_ID}
               component="label"
               htmlFor="include-moderator-switch"
-              fontWeight="normal"
-              mr={1}
+              sx={{
+                fontWeight: 'normal',
+                mr: 1,
+              }}
             >
               {t('talking-stick-include-moderator-switch')}
             </Typography>

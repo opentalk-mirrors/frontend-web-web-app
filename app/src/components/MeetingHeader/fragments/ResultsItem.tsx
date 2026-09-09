@@ -34,8 +34,10 @@ const CustomMenuItem = styled(MenuItem)(() => ({
   },
 }));
 
+export type ItemProps = Pick<LegalVote, 'name' | 'id' | 'state'> | Pick<Poll, 'topic' | 'id' | 'state' | 'choices'>;
+
 interface ResultsItemProps extends MenuItemProps {
-  item: Pick<LegalVote, 'name' | 'id' | 'state'> | Pick<Poll, 'topic' | 'id' | 'state' | 'choices'>;
+  item: ItemProps;
 }
 
 //Props are passed for accessibility reasons, autofocus doesn't get recognized otherwise and we cannot navigate into the list.

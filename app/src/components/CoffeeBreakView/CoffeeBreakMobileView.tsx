@@ -67,10 +67,16 @@ export const CoffeeBreakMobileView = memo(function CoffeeBreakMobileViewComponen
 
   return (
     <BackgroundCover role="alertdialog" aria-label={t('coffee-break-layer-aria-title')}>
-      <InnerContainer gap={4}>
+      <InnerContainer sx={{ gap: 4 }}>
         <Logo />
         <CustomCoffeeBreakIcon />
-        <Typography component="h2" variant="h3" textAlign="center">
+        <Typography
+          component="h2"
+          variant="h3"
+          sx={{
+            textAlign: 'center',
+          }}
+        >
           {isTimerActive ? t('coffee-break-layer-title') : t('coffee-break-stopped-title')}
         </Typography>
         <CoffeeBreakTimer />

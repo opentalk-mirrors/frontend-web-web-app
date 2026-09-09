@@ -116,7 +116,7 @@ const BreakoutRoomNotification = ({
               started={countdown.startedAt}
               duration={countdown.duration}
               onCountdownEnds={handleCountdownEnds}
-              ml={1.5}
+              sx={{ ml: 1.5 }}
             />
           )}
         </Box>

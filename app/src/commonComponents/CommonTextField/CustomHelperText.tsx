@@ -11,8 +11,20 @@ interface CustomHelperTextProps {
 
 const CustomHelperText = ({ helperText, characterCount, maxCharacters }: CustomHelperTextProps) => {
   return (
-    <Stack component="span" direction="row" justifyContent="space-between">
-      <Typography component="span" variant="caption" color="text.primary">
+    <Stack
+      component="span"
+      direction="row"
+      sx={{
+        justifyContent: 'space-between',
+      }}
+    >
+      <Typography
+        component="span"
+        variant="caption"
+        sx={{
+          color: 'text.primary',
+        }}
+      >
         {helperText}
       </Typography>
       {characterCount !== undefined && maxCharacters !== undefined && (

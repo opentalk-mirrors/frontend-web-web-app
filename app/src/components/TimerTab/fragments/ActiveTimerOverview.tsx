@@ -32,7 +32,7 @@ const ActiveTimerOverview = ({ timerStyle }: { timerStyle: TimerStyle }) => {
         overflow: 'hidden',
       }}
     >
-      <TimerContainer flex={1} spacing={1}>
+      <TimerContainer sx={{ flex: 1 }} spacing={1}>
         <TimerDuration style={timerStyle} />
 
         {timerStyle === TimerStyle.Normal && <UserList />}

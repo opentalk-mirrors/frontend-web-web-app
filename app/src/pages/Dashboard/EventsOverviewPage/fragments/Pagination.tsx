@@ -22,7 +22,14 @@ export function Pagination({ after, isFetching, onNextPage, onPreviousPage, curr
   };
 
   return (
-    <Box gap={1} display="flex" justifyContent="flex-end" mt={2}>
+    <Box
+      sx={{
+        gap: 1,
+        display: 'flex',
+        justifyContent: 'flex-end',
+        mt: 2,
+      }}
+    >
       <Button disabled={currentCursorIndex === -1 || isFetching} onClick={onPreviousPage}>
         {t('global-previous')}
       </Button>

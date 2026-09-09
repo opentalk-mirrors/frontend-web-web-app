@@ -136,8 +136,7 @@ const LegalVoteOverviewPanel = ({
             duration={duration}
             startTime={startTime}
             active={state === LegalVoteState.Started}
-            flex={1}
-            justifyContent="flex-end"
+            sx={{ flex: 1, justifyContent: 'flex-end' }}
           />
         )}
       </Box>

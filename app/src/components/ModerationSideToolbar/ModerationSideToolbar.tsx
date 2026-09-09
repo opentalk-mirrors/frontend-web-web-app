@@ -16,7 +16,7 @@ const Tabs = styled(MuiTabs)(({ theme }) => ({
   background: theme.palette.background.highlight.primary,
   padding: theme.spacing(4.5, 0),
   height: '100%',
-  '& .MuiTabs-flexContainer': {
+  '& .MuiTabs-list': {
     display: 'grid',
     gridColumns: '1fr',
     gridTemplateRows: '4fr repeat(11, 1fr)',

@@ -159,7 +159,13 @@ const CameraSettingsPanel = () => {
 
   return (
     <>
-      <Typography variant="h2" alignSelf="start" pb={2}>
+      <Typography
+        variant="h2"
+        sx={{
+          alignSelf: 'start',
+          pb: 2,
+        }}
+      >
         {t('camera-settings-title')}
       </Typography>
       <DeviceManager
@@ -191,7 +197,12 @@ const CameraSettingsPanel = () => {
               />
             }
             label={
-              <Typography fontWeight="normal" component="span">
+              <Typography
+                component="span"
+                sx={{
+                  fontWeight: 'normal',
+                }}
+              >
                 {t('videomenu-participant-videos')}
               </Typography>
             }
@@ -216,7 +227,12 @@ const CameraSettingsPanel = () => {
                     />
                   }
                   label={
-                    <Typography fontWeight="normal" component="span">
+                    <Typography
+                      component="span"
+                      sx={{
+                        fontWeight: 'normal',
+                      }}
+                    >
                       {t('videomenu-blur')}
                     </Typography>
                   }
@@ -234,7 +250,12 @@ const CameraSettingsPanel = () => {
                   />
                 }
                 label={
-                  <Typography fontWeight="normal" component="span">
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontWeight: 'normal',
+                    }}
+                  >
                     {t('videomenu-mirroring')}
                   </Typography>
                 }

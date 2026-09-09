@@ -5,9 +5,9 @@ import {
   Button,
   Checkbox,
   Container,
-  Grid,
   FormControlLabel as MuiFormControlLabel,
   Typography,
+  Stack,
   styled,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
@@ -86,10 +86,7 @@ const WaitingView = () => {
           }
           waitingRoom
         >
-          <Grid
-            container
-            size={{ sm: 12, md: 'auto' }}
-            direction="column"
+          <Stack
             sx={{
               alignItems: 'center',
               mt: 0,
@@ -106,7 +103,7 @@ const WaitingView = () => {
                 label={t('waiting-room-auto-join-label')}
               />
             )}
-          </Grid>
+          </Stack>
         </SelfTest>
       </Container>
       <ImprintContainer />

@@ -37,7 +37,11 @@ const MediaReconnectionDialog = () => {
   return (
     <Dialog aria-labelledby={titleId} aria-describedby={descId} open>
       <DialogContent>
-        <Box textAlign="center">
+        <Box
+          sx={{
+            textAlign: 'center',
+          }}
+        >
           <CircularProgress color="primary" size="5rem" />
         </Box>
         <DescriptionContainer>

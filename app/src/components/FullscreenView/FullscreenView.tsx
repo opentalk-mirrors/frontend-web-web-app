@@ -152,14 +152,27 @@ const FullscreenView = () => {
         <ButtonsContainer>
           <VotesAndPollsResultsPopover
             renderButton={(props) => (
-              <Box gridArea="votes" justifySelf="flex-start">
+              <Box
+                sx={{
+                  gridArea: 'votes',
+                  justifySelf: 'flex-start',
+                }}
+              >
                 <IconButton {...props}>
                   <PollIcon />
                 </IconButton>
               </Box>
             )}
           />
-          <Box display="flex" gap={1} alignItems="center" justifySelf="flex-end" gridArea="buttons">
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              alignItems: 'center',
+              justifySelf: 'flex-end',
+              gridArea: 'buttons',
+            }}
+          >
             <IconButton
               aria-label={t('indicator-pinned', {
                 participantName: displayName || '',

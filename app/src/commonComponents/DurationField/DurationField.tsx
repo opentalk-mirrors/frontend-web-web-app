@@ -192,7 +192,13 @@ export const DurationField = ({
         startIcon={<StyledClockIcon />}
         aria-label={getButtonAriaLabel()}
       >
-        <Typography component="span" variant="body2" color="text.secondary">
+        <Typography
+          component="span"
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {renderButtonText()}
         </Typography>
       </TimerButton>
@@ -222,7 +228,7 @@ export const DurationField = ({
             <Stack spacing={1}>
               <NumberInput
                 type="number"
-                inputProps={{ min, max, 'aria-describedby': 'duration-field-error' }}
+                slotProps={{ htmlInput: { min, max, 'aria-describedby': 'duration-field-error' } }}
                 onChange={handleInputChange}
                 value={customDurationFieldValue?.toString()}
               />

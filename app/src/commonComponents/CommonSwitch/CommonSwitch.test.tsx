@@ -9,9 +9,6 @@ const commonProps = {
   checked: false,
   onChange: vi.fn(),
   label: 'fake switch',
-  inputProps: {
-    role: 'switch',
-  },
 };
 
 describe('CommonSwitch', () => {

@@ -100,7 +100,7 @@ const ThumbsRow = ({ thumbWidth, thumbsPerWindow }: ThumbsProps) => {
   );
 
   return (
-    <ThumbsHolder direction="row" gap={1} tracks={thumbsPerWindow} data-testid="ThumbsHolder">
+    <ThumbsHolder direction="row" sx={{ gap: 1 }} tracks={thumbsPerWindow} data-testid="ThumbsHolder">
       {adjustedIndex > 0 && <IconSlideButton direction="left" aria-label="navigate-to-left" onClick={slideLeft} />}
       <ParticipantLoop participants={visibleParticipants}>
         <Thumbnail width={thumbWidth} />

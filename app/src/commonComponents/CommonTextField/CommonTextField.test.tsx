@@ -37,7 +37,7 @@ describe('CommonTextField', () => {
         <MenuItem>Test</MenuItem>
       </CommonTextField>
     );
-    const label = screen.getByText(LABEL, { selector: 'label' });
+    const label = screen.getByText(LABEL, { selector: '.MuiInputLabel-root' });
     expect(label).toHaveStyle('display: none');
     const combobox = screen.getByRole('combobox', { name: LABEL });
     expect(combobox).not.toHaveAttribute('aria-label', LABEL);

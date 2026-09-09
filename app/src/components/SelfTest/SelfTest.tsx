@@ -49,22 +49,37 @@ const SelfTest = ({ children, actionButton, waitingRoom }: SelftestProps) => {
           ) : (
             <>
               {roomData?.title && (
-                <Typography variant="h2" textAlign="center" marginBottom={theme.spacing(5)} component="h1">
+                <Typography
+                  variant="h2"
+                  component="h1"
+                  sx={{
+                    textAlign: 'center',
+                    marginBottom: theme.spacing(5),
+                  }}
+                >
                   {t('joinform-room-title', { title: truncate(roomData?.title, { length: 50 }) })}
                 </Typography>
               )}
               <Typography
                 variant="h1"
-                textAlign="center"
-                fontSize="2.9rem"
-                lineHeight="2.9rem"
-                mb={2}
                 component="h2"
                 lang="en"
+                sx={{
+                  textAlign: 'center',
+                  fontSize: '2.9rem',
+                  lineHeight: '2.9rem',
+                  mb: 2,
+                }}
               >
                 {t('selftest-header')}
               </Typography>
-              <Typography textAlign="center" fontSize="1.37rem" padding="0 0.5rem">
+              <Typography
+                sx={{
+                  textAlign: 'center',
+                  fontSize: '1.37rem',
+                  padding: '0 0.5rem',
+                }}
+              >
                 {joinWithoutMedia ? t('selftest-body-do-test') : t('selftest-body')}
               </Typography>
             </>

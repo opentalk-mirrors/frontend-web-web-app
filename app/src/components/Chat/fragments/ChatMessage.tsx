@@ -209,7 +209,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
         noWrap
         isModerator={isModerator}
         title={displayName}
-        textAlign={ownMessage ? 'right' : 'left'}
+        sx={{ textAlign: ownMessage ? 'right' : 'left' }}
         translate="no"
       >
         {displayName}

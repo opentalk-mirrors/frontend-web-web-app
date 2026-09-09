@@ -100,9 +100,11 @@ export const SettingsGeneralForm = (props: SettingsGeneralFormProps) => {
       name="settings-general-form"
       container
       spacing={2}
-      paddingBottom={0.5}
-      paddingLeft={0.5}
       onSubmit={submitForm}
+      sx={{
+        paddingBottom: 0.5,
+        paddingLeft: 0.5,
+      }}
     >
       <Grid size={{ xs: 12 }}>
         <Typography variant="h1" component="h3">
@@ -117,7 +119,14 @@ export const SettingsGeneralForm = (props: SettingsGeneralFormProps) => {
           {t('dashboard-settings-general-appearance')}
         </Typography>
       </Grid>
-      <Grid size={{ xs: 12, sm: 8 }} display="flex" gap={1} paddingTop={1}>
+      <Grid
+        size={{ xs: 12, sm: 8 }}
+        sx={{
+          display: 'flex',
+          gap: 1,
+          paddingTop: 1,
+        }}
+      >
         <ThemeSelect
           dashboardTheme={dashboardTheme}
           onDashboardThemeChange={changeDashboardTheme}

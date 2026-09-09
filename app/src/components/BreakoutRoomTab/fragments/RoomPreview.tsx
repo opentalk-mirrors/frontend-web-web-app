@@ -18,7 +18,11 @@ type RoomPreviewProps = {
 
 export function RoomPreview(props: RoomPreviewProps) {
   return (
-    <Box px={0.5}>
+    <Box
+      sx={{
+        px: 0.5,
+      }}
+    >
       <RoomHeader
         expanded={props.expanded}
         name={props.name + ` (${props.participants.length})`}

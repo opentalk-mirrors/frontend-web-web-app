@@ -149,7 +149,13 @@ const CreateLegalVoteForm = ({
         {!isLastStep && (
           <SaveAsTemplateButton onClick={() => saveFormValues(formik.values)} disabled={!formik.isValid} />
         )}
-        <Stack direction="row" spacing={1} mt="auto">
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            mt: 'auto',
+          }}
+        >
           <Button type="button" onClick={handlePrev} startIcon={<BackIcon />} fullWidth color="primary">
             {t('legal-vote-button-back')}
           </Button>
@@ -188,7 +194,11 @@ const CreateLegalVoteForm = ({
           }}
         >
           <Form>
-            <Typography paddingBottom={2}>
+            <Typography
+              sx={{
+                paddingBottom: 2,
+              }}
+            >
               {initialValues?.id !== undefined
                 ? t('legal-vote-header-title-update')
                 : t('legal-vote-header-title-create')}

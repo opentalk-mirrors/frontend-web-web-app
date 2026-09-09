@@ -165,7 +165,12 @@ const RestrictionsDialog = ({ open, onClose }: { open: boolean; onClose: () => v
               );
             })}
             {editableParticipants.length === 0 && (
-              <Box px={2} py={3}>
+              <Box
+                sx={{
+                  px: 2,
+                  py: 3,
+                }}
+              >
                 <Typography variant="body2" color="textSecondary">
                   {t('whiteboard-dialog-edit-restrictions-empty')}
                 </Typography>

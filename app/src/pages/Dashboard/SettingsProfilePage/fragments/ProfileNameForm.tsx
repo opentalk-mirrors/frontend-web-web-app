@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Grid, Typography } from '@mui/material';
+import { Button, Grid, Stack, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -49,8 +49,14 @@ const ProfileNameForm = () => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <Grid container spacing={3} direction="column" paddingBottom={0.5} paddingLeft={0.5}>
-        <Grid container spacing={1} direction="column">
+      <Stack
+        spacing={3}
+        sx={{
+          paddingBottom: 0.5,
+          paddingLeft: 0.5,
+        }}
+      >
+        <Stack spacing={1}>
           <Grid>
             <CommonTextField
               disabled={disallowCustomDisplayName}
@@ -68,13 +74,13 @@ const ProfileNameForm = () => {
               {t('dashboard-settings-profile-input-hint')}
             </Typography>
           </Grid>
-        </Grid>
+        </Stack>
         <Grid>
           <Button type="submit" disabled={isLoading || disallowCustomDisplayName} color="secondary">
             {t('dashboard-settings-profile-button-save')}
           </Button>
         </Grid>
-      </Grid>
+      </Stack>
     </form>
   );
 };

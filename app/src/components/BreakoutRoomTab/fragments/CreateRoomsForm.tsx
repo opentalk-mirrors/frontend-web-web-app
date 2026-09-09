@@ -196,7 +196,14 @@ const CreateRoomsForm = () => {
   }, [sortedParticipants, isAssignedToRoom, editingRoomIndex]);
 
   return (
-    <Box display="flex" flexDirection="column" gap={2} overflow="auto">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        overflow: 'auto',
+      }}
+    >
       <DurationRow
         value={duration}
         changeValue={handleChangeDurationValue}
@@ -258,7 +265,12 @@ const CreateRoomsForm = () => {
             </Popover>
           </Stack>
         )}
-        <Stack mt={2} spacing={2}>
+        <Stack
+          spacing={2}
+          sx={{
+            mt: 2,
+          }}
+        >
           {hasInsufficientParticipants && (
             <MinimumWarning
               labelKey="breakout-room-insufficient-number-of-participants-warning"

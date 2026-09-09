@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Grid, styled } from '@mui/material';
+import { Button, Grid, Stack, styled } from '@mui/material';
 import { Event, EventInvite, isEvent, RegisteredUser } from '@opentalk/rest-api-rtk-query';
 import type { ParticipantOption } from '@opentalk/rest-api-rtk-query/src/types/user';
 import { merge } from 'lodash';
@@ -121,18 +121,15 @@ const InviteToMeeting = ({
     : t('dashboard-direct-meeting-label-select-participants-fallback');
 
   return (
-    <Grid
-      container
-      direction="column"
+    <Stack
       spacing={0}
-      wrap="nowrap"
       sx={{
         justifyContent: 'space-between',
         overflow: 'auto',
         pt: 1,
       }}
     >
-      <Grid container spacing={3} direction="row">
+      <Grid container spacing={3}>
         <MeetingLinksAndPasswords event={existingEvent} />
         {!showOnlyLinkFields && features.userSearch && (
           <>
@@ -216,7 +213,7 @@ const InviteToMeeting = ({
           </Grid>
         </Grid>
       )}
-    </Grid>
+    </Stack>
   );
 };
 

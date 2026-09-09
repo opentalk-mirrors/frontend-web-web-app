@@ -122,9 +122,25 @@ export const CustomTrainingParticipationReportDialog = ({
         {t('dashboard-custom-training-participation-report-dialog-title')}
       </DialogTitle>
       <DialogContent>
-        <Stack marginBottom={2}>
-          <Typography mb={1}>{t('dashboard-custom-training-participation-report-dialog-initial-timeout')}</Typography>
-          <Stack direction="row" spacing={1} alignItems="center">
+        <Stack
+          sx={{
+            marginBottom: 2,
+          }}
+        >
+          <Typography
+            sx={{
+              mb: 1,
+            }}
+          >
+            {t('dashboard-custom-training-participation-report-dialog-initial-timeout')}
+          </Typography>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <NumberInput
               {...formikNumberFieldProps('initialCheckpointDelay.from', formik)}
               type="number"
@@ -145,8 +161,20 @@ export const CustomTrainingParticipationReportDialog = ({
           )}
         </Stack>
         <Stack>
-          <Typography mb={1}>{t('dashboard-custom-training-participation-report-dialog-interval-duration')}</Typography>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Typography
+            sx={{
+              mb: 1,
+            }}
+          >
+            {t('dashboard-custom-training-participation-report-dialog-interval-duration')}
+          </Typography>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <NumberInput
               {...formikNumberFieldProps('checkpointInterval.from', formik)}
               type="number"

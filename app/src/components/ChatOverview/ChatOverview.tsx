@@ -108,7 +108,7 @@ const ChatOverview = () => {
 
   if (chatConversationState.scope === ChatScope.Private && chatConversationState.target !== '') {
     return (
-      <Container alignItems="flex-start" spacing={1}>
+      <Container sx={{ alignItems: 'flex-start' }} spacing={1}>
         <AdjustedButton
           size="small"
           startIcon={<BackIcon />}
@@ -126,7 +126,7 @@ const ChatOverview = () => {
   const open = Boolean(anchorEl);
 
   return (
-    <Container spacing={1} overflow="hidden">
+    <Container spacing={1} sx={{ overflow: 'hidden' }}>
       <Box>
         <AdjustedButton
           size="small"

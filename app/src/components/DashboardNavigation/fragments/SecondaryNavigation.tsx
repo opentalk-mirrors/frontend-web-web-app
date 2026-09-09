@@ -153,10 +153,10 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
           variant="h1"
           color="inherit"
           sx={{
+            fontWeight: 700,
             ml: 4,
             mr: 4,
           }}
-          fontWeight={700}
         >
           {t(label)}
         </Typography>

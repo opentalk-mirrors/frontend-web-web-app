@@ -109,7 +109,7 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
     !outgoingVideoStreamTrack?.muted;
   */
   return (
-    <Container container justifyContent="center" alignItems="center">
+    <Container container>
       {(isCameraEnabled || isScreenShareEnabled) && (screenShareTrackRef || videoTrackRef) && (
         <>
           {fullscreenMode && (

@@ -83,8 +83,7 @@ const PollOverviewPanel = ({ poll }: IPollOverviewPanelProps) => {
             duration={poll.duration}
             startTime={poll.startTime}
             active={poll.state === 'active'}
-            flex={1}
-            justifyContent="flex-end"
+            sx={{ flex: 1, justifyContent: 'flex-end' }}
           />
         )}
       </Box>

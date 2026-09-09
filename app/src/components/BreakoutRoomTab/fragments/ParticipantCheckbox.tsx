@@ -33,7 +33,12 @@ export function ParticipantCheckbox(props: ParticipantCheckboxProps) {
         />
       }
       label={
-        <Typography translate="no" width="100%">
+        <Typography
+          translate="no"
+          sx={{
+            width: '100%',
+          }}
+        >
           {truncate(props.displayName, { length: 30 })}
         </Typography>
       }

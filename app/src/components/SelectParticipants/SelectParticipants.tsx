@@ -150,15 +150,16 @@ const SelectParticipants = ({
       noOptionsText={t('global-no-result')}
       loading={isFetching}
       open={!isFetching && !suggestionsAreStale && searchValue?.length >= MIN_QUERY_LENGTH_CHAR}
-      renderInput={({ InputProps, ...params }) => (
+      renderInput={(params) => (
         <AutocompleteTextField
           {...params}
           placeholder={placeholder}
           label={label}
           variant="outlined"
           slotProps={{
+            ...params.slotProps,
             input: {
-              ...InputProps,
+              ...params.slotProps.input,
               startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon aria-label={t('dashboard-select-participants-label-search')}>

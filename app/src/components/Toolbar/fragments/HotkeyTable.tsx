@@ -25,7 +25,13 @@ const HotkeyTable = () => {
             <code>{keyCombination}</code>
           </TableCell>
           <TableCell headers="shortcut-description">
-            <Typography fontWeight="300">{t(hotkey.descriptionKey)}</Typography>
+            <Typography
+              sx={{
+                fontWeight: '300',
+              }}
+            >
+              {t(hotkey.descriptionKey)}
+            </Typography>
           </TableCell>
         </TableRow>
       );

@@ -68,7 +68,7 @@ const VideoElement = () => {
   }
 
   return (
-    <Container container justifyContent="center" alignItems="center" flexDirection="column">
+    <Container container sx={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
       <Video ref={videoRef} noRoundedCorners mirroringEnabled={mirroredVideoEnabled} />
       {isVideoMissing && <NoVideoText>{t('localvideo-no-device')}</NoVideoText>}
     </Container>

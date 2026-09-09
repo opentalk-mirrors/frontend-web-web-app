@@ -28,7 +28,13 @@ export function RoomHeader(props: RoomHeaderProps) {
   };
 
   return (
-    <Box display="flex" alignItems="center" gap={2}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+      }}
+    >
       <Button
         startIcon={props.expanded ? <ArrowDownIcon fontSize="small" /> : <ArrowRightIcon fontSize="small" />}
         variant="text"

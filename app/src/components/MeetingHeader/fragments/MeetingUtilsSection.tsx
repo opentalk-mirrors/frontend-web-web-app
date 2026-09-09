@@ -58,7 +58,13 @@ const BadConnectionIcon = styled(ConnectionBadIcon)(({ theme }) => ({
 
 const BadConnectionContainer = ({ text }: { text: string }) => {
   return (
-    <Grid container maxWidth="24rem" alignItems="center">
+    <Grid
+      container
+      sx={{
+        maxWidth: '24rem',
+        alignItems: 'center',
+      }}
+    >
       <Typography>{text}</Typography>
     </Grid>
   );

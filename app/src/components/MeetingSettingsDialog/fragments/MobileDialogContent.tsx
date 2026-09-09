@@ -98,7 +98,7 @@ const MobileDialogContent = (props: MobileSettingsDialogContentProps) => {
                   'aria-label': t('meeting-settings-title'),
                 },
                 MenuProps: {
-                  MenuListProps: { 'aria-controls': SETTINGS_PANEL_ID },
+                  slotProps: { list: { 'aria-controls': SETTINGS_PANEL_ID } },
                 },
               },
             }}

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Divider, Grid, styled, Typography } from '@mui/material';
+import { Button, Divider, Grid, styled, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { useGetMeQuery } from '../../../api/rest';
@@ -28,7 +28,7 @@ const SettingsAccountPage = () => {
   return (
     <>
       <VisuallyHiddenTitle label={pageHeading} component="h2" />
-      <Grid container spacing={5} direction="column">
+      <Stack spacing={5}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12 }}>
             <Typography variant="h1" component="h2">
@@ -78,7 +78,7 @@ const SettingsAccountPage = () => {
             <Grid>
               <Divider />
             </Grid>
-            <Grid container spacing={3} direction="column">
+            <Stack spacing={3}>
               <Grid>
                 <Typography variant="h1" component="h2">
                   {t('global-password')}
@@ -89,10 +89,10 @@ const SettingsAccountPage = () => {
                   {t('dashboard-settings-account-change-password-button')}
                 </Button>
               </Grid>
-            </Grid>
+            </Stack>
           </>
         )}
-      </Grid>
+      </Stack>
     </>
   );
 };

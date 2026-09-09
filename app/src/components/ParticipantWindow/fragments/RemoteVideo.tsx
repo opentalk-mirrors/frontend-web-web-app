@@ -31,14 +31,7 @@ const RemoteVideo = ({ descriptor }: IRemoteVideoProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <Container
-      ref={containerRef}
-      container
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
-      data-testid={`remoteVideo-${idFromDescriptor(descriptor)}`}
-    >
+    <Container ref={containerRef} container data-testid={`remoteVideo-${idFromDescriptor(descriptor)}`}>
       {videoTrack ? <Video muted autoPlay trackRef={videoTrack} /> : <Loader />}
     </Container>
   );
