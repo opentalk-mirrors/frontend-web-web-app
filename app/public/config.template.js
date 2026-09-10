@@ -53,6 +53,7 @@ window.config = {
     addUser: false,
     joinWithoutMedia: false,
     e2eEncryption: false,
+    conferenceUiV2: false,
   },
   settings: {
     waitingRoomDefaultValue: true,

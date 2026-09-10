@@ -20,6 +20,7 @@ import { ElementType, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon } from '../../../assets/icons';
+import { useConferenceUiVersion } from '../../../hooks';
 import { MeetingSettings, getSettingPanels } from './settingPanels';
 
 const DesktopSettingsDialogContent = styled(DialogContent)(({ theme }) => ({
@@ -86,13 +87,14 @@ const DesktopDialogContent = (props: DesktopSettingsDialogContentProps) => {
   const { t } = useTranslation();
   const { onClose, setting } = props;
   const [tabValue, setTabValue] = useState<MeetingSettings>(setting);
+  const { isV2Available } = useConferenceUiVersion(); // V2-CLEANUP
 
   const handleChange = (event: React.SyntheticEvent, newValue: MeetingSettings) => {
     setTabValue(newValue);
   };
 
   const title = t('meeting-settings-title');
-  const settingPanels = getSettingPanels();
+  const settingPanels = getSettingPanels({ includeInterface: isV2Available }); // V2-CLEANUP: call getSettingPanels()
 
   return (
     <>

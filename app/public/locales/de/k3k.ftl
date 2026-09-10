@@ -105,6 +105,9 @@ camera-settings-title = Ein- und Ausgabe von Videosignalen
 camera-panel-title = Kamera
 screen-share-panel-title = Bildschirmfreigabe
 screen-share-panel-resolution-changed = Sie müssen die Bildschirmfreigabe neu starten, damit die Änderungen wirksam werden.
+interface-panel-title = Oberfläche
+interface-settings-new-ui-label = Neue Oberfläche (Beta)
+interface-settings-new-ui-description = Testen Sie die neu gestaltete Meeting-Oberfläche. Sie können jederzeit zurückwechseln.
 
 participant-stream-broken-tooltip = Medienstrom unterbrochen
 participant-audio-broken-tooltip = Audiokanal unterbrochen

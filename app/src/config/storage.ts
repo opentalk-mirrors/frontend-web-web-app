@@ -10,4 +10,5 @@ export enum localStorageItems {
   safariNotificationKey = 'safari-warning-notification',
   devMode = 'devMode',
   meetingsFilter = 'dashboard-meetings-filter',
+  conferenceUiVersion = 'conference-ui-version', // V2-CLEANUP
 }

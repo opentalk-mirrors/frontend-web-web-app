@@ -5,6 +5,7 @@ import useDateFormat from './useDateFormat';
 import useLocale from './useLocale';
 
 export { default as useRemainingDurationOfTimer } from './useRemainingDurationOfTimer';
+export { default as useConferenceUiVersion } from './useConferenceUiVersion';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export { useAppDispatch, useAppSelector } from './useCustomRedux';

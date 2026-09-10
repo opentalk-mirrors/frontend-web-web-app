@@ -32,6 +32,11 @@ vi.mock('./settingPanels', () => {
   };
 });
 
+vi.mock('../../../hooks', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../../hooks')>();
+  return { ...actual, useConferenceUiVersion: () => ({ isV2Available: false }) };
+});
+
 describe('DesktopDialogContent', () => {
   beforeAll(() => {
     mockPanels = SETTING_PANELS;
