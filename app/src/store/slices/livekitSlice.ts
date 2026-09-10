@@ -582,15 +582,21 @@ const startReconnectOnLivekitTriggerListener = (startAppListening: StartAppListe
 const startDisableMediaOnCoffeeBreakListener = (startAppListening: StartAppListening) =>
   startAppListening({
     actionCreator: timerStarted,
-    effect: (action, listenerApi) => {
+    effect: async (action, listenerApi) => {
       const state = listenerApi.getState();
       const isAnyMediaTrackEnabled = selectAudioEnabled(state) || selectVideoEnabled(state);
       const isShareScreenEnabled = selectScreenShareEnabled(state);
 
       if (action.payload.style === TimerStyle.CoffeeBreak) {
         if (isAnyMediaTrackEnabled) {
-          listenerApi.dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
+          await listenerApi.dispatch(changeMedia({ kind: 'audioinput', enabled: false }));
           listenerApi.dispatch(changeMedia({ kind: 'videoinput', enabled: false }));
+
+          // LiveKit only mutes the microphone track on disable (unlike the camera, which it stops)
+          const microphonePublication = listenerApi
+            .getState()
+            .livekit.room?.localParticipant.getTrackPublication(Track.Source.Microphone);
+          microphonePublication?.audioTrack?.stop();
         }
         if (isShareScreenEnabled) {
           listenerApi.dispatch(setScreenShareEnabled({ enabled: false }));
