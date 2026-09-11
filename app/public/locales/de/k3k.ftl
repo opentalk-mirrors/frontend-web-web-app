@@ -834,6 +834,7 @@ conference-storage-tooltip-full-storage = Ihr Dateispeicher ist voll. Sie könne
 dashboard-close-navbar= Navigation schließen
 dashboard-open-navbar = Navigation aufklappen
 dashboard-join-meeting = Nehmen Sie an der Besprechung teil
+date-time-picker = Datums- und Zeitauswahl
 
 dashboard-sign-in = Anmelden
 
