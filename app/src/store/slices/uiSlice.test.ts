@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import LayoutOptions from '../../enums/LayoutOptions';
+import { SwitchedRoomPayload, switchedRoom } from './breakoutSlice';
 import { CinemaViewSortOrder } from './common';
 import reducer, {
   loadCinemaLayoutSettingsFromLocalStorage,
@@ -72,6 +73,29 @@ describe('uiSlice updatedCinemaLayout', () => {
     state = reducer(state, updatedCinemaLayout({ layout: state.lastCinemaLayout }));
 
     expect(state.cinemaLayout).toBe(LayoutOptions.Speaker);
+  });
+});
+
+describe('uiSlice switchedRoom', () => {
+  it('closes the whiteboard and returns to the cached last layout when switching rooms', () => {
+    let state = reducer(
+      getInitialState(),
+      updatedCinemaLayout({ layout: LayoutOptions.Speaker, cacheLastLayout: true })
+    );
+    state = reducer(state, updatedCinemaLayout({ layout: LayoutOptions.Whiteboard, cacheLastLayout: true }));
+
+    state = reducer(state, switchedRoom({ newRoom: { id: 'room-1' } } as unknown as SwitchedRoomPayload));
+
+    expect(state.cinemaLayout).toBe(LayoutOptions.Speaker);
+  });
+
+  it('leaves a non-whiteboard layout untouched when switching rooms', () => {
+    const state = reducer(
+      { ...getInitialState(), cinemaLayout: LayoutOptions.Grid },
+      switchedRoom({ newRoom: { id: 'room-1' } } as unknown as SwitchedRoomPayload)
+    );
+
+    expect(state.cinemaLayout).toBe(LayoutOptions.Grid);
   });
 });
 

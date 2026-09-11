@@ -311,6 +311,13 @@ export const uiSlice = createSlice({
     builder.addCase(automodStarted, (state) => {
       state.currentMenuTab = MenuTab.People;
     });
+    builder.addCase(switchedRoom, (state) => {
+      // The whiteboard session belongs to the room it was opened in, so close it on
+      // room switch the same way the "Hide" button does, rather than showing it stale.
+      if (state.cinemaLayout === LayoutOptions.Whiteboard) {
+        state.cinemaLayout = state.lastCinemaLayout;
+      }
+    });
     builder.addMatcher(isAnyOf(switchedRoom, joinSuccess), (state, { payload }) => {
       if ('newRoom' in payload && payload.newRoom) {
         if (payload.newRoom.kind === RoomKind.Breakout) {

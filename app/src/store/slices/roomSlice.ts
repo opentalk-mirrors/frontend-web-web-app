@@ -4,7 +4,7 @@
 import { AuthTypeError, authError } from '@opentalk/redux-oidc';
 import { EventInfo, InviteCode, RoomId } from '@opentalk/rest-api-rtk-query';
 import { MeetingDetails } from '@opentalk/rest-api-rtk-query/dist/src/types/event';
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { isAnyOf, PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ListenerEffectAPI } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
 import { t } from 'i18next';
@@ -15,6 +15,7 @@ import { RoomParametersChanged } from '../../api/types/incoming/core';
 import { ParticipationLoggingState } from '../../api/types/outgoing/trainingParticipationReport';
 import { notifications } from '../../commonComponents';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
+import { abortWhiteboardRoomSwitch, endWhiteboardRoomSwitch } from '../../modules/WhiteboardRoomSwitch';
 import {
   AutomodSelectionStrategy,
   FetchRequestError,
@@ -29,7 +30,7 @@ import { disconnectRoom, hangUp, joinSuccess, startRoom } from '../commonActions
 import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted, stopped as automodStopped } from './automodSlice';
-import { switchedRoom } from './breakoutSlice';
+import { breakoutError, switchedRoom } from './breakoutSlice';
 import { timerStarted, timerStopped } from './timerSlice';
 
 export type RoomState = {
@@ -443,9 +444,25 @@ const startCloseAllNotificationsOnFailedConnectionListener = (startAppListening:
     },
   });
 
+const startWhiteboardSwitchErrorListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: breakoutError,
+    effect: () => {
+      abortWhiteboardRoomSwitch();
+    },
+  });
+
+const startWhiteboardRoomSwitchResetListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    matcher: isAnyOf(connectionClosed, startRoom.pending),
+    effect: endWhiteboardRoomSwitch,
+  });
+
 export const startRoomListeners = (startAppListening: StartAppListening) => {
   startReconnectOnStartRoomErrorListener(startAppListening);
   startReconnectOnConnectionClosedListener(startAppListening);
   startCloseAllNotificationsOnFailedConnectionListener(startAppListening);
   startConnectionStateChangeListener(startAppListening);
+  startWhiteboardSwitchErrorListener(startAppListening);
+  startWhiteboardRoomSwitchResetListener(startAppListening);
 };

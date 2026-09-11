@@ -1,11 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
-import { MeetingNotesAccess, ParticipationKind, Role } from '../../types';
+import type { ExcalidrawElements } from '../../api/types/incoming/whiteboard';
+import { switchRoom } from '../../api/types/outgoing/breakout';
+import { storeScene } from '../../api/types/outgoing/whiteboard';
+import { endWhiteboardRoomSwitch } from '../../modules/WhiteboardRoomSwitch';
+import { switchedRoom, SwitchedRoomPayload } from '../../store/slices/breakoutSlice';
+import { BreakoutRoomId, MeetingNotesAccess, ParticipationKind, Role, RoomKind } from '../../types';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import WhiteboardView from './WhiteboardView';
 
@@ -25,6 +30,11 @@ const { excalidrawApiMock, createAssetMock, getCurrentConferenceRoomMock, sendMe
     sendMessageMock: vi.fn(),
     restrictionsDialogMock: vi.fn(),
   }));
+
+// Captures the latest `onChange` handler so tests can simulate drawing on the whiteboard.
+const excalidrawHandlers = vi.hoisted(() => ({
+  onChange: undefined as ((elements: ReadonlyArray<unknown>) => void) | undefined,
+}));
 
 vi.mock('../../commonComponents', () => ({
   notifications: {
@@ -111,13 +121,16 @@ vi.mock('@excalidraw/excalidraw', () => {
         children,
         viewModeEnabled,
         UIOptions,
+        onChange,
       }: {
         excalidrawAPI?: (api: typeof excalidrawApiMock) => void;
         children: ReactNode;
         viewModeEnabled?: boolean;
         UIOptions?: { tools?: { image?: boolean } };
+        onChange?: (elements: ReadonlyArray<unknown>) => void;
       }) => {
         excalidrawAPI?.(excalidrawApiMock);
+        excalidrawHandlers.onChange = onChange;
 
         return (
           <div
@@ -186,13 +199,15 @@ const renderWhiteboardView = ({
   dispatchSpy.mockClear();
   restrictionsDialogMock.mockClear();
 
-  return { ...view, dispatchSpy };
+  return { ...view, dispatchSpy, store };
 };
 
 describe('WhiteboardView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     getCurrentConferenceRoomMock.mockReturnValue(undefined);
+    excalidrawHandlers.onChange = undefined;
+    endWhiteboardRoomSwitch();
   });
 
   it('renders excalidraw in edit mode when the user may edit', () => {
@@ -251,5 +266,62 @@ describe('WhiteboardView', () => {
     unmount();
 
     expect(room.removeEventListener).toHaveBeenCalledWith('message', registeredHandler);
+  });
+
+  describe('scene persistence', () => {
+    const drawnElements = [
+      { id: 'element-1', version: 1, versionNonce: 1, isDeleted: false, updated: Date.now() },
+    ] as unknown as ExcalidrawElements;
+    const storeDrawnScene = storeScene.action({ scene: { elements: drawnElements } });
+
+    const drawOnWhiteboard = () => {
+      act(() => {
+        excalidrawHandlers.onChange?.(drawnElements);
+      });
+    };
+
+    beforeEach(() => {
+      getCurrentConferenceRoomMock.mockReturnValue({
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      });
+    });
+
+    it('persists the scene when the whiteboard is closed inside the same room', () => {
+      const { unmount, dispatchSpy } = renderWhiteboardView();
+      drawOnWhiteboard();
+
+      unmount();
+
+      expect(dispatchSpy).toHaveBeenCalledWith(storeDrawnScene);
+    });
+
+    it('does not persist the scene once a room switch has been requested', () => {
+      const { unmount, dispatchSpy, store } = renderWhiteboardView();
+      drawOnWhiteboard();
+
+      act(() => {
+        store.dispatch(switchRoom.action({ kind: RoomKind.Breakout, id: 1 as BreakoutRoomId }));
+      });
+      unmount();
+
+      expect(dispatchSpy).not.toHaveBeenCalledWith(storeDrawnScene);
+    });
+
+    it('does not persist the scene of the room we left once the switch completed', async () => {
+      const { unmount, dispatchSpy, store } = renderWhiteboardView();
+      drawOnWhiteboard();
+
+      await act(async () => {
+        store.dispatch(
+          switchedRoom({
+            newRoom: { kind: RoomKind.Breakout, id: 1 },
+          } as unknown as SwitchedRoomPayload)
+        );
+      });
+      unmount();
+
+      expect(dispatchSpy).not.toHaveBeenCalledWith(storeDrawnScene);
+    });
   });
 });
