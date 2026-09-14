@@ -180,9 +180,12 @@ export class ConferenceRoom extends BaseEventEmitter<ConferenceEvent> {
   private handleCoreMessage(message: RoomserverCoreMessage) {
     switch (message.message) {
       case 'join_blocked':
-        // try to automatically rejoin a blocked room
+        // try to automatically rejoin a blocked room, but only while the
+        // signaling socket is still open to avoid an uncaught throw from join()
         this.rejoinTimer = setTimeout(() => {
-          this.join(this.participantName ?? '');
+          if (this.signaling.isOpen()) {
+            this.join(this.participantName ?? '');
+          }
         }, REJOIN_ON_BLOCKED_CONNECTION_TIME);
         break;
     }
