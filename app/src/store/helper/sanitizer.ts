@@ -5,7 +5,7 @@ import type { UnknownAction, Action } from '@reduxjs/toolkit';
 import { get, set } from 'lodash';
 
 import { broadcastVolatile } from '../../api/types/outgoing/whiteboard';
-import { changeLocalMedia, connectRoom, switchLocalDevice } from '../commonActions';
+import { changeLocalMedia, connectRoom, startRoom, switchLocalDevice } from '../commonActions';
 import type { RootState } from '../index';
 import { setLivekitRoom } from '../slices/livekitSlice';
 
@@ -88,6 +88,10 @@ function maskPayloadKey<T extends UnknownAction, K extends string>(action: T, ke
 
 export const actionSanitizer: <A extends Action>(genericAction: A, _id: number) => A = <A>(genericAction: A): A => {
   const action = genericAction as unknown as UnknownAction;
+
+  if (startRoom.fulfilled.match(action)) {
+    return maskPayloadKey(action, 'conferenceContext') as A;
+  }
 
   if (changeLocalMedia.fulfilled.match(action) || switchLocalDevice.fulfilled.match(action)) {
     return maskPayloadKey(action, 'videoTrackPublication') as A;
