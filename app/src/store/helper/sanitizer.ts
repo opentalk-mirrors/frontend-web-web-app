@@ -94,7 +94,7 @@ export const actionSanitizer: <A extends Action>(genericAction: A, _id: number) 
   }
 
   if (changeLocalMedia.fulfilled.match(action) || switchLocalDevice.fulfilled.match(action)) {
-    return maskPayloadKey(action, 'videoTrackPublication') as A;
+    return maskPayloadKey(action, 'track') as A;
   }
 
   if (setLivekitRoom.match(action) || connectRoom.fulfilled.match(action)) {
