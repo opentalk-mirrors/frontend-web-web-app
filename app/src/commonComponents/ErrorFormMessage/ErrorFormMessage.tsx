@@ -33,7 +33,12 @@ export const ErrorFormMessage: FC<ErrorFormMessageProps> = ({ helperText, id }) 
   return (
     <Container error id={id}>
       <span>{t('global-error')}</span>:&nbsp;
-      <Box component="span" flex={1}>
+      <Box
+        component="span"
+        sx={{
+          flex: 1,
+        }}
+      >
         {helperText}
       </Box>
     </Container>

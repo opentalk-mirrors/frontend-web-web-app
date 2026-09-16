@@ -29,7 +29,7 @@ export const LegalVoteSetupForm = () => {
   return (
     <Grid container spacing={2}>
       <Grid size={{ xs: 12 }} sx={{ position: 'relative' }}>
-        <DurationFieldWrapper paddingTop={1}>
+        <DurationFieldWrapper sx={{ paddingTop: 1 }}>
           <DurationField
             {...formikDurationFieldProps('duration', formik)}
             durationOptions={[null, 1, 2, 5, 'custom']}

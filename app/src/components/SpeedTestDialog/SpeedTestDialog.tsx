@@ -15,6 +15,7 @@ import {
   DialogProps,
   Box,
   Tooltip,
+  Stack,
 } from '@mui/material';
 import { useCallback, useState, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,9 +42,10 @@ const slowUploadMbs = 1;
 const goodLatency = 200;
 const slowLatency = 1000;
 
-const ExpandingContainer = styled(Grid, {
+const ExpandingContainer = styled(Stack, {
   shouldForwardProp: (prop) => prop !== 'visible',
 })<{ visible: boolean }>(({ visible, theme }) => ({
+  alignItems: 'center',
   paddingTop: theme.spacing(2),
   overflow: 'hidden',
   maxHeight: visible ? '25rem' : 0,
@@ -287,10 +289,13 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
           </CloseIconButton>
         </Box>
 
-        <Grid container justifyContent="center">
-          <Grid
-            container
-            direction="column"
+        <Grid
+          container
+          sx={{
+            justifyContent: 'center',
+          }}
+        >
+          <Stack
             spacing={2}
             sx={{
               alignItems: 'center',
@@ -312,34 +317,23 @@ const SpeedTestDialog = ({ ...props }: SpeedTestDialogProps) => {
                 </StyledTypography>
               </Grid>
             )}
-          </Grid>
+          </Stack>
 
-          <ExpandingContainer
-            visible={testCompleted}
-            container
-            direction="column"
-            alignItems="center"
-            spacing={2}
-            wrap="nowrap"
-          >
-            <Grid>
-              <GridDiv>
-                <StyledTypography variant="body2">{t('speed-meter-download-label')}:</StyledTypography>
-                <ResultDiv quality={downloadQuality}>
-                  {downloadState !== undefined ? downloadState.toFixed(2) : '-'}
-                </ResultDiv>
-                <StyledTypography variant="body2">{t('speed-meter-mbps')}</StyledTypography>
-                <StyledTypography variant="body2">{t('speed-meter-upload-label')}:</StyledTypography>
-                <ResultDiv quality={uploadQuality}>
-                  {uploadState !== undefined ? uploadState.toFixed(2) : '-'}
-                </ResultDiv>
-                <StyledTypography variant="body2">{t('speed-meter-mbps')}</StyledTypography>
-                <StyledTypography variant="body2">{t('speed-meter-latency-label')}:</StyledTypography>
+          <ExpandingContainer visible={testCompleted} spacing={2}>
+            <GridDiv>
+              <StyledTypography variant="body2">{t('speed-meter-download-label')}:</StyledTypography>
+              <ResultDiv quality={downloadQuality}>
+                {downloadState !== undefined ? downloadState.toFixed(2) : '-'}
+              </ResultDiv>
+              <StyledTypography variant="body2">{t('speed-meter-mbps')}</StyledTypography>
+              <StyledTypography variant="body2">{t('speed-meter-upload-label')}:</StyledTypography>
+              <ResultDiv quality={uploadQuality}>{uploadState !== undefined ? uploadState.toFixed(2) : '-'}</ResultDiv>
+              <StyledTypography variant="body2">{t('speed-meter-mbps')}</StyledTypography>
+              <StyledTypography variant="body2">{t('speed-meter-latency-label')}:</StyledTypography>
 
-                <ResultDiv quality={latencyQuality}>{latencyState !== undefined ? latencyState : '-'}</ResultDiv>
-                <StyledTypography variant="body2">{t('speed-meter-ms')}</StyledTypography>
-              </GridDiv>
-            </Grid>
+              <ResultDiv quality={latencyQuality}>{latencyState !== undefined ? latencyState : '-'}</ResultDiv>
+              <StyledTypography variant="body2">{t('speed-meter-ms')}</StyledTypography>
+            </GridDiv>
             <DialogContent>
               <StyledTypography variant="body2" align="center">
                 {getMessage()}

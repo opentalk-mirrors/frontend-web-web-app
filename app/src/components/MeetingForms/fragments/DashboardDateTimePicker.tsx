@@ -68,9 +68,7 @@ export const DashboardDateTimePicker = (props: DashboardDateTimePickerProps) => 
           required: true,
         }}
         helperText={props.formik.errors[`${props.type}Date`] || props.helperText}
-        InputProps={{
-          color: 'primary',
-        }}
+        InputProps={{ color: 'primary' }}
       />
     </Stack>
   );

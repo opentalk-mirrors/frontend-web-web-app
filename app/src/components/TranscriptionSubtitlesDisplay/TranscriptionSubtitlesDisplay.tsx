@@ -100,7 +100,13 @@ const TranscriptionSubtitlesDisplay = () => {
           </SubtitlesContainerHeader>
           {activeSubtitles.map((subtitle: TranscriptionSubtitle) => (
             <Subtitle key={`${subtitle.displayName}-${subtitle.timestamp}`}>
-              <Stack direction="row" spacing={2} alignItems="center">
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  alignItems: 'center',
+                }}
+              >
                 <ParticipantAvatar src={subtitle.avatarUrl} alt={subtitle.displayName} />
                 <Box>
                   <DisplayName variant="body2">{subtitle.displayName}</DisplayName>

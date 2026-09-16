@@ -84,10 +84,10 @@ export const CustomEndOptions = ({
       <Grid
         container
         sx={{
+          columnGap: 2,
           alignItems: 'center',
           flexWrap: 'nowrap',
         }}
-        columnGap={2}
       >
         <Grid>
           <FormControlLabel
@@ -109,7 +109,10 @@ export const CustomEndOptions = ({
                   helperText: isTouched && validationErrorKey ? t(validationErrorKey) : undefined,
                   onBlur: () => setIsTouched(true),
                   onFocus: () => setIsTouched(false),
-                  InputProps: { color: 'primary' },
+
+                  slotProps: {
+                    input: { color: 'primary' },
+                  },
                 },
               }}
             />

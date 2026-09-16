@@ -60,14 +60,14 @@ const ChatOverviewItem = ({ chat, onClick }: ChatOverviewItemProps) => {
           noWrap
           translate="no"
           sx={{
-            fontWeight: fontWeight,
+            fontWeight,
           }}
         >
           {getDisplayName()}
         </Typography>
       </Grid>
       <Grid>
-        <TimeTypography variant="caption" fontWeight={fontWeight}>
+        <TimeTypography variant="caption" sx={{ fontWeight }}>
           {formattedTime}
         </TimeTypography>
       </Grid>

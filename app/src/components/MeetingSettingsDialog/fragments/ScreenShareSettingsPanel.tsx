@@ -60,11 +60,22 @@ const ScreenShareSettingsPanel = () => {
 
   return (
     <>
-      <Typography variant="h2" alignSelf="start" pb={1}>
+      <Typography
+        variant="h2"
+        sx={{
+          alignSelf: 'start',
+          pb: 1,
+        }}
+      >
         {t('screen-share-panel-title')}
       </Typography>
       {valueChanged && (
-        <Typography variant="body2" pb={2}>
+        <Typography
+          variant="body2"
+          sx={{
+            pb: 2,
+          }}
+        >
           {t('screen-share-panel-resolution-changed')}
         </Typography>
       )}
@@ -76,7 +87,12 @@ const ScreenShareSettingsPanel = () => {
               <ShareScreenOnIcon />
               {t('screen-share-menu-choose-resolution')}
             </ListSubheader>
-            <Typography variant="body2" mb={1}>
+            <Typography
+              variant="body2"
+              sx={{
+                mb: 1,
+              }}
+            >
               {t('screen-share-menu-choose-resolution-subtitle')}
             </Typography>
           </>

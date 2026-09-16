@@ -20,14 +20,26 @@ const DeviceManager = ({ state, ...props }: DeviceManagerProps) => {
       return <DeviceList {...props} />;
     case DevicePermissionState.Pending:
       return (
-        <Stack alignItems="center" direction="row" gap={1}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
           <WarningIcon data-testid="warning-icon" />
           <Typography variant="body2">{t('device-permission-pending')}</Typography>
         </Stack>
       );
     case DevicePermissionState.Denied:
       return (
-        <Stack alignItems="center" direction="row" gap={1}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
           <ErrorIcon data-testid="error-icon" />
           <Typography variant="body2">{t('device-permission-denied')}</Typography>
         </Stack>

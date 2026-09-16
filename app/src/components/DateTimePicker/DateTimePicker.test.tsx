@@ -21,7 +21,6 @@ const clearableDateTimePickerProps = {
   value: date.toString(),
   clearable: true,
   clearButtonLabel: 'Custom clear button text',
-  placeholder: 'Cleared value',
   onChange: vi.fn(),
   ampm: false,
 };
@@ -53,7 +52,7 @@ describe('render <DateTimePicker />', () => {
     expect(pickerValue).toBe(deFormattedDate);
   });
 
-  it('renders DateTimePicker placeholder value on clear button click', async () => {
+  it('renders clear button on choose date click, if clearable', async () => {
     renderWithProviders(<DateTimePicker {...clearableDateTimePickerProps} />, { store, provider: { mui: true } });
 
     const input = screen.getByRole('group');

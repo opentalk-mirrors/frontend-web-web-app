@@ -37,7 +37,6 @@ const CommonFormItem = ({
 }: CommonFormItemProps) => {
   const isChecked = checked === undefined ? undefined : checked;
   const id = React.useId();
-  const controlInputProps = control.props?.inputProps || {};
 
   return (
     <Stack>
@@ -56,7 +55,6 @@ const CommonFormItem = ({
           name,
           id: props.id || id,
           checked: isChecked,
-          inputProps: { ...controlInputProps },
           value,
         })}
       </Box>

@@ -1281,6 +1281,7 @@ layout-selection-grid-activity-first = Aktivität
 layout-selection-grid-activity-first-subtitle = Sprechen und aktive Kamera
 layout-selection-grid-size = Anzahl der Kacheln
 layout-selection-tiles = Kacheln
+shared-folder-menu-label = Geteilten Ordner Menü
 shared-folder-open-label = Geteilten Ordner öffnen
 shared-folder-password-label = Ordner-Passwort kopieren
 

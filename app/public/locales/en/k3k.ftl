@@ -1283,6 +1283,7 @@ layout-selection-grid-activity-first = Activity
 layout-selection-grid-activity-first-subtitle = Based on speaking and camera status
 layout-selection-grid-size = Grid size
 layout-selection-tiles = tiles
+shared-folder-menu-label = Shared folder menu
 shared-folder-open-label = Open shared folder
 shared-folder-password-label = Copy Folder-password
 

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MenuItem, Popover } from '@mui/material';
+import { MenuItem, Popover, MenuList } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -62,18 +62,22 @@ export const SharedFolderPopover = () => {
         onClose={() => setAnchorElement(null)}
         disablePortal
       >
-        {sharedFolderUrl && (
-          <MenuItem
-            onClick={() => {
-              dispatch(sharedFolderOpened());
-              window.open(sharedFolderUrl, 'sharedFolder');
-              setAnchorElement(null);
-            }}
-          >
-            {t('shared-folder-open-label')}
-          </MenuItem>
-        )}
-        {sharedFolderPassword && <MenuItem onClick={handlePasswordClick}>{t('shared-folder-password-label')}</MenuItem>}
+        <MenuList aria-label={t('shared-folder-menu-label')}>
+          {sharedFolderUrl && (
+            <MenuItem
+              onClick={() => {
+                dispatch(sharedFolderOpened());
+                window.open(sharedFolderUrl, 'sharedFolder');
+                setAnchorElement(null);
+              }}
+            >
+              {t('shared-folder-open-label')}
+            </MenuItem>
+          )}
+          {sharedFolderPassword && (
+            <MenuItem onClick={handlePasswordClick}>{t('shared-folder-password-label')}</MenuItem>
+          )}
+        </MenuList>
       </Popover>
     </>
   );

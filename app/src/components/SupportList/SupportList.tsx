@@ -178,7 +178,7 @@ export const SupportList = ({
           {items().map((item) => (
             <MenuItem key={item.key} sx={{ width: '100%' }} disableGutters {...(item.componentProps as MenuItemProps)}>
               {icons && <ListItemIcon>{item.icon}</ListItemIcon>}
-              <ListItemText primary={t(item.name)} slotProps={{ primary: { textAlign: 'left' } }} />
+              <ListItemText primary={t(item.name)} slotProps={{ primary: { sx: { textAlign: 'left' } } }} />
               {renderEndAdornment(item)}
             </MenuItem>
           ))}

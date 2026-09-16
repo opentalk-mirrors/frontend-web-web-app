@@ -88,7 +88,12 @@ const CreateDirectMeeting = () => {
   return (
     <Container>
       <Stack>
-        <Typography variant="h1" fontWeight="bold">
+        <Typography
+          variant="h1"
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           {pageHeading}
         </Typography>
         <AttentionMessageTypography>{t('dashboard-direct-meeting-attention')}</AttentionMessageTypography>

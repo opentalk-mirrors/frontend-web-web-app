@@ -80,7 +80,13 @@ export function ParticipantsPopoverContent(props: ParticipantsPopoverProps) {
   return (
     <Container fixed maxWidth="xs" disableGutters>
       <Title variant="body2">{t('room', { roomNumber: props.editingRoomIndex + 1 })}</Title>
-      <Stack pl={1} pr={2} pb={1}>
+      <Stack
+        sx={{
+          pl: 1,
+          pr: 2,
+          pb: 1,
+        }}
+      >
         {props.participants.map(({ id, displayName }) => (
           <ParticipantCheckbox
             key={id}

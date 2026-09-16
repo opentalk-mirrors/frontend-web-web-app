@@ -72,7 +72,14 @@ const EventsPageHeader = ({ onFilterChange, filters, entries, title }: EventsPag
             gap: 2,
           }}
         >
-          <Typography variant="h1" component="h1" fontWeight={700} color="inherit">
+          <Typography
+            variant="h1"
+            component="h1"
+            color="inherit"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             {title}
           </Typography>
           <EventPageFilters

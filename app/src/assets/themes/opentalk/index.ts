@@ -78,6 +78,64 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
                   },
                 },
               },
+              {
+                props: { variant: 'contained', color: 'primary' },
+                style: {
+                  color: theme.palette.primary.contrastText,
+                  ':hover': {
+                    backgroundColor: theme.palette.primary.light,
+                  },
+                  ':disabled': {
+                    backgroundColor: theme.palette.primary.dark,
+                    color: theme.palette.primary.contrastText,
+                  },
+                  '&.MuiButtonBase-root.Mui-disabled': {
+                    backgroundColor: theme.palette.primary.dark,
+                  },
+                },
+              },
+              {
+                props: { variant: 'contained', color: 'secondary' },
+                style: {
+                  color: theme.palette.secondary.contrastText,
+                  ':hover': {
+                    backgroundColor: theme.palette.secondary.light,
+                  },
+                  ':disabled': {
+                    backgroundColor: theme.palette.secondary.dark,
+                    color: theme.palette.secondary.contrastText,
+                  },
+                },
+              },
+              {
+                props: { variant: 'contained', color: 'colorError' },
+                style: {
+                  ':hover': {
+                    backgroundColor: theme.palette.error.light,
+                  },
+                  ':disabled': {
+                    backgroundColor: theme.palette.secondary.main,
+                    color: theme.palette.secondary.contrastText,
+                  },
+                },
+              },
+              {
+                props: { variant: 'outlined', color: 'secondary' },
+                style: {
+                  borderColor: theme.palette.secondary.main,
+                  ':disabled': {
+                    color: theme.palette.secondary.main,
+                  },
+                },
+              },
+              {
+                props: { variant: 'text', color: 'secondary' },
+                style: {
+                  ':hover': {
+                    backgroundColor: 'unset',
+                  },
+                },
+              },
             ],
           }),
           sizeSmall: ({ theme }) => ({
@@ -115,49 +173,6 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
               },
             },
           }),
-          containedPrimary: ({ theme }) => ({
-            color: theme.palette.primary.contrastText,
-            ':hover': {
-              backgroundColor: theme.palette.primary.light,
-            },
-            ':disabled': {
-              backgroundColor: theme.palette.primary.dark,
-              color: theme.palette.primary.contrastText,
-            },
-            '&.MuiButtonBase-root.Mui-disabled': {
-              backgroundColor: theme.palette.primary.dark,
-            },
-          }),
-          containedSecondary: ({ theme }) => ({
-            color: theme.palette.secondary.contrastText,
-            ':hover': {
-              backgroundColor: theme.palette.secondary.light,
-            },
-            ':disabled': {
-              backgroundColor: theme.palette.secondary.main,
-              color: theme.palette.secondary.contrastText,
-            },
-          }),
-          outlinedSecondary: ({ theme }) => ({
-            borderColor: theme.palette.secondary.main,
-            ':disabled': {
-              color: theme.palette.secondary.main,
-            },
-          }),
-          containedError: ({ theme }) => ({
-            ':hover': {
-              backgroundColor: theme.palette.error.light,
-            },
-            ':disabled': {
-              backgroundColor: theme.palette.secondary.main,
-              color: theme.palette.secondary.contrastText,
-            },
-          }),
-          textSecondary: {
-            ':hover': {
-              backgroundColor: 'unset',
-            },
-          },
         },
       },
       MuiSvgIcon: {
@@ -452,19 +467,17 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
           multiline: {
             padding: 0,
           },
-          inputAdornedStart: {
-            '&&': {
-              paddingLeft: 0,
-            },
+          adornedStart: {
+            '&:not(.MuiInputBase-multiline) .MuiInputBase-input': { paddingLeft: 0 },
           },
-          inputAdornedEnd: ({ theme }) => ({
-            '&.MuiInputBase-input': {
-              paddingRight: theme.spacing(4),
-            },
+          adornedEnd: ({ theme }) => ({
+            '&:not(.MuiInputBase-multiline) .MuiInputBase-input': { paddingRight: theme.spacing(4) },
           }),
-          inputSizeSmall: ({ theme }) => ({
-            padding: theme.spacing(1, 4, 1, 1.5),
-            fontSize: theme.typography.pxToRem(14),
+          sizeSmall: ({ theme }) => ({
+            '&:not(.MuiInputBase-multiline) .MuiInputBase-input': {
+              padding: theme.spacing(1, 4, 1, 1.5),
+              fontSize: theme.typography.pxToRem(14),
+            },
           }),
         },
       },
@@ -662,8 +675,13 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
       },
       MuiSelect: {
         styleOverrides: {
-          iconOutlined: ({ theme }) => ({
-            fill: theme.palette.primary.contrastText,
+          root: ({ theme }) => ({
+            variants: [
+              {
+                props: { variant: 'outlined' },
+                style: { '& .MuiSelect-icon': { fill: theme.palette.primary.contrastText } },
+              },
+            ],
           }),
           icon: ({ theme }) => ({
             padding: theme.spacing(0.75),
@@ -898,7 +916,7 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
           }),
         },
       },
-      MuiPickersDay: {
+      MuiPickerDay: {
         styleOverrides: {
           root: ({ theme }) => ({
             '&:hover': {

@@ -44,7 +44,7 @@ ${props.token}
   }
 
   return (
-    <Container display="flex" alignItems="center" gap={2}>
+    <Container sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       <CommonTextField name="token" value={props.token} fullWidth slotProps={{ input: { readOnly: true } }} />
       <Button type="button" onClick={injectTokenIntoClipboard} aria-label="Copy token">
         <CopyIcon />

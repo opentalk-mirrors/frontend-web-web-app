@@ -166,7 +166,14 @@ const EventDetailsPage = () => {
               mb: 4,
             }}
           >
-            <Typography variant="h1" fontWeight="bold" title={pageHeading} sx={{ wordBreak: 'break-word' }}>
+            <Typography
+              variant="h1"
+              title={pageHeading}
+              sx={{
+                fontWeight: 'bold',
+                wordBreak: 'break-word',
+              }}
+            >
               {truncate(pageHeading, { length: 140 })}
             </Typography>
             <Typography
@@ -217,7 +224,11 @@ const EventDetailsPage = () => {
             <InvitedParticipants eventId={event.id} isUpdatable={false} />
           )}
         </Stack>
-        <Box flex="1">
+        <Box
+          sx={{
+            flex: '1',
+          }}
+        >
           <RoomAssetTable
             roomId={event.room.id}
             isMeetingCreator={isMeetingCreator}

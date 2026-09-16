@@ -13,6 +13,7 @@ import {
   ListItem as MuiListItem,
   ListItemAvatar as MuiListItemAvatar,
   Typography,
+  Stack,
   styled,
 } from '@mui/material';
 import { useFormikContext } from 'formik';
@@ -221,12 +222,12 @@ const ParticipantSelector = ({ name }: IParticipantSelectorProps) => {
 
   return (
     <Container disableGutters>
-      <Grid container spacing={2} direction="column">
+      <Stack spacing={2}>
         {renderSearchUser}
         {renderAllUsersButton}
         <FormHelperText>{t('legal-vote-input-assignments-required')}</FormHelperText>
         {renderParticipants}
-      </Grid>
+      </Stack>
     </Container>
   );
 };

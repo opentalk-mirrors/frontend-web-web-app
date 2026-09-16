@@ -194,7 +194,12 @@ export const CustomRecurringEventDialog = ({
     >
       <DialogTitle id={RECURRING_DIALOG_LABEL_ID}>{t('dashboard-recurrence-dialog-title')}</DialogTitle>
       <DialogContent>
-        <Grid container rowGap={1}>
+        <Grid
+          container
+          sx={{
+            rowGap: 1,
+          }}
+        >
           <Grid
             container
             size={12}
@@ -220,7 +225,7 @@ export const CustomRecurringEventDialog = ({
                   type="number"
                   value={interval.toString()}
                   onChange={handleIntervalChange}
-                  inputProps={{ min: 1 }}
+                  slotProps={{ htmlInput: { min: 1 } }}
                 />
               </Grid>
               <Grid size={{ sm: 'auto' }}>

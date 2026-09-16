@@ -28,6 +28,28 @@ describe('SharedFolderPopover rendering logic', () => {
 });
 
 describe('SharedFolderPopover MenuItem rendering logic', () => {
+  it('should render menu on button click', async () => {
+    const user = userEvent.setup();
+    const { store } = configureStore({
+      initialState: {
+        sharedFolder: {
+          opened: true,
+          sharedFolderData: {
+            read: {},
+            readWrite: {
+              url: 'https://example.com',
+              password: 'password',
+            },
+          },
+        },
+      },
+    });
+    renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
+    const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
+    await user.click(button);
+    expect(screen.getByRole('menu', { name: 'shared-folder-menu-label', hidden: true })).toBeInTheDocument();
+  });
+
   it('should not render shared folder MenuItem if url is not provided.', () => {
     const { store } = configureStore({
       initialState: {
@@ -41,7 +63,7 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
       },
     });
     renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
-    expect(screen.queryByRole('menuitem', { name: 'shared-folder-open-label' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'shared-folder-open-label', hidden: true })).not.toBeInTheDocument();
   });
 
   it('should not render shared password MenuItem if its not provided.', async () => {
@@ -59,10 +81,10 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
     });
     renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
-
     await user.click(button);
-
-    expect(screen.queryByText('shared-folder-password-label')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: 'shared-folder-password-label', hidden: true })
+    ).not.toBeInTheDocument();
   });
 
   it('should render shared folder MenuItem if url is provided.', async () => {
@@ -83,10 +105,8 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
     });
     renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
-
     await user.click(button);
-
-    expect(screen.getByText('shared-folder-open-label')).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'shared-folder-open-label', hidden: true })).toBeInTheDocument();
   });
 
   it('should render shared password MenuItem if its provided.', async () => {
@@ -106,11 +126,8 @@ describe('SharedFolderPopover MenuItem rendering logic', () => {
       },
     });
     renderWithProviders(<SharedFolderPopover />, { store, provider: { mui: true } });
-
     const button = screen.getByRole('button', { name: 'shared-folder-open-label' });
-
     await user.click(button);
-
     expect(screen.getByRole('menuitem', { name: 'shared-folder-password-label', hidden: true })).toBeInTheDocument();
   });
 });

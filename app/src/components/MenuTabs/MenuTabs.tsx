@@ -108,7 +108,13 @@ const MenuTabs = () => {
           id={`tab-${MenuTab.People}`}
           label={t('menutabs-people')}
           icon={
-            <Typography variant="caption" aria-hidden="true" lineHeight={1}>
+            <Typography
+              variant="caption"
+              aria-hidden="true"
+              sx={{
+                lineHeight: 1,
+              }}
+            >
               ({totalParticipants})
             </Typography>
           }

@@ -61,14 +61,14 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
       timeString = t('dashboard-meeting-card-timeindependent');
     } else if (endDate && startDate) {
       return (
-        <Typography variant="body2" noWrap mb={isPending ? 0 : 1}>
+        <Typography variant="body2" noWrap sx={{ mb: isPending ? 0 : 1 }}>
           <EventTimePreview startDate={startDate} endDate={endDate} />
         </Typography>
       );
     }
 
     return (
-      <Typography variant="body2" noWrap mb={isPending ? 0 : 1}>
+      <Typography variant="body2" noWrap sx={{ mb: isPending ? 0 : 1 }}>
         {timeString}
       </Typography>
     );
@@ -78,7 +78,14 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
     const authorWithPrefix = isMeetingCreator ? `${author} (${t('global-me')})` : author;
 
     return (
-      <Typography variant="body2" noWrap margin={0} title={authorWithPrefix}>
+      <Typography
+        variant="body2"
+        noWrap
+        title={authorWithPrefix}
+        sx={{
+          margin: 0,
+        }}
+      >
         {t('dashboard-home-created-by', { author: authorWithPrefix })}
       </Typography>
     );
@@ -89,16 +96,41 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
       <Collapse in={isFavorite} data-testid={`favorite-icon${isFavorite ? '-visible' : ''}`}>
         <FavoriteIcon type="functional" title={t('global-favorite')} titleId={uniqueId('favorite-icon-')} />
       </Collapse>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
+      <Stack
+        direction="row"
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         {renderTimeString()}
         {isPending && (
-          <Box display="flex" alignSelf="flex-end">
+          <Box
+            sx={{
+              display: 'flex',
+              alignSelf: 'flex-end',
+            }}
+          >
             <PendingInviteIcon />
           </Box>
         )}
       </Stack>
-      <Stack justifyContent="space-between" flexDirection="row" flexWrap="wrap" gap={2}>
-        <Stack justifyContent="space-between" gap={1} flex={1} minWidth={0}>
+      <Stack
+        sx={{
+          justifyContent: 'space-between',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: 2,
+        }}
+      >
+        <Stack
+          sx={{
+            justifyContent: 'space-between',
+            gap: 1,
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
           <Tooltip translate="no" title={title || ''} describeChild placement="bottom-start">
             <Typography
               variant="h1"
@@ -116,7 +148,11 @@ const StandardCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
           {renderCreator()}
         </Stack>
         <Stack>
-          <Box mt="auto">
+          <Box
+            sx={{
+              mt: 'auto',
+            }}
+          >
             <MeetingCardActions event={event} isMeetingCreator={isMeetingCreator} highlighted={highlighted} />
           </Box>
         </Stack>

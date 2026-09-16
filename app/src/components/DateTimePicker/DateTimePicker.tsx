@@ -1,16 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { Theme, useMediaQuery, Typography, styled } from '@mui/material';
 import {
-  Theme,
-  useMediaQuery,
-  Typography,
-  styled,
-  FilledInputProps,
-  OutlinedInputProps,
-  InputProps,
-} from '@mui/material';
-import { DateTimePicker as MuiDateTimePicker, PickersActionBarAction, PickersLocaleText } from '@mui/x-date-pickers';
+  PickersOutlinedInputProps,
+  DateTimePicker as MuiDateTimePicker,
+  PickersActionBarAction,
+  PickersLocaleText,
+} from '@mui/x-date-pickers';
 import { isSameDay } from 'date-fns';
 import { t } from 'i18next';
 import { isEmpty } from 'lodash';
@@ -21,7 +18,6 @@ import PickerLocalizationProvider from '../../provider/PickerLocalizationProvide
 import { IFormikDateTimePickerPropsReturnValue } from '../../utils/formikUtils';
 
 type PickerTextFieldProps = {
-  placeholder?: string;
   id?: string;
   startAdornment?: string;
   fullWidth?: boolean;
@@ -41,7 +37,7 @@ export type DateTimePickerProps = {
   okButtonLabel?: string;
   cancelButtonLabel?: string;
   textField?: PickerTextFieldProps;
-  InputProps?: Partial<FilledInputProps> | Partial<OutlinedInputProps> | Partial<InputProps> | undefined;
+  InputProps?: Partial<PickersOutlinedInputProps>;
 } & Pick<IFormikDateTimePickerPropsReturnValue, 'onChange' | 'helperText' | 'error'>;
 
 const StartAdornmentTypography = styled(Typography)<{ component?: string; htmlFor?: string }>(({ theme }) => ({
@@ -78,7 +74,7 @@ const DateTimePicker = ({
   InputProps,
 }: DateTimePickerProps) => {
   const inputId = React.useId();
-  const { placeholder, id, startAdornment, fullWidth, required } = textField || {};
+  const { id, startAdornment, fullWidth, required } = textField || {};
   const isScreenHeightTooSmall = useMediaQuery((theme: Theme) => {
     const query = theme.breakpoints.up('sm') + ' and (max-height:900px)';
     return query;
@@ -153,15 +149,16 @@ const DateTimePicker = ({
           closeOnSelect={false}
           slotProps={{
             textField: {
-              placeholder,
               error,
               id,
               fullWidth,
-              InputProps: {
-                ...InputProps,
-                startAdornment: getStartAdornment(),
-                id: inputId,
-                'aria-describedby': error ? `${inputId}-error` : undefined,
+              slotProps: {
+                input: {
+                  ...InputProps,
+                  startAdornment: getStartAdornment(),
+                  id: inputId,
+                  'aria-describedby': error ? `${inputId}-error` : undefined,
+                },
               },
               required,
               helperText: !error && helperText,

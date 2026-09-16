@@ -21,4 +21,10 @@ describe('CommonFormItem', () => {
     rerender(<CommonFormItem {...commonProps} helperText="error message" error />);
     expect(screen.getByText('error message')).toBeInTheDocument();
   });
+  it('renders control customized slot props(like aria-label for example)', () => {
+    render(
+      <CommonFormItem {...commonProps} control={<TextField slotProps={{ input: { 'aria-label': 'Auto close' } }} />} />
+    );
+    expect(screen.getByRole('textbox', { name: 'Auto close' })).toBeInTheDocument();
+  });
 });

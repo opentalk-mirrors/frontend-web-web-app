@@ -260,7 +260,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
         onSubmit={handleSubmit}
         aria-label={existingEvent ? t('dashboard-meeting-update-form-title') : t('dashboard-meeting-create-form-title')}
       >
-        <Stack spacing={2} pb={2}>
+        <Stack spacing={2} sx={{ pb: 2 }}>
           <CommonTextField
             {...formikProps('title', formik)}
             label={t('dashboard-meeting-textfield-title')}

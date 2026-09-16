@@ -70,10 +70,19 @@ const LobbyPasswordStep = ({ initialPassword = '', isSubmitting = false, onSubmi
     <LobbyLayout
       center={
         <>
-          <Typography variant="h1" textAlign="center" fontSize="2.9rem" lineHeight="2.9rem" mb={2} component="h1">
+          <Typography
+            variant="h1"
+            component="h1"
+            sx={{
+              textAlign: 'center',
+              fontSize: '2.9rem',
+              lineHeight: '2.9rem',
+              mb: 2,
+            }}
+          >
             {t('lobby-password-step-heading')}
           </Typography>
-          <Subtext textAlign="center" fontSize="1.37rem" padding="0 0.5rem">
+          <Subtext sx={{ textAlign: 'center', fontSize: '1.37rem', padding: '0 0.5rem' }}>
             {t('lobby-password-step-subtext')}
           </Subtext>
         </>

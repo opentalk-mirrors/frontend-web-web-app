@@ -136,7 +136,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
             </Typography>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
-                <DurationFieldWrapper paddingTop={1}>
+                <DurationFieldWrapper sx={{ paddingTop: 1 }}>
                   <DurationField
                     {...formikDurationFieldProps('duration', formik)}
                     durationOptions={[1, 2, 5, 'custom']}
@@ -199,12 +199,24 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
                 <AnswersFormElement name="choices" answersRange={{ min: CHOICE_MIN_AMOUNT, max: CHOICE_MAX_AMOUNT }} />
               </Grid>
             </Grid>
-            <Stack direction="column" spacing={2} mt="auto">
+            <Stack
+              direction="column"
+              spacing={2}
+              sx={{
+                mt: 'auto',
+              }}
+            >
               <SaveAsTemplateButton
                 onClick={() => saveFormValues(formik.values)}
                 disabled={isSaveAsTemplateDisabled(formik.values)}
               />
-              <Stack direction="row" spacing={1} mt="auto">
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  mt: 'auto',
+                }}
+              >
                 <Button type="button" onClick={onClose} startIcon={<BackIcon />} fullWidth color="primary">
                   {t('poll-button-back')}
                 </Button>

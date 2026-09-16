@@ -139,7 +139,7 @@ export const StorageSection = () => {
   const { t } = useTranslation();
   return (
     <Stack spacing={2}>
-      <Typography variant="h1" component="h2" fontWeight="bold">
+      <Typography variant="h1" component="h2" sx={{ fontWeight: 'bold' }}>
         {t('dashboard-settings-storage')}
       </Typography>
       <StorageUsage />

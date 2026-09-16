@@ -109,7 +109,7 @@ export const MobileHome = () => {
               'aria-label': t('dashboard-meeting-mobile-view-select'),
             },
             MenuProps: {
-              MenuListProps: { 'aria-controls': MEETINGS_CONATINER_ID },
+              slotProps: { list: { 'aria-controls': MEETINGS_CONATINER_ID } },
             },
           },
           input: {

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { MenuList } from '@mui/material';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -20,12 +21,14 @@ const renderSubmenu = (overrides?: { disabled?: boolean; submenu?: Array<Submenu
   ];
 
   const view = renderWithProviders(
-    <SubmenuMenuItem
-      label={TRIGGER_LABEL}
-      icon={<span data-testid="trigger-icon" />}
-      disabled={overrides?.disabled}
-      submenu={submenu}
-    />,
+    <MenuList>
+      <SubmenuMenuItem
+        label={TRIGGER_LABEL}
+        icon={<span data-testid="trigger-icon" />}
+        disabled={overrides?.disabled}
+        submenu={submenu}
+      />
+    </MenuList>,
     { provider: { mui: true } }
   );
 

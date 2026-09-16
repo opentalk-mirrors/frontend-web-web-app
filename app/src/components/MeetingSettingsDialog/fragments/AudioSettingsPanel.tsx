@@ -101,7 +101,13 @@ const AudioSettingsPanel = () => {
 
   return (
     <>
-      <Typography variant="h2" alignSelf="start" pb={2}>
+      <Typography
+        variant="h2"
+        sx={{
+          alignSelf: 'start',
+          pb: 2,
+        }}
+      >
         {t('audio-settings-title')}
       </Typography>
       <DeviceManager

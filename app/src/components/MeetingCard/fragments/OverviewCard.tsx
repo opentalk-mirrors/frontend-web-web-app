@@ -156,7 +156,7 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
       size="grow"
-      gap="2"
+      sx={{ gap: 2 }}
     >
       <Grid
         size={{ xs: 'auto', sm: 1 }}
@@ -195,7 +195,7 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
         <MaxWidthTypography
           maxWidth="50ch"
           variant="body1"
-          fontWeight={400}
+          sx={{ fontWeight: 400 }}
           noWrap
           translate="no"
           title={createdBy.displayName}
@@ -203,7 +203,13 @@ const OverviewCard = ({ event, isMeetingCreator, highlighted }: MeetingCardFragm
           {t('dashboard-home-created-by', { author: truncate(createdBy.displayName, { length: 30 }) })}
         </MaxWidthTypography>
       </Grid>
-      <Grid size={{ xs: 16, sm: 4 }} container justifyContent="flex-end">
+      <Grid
+        size={{ xs: 16, sm: 4 }}
+        container
+        sx={{
+          justifyContent: 'flex-end',
+        }}
+      >
         <MeetingCardActions event={event} isMeetingCreator={isMeetingCreator} highlighted={highlighted} />
       </Grid>
     </CardWrapper>
