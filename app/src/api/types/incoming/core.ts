@@ -124,6 +124,7 @@ export type Message =
 
 export enum RoomserverMessageKey {
   JoinSuccess = 'join_success',
+  JoinBlocked = 'join_blocked',
   ParticipantConnected = 'participant_connected',
   ParticipantDisconnected = 'participant_disconnected',
   InWaitingRoom = 'in_waiting_room',

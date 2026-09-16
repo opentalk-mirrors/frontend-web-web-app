@@ -31,6 +31,7 @@ import {
   selectLobbyParticipantId,
   selectParticipantLimit,
   setIsRoomDeleted,
+  joinBlocked,
 } from '../../store/slices/roomSlice';
 import { showSubtitles } from '../../store/slices/transcriptionSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
@@ -375,6 +376,10 @@ export const handleRoomServerCoreMessage = async (
           reason: data.reason,
         })
       );
+      break;
+    }
+    case RoomserverMessageKey.JoinBlocked: {
+      dispatch(joinBlocked({ reason: data.reason }));
       break;
     }
     case RoomserverMessageKey.InWaitingRoom: {
