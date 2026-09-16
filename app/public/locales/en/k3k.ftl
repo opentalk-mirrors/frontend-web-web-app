@@ -106,6 +106,9 @@ camera-settings-title = Video Input and Output
 camera-panel-title = Camera
 screen-share-panel-title = Screen Share
 screen-share-panel-resolution-changed = You need to restart screen sharing for the changes to take effect.
+interface-panel-title = Interface
+interface-settings-new-ui-label = New interface (beta)
+interface-settings-new-ui-description = Try the redesigned meeting interface. You can switch back at any time.
 
 participant-stream-broken-tooltip = Mediastream broken
 participant-audio-broken-tooltip = Audio channel broken

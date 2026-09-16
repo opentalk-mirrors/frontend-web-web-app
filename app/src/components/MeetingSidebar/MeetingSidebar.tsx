@@ -6,12 +6,13 @@ import { useTranslation } from 'react-i18next';
 
 import { ModerationTabKey } from '../../config/constants';
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import useConferenceUiVersion from '../../hooks/useConferenceUiVersion';
 import useTabs from '../../hooks/useTabs';
 import { selectActiveTab, setActiveTab } from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import LocalVideo from '../LocalVideo';
 import ModerationSideToolbar from '../ModerationSideToolbar';
-import Toolbar from '../Toolbar';
+import MeetingSidebarLegacy from './MeetingSidebarLegacy';
 import SideTabPanel from './fragments/SideTabPanel';
 
 const SidebarContainer = styled('aside')(({ theme }) => ({
@@ -30,6 +31,7 @@ const UserSidebarContainer = styled(Stack)(({ theme }) => ({
 
 const MeetingSidebar = () => {
   const { t } = useTranslation();
+  const { isV2 } = useConferenceUiVersion();
   const isModerator = useAppSelector(selectIsModerator);
   const CHAT_PANEL_VALUE = ModerationTabKey.Home;
   const activeTab = useAppSelector(selectActiveTab);
@@ -40,6 +42,11 @@ const MeetingSidebar = () => {
 
   const handleSetActiveTab = (tabKey: ModerationTabKey) => dispatch(setActiveTab(tabKey));
 
+  // V2-CLEANUP: drop this guard and MeetingSidebarLegacy
+  if (!isV2) {
+    return <MeetingSidebarLegacy />;
+  }
+
   return (
     <SidebarContainer aria-label={t('landmark-complementary-tools')}>
       {isModerator && (
@@ -47,7 +54,6 @@ const MeetingSidebar = () => {
       )}
       <UserSidebarContainer>
         <LocalVideo />
-        <Toolbar />
 
         {displayedTab && (
           <SideTabPanel

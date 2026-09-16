@@ -7,7 +7,7 @@ import { MAX_GRID_TILES_DESKTOP } from '../../../constants';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { WaitingState } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
-import DesktopMeetingHeader from './DesktopMeetingHeader';
+import DesktopMeetingHeaderLegacy from './DesktopMeetingHeader';
 
 vi.mock('./LayoutSelection', () => ({
   __esModule: true,
@@ -65,11 +65,11 @@ const { store } = configureStore({
 
 describe('DesktopMeetingHeader rendering logic', () => {
   it('should render without crashing', () => {
-    expect(() => renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } })).not.toThrow();
+    expect(() => renderWithProviders(<DesktopMeetingHeaderLegacy />, { store, provider: { mui: true } })).not.toThrow();
   });
 
   it('renders header pagination when layout is grid.', () => {
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeaderLegacy />, { store, provider: { mui: true } });
     expect(screen.queryByText('1')).not.toBeInTheDocument();
     expect(screen.queryByText('2')).not.toBeInTheDocument();
     const { store: nextStore } = configureStore({
@@ -79,7 +79,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
       },
     });
     unmount();
-    renderWithProviders(<DesktopMeetingHeader />, { store: nextStore, provider: { mui: true } });
+    renderWithProviders(<DesktopMeetingHeaderLegacy />, { store: nextStore, provider: { mui: true } });
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
   });
@@ -93,7 +93,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         whiteboard: { isWhiteboardAvailable: false },
       },
     });
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeaderLegacy />, { store, provider: { mui: true } });
     expect(screen.queryByLabelText(label)).not.toBeInTheDocument();
     unmount();
     const { store: nextStore } = configureStore({
@@ -103,7 +103,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         whiteboard: { isWhiteboardAvailable: true },
       },
     });
-    renderWithProviders(<DesktopMeetingHeader />, { store: nextStore, provider: { mui: true } });
+    renderWithProviders(<DesktopMeetingHeaderLegacy />, { store: nextStore, provider: { mui: true } });
     expect(screen.getByLabelText(label)).toBeInTheDocument();
   });
 
@@ -119,7 +119,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         meetingNotes: { meetingNotesUrl: undefined },
       },
     });
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeaderLegacy />, { store, provider: { mui: true } });
     expect(screen.queryByLabelText(label)).not.toBeInTheDocument();
     const { store: secondStore } = configureStore({
       initialState: {
@@ -132,7 +132,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
       },
     });
     unmount();
-    renderWithProviders(<DesktopMeetingHeader />, { store: secondStore, provider: { mui: true } });
+    renderWithProviders(<DesktopMeetingHeaderLegacy />, { store: secondStore, provider: { mui: true } });
     expect(screen.queryByLabelText(label)).not.toBeInTheDocument();
     const { store: thirdStore } = configureStore({
       initialState: {
@@ -145,12 +145,12 @@ describe('DesktopMeetingHeader rendering logic', () => {
       },
     });
     unmount();
-    renderWithProviders(<DesktopMeetingHeader />, { store: thirdStore, provider: { mui: true } });
+    renderWithProviders(<DesktopMeetingHeaderLegacy />, { store: thirdStore, provider: { mui: true } });
     expect(screen.getByLabelText(label)).toBeInTheDocument();
   });
 
   it('should render shared folder button when shared folder is available.', () => {
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeaderLegacy />, { store, provider: { mui: true } });
     expect(screen.queryByText('SharedFolderPopover')).not.toBeInTheDocument();
     unmount();
     const { store: secondStore } = configureStore({
@@ -171,7 +171,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DesktopMeetingHeader />, { store: secondStore, provider: { mui: true } });
+    renderWithProviders(<DesktopMeetingHeaderLegacy />, { store: secondStore, provider: { mui: true } });
     expect(screen.getByText('SharedFolderPopover')).toBeInTheDocument();
   });
 
@@ -188,7 +188,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         },
       },
     });
-    const { unmount } = renderWithProviders(<DesktopMeetingHeader />, { store, provider: { mui: true } });
+    const { unmount } = renderWithProviders(<DesktopMeetingHeaderLegacy />, { store, provider: { mui: true } });
     expect(screen.queryByText('VotesAndPollsResultsPopover')).not.toBeInTheDocument();
     unmount();
     const { store: secondStore } = configureStore({
@@ -213,7 +213,7 @@ describe('DesktopMeetingHeader rendering logic', () => {
         },
       },
     });
-    renderWithProviders(<DesktopMeetingHeader />, { store: secondStore, provider: { mui: true } });
+    renderWithProviders(<DesktopMeetingHeaderLegacy />, { store: secondStore, provider: { mui: true } });
     expect(screen.getByText('VotesAndPollsResultsPopover')).toBeInTheDocument();
   });
 });

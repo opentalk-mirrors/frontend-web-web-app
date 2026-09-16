@@ -7,8 +7,10 @@ import { Track } from 'livekit-client';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import useConferenceUiVersion from '../../hooks/useConferenceUiVersion';
 import { changeMedia } from '../../store/commonActions';
 import { selectAudioEnabled, selectVideoEnabled } from '../../store/slices/livekitSlice';
+import ToolbarLegacy from './ToolbarLegacy';
 import AudioButton from './fragments/AudioButton';
 import EndCallButton from './fragments/EndCallButton';
 import HandraiseButton from './fragments/HandraiseButton';
@@ -50,6 +52,7 @@ const MainContainer = styled('aside')(({ theme }) => ({
 const Toolbar = ({ layout }: { layout?: LayoutTypes }) => {
   'use no memo';
   const { t } = useTranslation();
+  const { isV2 } = useConferenceUiVersion();
   const { localParticipant } = useLocalParticipant();
   const audioTrack = localParticipant.getTrackPublication(Track.Source.Microphone)?.audioTrack;
   const audioEnabled = useAppSelector(selectAudioEnabled);
@@ -63,6 +66,11 @@ const Toolbar = ({ layout }: { layout?: LayoutTypes }) => {
   const handleVideoButtonToggle = () => {
     dispatch(changeMedia({ kind: 'videoinput', enabled: !videoEnabled }));
   };
+
+  // V2-CLEANUP: drop this guard and ToolbarLegacy
+  if (!isV2) {
+    return <ToolbarLegacy layout={layout} />;
+  }
 
   return (
     <MainContainer aria-label={t('landmark-complementary-toolbar')} className={layout}>

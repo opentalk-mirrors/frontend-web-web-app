@@ -41,6 +41,11 @@ import uiReducer, {
   initialState as uiInitialState,
   loadCinemaLayoutSettingsFromLocalStorage as uiRehydrateSlice,
 } from './slices/uiSlice';
+// V2-CLEANUP: remove the uiVersion slice wiring below with the rest of the v2 transition code.
+import uiVersionReducer, {
+  initialState as uiVersionInitialState,
+  loadUiVersionFromLocalStorage as uiVersionRehydrateSlice,
+} from './slices/uiVersionSlice';
 import userReducer from './slices/userSlice';
 import whiteboardReducer from './slices/whiteboardSlice';
 
@@ -80,6 +85,7 @@ export const rootReducer = combineReducers({
   room: roomReducer,
   ui: uiReducer,
   user: userReducer,
+  uiVersion: uiVersionReducer, // V2-CLEANUP
   slot: slotReducer,
   speed: speedMeterReducer,
   poll: pollReducer,
@@ -155,6 +161,7 @@ export function setupStore(preloadedState?: Partial<RootState>) {
       config: merge({}, initialConfig, window.config),
       livekit: merge({}, livekitInitialState, mediaRehydrateSlice()),
       ui: merge({}, uiInitialState, uiRehydrateSlice()),
+      uiVersion: merge({}, uiVersionInitialState, uiVersionRehydrateSlice()), // V2-CLEANUP
       ...preloadedState,
     },
     devTools: {

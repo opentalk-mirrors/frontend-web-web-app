@@ -42,6 +42,8 @@ export enum FeaturesKeys {
   Debriefing = 'debriefing',
   E2eEncryption = 'e2eEncryption',
   InnovafoneAPI = 'innovafoneAPI',
+  // V2-CLEANUP: availability flag for the new conference UI
+  ConferenceUiV2 = 'conferenceUiV2',
 }
 
 type Features = {
@@ -225,6 +227,7 @@ export const initialState: ConfigState = {
     addUser: false,
     e2eEncryption: false,
     innovafoneAPI: false,
+    conferenceUiV2: false, // V2-CLEANUP
   },
   settings: {
     waitingRoomDefaultValue: true,
@@ -291,6 +294,8 @@ export const selectContactSupportUrl = (state: RootState) => state.config.contac
 export const selectOidcConfig = (state: RootState) => state.config.oidcConfig;
 export const selectSpeedTestConfig = (state: RootState) => state.config.speedTest;
 export const selectConfigFeatures = (state: RootState) => state.config.features;
+// V2-CLEANUP: remove together with the ConferenceUiV2 feature flag.
+export const selectIsConferenceUiV2Available = (state: RootState) => state.config.features.conferenceUiV2 ?? false;
 export const selectVideoBackgrounds = (state: RootState) => state.config.videoBackgrounds;
 export const selectLibravatarDefaultImage = (state: RootState) => state.config.libravatarDefaultImage;
 export const selectUserSurveyUrl = (state: RootState) => state.config.userSurveyUrl;
