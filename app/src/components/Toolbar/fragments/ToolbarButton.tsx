@@ -181,18 +181,16 @@ const ToolbarButton = ({
   return (
     <ButtonContainer>
       <Tooltip placement="top" title={tooltipTitle}>
-        <span>
-          <ToolbarIconButton
-            isActive={active}
-            disabled={disabled || undefined}
-            aria-label={tooltipTitle}
-            onClick={(event) => onClick(event)}
-            isLobby={isLobby}
-            {...props}
-          >
-            {children}
-          </ToolbarIconButton>
-        </span>
+        <ToolbarIconButton
+          isActive={active}
+          disabled={disabled || undefined}
+          aria-label={tooltipTitle}
+          onClick={(event) => onClick(event)}
+          isLobby={isLobby}
+          {...props}
+        >
+          {children}
+        </ToolbarIconButton>
       </Tooltip>
       {hasContext && !contextDisabled && (
         <Tooltip placement="top" title={contextTitle}>
