@@ -271,7 +271,7 @@ toolbar-button-blur-turn-off-tooltip-title = Turn Off Background Blur
 toolbar-button-more-tooltip-title = More Options
 toolbar-button-screen-share-turn-on-tooltip-title = Turn On Screen Share
 toolbar-button-screen-share-turn-off-tooltip-title = Turn Off Screen Share
-toolbar-button-screen-share-context-title = Switch Screen
+toolbar-button-screen-share-context-title = Share a different screen
 toolbar-button-end-call-tooltip-title = Leave Call
 
 toolbar-button-screen-share-tooltip-request-moderator-presenter-role = Ask a moderator to allow to share your screen
