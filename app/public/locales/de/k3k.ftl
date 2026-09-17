@@ -553,12 +553,12 @@ fallback-room-title = Meeting-Raum
 secure-connection-button-label = Sicherheitsmonitor anzeigen
 secure-connection-title = Sicherheitsmonitor
 secure-connection-message = Diese Verbindung ist verschlüsselt und sicher.
-secure-connection-registered-only = Nur registrierte Teilnehmer
 secure-connection-no-sip = Keine Telefon-Teilnehmer
+secure-connection-no-recording = Keine Aufnahmen und kein Streaming
 secure-connection-guests = Bitte beachten Sie, dass auch Gäste anwesend sind.
 secure-connection-contaminated = Bitte beachten Sie, dass Gäste, darunter auch Telefon-Teilnehmer anwesend sind.
 secure-connection-sip = Bitte beachten Sie, dass auch Telefon-Teilnehmer anwesend sind.
-secure-connection-high-security = Sehr hohes Schutzniveau aktiv.
+secure-connection-high-security = Sehr hohes Schutzniveau aktiv
 
 participant-joined-text = Beigetreten {$joinedTime}
 participant-hand-raise-text = Hand gehoben {$handUpdated}
@@ -833,6 +833,7 @@ conference-storage-near-limit-warning = Ihr Speicher ist fast voll. Diese Datei 
 conference-storage-full-warning = Speicherlimit erreicht. Sie können die Aktion starten, aber sie wird wahrscheinlich nicht gespeichert werden können.
 conference-storage-tooltip-upgradeable-full-storage = Ihr Dateispeicher ist voll. Sie können diese Aktion nicht starten. Erweitern Sie Ihren Speicher im <accountManagementLink>Accountmanagement</accountManagementLink>, um fortzufahren.
 conference-storage-tooltip-full-storage = Ihr Dateispeicher ist voll. Sie können diese Aktion nicht starten. Bitte wenden Sie sich an Ihre Administratorin oder Ihren Administrator, um mehr Speicher zu erhalten.
+more-menu-high-security-tooltip = Diese Funktion ist bei aktiviertem sehr hohem Schutzniveau nicht verfügbar.
 
 dashboard-close-navbar= Navigation schließen
 dashboard-open-navbar = Navigation aufklappen

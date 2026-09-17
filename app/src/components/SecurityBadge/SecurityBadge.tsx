@@ -103,8 +103,8 @@ const SecurityBadge = () => {
       <Grid size={{ xs: 4 }}>
         <Typography>{t('secure-connection-message')}</Typography>
       </Grid>
-      <CheckmarkLine translationKey="secure-connection-registered-only" />
       <CheckmarkLine translationKey="secure-connection-no-sip" />
+      <CheckmarkLine translationKey="secure-connection-no-recording" />
     </Grid>
   );
 
@@ -123,9 +123,9 @@ const SecurityBadge = () => {
       <Grid size={{ xs: 4 }}>
         <Typography>{t('secure-connection-message')}</Typography>
       </Grid>
-      <CheckmarkLine translationKey="secure-connection-registered-only" />
-      <CheckmarkLine translationKey="secure-connection-no-sip" />
       <CheckmarkLine translationKey="secure-connection-high-security" />
+      <CheckmarkLine translationKey="secure-connection-no-sip" />
+      <CheckmarkLine translationKey="secure-connection-no-recording" />
     </Grid>
   );
   const determineBadgeToShow = () => {

@@ -553,12 +553,12 @@ fallback-room-title = Meeting room
 secure-connection-button-label = Show security monitor
 secure-connection-title = Security monitor
 secure-connection-message = This connection is encrypted and safe.
-secure-connection-registered-only = Only registered participants
-secure-connection-no-sip = No call-in participants
+secure-connection-no-sip = No call-in participants and room kits
+secure-connection-no-recording = No recording and streaming
 secure-connection-guests = Please note that guests are also present.
 secure-connection-contaminated = Please note that guests, including call-in participants, are present.
 secure-connection-sip = Please note that call-in participants are also present.
-secure-connection-high-security = High security mode is enabled.
+secure-connection-high-security = High security mode is enabled
 
 participant-joined-text = Joined {$joinedTime}
 participant-hand-raise-text = Hand raised {$handUpdated}
@@ -836,6 +836,7 @@ conference-storage-near-limit-warning = Your storage is almost full. This asset 
 conference-storage-full-warning = Storage limit reached. You can still start this action, but it will likely fail to save.
 conference-storage-tooltip-upgradeable-full-storage = Your file storage is full. You cannot start this action. Upgrade your storage in <accountManagementLink>account management</accountManagementLink> to continue.
 conference-storage-tooltip-full-storage = Your file storage is full. You cannot start this action. Please contact your administrator to get more storage.
+more-menu-high-security-tooltip = This feature is not available while high security mode is enabled.
 
 dashboard-close-navbar = Close navigation
 dashboard-open-navbar = Open navigation
