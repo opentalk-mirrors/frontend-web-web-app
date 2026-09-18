@@ -4,9 +4,15 @@
 // Switch off the rule, as it doesn't recognize assertion in the utility helper function
 // Maybe it's a bug or maybe it's not a good practice to use this kind of helper function
 /* eslint-disable vitest/expect-expect */
-import { BackendModules, TranscriptionFeatures } from '@opentalk/rest-api-rtk-query';
+import {
+  BackendModules,
+  RecordingFeatures,
+  StreamStatus,
+  StreamingStatus,
+  TranscriptionFeatures,
+} from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvent, { PointerEventsCheckLevel } from '@testing-library/user-event';
 
 import { TranscriptionStatus } from '../../../api/types/incoming/transcription';
 import { disableSelfRename, enableSelfRename } from '../../../api/types/outgoing/moderation';
@@ -277,6 +283,72 @@ describe('MoreMenu', () => {
         provider: { snackbar: true, mui: true },
       });
       checkMenuItem('more-menu-export-attendance-report');
+    });
+
+    describe('when high security (e2ee) is enabled', () => {
+      const highSecuritySetup = () => {
+        const { store } = configureStore({
+          initialState: {
+            ...moderatorState,
+            room: { isOwnedByCurrentUser: true, eventInfo: { e2eEncryption: true } },
+            config: {
+              provider: {
+                accountManagementUrl: 'https://account.opentalk.eu',
+              },
+              enabledModules: {
+                [BackendModules.Recording]: [RecordingFeatures.Record],
+                [BackendModules.Transcription]: [TranscriptionFeatures.Transcription],
+              },
+            },
+            streaming: {
+              streams: {
+                ids: ['target-1'],
+                entities: { 'target-1': { targetId: 'target-1', status: StreamStatus.Inactive } },
+              },
+              recording: StreamingStatus.Inactive,
+            },
+          },
+        });
+        renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
+          store,
+          provider: { snackbar: true, mui: true },
+        });
+      };
+
+      it('greys out the start recording item', () => {
+        highSecuritySetup();
+        checkMenuItem('more-menu-start-recording', { disabled: true });
+      });
+
+      it('greys out the transcription (subtitle) item', () => {
+        highSecuritySetup();
+        checkMenuItem('more-menu-subtitle-enable', { disabled: true });
+      });
+
+      it('greys out the start streaming item', () => {
+        highSecuritySetup();
+        checkMenuItem('more-menu-start-streaming', { disabled: true });
+      });
+
+      const expectHighSecurityTooltip = async (name: string) => {
+        // eslint-disable-next-line testing-library/render-result-naming-convention
+        const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
+        highSecuritySetup();
+        await user.hover(screen.getByRole('menuitem', { name }));
+        expect(await screen.findByRole('tooltip')).toHaveTextContent('more-menu-high-security-tooltip');
+      };
+
+      it('shows a high security tooltip on the disabled start recording item', async () => {
+        await expectHighSecurityTooltip('more-menu-start-recording');
+      });
+
+      it('shows a high security tooltip on the disabled transcription item', async () => {
+        await expectHighSecurityTooltip('more-menu-subtitle-enable');
+      });
+
+      it('shows a high security tooltip on the disabled start streaming item', async () => {
+        await expectHighSecurityTooltip('more-menu-start-streaming');
+      });
     });
   });
 

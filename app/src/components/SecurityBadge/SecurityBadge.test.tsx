@@ -149,9 +149,25 @@ describe('<SecurityBadge />', () => {
 
     await userEvent.click(button);
     expect(screen.getByText('secure-connection-high-security')).toBeInTheDocument();
+    expect(screen.getByText('secure-connection-no-sip')).toBeInTheDocument();
+    expect(screen.getByText('secure-connection-no-recording')).toBeInTheDocument();
+    expect(screen.queryByText('secure-connection-registered-only')).not.toBeInTheDocument();
 
     await userEvent.click(button);
 
     expect(screen.queryByText('secure-connection-title')).not.toBeInTheDocument();
+  });
+  it('should show the no-sip and no-recording lines for a secure connection without unsafe participants', async () => {
+    const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {});
+    renderWithProviders(<SecurityBadge />, { store });
+
+    const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
+
+    await userEvent.click(button);
+
+    expect(screen.getByText('secure-connection-no-sip')).toBeInTheDocument();
+    expect(screen.getByText('secure-connection-no-recording')).toBeInTheDocument();
+    expect(screen.queryByText('secure-connection-registered-only')).not.toBeInTheDocument();
+    expect(screen.queryByText('secure-connection-high-security')).not.toBeInTheDocument();
   });
 });

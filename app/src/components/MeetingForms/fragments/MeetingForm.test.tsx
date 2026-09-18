@@ -182,6 +182,33 @@ describe('MeetingForm', () => {
       expect(screen.getByRole('switch', { name: 'dashboard-meeting-e2ee-tooltip' })).toBeInTheDocument();
     });
 
+    it('keeps the guest access switch available after enabling e2e encryption', async () => {
+      const user = userEvent.setup();
+      const { store } = configureStore({
+        initialState: {
+          config: {
+            settings: {
+              waitingRoomDefaultValue: false,
+            },
+            features: {
+              e2eEncryption: true,
+            },
+          },
+        },
+      });
+      renderWithProviders(<MeetingForm onSubmit={onSubmit} eventIsLoading={false} />, {
+        store,
+        provider: { mui: true },
+      });
+
+      expect(screen.getByRole('switch', { name: 'guest-access-switch-label' })).toBeInTheDocument();
+
+      await user.click(screen.getByRole('switch', { name: 'dashboard-meeting-e2ee-tooltip' }));
+
+      expect(screen.getByRole('switch', { name: 'dashboard-meeting-e2ee-tooltip' })).toBeChecked();
+      expect(screen.getByRole('switch', { name: 'guest-access-switch-label' })).toBeInTheDocument();
+    });
+
     it('hides the guest access switch when the tariff does not allow guests', () => {
       const { store } = configureStore({});
       mockTariff = { ...defaultTariff, modules: { recording: { features: [] } } };

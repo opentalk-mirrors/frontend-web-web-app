@@ -94,7 +94,7 @@ import {
 } from '../../../store/slices/moderationSlice';
 import { selectAllModeratorParticipants } from '../../../store/slices/participantsSlice';
 import { selectReactionRestrictionsEnabled } from '../../../store/slices/reactionSlice';
-import { selectIsRoomOwner } from '../../../store/slices/roomSlice';
+import { selectE2EEncryption, selectIsRoomOwner } from '../../../store/slices/roomSlice';
 import {
   selectActiveStreamIds,
   selectInactiveStreamIds,
@@ -199,6 +199,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const isTrainingParticipationReportEnabled = useAppSelector(selectTrainingParticipationReportEnabled);
   const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
   const guestAccessEnabled = useAppSelector(selectGuestAccessEnabled);
+  const highSecurityEnabled = useAppSelector(selectE2EEncryption);
   const { storageStatus, canUpgrade } = useStorageStatus();
 
   const withGuestAccessDisabledTooltip = (key: string, children: React.ReactNode) => (
@@ -244,6 +245,12 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
       title={storageFullTooltipTitle}
       slotProps={{ tooltip: { sx: { bgcolor: 'error.dark' } } }}
     >
+      <span>{children}</span>
+    </Tooltip>
+  );
+
+  const withHighSecurityTooltip = (key: string, children: React.ReactNode) => (
+    <Tooltip key={key} describeChild title={t('more-menu-high-security-tooltip')}>
       <span>{children}</span>
     </Tooltip>
   );
@@ -456,6 +463,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   const subtitleSettingsItem = {
     label: subtitlesEnabled ? 'more-menu-subtitle-settings' : 'more-menu-subtitle-enable',
     icon: <Icon_cc_settingsIcon />,
+    disabled: highSecurityEnabled,
+    tooltip: highSecurityEnabled
+      ? (children: React.ReactNode) => withHighSecurityTooltip('more-menu-subtitle-settings', children)
+      : undefined,
     action: () => {
       onClose();
       dispatch(showTranscriptionSettings());
@@ -487,6 +498,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
   }
 
   if (hasRecordingFeatureOn) {
+    const disableRecording = storageStatus === StorageStatus.Full || highSecurityEnabled;
     switch (recordingStatus) {
       case StreamingStatus.Active:
         moderatorMenuItems.push({
@@ -509,11 +521,13 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
             onClose();
           },
           icon: <RecordingsIcon />,
-          disabled: storageStatus === StorageStatus.Full,
+          disabled: disableRecording,
           tooltip:
             storageStatus === StorageStatus.Full
               ? (children) => withStorageFullTooltip('more-menu-start-recording', children)
-              : undefined,
+              : highSecurityEnabled
+                ? (children) => withHighSecurityTooltip('more-menu-start-recording', children)
+                : undefined,
         });
         break;
       case StreamingStatus.Requested:
@@ -553,6 +567,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: ToolbarMenuProps) => {
         dispatch(sendStartStreamSignal.action({ targetIds: inactiveStreamIds }));
         onClose();
       },
+      disabled: highSecurityEnabled,
+      tooltip: highSecurityEnabled
+        ? (children) => withHighSecurityTooltip('more-menu-start-streaming', children)
+        : undefined,
       icon: <LiveIcon />,
     });
   }

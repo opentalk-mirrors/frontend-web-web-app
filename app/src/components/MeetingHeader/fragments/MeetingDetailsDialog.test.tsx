@@ -198,4 +198,71 @@ describe('MeetingDetailsDialog', () => {
       expect(success).toHaveBeenCalledExactlyOnceWith('meeting-details-dialog-copy-meeting-link-success')
     );
   });
+
+  describe('dial-in field', () => {
+    const meetingDetailsWithCallIn: MeetingDetails = {
+      streamingLinks: [],
+      callIn: {
+        id: '1234' as NonNullable<MeetingDetails['callIn']>['id'],
+        tel: '+49123456789',
+        password: '5678',
+      },
+    };
+
+    it('renders the dial-in field with its value when high security is disabled', () => {
+      const { store } = configureStore({
+        initialState: {
+          config: {
+            baseUrl: 'http://localhost:3000',
+            enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
+          },
+          room: { eventInfo: { e2eEncryption: false } },
+        },
+      });
+
+      renderWithProviders(
+        <MeetingDetailsDialog
+          open={true}
+          onClose={vi.fn()}
+          eventInfo={mockEventInfo}
+          meetingDetails={meetingDetailsWithCallIn}
+          roomInfo={mockRoomInfo}
+        />,
+        { store, provider: { snackbar: true, mui: true } }
+      );
+
+      const sipField = screen.getByRole('textbox', { name: 'meeting-details-dialog-label-sip-link' });
+      expect(sipField).toHaveValue('+49123456789,,1234,,5678');
+      expect(sipField).not.toBeDisabled();
+      expect(screen.getByRole('button', { name: 'meeting-details-dialog-aria-label-sip-link' })).toBeEnabled();
+    });
+
+    it('empties and disables the dial-in field and its copy button when high security is enabled', () => {
+      const { store } = configureStore({
+        initialState: {
+          config: {
+            baseUrl: 'http://localhost:3000',
+            enabledModules: { [BackendModules.Core]: [CoreFeatures.GuestsAllowed] },
+          },
+          room: { eventInfo: { e2eEncryption: true } },
+        },
+      });
+
+      renderWithProviders(
+        <MeetingDetailsDialog
+          open={true}
+          onClose={vi.fn()}
+          eventInfo={{ ...mockEventInfo, e2eEncryption: true }}
+          meetingDetails={meetingDetailsWithCallIn}
+          roomInfo={mockRoomInfo}
+        />,
+        { store, provider: { snackbar: true, mui: true } }
+      );
+
+      const sipField = screen.getByRole('textbox', { name: 'meeting-details-dialog-label-sip-link' });
+      expect(sipField).not.toHaveValue('+49123456789,,1234,,5678');
+      expect(sipField).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'meeting-details-dialog-aria-label-sip-link' })).toBeDisabled();
+    });
+  });
 });

@@ -12,7 +12,6 @@ const useIsGuestAccessAllowed = (event: Event): boolean => {
   return Boolean(
     roomTariff &&
     isFeatureEnabledPredicate(CoreFeatures.GuestsAllowed, roomTariff.modules) &&
-    !event.room.e2eEncryption &&
     event.room.guestAccess !== GuestAccess.Disabled
   );
 };

@@ -117,16 +117,14 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
       </Box>
       <DialogContent>
         <Stack spacing={2}>
-          {!highSecurityEnabled && (
-            <CustomCopyTextField
-              label={getLabelText(FieldKeys.MeetingLink)}
-              value={meetingLink?.toString()}
-              ariaLabel={getAriaLabelText(FieldKeys.MeetingLink)}
-              notificationText={getNotificationText(FieldKeys.MeetingLink)}
-              checked={meetingLink ? copiedUrl === meetingLink.toString() : false}
-              onClick={() => setCopiedUrl(meetingLink?.toString())}
-            />
-          )}
+          <CustomCopyTextField
+            label={getLabelText(FieldKeys.MeetingLink)}
+            value={meetingLink?.toString()}
+            ariaLabel={getAriaLabelText(FieldKeys.MeetingLink)}
+            notificationText={getNotificationText(FieldKeys.MeetingLink)}
+            checked={meetingLink ? copiedUrl === meetingLink.toString() : false}
+            onClick={() => setCopiedUrl(meetingLink?.toString())}
+          />
 
           {personalRoomLink && (
             <CustomCopyTextField
@@ -142,11 +140,12 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
           {sipLink && guestAccessEnabled && (
             <CustomCopyTextField
               label={getLabelText(FieldKeys.SipLink)}
-              value={sipLink}
+              value={highSecurityEnabled ? '' : sipLink}
               ariaLabel={getAriaLabelText(FieldKeys.SipLink)}
               notificationText={getNotificationText(FieldKeys.SipLink)}
               checked={copiedUrl === sipLink}
               onClick={() => setCopiedUrl(sipLink)}
+              disabled={highSecurityEnabled}
             />
           )}
           {roomPassword && (
