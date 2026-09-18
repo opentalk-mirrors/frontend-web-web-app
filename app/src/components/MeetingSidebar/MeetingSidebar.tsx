@@ -10,7 +10,6 @@ import useConferenceUiVersion from '../../hooks/useConferenceUiVersion';
 import useTabs from '../../hooks/useTabs';
 import { selectActiveTab, setActiveTab } from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
-import LocalVideo from '../LocalVideo';
 import ModerationSideToolbar from '../ModerationSideToolbar';
 import MeetingSidebarLegacy from './MeetingSidebarLegacy';
 import SideTabPanel from './fragments/SideTabPanel';
@@ -53,8 +52,6 @@ const MeetingSidebar = () => {
         <ModerationSideToolbar displayedTabs={tabs} onSelect={handleSetActiveTab} activeTab={activeTab} />
       )}
       <UserSidebarContainer>
-        <LocalVideo />
-
         {displayedTab && (
           <SideTabPanel
             key={displayedTab.key}

@@ -3,9 +3,16 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
+import { Mock } from 'vitest';
 
+import useConferenceUiVersion from '../../../hooks/useConferenceUiVersion';
 import { renderWithProviders, mockStore, mockedParticipant } from '../../../utils/testUtils';
 import SpeakerWindow from './SpeakerWindow';
+
+vi.mock('../../../hooks/useConferenceUiVersion', () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
 
 vi.mock('@livekit/components-react', () => ({
   useParticipantContext: () => mockedParticipant(0),
@@ -27,6 +34,7 @@ vi.mock('../../ParticipantWindow', () => ({
 describe('SpeakerWindow', () => {
   it('SpeakerWindow is not rendered with zero participants', () => {
     const { store } = mockStore(0);
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
     renderWithProviders(<SpeakerWindow />, { store, provider: { mui: true } });
 
     expect(screen.queryByTestId('ParticipantWindow')).not.toBeInTheDocument();
@@ -34,6 +42,7 @@ describe('SpeakerWindow', () => {
 
   it('SpeakerWindow is rendered with one participant', () => {
     const { store } = mockStore(1);
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
     renderWithProviders(<SpeakerWindow />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('participantWindow')).toBeInTheDocument();

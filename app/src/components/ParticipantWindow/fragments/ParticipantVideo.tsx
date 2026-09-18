@@ -6,7 +6,7 @@ import { Slide, styled } from '@mui/material';
 import { ParticipantEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useAppDispatch, useAppSelector, useConferenceUiVersion } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/livekitSlice';
 import {
@@ -39,6 +39,7 @@ interface ParticipantVideoProps {
 }
 
 const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
+  const { isV2 } = useConferenceUiVersion();
   const participant = useRemoteParticipant(connectionIdentifier, {
     updateOnlyOn: [
       ParticipantEvent.TrackMuted,
@@ -116,18 +117,21 @@ const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThum
         ref={handleContainerRef}
       >
         <RemoteVideo descriptor={screenDescriptor} />
-        {showCamera && (
-          <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerElement}>
-            <ScreenPresenterVideo
-              connectionIdentifier={connectionIdentifier}
-              isVideoPinned={isVideoPinned}
-              togglePin={togglePin}
-              videoPosition={presenterVideoPosition}
-              changeVideoPosition={movePresenterVideo}
-              isThumbnail={isThumbnail}
-            />
-          </Slide>
-        )}
+        {
+          // V2-CLEANUP: Remove the rendering completely after transition to V2, presenter video is not needed
+          showCamera && !isV2 && (
+            <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerElement}>
+              <ScreenPresenterVideo
+                connectionIdentifier={connectionIdentifier}
+                isVideoPinned={isVideoPinned}
+                togglePin={togglePin}
+                videoPosition={presenterVideoPosition}
+                changeVideoPosition={movePresenterVideo}
+                isThumbnail={isThumbnail}
+              />
+            </Slide>
+          )
+        }
       </ScreenShareContainer>
     );
   }

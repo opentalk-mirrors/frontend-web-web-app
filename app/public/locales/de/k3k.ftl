@@ -737,6 +737,7 @@ global-save-changes = Änderungen speichern
 global-password = Passwort
 global-beta = Beta
 global-me = Ich
+global-you = Du
 global-copy = Kopieren
 global-copied = Kopiert
 global-copy-link-success = Der Link wurde erfolgreich kopiert

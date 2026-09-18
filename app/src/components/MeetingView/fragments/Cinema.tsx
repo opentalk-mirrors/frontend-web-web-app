@@ -2,11 +2,12 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { VisuallyHiddenTitle } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useAppDispatch, useAppSelector, useConferenceUiVersion } from '../../../hooks';
+import SelfViewAnchorContext from '../../../provider/SelfViewAnchorContext';
 import { selectIsSpacedeckEnabled } from '../../../store/slices/configSlice';
 import { fullscreenActions, selectFullscreenActive } from '../../../store/slices/fullscreen/slice';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
@@ -20,6 +21,7 @@ import TranscriptionSubtitlesDisplay from '../../TranscriptionSubtitlesDisplay';
 import WhiteboardView from '../../WhiteboardView';
 import Spacedeck from '../../WhiteboardView/fragments/Spacedeck';
 import MediaReconnectionDialog from './MediaReconnectionDialog';
+import SelfView from './SelfView';
 
 const Container = styled('main')({
   gridArea: 'main',
@@ -32,6 +34,8 @@ const Container = styled('main')({
 });
 
 const Cinema = () => {
+  const { isV2 } = useConferenceUiVersion();
+  const [selfViewAnchor, setSelfViewAnchor] = useState<HTMLElement | null>(null);
   const userLayout = useAppSelector(selectCinemaLayout);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
@@ -66,13 +70,19 @@ const Cinema = () => {
   };
 
   return (
-    <Container ref={refForFullscreen}>
-      <VisuallyHiddenTitle component="h2" label="videoroom-hidden-heading" />
-      {isLivekitUnavailable && <MediaReconnectionDialog />}
-      {renderView()}
-      <FloatingReactionsOverlay />
-      <TranscriptionSubtitlesDisplay />
-    </Container>
+    <SelfViewAnchorContext.Provider value={{ anchor: selfViewAnchor, setAnchor: setSelfViewAnchor }}>
+      <Container ref={refForFullscreen}>
+        <VisuallyHiddenTitle component="h2" label="videoroom-hidden-heading" />
+        {isLivekitUnavailable && <MediaReconnectionDialog />}
+        {renderView()}
+        <FloatingReactionsOverlay />
+        <TranscriptionSubtitlesDisplay />
+        {
+          // V2-CLEANUP: Remove the isV2 guard after transition to V2
+          isV2 && <SelfView />
+        }
+      </Container>
+    </SelfViewAnchorContext.Provider>
   );
 };
 

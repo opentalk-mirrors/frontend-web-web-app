@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
+import { Mock } from 'vitest';
 
+import useConferenceUiVersion from '../../hooks/useConferenceUiVersion';
 import { fullscreenActions } from '../../store/slices/fullscreen/slice';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import FullscreenView from './FullscreenView';
@@ -20,7 +22,12 @@ vi.mock('@livekit/components-react', () => ({
   useSortedParticipants: () => [mockedParticipant(0)],
 }));
 
-vi.mock('../LocalVideo', () => ({
+vi.mock('../../hooks/useConferenceUiVersion', () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+vi.mock('../LocalVideoLegacy', () => ({
   __esModule: true,
   default: () => <div />,
 }));
@@ -39,6 +46,7 @@ describe('FullscreenView', () => {
   const { store } = configureStore();
 
   it('renders without crashing', () => {
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
     renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('fullscreen')).toBeInTheDocument();
@@ -47,8 +55,10 @@ describe('FullscreenView', () => {
     expect(screen.queryByTestId('Toolbar')).not.toBeInTheDocument();
   });
 
-  it('shows LocalVideo & toolbar on mouse over', () => {
+  it('shows toolbar on mouse over', () => {
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
     renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
+
     const fullscreen = screen.getByTestId('fullscreen');
     expect(fullscreen).toBeInTheDocument();
 
@@ -56,10 +66,34 @@ describe('FullscreenView', () => {
 
     expect(screen.getByRole('button', { name: /indicator-fullscreen-close/i })).toBeInTheDocument();
     expect(screen.getByTestId('toolbar')).toBeInTheDocument();
+  });
+
+  it('doesnt show LocalVideo on mouse over if V2 ui is selected', () => {
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
+    renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
+
+    const fullscreen = screen.getByTestId('fullscreen');
+    expect(fullscreen).toBeInTheDocument();
+
+    fireEvent.mouseMove(fullscreen);
+
+    expect(screen.queryByTestId('fullscreenLocalVideo')).not.toBeInTheDocument();
+  });
+
+  it('shows LocalVideo on mouse over if V1 ui is selected', () => {
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: false });
+    renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
+
+    const fullscreen = screen.getByTestId('fullscreen');
+    expect(fullscreen).toBeInTheDocument();
+
+    fireEvent.mouseMove(fullscreen);
+
     expect(screen.getByTestId('fullscreenLocalVideo')).toBeInTheDocument();
   });
 
   it('triggers react-full-screen exit function when clicking on close button', () => {
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
     renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
 
     const spyFullscreenActionsExit = vi.spyOn(fullscreenActions, 'exit');

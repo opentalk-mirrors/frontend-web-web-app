@@ -4,7 +4,9 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { Track } from 'livekit-client';
 import React from 'react';
+import { Mock } from 'vitest';
 
+import useConferenceUiVersion from '../../../hooks/useConferenceUiVersion';
 import { idFromDescriptor, MediaDescriptor } from '../../../modules/WebRTC';
 import { initialState as livekitInitialState } from '../../../store/slices/livekitSlice';
 import {
@@ -41,6 +43,11 @@ const screenPresenterVideoMock = vi.hoisted(() =>
     return <div data-testid="screenPresenterVideo"></div>;
   })
 );
+
+vi.mock('../../../hooks/useConferenceUiVersion', () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
 
 vi.mock('@livekit/components-react', () => ({
   useRemoteParticipant: useRemoteParticipantMock,
@@ -89,6 +96,7 @@ const serializableParticipantsState = {
 describe('ParticipantVideo', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: false });
     lastScreenPresenterVideoProps.current = undefined;
   });
 
@@ -131,6 +139,26 @@ describe('ParticipantVideo', () => {
     ).toBeInTheDocument();
     expect(screen.queryByTestId('participantScreenShareVideo')).not.toBeInTheDocument();
     expect(screen.queryByTestId('avatarContainer')).not.toBeInTheDocument();
+  });
+
+  it('does not render the camera feed when the participant shares screen if ui V2 is selected', () => {
+    const { store } = mockStore(1, {
+      store: { initialState: { participants: serializableParticipantsState } },
+    });
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
+    useRemoteParticipantMock.mockReturnValue({
+      ...participant,
+      isCameraEnabled: true,
+      isScreenShareEnabled: true,
+    });
+
+    renderWithProviders(<ParticipantVideo {...baseProps} />, { store, provider: { mui: true } });
+
+    expect(
+      screen.queryByTestId(
+        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.Camera } as MediaDescriptor)}`
+      )
+    ).not.toBeInTheDocument();
   });
 
   it('shows and hides the presenter tile when screen sharing based on mouse movement', async () => {

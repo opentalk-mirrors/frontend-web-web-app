@@ -13,14 +13,14 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, PinIcon, PollIcon } from '../../assets/icons';
-import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector, useConferenceUiVersion } from '../../hooks';
 import { fullscreenActions, selectFullscreenElement } from '../../store/slices/fullscreen/slice';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
 import { pinnedConnectionIdentifierSet, selectPinnedConnectionIdentifier } from '../../store/slices/uiSlice';
 import type { ConnectionIdentifier } from '../../types';
 import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 import Ballot from '../Ballot';
-import LocalVideo from '../LocalVideo';
+import LocalVideoLegacy from '../LocalVideoLegacy';
 import VotesAndPollsResultsPopover from '../MeetingHeader/fragments/VotesAndPollsResultsPopover';
 import ParticipantWindow from '../ParticipantWindow';
 import TimerPopover from '../TimerPopover/TimerPopover';
@@ -79,8 +79,11 @@ const IconButton = styled(MuiIconButton)(({ theme, 'aria-pressed': ariaPressed }
 
 const FullscreenView = () => {
   const { t } = useTranslation();
+  const { isV2 } = useConferenceUiVersion();
   const [hasVisibleControls, setVisibleControls] = useState<boolean>(false);
+  // V2-CLEANUP: is not needed after transition to V2
   const [isLocalVideoPinned, setIsLocalVideoPinned] = useState<boolean>(false);
+  // V2-CLEANUP: is not needed after transition to V2
   const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
   const sortedParticipants = useSortedParticipants(
     useRemoteParticipants({
@@ -132,6 +135,7 @@ const FullscreenView = () => {
     }, 5000);
   }, [hasVisibleControls]);
 
+  // V2-CLEANUP: is not needed after transition to V2
   const toggleLocalVideoPin = () => setIsLocalVideoPinned((prevState) => !prevState);
 
   const handleCloseFullscreen = () => {
@@ -139,7 +143,9 @@ const FullscreenView = () => {
   };
 
   const isActive = hasVisibleControls;
+  // V2-CLEANUP: is not needed after transition to V2
   const isPinned = pinnedConnectionIdentifier ? pinnedConnectionIdentifier === selectedParticipant?.identity : false;
+  // V2-CLEANUP: is not needed after transition to V2
   const togglePin = useCallback(() => {
     const updatePinnedId =
       pinnedConnectionIdentifier === sortedParticipantsIdentity ? undefined : sortedParticipantsIdentity;
@@ -187,11 +193,20 @@ const FullscreenView = () => {
             </IconButton>
           </Box>
         </ButtonsContainer>
-        <Slide direction="down" in={isLocalVideoPinned || isActive} mountOnEnter>
-          <LocalVideoContainer data-testid="fullscreenLocalVideo">
-            <LocalVideo fullscreenMode togglePinVideo={toggleLocalVideoPin} isVideoPinned={isLocalVideoPinned} />
-          </LocalVideoContainer>
-        </Slide>
+        {
+          // V2-CLEANUP: the whole Slide needed only in V1, remove completely after transition to V2
+          !isV2 && (
+            <Slide direction="down" in={isLocalVideoPinned || isActive} mountOnEnter>
+              <LocalVideoContainer data-testid="fullscreenLocalVideo">
+                <LocalVideoLegacy
+                  fullscreenMode
+                  togglePinVideo={toggleLocalVideoPin}
+                  isVideoPinned={isLocalVideoPinned}
+                />
+              </LocalVideoContainer>
+            </Slide>
+          )
+        }
         <Slide direction="up" in={isActive} mountOnEnter unmountOnExit>
           <ToolbarWrapper>
             <Toolbar layout="fullscreen" />

@@ -54,5 +54,21 @@ describe('NameTile with activated media', () => {
       expect(screen.queryByTestId('micOff')).not.toBeInTheDocument();
       expect(screen.queryByTestId('camOff')).not.toBeInTheDocument();
     });
+
+    it('does not render video icon, if video is off and show icons is set to false', () => {
+      renderWithProviders(<NameTile audioOn videoOn={false} showIcons={false} displayName={displayName} />, {
+        provider: { mui: true },
+      });
+
+      expect(screen.queryByTestId('camOff')).not.toBeInTheDocument();
+    });
+
+    it('does not render audio icon, if audio is off and show icons is set to false', () => {
+      renderWithProviders(<NameTile audioOn={false} videoOn showIcons={false} displayName={displayName} />, {
+        provider: { mui: true },
+      });
+
+      expect(screen.queryByTestId('micOff')).not.toBeInTheDocument();
+    });
   });
 });
