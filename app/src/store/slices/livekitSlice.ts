@@ -832,7 +832,7 @@ const createRoomListeners = (
     }
   },
   [RoomEvent.LocalTrackUnpublished]: (pub) => handleTrackToggle(pub, room, dispatch, getState, false),
-  [RoomEvent.TrackSubscribed]: (track, pub, participant) => handleTrackSubscribed(track, pub, participant),
+  [RoomEvent.TrackSubscribed]: (track, pub, participant) => handleTrackSubscribed(track, pub, participant, getState),
   [RoomEvent.ParticipantPermissionsChanged]: (previousPermissions, participant) =>
     handlePermissionChanged(previousPermissions, participant as RemoteParticipant | LocalParticipant, dispatch),
   [RoomEvent.TrackMuted]: (pub, participant) => handleTrackToggle(pub, room, dispatch, getState, false, participant),
@@ -1007,12 +1007,14 @@ const handleRemoteTrackUnpublished = (
 const handleTrackSubscribed = async (
   track: RemoteTrack,
   pub: RemoteTrackPublication,
-  participant: RemoteParticipant
+  participant: RemoteParticipant,
+  getState: () => RootState
 ) => {
   if (pub.isEncrypted) {
     log.debug(`subscribed encrypted ${pub.kind} stream from user with ID:`, participant.identity);
   }
-  if (track.kind === Track.Kind.Audio) {
+
+  if (track.kind === Track.Kind.Audio && !getState().livekit.isPopoutStream) {
     try {
       const element = track.attach();
       await element.play();
