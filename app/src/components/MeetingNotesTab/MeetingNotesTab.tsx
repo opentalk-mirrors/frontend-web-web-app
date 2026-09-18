@@ -19,8 +19,8 @@ import {
   Tooltip,
   Link,
 } from '@mui/material';
-import { cloneDeep } from 'es-toolkit';
-import { intersectionBy, isEmpty, some, truncate, unionBy, uniqueId } from 'es-toolkit/compat';
+import { cloneDeep, intersectionBy, unionBy } from 'es-toolkit';
+import { isEmpty, truncate, uniqueId } from 'es-toolkit/compat';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -90,15 +90,15 @@ const MeetingNotesTab = () => {
     oldParticipants: MeetingNotesParticipant[]
   ) => {
     let mergedParticipants: MeetingNotesParticipant[] = oldParticipants;
-    const idProperty: keyof MeetingNotesParticipant = 'id';
+    const getId = (participant: MeetingNotesParticipant) => participant.id;
 
     // Participants have joined the conference
     if (newParticipants.length > oldParticipants.length) {
-      mergedParticipants = unionBy(oldParticipants, newParticipants, idProperty);
+      mergedParticipants = unionBy(oldParticipants, newParticipants, getId);
     }
     // Participants have left the conference
     if (newParticipants.length < oldParticipants.length) {
-      mergedParticipants = intersectionBy(oldParticipants, newParticipants, idProperty);
+      mergedParticipants = intersectionBy(oldParticipants, newParticipants, getId);
     }
 
     return mergedParticipants;
@@ -275,7 +275,7 @@ const MeetingNotesTab = () => {
   };
 
   const open = Boolean(anchorEl);
-  const hasSelectedParticipants = some(mergedParticipants, 'isSelected');
+  const hasSelectedParticipants = mergedParticipants.some((participant) => participant.isSelected);
 
   return (
     <Stack

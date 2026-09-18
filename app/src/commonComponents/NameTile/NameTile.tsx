@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, BoxProps, Stack, Typography, styled } from '@mui/material';
 import Color from 'colorjs.io';
-import { omit } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { CameraOffIcon, MicOffIcon } from '../../assets/icons';
@@ -79,10 +78,8 @@ const NameTile = ({ displayName, videoOn = false, audioOn = false, ...props }: N
       </IconBox>
     );
 
-  const boxProps = omit(props, 'displayName', 'videoOn', 'audioOn');
-
   return (
-    <NameBox data-testid="nameTile" {...boxProps}>
+    <NameBox data-testid="nameTile" {...props}>
       {renderIconBox()}
       <Typography
         variant="body2"

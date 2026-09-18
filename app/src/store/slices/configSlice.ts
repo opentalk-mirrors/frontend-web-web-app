@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { BackendFeatures, BackendModules, Tariff, TariffId } from '@opentalk/rest-api-rtk-query';
 import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
-import { merge } from 'es-toolkit/compat';
+import { merge } from 'es-toolkit';
 
 import type { RootState } from '../';
 import { getAvailableGridSizes } from '../../constants';

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { unionBy } from 'es-toolkit/compat';
+import { unionBy } from 'es-toolkit';
 import i18next from 'i18next';
 
 import type { RootState } from '../';
@@ -62,7 +62,7 @@ export const subroomAudioSlice = createSlice({
         participantId: p,
         state: WhisperParticipantState.Invited,
       }));
-      state.participants = unionBy(newParticipants, state.participants, 'participantId');
+      state.participants = unionBy(newParticipants, state.participants, (participant) => participant.participantId);
     },
     removeParticipant: (state, { payload: { participantId } }) => {
       state.participants = state.participants.filter((p) => p.participantId !== participantId);

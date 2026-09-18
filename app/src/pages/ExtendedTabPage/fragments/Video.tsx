@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { VideoTrack, TrackReference } from '@livekit/components-react';
 import { styled, CircularProgress } from '@mui/material';
-import { debounce } from 'es-toolkit/compat';
+import { debounce } from 'es-toolkit';
 import { RemoteParticipant, RemoteTrackPublication } from 'livekit-client';
 import { Room } from 'livekit-client';
 import { useCallback, useEffect, useState } from 'react';
@@ -46,7 +46,7 @@ const Video = ({ mediaDescriptor, room }: { mediaDescriptor: MediaDescriptor; ro
   }, []);
 
   useEffect(() => {
-    const debouncedHandleResize = debounce(handleResize);
+    const debouncedHandleResize = debounce(handleResize, 0);
 
     debouncedHandleResize();
     window.addEventListener('resize', debouncedHandleResize);

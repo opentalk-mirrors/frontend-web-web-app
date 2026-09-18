@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, styled } from '@mui/material';
-import { debounce } from 'es-toolkit/compat';
+import { debounce } from 'es-toolkit';
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
