@@ -12,9 +12,9 @@ import { ParticipantId } from '../../../types';
 import { Minutes, Seconds } from '../../../utils/tsUtils';
 import { DurationRow } from './DurationRow';
 import { LimitPicker } from './LimitPicker';
-import { MinimumWarning } from './MinimumWarning';
 import { ParticipantsPopoverContent } from './ParticipantsPopoverContent';
 import { RandomDistributionRow } from './RandomDistributionRow';
+import { RequirementWarning } from './RequirementWarning';
 import { RoomPreview } from './RoomPreview';
 import { SelectionModeRow } from './SelectionModeRow';
 import {
@@ -73,8 +73,11 @@ const CreateRoomsForm = () => {
     setDuration(Number(event.target.value) as Minutes);
   }, []);
 
+  const isEveryParticipantAssigned = sortedParticipants.every((participant) => isAssignedToAnyRoom(participant.id));
+
   const isStartButtonDisabled =
-    hasInsufficientParticipants || (!randomDistribution && hasInsufficientParticipantsInRooms);
+    hasInsufficientParticipants ||
+    (!randomDistribution && (hasInsufficientParticipantsInRooms || !isEveryParticipantAssigned));
 
   const collapseRoom = useCallback(
     (roomIndex: number) => {
@@ -272,18 +275,21 @@ const CreateRoomsForm = () => {
           }}
         >
           {hasInsufficientParticipants && (
-            <MinimumWarning
+            <RequirementWarning
               labelKey="breakout-room-insufficient-number-of-participants-warning"
               minimumNumberOfParticipants={necessaryNumberOfParticipants}
             />
           )}
           {hasInsufficientParticipantsInRooms && !randomDistribution && (
-            <MinimumWarning
+            <RequirementWarning
               labelKey="breakout-room-underpopulated-rooms-warning"
               minimumNumberOfParticipants={
                 dropdownOption === DropdownOptions.Rooms ? MINIMUM_NUMBER_OF_PARTICIPANTS_PER_ROOM : limit
               }
             />
+          )}
+          {!hasInsufficientParticipantsInRooms && !isEveryParticipantAssigned && !randomDistribution && (
+            <RequirementWarning labelKey="breakout-room-unassigned-participants-warning" />
           )}
 
           <Button onClick={handleBreakoutRoomStart} disabled={isStartButtonDisabled} color="secondary">
