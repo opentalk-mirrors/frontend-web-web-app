@@ -269,7 +269,7 @@ toolbar-button-blur-turn-on-tooltip-title = Hintergrund-Filter aktivieren
 toolbar-button-blur-turn-off-tooltip-title = Hintergrund-Filter deaktivieren
 toolbar-button-more-tooltip-title = Mehr Einstellungen
 toolbar-button-screen-share-turn-on-tooltip-title = Bildschirm teilen
-toolbar-button-screen-share-turn-off-tooltip-title = Bildschirm nicht mehr teilen
+toolbar-button-screen-share-turn-off-tooltip-title = Bildschirmfreigabe beenden
 toolbar-button-screen-share-context-title = Anderen Bildschirm teilen
 toolbar-button-end-call-tooltip-title = Raum verlassen
 
