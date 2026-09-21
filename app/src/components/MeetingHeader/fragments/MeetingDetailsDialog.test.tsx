@@ -145,12 +145,32 @@ describe('MeetingDetailsDialog', () => {
         onClose={vi.fn()}
         eventInfo={mockEventInfo}
         meetingDetails={{ ...meetingDetails }}
-        roomInfo={mockRoomInfo}
+        roomInfo={{ ...mockRoomInfo, alias: undefined }}
       />,
       { store, provider: { snackbar: true, mui: true } }
     );
     expect(screen.getByRole('textbox', { name: 'meeting-details-dialog-label-meeting-link' })).toBeInTheDocument();
     expect(screen.queryByRole('textbox', { name: 'meeting-details-dialog-label-invite-link' })).not.toBeInTheDocument();
+  });
+
+  it('does not render the meeting link when an alias exists', () => {
+    renderWithProviders(
+      <MeetingDetailsDialog
+        open={true}
+        onClose={vi.fn()}
+        eventInfo={mockEventInfo}
+        meetingDetails={meetingDetails}
+        roomInfo={mockRoomInfo}
+      />,
+      { store, provider: { snackbar: true, mui: true } }
+    );
+
+    expect(
+      screen.queryByRole('textbox', { name: 'meeting-details-dialog-label-meeting-link' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'meeting-details-dialog-label-personal-room-link' })
+    ).toBeInTheDocument();
   });
 
   it('shows the meeting link copy notification even when an invite code is provided', async () => {
@@ -163,7 +183,7 @@ describe('MeetingDetailsDialog', () => {
         onClose={vi.fn()}
         eventInfo={mockEventInfo}
         meetingDetails={meetingDetails}
-        roomInfo={mockRoomInfo}
+        roomInfo={{ ...mockRoomInfo, alias: undefined }}
       />,
       { store, provider: { snackbar: true, mui: true } }
     );
@@ -186,7 +206,7 @@ describe('MeetingDetailsDialog', () => {
         onClose={vi.fn()}
         eventInfo={mockEventInfo}
         meetingDetails={{ ...meetingDetails }}
-        roomInfo={mockRoomInfo}
+        roomInfo={{ ...mockRoomInfo, alias: undefined }}
       />,
       { store, provider: { snackbar: true, mui: true } }
     );
