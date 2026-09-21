@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { CreateEventPayload } from '@opentalk/rest-api-rtk-query';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';

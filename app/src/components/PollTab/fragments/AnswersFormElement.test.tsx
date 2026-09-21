@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
+import { range } from 'es-toolkit';
 import { useFormikContext } from 'formik';
-import { range } from 'lodash';
 import { Mock } from 'vitest';
 
 import { renderWithProviders } from '../../../utils/testUtils';

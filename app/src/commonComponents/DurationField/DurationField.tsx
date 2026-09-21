@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, Button, ButtonProps, Chip as MuiChip, Popover, Stack, styled, Typography } from '@mui/material';
-import { isNumber } from 'lodash';
+import { isNumber } from 'es-toolkit';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

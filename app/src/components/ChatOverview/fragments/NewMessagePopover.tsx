@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { ListItemText, Menu as MuiMenu, MenuItem as MuiMenuItem, styled } from '@mui/material';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 

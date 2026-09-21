@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { List as MuiList, ListItem, ListItemAvatar, ListItemText, Stack, Typography, styled } from '@mui/material';
-import { truncate, uniqueId } from 'lodash';
+import { truncate, uniqueId } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, DoneIcon } from '../../../assets/icons';

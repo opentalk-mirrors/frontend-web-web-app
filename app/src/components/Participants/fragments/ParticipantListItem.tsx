@@ -14,8 +14,8 @@ import {
 } from '@mui/material';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { format } from 'date-fns';
+import { isEmpty, uniqueId } from 'es-toolkit/compat';
 import { ParticipantEvent } from 'livekit-client';
-import { isEmpty, uniqueId } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { RowComponentProps } from 'react-window';

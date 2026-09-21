@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Typography } from '@mui/material';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -6,7 +6,7 @@ import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import { isTimelessEvent } from '@opentalk/rest-api-rtk-query';
-import { kebabCase } from 'lodash';
+import { kebabCase } from 'es-toolkit';
 import { SyntheticEvent, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -9,7 +9,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

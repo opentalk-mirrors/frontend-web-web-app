@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { range, shuffle } from 'lodash';
+import { range, shuffle } from 'es-toolkit';
 import { useCallback, useMemo, useState } from 'react';
 
 import { BreakoutRoomConfig } from '../../../../api/types/outgoing/breakout';

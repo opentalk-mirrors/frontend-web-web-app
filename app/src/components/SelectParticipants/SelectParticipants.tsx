@@ -4,7 +4,8 @@
 import { Autocomplete, CircularProgress, InputAdornment, TextField, styled } from '@mui/material';
 import { EventInvite } from '@opentalk/rest-api-rtk-query';
 import type { EventId, User, EmailUser, Email, ParticipantOption } from '@opentalk/rest-api-rtk-query';
-import { debounce, differenceBy } from 'lodash';
+import { debounce } from 'es-toolkit';
+import { differenceBy } from 'es-toolkit/compat';
 import { useCallback, useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -4,7 +4,7 @@
 import { Button, Grid, Stack, styled } from '@mui/material';
 import { Event, EventInvite, isEvent, RegisteredUser } from '@opentalk/rest-api-rtk-query';
 import type { ParticipantOption } from '@opentalk/rest-api-rtk-query/src/types/user';
-import { merge } from 'lodash';
+import { merge } from 'es-toolkit';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';

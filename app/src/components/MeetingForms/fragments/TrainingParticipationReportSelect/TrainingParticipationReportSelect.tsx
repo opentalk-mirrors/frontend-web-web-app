@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Collapse, MenuItem, Stack } from '@mui/material';
 import { TrainingParticipationReportParameterSet } from '@opentalk/rest-api-rtk-query/src/types/event';
+import { isEqual } from 'es-toolkit';
 import { FormikProps } from 'formik';
-import { isEqual } from 'lodash';
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

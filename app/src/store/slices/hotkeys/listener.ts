@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { ListenerMiddlewareInstance } from '@reduxjs/toolkit';
-import { debounce, isEqual } from 'lodash';
+import { debounce, isEqual } from 'es-toolkit';
 
 import browser from '../../../modules/BrowserSupport';
 import type { AppDispatch, RootState } from '../../../store';
@@ -172,7 +172,7 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
           }
         },
         100,
-        { leading: true, trailing: false }
+        { edges: ['leading'] }
       );
 
       await debouncedOnPress();
@@ -213,7 +213,7 @@ export const startHotkeyListeners = (startListening: ListenerMiddlewareInstance[
           }
         },
         100,
-        { leading: true, trailing: false }
+        { edges: ['leading'] }
       );
 
       debouncedPressRelease();

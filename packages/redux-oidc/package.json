@@ -25,6 +25,7 @@
     "react-router-dom": "catalog:"
   },
   "dependencies": {
+    "es-toolkit": "catalog:",
     "jwt-decode": "^4.0.0"
   }
 }

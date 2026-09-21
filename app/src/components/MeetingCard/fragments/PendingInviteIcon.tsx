@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
-import { uniqueId } from 'lodash';
+import { uniqueId } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { InviteIcon } from '../../../assets/icons';

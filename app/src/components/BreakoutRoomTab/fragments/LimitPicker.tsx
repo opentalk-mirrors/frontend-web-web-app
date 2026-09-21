@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled } from '@mui/material';
-import { clamp } from 'lodash';
+import { clamp } from 'es-toolkit';
 import { KeyboardEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

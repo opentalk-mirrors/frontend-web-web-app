@@ -4,7 +4,7 @@
 import { Grid, styled, Typography, Collapse, Tooltip } from '@mui/material';
 import { isTimelessEvent, isRecurringEvent, isPendingEvent, getEventId } from '@opentalk/rest-api-rtk-query';
 import { Property } from 'csstype';
-import { uniqueId, truncate } from 'lodash';
+import { uniqueId, truncate } from 'es-toolkit/compat';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';

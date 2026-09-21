@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled, Stack, Typography, Button, Box } from '@mui/material';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';

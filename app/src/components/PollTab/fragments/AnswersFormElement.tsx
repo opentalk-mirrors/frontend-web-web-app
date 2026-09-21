@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, Chip as MuiChip, Grid, styled, Typography, FormHelperText } from '@mui/material';
+import { get, isEmpty } from 'es-toolkit/compat';
 import { FieldArray, Field, FieldProps, useFormikContext } from 'formik';
-import { get, isEmpty } from 'lodash';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

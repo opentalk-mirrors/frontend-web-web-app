@@ -5,7 +5,7 @@ import { Box, Button, Stack, Typography, styled } from '@mui/material';
 import { InviteStatus, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
 import type { EventId, RoomId } from '@opentalk/rest-api-rtk-query';
 import { skipToken } from '@reduxjs/toolkit/query';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';

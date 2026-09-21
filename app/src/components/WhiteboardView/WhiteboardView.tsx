@@ -25,7 +25,7 @@ import type {
 } from '@excalidraw/excalidraw/types';
 import { Mutable } from '@excalidraw/excalidraw/utility-types';
 import { styled } from '@mui/material';
-import { keyBy, throttle } from 'lodash';
+import { keyBy, throttle } from 'es-toolkit';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -331,7 +331,7 @@ const WhiteboardView = () => {
 
   const bumpElementVersions = useCallback(
     <T extends ExcalidrawElement>(targetElements: T[], localElements: readonly OrderedExcalidrawElement[]) => {
-      const localElementsMap = localElements ? keyBy(localElements, 'id') : null;
+      const localElementsMap = localElements ? keyBy(localElements, (element) => element.id) : null;
 
       return targetElements.map((element) => {
         const localElement = localElementsMap ? localElementsMap[element.id] : null;
@@ -514,7 +514,7 @@ const WhiteboardView = () => {
         );
       },
       SYNC_FULL_SCENE_INTERVAL_MS,
-      { leading: false, trailing: true }
+      { edges: ['trailing'] }
     );
   }, [dispatch]);
 
@@ -539,7 +539,7 @@ const WhiteboardView = () => {
         dispatch(broadcast.action({ data: { elements: syncableElements } }));
       },
       SYNC_SCENE_ELEMENTS_INTERVAL_MS,
-      { leading: true, trailing: true }
+      { edges: ['leading', 'trailing'] }
     );
   }, [dispatch]);
 
@@ -557,7 +557,7 @@ const WhiteboardView = () => {
         dispatch(broadcast.action({ data: { elements: syncableElements } }));
       },
       SYNC_FULL_SCENE_INTERVAL_MS,
-      { leading: false, trailing: true }
+      { edges: ['trailing'] }
     );
   }, [dispatch]);
 

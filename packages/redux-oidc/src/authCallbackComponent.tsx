@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { isEmpty } from 'es-toolkit/compat';
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useSelector } from 'react-redux';

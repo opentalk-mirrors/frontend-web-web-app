@@ -4,7 +4,7 @@
 import { Stack, Skeleton, List, ListItem, styled } from '@mui/material';
 import { DateTime, Event, EventInstance, InviteStatus } from '@opentalk/rest-api-rtk-query';
 import { formatRFC3339 } from 'date-fns';
-import { isEmpty } from 'lodash';
+import { isEmpty } from 'es-toolkit/compat';
 
 import { useGetEventsWithInstancesQuery } from '../../../../api/rest';
 import MeetingCard from '../../../../components/MeetingCard';

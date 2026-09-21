@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Grid, Typography, styled } from '@mui/material';
-import { uniq } from 'lodash';
+import { uniq } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Collapse as MuiCollapse, Stack, styled, Tooltip, Typography, Box } from '@mui/material';
 import { isPendingEvent, isTimelessEvent } from '@opentalk/rest-api-rtk-query';
-import { truncate, uniqueId } from 'lodash';
+import { truncate, uniqueId } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { FavoriteIcon as OriginalFavoriteIcon } from '../../../assets/icons';

@@ -4,7 +4,7 @@
 import { Grid, styled } from '@mui/material';
 import { EventInvite, InviteStatus, EventId } from '@opentalk/rest-api-rtk-query';
 import type { ParticipantOption, RegisteredUser } from '@opentalk/rest-api-rtk-query';
-import { sortBy } from 'lodash';
+import { sortBy } from 'es-toolkit';
 
 import { useGetEventInvitesQuery } from '../../api/rest';
 import { isRegisteredUser } from '../../utils/typeGuardUtils';

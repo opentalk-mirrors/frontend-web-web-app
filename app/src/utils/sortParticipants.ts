@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { sortBy, partition } from 'lodash';
+import { partition, sortBy } from 'es-toolkit';
 
 import { Participant, SortOption } from '../types';
 import { shuffleArrayItems } from './arrayUtils';
@@ -12,10 +12,9 @@ export type SortableParticipant = Pick<
 >;
 
 function sortByRaisedHand<T extends SortableParticipant>(participants: Array<T>): Array<T> {
-  return sortBy(
-    participants,
-    (participant) => participant.handIsUp && participant.handUpdatedAt && new Date(participant.handUpdatedAt)
-  );
+  return sortBy(participants, [
+    (participant) => participant.handIsUp && participant.handUpdatedAt && new Date(participant.handUpdatedAt),
+  ]);
 }
 
 function sortByDisplayName<T extends SortableParticipant>(participants: Array<T>): Array<T> {
@@ -25,7 +24,7 @@ function sortByDisplayName<T extends SortableParticipant>(participants: Array<T>
 function getSortedByRaisedHandFirst<T extends SortableParticipant>(participants: T[]) {
   const [participantsWithRaisedHands, participantsWithoutRaisedHands] = partition(
     participants,
-    (participant) => participant.handIsUp
+    (participant) => !!participant.handIsUp
   );
 
   return sortByRaisedHand(participantsWithRaisedHands).concat(sortByDisplayName(participantsWithoutRaisedHands));

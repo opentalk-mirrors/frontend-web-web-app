@@ -16,8 +16,9 @@ import {
   Stack,
   styled,
 } from '@mui/material';
+import { debounce } from 'es-toolkit';
+import { truncate } from 'es-toolkit/compat';
 import { useFormikContext } from 'formik';
-import { find, debounce, truncate } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -64,7 +65,7 @@ export interface AllowedParticipant {
 }
 
 const isSelectedParticipant = (participants: AllowedParticipant[], id: ParticipantId) =>
-  Boolean(find(participants, { id })?.isSelected);
+  Boolean(participants.find((participant) => participant.id === id)?.isSelected);
 
 const getSelectedParticipants = (participants: AllowedParticipant[]) =>
   participants.filter((participant) => participant.isSelected);

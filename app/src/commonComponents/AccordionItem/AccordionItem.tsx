@@ -9,7 +9,7 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-import { uniqueId } from 'lodash';
+import { uniqueId } from 'es-toolkit/compat';
 import React, { SyntheticEvent, useState } from 'react';
 
 import { ArrowDownIcon } from '../../assets/icons';

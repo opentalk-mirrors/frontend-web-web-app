@@ -11,8 +11,8 @@ import {
   RecordingFeatures,
   CoreFeatures,
 } from '@opentalk/rest-api-rtk-query';
+import { debounce } from 'es-toolkit';
 import { useFormik } from 'formik';
-import { debounce } from 'lodash';
 import { ChangeEvent, SubmitEvent, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

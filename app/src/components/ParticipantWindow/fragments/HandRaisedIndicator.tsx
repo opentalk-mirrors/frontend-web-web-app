@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { keyframes, styled, Box as MuiBox } from '@mui/material';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import { useTranslation } from 'react-i18next';
 
 import { RaiseHandOnIcon } from '../../../assets/icons';

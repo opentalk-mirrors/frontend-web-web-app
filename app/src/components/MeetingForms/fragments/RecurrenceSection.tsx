@@ -4,8 +4,8 @@
 import { RRule } from '@heinlein-video/rrule';
 import { Grid, MenuItem, SelectChangeEvent, styled } from '@mui/material';
 import { Event, RecurrencePattern, isRecurringEvent } from '@opentalk/rest-api-rtk-query';
+import { isEmpty } from 'es-toolkit/compat';
 import { FormikProps } from 'formik';
-import { isEmpty } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

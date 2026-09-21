@@ -2,9 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, styled, Switch, Typography, Tooltip, Grid, Stack } from '@mui/material';
+import { isEqual } from 'es-toolkit';
+import { isEmpty } from 'es-toolkit/compat';
 import { FormikValues, Formik } from 'formik';
 import i18next from 'i18next';
-import { isEmpty, isEqual } from 'lodash';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';

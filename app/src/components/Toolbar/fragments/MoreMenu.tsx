@@ -19,7 +19,7 @@ import {
   StreamingStatus,
   TranscriptionFeatures,
 } from '@opentalk/rest-api-rtk-query';
-import { truncate } from 'lodash';
+import { truncate } from 'es-toolkit/compat';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
