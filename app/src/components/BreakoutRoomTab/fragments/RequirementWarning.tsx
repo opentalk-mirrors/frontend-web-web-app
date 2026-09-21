@@ -4,12 +4,12 @@
 import { Alert } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-type MinimumWarningProps = {
+type RequirementWarningProps = {
   labelKey: string;
-  minimumNumberOfParticipants: number;
+  minimumNumberOfParticipants?: number;
 };
 
-export function MinimumWarning(props: MinimumWarningProps) {
+export function RequirementWarning(props: RequirementWarningProps) {
   const { t } = useTranslation();
 
   return (

@@ -509,6 +509,7 @@ breakout-room-start-button = Start rooms
 breakout-room-start-button-disabled = Insufficient number of participants present in the conference
 breakout-room-insufficient-number-of-participants-warning = At least {$minimumNumberOfParticipants} participants are required to create breakout rooms in current setup.
 breakout-room-underpopulated-rooms-warning = Some rooms have fewer than the minimum participants required (at least {$minimumNumberOfParticipants} per room).
+breakout-room-unassigned-participants-warning = Some participants are not assigned to a room yet.
 
 breakout-room-rooms-created-by-participants = Create {$rooms} Rooms
 breakout-room-assignable-participants-per-rooms = Assign {$participantsPerRoom} participants per room
