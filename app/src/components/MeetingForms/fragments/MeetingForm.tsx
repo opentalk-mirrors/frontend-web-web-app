@@ -13,7 +13,7 @@ import {
 } from '@opentalk/rest-api-rtk-query';
 import { useFormik } from 'formik';
 import { debounce } from 'lodash';
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, SubmitEvent, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLazyGetEventsWithInstancesQuery, useGetMeTariffQuery, useVerifyRoomNameMutation } from '../../../api/rest';
@@ -216,7 +216,7 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
     return null;
   };
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
 
     if (!formik.values.isTimeDependent) {
@@ -311,6 +311,15 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
                 maxCharacters={MAX_CHARACTERS_ALIAS}
                 error={personalRoomNameHasError}
                 onChange={handlePersonalRoomNameChange}
+                slotProps={{
+                  formHelperText: {
+                    sx: {
+                      '&.Mui-error::before': {
+                        display: 'none',
+                      },
+                    },
+                  },
+                }}
                 helperText={
                   <CustomHelperText
                     helperText={t('dashboard-meeting-personal-room-name-helper-text')}

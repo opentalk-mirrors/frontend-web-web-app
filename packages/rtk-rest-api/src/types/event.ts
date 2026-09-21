@@ -167,7 +167,7 @@ export interface UpdateEventPayload {
   streamingTargets?: Array<StreamingTarget>;
   trainingParticipationReport?: TrainingParticipationReportParameterSet | null;
   guestAccess?: GuestAccess;
-  roomName?: string;
+  roomName?: string | null;
 }
 
 /**

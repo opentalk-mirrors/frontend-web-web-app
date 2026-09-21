@@ -1,7 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { InputProps, InputLabelProps, TextField, TextFieldProps, styled, SelectProps } from '@mui/material';
+import {
+  InputProps,
+  InputLabelProps,
+  TextField,
+  TextFieldProps,
+  styled,
+  SelectProps,
+  FormHelperTextProps,
+} from '@mui/material';
 import { useState, FocusEvent, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -57,6 +65,7 @@ const CommonTextField = ({
   const initialInputLabelProps = (slotProps?.inputLabel || {}) as InputLabelProps;
   const InputProps = (slotProps?.input || {}) as InputProps;
   const SelectProps = (slotProps?.select || {}) as SelectProps;
+  const formHelperTextProps = (slotProps?.formHelperText || {}) as FormHelperTextProps;
 
   const id = useId();
 
@@ -140,6 +149,7 @@ const CommonTextField = ({
       slotProps={{
         input: InputProps,
         select: SelectProps,
+        formHelperText: formHelperTextProps,
         inputLabel: computedInputLabelProps,
         htmlInput: {
           ...slotProps?.htmlInput,
