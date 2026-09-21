@@ -5,7 +5,7 @@ import { ClickAwayListener, ListItemIcon, ListItemText, MenuList, Paper, Popper,
 import React, { useRef, useState } from 'react';
 
 import { ArrowRightIcon, DoneIcon } from '../../../assets/icons';
-import { ToolbarMenuItem } from './ToolbarMenuUtils';
+import MoreMenuItem from './MoreMenuItem';
 
 const SUBMENU_CLOSE_DELAY_MS = 150;
 
@@ -58,7 +58,7 @@ const SubmenuMenuItem = ({ label, icon, disabled, submenu, container }: SubmenuM
   };
 
   return (
-    <ToolbarMenuItem
+    <MoreMenuItem
       ref={itemRef}
       disabled={disabled}
       onMouseEnter={() => openSubmenu(false)}
@@ -106,7 +106,7 @@ const SubmenuMenuItem = ({ label, icon, disabled, submenu, container }: SubmenuM
                 const isSelected = option.selected ?? false;
 
                 const menuItem = (
-                  <ToolbarMenuItem
+                  <MoreMenuItem
                     key={option.label}
                     disabled={option.disabled}
                     onClick={(event) => {
@@ -123,7 +123,7 @@ const SubmenuMenuItem = ({ label, icon, disabled, submenu, container }: SubmenuM
                     <Typography variant="inherit" noWrap>
                       {option.label}
                     </Typography>
-                  </ToolbarMenuItem>
+                  </MoreMenuItem>
                 );
 
                 return option.tooltip ? (
@@ -136,7 +136,7 @@ const SubmenuMenuItem = ({ label, icon, disabled, submenu, container }: SubmenuM
           </Paper>
         </ClickAwayListener>
       </Popper>
-    </ToolbarMenuItem>
+    </MoreMenuItem>
   );
 };
 

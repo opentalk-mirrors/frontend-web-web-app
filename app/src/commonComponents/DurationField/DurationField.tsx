@@ -10,7 +10,7 @@ import { ClockIcon } from '../../assets/icons';
 import { IFormikCustomFieldPropsReturnDurationValue } from '../../utils/formikUtils';
 import CommonTextField from '../CommonTextField';
 import ErrorFormMessage from '../ErrorFormMessage';
-import { MenuTitle } from '../ToolbarMenuUtils/ToolbarMenuUtils';
+import { MenuTitle } from '../MenuUtils';
 import { DURATION_OPTIONS, DurationValueOptions } from './fragments/constants';
 
 interface DurationFieldProps extends IFormikCustomFieldPropsReturnDurationValue {
