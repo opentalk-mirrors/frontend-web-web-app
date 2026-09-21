@@ -87,3 +87,17 @@ path = "packages/track-processors-js-main/**"
 precedence = "aggregate"
 SPDX-FileCopyrightText = ["Copyright 2023 LiveKit, Inc."]
 SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "app/public/excalidraw-assets/THIRD-PARTY-FONT-LICENSES.txt"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+    "2024 Excalidraw (Excalifont)",
+    "2011 Your Own Font Foundry (Virgil)",
+    "2014 The Nunito Project Authors (Nunito)",
+    "2011 Juan Montoreano (Lilita One)",
+    "2020 Microsoft Corporation (Cascadia Code)",
+    "2020 The Assistant Project Authors, 2010 The Source Sans Pro Authors (Assistant)",
+    "2018 Shannon Miwa, 2023 Jesus Gonzalez, 2023 Rodrigo Batista de Moraes, 2024 Fini Jastrow, 2024 Kyle Beechly (Comic Shanns Mono)",
+]
+SPDX-License-Identifier = "OFL-1.1 AND MIT"
