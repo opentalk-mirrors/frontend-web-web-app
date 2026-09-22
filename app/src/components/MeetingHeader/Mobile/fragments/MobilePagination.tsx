@@ -6,8 +6,7 @@ import { useEffect, useState } from 'react';
 
 import LayoutOptions from '../../../../enums/LayoutOptions';
 import { useAppSelector, useAppDispatch } from '../../../../hooks';
-import { useGridPageSize } from '../../../../hooks/useGridPageSize';
-import { selectAllOnlineParticipants } from '../../../../store/slices/participantsSlice';
+import { useGridPageCount } from '../../../../hooks/useGridPageCount';
 import { setPaginationPage, selectCinemaLayout, selectPaginationPageState } from '../../../../store/slices/uiSlice';
 import PageIndex from './PageIndex';
 
@@ -40,14 +39,11 @@ const PopoverContainer = styled(Stack)(({ theme }) => ({
 
 const MobilePagination = () => {
   const dispatch = useAppDispatch();
-  const participants = useAppSelector(selectAllOnlineParticipants);
   const selectedPage = useAppSelector(selectPaginationPageState);
   const selectedLayout = useAppSelector(selectCinemaLayout);
-  const gridPageSize = useGridPageSize();
+  const pageCount = useGridPageCount();
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const isPopoverOpen = Boolean(anchorElement);
-
-  const pageCount = Math.ceil(participants.length / gridPageSize);
 
   useEffect(() => {
     if (selectedPage > pageCount || selectedPage === 0) {

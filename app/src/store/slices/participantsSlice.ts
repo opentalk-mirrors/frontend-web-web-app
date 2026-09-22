@@ -279,6 +279,10 @@ export const selectParticipantsTotal = createSelector(
   (participants) => participants.length + 1
 );
 
+export const selectOnlineConnectionsTotal = createSelector([selectAllOnlineParticipants], (participants) =>
+  participants.reduce((total, participant) => total + participant.connections.length, 0)
+);
+
 export const selectParticipantAvatarUrl: (state: RootState, id: ParticipantId) => string | undefined = createSelector(
   [(state: RootState, id: ParticipantId) => selectParticipantById(id)(state)],
   (participant: Participant) => participant?.avatarUrl

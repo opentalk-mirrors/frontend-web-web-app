@@ -9,10 +9,9 @@ import { useTranslation } from 'react-i18next';
 import { LogoIcon, MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icons';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useGridPageSize } from '../../../hooks/useGridPageSize';
+import { useGridPageCount } from '../../../hooks/useGridPageCount';
 import { selectPollsAndVotingCount } from '../../../store/selectors';
 import { selectMeetingNotesUrl } from '../../../store/slices/meetingNotesSlice';
-import { selectAllOnlineParticipants } from '../../../store/slices/participantsSlice';
 import { selectIsSharedFolderAvailable } from '../../../store/slices/sharedFolderSlice';
 import {
   selectCinemaLayout,
@@ -114,11 +113,10 @@ const RoomTitleContainer = styled('div')(({ theme }) => ({
 const DesktopMeetingHeaderLegacy = () => {
   const dispatch = useAppDispatch();
   const selectedLayout = useAppSelector(selectCinemaLayout);
-  const participants = useAppSelector(selectAllOnlineParticipants);
   const selectedPage = useAppSelector(selectPaginationPageState);
   const meetingNotesUrl = useAppSelector(selectMeetingNotesUrl);
   const isWhiteboardAvailable = useAppSelector(selectIsWhiteboardAvailable);
-  const gridSize = useGridPageSize();
+  const pageCount = useGridPageCount();
   const isCurrentWhiteboardHighlighted = useAppSelector(selectIsCurrentWhiteboardHighlighted);
   const isCurrentMeetingNotesHighlighted = useAppSelector(selectIsCurrentMeetingNotesHighlighted);
   const showWhiteboardIcon = isWhiteboardAvailable && selectedLayout !== LayoutOptions.Whiteboard;
@@ -128,8 +126,6 @@ const DesktopMeetingHeaderLegacy = () => {
   const { t } = useTranslation();
   const isMeetingNotesActive = selectedLayout === LayoutOptions.MeetingNotes;
   const isWhiteboardActive = selectedLayout === LayoutOptions.Whiteboard;
-
-  const pageCount = Math.ceil(participants.length / gridSize);
 
   useEffect(() => {
     if (selectedPage > pageCount || selectedPage === 0) {
