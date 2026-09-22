@@ -9,7 +9,7 @@ import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { ModerationTabKey } from '../../config/constants';
-import { GRID_SIZES, getAvailableGridSizes } from '../../constants';
+import { GRID_SIZES, MAX_GRID_TILES_DESKTOP, MAX_GRID_TILES_MOBILE } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import {
@@ -26,6 +26,7 @@ import {
   TimerStyle,
 } from '../../types';
 import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
+import { getAvailableGridSizes } from '../../utils/getAvailableGridSizes';
 import { hangUp, joinSuccess } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted } from './automodSlice';
@@ -365,6 +366,12 @@ export const selectParticipantsSearchValue = (state: RootState) => state.ui.part
 export const selectCinemaLayout = (state: RootState) => state.ui.cinemaLayout;
 export const selectCinemaViewOrder = (state: RootState) => state.ui.cinemaViewOrder;
 export const selectCinemaGridSize = (state: RootState) => state.ui.cinemaGridSize;
+export const selectEffectiveGridPageSize = (state: RootState, isMobile = false) => {
+  const maxTiles = isMobile ? MAX_GRID_TILES_MOBILE : MAX_GRID_TILES_DESKTOP;
+  const selectedSize = selectCinemaGridSize(state);
+  const size = Number.isFinite(selectedSize) && selectedSize > 0 ? selectedSize : maxTiles;
+  return Math.max(1, Math.min(size, maxTiles));
+};
 export const selectChatConversationState = (state: RootState) => state.ui.chatConversationState;
 export const selectChatConversationTarget = (state: RootState) => state.ui.chatConversationState.target;
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;

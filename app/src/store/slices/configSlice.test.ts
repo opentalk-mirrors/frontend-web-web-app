@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { GRID_SIZES } from '../../constants';
 import type { RootState } from '../index';
 import { selectAvailableGridSizes, selectDefaultGridSize } from './configSlice';
 
@@ -10,7 +11,7 @@ const createState = (config: { maxGridTiles?: number; defaultGridSize?: number }
 describe('config grid size selectors', () => {
   describe('selectAvailableGridSizes', () => {
     it('returns all grid sizes when maxGridTiles is not configured', () => {
-      expect(selectAvailableGridSizes(createState({}))).toEqual([6, 9, 16, 24]);
+      expect(selectAvailableGridSizes(createState({}))).toEqual(GRID_SIZES);
     });
 
     it('limits the available grid sizes to maxGridTiles', () => {

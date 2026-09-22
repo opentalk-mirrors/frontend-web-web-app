@@ -38,6 +38,7 @@ const MOCK_PARTICIPANTS = {
   ids: Array.from({ length: 2 * MAX_GRID_TILES_DESKTOP }, (_, i) => String(i)),
   entities: Array.from({ length: 2 * MAX_GRID_TILES_DESKTOP }, (_, i) => ({
     id: String(i),
+    connections: [`connection-${i}`],
     waitingState: WaitingState.Joined,
     leftAt: null,
     breakoutRoomId: undefined,

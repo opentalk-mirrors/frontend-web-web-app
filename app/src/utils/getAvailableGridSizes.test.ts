@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { GRID_SIZES, getAvailableGridSizes } from './constants';
+import { GRID_SIZES } from '../constants';
+import { getAvailableGridSizes } from './getAvailableGridSizes';
 
 describe('getAvailableGridSizes', () => {
   it('returns all grid sizes when maxGridTiles is undefined', () => {

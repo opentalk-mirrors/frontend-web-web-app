@@ -2,40 +2,40 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { ParticipantContext } from '@livekit/components-react';
-import { CircularProgress, Grid, styled } from '@mui/material';
-import { Participant, RemoteParticipant } from 'livekit-client';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, styled } from '@mui/material';
+import { Participant } from 'livekit-client';
+import { CSSProperties, useEffect, useState } from 'react';
 
-import { GRID_SIZES, GRID_VIDEO_WIDTHS } from '../../constants';
 import { useAppSelector } from '../../hooks';
-import { CinemaViewParticipant, useCinemaViewParticipants } from '../../hooks/useCinemaViewParticipants';
+import { useBestFitGridLayout } from '../../hooks/useBestFitGridLayout';
+import { useCinemaViewParticipants } from '../../hooks/useCinemaViewParticipants';
 import { useCinemaViewParticipantsOrdering } from '../../hooks/useCinemaViewParticipantsOrdering';
-import { PaginationDirection, selectPaginationDirectionState } from '../../store/slices/uiSlice';
+import { useIsMobile } from '../../hooks/useMediaQuery';
+import { selectPaginationDirectionState } from '../../store/slices/uiSlice';
 import { ConnectionIdentifier } from '../../types';
 import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import GridCell from './fragments/GridCell';
+import { GRID_COLUMNS_VAR, GRID_GAP, GRID_GAP_VAR, GRID_TILE_WIDTH_VAR } from './gridLayout';
 
-const GridContainer = styled('div', {
-  shouldForwardProp: (prop) => prop !== 'videoWidth',
-})<{ videoWidth: number }>(({ theme, videoWidth }) => ({
+const GridContainer = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isScrolling',
+})<{ isScrolling: boolean }>(({ isScrolling }) => ({
+  [GRID_GAP_VAR]: `${GRID_GAP}px`,
+  flex: 1,
+  minHeight: 0,
   width: '100%',
-  display: 'grid',
-  gridGap: theme.spacing(1),
-  alignContent: 'center',
-  gridAutoFlow: 'row',
-  minHeight: '80%',
-  [theme.breakpoints.up('md')]: {
-    flex: 1,
-    gridTemplateColumns: `repeat(auto-fit, minmax(calc(${videoWidth}% - ${theme.spacing(1)}), 1fr))`,
-  },
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: `var(${GRID_GAP_VAR})`,
+  justifyContent: 'center',
+  alignContent: isScrolling ? 'flex-start' : 'center',
+  alignItems: 'center',
+  // Keep overflow-x explicitly hidden: leaving it unset makes it compute to `auto`
+  // (because overflow-y is not `visible`), so a transient horizontal scrollbar could
+  // steal height and flip the row count while shrinking the width.
+  overflowX: 'hidden',
+  overflowY: isScrolling ? 'auto' : 'hidden',
 }));
-
-export type GridViewProps = {
-  participants: CinemaViewParticipant[];
-  remoteParticipantsMap: Map<string, RemoteParticipant>;
-  pageNumber: number;
-  direction: PaginationDirection;
-};
 
 const GridView = () => {
   const { cinemaViewParticipants, remoteParticipantsMap } = useCinemaViewParticipants();
@@ -43,8 +43,12 @@ const GridView = () => {
   const [fallbackParticipantCache] = useState(() => new Map<ConnectionIdentifier, Participant>());
   const direction = useAppSelector(selectPaginationDirectionState);
 
-  const videoWidthIndex = GRID_SIZES.findIndex((videoWidth) => participants.length <= videoWidth) ?? 0;
-  const videoWidth = GRID_VIDEO_WIDTHS[videoWidthIndex];
+  const tileCount = participants.reduce((sum, participant) => sum + participant.connections.length, 0);
+  const isMobile = useIsMobile();
+  const { containerRef, layout, isScrolling } = useBestFitGridLayout(tileCount, {
+    gap: GRID_GAP,
+    allowScroll: isMobile,
+  });
   const highlight = participants.length >= 2;
 
   useEffect(() => {
@@ -58,53 +62,49 @@ const GridView = () => {
     }
   }, [participants, remoteParticipantsMap, fallbackParticipantCache]);
 
-  const createOrGetFallbackParticipant = useCallback(
-    (connectionIdentifier: ConnectionIdentifier, displayName: string) => {
-      if (!fallbackParticipantCache.has(connectionIdentifier)) {
-        fallbackParticipantCache.set(
-          connectionIdentifier,
-          new Participant(connectionIdentifier, connectionIdentifier, displayName)
-        );
-      }
-      return fallbackParticipantCache.get(connectionIdentifier)!;
-    },
-    [fallbackParticipantCache]
-  );
+  const createOrGetFallbackParticipant = (connectionIdentifier: ConnectionIdentifier, displayName: string) => {
+    if (!fallbackParticipantCache.has(connectionIdentifier)) {
+      fallbackParticipantCache.set(
+        connectionIdentifier,
+        new Participant(connectionIdentifier, connectionIdentifier, displayName)
+      );
+    }
+    return fallbackParticipantCache.get(connectionIdentifier)!;
+  };
 
-  const gridCells = useMemo(() => {
-    return participants.map((participant) => {
-      return participant.connections.map((connection) => {
-        const connectionIdentifier = constructConnectionIdentifier(participant.id, connection);
+  const gridCells = participants.map((participant) => {
+    return participant.connections.map((connection) => {
+      const connectionIdentifier = constructConnectionIdentifier(participant.id, connection);
 
-        // We will use participant data from the controller until we get the more preferable data from the livekit server
-        const participantData =
-          remoteParticipantsMap.get(connectionIdentifier) ||
-          createOrGetFallbackParticipant(connectionIdentifier, participant.displayName);
+      // We will use participant data from the controller until we get the more preferable data from the livekit server
+      const participantData =
+        remoteParticipantsMap.get(connectionIdentifier) ||
+        createOrGetFallbackParticipant(connectionIdentifier, participant.displayName);
 
-        return (
-          <ParticipantContext.Provider value={participantData} key={connectionIdentifier}>
-            <GridCell direction={direction} highlight={highlight} />
-          </ParticipantContext.Provider>
-        );
-      });
+      return (
+        <ParticipantContext.Provider value={participantData} key={connectionIdentifier}>
+          <GridCell direction={direction} highlight={highlight} />
+        </ParticipantContext.Provider>
+      );
     });
-  }, [participants, remoteParticipantsMap, createOrGetFallbackParticipant, direction, highlight]);
+  });
 
-  const areGridCellsLoading = participants.length > 1 && gridCells.length === 0;
+  // Leave the variables unset until measured, so GridCell can apply its own fallback size.
+  // The column count fixes how tiles wrap; the pixel width only caps their max size, so a
+  // stale measurement can no longer push a tile onto an extra row while the width shrinks.
+  const tileSizeStyle =
+    layout.columns > 0 && layout.tileWidth > 0
+      ? ({
+          [GRID_COLUMNS_VAR]: layout.columns,
+          [GRID_TILE_WIDTH_VAR]: `${Math.floor(layout.tileWidth)}px`,
+        } as CSSProperties)
+      : undefined;
 
-  const loadingGrids = (
-    <Grid
-      container
-      sx={{
-        justifyContent: 'center',
-        alignContent: 'center',
-      }}
-    >
-      <CircularProgress />
-    </Grid>
+  return (
+    <GridContainer data-testid="gridContainer" ref={containerRef} isScrolling={isScrolling} style={tileSizeStyle}>
+      {gridCells}
+    </GridContainer>
   );
-
-  return <GridContainer videoWidth={videoWidth}>{areGridCellsLoading ? loadingGrids : gridCells}</GridContainer>;
 };
 
 export default GridView;

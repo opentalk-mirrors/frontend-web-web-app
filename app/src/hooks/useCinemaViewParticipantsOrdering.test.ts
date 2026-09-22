@@ -4,6 +4,7 @@
 import { act } from '@testing-library/react';
 import { waitFor } from '@testing-library/react';
 
+import { GRID_SIZES, MAX_GRID_TILES_MOBILE } from '../constants';
 import { CinemaViewSortOrder } from '../store/slices/common';
 import { updatedCinemaViewSortOrder } from '../store/slices/uiSlice';
 import { ConnectionId, ParticipantId } from '../types';
@@ -75,6 +76,36 @@ describe('useCinemaViewParticipantsOrdering', () => {
     const { store } = configureStore(SHARED_INITIAL_STATE);
     const { result } = renderHookWithProviders(() => useCinemaViewParticipantsOrdering(participants), { store });
     expect(result.current.pageParticipants).toHaveProperty('length', 9);
+  });
+  it.each(GRID_SIZES)('caps selected size %i on mobile without losing remaining participants', (cinemaGridSize) => {
+    useIsMobileMock.mockReturnValue(true);
+    useCurrentSpeakerMock.mockReturnValue(null);
+    selectPaginationPageStateMock.mockReturnValue(1);
+    const pageSize = Math.min(cinemaGridSize, MAX_GRID_TILES_MOBILE);
+    const participants = getMockedParticipants(25);
+    const { store } = configureStore({ initialState: { ui: { cinemaGridSize } } });
+    const { result, unmount } = renderHookWithProviders(() => useCinemaViewParticipantsOrdering(participants), {
+      store,
+    });
+    expect(result.current.pageParticipants).toEqual(participants.slice(0, pageSize));
+    unmount();
+    selectPaginationPageStateMock.mockReturnValue(2);
+    const { result: secondPage } = renderHookWithProviders(() => useCinemaViewParticipantsOrdering(participants), {
+      store,
+    });
+    selectPaginationPageStateMock.mockReturnValue(1);
+    useIsMobileMock.mockReturnValue(false);
+    expect(secondPage.current.pageParticipants).toEqual(participants.slice(pageSize, pageSize * 2));
+  });
+
+  it.each(GRID_SIZES)('keeps selected page size %i on desktop', (cinemaGridSize) => {
+    useIsMobileMock.mockReturnValue(false);
+    useCurrentSpeakerMock.mockReturnValue(null);
+    selectPaginationPageStateMock.mockReturnValue(1);
+    const participants = getMockedParticipants(25);
+    const { store } = configureStore({ initialState: { ui: { cinemaGridSize } } });
+    const { result } = renderHookWithProviders(() => useCinemaViewParticipantsOrdering(participants), { store });
+    expect(result.current.pageParticipants).toEqual(participants.slice(0, cinemaGridSize));
   });
 
   it('appends a new participant without camera or audio activity to page 2 (gridSize 6)', () => {
