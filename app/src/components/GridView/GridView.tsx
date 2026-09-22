@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { ParticipantContext } from '@livekit/components-react';
-import { Box, CircularProgress, Grid, styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
 import { CSSProperties, useEffect, useState } from 'react';
 
@@ -89,20 +89,6 @@ const GridView = () => {
     });
   });
 
-  const areGridCellsLoading = participants.length > 1 && gridCells.length === 0;
-
-  const loadingGrids = (
-    <Grid
-      container
-      sx={{
-        justifyContent: 'center',
-        alignContent: 'center',
-      }}
-    >
-      <CircularProgress />
-    </Grid>
-  );
-
   // Leave the variables unset until measured, so GridCell can apply its own fallback size.
   // The column count fixes how tiles wrap; the pixel width only caps their max size, so a
   // stale measurement can no longer push a tile onto an extra row while the width shrinks.
@@ -116,7 +102,7 @@ const GridView = () => {
 
   return (
     <GridContainer data-testid="gridContainer" ref={containerRef} isScrolling={isScrolling} style={tileSizeStyle}>
-      {areGridCellsLoading ? loadingGrids : gridCells}
+      {gridCells}
     </GridContainer>
   );
 };
