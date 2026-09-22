@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { endWhiteboardRoomSwitch } from '../../modules/WhiteboardRoomSwitch';
 import type { RootState } from '../../store';
 import * as breakoutStore from '../../store/slices/breakoutSlice';
 import { patch } from '../../store/slices/participantsSlice';
@@ -19,6 +20,10 @@ import { showErrorNotification } from './helpers';
 
 vi.mock('./helpers', () => ({
   showErrorNotification: vi.fn(),
+}));
+
+vi.mock('../../modules/WhiteboardRoomSwitch', () => ({
+  endWhiteboardRoomSwitch: vi.fn(),
 }));
 
 const createStartedMessage = (): BreakoutStartedMessage => ({
@@ -96,6 +101,27 @@ describe('handleBreakoutMessage', () => {
     );
   });
 
+  it('drops the whiteboard messages of the room we left on switched_room', () => {
+    const dispatch = vi.fn();
+    const timestamp = '2024-01-01T10:00:00Z' as Timestamp;
+    const data: SwitchedRoom = {
+      message: 'switched_room',
+      oldRoom: {
+        kind: RoomKind.Main,
+      },
+      newRoom: {
+        kind: RoomKind.Breakout,
+        id: 3 as BreakoutRoomId,
+      },
+      ownData: undefined,
+      peerData: undefined,
+    };
+
+    handleBreakoutMessage(dispatch, data, timestamp, createState('own-participant' as ParticipantId));
+
+    expect(endWhiteboardRoomSwitch).toHaveBeenCalledOnce();
+  });
+
   it('sets loading when closing', () => {
     const dispatch = vi.fn();
     const timestamp = '2024-01-01T10:00:00Z' as Timestamp;
@@ -128,6 +154,7 @@ describe('handleBreakoutMessage', () => {
 
     handleBreakoutMessage(dispatch, data, timestamp, createState());
 
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(breakoutStore.breakoutError(data.error));
     expect(showErrorNotification).toHaveBeenCalledExactlyOnceWith(BreakoutError.InsufficientPermission);
   });
 

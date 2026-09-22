@@ -1,9 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAction,
+  createEntityAdapter,
+  createSelector,
+  createSlice,
+  EntityState,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 
-import { CloseNotice, Closing, Started, SwitchedRoom } from '../../api/types/incoming/breakout';
+import { BreakoutError, CloseNotice, Closing, Started, SwitchedRoom } from '../../api/types/incoming/breakout';
 import { BreakoutRoomId, ParticipantId, Timestamp } from '../../types';
 import { joinSuccess, startRoom } from '../commonActions';
 
@@ -38,6 +45,8 @@ const initialState: BreakoutState = {
   expired: false,
   breakoutRooms: breakoutRooms.getInitialState(),
 };
+
+export const breakoutError = createAction<BreakoutError>('breakout/error');
 
 export const breakoutSlice = createSlice({
   name: 'breakout',

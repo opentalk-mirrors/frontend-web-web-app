@@ -39,7 +39,9 @@ import { showStorageNearLimitNotification } from '../../commonComponents/Notista
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useStorageStatus, StorageStatus } from '../../hooks/useStorageStatus';
 import { getCurrentConferenceRoom } from '../../modules/WebRTC/ConferenceRoom';
+import { isWhiteboardRoomSwitchPending, registerWhiteboardSyncReset } from '../../modules/WhiteboardRoomSwitch';
 import { useAppStore } from '../../store';
+import { selectCurrentBreakoutRoomId } from '../../store/slices/breakoutSlice';
 import { selectAccountManagementUrl } from '../../store/slices/configSlice';
 import { selectDisplayNameById } from '../../store/slices/participantsSlice';
 import { selectRoomId } from '../../store/slices/roomSlice';
@@ -142,10 +144,19 @@ const WhiteboardView = () => {
     [editRestrictionsEnabled, isRestrictionsDialogOpen, unrestrictedParticipants]
   );
 
-  const throttledOnPointerUpdateDrawingRef = useRef<ReturnType<typeof throttle> | null>(null);
-  const throttledOnPointerUpdateIdleRef = useRef<ReturnType<typeof throttle> | null>(null);
   const throttledRelayVisibleSceneBounds = useRef<ReturnType<typeof throttle> | null>(null);
   const lastKnownElementsRef = useRef<readonly OrderedExcalidrawElement[]>([]);
+  const breakoutRoomIdOnMount = useRef(selectCurrentBreakoutRoomId(store.getState()));
+
+  // The scene we hold belongs to the room it was drawn in. Once we leave that room the
+  // roomserver would apply it to the destination room, so we must stop sending it.
+  const isSceneOwnedByCurrentRoom = useCallback(() => {
+    if (isWhiteboardRoomSwitchPending()) {
+      return false;
+    }
+
+    return selectCurrentBreakoutRoomId(store.getState()) === breakoutRoomIdOnMount.current;
+  }, [store]);
 
   const renderUploadMenuButton = () => {
     return (
@@ -229,34 +240,6 @@ const WhiteboardView = () => {
     accountManagementUrl,
   ]);
 
-  useEffect(() => {
-    return () => {
-      throttledOnPointerUpdateDrawingRef.current?.cancel();
-      throttledOnPointerUpdateDrawingRef.current = null;
-      throttledOnPointerUpdateIdleRef.current?.cancel();
-      throttledOnPointerUpdateIdleRef.current = null;
-      throttledRelayVisibleSceneBounds.current?.cancel();
-      throttledRelayVisibleSceneBounds.current = null;
-
-      const room = getCurrentConferenceRoom();
-      if (!room) {
-        return;
-      }
-      const elements = lastKnownElementsRef.current;
-      const syncableElements = elements.filter(isSyncableElement);
-      if (syncableElements.length === 0) {
-        return;
-      }
-      dispatch(
-        storeScene.action({
-          scene: {
-            elements: syncableElements,
-          },
-        })
-      );
-    };
-  }, [dispatch]);
-
   const sendPointerUpdate = useCallback(
     (
       pointer: ExcalidrawOnPointerUpdatePayload['pointer'],
@@ -285,11 +268,6 @@ const WhiteboardView = () => {
     () => throttle(sendPointerUpdate, CURSOR_SYNC_TIMEOUT_IDLE_MS),
     [sendPointerUpdate]
   );
-
-  useEffect(() => {
-    throttledOnPointerUpdateDrawingRef.current = throttledOnPointerUpdateDrawing;
-    throttledOnPointerUpdateIdleRef.current = throttledOnPointerUpdateIdle;
-  }, [throttledOnPointerUpdateDrawing, throttledOnPointerUpdateIdle]);
 
   const lastPointerButtonRef = useRef<string | null>(null);
 
@@ -563,6 +541,10 @@ const WhiteboardView = () => {
 
   const handleChange = useCallback<NonNullable<ExcalidrawProps['onChange']>>(
     (elements) => {
+      if (!isSceneOwnedByCurrentRoom()) {
+        return;
+      }
+
       const elementsVersion = hashElementsVersion(elements);
 
       if (elementsVersion === lastBroadcastedOrReceivedSceneVersion.current) {
@@ -576,20 +558,70 @@ const WhiteboardView = () => {
       queueBroadcastAllElements(elements, broadcastedElementVersions.current);
       queueStoreSceneToBackend(elements);
     },
-    [broadcastSceneDelta, queueBroadcastAllElements, queueStoreSceneToBackend]
+    [broadcastSceneDelta, isSceneOwnedByCurrentRoom, queueBroadcastAllElements, queueStoreSceneToBackend]
   );
+
+  // Drops everything the whiteboard would still send for the room the scene was drawn in.
+  const resetSync = useCallback(() => {
+    throttledOnPointerUpdateDrawing.cancel();
+    throttledOnPointerUpdateIdle.cancel();
+    throttledRelayVisibleSceneBounds.current?.cancel();
+    broadcastSceneDelta.cancel();
+    queueBroadcastAllElements.cancel();
+    queueStoreSceneToBackend.cancel();
+
+    lastKnownElementsRef.current = [];
+    broadcastedElementVersions.current.clear();
+    lastBroadcastedOrReceivedSceneVersion.current = -1;
+  }, [
+    broadcastSceneDelta,
+    queueBroadcastAllElements,
+    queueStoreSceneToBackend,
+    throttledOnPointerUpdateDrawing,
+    throttledOnPointerUpdateIdle,
+  ]);
+
+  useEffect(() => {
+    const unregisterSyncReset = registerWhiteboardSyncReset(resetSync);
+    return unregisterSyncReset;
+  }, [resetSync]);
 
   useEffect(() => {
     return () => {
-      broadcastSceneDelta.cancel();
-      queueBroadcastAllElements.cancel();
-      queueStoreSceneToBackend.cancel();
+      const elements = lastKnownElementsRef.current;
+      resetSync();
+
+      if (!isSceneOwnedByCurrentRoom()) {
+        return;
+      }
+
+      const room = getCurrentConferenceRoom();
+      if (!room) {
+        return;
+      }
+
+      const syncableElements = elements.filter(isSyncableElement);
+      if (syncableElements.length === 0) {
+        return;
+      }
+
+      dispatch(
+        storeScene.action({
+          scene: {
+            elements: syncableElements,
+          },
+        })
+      );
     };
-  }, [broadcastSceneDelta, queueBroadcastAllElements, queueStoreSceneToBackend]);
+  }, [dispatch, isSceneOwnedByCurrentRoom, resetSync]);
 
   const storeCurrentSceneImmediately = useCallback(() => {
     const excalidrawAPI = excalidrawAPIRef.current;
     if (!excalidrawAPI) {
+      return;
+    }
+
+    if (!isSceneOwnedByCurrentRoom()) {
       return;
     }
 
@@ -606,7 +638,7 @@ const WhiteboardView = () => {
         },
       })
     );
-  }, [dispatch, queueStoreSceneToBackend]);
+  }, [dispatch, isSceneOwnedByCurrentRoom, queueStoreSceneToBackend]);
 
   // When a moderator grants edit rights, immediately persist the current scene to the backend
   const previousEditRestrictionsRef = useRef<string | null>(null);

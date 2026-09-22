@@ -13,6 +13,7 @@ import {
   ExcalidrawScene,
 } from '../../api/types/incoming/whiteboard';
 import { ParticipantId } from '../../types';
+import { switchedRoom } from './breakoutSlice';
 
 export interface SpacedeckParam {
   url: string | undefined;
@@ -88,6 +89,34 @@ export const whiteboardSlice = createSlice({
       state.isWhiteboardAvailable = !isEmpty(payload.url);
       state.spacedeck.url = payload.url;
     },
+  },
+  extraReducers: (builder) => {
+    // Switching rooms does not re-emit `joinSuccess`, so rebuild both whiteboard providers.
+    builder.addCase(switchedRoom, (_, { payload }) => {
+      const excalidraw = payload.ownData?.excalidraw;
+      const spacedeck = payload.ownData?.whiteboard;
+      const excalidrawData = excalidraw && 'elements' in excalidraw.scene ? excalidraw : undefined;
+      const hasExcalidraw = Boolean(excalidrawData);
+      const hasSpacedeck = spacedeck?.status === 'initialized';
+
+      return {
+        ...initialState,
+        isWhiteboardAvailable: hasExcalidraw || hasSpacedeck,
+        scene: {
+          elements: excalidrawData ? castDraft(excalidrawData.scene.elements) : [],
+        },
+        editRestrictions: {
+          enabled: excalidrawData?.editRestrictions.type === 'enabled',
+          unrestrictedParticipants:
+            excalidrawData && 'unrestrictedParticipants' in excalidrawData.editRestrictions
+              ? excalidrawData.editRestrictions.unrestrictedParticipants
+              : [],
+        },
+        spacedeck: {
+          url: hasSpacedeck ? spacedeck.url : undefined,
+        },
+      };
+    });
   },
 });
 

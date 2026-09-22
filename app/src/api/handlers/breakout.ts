@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import log from '../../logger';
+import { endWhiteboardRoomSwitch } from '../../modules/WhiteboardRoomSwitch';
 import type { AppDispatch, RootState } from '../../store';
 import * as breakoutStore from '../../store/slices/breakoutSlice';
 import { patch } from '../../store/slices/participantsSlice';
@@ -43,9 +44,13 @@ export const handleBreakoutMessage = (
       );
       break;
     case 'switched_room':
+      // We are in the new room from here on, so drop whatever the whiteboard still
+      // has scheduled for the room we just left.
+      endWhiteboardRoomSwitch();
       dispatch(breakoutStore.switchedRoom({ ...data, ownParticipantId: state.user.uuid ?? undefined }));
       break;
     case 'error':
+      dispatch(breakoutStore.breakoutError(data.error));
       showErrorNotification(data.error);
       break;
     default: {

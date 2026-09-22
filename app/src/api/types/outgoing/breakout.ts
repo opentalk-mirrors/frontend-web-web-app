@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 //! Incoming Breakout Room related actions
+import { beginWhiteboardRoomSwitch } from '../../../modules/WhiteboardRoomSwitch';
 import type { RootState } from '../../../store';
 import { Namespaced, ParticipantId, RoomKindBreakout, RoomKindMain, createModule } from '../../../types';
 import { Seconds } from '../../../utils/tsUtils';
@@ -47,6 +48,9 @@ export const handler = createModule<RootState>((builder) => {
       sendMessage(start(action.payload));
     })
     .addCase(switchRoom.action, (_state, action) => {
+      // The roomserver applies everything we send after `switch_room` to the destination
+      // room, so the whiteboard has to drop its scheduled messages before we leave.
+      beginWhiteboardRoomSwitch();
       sendMessage(switchRoom(action.payload));
     })
     .addCase(stop.action, (_state, action) => {
