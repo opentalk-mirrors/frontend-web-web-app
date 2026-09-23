@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import useTabs from '../../hooks/useTabs';
 import { selectActiveTab, setActiveTab } from '../../store/slices/uiSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
-import LocalVideo from '../LocalVideo';
+import LocalVideoLegacy from '../LocalVideoLegacy';
 import ModerationSideToolbar from '../ModerationSideToolbar';
 import Toolbar from '../Toolbar';
 import SideTabPanel from './fragments/SideTabPanel';
@@ -47,7 +47,7 @@ const MeetingSidebarLegacy = () => {
         <ModerationSideToolbar displayedTabs={tabs} onSelect={handleSetActiveTab} activeTab={activeTab} />
       )}
       <UserSidebarContainer>
-        <LocalVideo />
+        <LocalVideoLegacy />
         <Toolbar />
 
         {displayedTab && (

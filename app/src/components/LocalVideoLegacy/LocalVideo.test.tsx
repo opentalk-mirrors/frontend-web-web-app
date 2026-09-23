@@ -7,7 +7,7 @@ import { fireEvent, screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
-import LocalVideo from './LocalVideo';
+import LocalVideoLegacy from './LocalVideoLegacy';
 
 vi.mock('@livekit/components-react', () => ({
   useTracks: vi.fn().mockReturnValue([]),
@@ -86,7 +86,7 @@ describe('LocalVideo', () => {
       lastCameraError: undefined,
     });
 
-    renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
+    renderWithProviders(<LocalVideoLegacy />, { store, provider: { mui: true } });
     expect(screen.queryByTestId('video-track')).not.toBeInTheDocument();
     expect(screen.queryByTestId('name-tile')).not.toBeInTheDocument();
   });
@@ -118,7 +118,7 @@ describe('LocalVideo', () => {
     };
     (useTracks as Mock).mockReturnValue([videoTrackRef]);
 
-    renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
+    renderWithProviders(<LocalVideoLegacy />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('video-track')).toBeInTheDocument();
     expect(screen.getByTestId('name-tile')).toHaveTextContent('Test User');
@@ -152,7 +152,7 @@ describe('LocalVideo', () => {
 
     (useTracks as Mock).mockReturnValue([videoTrackRef]);
 
-    renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
+    renderWithProviders(<LocalVideoLegacy />, { store, provider: { mui: true } });
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
 
@@ -178,7 +178,7 @@ describe('LocalVideo', () => {
 
     (useTracks as Mock).mockReturnValue([]);
 
-    renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
+    renderWithProviders(<LocalVideoLegacy />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('warning-icon')).toBeInTheDocument();
   });
@@ -211,7 +211,7 @@ describe('LocalVideo', () => {
     (useTracks as Mock).mockReturnValue([videoTrackRef]);
     (useMediaDeviceSelect as Mock).mockReturnValue({ devices: [] });
 
-    renderWithProviders(<LocalVideo />, { store, provider: { mui: true } });
+    renderWithProviders(<LocalVideoLegacy />, { store, provider: { mui: true } });
     expect(screen.getByText('localvideo-no-device')).toBeInTheDocument();
   });
 
@@ -243,7 +243,7 @@ describe('LocalVideo', () => {
 
     (useTracks as Mock).mockReturnValue([videoTrackRef]);
 
-    renderWithProviders(<LocalVideo fullscreenMode togglePinVideo={togglePinVideo} isVideoPinned={true} />, {
+    renderWithProviders(<LocalVideoLegacy fullscreenMode togglePinVideo={togglePinVideo} isVideoPinned={true} />, {
       store,
       provider: { mui: true },
     });

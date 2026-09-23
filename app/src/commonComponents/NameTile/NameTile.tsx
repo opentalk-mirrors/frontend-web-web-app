@@ -53,11 +53,12 @@ const StyledMicOffIcon = styled(MicOffIcon)(({ theme }) => ({
 
 type NameTileProps = {
   displayName: string;
+  showIcons?: boolean;
   videoOn?: boolean;
   audioOn?: boolean;
 } & BoxProps;
 
-const NameTile = ({ displayName, videoOn = false, audioOn = false, ...props }: NameTileProps) => {
+const NameTile = ({ displayName, showIcons = true, videoOn = false, audioOn = false, ...props }: NameTileProps) => {
   const { t } = useTranslation();
 
   const renderCameraOffIcon = () => !videoOn && <CameraOffIcon data-testid="camOff" />;
@@ -80,7 +81,7 @@ const NameTile = ({ displayName, videoOn = false, audioOn = false, ...props }: N
 
   return (
     <NameBox data-testid="nameTile" {...props}>
-      {renderIconBox()}
+      {showIcons && renderIconBox()}
       <Typography
         variant="body2"
         noWrap

@@ -2,11 +2,13 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { ParticipantContext } from '@livekit/components-react';
-import { styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import { Participant } from 'livekit-client';
 import { useMemo } from 'react';
 
+import { useConferenceUiVersion } from '../../../hooks';
 import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
+import { useSelfViewAnchor } from '../../../provider/SelfViewAnchorContext';
 import ParticipantWindow from '../../ParticipantWindow';
 
 interface SpeakerWindowProps {
@@ -17,6 +19,7 @@ interface SpeakerWindowProps {
 const Container = styled('div', {
   shouldForwardProp: (prop) => !['width', 'height'].includes(prop as string),
 })<{ width: number; height: number }>(({ theme, width, height }) => ({
+  position: 'relative',
   borderRadius: theme.borderRadius.medium,
   overflow: 'hidden',
   width,
@@ -26,7 +29,16 @@ const Container = styled('div', {
   flexDirection: 'column',
 }));
 
+const SelfViewContainer = styled(Box)({
+  position: 'absolute',
+  inset: 0,
+  pointerEvents: 'none',
+});
+
 const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerWindowProps) => {
+  const { isV2 } = useConferenceUiVersion();
+  const { setAnchor } = useSelfViewAnchor();
+
   const { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId } = useCinemaViewParticipants();
   const selectedParticipant = (() => {
     if (currentSpeakerId) {
@@ -66,6 +78,11 @@ const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerWindo
           <ParticipantWindow alwaysShowOverlay />
         </ParticipantContext.Provider>
       )}
+      {
+        // V2-CLEANUP: Remove the isV2 guard after transition to V2
+        // Provide a new anchor to self view, as we need it here in contrast to other layout
+        isV2 && <SelfViewContainer ref={setAnchor} />
+      }
     </Container>
   );
 };

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import type { DetachedWindowAPI } from 'happy-dom';
 import { i18n } from 'i18next';
 
 import { ConfigState } from './store/slices/configSlice';
@@ -10,6 +11,7 @@ export {};
 declare global {
   interface Window {
     config: ConfigState;
+    happyDOM?: DetachedWindowAPI;
     showReportDialog: (options?: Sentry.ReportDialogOptions | undefined, hub?: Sentry.Hub | undefined) => void;
     webkitAudioContext: typeof AudioContext;
     i18n: i18n;

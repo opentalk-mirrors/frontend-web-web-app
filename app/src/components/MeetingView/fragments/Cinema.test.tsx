@@ -6,11 +6,22 @@ import { screen, waitFor } from '@testing-library/react';
 import { Mock } from 'vitest';
 
 import LayoutOptions from '../../../enums/LayoutOptions';
+import useConferenceUiVersion from '../../../hooks/useConferenceUiVersion';
 import { fullscreenActions } from '../../../store/slices/fullscreen/slice';
 import { setLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { actions as uiActions } from '../../../store/slices/uiSlice';
 import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import Cinema from './Cinema';
+
+vi.mock('../../../hooks/useConferenceUiVersion', () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+vi.mock('./SelfView', () => ({
+  __esModule: true,
+  default: () => <div data-testid="self-view" />,
+}));
 
 vi.mock('../../FullscreenView', () => ({
   __esModule: true,
@@ -57,9 +68,23 @@ describe('Cinema', () => {
     vi.clearAllMocks();
   });
 
+  it('renders self view if V2 ui is selected', () => {
+    const { store } = configureStore();
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
+    renderWithProviders(<Cinema />, { store, provider: { mui: true } });
+    expect(screen.getByTestId('self-view')).toBeInTheDocument();
+  });
+
+  it('does not render self view if V1 ui is selected', () => {
+    const { store } = configureStore();
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: false });
+    renderWithProviders(<Cinema />, { store, provider: { mui: true } });
+    expect(screen.queryByTestId('self-view')).not.toBeInTheDocument();
+  });
+
   it('dispatches fullscreen element on mount and clears it on unmount', async () => {
     const { store, dispatchSpy } = configureStore();
-
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
     const { unmount } = renderWithProviders(<Cinema />, { store, provider: { mui: true } });
 
     await waitFor(() => {
@@ -80,6 +105,7 @@ describe('Cinema', () => {
 
   it('renders fullscreen view when fullscreen mode is active regardless of layout', () => {
     const { store } = configureStore();
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
     store.dispatch(uiActions.updatedCinemaLayout({ layout: LayoutOptions.Speaker }));
     store.dispatch(fullscreenActions.changed({ active: true }));
 
@@ -99,6 +125,7 @@ describe('Cinema', () => {
         },
       },
     });
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
     store.dispatch(setLivekitUnavailable(true));
 
     renderWithProviders(<Cinema />, { store, provider: { mui: true } });

@@ -67,7 +67,9 @@ export type UIState = {
   lastCinemaLayout: LayoutOptions;
   paginationPage: number;
   paginationDirection: PaginationDirection;
+  // V2-CLEANUP: is not needed after transition to V2
   pinnedConnectionIdentifier?: ConnectionIdentifier;
+  // V2-CLEANUP: is not needed after transition to V2
   presenterOverlayPinnedParticipantId?: ConnectionIdentifier;
   localVideoMirroringEnabled: boolean;
   showVoteOrPollResult: boolean;
@@ -384,6 +386,7 @@ export const selectChatConversationTarget = (state: RootState) => state.ui.chatC
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;
 export const selectPaginationDirectionState = (state: RootState) => state.ui.paginationDirection;
 export const selectChatConversationScope = (state: RootState) => state.ui.chatConversationState.scope;
+// V2-CLEANUP: is not needed after transition to V2
 export const selectPinnedConnectionIdentifier = (state: RootState) => state.ui.pinnedConnectionIdentifier;
 export const selectPresenterOverlayPinnedParticipantId = (state: RootState) =>
   state.ui.presenterOverlayPinnedParticipantId;

@@ -77,7 +77,7 @@ interface LocalVideoProps extends PropsType {
   togglePinVideo?: () => void;
 }
 
-const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoPinned }: LocalVideoProps) => {
+const LocalVideoLegacy = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoPinned }: LocalVideoProps) => {
   const screenShareTrackRef = useTracks([Track.Source.ScreenShare], {
     updateOnlyOn: [RoomEvent.ActiveDeviceChanged, RoomEvent.TrackUnpublished],
   }).find((trackRef) => trackRef.participant.isLocal);
@@ -153,4 +153,4 @@ const LocalVideo = ({ noRoundedCorners, fullscreenMode, togglePinVideo, isVideoP
   );
 };
 
-export default LocalVideo;
+export default LocalVideoLegacy;
