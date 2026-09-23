@@ -28,6 +28,7 @@ const getSnackbarContainerRootClass = (theme: Theme) => ({
   '& > div': {
     width: '100%',
     minWidth: '280px',
+    maxWidth: '560px',
     [theme.breakpoints.up('sm')]: {
       width: '30vw',
     },

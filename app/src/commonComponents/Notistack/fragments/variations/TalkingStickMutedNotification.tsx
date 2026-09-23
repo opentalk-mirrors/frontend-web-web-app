@@ -22,7 +22,7 @@ export const TalkingStickMutedNotification = forwardRef(
 
     return (
       <CustomSnackbarContent role="alertdialog" aria-live="polite" aria-describedby={messageId} ref={ref} style={style}>
-        <Stack spacing={1}>
+        <Stack spacing={1} sx={{ width: '100%' }}>
           <NotificationHeading id={messageId} as="h3">
             <DoneIcon aria-hidden="true" />
             {t('talking-stick-speaker-announcement')}
@@ -31,6 +31,11 @@ export const TalkingStickMutedNotification = forwardRef(
             sx={{
               display: 'flex',
               gap: 1,
+              justifyContent: 'end',
+              '>button': {
+                width: 'fit-content',
+                whiteSpace: 'nowrap',
+              },
             }}
           >
             {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
