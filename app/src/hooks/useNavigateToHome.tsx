@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { ConnectionState } from '../modules/WebRTC/ConferenceRoom';
 import { hangUp } from '../store/commonActions';
+import { cleanLocalTracks } from '../store/slices/livekitSlice';
 import { roomReset, selectRoomConnectionState } from '../store/slices/roomSlice';
 import { useAppDispatch, useAppSelector } from './useCustomRedux';
 
@@ -23,6 +24,9 @@ const useNavigateToHome = () => {
     if (roomConnectionState === ConnectionState.Waiting || roomConnectionState === ConnectionState.ReadyToEnter) {
       dispatch(hangUp());
     }
+
+    // Releases the lobby preview camera/microphone, otherwise the device stays open
+    dispatch(cleanLocalTracks());
     dispatch(roomReset());
     navigate('/dashboard');
   }, [dispatch, navigate, roomConnectionState]);
