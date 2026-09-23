@@ -5,6 +5,152 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.10.0] - 2026-09-23
+
+[2.10.0]: https://git.opentalk.dev/opentalk/frontend/web/web-app/-/compare/v2.9.0...v2.10.0
+
+### 🚀 New features
+
+- (lobby) Support websocket based lobby ([!3500](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3500), [#3425](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3425))
+- Add transcription service live subtitle display ([!3442](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3442), [#3353](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3353))
+- (handraise) Disable reset handraises buttons ([!3529](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3529), [#3452](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3452))
+- (lobby) Add password step for password-protected rooms ([!3532](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3532), [#3451](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3451))
+- Being inside a conference as it is being deleted puts a user in the lobby and shows a dialog ([!3515](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3515), [#3395](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3395))
+- (ci) Add PR-Agent for automatic AI agent reviews ([!3547](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3547))
+- Change language of a running transcription service ([!3533](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3533), [#3442](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3442))
+- (pr-agent) Use manual CI trigger and update PR-Agent settings ([!3562](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3562), [#3474](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3474))
+- (screenshare) Add chevron button to the toolbar button ([!3570](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3570), [#3469](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3469))
+- (one-link) Remove invite code handling ([!3504](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3504), [#3411](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3411))
+- (guest-access) Reorder waiting room options and refine labels ([!3571](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3571), [#3482](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3482))
+- Add support for personal room names ([!3572](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3572), [#3412](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3412))
+- (dashboard) Persist meetings filter local storage ([!3565](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3565), [#3477](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3477))
+- (dashboard) Add pagination for past and future events ([!3603](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3603), [#3497](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3497))
+- Add login button to unauthorized error dialog ([!3598](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3598))
+- Set default theme to system ([!3604](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3604), [#3499](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3499))
+- (meeting-form) Allow guests in e2ee rooms ([!3645](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3645), [#3507)](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3507))
+- (e2ee) Grey out dial-in, recording, streaming and transcription under e2ee ([!3645](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3645), [#3507](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3507)
+- (breakout-rooms) Enforce assignment of every participant in manual mode ([!3645](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3645), [#3535](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3535))
+
+### 🐛 Bug fixes
+
+- (chat) Display private message notifications ([!3499](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3499), [#3424](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3424))
+- (room) Return to lobby on graceful connection close after debriefing ([!3490](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3490), [#3420](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3420))
+- (streaming) Only notify on active/inactive stream status changes ([!3489](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3489), [#3419](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3419))
+- (styles) Adjust toggle transform when checked ([!3501](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3501))
+- (AudioButton) Restore permission state when moderator re-enables microphones ([!3488](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3488), [#3418](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3418))
+- Show whitebaord icon if only excalidraw configured ([!3494](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3494))
+- (participant-list) Keep People tab menus open when users join/leave ([!3487](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3487), [#3417](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3417))
+- (debrief) Suppress redudant waiting room notification ([!3503](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3503), [#3426](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3426))
+- (talking-stick) Show correct notification after becoming active speaker ([!3486](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3486), [#3416](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3416))
+- (voting) Disable create button if storage is full ([!3498](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3498), [#3423](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3423))
+- Change the order of the emoji reactions ([!3517](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3517), [#3439](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3439))
+- (changelog) Add missing entries to release v2.9.0 ([!3520](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3520))
+- (lobby) Prevent auto-connect if password is required ([!3522](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3522), [#3433](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3433))
+- (ci) Failing build pipeline due to wrong sentry configuration ([!3524](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3524))
+- (hotkeys) Release push-to-talk on losing focus ([!3512](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3512), [#3434](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3434))
+- (participant-list-item) Close menu on presenter role update ([!3513](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3513), [#3435](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3435))
+- (debrief) Keep notifications after ending the conference ([!3510](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3510), [#3432](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3432))
+- (rename-dialog) Ensure the dialog remains open when users join/leave ([!3509](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3509), [#3431](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3431))
+- (chat) Change disconnenct message if connection is lost ([!3526](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3526), [#3448](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3448))
+- (locales) Use term meeting uniformly ([!3526](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3526))
+- (dashboard) Always expand first meetings group by default ([!3518](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3518), [#3443](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3443))
+- (lobby) Handle Left state in the lobby ([!3523](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3523), [#3445](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3445))
+- (connection_state) Reset conference join state ([!3523](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3523), [#3445](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3445))
+- (raise_hands) Handling of `raise_hands_disabled` ([!3527](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3527), [#3450](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3450))
+- (styles) Fix overflowing submenu item ([!3502](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3502))
+- (handraise) Handle `raise_hands_disabled` error ([!3529](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3529), [#3452](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3452))
+- (moderation) Notify issuer of moderator rights toggling ([!3519](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3519), [#3444](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3444))
+- (callin) Add missing options for callin users ([!3534](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3534), [#3454](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3454))
+- (meeting-card) Display accept & decline buttons for pending recurring events ([!3516](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3516), [#3437](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3437))
+- (handraise) Tooltip translation ([!3539](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3539), [#3465](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3465))
+- (ci) Syntax error in container steps ([!3545](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3545))
+- (pr-agent) Remove deprecated extended thinking configuration ([!3554](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3554))
+- (speaker-view) Restore speaker tile aspect-ratio on resize ([!3556](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3556), [#3470](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3470))
+- (speaker-view) Keep tiles fitted within view on resize ([!3563](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3563), [#3475](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3475))
+- (timer) Handle error cases ([!3568](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3568), [#3480](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3480))
+- Add accessible labels to poll setting switches ([!3567](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3567))
+- Add accessible label to voting auto close switch ([!3569](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3569))
+- Being in a room that gets deleted now correctly shows a dialog ([!3578](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3578), [#3471](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3471))
+- Ensure join meeting supports legacy invite code URLs ([!3560](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3560))
+- Show error in join meeting dialog before submitting ([!3560](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3560))
+- Align WaitingRoom forAll value with backend ([!3593](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3593), [#3492](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3492))
+- Cancel subtitle settings restores the original UI state ([!3581](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3581), [#3488](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3488))
+- Clipboard and email functions in meeting details dialog now contain the personal room link ([!3594](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3594), [#3493](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3493))
+- (toolbar) Show tooltip and disabled state on disabled toolbar buttons ([!3590](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3590), [#3490](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3490))
+- Prevent login redirect loop caused by StrictMode double sign-in ([!3600](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3600))
+- Clear timer state when a join success is received ([!3601](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3601), [#3495](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3495))
+- Don't create duplicate events in `CreateDirectMeeting` ([!3576](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3576), [#3484](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3484))
+- (timer) Clear timer state when switching breakout rooms ([!3606](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3606), [#3500](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3500))
+- (timer) Read timer ready state from peer data when switching rooms ([!3606](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3606))
+- (timer) Only show participants in the current (breakout-)room ([!3606](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3606), [#3501](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3501))
+- Join meeting dialog now accepts personal meeting rooms ([!3605](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3605), [#3498](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3498))
+- Add another check whether the alias contains alphanumeric characters ([!3605](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3605), [#3498](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3498))
+- Separate pointer position update depending on drawing or not drawing ([!3607](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3607), [#3441](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3441))
+- Update pointer position of other participants on whiteboard ([!3607](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3607), [#3441](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3441))
+- Remove missleading tooltip from `MeetingLinkField` ([!3598](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3598))
+- Error when not authorized ([!3598](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3598))
+- Use a generic error message when meeting details cannot be loaded ([!3598](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3598))
+- (coffee-break) Stop audio tracks on start ([!3612](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3612), [#3509](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3509))
+- Add accessible label to date time picker popper ([!3613](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3613))
+- Adding translation key in german ([!3613](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3613))
+- Handle join blocked events ([!3624](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3624), [#3517](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3517))
+- (toolbar) Chevron buttons size in fullscreen ([!3631](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3631), [#3522](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3522))
+- (screen-share) Adjust tooltip wording ([!3634](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3634), [#3525](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3525))
+- (popout) Prevent duplicate audio track subscription ([!3641](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3641), [#3531](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3531))
+- (redux) Sanitize start room action ([!3645](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3645), [#3520](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3520))
+- (screen-share) Turn off wording ([!3645](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3645), [#3534](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3534)
+- Unchecking personal room in an existing event removes the personal room name ([!3645](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3645), [#3494](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3494))
+- (whiteboard) Self-host Excalidraw fonts instead of using the CDN ([!3645](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3645), [#3486](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3486))
+
+### 🔨 Refactor
+
+- Replace hardcoded LiveKit permission numbers with TrackSource constants ([!3488](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3488))
+- (common) Move `ConditionalToolTip` to common ([!3529](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3529), [#3452](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3452))
+- (common) Disable action buttons ([!3529](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3529), [#3452](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3452))
+- (ci) Move pr-agent to analyze stage and replace coreebo ([!3562](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3562))
+- (sanitizer) Rename videoTrackPublication to track ([!3645](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3645))
+
+### 📦 Dependencies
+
+- (deps) Pnpm update ([!3540](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3540))
+- (deps) Update dependency @reduxjs/toolkit to ^2.12.0 ([!3394](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3394))
+- (deps) Lock file maintenance ([!3406](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3406))
+- (deps) Update dependency @testing-library/user-event to ^14.6.6 ([!3580](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3580))
+- (deps) Update pnpm to v11 ([!3398](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3398))
+- (deps) Update dependency msw to ^2.15.0 ([!3551](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3551))
+- (deps) Update commitlint monorepo to v21 ([!3396](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3396))
+- (deps) Update node.js to v24.20.0 ([!3480](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3480))
+- (deps) Update dependency vitest>tinypool to v2 ([!3281](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3281))
+- (deps) Update @types ([!3476](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3476))
+- (deps) Update dependency type-fest to ^5.9.0 ([!3479](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3479))
+- (deps) Update dependency i18next-http-backend to v4 ([!3351](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3351))
+- (deps) Update dependency vite to v8 ([!3207](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3207))
+- (deps) Update dependency licensee to ^12.0.2 ([!3584](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3584))
+- (deps) Update dependency lint-staged to ^17.5.0 ([!3585](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3585))
+
+### ✨ Style
+
+- (more menu) Change icons for moderator rename and chat functions ([!3482](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3482), [#3408](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3408))
+- Change more menu name editing labels ([!3508](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3508), [#3408](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3408))
+- Fixed gap between subtitle display and grid view container ([!3533](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3533), [#3442](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3442))
+- Change icons associated with subtitles ([!3581](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3581), [#3488](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3488))
+- Remove error icon from personal room name input for consistency ([!3645](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3645), [#3494](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3494))
+
+### ⚙ Miscellaneous
+
+- Renovate corrupts pnpm-workspace ([!3587](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3587), [#3489](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3489))
+- Fix excalidraw-caused audit fail ([!3592](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3592), [#3491](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/3491))
+- Remove duplicate section from changelog ([!3623](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3623))
+
+### Ci
+
+- Switch from kaniko to buildah ([!3538](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3538))
+
+### Test
+
+- (setup) Provide localStorage/sessionStorage fallback ([!3531](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3531))
+- Use `user.click` instead of `fireEvent.submit` ([!3504](https://git.opentalk.dev/opentalk/frontend/web/web-app/-/merge_requests/3504))
+
 ## [2.9.2] - 2026-08-24
 
 [2.9.2]: https://git.opentalk.dev/opentalk/frontend/web/web-app/-/compare/v2.9.1...v2.9.2
