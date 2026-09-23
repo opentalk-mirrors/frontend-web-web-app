@@ -30,19 +30,16 @@ export const TalkingStickMutedNotification = forwardRef(
           <Box
             sx={{
               display: 'flex',
+              flexWrap: 'wrap',
               gap: 1,
-              justifyContent: 'end',
-              '>button': {
-                width: 'fit-content',
-                whiteSpace: 'nowrap',
-              },
+              justifyContent: 'flex-end',
             }}
           >
             {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-            <Button onClick={onUnmute} variant="contained" color="secondary" fullWidth autoFocus>
+            <Button onClick={onUnmute} variant="contained" color="secondary" autoFocus>
               {t('talking-stick-notification-unmute')}
             </Button>
-            <Button onClick={onNext} variant="contained" color="primary" fullWidth>
+            <Button onClick={onNext} variant="contained" color="primary">
               {t('talking-stick-notification-next-speaker')}
             </Button>
           </Box>
