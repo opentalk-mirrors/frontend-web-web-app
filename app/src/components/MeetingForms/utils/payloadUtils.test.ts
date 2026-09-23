@@ -94,14 +94,14 @@ describe('createPayload', () => {
     expect(payload.roomName).toBe('my-room');
   });
 
-  it('should not include roomName when personal room is disabled', () => {
+  it('should include roomName as null when personal room is disabled', () => {
     const payload = createPayload({ ...mockedMeetingFormValues, personalRoom: false, personalRoomName: 'my-room' });
-    expect(payload.roomName).toBeUndefined();
+    expect(payload.roomName).toBeNull();
   });
 
-  it('should not include roomName when personal room is enabled but name is empty', () => {
+  it('should include roomName as null when personal room is enabled but name is empty', () => {
     const payload = createPayload({ ...mockedMeetingFormValues, personalRoom: true, personalRoomName: '' });
-    expect(payload.roomName).toBeUndefined();
+    expect(payload.roomName).toBeNull();
   });
 
   it('should set streaming target to empty array if streaming is disabled', () => {

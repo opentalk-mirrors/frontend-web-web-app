@@ -53,7 +53,7 @@ const createRoomNamePayload = (personalRoom?: boolean, personalRoomName?: string
   if (personalRoom && personalRoomName) {
     return personalRoomName;
   } else {
-    return undefined;
+    return null;
   }
 };
 
