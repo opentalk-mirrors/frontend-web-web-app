@@ -123,6 +123,10 @@ export const roomSlice = createSlice({
         state.hasJoinedConference = false;
         return;
       }
+      // The roomserver closes the socket right after `join_blocked`, keep showing the blocked screen
+      if (state.connectionState === ConnectionState.Blocked) {
+        return;
+      }
       if (errorCode) {
         state.connectionState = ConnectionState.Failed;
       } else {
@@ -201,7 +205,10 @@ export const roomSlice = createSlice({
         }
       ) => {
         state.error = undefined;
-        state.connectionState = ConnectionState.Starting;
+        // Stay on the blocked screen while automatically retrying to join a full room
+        if (state.connectionState !== ConnectionState.Blocked) {
+          state.connectionState = ConnectionState.Starting;
+        }
         state.roomId = roomId;
         state.password = password;
       }
