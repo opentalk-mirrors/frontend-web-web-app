@@ -15,8 +15,8 @@ import { notifications, showConsentNotification } from '../../commonComponents';
 import { createStreamUpdatedNotification } from '../../components/StreamUpdatedNotification';
 import log from '../../logger';
 import type { RootState } from '../../store';
-import { streamUpdated } from '../../store/slices/streamingSlice';
-import type { Message as StreamingMessage } from '../types/incoming/streaming';
+import { startRecordingFailed, streamUpdated } from '../../store/slices/streamingSlice';
+import { RecordingError, type Message as StreamingMessage } from '../types/incoming/streaming';
 import { handleStreamingMessage } from './streaming';
 
 vi.mock('i18next', () => ({
@@ -94,6 +94,7 @@ describe('handleStreamingMessage', () => {
           },
         },
         recording: StreamingStatus.Active,
+        isStartRecordingRequested: false,
       },
     });
 
@@ -123,6 +124,7 @@ describe('handleStreamingMessage', () => {
           entities: {},
         },
         recording: StreamingStatus.Active,
+        isStartRecordingRequested: false,
       },
     });
 
@@ -157,6 +159,7 @@ describe('handleStreamingMessage', () => {
           },
         },
         recording: StreamingStatus.Inactive,
+        isStartRecordingRequested: false,
       },
     });
 
@@ -202,6 +205,7 @@ describe('handleStreamingMessage', () => {
             },
           },
           recording: StreamingStatus.Inactive,
+          isStartRecordingRequested: false,
         },
       });
 
@@ -213,19 +217,51 @@ describe('handleStreamingMessage', () => {
     }
   );
 
-  it('notifies on recorder timeouts', async () => {
+  it.each([RecordingError.FailedToRequestRecordingService, RecordingError.RecorderNotStarted])(
+    'resets the start recording request and notifies when the recording service is unavailable ("%s")',
+    async (error) => {
+      const dispatch = vi.fn();
+      const state = createState();
+      const data: StreamingMessage = { message: 'error', error };
+
+      await handleStreamingMessage(dispatch, data, state);
+
+      expect(dispatch).toHaveBeenCalledWith(startRecordingFailed());
+      expect(i18next.t).toHaveBeenCalledWith('livestream-recording-error');
+      expect(notifications.error).toHaveBeenCalledWith('livestream-recording-error');
+      expect(log.error).toHaveBeenCalledWith('recording error:', error);
+    }
+  );
+
+  it.each([
+    RecordingError.InsufficientPermissions,
+    RecordingError.RecordFeatureDisabled,
+    RecordingError.RecordingAlreadyActive,
+  ])('resets the start recording request without notifying on "%s"', async (error) => {
     const dispatch = vi.fn();
     const state = createState();
-    const data: StreamingMessage = {
-      message: 'error',
-      error: 'recorder_not_started',
-    } as StreamingMessage;
+    const data: StreamingMessage = { message: 'error', error };
 
     await handleStreamingMessage(dispatch, data, state);
 
-    expect(i18next.t).toHaveBeenCalledWith('livestream-recording-error');
-    expect(notifications.error).toHaveBeenCalledWith('livestream-recording-error');
-    expect(log.error).toHaveBeenCalledWith('recording error:', 'recorder_not_started');
+    expect(dispatch).toHaveBeenCalledWith(startRecordingFailed());
+    expect(notifications.error).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    RecordingError.StreamFeatureDisabled,
+    RecordingError.InvalidStreamingId,
+    RecordingError.StreamingTargetInUse,
+    RecordingError.RecordingNotActive,
+  ])('ignores errors unrelated to starting a recording ("%s")', async (error) => {
+    const dispatch = vi.fn();
+    const state = createState();
+    const data: StreamingMessage = { message: 'error', error };
+
+    await handleStreamingMessage(dispatch, data, state);
+
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(notifications.error).not.toHaveBeenCalled();
   });
 
   it('throws on unknown message types', async () => {

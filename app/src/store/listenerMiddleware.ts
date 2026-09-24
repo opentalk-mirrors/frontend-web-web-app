@@ -11,6 +11,7 @@ import { startLivekitListeners } from './slices/livekitSlice';
 import { startParticipantsListeners } from './slices/participantsSlice';
 import { startFloatingReactionListener, startReactionClearTimeoutListener } from './slices/reactionSlice';
 import { startRoomListeners } from './slices/roomSlice';
+import { startStreamingListeners } from './slices/streamingSlice';
 import { startSubroomListeners } from './slices/subroomAudioSlice';
 import { startTimerListeners } from './slices/timerSlice';
 import { startTranscriptionSliceListeners } from './slices/transcriptionSlice';
@@ -36,6 +37,7 @@ export const startListening = () => {
   startFullscreenListeners(startAppListening);
   startSubroomListeners(startAppListening);
   startUiListeners(startAppListening);
+  startStreamingListeners(startAppListening);
   startUiVersionListeners(startAppListening); // V2-CLEANUP
   startReactionClearTimeoutListener(startAppListening);
   startFloatingReactionListener(startAppListening);

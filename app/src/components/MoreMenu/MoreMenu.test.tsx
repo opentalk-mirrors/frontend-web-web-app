@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { BackendModules } from '@opentalk/rest-api-rtk-query';
-import { screen } from '@testing-library/react';
+import { BackendModules, RecordingFeatures, StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { enableSelfRename } from '../../api/types/outgoing/moderation';
@@ -10,6 +10,13 @@ import { ForceMuteType, Role } from '../../types';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import MenuButton from './MoreButton';
 import MoreMenu from './MoreMenu';
+
+vi.mock('../../modules/WebRTC/ConferenceRoom', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getCurrentConferenceRoom: () => ({
+    sendMessage: vi.fn(),
+  }),
+}));
 
 const renderMenu = (initialState = {}) => {
   const { store } = configureStore({ initialState });
@@ -91,5 +98,37 @@ describe('MoreMenu', () => {
     });
 
     expect(screen.getByRole('menuitem', { name: 'more-menu-enable-microphones' })).toBeInTheDocument();
+  });
+  it('keeps start recording disabled when the menu is reopened while awaiting server status', async () => {
+    const user = userEvent.setup();
+    const { store } = configureStore({
+      initialState: {
+        user: { role: Role.Moderator },
+        config: {
+          provider: { accountManagementUrl: 'https://account.opentalk.eu' },
+          enabledModules: { [BackendModules.Recording]: [RecordingFeatures.Record] },
+        },
+        streaming: {
+          streams: { ids: [], entities: {} },
+          recording: StreamingStatus.Inactive,
+        },
+      },
+    });
+    const anchorEl = document.createElement('div');
+    const { rerender } = renderWithProviders(<MoreMenu anchorEl={anchorEl} onClose={vi.fn()} open />, {
+      store,
+      provider: { snackbar: true, mui: true },
+    });
+
+    await user.click(screen.getByRole('menuitem', { name: 'more-menu-start-recording' }));
+
+    rerender(<MoreMenu anchorEl={anchorEl} onClose={vi.fn()} open={false} />);
+    await waitForElementToBeRemoved(() => screen.queryByTestId('moreMenu'));
+    rerender(<MoreMenu anchorEl={anchorEl} onClose={vi.fn()} open />);
+
+    expect(screen.getByRole('menuitem', { name: 'more-menu-start-recording' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    );
   });
 });
