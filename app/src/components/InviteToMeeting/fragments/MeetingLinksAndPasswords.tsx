@@ -51,18 +51,19 @@ const MeetingLinksAndPasswords = ({ event }: MeetingLinksAndPasswordsProps) => {
 
   return (
     <>
-      <MeetingLinkField
-        fieldKey={FieldKeys.RoomLink}
-        checked={highlightedField === FieldKeys.RoomLink}
-        value={roomURL}
-        setHighlightedField={setHighlightedField}
-        eventTitle={eventTitle}
-      />
-      {roomAlias && (
+      {roomAlias ? (
         <MeetingLinkField
           fieldKey={FieldKeys.PersonalRoomLink}
           checked={highlightedField === FieldKeys.PersonalRoomLink}
           value={new URL(`/room/${roomAlias}`, baseURL)}
+          setHighlightedField={setHighlightedField}
+          eventTitle={eventTitle}
+        />
+      ) : (
+        <MeetingLinkField
+          fieldKey={FieldKeys.RoomLink}
+          checked={highlightedField === FieldKeys.RoomLink}
+          value={roomURL}
           setHighlightedField={setHighlightedField}
           eventTitle={eventTitle}
         />

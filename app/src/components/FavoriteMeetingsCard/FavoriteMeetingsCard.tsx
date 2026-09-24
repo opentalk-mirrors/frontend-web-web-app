@@ -77,6 +77,7 @@ const EmptyEntry = styled('div')(({ theme }) => ({
 export interface FavoriteMeetingProps {
   subject: string;
   roomId: RoomId;
+  alias?: string;
 }
 
 const FavoriteMeetingsCard = ({ meetings }: { meetings: Array<FavoriteMeetingProps> }) => {
@@ -87,9 +88,9 @@ const FavoriteMeetingsCard = ({ meetings }: { meetings: Array<FavoriteMeetingPro
     if (sortedMeetings.length > 0) {
       return (
         <FavoritesContainer>
-          {sortedMeetings.map(({ subject, roomId }) => (
+          {sortedMeetings.map(({ subject, roomId, alias }) => (
             <FavoriteEntry key={roomId}>
-              <Typography noWrap component={Link} to={`/room/${roomId}`} target="_blank">
+              <Typography noWrap component={Link} to={`/room/${alias ?? roomId}`} target="_blank">
                 {subject}
               </Typography>
             </FavoriteEntry>

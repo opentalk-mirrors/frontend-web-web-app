@@ -77,6 +77,7 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
 
   const eventId = getEventId(event);
   const roomId = event.room?.id;
+  const roomAliasOrId = event.room?.alias ?? roomId;
 
   const [markEvent] = useMarkFavoriteEventMutation();
   const [unmarkEvent] = useUnmarkFavoriteEventMutation();
@@ -129,11 +130,10 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
 
   const copyMeetingLink = useCallback(async () => {
     handleClose();
-    const roomAliasOrId = event.room?.alias ?? roomId;
     const link = `${baseUrl}/room/${roomAliasOrId}`;
     await navigator.clipboard.writeText(link);
     notifications.success(t('global-copy-link-success'));
-  }, [baseUrl, event.room?.alias, handleClose, roomId, t]);
+  }, [baseUrl, roomAliasOrId, handleClose, t]);
 
   const showDialog = useCallback(() => {
     showConfirmDialog(true);
@@ -287,7 +287,7 @@ export const MeetingActions = ({ event, isMeetingCreator, highlighted }: Meeting
       <ConfirmDeleteDialog open={isConfirmDialogVisible} onClose={handleCloseConfirmDeleteDialog} event={event} />
       <Button
         variant={highlighted ? 'contained' : 'outlined'}
-        to={`/room/${roomId}`}
+        to={`/room/${roomAliasOrId}`}
         component={NavLink}
         target="_blank"
         onMouseDown={stopPropagation}

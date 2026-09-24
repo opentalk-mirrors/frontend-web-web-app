@@ -117,16 +117,7 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
       </Box>
       <DialogContent>
         <Stack spacing={2}>
-          <CustomCopyTextField
-            label={getLabelText(FieldKeys.MeetingLink)}
-            value={meetingLink?.toString()}
-            ariaLabel={getAriaLabelText(FieldKeys.MeetingLink)}
-            notificationText={getNotificationText(FieldKeys.MeetingLink)}
-            checked={meetingLink ? copiedUrl === meetingLink.toString() : false}
-            onClick={() => setCopiedUrl(meetingLink?.toString())}
-          />
-
-          {personalRoomLink && (
+          {personalRoomLink ? (
             <CustomCopyTextField
               label={getLabelText(FieldKeys.PersonalRoomLink)}
               value={personalRoomLink}
@@ -134,6 +125,15 @@ const MeetingDetailsDialog = ({ open, onClose, eventInfo, meetingDetails, roomIn
               notificationText={getNotificationText(FieldKeys.PersonalRoomLink)}
               checked={copiedUrl === personalRoomLink}
               onClick={() => setCopiedUrl(personalRoomLink)}
+            />
+          ) : (
+            <CustomCopyTextField
+              label={getLabelText(FieldKeys.MeetingLink)}
+              value={meetingLink?.toString()}
+              ariaLabel={getAriaLabelText(FieldKeys.MeetingLink)}
+              notificationText={getNotificationText(FieldKeys.MeetingLink)}
+              checked={meetingLink ? copiedUrl === meetingLink.toString() : false}
+              onClick={() => setCopiedUrl(meetingLink?.toString())}
             />
           )}
 

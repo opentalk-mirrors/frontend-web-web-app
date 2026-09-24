@@ -38,4 +38,28 @@ describe('favorite meetings card', () => {
 
     expect(screen.queryAllByRole('link')).toHaveLength(dummyMeetings.length);
   });
+
+  it('links to the alias when the meeting has one', () => {
+    renderWithProviders(
+      <BrowserRouter>
+        <FavoriteMeetingsCard
+          meetings={[{ subject: 'Weekly Sync', roomId: 'some-room-id' as RoomId, alias: 'weekly-sync_abc123' }]}
+        />
+      </BrowserRouter>,
+      { provider: { mui: true } }
+    );
+
+    expect(screen.getByRole('link', { name: 'Weekly Sync' })).toHaveAttribute('href', '/room/weekly-sync_abc123');
+  });
+
+  it('falls back to the room id when no alias is set', () => {
+    renderWithProviders(
+      <BrowserRouter>
+        <FavoriteMeetingsCard meetings={[{ subject: 'Weekly Sync', roomId: 'some-room-id' as RoomId }]} />
+      </BrowserRouter>,
+      { provider: { mui: true } }
+    );
+
+    expect(screen.getByRole('link', { name: 'Weekly Sync' })).toHaveAttribute('href', '/room/some-room-id');
+  });
 });

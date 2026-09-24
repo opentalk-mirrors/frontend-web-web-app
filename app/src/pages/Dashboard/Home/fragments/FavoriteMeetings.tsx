@@ -23,6 +23,7 @@ const FavoriteMeetings = () => {
       .map((favoritesEvent) => ({
         subject: favoritesEvent.title ? favoritesEvent.title : '',
         roomId: favoritesEvent.room?.id ? (favoritesEvent.room.id as RoomId) : ('' as RoomId),
+        alias: favoritesEvent.room?.alias,
       })) || [];
 
   if (favoritesEventsIsLoading) {

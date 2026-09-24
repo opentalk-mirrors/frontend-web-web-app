@@ -89,12 +89,13 @@ ${t('global-call-in-pin')}: ${callIn.password}
 
     let joinString = `${t('meeting-details-dialog-join-line')}\n`;
     if (isGuestParticipationAvailable) {
-      joinString += `${t('global-meeting-link')}: ${meetingLink}\n`;
-      if (roomPassword) {
-        joinString += `${t('global-password')}: ${roomPassword}\n`;
-      }
       if (personalRoomLink) {
         joinString += `${t('meeting-details-dialog-label-personal-room-link')}: ${personalRoomLink}\n`;
+      } else {
+        joinString += `${t('global-meeting-link')}: ${meetingLink}\n`;
+      }
+      if (roomPassword) {
+        joinString += `${t('global-password')}: ${roomPassword}\n`;
       }
     }
 

@@ -142,4 +142,20 @@ describe('PendingMeetingActions', () => {
       expect(mockWriteText).toHaveBeenCalledWith('https://example.com/room/my-room_abc123');
     });
   });
+
+  it('opens the alias-based room link from the start button when the room has an alias', () => {
+    const eventWithAlias = {
+      ...eventMockedData,
+      room: { ...eventMockedData.room, alias: 'my-room_abc123' },
+    } as Event;
+
+    renderWithProviders(<MeetingActions event={eventWithAlias} isMeetingCreator={false} />, {
+      provider: { router: true, mui: true },
+    });
+
+    expect(screen.getByRole('link', { name: 'dashboard-home-join-label' })).toHaveAttribute(
+      'href',
+      '/room/my-room_abc123'
+    );
+  });
 });
