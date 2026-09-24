@@ -407,7 +407,7 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
             },
             '&.Mui-error .MuiOutlinedInput-notchedOutline': {
               borderWidth: '2px',
-              borderColor: theme.palette.text.error,
+              borderColor: theme.palette.error.main,
             },
           }),
         },
@@ -451,7 +451,7 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
                   },
                   '&.Mui-error .MuiOutlinedInput-notchedOutline': {
                     borderWidth: '2px',
-                    borderColor: theme.palette.text.error,
+                    borderColor: theme.palette.error.main,
                   },
                 },
               },

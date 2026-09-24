@@ -62,6 +62,27 @@ const Form = styled('form')(({ theme }) => ({
   color: theme.palette.background.main.contrastText,
 }));
 
+const PersonalRoomNameFeedback = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'error',
+})<{ error?: boolean }>(({ theme, error }) =>
+  error
+    ? {
+        '&::before': {
+          content: "'!'",
+          display: 'inline-flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '1.25rem',
+          height: '1.25rem',
+          borderRadius: '50%',
+          backgroundColor: theme.palette.error.main,
+          color: theme.palette.text.primary,
+          marginRight: theme.spacing(0.5),
+        },
+      }
+    : {}
+);
+
 const MAX_INSTANCES_PER_RECURRING_EVENT = 100;
 
 const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonClick }: MeetingFormProps) => {
@@ -168,19 +189,19 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
 
     if (!hasValidAliasChars) {
       return (
-        <Typography variant="caption" color="textError">
+        <PersonalRoomNameFeedback variant="caption" color="textError" error>
           {t('dashboard-meeting-personal-room-name-invalid-chars', {
             char: findFirstInvalidChar(value),
           })}
-        </Typography>
+        </PersonalRoomNameFeedback>
       );
     }
 
     if (!hasAlphanumericChar) {
       return (
-        <Typography variant="caption" color="textError">
+        <PersonalRoomNameFeedback variant="caption" color="textError" error>
           {t('dashboard-meeting-personal-room-name-no-alphanumeric')}
-        </Typography>
+        </PersonalRoomNameFeedback>
       );
     }
 
@@ -192,25 +213,29 @@ const MeetingForm = ({ onSubmit, eventIsLoading, existingEvent, onForwardButtonC
     const isCheckPendingForValue = pendingCheckName === value && !resultMatchesInput;
     if (aliasExistsResult.isLoading || isCheckPendingForValue) {
       return (
-        <Typography variant="caption" color="text.secondary">
+        <PersonalRoomNameFeedback variant="caption" color="textPrimary">
           {t('dashboard-meeting-personal-room-name-checking')}
-        </Typography>
+        </PersonalRoomNameFeedback>
       );
     }
     if (aliasExistsResult.isSuccess) {
       return (
-        <Typography variant="caption" color={aliasExistsResult.data.available ? 'success.main' : 'textError'}>
+        <PersonalRoomNameFeedback
+          variant="caption"
+          color={aliasExistsResult.data.available ? 'success' : 'textError'}
+          error={!aliasExistsResult.data.available}
+        >
           {aliasExistsResult.data.available
             ? t('dashboard-meeting-personal-room-name-available')
             : t('dashboard-meeting-personal-room-name-taken')}
-        </Typography>
+        </PersonalRoomNameFeedback>
       );
     }
     if (aliasExistsResult.isError) {
       return (
-        <Typography variant="caption" color="textError">
+        <PersonalRoomNameFeedback variant="caption" color="textError" error>
           {t('dashboard-meeting-personal-room-name-check-error')}
-        </Typography>
+        </PersonalRoomNameFeedback>
       );
     }
     return null;

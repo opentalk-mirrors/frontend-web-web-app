@@ -16,13 +16,14 @@ const CustomHelperText = ({ helperText, characterCount, maxCharacters }: CustomH
       direction="row"
       sx={{
         justifyContent: 'space-between',
+        color: 'text.primary',
       }}
     >
       <Typography
         component="span"
         variant="caption"
         sx={{
-          color: 'text.primary',
+          color: 'inherit',
         }}
       >
         {helperText}
