@@ -1,40 +1,34 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useLocalParticipant } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
-import { Track } from 'livekit-client';
-import { Mock } from 'vitest';
 
+import type { NameTileProps } from '../../../commonComponents/NameTile';
 import SelfViewAnchorContext from '../../../provider/SelfViewAnchorContext';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
+import { SelfVideoContentProps } from './SelfVideoContent';
 import SelfView from './SelfView';
 
 const DEFAULT_VIEWPORT_WIDTH_PX = 1024;
 
-vi.mock('@livekit/components-react', () => ({
-  useLocalParticipant: vi.fn(),
-  VideoTrack: () => (
-    <video data-testid="video-track">
-      <track kind="captions" />
-    </video>
+vi.mock('../../../commonComponents/NameTile', () => ({
+  __esModule: true,
+  default: (props: NameTileProps) => (
+    <div data-testid="name-tile">
+      {props.displayName}
+      {props.showIcons && <div data-testid="icons" />}
+    </div>
   ),
 }));
 
-vi.mock('../../../commonComponents/NameTile', () => ({
+vi.mock('./SelfVideoContent', () => ({
   __esModule: true,
-  default: () => <div data-testid="name-tile" />,
+  default: (props: SelfVideoContentProps) => <div data-testid="self-video-content">{props.displayName}</div>,
 }));
 
 describe('SelfView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useLocalParticipant as Mock).mockReturnValue({
-      isCameraEnabled: true,
-      cameraTrack: {
-        source: Track.Source.Camera,
-      },
-    });
   });
 
   describe('size', () => {
@@ -44,9 +38,9 @@ describe('SelfView', () => {
     });
 
     it.each([
-      { width: 600, size: 'sm', expected: { width: '93px', height: '140px' } },
-      { width: 900, size: 'md', expected: { width: '120px', height: '80px' } },
-      { width: 1200, size: 'lg', expected: { width: '150px', height: '100px' } },
+      { width: 390, size: 'sm', expected: { width: '93px', height: '140px' } },
+      { width: 1024, size: 'md', expected: { width: '120px', height: '80px' } },
+      { width: 1440, size: 'lg', expected: { width: '150px', height: '100px' } },
       { width: 1536, size: 'xl', expected: { width: '150px', height: '100px' } },
     ])('renders with specified fixed size for a $size viewport', ({ width, expected }) => {
       window.happyDOM?.setViewport({ width });
@@ -59,38 +53,40 @@ describe('SelfView', () => {
     });
   });
 
-  it('renders video if camera is enabled and video track is present', () => {
+  it('renders video content', () => {
     const { store } = configureStore();
     renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(screen.getByTestId('video-track')).toBeInTheDocument();
+    expect(screen.getByTestId('self-video-content')).toBeInTheDocument();
   });
 
-  it('does not render video if camera is disabled and video track is present', () => {
-    const { store } = configureStore();
-    (useLocalParticipant as Mock).mockReturnValue({
-      isCameraEnabled: false,
-      cameraTrack: {
-        source: Track.Source.Camera,
+  it('passes display name to video content', () => {
+    const { store } = configureStore({
+      initialState: {
+        user: {
+          displayName: 'Bob Benton',
+        },
       },
     });
     renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(screen.queryByTestId('video-track')).not.toBeInTheDocument();
-  });
-
-  it('does not render video if camera is enabled and video track is not present', () => {
-    const { store } = configureStore();
-    (useLocalParticipant as Mock).mockReturnValue({
-      isCameraEnabled: true,
-      cameraTrack: undefined,
-    });
-    renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(screen.queryByTestId('video-track')).not.toBeInTheDocument();
+    expect(screen.getByTestId('self-video-content')).toHaveTextContent('Bob Benton');
   });
 
   it('renders name tile', () => {
     const { store } = configureStore();
     renderWithProviders(<SelfView />, { store, provider: { mui: true } });
     expect(screen.getByTestId('name-tile')).toBeInTheDocument();
+  });
+
+  it('passes "you" as name to the name tile', () => {
+    const { store } = configureStore();
+    renderWithProviders(<SelfView />, { store, provider: { mui: true } });
+    expect(screen.getByTestId('name-tile')).toHaveTextContent('global-you');
+  });
+
+  it('prevent rendering icons in the name tile', () => {
+    const { store } = configureStore();
+    renderWithProviders(<SelfView />, { store, provider: { mui: true } });
+    expect(screen.getByTestId('name-tile')).not.toContainElement(screen.queryByTestId('icons'));
   });
 
   it('portals into the provided anchor element', () => {
@@ -106,8 +102,8 @@ describe('SelfView', () => {
       { store, provider: { mui: true } }
     );
 
-    expect(anchor).toContainElement(screen.getByTestId('video-track'));
-    expect(container).not.toContainElement(screen.getByTestId('video-track'));
+    expect(anchor).toContainElement(screen.getByTestId('self-video-content'));
+    expect(container).not.toContainElement(screen.getByTestId('self-video-content'));
 
     anchor.remove();
   });
@@ -115,6 +111,6 @@ describe('SelfView', () => {
   it('renders inline (no portal) when no anchor is set', () => {
     const { store } = configureStore();
     const { container } = renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(container).toContainElement(screen.getByTestId('video-track'));
+    expect(container).toContainElement(screen.getByTestId('self-video-content'));
   });
 });

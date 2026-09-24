@@ -24,7 +24,7 @@ import {
 } from './Notistack';
 import { ISnackActionsProps, ISnackbarPersistentProps } from './Notistack';
 import { SnackbarActionButtonProps } from './Notistack/fragments/SnackbarActionButtons/SnackbarActionButtons';
-import ParticipantAvatar, { setLibravatarOptions } from './ParticipantAvatar';
+import ParticipantAvatar, { ParticipantAvatarProps, setLibravatarOptions } from './ParticipantAvatar';
 import ProgressBar from './ProgressBar';
 import Rating from './Rating';
 import SortPopoverMenu from './SortPopoverMenu';
@@ -73,4 +73,5 @@ export type {
   SnackbarActionButtonProps,
   ToggleOptions,
   DurationValueOptions,
+  ParticipantAvatarProps,
 };

@@ -147,7 +147,7 @@ describe('<ShareScreenButton />', () => {
       const { store } = configureStore({
         initialState: {
           ...sharescreenActiveState,
-          livekit: { ...sharescreenActiveState.livekit, mediaChangeInProgress: ['screenshare'] },
+          livekit: { ...sharescreenActiveState.livekit, mediaChangeInProgress: { screenshare: { enabled: true } } },
         },
       });
 

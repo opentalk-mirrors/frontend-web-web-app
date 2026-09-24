@@ -21,7 +21,7 @@ const Avatar = styled(MuiAvatar, {
   },
 }));
 
-interface ParticipantAvatarProps extends AvatarProps {
+export interface ParticipantAvatarProps extends AvatarProps {
   defaultImage?: LibravatarDefaultImage;
   iconAvatar?: boolean;
   specialCharacter?: string;
