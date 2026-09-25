@@ -212,6 +212,16 @@ export default defineConfig(({ command, mode }) => {
           minify: {
             mangle: false,
           },
+          codeSplitting: {
+            groups: [
+              {
+                name: 'excalidraw-font-subset-worker',
+                test: /node_modules[\\/]@excalidraw[\\/]excalidraw[\\/]dist[\\/]prod[\\/]subset-worker\.chunk\.js$/,
+                includeDependenciesRecursively: true,
+                entriesAware: true,
+              },
+            ],
+          },
         },
       },
       chunkSizeWarningLimit: 1200,

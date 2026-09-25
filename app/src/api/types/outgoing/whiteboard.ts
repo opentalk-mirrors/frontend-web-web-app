@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { SceneBounds } from '@excalidraw/excalidraw/element/bounds';
+import type { SceneBounds } from '@excalidraw/excalidraw/element/bounds';
 
 import type { RootState } from '../../../store';
 import type { Namespaced, ParticipantId } from '../../../types';
