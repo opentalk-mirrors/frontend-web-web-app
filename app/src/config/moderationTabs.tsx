@@ -232,6 +232,7 @@ export const tabs: Array<Tab> = [
     tooltipTranslationKey: 'moderationbar-button-add-user-tooltip',
     featureKey: FeaturesKeys.AddUser,
     key: ModerationTabKey.AddUser,
+    titleKey: 'add-user-tab-title',
   },
   {
     icon: <WoolBallIcon />,

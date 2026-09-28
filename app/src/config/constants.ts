@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-
 export enum ModerationTabKey {
   Home = 'tab-home',
   MuteUsers = 'tab-mute-users',
@@ -24,3 +23,5 @@ export enum ModerationTabKey {
   PollsAndLegalVote = 'tab-polls-voting',
   SupportMenu = 'tab-support-menu',
 }
+
+export const MODERATION_MENU_VIEW = 'moderation';

@@ -9,7 +9,6 @@ modifier-shift = Shift
 modifier-alt = Alt
 modifier-meta = Cmd
 
-messages = Nachrichten
 dismiss = Verwerfen
 action-delete = löschen
 action-download = Download
@@ -212,13 +211,10 @@ grant-presenter-role = Präsentatorrolle zuweisen
 revoke-presenter-role = Widerrufen Sie die Rolle des Präsentators
 
 menutabs-area-hidden-heading = Zusatzfunktionen
-menutabs-chat = Chat
-menutabs-people = Teilnehmer
 menutabs-people-complementary = { $count ->
     [one] Du bist der einzige Teilnehmende in der Konferenz.
    *[other] Es gibt {$count} Teilnehmer in der Konferenz.
 }
-menutabs-messages = Nachrichten
 participant-list-hidden-heading = Teilnehmerliste
 participant-list-self-description = Ich
 chatroom-hidden-heading = Chatraum
@@ -272,6 +268,14 @@ toolbar-button-screen-share-turn-on-tooltip-title = Bildschirm teilen
 toolbar-button-screen-share-turn-off-tooltip-title = Bildschirmfreigabe beenden
 toolbar-button-screen-share-context-title = Anderen Bildschirm teilen
 toolbar-button-end-call-tooltip-title = Raum verlassen
+toolbar-button-moderation-tooltip-title = Moderation
+
+side-panel-toolbar-group-label = Seitenleiste
+side-panel-close-button-label = Seitenleiste schließen
+side-panel-back-button-label = Zurück zur Moderation
+
+moderation-menu-group-actions = Aktionen
+moderation-menu-group-tools = Werkzeuge
 
 toolbar-button-screen-share-tooltip-request-moderator-presenter-role = Frage einen Moderator um deinen Bildschirm zu teilen
 
@@ -338,6 +342,7 @@ approve-all-participants-from-waiting = Alles genehmigen
 moderationbar-button-home-tooltip = Home
 moderationbar-button-mute-tooltip = Teilnehmer stummschalten
 moderationbar-button-add-user-tooltip = Nutzer hinzufügen ist in Entwicklung
+add-user-tab-title = Nutzer hinzufügen
 moderationbar-button-breakout-tooltip = Breakout-Räume erstellen
 moderationbar-button-poll-tooltip = Umfragen
 moderationbar-button-ballot-tooltip = Abstimmungen
@@ -796,9 +801,10 @@ global-edit = Bearbeiten
 global-continue = Fortfahren
 global-for-all = Für alle
 global-for-guests = Für Gäste
+global-chat = Chat
+global-messages = Nachrichten
 
 retry-available-in = Wiederholung verfügbar in {$seconds}
-
 dashboard-logo-title = OpenTalk Logo
 dashboard-home = Startseite
 dashboard-meetings = Meetings

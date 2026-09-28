@@ -5,6 +5,7 @@ import { Box, Typography, styled } from '@mui/material';
 import React, { forwardRef } from 'react';
 
 import { ModerationTabKey } from '../../../config/constants';
+import { SIDE_PANEL_ID } from '../../../constants';
 
 interface SideTabPanelProps {
   value: ModerationTabKey;
@@ -34,9 +35,9 @@ const SideTabPanel = forwardRef<unknown, SideTabPanelProps>(({ children, value, 
   return (
     <Box
       {...ref}
-      role="tabpanel"
+      role="region"
       aria-hidden={hidden}
-      id={`tabpanel-${value}`}
+      id={SIDE_PANEL_ID}
       aria-labelledby={value}
       sx={[
         {
