@@ -51,7 +51,7 @@ const StyledMicOffIcon = styled(MicOffIcon)(({ theme }) => ({
   },
 }));
 
-type NameTileProps = {
+export type NameTileProps = {
   displayName: string;
   showIcons?: boolean;
   videoOn?: boolean;

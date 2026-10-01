@@ -63,6 +63,11 @@ vi.mock('@mui/material', async () => {
   };
 });
 
+vi.mock('../../ParticipantVideoFallback', () => ({
+  __esModule: true,
+  default: () => <div data-testid="participant-video-fallback" />,
+}));
+
 vi.mock('./RemoteVideo', () => ({
   __esModule: true,
   default: remoteVideoMock,
@@ -104,7 +109,7 @@ describe('ParticipantVideo', () => {
     vi.useRealTimers();
   });
 
-  it('shows only the avatar when no streams are available', () => {
+  it('shows video fallback when no streams are available', () => {
     const { store } = mockStore(1, {
       store: { initialState: { participants: serializableParticipantsState } },
     });
@@ -116,7 +121,7 @@ describe('ParticipantVideo', () => {
 
     renderWithProviders(<ParticipantVideo {...baseProps} />, { store, provider: { mui: true } });
 
-    expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
+    expect(screen.getByTestId('participant-video-fallback')).toBeInTheDocument();
     expect(screen.queryByTestId(/remoteVideo/)).not.toBeInTheDocument();
   });
 
@@ -138,7 +143,7 @@ describe('ParticipantVideo', () => {
       )
     ).toBeInTheDocument();
     expect(screen.queryByTestId('participantScreenShareVideo')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('avatarContainer')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('participant-video-fallback')).not.toBeInTheDocument();
   });
 
   it('does not render the camera feed when the participant shares screen if ui V2 is selected', () => {
@@ -242,6 +247,6 @@ describe('ParticipantVideo', () => {
 
     await waitFor(() => expect(cameraPublication.setSubscribed).toHaveBeenCalledWith(false));
     expect(screenPublication.setSubscribed).not.toHaveBeenCalled();
-    expect(screen.getByTestId('avatarContainer')).toBeInTheDocument();
+    expect(screen.getByTestId('participant-video-fallback')).toBeInTheDocument();
   });
 });

@@ -6,13 +6,13 @@ import { styled } from '@mui/material';
 import { Track } from 'livekit-client';
 import React, { useState, useMemo } from 'react';
 
-import { useAppSelector } from '../../../hooks';
+import { useAppSelector, useParticipantFallbackProps } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/livekitSlice';
 import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
 import { ConnectionIdentifier, VideoSetting } from '../../../types';
 import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
-import { AvatarContainer } from './AvatarContainer';
+import ParticipantVideoFallback from '../../ParticipantVideoFallback';
 import { PresenterOverlay } from './PresenterOverlay';
 import RemoteVideo from './RemoteVideo';
 
@@ -57,6 +57,7 @@ interface ScreenPresenterVideoProps {
 const ScreenPresenterVideo = React.forwardRef<HTMLDivElement, ScreenPresenterVideoProps>(
   ({ connectionIdentifier, isVideoPinned, togglePin, videoPosition, changeVideoPosition, isThumbnail }, ref) => {
     const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
+    const { displayName, avatarUrl, isSipParticipant } = useParticipantFallbackProps(participantId);
     const videoDescriptor = useMemo<MediaDescriptor>(
       () => ({ connectionIdentifier, mediaType: Track.Source.Camera }),
       [connectionIdentifier]
@@ -66,13 +67,11 @@ const ScreenPresenterVideo = React.forwardRef<HTMLDivElement, ScreenPresenterVid
     const participant = useParticipantContext();
     const showVideo = participant.isCameraEnabled && qualityCap !== VideoSetting.Off;
 
-    const videoTile = useMemo(() => {
-      return showVideo ? (
-        <RemoteVideo descriptor={videoDescriptor} />
-      ) : (
-        <AvatarContainer participantId={participantId} />
-      );
-    }, [showVideo, videoDescriptor, participantId]);
+    const videoTile = showVideo ? (
+      <RemoteVideo descriptor={videoDescriptor} />
+    ) : (
+      <ParticipantVideoFallback displayName={displayName} avatarUrl={avatarUrl} isSipParticipant={isSipParticipant} />
+    );
 
     return (
       <SharedPresenterVideo

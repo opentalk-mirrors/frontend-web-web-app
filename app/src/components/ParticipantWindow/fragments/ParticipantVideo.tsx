@@ -6,7 +6,7 @@ import { Slide, styled } from '@mui/material';
 import { ParticipantEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useAppDispatch, useAppSelector, useConferenceUiVersion } from '../../../hooks';
+import { useAppDispatch, useAppSelector, useConferenceUiVersion, useParticipantFallbackProps } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import { selectQualityCap } from '../../../store/slices/livekitSlice';
 import {
@@ -18,7 +18,7 @@ import {
 } from '../../../store/slices/uiSlice';
 import { ConnectionIdentifier, VideoSetting } from '../../../types';
 import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
-import { AvatarContainer } from './AvatarContainer';
+import ParticipantVideoFallback from '../../ParticipantVideoFallback';
 import RemoteVideo from './RemoteVideo';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
 
@@ -50,6 +50,7 @@ const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThum
   });
   const dispatch = useAppDispatch();
   const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
+  const { displayName, avatarUrl, isSipParticipant } = useParticipantFallbackProps(participantId);
 
   const videoDescriptor = useMemo<MediaDescriptor>(
     () => ({ connectionIdentifier, mediaType: Track.Source.Camera }),
@@ -140,7 +141,9 @@ const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThum
     return <RemoteVideo descriptor={videoDescriptor} />;
   }
 
-  return <AvatarContainer participantId={participantId} />;
+  return (
+    <ParticipantVideoFallback displayName={displayName} avatarUrl={avatarUrl} isSipParticipant={isSipParticipant} />
+  );
 };
 
 export default ParticipantVideo;

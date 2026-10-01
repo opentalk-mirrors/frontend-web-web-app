@@ -6,10 +6,15 @@ import { Track } from 'livekit-client';
 import { switchRoom } from '../../api/types/outgoing/breakout';
 import { RoomKind, TimerStyle } from '../../types';
 import { configureStore } from '../../utils/testUtils';
+import { changeMedia, setScreenShareEnabled } from '../commonActions';
 import livekitReducer, {
   cleanMediaSettingsState,
   clearMediaSettingsBeforeRoomSwitch,
   initialState,
+  selectAudioChangeInProgress,
+  selectMediaChange,
+  selectScreenshareChangeInProgress,
+  selectVideoChangeInProgress,
 } from './livekitSlice';
 import { timerStarted } from './timerSlice';
 
@@ -128,5 +133,83 @@ describe('livekit slice - disable media on coffee break', () => {
     await flushMacrotask();
     expect(audioTrackStop).not.toHaveBeenCalled();
     expect(setMicrophoneEnabled).not.toHaveBeenCalled();
+  });
+});
+
+describe('livekit slice - media change in progress', () => {
+  const changeMediaCases = [{ kind: 'audioinput' }, { kind: 'videoinput' }] as const;
+
+  describe.each(changeMediaCases)('$kind', ({ kind }) => {
+    const turnOn = { kind, enabled: true };
+    const turnOff = { kind, enabled: false };
+
+    it('stores the requested state while being turned on', () => {
+      const { store } = configureStore();
+      store.dispatch(changeMedia.pending('on', turnOn));
+      expect(selectMediaChange(store.getState(), kind)).toEqual({ enabled: true });
+    });
+
+    it('stores the requested state while being turned off', () => {
+      const { store } = configureStore();
+      store.dispatch(changeMedia.pending('off', turnOff));
+      expect(selectMediaChange(store.getState(), kind)).toEqual({ enabled: false });
+    });
+
+    it('is cleared once the change succeeded', () => {
+      const { store } = configureStore();
+      store.dispatch(changeMedia.pending('on', turnOn));
+      store.dispatch(changeMedia.fulfilled(undefined, 'on', turnOn));
+      expect(selectMediaChange(store.getState(), kind)).toBeUndefined();
+    });
+
+    it('is cleared once the change failed', () => {
+      const { store } = configureStore();
+      store.dispatch(changeMedia.pending('on', turnOn));
+      store.dispatch(changeMedia.rejected(null, 'on', turnOn));
+      expect(selectMediaChange(store.getState(), kind)).toBeUndefined();
+    });
+
+    it('keeps the latest requested state', () => {
+      const { store } = configureStore();
+      store.dispatch(changeMedia.pending('on', turnOn));
+      store.dispatch(changeMedia.pending('off', turnOff));
+      expect(selectMediaChange(store.getState(), kind)).toEqual({ enabled: false });
+    });
+  });
+
+  describe('screenshare', () => {
+    it('stores the requested state while being turned on', () => {
+      const { store } = configureStore();
+      store.dispatch(setScreenShareEnabled.pending('on', { enabled: true }));
+      expect(selectMediaChange(store.getState(), 'screenshare')).toEqual({ enabled: true });
+    });
+
+    it('stores the requested state while being turned off', () => {
+      const { store } = configureStore();
+      store.dispatch(setScreenShareEnabled.pending('off', { enabled: false }));
+      expect(selectMediaChange(store.getState(), 'screenshare')).toEqual({ enabled: false });
+    });
+
+    it('is cleared once the change succeeded', () => {
+      const { store } = configureStore();
+      store.dispatch(setScreenShareEnabled.pending('on', { enabled: true }));
+      store.dispatch(setScreenShareEnabled.fulfilled(undefined, 'on', { enabled: true }));
+      expect(selectMediaChange(store.getState(), 'screenshare')).toBeUndefined();
+    });
+
+    it('is cleared once the change failed', () => {
+      const { store } = configureStore();
+      store.dispatch(setScreenShareEnabled.pending('on', { enabled: true }));
+      store.dispatch(setScreenShareEnabled.rejected(null, 'on', { enabled: true }));
+      expect(selectMediaChange(store.getState(), 'screenshare')).toBeUndefined();
+    });
+  });
+
+  it('tracks each kind separately', () => {
+    const { store } = configureStore();
+    store.dispatch(changeMedia.pending('on', { kind: 'videoinput', enabled: true }));
+    expect(selectVideoChangeInProgress(store.getState())).toBe(true);
+    expect(selectAudioChangeInProgress(store.getState())).toBe(false);
+    expect(selectScreenshareChangeInProgress(store.getState())).toBe(false);
   });
 });

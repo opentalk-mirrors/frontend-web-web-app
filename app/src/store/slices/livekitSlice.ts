@@ -100,7 +100,7 @@ export type LivekitState = {
   popoutStreamAccesses: PopoutStreamAccesses;
   qualityCap: VideoSetting;
   isPopoutStream: boolean;
-  mediaChangeInProgress?: MediaDeviceKindExtended[];
+  mediaChangeInProgress: Partial<Record<MediaDeviceKindExtended, { enabled: boolean }>>;
   room: Room | undefined;
   whisperRoom: Room | undefined;
   permissionDenied: MediaDeviceKindExtended[] | undefined;
@@ -124,7 +124,7 @@ export const initialState: LivekitState = {
   popoutStreamAccesses: [],
   qualityCap: VideoSetting.High,
   isPopoutStream: false,
-  mediaChangeInProgress: [],
+  mediaChangeInProgress: {},
   room: undefined,
   whisperRoom: undefined,
   permissionDenied: undefined,
@@ -193,11 +193,11 @@ export const livekitSlice = createSlice({
     setDisableRemoteVideos: (state, { payload }: PayloadAction<boolean>) => {
       state.qualityCap = payload ? VideoSetting.Off : VideoSetting.High;
     },
-    setMediaChangeInProgress: (state, { payload }: PayloadAction<MediaDeviceKind>) => {
-      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, payload);
+    setMediaChangeInProgress: (state, { payload }: PayloadAction<{ kind: MediaDeviceKind; enabled: boolean }>) => {
+      state.mediaChangeInProgress[payload.kind] = { enabled: payload.enabled };
     },
     setMediaChangeFailed: (state, { payload }: PayloadAction<MediaDeviceKind>) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, payload);
+      delete state.mediaChangeInProgress[payload];
       state.permissionDenied = insertItem(state.permissionDenied, payload);
     },
     startReconnectLoop: (state) => {
@@ -278,44 +278,44 @@ export const livekitSlice = createSlice({
       state.unavailable = payload;
     });
     builder.addCase(changeLocalMedia.pending, (state, { meta: { arg } }) => {
-      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, arg.kind);
+      state.mediaChangeInProgress[arg.kind] = { enabled: arg.enabled };
     });
     builder.addCase(changeLocalMedia.rejected, (state, { meta: { arg } }) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
+      delete state.mediaChangeInProgress[arg.kind];
       state.permissionDenied = insertItem(state.permissionDenied, arg.kind);
     });
     builder.addCase(changeLocalMedia.fulfilled, (state, { payload, meta: { arg } }) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
+      delete state.mediaChangeInProgress[arg.kind];
       state.permissionDenied = removeItem(state.permissionDenied, arg.kind);
       updateLobbyTrack(state.lobby as Lobby, arg.kind, payload.deviceId, payload.track, state as LivekitState);
     });
     builder.addCase(changeMedia.pending, (state, { meta: { arg } }) => {
-      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, arg.kind);
+      state.mediaChangeInProgress[arg.kind] = { enabled: arg.enabled };
     });
     builder.addCase(changeMedia.rejected, (state, { meta: { arg } }) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
+      delete state.mediaChangeInProgress[arg.kind];
       state.permissionDenied = insertItem(state.permissionDenied, arg.kind);
     });
     builder.addCase(changeMedia.fulfilled, (state, { meta: { arg } }) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, arg.kind);
+      delete state.mediaChangeInProgress[arg.kind];
       state.permissionDenied = removeItem(state.permissionDenied, arg.kind);
     });
-    builder.addCase(setScreenShareEnabled.pending, (state) => {
-      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, 'screenshare');
+    builder.addCase(setScreenShareEnabled.pending, (state, { meta: { arg } }) => {
+      state.mediaChangeInProgress.screenshare = { enabled: arg.enabled };
     });
     builder.addCase(setScreenShareEnabled.rejected, (state) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, 'screenshare');
+      delete state.mediaChangeInProgress.screenshare;
       state.permissionDenied = insertItem(state.permissionDenied, 'screenshare');
     });
     builder.addCase(switchScreenShare.pending, (state) => {
-      state.mediaChangeInProgress = insertItem(state.mediaChangeInProgress, 'screenshare');
+      state.mediaChangeInProgress.screenshare = { enabled: true };
     });
     builder.addCase(switchScreenShare.rejected, (state) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, 'screenshare');
+      delete state.mediaChangeInProgress.screenshare;
       state.permissionDenied = insertItem(state.permissionDenied, 'screenshare');
     });
     builder.addCase(switchScreenShare.fulfilled, (state) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, 'screenshare');
+      delete state.mediaChangeInProgress.screenshare;
       state.permissionDenied = removeItem(state.permissionDenied, 'screenshare');
       state.mediaSettings.screenShareEnabled = state.room?.localParticipant.isScreenShareEnabled || false;
     });
@@ -330,7 +330,7 @@ export const livekitSlice = createSlice({
       state.videoBackgroundEffects = { ...arg, loading: false };
     });
     builder.addCase(setScreenShareEnabled.fulfilled, (state) => {
-      state.mediaChangeInProgress = removeItem(state.mediaChangeInProgress, 'screenshare');
+      delete state.mediaChangeInProgress.screenshare;
       state.permissionDenied = removeItem(state.permissionDenied, 'screenshare');
     });
     builder.addCase(switchActiveDevice.fulfilled, (state, { meta: { arg } }) => {
@@ -420,12 +420,11 @@ export const selectVideoPermissionDenied = (state: RootState) =>
 export const selectScreensharePermissionDenied = (state: RootState) =>
   Boolean(state.livekit?.permissionDenied?.find((kind) => kind === 'screenshare'));
 
-export const selectAudioChangeInProgress = (state: RootState) =>
-  Boolean(state.livekit.mediaChangeInProgress?.find((kind) => kind === 'audioinput'));
-export const selectVideoChangeInProgress = (state: RootState) =>
-  Boolean(state.livekit.mediaChangeInProgress?.find((kind) => kind === 'videoinput'));
-export const selectScreenshareChangeInProgress = (state: RootState) =>
-  Boolean(state.livekit.mediaChangeInProgress?.find((kind) => kind === 'screenshare'));
+export const selectMediaChange = (state: RootState, kind: MediaDeviceKindExtended) =>
+  state.livekit.mediaChangeInProgress?.[kind];
+export const selectAudioChangeInProgress = (state: RootState) => Boolean(selectMediaChange(state, 'audioinput'));
+export const selectVideoChangeInProgress = (state: RootState) => Boolean(selectMediaChange(state, 'videoinput'));
+export const selectScreenshareChangeInProgress = (state: RootState) => Boolean(selectMediaChange(state, 'screenshare'));
 
 export const selectLivekitPopoutStreamAccessByParticipantId = createSelector(
   [

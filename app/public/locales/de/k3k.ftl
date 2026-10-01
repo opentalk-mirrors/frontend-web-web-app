@@ -748,6 +748,7 @@ global-on = An
 global-off = Aus
 global-microphone = Mikrofon
 global-video = Video
+global-video-loading = Video wird geladen
 global-description = Beschreibung
 global-hotkey = Abkürzung
 global-spacebar = Leertaste

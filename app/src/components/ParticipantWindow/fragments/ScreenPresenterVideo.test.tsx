@@ -25,6 +25,11 @@ vi.mock('./RemoteVideo', () => ({
   default: () => <div data-testid="remoteVideo" />,
 }));
 
+vi.mock('../../ParticipantVideoFallback', () => ({
+  __esModule: true,
+  default: () => <div data-testid="participant-video-fallback" />,
+}));
+
 const participant = mockedParticipant(0);
 const connectionIdentifier = constructConnectionIdentifier(participant.id, participant.connections[0]);
 
@@ -50,7 +55,7 @@ describe('ScreenPresenterVideo Component', () => {
 
     expect(screen.getByTestId('sharedPresenterVideo')).toBeInTheDocument();
 
-    expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
+    expect(screen.getByTestId('participant-video-fallback')).toBeInTheDocument();
     expect(screen.queryByText(participant.displayName)).not.toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
   });
@@ -120,7 +125,7 @@ describe('ScreenPresenterVideo Component', () => {
     renderWithProviders(<ScreenPresenterVideo {...ScreenPresenterVideoProps} />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('sharedPresenterVideo')).toBeInTheDocument();
-    expect(screen.getByTestId('participantAvatar')).toBeInTheDocument();
+    expect(screen.getByTestId('participant-video-fallback')).toBeInTheDocument();
     expect(screen.queryByText(participant.displayName)).not.toBeInTheDocument();
     expect(screen.queryByTestId('screenShareVideoOverlay')).not.toBeInTheDocument();
     expect(

@@ -750,6 +750,7 @@ global-on = On
 global-off = Off
 global-microphone = Microphone
 global-video = Video
+global-video-loading = Loading video
 global-description = Description
 global-hotkey = Shortcut
 global-spacebar = spacebar
