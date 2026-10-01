@@ -14,7 +14,7 @@ import { defineConfig } from 'vitest/config';
 
 // We need to add file extension to import, to get rid of vite warning
 // We use `*.js` instead of `*.ts` to avoid a typescript error
-import { cleanPackageVersion } from './utils/build';
+import { cleanPackageVersion } from './utils/build.js';
 
 const DEFAULT_BUILD_PATH = '../dist';
 const WARNINGS_TO_IGNORE = [['SOURCEMAP_ERROR', "Can't resolve original location of error"]];
