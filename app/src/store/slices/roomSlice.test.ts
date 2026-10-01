@@ -1,10 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { RoomId } from '@opentalk/rest-api-rtk-query';
+
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
 import { ParticipantId } from '../../types';
-import { hangUp } from '../commonActions';
-import roomReducer, { connectionClosed, joinedLobby, setCanEnter, RoomState } from './roomSlice';
+import { hangUp, joinSuccess, startRoom } from '../commonActions';
+import roomReducer, { connectionClosed, joinBlocked, joinedLobby, setCanEnter, RoomState } from './roomSlice';
 
 describe('roomSlice - connectionClosed', () => {
   const getStateAfterClose = (initState: RoomState, errorCode?: number) => {
@@ -47,6 +49,50 @@ describe('roomSlice - connectionClosed', () => {
     const afterClose = roomReducer(leavingState, connectionClosed({ errorCode: 1006 }));
 
     expect(afterClose.connectionState).toBe(ConnectionState.Leaving);
+  });
+
+  it('keeps the blocked state when the roomserver closes the socket after "join_blocked"', () => {
+    const blockedState = roomReducer(undefined, joinBlocked({ reason: 'participant_limit_reached' }));
+    expect(blockedState.connectionState).toBe(ConnectionState.Blocked);
+
+    const afterClose = roomReducer(blockedState, connectionClosed({ errorCode: 1013 }));
+
+    expect(afterClose.connectionState).toBe(ConnectionState.Blocked);
+    expect(afterClose.error).toBe('participant_limit_reached');
+  });
+});
+
+describe('roomSlice - automatic retry while blocked', () => {
+  const blockedAndClosed = () => {
+    const blocked = roomReducer(undefined, joinBlocked({ reason: 'participant_limit_reached' }));
+    return roomReducer(blocked, connectionClosed({ errorCode: 1013 }));
+  };
+
+  const startRoomPending = (roomId: RoomId) => ({
+    type: startRoom.pending.type,
+    meta: { arg: { roomId } },
+  });
+
+  it('stays on the blocked screen while retrying instead of falling back to the lobby', () => {
+    const retrying = roomReducer(blockedAndClosed(), startRoomPending('room-1' as RoomId));
+
+    expect(retrying.connectionState).toBe(ConnectionState.Blocked);
+  });
+
+  it('enters the starting state on a regular join attempt', () => {
+    const starting = roomReducer(undefined, startRoomPending('room-1' as RoomId));
+
+    expect(starting.connectionState).toBe(ConnectionState.Starting);
+  });
+
+  it('leaves the blocked state once the retry succeeds', () => {
+    const retrying = roomReducer(blockedAndClosed(), startRoomPending('room-1' as RoomId));
+    const online = roomReducer(retrying, {
+      type: joinSuccess.type,
+      payload: { serverTimeOffset: 0, isRoomOwner: false, tariff: { quotas: {} } },
+    });
+
+    expect(online.connectionState).toBe(ConnectionState.Online);
   });
 });
 
