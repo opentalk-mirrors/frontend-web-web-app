@@ -79,7 +79,7 @@ const ListItemAvatar = styled(MuiListItemAvatar)({
 const ListItem = styled(MuiListItem, {
   shouldForwardProp: (prop) => !(['isWhispering', 'isMoreMenuOpen'] as Array<PropertyKey>).includes(prop),
 })<{ isMoreMenuOpen?: boolean; isWhispering?: boolean }>(({ theme, isMoreMenuOpen, isWhispering }) => ({
-  padding: theme.spacing(1),
+  padding: 0,
   '& .more-icon': {
     color: isMoreMenuOpen ? theme.palette.text.primary : 'transparent',
   },
@@ -119,21 +119,22 @@ const PhoneOffIconStyled = styled(TelephoneStrokeIcon)({
 });
 
 const ListItemText = styled(MuiListItemText)(({ theme }) => ({
-  padding: theme.spacing(0, 1),
+  margin: 0,
+  padding: theme.spacing(0, 1.5),
   '& p': {
     fontWeight: 400,
-    lineHeight: 1,
+    lineHeight: 1.25,
   },
 }));
 
-const IconsContainer = styled(Box)({
+const IconsContainer = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   display: 'flex',
   '& svg': {
-    width: '0.8em',
-    height: '0.8em',
+    width: theme.typography.pxToRem(18),
+    height: theme.typography.pxToRem(18),
   },
-});
+}));
 
 type ParticipantRowProps = {
   data: Participant[];
@@ -518,7 +519,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
               noWrap
               translate="no"
               sx={{
-                mb: 0.5,
+                mb: 0.25,
               }}
             >
               {participant?.displayName}

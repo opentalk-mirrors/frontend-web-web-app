@@ -30,6 +30,15 @@ const InnerContainer = styled(Box, { shouldForwardProp: (prop) => prop !== 'isSi
   gridTemplateRows: 'auto 1fr auto',
   gridTemplateColumns: isSidePanelOpen ? '1fr auto' : '1fr',
   gridTemplateAreas: isSidePanelOpen ? `'header sidebar' 'main sidebar' 'footer footer'` : `'header' 'main' 'footer'`,
+
+  [theme.breakpoints.down('lg')]: {
+    gridTemplateColumns: '1fr',
+    gridTemplateAreas: `
+      'header'
+      'main'
+      'footer'
+    `,
+  },
 }));
 
 const CircularProgressBar = styled(CircularProgress)({

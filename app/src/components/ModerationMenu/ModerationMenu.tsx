@@ -22,20 +22,37 @@ const List = styled(MuiList)({
   width: '100%',
   padding: 0,
   overflow: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
 });
 
 const ListItemButton = styled(MuiListItemButton)(({ theme }) => ({
-  gap: theme.spacing(1),
+  gap: theme.spacing(1.5),
+  minHeight: theme.typography.pxToRem(40),
+  padding: 0,
   borderRadius: theme.borderRadius.medium,
   '&:hover': {
     backgroundColor: theme.palette.background.highlight.primary,
   },
 }));
 
-const ListItemIcon = styled(MuiListItemIcon)({
+const ListItemIcon = styled(MuiListItemIcon)(({ theme }) => ({
   minWidth: 'auto',
   color: 'inherit',
-});
+  '& svg': {
+    width: theme.typography.pxToRem(20),
+    height: theme.typography.pxToRem(20),
+  },
+}));
+
+const ListItemText = styled(MuiListItemText)(({ theme }) => ({
+  margin: 0,
+  '& .MuiTypography-root': {
+    fontSize: theme.typography.pxToRem(16),
+    fontWeight: 400,
+    lineHeight: 1.25,
+  },
+}));
 
 const GroupLabel = styled(ListSubheader)(({ theme }) => ({
   padding: 0,
@@ -70,7 +87,7 @@ const ModerationMenu = () => {
             <ListItem key={key} disablePadding>
               <ListItemButton disabled={disabled || isRoomDeleted} onClick={() => dispatch(openSidePanel(key))}>
                 <ListItemIcon>{icon}</ListItemIcon>
-                <MuiListItemText primary={t(titleKey ?? tooltipTranslationKey ?? '')} />
+                <ListItemText primary={t(titleKey ?? tooltipTranslationKey ?? '')} />
               </ListItemButton>
             </ListItem>
           )

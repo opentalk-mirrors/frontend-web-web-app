@@ -15,25 +15,37 @@ type SidePanelHeaderProps = {
   onBack?: () => void;
 };
 
-const Title = styled(Typography)({
-  flex: 1,
-  fontSize: '1.25rem',
-  margin: 0,
-});
+const Header = styled(Stack)(({ theme }) => ({
+  flexDirection: 'row',
+  alignItems: 'center',
+  flexShrink: 0,
+  gap: theme.spacing(1.5),
+  height: theme.typography.pxToRem(64),
+  padding: theme.spacing(0, 3),
+  borderBottom: `1px solid ${theme.palette.background.main.primary}`,
+}));
 
-const TitleIcon = styled('span')({
+const Title = styled(Typography)(({ theme }) => ({
+  flex: 1,
+  fontSize: theme.typography.pxToRem(16),
+  fontWeight: 600,
+  lineHeight: 1.25,
+  margin: 0,
+}));
+
+const TitleIcon = styled('span')(({ theme }) => ({
   display: 'flex',
   '& svg': {
-    width: '1.25rem',
-    height: '1.25rem',
+    width: theme.typography.pxToRem(20),
+    height: theme.typography.pxToRem(20),
   },
-});
+}));
 
 const SidePanelHeader = ({ title, onClose, icon, onBack }: SidePanelHeaderProps) => {
   const { t } = useTranslation();
 
   return (
-    <Stack direction="row" spacing={1} sx={{ alignItems: 'center', pb: 2 }}>
+    <Header>
       {onBack && (
         <IconButton size="small" aria-label={t('side-panel-back-button-label')} onClick={onBack}>
           <BackIcon />
@@ -46,7 +58,7 @@ const SidePanelHeader = ({ title, onClose, icon, onBack }: SidePanelHeaderProps)
       <IconButton aria-label={t('side-panel-close-button-label')} onClick={onClose}>
         <CloseIcon />
       </IconButton>
-    </Stack>
+    </Header>
   );
 };
 

@@ -25,22 +25,31 @@ import SidePanelHeader from './fragments/SidePanelHeader';
 const SidebarContainer = styled('aside')(({ theme }) => ({
   gridArea: 'sidebar',
   display: 'flex',
+  minHeight: 0,
   background: theme.palette.background.customPaper.primary,
   color: theme.palette.text.primary,
   borderRadius: theme.borderRadius.medium,
   boxShadow: '0 1.187rem 3.187rem 0 rgb(0 0 0 / 16%), 0 0.875rem 1.187rem 0 rgb(0 0 0 / 7%)',
   flex: 1,
+  // Sharing the main grid area lets the panel overlay the video instead of shrinking it.
+  [theme.breakpoints.down('lg')]: {
+    gridArea: 'main',
+    justifySelf: 'end',
+    zIndex: 1,
+  },
 }));
-const UserSidebarContainer = styled(Stack)(({ theme }) => ({
-  width: '21rem',
-  padding: theme.spacing(2),
-}));
+const UserSidebarContainer = styled(Stack)({
+  width: 332,
+  minHeight: 0,
+});
 
 const PanelContent = styled(Box)(({ theme }) => ({
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
+  minHeight: 0,
   overflow: 'hidden',
+  padding: theme.spacing(1, 3, 2.5),
   '& > .MuiStack-root': {
     padding: theme.spacing(0.5),
   },

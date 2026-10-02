@@ -1,7 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Grid, ListItem, ListItemAvatar, ListItemText, Typography, styled } from '@mui/material';
+import {
+  Box,
+  Grid,
+  ListItem,
+  ListItemAvatar as MuiListItemAvatar,
+  ListItemText as MuiListItemText,
+  Typography,
+  styled,
+} from '@mui/material';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +22,8 @@ const StyledListItem = styled(ListItem, {
   shouldForwardProp: (prop) => !(['isActiveSpeaker', 'isCurrentUser'] as Array<PropertyKey>).includes(prop),
 })<{ isActiveSpeaker?: boolean; isCurrentUser?: boolean }>(({ theme, isActiveSpeaker, isCurrentUser }) => {
   const styles = {
-    padding: theme.spacing(0, 0.5),
+    padding: 0,
+    minHeight: theme.typography.pxToRem(56),
     border: '1px solid',
     borderRadius: theme.spacing(1),
     backgroundColor: isActiveSpeaker ? '#1A2D33' : 'unset',
@@ -31,6 +40,34 @@ const StyledListItem = styled(ListItem, {
 
   return styles;
 });
+
+const Avatar = styled(ParticipantAvatar)({
+  width: '2.25rem',
+  height: '2.25rem',
+  fontSize: '0.75rem',
+});
+
+const ListItemAvatar = styled(MuiListItemAvatar)({
+  minWidth: 'initial',
+});
+
+const ListItemText = styled(MuiListItemText)(({ theme }) => ({
+  margin: 0,
+  padding: theme.spacing(0, 1.5),
+  '& p': {
+    fontWeight: 400,
+    lineHeight: 1.25,
+  },
+}));
+
+const IconsContainer = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  display: 'flex',
+  '& svg': {
+    width: theme.typography.pxToRem(18),
+    height: theme.typography.pxToRem(18),
+  },
+}));
 
 const MicOnIcon = styled(MicOnDefaultIcon)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -59,20 +96,19 @@ const ParticipantListItem = ({
         direction="row"
         wrap="nowrap"
         sx={{
-          gap: 1,
           alignItems: 'center',
           flexGrow: 1,
         }}
       >
         <Grid>
           <ListItemAvatar>
-            <ParticipantAvatar src={avatarUrl}>{displayName}</ParticipantAvatar>
+            <Avatar src={avatarUrl}>{displayName}</Avatar>
           </ListItemAvatar>
         </Grid>
         <Grid size="grow">
           <ListItemText
             primary={
-              <Typography variant="body1" noWrap>
+              <Typography variant="body1" noWrap sx={{ mb: 0.25 }}>
                 {displayName}
               </Typography>
             }
@@ -85,11 +121,17 @@ const ParticipantListItem = ({
             }
           />
         </Grid>
-        {isActiveSpeaker ? (
-          <MicOnIcon type="functional" title={t('active-speaker-icon-title')} titleId="active-speaker-icon-title-id" />
-        ) : (
-          <MicOffIcon type="decorative" />
-        )}
+        <IconsContainer>
+          {isActiveSpeaker ? (
+            <MicOnIcon
+              type="functional"
+              title={t('active-speaker-icon-title')}
+              titleId="active-speaker-icon-title-id"
+            />
+          ) : (
+            <MicOffIcon type="decorative" />
+          )}
+        </IconsContainer>
       </Grid>
     </StyledListItem>
   );

@@ -16,7 +16,7 @@ interface SideTabPanelProps {
 
 const TabTitle = styled(Typography)(({ theme }) => ({
   paddingBottom: theme.spacing(2),
-  fontSize: '1.25rem',
+  fontSize: theme.typography.pxToRem(20),
   margin: 0,
 }));
 

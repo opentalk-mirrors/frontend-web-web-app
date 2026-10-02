@@ -69,7 +69,7 @@ describe('participant context menu', () => {
     renderWithProviders(
       <List
         rowComponent={ParticipantListItem}
-        rowHeight={69}
+        rowHeight={56}
         rowCount={participants.length}
         rowProps={{ data: participants }}
       />,

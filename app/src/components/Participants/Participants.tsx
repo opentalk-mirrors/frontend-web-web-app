@@ -15,11 +15,10 @@ const Participants = () => {
 
   return (
     <Stack
-      spacing={2}
       sx={{
         flex: 1,
+        minHeight: 0,
         overflow: 'hidden',
-        pt: 0.7,
       }}
     >
       {isAutomodActive ? (
