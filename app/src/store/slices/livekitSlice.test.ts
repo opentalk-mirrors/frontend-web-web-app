@@ -1,12 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import type { ListenerEffectAPI } from '@reduxjs/toolkit';
 import { Track } from 'livekit-client';
 
 import { switchRoom } from '../../api/types/outgoing/breakout';
+import { notifications } from '../../commonComponents';
 import { RoomKind, TimerStyle } from '../../types';
 import { configureStore } from '../../utils/testUtils';
 import { changeMedia, setScreenShareEnabled } from '../commonActions';
+import type { AppDispatch, RootState } from '../index';
 import livekitReducer, {
   cleanMediaSettingsState,
   clearMediaSettingsBeforeRoomSwitch,
@@ -15,8 +18,16 @@ import livekitReducer, {
   selectMediaChange,
   selectScreenshareChangeInProgress,
   selectVideoChangeInProgress,
+  setMediaSettingVideoEnabled,
+  handleNotificationOnCameraEnabled,
 } from './livekitSlice';
 import { timerStarted } from './timerSlice';
+
+vi.mock('../../commonComponents', () => ({
+  notifications: {
+    info: vi.fn(),
+  },
+}));
 
 vi.mock('../../modules/Media/BackgroundBlur', () => ({
   BackgroundBlur: vi.fn().mockImplementation(() => ({})),
@@ -211,5 +222,35 @@ describe('livekit slice - media change in progress', () => {
     expect(selectVideoChangeInProgress(store.getState())).toBe(true);
     expect(selectAudioChangeInProgress(store.getState())).toBe(false);
     expect(selectScreenshareChangeInProgress(store.getState())).toBe(false);
+  });
+});
+
+const getMockListenerApi = (isSelfViewMinimized: boolean, cameraEnabled = true) =>
+  ({
+    getState: vi.fn(() => ({
+      ui: { isSelfViewMinimized },
+      livekit: { mediaSettings: { cameraEnabled } },
+    })),
+  }) as unknown as ListenerEffectAPI<RootState, AppDispatch>;
+
+describe('livekit listeners', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('notifies user that their camera is on, when enabling camera with minimized selfview', () => {
+    const isSelfViewMinimized = true;
+    const cameraEnabled = true;
+    const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+    handleNotificationOnCameraEnabled(setMediaSettingVideoEnabled(true), listenerApi);
+    expect(notifications.info).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not notify user that their camera is on, when enabling camera with expanded selfview', () => {
+    const isSelfViewMinimized = false;
+    const cameraEnabled = true;
+    const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+    handleNotificationOnCameraEnabled(setMediaSettingVideoEnabled(true), listenerApi);
+    expect(notifications.info).not.toHaveBeenCalled();
   });
 });

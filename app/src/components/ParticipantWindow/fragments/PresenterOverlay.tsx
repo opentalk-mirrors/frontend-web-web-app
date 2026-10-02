@@ -6,11 +6,11 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BackIcon, PinIcon } from '../../../assets/icons';
+import { OverlayIconButton } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
 import { PresenterVideoPosition } from '../../../store/slices/uiSlice';
 import { ParticipantId } from '../../../types';
-import { OverlayIconButton } from './OverlayIconButton';
 
 const OverlayContainer = styled(Grid)(({ theme }) => ({
   position: 'absolute',

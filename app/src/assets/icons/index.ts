@@ -21,6 +21,7 @@ import ChatIcon from './ChatIcon';
 import ChatOffIcon from './ChatOffIcon';
 import CheckIcon from './CheckIcon';
 import ClockIcon from './ClockIcon';
+import CloseFullscreenIcon from './CloseFullscreenIcon';
 import CloseIcon from './CloseIcon';
 import CoffeeBreakIcon from './CoffeeBreakIcon';
 import ConnectionBadIcon from './ConnectionBadIcon';
@@ -83,6 +84,7 @@ import NoOfParticipantsIcon from './NoOfParticipantsIcon';
 import NoOfRoomsIcon from './NoOfRoomsIcon';
 import NoPollsIcon from './NoPollsIcon';
 import NoVotesIcon from './NoVotesIcon';
+import OpenInFullIcon from './OpenInFullIcon';
 import PersonIcon from './PersonIcon';
 import PersonOffIcon from './PersonOffIcon';
 import PhoneIcon from './PhoneIcon';
@@ -143,6 +145,7 @@ export {
   ChatOffIcon,
   CheckIcon,
   ClockIcon,
+  CloseFullscreenIcon,
   CloseIcon,
   CoffeeBreakIcon,
   ConnectionBadIcon,
@@ -207,6 +210,7 @@ export {
   NoOfRoomsIcon,
   NoPollsIcon,
   NoVotesIcon,
+  OpenInFullIcon,
   PhoneIcon,
   PictureIcon,
   PinIcon,

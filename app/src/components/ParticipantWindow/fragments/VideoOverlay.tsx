@@ -12,6 +12,7 @@ import { v4 as uuid } from 'uuid';
 
 import { requestPopoutStreamAccessToken } from '../../../api/types/outgoing/livekit';
 import { ExtendToTabIcon, FullscreenViewIcon, PinIcon } from '../../../assets/icons';
+import { OverlayIconButton } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
@@ -32,7 +33,6 @@ import {
 import { ConnectionIdentifier } from '../../../types';
 import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
 import BrokenSubscriberIndicator from './BrokenSubscriberIndicator';
-import { OverlayIconButton } from './OverlayIconButton';
 
 const OverlayContainer = styled(Grid)(({ theme }) => ({
   position: 'absolute',
@@ -176,7 +176,7 @@ const VideoOverlay = ({ connectionIdentifier, active }: VideoOverlayProps) => {
             {isFullscreenSupported && (
               <Tooltip title={t('video-overlay-tooltip-fullscreen')}>
                 <OverlayIconButton
-                  aria-label={t('indicator-fullscreen-open')}
+                  aria-label={t('global-fullscreen-open')}
                   onClick={openFullScreenView}
                   color="primary"
                 >

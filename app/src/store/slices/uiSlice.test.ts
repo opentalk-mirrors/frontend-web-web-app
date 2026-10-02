@@ -1,13 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import type { ListenerEffectAPI } from '@reduxjs/toolkit';
+
 import { AutomodStartedEvent } from '../../api/types/incoming/automod';
+import { notifications } from '../../commonComponents';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { MODERATION_MENU_VIEW, ModerationTabKey } from '../../config/constants';
 import LayoutOptions from '../../enums/LayoutOptions';
+import { ChatScope, ConnectionIdentifier, ParticipantId, SortOption } from '../../types';
+import type { AppDispatch, RootState } from '../index';
 import { started as automodStarted } from './automodSlice';
 import { SwitchedRoomPayload, switchedRoom } from './breakoutSlice';
 import { CinemaViewSortOrder } from './common';
+import { connectionClosed } from './roomSlice';
 import reducer, {
   closeSidePanel,
   loadCinemaLayoutSettingsFromLocalStorage,
@@ -19,7 +25,16 @@ import reducer, {
   toggleModerationPanel,
   toggleSidePanel,
   updatedCinemaLayout,
+  toggledSelfViewMinimized,
+  handleNotificationOnSelfViewMinimizedToggled,
+  type UIState,
 } from './uiSlice';
+
+vi.mock('../../commonComponents', () => ({
+  notifications: {
+    info: vi.fn(),
+  },
+}));
 
 const getInitialState = () => reducer(undefined, { type: '@@INIT' });
 
@@ -363,5 +378,98 @@ describe('per-meeting default grid size', () => {
 
       expect(loadCinemaLayoutSettingsFromLocalStorage()).toEqual({ cinemaLayout: LayoutOptions.Grid });
     });
+  });
+});
+
+describe('connection closed', () => {
+  it('resets self view state', () => {
+    const initialState: UIState = { ...getInitialState(), isSelfViewMinimized: true };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.isSelfViewMinimized).toBe(false);
+  });
+
+  it('resets chat conversation state', () => {
+    const initialState: UIState = {
+      ...getInitialState(),
+      chatConversationState: { scope: ChatScope.Private, target: 'participant-1' as ParticipantId },
+    };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.chatConversationState).toEqual({ scope: ChatScope.Global });
+  });
+
+  it('resets cinema layout', () => {
+    const initialState: UIState = { ...getInitialState(), cinemaLayout: LayoutOptions.Speaker };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.cinemaLayout).toBe(LayoutOptions.Grid);
+  });
+
+  it('resets cinema view order', () => {
+    const initialState: UIState = { ...getInitialState(), cinemaViewOrder: CinemaViewSortOrder.VideoFirst };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.cinemaViewOrder).toBe(CinemaViewSortOrder.ActivityFirst);
+  });
+
+  it('resets participants sort option', () => {
+    const initialState: UIState = { ...getInitialState(), participantsSortOption: SortOption.LastActive };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.participantsSortOption).toBe(SortOption.NameASC);
+  });
+
+  it('resets pinned connection identifier', () => {
+    const initialState: UIState = {
+      ...getInitialState(),
+      pinnedConnectionIdentifier: 'participant-1:connection-1' as ConnectionIdentifier,
+    };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.pinnedConnectionIdentifier).toBeUndefined();
+  });
+
+  it('resets pagination page', () => {
+    const initialState: UIState = { ...getInitialState(), paginationPage: 3 };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.paginationPage).toBe(1);
+  });
+
+  it('resets participants search value', () => {
+    const initialState: UIState = { ...getInitialState(), participantsSearchValue: 'alice' };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.participantsSearchValue).toBe('');
+  });
+});
+
+const getMockListenerApi = (isSelfViewMinimized: boolean, cameraEnabled = true) =>
+  ({
+    getState: vi.fn(() => ({
+      ui: { isSelfViewMinimized },
+      livekit: { mediaSettings: { cameraEnabled } },
+    })),
+  }) as unknown as ListenerEffectAPI<RootState, AppDispatch>;
+
+describe('uiListeners', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('notifies user that their camera is on, when minimizing the selfview and the camera is enabled', () => {
+    const isSelfViewMinimized = true;
+    const cameraEnabled = true;
+    const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+    handleNotificationOnSelfViewMinimizedToggled(toggledSelfViewMinimized(), listenerApi);
+    expect(notifications.info).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not notify user that their camera is on, when minimizing the selfview and the camera is disabled', () => {
+    const isSelfViewMinimized = true;
+    const cameraEnabled = false;
+    const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+    handleNotificationOnSelfViewMinimizedToggled(toggledSelfViewMinimized(), listenerApi);
+    expect(notifications.info).not.toHaveBeenCalled();
+  });
+
+  it('does not notify user, when expanding the selfview', () => {
+    const isSelfViewMinimized = false;
+    const listenerApi = getMockListenerApi(isSelfViewMinimized);
+    handleNotificationOnSelfViewMinimizedToggled(toggledSelfViewMinimized(), listenerApi);
+    expect(notifications.info).not.toHaveBeenCalled();
   });
 });

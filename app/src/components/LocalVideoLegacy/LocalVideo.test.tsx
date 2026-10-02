@@ -25,8 +25,6 @@ vi.mock('../../assets/icons', () => ({
 }));
 vi.mock('../../commonComponents', () => ({
   NameTile: (props: { displayName: string }) => <div data-testid="name-tile">{props.displayName}</div>,
-}));
-vi.mock('../ParticipantWindow/fragments/OverlayIconButton', () => ({
   OverlayIconButton: (props: IconButtonProps) => (
     <button type="button" aria-label={props['aria-label']} onClick={props.onClick} data-testid="pin-btn">
       {props.children}

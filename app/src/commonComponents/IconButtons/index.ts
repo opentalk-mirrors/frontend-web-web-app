@@ -5,5 +5,6 @@ import AdornmentIconButton from './AdornmentIconButton';
 import CircularIconButton from './CircularIconButton';
 import IconButton from './IconButton';
 import InfoButton from './InfoButton';
+import OverlayIconButton from './OverlayIconButton';
 
-export { IconButton, AdornmentIconButton, CircularIconButton, InfoButton };
+export { IconButton, AdornmentIconButton, CircularIconButton, InfoButton, OverlayIconButton };

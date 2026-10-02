@@ -321,6 +321,7 @@ more-menu-stop-streaming = Livestream beenden
 more-menu-export-attendance-report = Teilnahmebericht exportieren
 more-menu-start-remote-control = Remote Control App starten
 
+camera-on-reminder-notification = Ihr Video wird weiterhin an andere gesendet.
 microphones-enabled-notification = Der Moderator hat die Mikrofone wieder aktiviert
 microphones-disabled-notification = Der Moderator hat die Mikrofone deaktiviert
 turn-handraises-off-notification = Der Moderator hat das Handheben deaktiviert
@@ -665,9 +666,9 @@ indicator-has-audio-off = {$participantName} hat keinen Ton an
 indicator-has-audio-on = {$participantName} hat den Ton an
 indicator-has-raised-hand = {$participantName} möchte etwas sagen
 indicator-pinned = {$participantName} ist im Fokus
-indicator-fullscreen-open = Vollbild öffnen
-indicator-fullscreen-close = Vollbild schließen
 indicator-change-position = Position ändern
+selfview-minimize = Eigenansicht verkleinern
+selfview-expand = Eigenansicht vergrößern
 
 wrong-browser-dialog-title = Ihr Browser wird nur teilweise unterstützt.
 wrong-browser-dialog-message = Bitte verwenden Sie die letzte Version von Chrome, Firefox oder Safari. Sollten Sie weitere Schwierigkeiten haben, überprüfen Sie ob Ihr Browser im Kompatibilität-oder Inkognitomodus läuft. Deaktivieren Sie diese und versuchen es noch einmal hier.
@@ -787,6 +788,8 @@ global-meeting = { $count ->
     *[other] Meetings
 }
 global-open-new-tab = In neuem Tab öffnen
+global-fullscreen-open = Vollbild öffnen
+global-fullscreen-close = Vollbild schließen
 global-required-field = Dies ist ein Pflichtfeld
 global-unknown = Unbekannt
 global-unknown-username = Unbekannt

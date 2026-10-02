@@ -13,6 +13,7 @@ import {
   ListenerEffectAPI,
   PayloadAction,
 } from '@reduxjs/toolkit';
+import i18next from 'i18next';
 import { t } from 'i18next';
 import {
   DeviceUnsupportedError,
@@ -477,6 +478,24 @@ function updateLobbyTrack(
 /*                  Listeners                   */
 /*                                              */
 /************************************************/
+
+export const handleNotificationOnCameraEnabled = (
+  _action: ReturnType<typeof setMediaSettingVideoEnabled>,
+  listenerApi: ListenerEffectAPI<RootState, AppDispatch>
+) => {
+  const state = listenerApi.getState();
+
+  if (state.ui.isSelfViewMinimized && state.livekit.mediaSettings.cameraEnabled) {
+    notifications.info(i18next.t('camera-on-reminder-notification'));
+  }
+};
+
+const startNotificationOnCameraEnabled = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: setMediaSettingVideoEnabled,
+    effect: handleNotificationOnCameraEnabled,
+  });
+
 const startConnectLivekitListeners = (startAppListening: StartAppListening) => {
   startAppListening({
     actionCreator: connectRoom.fulfilled,
@@ -804,6 +823,7 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startDisconnectRoomCleanupListener(startAppListening);
   startPageUnloadCleanupListener(startAppListening);
   startSwitchRoomListener(startAppListening);
+  startNotificationOnCameraEnabled(startAppListening);
 };
 
 /************************************************/

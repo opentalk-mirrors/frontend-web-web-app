@@ -50,7 +50,7 @@ describe('FullscreenView', () => {
     renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
 
     expect(screen.getByTestId('fullscreen')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /indicator-fullscreen-close/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /global-fullscreen-close/i })).toBeInTheDocument();
     expect(screen.queryByTestId('fullscreenLocalVideo')).not.toBeInTheDocument();
     expect(screen.queryByTestId('Toolbar')).not.toBeInTheDocument();
   });
@@ -64,7 +64,7 @@ describe('FullscreenView', () => {
 
     fireEvent.mouseMove(fullscreen);
 
-    expect(screen.getByRole('button', { name: /indicator-fullscreen-close/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /global-fullscreen-close/i })).toBeInTheDocument();
     expect(screen.getByTestId('toolbar')).toBeInTheDocument();
   });
 
@@ -97,7 +97,7 @@ describe('FullscreenView', () => {
     renderWithProviders(<FullscreenView />, { store, provider: { mui: true } });
 
     const spyFullscreenActionsExit = vi.spyOn(fullscreenActions, 'exit');
-    const closeBtn = screen.getByRole('button', { name: /indicator-fullscreen-close/i });
+    const closeBtn = screen.getByRole('button', { name: /global-fullscreen-close/i });
 
     expect(screen.getByTestId('fullscreen')).toBeInTheDocument();
     expect(closeBtn).toBeInTheDocument();
