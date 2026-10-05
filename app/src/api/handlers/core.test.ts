@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { notifications } from '../../commonComponents';
 import type { RootState } from '../../store';
-import { joinSuccess } from '../../store/commonActions';
+import { hangUp, joinSuccess } from '../../store/commonActions';
 import { waitingRoomJoined } from '../../store/slices/participantsSlice';
 import { joinedLobby, setIsRoomDeleted } from '../../store/slices/roomSlice';
 import { Role } from '../../types';
@@ -40,6 +40,14 @@ vi.mock('../../commonComponents', () => ({
     showTranscriptionEnabledNotification: vi.fn(),
   },
   setLibravatarOptions: vi.fn(() => 'mocked-avatar'),
+}));
+
+// `hangUp` is an async thunk, so the dispatched value would be an anonymous function and
+// therefore not assertable. Replace it with a plain action creator, keep the rest intact.
+const hangUpAction = { type: 'room/hangup' };
+vi.mock('../../store/commonActions', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../store/commonActions')>()),
+  hangUp: vi.fn(() => ({ type: 'room/hangup' })),
 }));
 
 type DeepPartial<T> = T extends object ? { [K in keyof T]?: DeepPartial<T[K]> } : T;
@@ -169,6 +177,22 @@ describe('handleRoomServerCoreMessage', () => {
       handleRoomServerCoreMessage(dispatch, data, timestamp, createState());
 
       expect(dispatch).toHaveBeenCalledExactlyOnceWith(setIsRoomDeleted(true));
+    });
+
+    it.each([
+      RoomCloseReason.TimeLimitReached,
+      RoomCloseReason.GracefulShutdown,
+      RoomCloseReason.ImmediateShutdown,
+      RoomCloseReason.IdleTimeoutReached,
+      RoomCloseReason.FatalError,
+    ])('dispatches hangUp when the room is closed with reason %s', (reason) => {
+      const dispatch = vi.fn();
+      const data = closeRoom(reason);
+
+      handleRoomServerCoreMessage(dispatch, data, timestamp, createState());
+
+      expect(hangUp).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledExactlyOnceWith(hangUpAction);
     });
   });
 

@@ -14,7 +14,7 @@ import {
 } from '../../commonComponents';
 import { createStreamUpdatedNotification } from '../../components/StreamUpdatedNotification';
 import type { AppDispatch, RootState } from '../../store';
-import { joinSuccess } from '../../store/commonActions';
+import { hangUp, joinSuccess } from '../../store/commonActions';
 import { setChatSettings } from '../../store/slices/chatSlice';
 import { selectLibravatarDefaultImage, setStorageQuota } from '../../store/slices/configSlice';
 import {
@@ -137,6 +137,9 @@ export const handleRoomServerCoreMessage = async (
     case RoomserverMessageKey.Closing: {
       if (data.reason === core.RoomCloseReason.RoomDeleted) {
         dispatch(setIsRoomDeleted(true));
+      } else {
+        // Time limit reached / shutdown / idle timeout -> return everyone to the lobby
+        dispatch(hangUp());
       }
       break;
     }
