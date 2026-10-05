@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ModerationTabKey } from '../../config/constants';
 import { MY_MEETING_MENU_BUTTON_ID, ToolbarButtonIds } from '../../constants';
 import { useAppSelector } from '../../hooks';
+import useConferenceUiVersion from '../../hooks/useConferenceUiVersion';
 import { selectIsModerator } from '../../store/slices/userSlice';
 import { JumpLink } from './fragments/JumpLink';
 
@@ -16,12 +17,14 @@ const Nav = styled('nav')(() => ({
 
 const JumpLinkContainer = () => {
   const isModerator = useAppSelector(selectIsModerator);
+  const { isV2 } = useConferenceUiVersion();
   const { t } = useTranslation();
   return (
     <Nav aria-label={t('jumplink-nav-label')}>
       {isModerator && (
         <JumpLink
-          to={`#${ModerationTabKey.Home}`}
+          // V2-CLEANUP: keep only the toolbar button, the moderation rail is v1 only
+          to={`#${isV2 ? ToolbarButtonIds.Moderator : ModerationTabKey.Home}`}
           text={`${t('jumplink-skip-to')} ${t('landmark-complementary-moderation-panel')}`}
         />
       )}

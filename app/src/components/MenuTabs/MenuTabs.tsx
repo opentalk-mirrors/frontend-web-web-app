@@ -98,7 +98,7 @@ const MenuTabs = () => {
       <Tabs value={currentMenuTab} onChange={handleChange} variant="fullWidth">
         <Tab
           id={`tab-${MenuTab.Chat}`}
-          label={t('menutabs-chat')}
+          label={t('global-chat')}
           icon={hasUnreadGlobalChatMessages ? <ChatBadge variant="dot" role="presentation" /> : undefined}
           iconPosition="end"
           value={MenuTab.Chat}
@@ -106,7 +106,7 @@ const MenuTabs = () => {
         />
         <Tab
           id={`tab-${MenuTab.People}`}
-          label={t('menutabs-people')}
+          label={t('global-participants')}
           icon={
             <Typography
               variant="caption"
@@ -125,7 +125,7 @@ const MenuTabs = () => {
         />
         <Tab
           id={`tab-${MenuTab.Messages}`}
-          label={t('menutabs-messages')}
+          label={t('global-messages')}
           icon={hasUnreadPrivateChatMessages ? <MessagesBadge variant="dot" role="presentation" /> : undefined}
           iconPosition="end"
           value={MenuTab.Messages}

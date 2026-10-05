@@ -17,6 +17,7 @@ import BugIcon from './BugIcon';
 import BurgermenuIcon from './BurgermenuIcon';
 import CameraOffIcon from './CameraOffIcon';
 import CameraOnIcon from './CameraOnIcon';
+import ChatIcon from './ChatIcon';
 import ChatOffIcon from './ChatOffIcon';
 import CheckIcon from './CheckIcon';
 import ClockIcon from './ClockIcon';
@@ -27,6 +28,7 @@ import ConnectionGoodIcon from './ConnectionGoodIcon';
 import ConnectionMediumIcon from './ConnectionMediumIcon';
 import ContactIcon from './ContactIcon';
 import CopyIcon from './CopyIcon';
+import CrownIcon from './CrownIcon';
 import DashboardLegalIcon from './DashboardLegalIcon';
 import DebriefingIcon from './DebriefingIcon';
 import DoneIcon from './DoneIcon';
@@ -67,6 +69,7 @@ import MeetingNotesIcon from './MeetingNotesIcon';
 import MeetingRoomIcon from './MeetingRoomIcon';
 import MeetingsIcon from './MeetingsIcon';
 import MenubookIcon from './MenubookIcon';
+import MessagesIcon from './MessagesIcon';
 import MicOffIcon from './MicOffIcon';
 import MicOnIcon from './MicOnIcon';
 import ModeratorIcon from './ModeratorIcon';
@@ -136,6 +139,7 @@ export {
   BurgermenuIcon,
   CameraOffIcon,
   CameraOnIcon,
+  ChatIcon,
   ChatOffIcon,
   CheckIcon,
   ClockIcon,
@@ -146,6 +150,7 @@ export {
   ConnectionMediumIcon,
   ContactIcon,
   CopyIcon,
+  CrownIcon,
   DashboardLegalIcon,
   DebriefingIcon,
   DoneIcon,
@@ -188,6 +193,7 @@ export {
   MeetingRoomIcon,
   MeetingsIcon,
   MenubookIcon,
+  MessagesIcon,
   MicOffIcon,
   MicOnIcon,
   ModeratorIcon,

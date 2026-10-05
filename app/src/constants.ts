@@ -4,6 +4,8 @@
 
 export const MY_MEETING_MENU_BUTTON_ID = 'my-meeting-menu-button';
 export const CHAT_INPUT_ID = 'chat-input';
+export const SIDE_PANEL_ID = 'side-panel';
+export const SIDE_PANEL_TITLE_ID = 'side-panel-title';
 
 export enum ToolbarButtonIds {
   Handraise = 'toolbar-handraise',
@@ -13,6 +15,10 @@ export enum ToolbarButtonIds {
   Video = 'toolbar-video',
   More = 'toolbar-more',
   EndCall = 'toolbar-endcall',
+  Participants = 'toolbar-participants',
+  Chat = 'toolbar-chat',
+  Messages = 'toolbar-messages',
+  Moderator = 'toolbar-moderator',
 }
 
 export const DISPLAY_NAME_MAX_CHARACTERS = 100;

@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { CircularProgress, styled } from '@mui/material';
+import { Box, CircularProgress, styled } from '@mui/material';
 
 import { useAppSelector } from '../../../hooks';
 import useConferenceUiVersion from '../../../hooks/useConferenceUiVersion';
 import { ConnectionState } from '../../../modules/WebRTC/ConferenceRoom';
 import { selectRoomConnectionState } from '../../../store/slices/roomSlice';
-import { selectShowCoffeeBreakCurtain } from '../../../store/slices/uiSlice';
+import { selectIsSidePanelOpen, selectShowCoffeeBreakCurtain } from '../../../store/slices/uiSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import Ballot from '../../Ballot';
 import CoffeeBreakView from '../../CoffeeBreakView';
@@ -18,7 +18,9 @@ import MeetingSidebar from '../../MeetingSidebar';
 import Cinema from './Cinema';
 import DesktopInnerLayoutLegacy from './DesktopInnerLayoutLegacy';
 
-const InnerContainer = styled('div')(({ theme }) => ({
+const InnerContainer = styled(Box, { shouldForwardProp: (prop) => prop !== 'isSidePanelOpen' })<{
+  isSidePanelOpen: boolean;
+}>(({ theme, isSidePanelOpen }) => ({
   display: 'grid',
   height: '100%',
   width: '100%',
@@ -26,12 +28,17 @@ const InnerContainer = styled('div')(({ theme }) => ({
   gap: theme.spacing(2),
   minHeight: 0,
   gridTemplateRows: 'auto 1fr auto',
-  gridTemplateColumns: 'auto 1fr',
-  gridTemplateAreas: `
-    'sidebar header'
-    'sidebar main'
-    'footer  footer'
-  `,
+  gridTemplateColumns: isSidePanelOpen ? '1fr auto' : '1fr',
+  gridTemplateAreas: isSidePanelOpen ? `'header sidebar' 'main sidebar' 'footer footer'` : `'header' 'main' 'footer'`,
+
+  [theme.breakpoints.down('lg')]: {
+    gridTemplateColumns: '1fr',
+    gridTemplateAreas: `
+      'header'
+      'main'
+      'footer'
+    `,
+  },
 }));
 
 const CircularProgressBar = styled(CircularProgress)({
@@ -44,6 +51,7 @@ const DesktopInnerLayout = () => {
   const connectionState = useAppSelector(selectRoomConnectionState);
   const showCoffeeBreakCurtain = useAppSelector(selectShowCoffeeBreakCurtain);
   const isModerator = useAppSelector(selectIsModerator);
+  const isSidePanelOpen = useAppSelector(selectIsSidePanelOpen);
 
   // V2-CLEANUP: drop this guard and DesktopInnerLayoutLegacy
   if (!isV2) {
@@ -51,7 +59,7 @@ const DesktopInnerLayout = () => {
   }
 
   return (
-    <InnerContainer>
+    <InnerContainer isSidePanelOpen={isSidePanelOpen}>
       <JumpLinkContainer />
       <MeetingHeader />
       {showCoffeeBreakCurtain && isModerator ? (
@@ -68,7 +76,7 @@ const DesktopInnerLayout = () => {
           )}
         </>
       )}
-      <MeetingSidebar />
+      {isSidePanelOpen && <MeetingSidebar />}
       <MeetingFooter />
     </InnerContainer>
   );

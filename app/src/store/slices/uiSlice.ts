@@ -8,7 +8,7 @@ import type { AppDispatch, RootState } from '../';
 import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
-import { ModerationTabKey } from '../../config/constants';
+import { MODERATION_MENU_VIEW, ModerationTabKey } from '../../config/constants';
 import { GRID_SIZES, MAX_GRID_TILES_DESKTOP, MAX_GRID_TILES_MOBILE } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
@@ -25,8 +25,10 @@ import {
   SortOption,
   TimerStyle,
 } from '../../types';
+import { SidePanelView } from '../../types/sidepanel';
 import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import { getAvailableGridSizes } from '../../utils/getAvailableGridSizes';
+import { isModerationView } from '../../utils/isModerationView';
 import { hangUp, joinSuccess } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 import { started as automodStarted } from './automodSlice';
@@ -79,6 +81,8 @@ export type UIState = {
   isCurrentMeetingNotesHighlighted?: boolean;
   showCoffeeBreakCurtain: boolean;
   activeTab: ModerationTabKey;
+  sidePanelView: SidePanelView | null;
+  lastModerationView: SidePanelView;
   chatAutosavedInputs: {
     [ChatScope.Global]: string;
     [ChatScope.Private]: Record<ParticipantId, string>;
@@ -117,6 +121,8 @@ export const initialState: UIState = {
   isCurrentMeetingNotesHighlighted: undefined,
   showCoffeeBreakCurtain: false,
   activeTab: ModerationTabKey.Home,
+  sidePanelView: MenuTab.Chat,
+  lastModerationView: MODERATION_MENU_VIEW,
   chatAutosavedInputs: {
     [ChatScope.Global]: '',
     [ChatScope.Private]: {},
@@ -206,6 +212,24 @@ export const uiSlice = createSlice({
       if (tabKey === ModerationTabKey.PollsAndLegalVote) {
         state.haveSeenMobilePollsAndVotes = true;
       }
+    },
+    openSidePanel(state, { payload: view }: PayloadAction<SidePanelView>) {
+      state.sidePanelView = view;
+      if (isModerationView(view)) {
+        state.lastModerationView = view;
+      }
+    },
+    closeSidePanel(state) {
+      state.sidePanelView = null;
+    },
+    toggleSidePanel(state, { payload: view }: PayloadAction<SidePanelView>) {
+      state.sidePanelView = state.sidePanelView === view ? null : view;
+      if (isModerationView(state.sidePanelView)) {
+        state.lastModerationView = view;
+      }
+    },
+    toggleModerationPanel(state) {
+      state.sidePanelView = isModerationView(state.sidePanelView) ? null : state.lastModerationView;
     },
     pinnedRemoteScreenshare(state, { payload: id }: PayloadAction<ConnectionIdentifier>) {
       state.pinnedConnectionIdentifier = id;
@@ -312,6 +336,7 @@ export const uiSlice = createSlice({
     });
     builder.addCase(automodStarted, (state) => {
       state.currentMenuTab = MenuTab.People;
+      state.sidePanelView = MenuTab.People;
     });
     builder.addCase(switchedRoom, (state) => {
       // The whiteboard session belongs to the room it was opened in, so close it on
@@ -356,6 +381,10 @@ export const {
   setMeetingNotesHighlight,
   setCoffeeBreakCurtainOpenFlag,
   setActiveTab,
+  openSidePanel,
+  closeSidePanel,
+  toggleSidePanel,
+  toggleModerationPanel,
   pinnedRemoteScreenshare,
   saveDefaultChatMessage,
   setHotkeysEnabled,
@@ -398,6 +427,8 @@ export const selectIsCurrentWhiteboardHighlighted = (state: RootState) => state.
 export const selectIsCurrentMeetingNotesHighlighted = (state: RootState) => state.ui.isCurrentMeetingNotesHighlighted;
 export const selectShowCoffeeBreakCurtain = (state: RootState) => state.ui.showCoffeeBreakCurtain;
 export const selectActiveTab = (state: RootState) => state.ui.activeTab;
+export const selectSidePanelView = (state: RootState) => state.ui.sidePanelView;
+export const selectIsSidePanelOpen = (state: RootState) => state.ui.sidePanelView !== null;
 export const selectUiMode = (state: RootState) => state.ui.mode;
 export const selectLastCinemaLayout = (state: RootState) => state.ui.lastCinemaLayout;
 export const selectDefaultChatMessage = createSelector(

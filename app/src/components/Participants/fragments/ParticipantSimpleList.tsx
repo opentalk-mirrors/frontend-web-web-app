@@ -7,7 +7,7 @@ import { List as ReactWindowList } from 'react-window';
 import { Participant } from '../../../types';
 import ParticipantListItem from './ParticipantListItem';
 
-const ROW_HEIGHT = 69;
+const ROW_HEIGHT = 56;
 const OVERSCAN_COUNT = 4;
 
 interface ParticipantSimpleListProps {

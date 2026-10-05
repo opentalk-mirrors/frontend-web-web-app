@@ -42,7 +42,7 @@ const ToolbarIconButton = styled(IconButton, {
   borderRadius: theme.borderRadius.large,
   '&:hover': {
     background: theme.palette.primary.main,
-    '& > svg': {
+    '& svg': {
       fill: theme.palette.primary.contrastText,
     },
   },

@@ -9,7 +9,6 @@ modifier-shift = Shift
 modifier-alt = Alt
 modifier-meta = Cmd
 
-messages = Messages
 dismiss = Dismiss
 action-delete = Delete
 action-download = Download
@@ -213,13 +212,10 @@ grant-presenter-role = Grant presenter role
 revoke-presenter-role = Revoke presenter role
 
 menutabs-area-hidden-heading = Additional Functions
-menutabs-chat = Chat
-menutabs-people = People
 menutabs-people-complementary = { $count ->
     [one] You are the only participant in the conference.
    *[other] There are {$count} participants in the conference.
 }
-menutabs-messages = Messages
 participant-list-hidden-heading = Participant List
 participant-list-self-description = You
 chatroom-hidden-heading = Chat Room
@@ -273,6 +269,14 @@ toolbar-button-screen-share-turn-on-tooltip-title = Turn On Screen Share
 toolbar-button-screen-share-turn-off-tooltip-title = Stop screen sharing
 toolbar-button-screen-share-context-title = Share a different screen
 toolbar-button-end-call-tooltip-title = Leave Call
+toolbar-button-moderation-tooltip-title = Moderation
+
+side-panel-toolbar-group-label = Side panel
+side-panel-close-button-label = Close side panel
+side-panel-back-button-label = Back to moderation
+
+moderation-menu-group-actions = Actions
+moderation-menu-group-tools = Tools
 
 toolbar-button-screen-share-tooltip-request-moderator-presenter-role = Ask a moderator to allow to share your screen
 
@@ -339,6 +343,7 @@ approve-all-participants-from-waiting = Approve all
 moderationbar-button-home-tooltip = Home
 moderationbar-button-mute-tooltip = Mute participants
 moderationbar-button-add-user-tooltip = Add User feature is under development
+add-user-tab-title = Add user
 moderationbar-button-breakout-tooltip = Create breakout rooms
 moderationbar-button-poll-tooltip = Poll
 moderationbar-button-ballot-tooltip = Voting
@@ -799,6 +804,8 @@ global-edit = Edit
 global-continue = Continue
 global-for-all = For all
 global-for-guests = For guests
+global-chat = Chat
+global-messages = Messages
 
 retry-available-in = Retry available in {$seconds}
 

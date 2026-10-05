@@ -5,7 +5,9 @@ import { screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
 import useConferenceUiVersion from '../../../hooks/useConferenceUiVersion';
+import { initialState as uiInitialState } from '../../../store/slices/uiSlice';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
+import { MenuTab } from '../../MenuTabs/fragments/constants';
 import DesktopInnerLayout from './DesktopInnerLayout';
 
 vi.mock('../../../hooks/useConferenceUiVersion', () => ({
@@ -48,8 +50,8 @@ vi.mock('../../CoffeeBreakView', () => ({
   default: () => null,
 }));
 
-const renderDesktopInnerLayout = () => {
-  const { store } = configureStore();
+const renderDesktopInnerLayout = (sidePanelView = uiInitialState.sidePanelView) => {
+  const { store } = configureStore({ initialState: { ui: { ...uiInitialState, sidePanelView } } });
   return renderWithProviders(<DesktopInnerLayout />, { store });
 };
 
@@ -70,5 +72,24 @@ describe('DesktopInnerLayout ui-version branching', () => {
 
     expect(screen.getByTestId('meeting-footer')).toBeInTheDocument();
     expect(screen.queryByTestId('desktop-inner-layout-legacy')).not.toBeInTheDocument();
+  });
+});
+
+describe('DesktopInnerLayout side panel', () => {
+  beforeEach(() => {
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
+  });
+
+  it('renders the sidebar when a view is selected', () => {
+    renderDesktopInnerLayout(MenuTab.Chat);
+
+    expect(screen.getByTestId('meeting-sidebar')).toBeInTheDocument();
+  });
+
+  it('omits the sidebar when the panel is closed', () => {
+    renderDesktopInnerLayout(null);
+
+    expect(screen.queryByTestId('meeting-sidebar')).not.toBeInTheDocument();
+    expect(screen.getByTestId('cinema')).toBeInTheDocument();
   });
 });

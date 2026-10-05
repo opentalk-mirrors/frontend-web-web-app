@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import MenuTabs from './MenuTabs';
@@ -34,43 +35,45 @@ describe('MenuTabs Component', () => {
     expect(tablist).toBeInTheDocument();
     expect(tabs).toHaveLength(3);
 
-    screen.getByRole('tab', { name: 'menutabs-chat' });
-    screen.getByRole('tab', { name: 'menutabs-people' });
-    screen.getByRole('tab', { name: 'menutabs-messages' });
+    screen.getByRole('tab', { name: 'global-chat' });
+    screen.getByRole('tab', { name: 'global-participants' });
+    screen.getByRole('tab', { name: 'global-messages' });
   });
 
   it('renders chat tab panel by default', () => {
     const { store } = configureStore();
     renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
-    const chatTabPanel = screen.getByRole('tabpanel', { name: 'menutabs-chat' });
+    const chatTabPanel = screen.getByRole('tabpanel', { name: 'global-chat' });
     expect(chatTabPanel).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'chatroom-hidden-heading', level: 3 })).toBeInTheDocument();
     expect(screen.getByTestId('Chat')).toBeInTheDocument();
   });
 
-  it('renders chat overview when click on messages tab', () => {
+  it('renders chat overview when click on messages tab', async () => {
+    const user = userEvent.setup();
     const { store } = configureStore();
     renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
-    const messageTab = screen.getByRole('tab', { name: 'menutabs-messages' });
+    const messageTab = screen.getByRole('tab', { name: 'global-messages' });
 
-    fireEvent.click(messageTab);
+    await user.click(messageTab);
 
-    const messageTabPanel = screen.getByRole('tabpanel', { name: 'menutabs-messages' });
+    const messageTabPanel = screen.getByRole('tabpanel', { name: 'global-messages' });
     expect(messageTabPanel).toBeInTheDocument();
     expect(screen.getByTestId('ChatOverview')).toBeInTheDocument();
   });
 
-  it('renders participants when click on people tab', () => {
+  it('renders participants when click on people tab', async () => {
+    const user = userEvent.setup();
     const { store } = configureStore();
     renderWithProviders(<MenuTabs />, { store, provider: { mui: true } });
 
-    const peopleTab = screen.getByRole('tab', { name: 'menutabs-people' });
+    const peopleTab = screen.getByRole('tab', { name: 'global-participants' });
 
-    fireEvent.click(peopleTab);
+    await user.click(peopleTab);
 
-    const peopleTabPanel = screen.getByRole('tabpanel', { name: 'menutabs-people' });
+    const peopleTabPanel = screen.getByRole('tabpanel', { name: 'global-participants' });
     expect(peopleTabPanel).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'participant-list-hidden-heading', level: 3 })).toBeInTheDocument();
     expect(screen.getByTestId('Participants')).toBeInTheDocument();

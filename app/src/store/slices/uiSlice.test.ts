@@ -1,15 +1,23 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { AutomodStartedEvent } from '../../api/types/incoming/automod';
+import { MenuTab } from '../../components/MenuTabs/fragments/constants';
+import { MODERATION_MENU_VIEW, ModerationTabKey } from '../../config/constants';
 import LayoutOptions from '../../enums/LayoutOptions';
+import { started as automodStarted } from './automodSlice';
 import { SwitchedRoomPayload, switchedRoom } from './breakoutSlice';
 import { CinemaViewSortOrder } from './common';
 import reducer, {
+  closeSidePanel,
   loadCinemaLayoutSettingsFromLocalStorage,
   loadGridSizeFromSessionStorage,
+  openSidePanel,
   persistCinemaLayoutSettings,
   resolveMeetingGridSize,
   storeGridSizeToSessionStorage,
+  toggleModerationPanel,
+  toggleSidePanel,
   updatedCinemaLayout,
 } from './uiSlice';
 
@@ -96,6 +104,97 @@ describe('uiSlice switchedRoom', () => {
     );
 
     expect(state.cinemaLayout).toBe(LayoutOptions.Grid);
+  });
+});
+
+describe('uiSlice side panel', () => {
+  it('opens with the chat view by default', () => {
+    expect(getInitialState().sidePanelView).toBe(MenuTab.Chat);
+  });
+
+  it('opens the requested view', () => {
+    const state = reducer(getInitialState(), openSidePanel(MODERATION_MENU_VIEW));
+
+    expect(state.sidePanelView).toBe(MODERATION_MENU_VIEW);
+  });
+
+  it('closes the panel', () => {
+    const state = reducer(getInitialState(), closeSidePanel());
+
+    expect(state.sidePanelView).toBeNull();
+  });
+
+  it('closes the panel when toggling the view that is already displayed', () => {
+    const state = reducer({ ...getInitialState(), sidePanelView: MenuTab.People }, toggleSidePanel(MenuTab.People));
+
+    expect(state.sidePanelView).toBeNull();
+  });
+
+  it('switches the view when toggling a different view', () => {
+    const state = reducer({ ...getInitialState(), sidePanelView: MenuTab.People }, toggleSidePanel(MenuTab.Messages));
+
+    expect(state.sidePanelView).toBe(MenuTab.Messages);
+  });
+
+  it('reopens the panel when toggling while closed', () => {
+    const state = reducer({ ...getInitialState(), sidePanelView: null }, toggleSidePanel(ModerationTabKey.MuteUsers));
+
+    expect(state.sidePanelView).toBe(ModerationTabKey.MuteUsers);
+  });
+
+  it('shows the people view when the talking stick starts', () => {
+    const state = reducer(
+      { ...getInitialState(), sidePanelView: null },
+      automodStarted({} as unknown as AutomodStartedEvent)
+    );
+
+    expect(state.sidePanelView).toBe(MenuTab.People);
+  });
+});
+
+describe('uiSlice moderation panel', () => {
+  it('opens the moderation overview from a closed panel', () => {
+    const state = reducer({ ...getInitialState(), sidePanelView: null }, toggleModerationPanel());
+
+    expect(state.sidePanelView).toBe(MODERATION_MENU_VIEW);
+  });
+
+  it('closes the panel while a moderation tool is displayed', () => {
+    let state = reducer(getInitialState(), toggleModerationPanel());
+    state = reducer(state, openSidePanel(ModerationTabKey.Polls));
+
+    state = reducer(state, toggleModerationPanel());
+
+    expect(state.sidePanelView).toBeNull();
+  });
+
+  it('reopens the moderation tool that was displayed last', () => {
+    let state = reducer(getInitialState(), toggleModerationPanel());
+    state = reducer(state, openSidePanel(ModerationTabKey.Polls));
+    state = reducer(state, toggleModerationPanel());
+
+    state = reducer(state, toggleModerationPanel());
+
+    expect(state.sidePanelView).toBe(ModerationTabKey.Polls);
+  });
+
+  it('returns to the overview once the moderator navigates back', () => {
+    let state = reducer(getInitialState(), openSidePanel(ModerationTabKey.Polls));
+    state = reducer(state, openSidePanel(MODERATION_MENU_VIEW));
+    state = reducer(state, toggleModerationPanel());
+
+    state = reducer(state, toggleModerationPanel());
+
+    expect(state.sidePanelView).toBe(MODERATION_MENU_VIEW);
+  });
+
+  it('does not remember the top level views', () => {
+    let state = reducer(getInitialState(), openSidePanel(ModerationTabKey.Polls));
+    state = reducer(state, openSidePanel(MenuTab.Chat));
+
+    state = reducer(state, toggleModerationPanel());
+
+    expect(state.sidePanelView).toBe(ModerationTabKey.Polls);
   });
 });
 

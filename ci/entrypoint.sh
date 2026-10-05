@@ -14,6 +14,7 @@ ACTIVE_FEATURES="{
     joinWithoutMedia: ${FEATURE_JOIN_WITHOUT_MEDIA:-false},
     e2eEncryption: ${FEATURE_E2E_ENCRYPTION:-false},
     innovafoneAPI: ${FEATURE_INNOVAFONE_API:-false},
+    conferenceUiV2: ${FEATURE_CONFERENCE_UI_V2:-false}, 
 }"
 
 DEFAULT_VIDEO_BACKGROUNDS="[

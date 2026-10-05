@@ -7,7 +7,7 @@ import VisuallyHiddenTitle from './VisuallyHiddenTitle';
 
 describe('Visually Hidden Title', () => {
   it('should render as the given component', () => {
-    render(<VisuallyHiddenTitle component="h2" label="messages" />);
+    render(<VisuallyHiddenTitle component="h2" label="global-messages" />);
 
     const renderedVisuallyHiddenTitle = screen.getByRole('heading');
     expect(renderedVisuallyHiddenTitle).toBeInTheDocument();

@@ -8,12 +8,11 @@ import { selectMyParticipantId, selectSpeakerId } from '../../store/slices/autom
 import ParticipantListItem from './fragments/ParticipantListItem/ParticipantListItem';
 import { ListableParticipant } from './types/participant';
 
-const StyledList = styled(List)(({ theme }) => ({
+const StyledList = styled(List)({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(2),
   overflow: 'auto',
-}));
+});
 
 interface ParticipantListProps<T extends ListableParticipant> {
   participants: T[];

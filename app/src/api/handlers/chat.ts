@@ -71,7 +71,7 @@ export const handleChatMessage = (
       }
 
       dispatch(received({ chatMessage, userId }));
-      if (state.ui.currentMenuTab === MenuTab.Chat) {
+      if (state.ui.sidePanelView === MenuTab.Chat) {
         dispatch(lastSeenTimestampAdded({ scope: ChatScope.Global, timestamp }));
       }
       break;
