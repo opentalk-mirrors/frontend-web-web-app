@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#1f1f1f"><rect fill="none" height="24" width="24"/><polygon points="21,11 21,3 13,3 16.29,6.29 6.29,16.29 3,13 3,21 11,21 7.71,17.71 17.71,7.71"/></svg>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M15.94,4.14L18.39,4.14L12.47,10.06A1.04,1.04,0,0,0,13.94,11.53L19.86,5.61L19.86,8.06A1.04,1.04,0,0,0,21.94,8.06L21.94,3.06A1,1,0,0,0,20.94,2.06L15.94,2.06A1.04,1.04,0,0,0,15.94,4.14Z" />
+    <path d="M8.06,19.86L5.61,19.86L11.53,13.94A1.04,1.04,0,0,0,10.06,12.47L4.14,18.39L4.14,15.94A1.04,1.04,0,0,0,2.06,15.94L2.06,20.94A1,1,0,0,0,3.06,21.94L8.06,21.94A1.04,1.04,0,0,0,8.06,19.86Z" />
+</svg>

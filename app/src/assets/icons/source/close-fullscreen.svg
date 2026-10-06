@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#1f1f1f"><rect fill="none" height="24" width="24"/><path d="M22,3.41l-5.29,5.29L20,12h-8V4l3.29,3.29L20.59,2L22,3.41z M3.41,22l5.29-5.29L12,20v-8H4l3.29,3.29L2,20.59L3.41,22z"/></svg>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M18.46,9.46L16.01,9.46L21.93,3.54A1.04,1.04,0,0,0,20.46,2.07L14.54,7.99L14.54,5.54A1.04,1.04,0,0,0,12.46,5.54L12.46,10.54A1,1,0,0,0,13.46,11.54L18.46,11.54A1.04,1.04,0,0,0,18.46,9.46Z" />
+    <path d="M5.54,14.54L7.99,14.54L2.07,20.46A1.04,1.04,0,0,0,3.54,21.93L9.46,16.01L9.46,18.46A1.04,1.04,0,0,0,11.54,18.46L11.54,13.46A1,1,0,0,0,10.54,12.46L5.54,12.46A1.04,1.04,0,0,0,5.54,14.54Z" />
+</svg>
