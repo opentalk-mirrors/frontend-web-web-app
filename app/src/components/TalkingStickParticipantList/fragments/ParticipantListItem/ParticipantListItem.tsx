@@ -22,7 +22,7 @@ const StyledListItem = styled(ListItem, {
   shouldForwardProp: (prop) => !(['isActiveSpeaker', 'isCurrentUser'] as Array<PropertyKey>).includes(prop),
 })<{ isActiveSpeaker?: boolean; isCurrentUser?: boolean }>(({ theme, isActiveSpeaker, isCurrentUser }) => {
   const styles = {
-    padding: 0,
+    padding: theme.spacing(0, 1.5),
     minHeight: theme.typography.pxToRem(56),
     border: '1px solid',
     borderRadius: theme.spacing(1),

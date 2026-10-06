@@ -29,7 +29,7 @@ const List = styled(MuiList)({
 const ListItemButton = styled(MuiListItemButton)(({ theme }) => ({
   gap: theme.spacing(1.5),
   minHeight: theme.typography.pxToRem(40),
-  padding: 0,
+  padding: theme.spacing(0, 1.5),
   borderRadius: theme.borderRadius.medium,
   '&:hover': {
     backgroundColor: theme.palette.background.highlight.primary,
@@ -55,7 +55,7 @@ const ListItemText = styled(MuiListItemText)(({ theme }) => ({
 }));
 
 const GroupLabel = styled(ListSubheader)(({ theme }) => ({
-  padding: 0,
+  padding: theme.spacing(0, 1.5),
   background: 'transparent',
   color: theme.palette.grey[400],
   fontSize: theme.typography.pxToRem(12),

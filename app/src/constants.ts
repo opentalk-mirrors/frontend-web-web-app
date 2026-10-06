@@ -6,6 +6,8 @@ export const MY_MEETING_MENU_BUTTON_ID = 'my-meeting-menu-button';
 export const CHAT_INPUT_ID = 'chat-input';
 export const SIDE_PANEL_ID = 'side-panel';
 export const SIDE_PANEL_TITLE_ID = 'side-panel-title';
+export const SIDE_PANEL_WIDTH_PX = 332;
+export const SIDE_PANEL_OFFSET_VARIABLE = '--side-panel-offset';
 
 export enum ToolbarButtonIds {
   Handraise = 'toolbar-handraise',

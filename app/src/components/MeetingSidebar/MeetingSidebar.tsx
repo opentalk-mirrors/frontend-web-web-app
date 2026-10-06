@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ChatIcon, ModeratorIcon, MessagesIcon, SpeakerQueueIcon } from '../../assets/icons';
 import { MODERATION_MENU_VIEW } from '../../config/constants';
-import { SIDE_PANEL_ID, SIDE_PANEL_TITLE_ID, ToolbarButtonIds } from '../../constants';
+import { SIDE_PANEL_ID, SIDE_PANEL_TITLE_ID, SIDE_PANEL_WIDTH_PX, ToolbarButtonIds } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import useConferenceUiVersion from '../../hooks/useConferenceUiVersion';
 import useTabs from '../../hooks/useTabs';
@@ -31,15 +31,9 @@ const SidebarContainer = styled('aside')(({ theme }) => ({
   borderRadius: theme.borderRadius.medium,
   boxShadow: '0 1.187rem 3.187rem 0 rgb(0 0 0 / 16%), 0 0.875rem 1.187rem 0 rgb(0 0 0 / 7%)',
   flex: 1,
-  // Sharing the main grid area lets the panel overlay the video instead of shrinking it.
-  [theme.breakpoints.down('lg')]: {
-    gridArea: 'main',
-    justifySelf: 'end',
-    zIndex: 1,
-  },
 }));
-const UserSidebarContainer = styled(Stack)({
-  width: 332,
+const SidePanel = styled(Stack)({
+  width: SIDE_PANEL_WIDTH_PX,
   minHeight: 0,
 });
 
@@ -49,7 +43,7 @@ const PanelContent = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   minHeight: 0,
   overflow: 'hidden',
-  padding: theme.spacing(1, 3, 2.5),
+  padding: theme.spacing(1, 1.5, 2.5),
   '& > .MuiStack-root': {
     padding: theme.spacing(0.5),
   },
@@ -145,7 +139,7 @@ const MeetingSidebar = () => {
 
   return (
     <SidebarContainer aria-label={t('landmark-complementary-tools')}>
-      <UserSidebarContainer
+      <SidePanel
         ref={panelRef}
         id={SIDE_PANEL_ID}
         role="region"
@@ -160,7 +154,7 @@ const MeetingSidebar = () => {
           onBack={displayedView?.showBack ? () => dispatch(openSidePanel(MODERATION_MENU_VIEW)) : undefined}
         />
         <PanelContent>{displayedView?.content}</PanelContent>
-      </UserSidebarContainer>
+      </SidePanel>
     </SidebarContainer>
   );
 };
