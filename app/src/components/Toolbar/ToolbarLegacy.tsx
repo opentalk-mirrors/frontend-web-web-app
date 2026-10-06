@@ -32,10 +32,9 @@ const MainContainer = styled('aside')(({ theme }) => ({
     '.MuiButtonBase-root': {
       border: `1px solid ${theme.palette.common.white}`,
     },
-    '.MuiButtonBase-root:first-of-type': {
-      // padding: theme.spacing(1.5),
-      width: '2.75rem',
-      height: '2.35rem',
+    '.MuiButtonBase-root:first-child': {
+      width: theme.typography.pxToRem(44),
+      height: theme.typography.pxToRem(37.6),
     },
   },
   [theme.breakpoints.down('md')]: {

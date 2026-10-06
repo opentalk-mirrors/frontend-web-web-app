@@ -5,6 +5,8 @@ import { styled, Tooltip, IconButtonProps, IconButton, Theme } from '@mui/materi
 import { MouseEvent, ReactNode } from 'react';
 
 import { ArrowDownIcon } from '../../../assets/icons';
+import { useAppSelector } from '../../../hooks';
+import { selectFullscreenActive, selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
 
 interface IButtonProps {
   isActive?: boolean;
@@ -27,6 +29,11 @@ const ButtonContainer = styled('div')(() => ({
   cursor: 'pointer',
   position: 'relative',
 }));
+
+// Disabled buttons don't fire pointer events, so the tooltip needs a non-disabled wrapper to listen on
+const TooltipWrapper = styled('span')({
+  display: 'inline-flex',
+});
 
 const ToolbarIconButton = styled(IconButton, {
   shouldForwardProp: (prop) => prop !== 'isActive' && prop !== 'isLobby',
@@ -178,22 +185,28 @@ const ToolbarButton = ({
   isLobby,
   ...props
 }: ToolbarButtonProps) => {
+  const tooltipContainer = useAppSelector((state) =>
+    selectFullscreenActive(state) ? selectFullscreenElement(state) : undefined
+  );
+
   return (
     <ButtonContainer>
-      <Tooltip placement="top" title={tooltipTitle}>
-        <ToolbarIconButton
-          isActive={active}
-          disabled={disabled || undefined}
-          aria-label={tooltipTitle}
-          onClick={(event) => onClick(event)}
-          isLobby={isLobby}
-          {...props}
-        >
-          {children}
-        </ToolbarIconButton>
+      <Tooltip placement="top" title={tooltipTitle} slotProps={{ popper: { container: tooltipContainer } }}>
+        <TooltipWrapper>
+          <ToolbarIconButton
+            isActive={active}
+            disabled={disabled || undefined}
+            aria-label={tooltipTitle}
+            onClick={(event) => onClick(event)}
+            isLobby={isLobby}
+            {...props}
+          >
+            {children}
+          </ToolbarIconButton>
+        </TooltipWrapper>
       </Tooltip>
       {hasContext && !contextDisabled && (
-        <Tooltip placement="top" title={contextTitle}>
+        <Tooltip placement="top" title={contextTitle} slotProps={{ popper: { container: tooltipContainer } }}>
           <ToggleButton
             isActive={active}
             onClick={(event) => {
