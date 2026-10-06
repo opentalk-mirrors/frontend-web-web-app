@@ -16,8 +16,8 @@ catalogs:
       specifier: ^24.13.3
       version: 24.13.3
     camelcase-keys:
-      specifier: ^10.0.2
-      version: 10.0.2
+      specifier: ^10.0.3
+      version: 10.0.3
     es-toolkit:
       specifier: ^1.52.0
       version: 1.52.0
@@ -212,7 +212,7 @@ importers:
         version: 2.14.1
       camelcase-keys:
         specifier: 'catalog:'
-        version: 10.0.2
+        version: 10.0.3
       colorjs.io:
         specifier: ^0.6.1
         version: 0.6.1
@@ -435,7 +435,7 @@ importers:
     dependencies:
       camelcase-keys:
         specifier: 'catalog:'
-        version: 10.0.2
+        version: 10.0.3
       snakecase-keys:
         specifier: 'catalog:'
         version: 9.0.2
@@ -3175,8 +3175,8 @@ packages:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
 
-  camelcase-keys@10.0.2:
-    resolution: {integrity: sha512-PVHCLVbJ7nWGal0lPAmBN5eSLjIynlMUk2EPmL9aPl6QyJ6+FoszTKwldPzkuVqg5teZbPTbb8Oenzyw9GSJRw==}
+  camelcase-keys@10.0.3:
+    resolution: {integrity: sha512-+WSfgt7e6uZSWfEO9xdFmWEf/bwvA6lJY2mmj4U+N1MHY6h01jQUlZ2dyxnaL4dumg/cxXyRci1fKUtGQfX5+g==}
     engines: {node: '>=20'}
 
   camelcase@6.3.0:
@@ -9272,7 +9272,7 @@ snapshots:
 
   callsites@3.1.0: {}
 
-  camelcase-keys@10.0.2:
+  camelcase-keys@10.0.3:
     dependencies:
       camelcase: 9.0.0
       map-obj: 6.0.0
