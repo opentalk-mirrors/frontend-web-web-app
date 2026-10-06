@@ -19,9 +19,10 @@ import livekitReducer, {
   selectScreenshareChangeInProgress,
   selectVideoChangeInProgress,
   setMediaSettingVideoEnabled,
-  handleNotificationOnCameraEnabled,
+  handleCameraOnReminder,
 } from './livekitSlice';
 import { timerStarted } from './timerSlice';
+import { toggledSelfViewMinimized } from './uiSlice';
 
 vi.mock('../../commonComponents', () => ({
   notifications: {
@@ -238,19 +239,53 @@ describe('livekit listeners', () => {
     vi.clearAllMocks();
   });
 
-  it('notifies user that their camera is on, when enabling camera with minimized selfview', () => {
-    const isSelfViewMinimized = true;
-    const cameraEnabled = true;
-    const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
-    handleNotificationOnCameraEnabled(setMediaSettingVideoEnabled(true), listenerApi);
-    expect(notifications.info).toHaveBeenCalledTimes(1);
-  });
+  describe('camera on reminder', () => {
+    it('notifies user that their camera is on, when enabling camera with minimized selfview', () => {
+      const isSelfViewMinimized = true;
+      const cameraEnabled = true;
+      const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+      handleCameraOnReminder(setMediaSettingVideoEnabled(true), listenerApi);
+      expect(notifications.info).toHaveBeenCalledTimes(1);
+    });
 
-  it('does not notify user that their camera is on, when enabling camera with expanded selfview', () => {
-    const isSelfViewMinimized = false;
-    const cameraEnabled = true;
-    const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
-    handleNotificationOnCameraEnabled(setMediaSettingVideoEnabled(true), listenerApi);
-    expect(notifications.info).not.toHaveBeenCalled();
+    it('notifies user that their camera is on, when minimizing the selfview and the camera is enabled', () => {
+      const isSelfViewMinimized = true;
+      const cameraEnabled = true;
+      const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+      handleCameraOnReminder(toggledSelfViewMinimized(), listenerApi);
+      expect(notifications.info).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not notify user, when enabling camera with expanded selfview', () => {
+      const isSelfViewMinimized = false;
+      const cameraEnabled = true;
+      const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+      handleCameraOnReminder(setMediaSettingVideoEnabled(true), listenerApi);
+      expect(notifications.info).not.toHaveBeenCalled();
+    });
+
+    it('does not notify user, when expanding the selfview', () => {
+      const isSelfViewMinimized = false;
+      const cameraEnabled = true;
+      const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+      handleCameraOnReminder(toggledSelfViewMinimized(), listenerApi);
+      expect(notifications.info).not.toHaveBeenCalled();
+    });
+
+    it('does not notify user, when disabling camera with minimized selfview', () => {
+      const isSelfViewMinimized = true;
+      const cameraEnabled = false;
+      const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+      handleCameraOnReminder(setMediaSettingVideoEnabled(false), listenerApi);
+      expect(notifications.info).not.toHaveBeenCalled();
+    });
+
+    it('does not notify user, when minimizing the selfview and the camera is disabled', () => {
+      const isSelfViewMinimized = true;
+      const cameraEnabled = false;
+      const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
+      handleCameraOnReminder(toggledSelfViewMinimized(), listenerApi);
+      expect(notifications.info).not.toHaveBeenCalled();
+    });
   });
 });

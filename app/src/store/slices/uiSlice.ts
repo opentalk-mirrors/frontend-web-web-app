@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createSelector, createSlice, isAnyOf, ListenerEffectAPI, PayloadAction } from '@reduxjs/toolkit';
 import { ErrorEvent } from '@sentry/react';
-import i18next from 'i18next';
 
 import type { AppDispatch, RootState } from '../';
 import { VoteStarted } from '../../api/types/incoming/legalVote';
 import { Started as PollStartedInterface } from '../../api/types/incoming/poll';
-import { notifications } from '../../commonComponents';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { MODERATION_MENU_VIEW, ModerationTabKey } from '../../config/constants';
 import { GRID_SIZES, MAX_GRID_TILES_DESKTOP, MAX_GRID_TILES_MOBILE } from '../../constants';
@@ -475,23 +473,6 @@ export default uiSlice.reducer;
 /*                                              */
 /************************************************/
 
-export const handleNotificationOnSelfViewMinimizedToggled = (
-  _action: ReturnType<typeof toggledSelfViewMinimized>,
-  listenerApi: ListenerEffectAPI<RootState, AppDispatch>
-) => {
-  const state = listenerApi.getState();
-
-  if (state.ui.isSelfViewMinimized && state.livekit.mediaSettings.cameraEnabled) {
-    notifications.info(i18next.t('camera-on-reminder-notification'));
-  }
-};
-
-const startNotificationOnSelfViewMinimizedToggled = (startAppListening: StartAppListening) =>
-  startAppListening({
-    actionCreator: toggledSelfViewMinimized,
-    effect: handleNotificationOnSelfViewMinimizedToggled,
-  });
-
 const startUiChangeModeListener = (startAppListening: StartAppListening) =>
   startAppListening({
     actionCreator: setUiMode,
@@ -544,7 +525,6 @@ export const startUiListeners = (startAppListening: StartAppListening) => {
   startUiChangeModeListener(startAppListening);
   startLayoutChangeListener(startAppListening);
   startGridSizeRestoreListener(startAppListening);
-  startNotificationOnSelfViewMinimizedToggled(startAppListening);
 };
 
 export const selectSelfRenameDialogVisible = (state: RootState) => state.ui.showSelfRenameDialog;

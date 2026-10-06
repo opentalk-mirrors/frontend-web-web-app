@@ -12,8 +12,8 @@ import {
   isAnyOf,
   ListenerEffectAPI,
   PayloadAction,
+  UnknownAction,
 } from '@reduxjs/toolkit';
-import i18next from 'i18next';
 import { t } from 'i18next';
 import {
   DeviceUnsupportedError,
@@ -65,7 +65,12 @@ import { selectShouldForceMuted } from './moderationSlice';
 import { abortedReconnection, enteredWaitingRoom } from './roomSlice';
 import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice';
 import { timerStarted } from './timerSlice';
-import { pinnedConnectionIdentifierSet, pinnedRemoteScreenshare, updatedCinemaLayout } from './uiSlice';
+import {
+  pinnedConnectionIdentifierSet,
+  pinnedRemoteScreenshare,
+  toggledSelfViewMinimized,
+  updatedCinemaLayout,
+} from './uiSlice';
 
 type WritableDraft<T> = {
   -readonly [K in keyof T]: Draft<T[K]>;
@@ -479,21 +484,21 @@ function updateLobbyTrack(
 /*                                              */
 /************************************************/
 
-export const handleNotificationOnCameraEnabled = (
-  _action: ReturnType<typeof setMediaSettingVideoEnabled>,
+export const handleCameraOnReminder = (
+  _action: UnknownAction,
   listenerApi: ListenerEffectAPI<RootState, AppDispatch>
 ) => {
   const state = listenerApi.getState();
 
   if (state.ui.isSelfViewMinimized && state.livekit.mediaSettings.cameraEnabled) {
-    notifications.info(i18next.t('camera-on-reminder-notification'));
+    notifications.info(t('camera-on-reminder-notification'));
   }
 };
 
-const startNotificationOnCameraEnabled = (startAppListening: StartAppListening) =>
+const startCameraOnReminderListener = (startAppListening: StartAppListening) =>
   startAppListening({
-    actionCreator: setMediaSettingVideoEnabled,
-    effect: handleNotificationOnCameraEnabled,
+    matcher: isAnyOf(setMediaSettingVideoEnabled, toggledSelfViewMinimized),
+    effect: handleCameraOnReminder,
   });
 
 const startConnectLivekitListeners = (startAppListening: StartAppListening) => {
@@ -823,7 +828,7 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startDisconnectRoomCleanupListener(startAppListening);
   startPageUnloadCleanupListener(startAppListening);
   startSwitchRoomListener(startAppListening);
-  startNotificationOnCameraEnabled(startAppListening);
+  startCameraOnReminderListener(startAppListening);
 };
 
 /************************************************/

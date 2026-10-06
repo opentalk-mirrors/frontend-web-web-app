@@ -1,15 +1,11 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import type { ListenerEffectAPI } from '@reduxjs/toolkit';
-
 import { AutomodStartedEvent } from '../../api/types/incoming/automod';
-import { notifications } from '../../commonComponents';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { MODERATION_MENU_VIEW, ModerationTabKey } from '../../config/constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ChatScope, ConnectionIdentifier, ParticipantId, SortOption } from '../../types';
-import type { AppDispatch, RootState } from '../index';
 import { started as automodStarted } from './automodSlice';
 import { SwitchedRoomPayload, switchedRoom } from './breakoutSlice';
 import { CinemaViewSortOrder } from './common';
@@ -25,16 +21,8 @@ import reducer, {
   toggleModerationPanel,
   toggleSidePanel,
   updatedCinemaLayout,
-  toggledSelfViewMinimized,
-  handleNotificationOnSelfViewMinimizedToggled,
   type UIState,
 } from './uiSlice';
-
-vi.mock('../../commonComponents', () => ({
-  notifications: {
-    info: vi.fn(),
-  },
-}));
 
 const getInitialState = () => reducer(undefined, { type: '@@INIT' });
 
@@ -434,42 +422,5 @@ describe('connection closed', () => {
     const initialState: UIState = { ...getInitialState(), participantsSearchValue: 'alice' };
     const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
     expect(state.participantsSearchValue).toBe('');
-  });
-});
-
-const getMockListenerApi = (isSelfViewMinimized: boolean, cameraEnabled = true) =>
-  ({
-    getState: vi.fn(() => ({
-      ui: { isSelfViewMinimized },
-      livekit: { mediaSettings: { cameraEnabled } },
-    })),
-  }) as unknown as ListenerEffectAPI<RootState, AppDispatch>;
-
-describe('uiListeners', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('notifies user that their camera is on, when minimizing the selfview and the camera is enabled', () => {
-    const isSelfViewMinimized = true;
-    const cameraEnabled = true;
-    const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
-    handleNotificationOnSelfViewMinimizedToggled(toggledSelfViewMinimized(), listenerApi);
-    expect(notifications.info).toHaveBeenCalledTimes(1);
-  });
-
-  it('does not notify user that their camera is on, when minimizing the selfview and the camera is disabled', () => {
-    const isSelfViewMinimized = true;
-    const cameraEnabled = false;
-    const listenerApi = getMockListenerApi(isSelfViewMinimized, cameraEnabled);
-    handleNotificationOnSelfViewMinimizedToggled(toggledSelfViewMinimized(), listenerApi);
-    expect(notifications.info).not.toHaveBeenCalled();
-  });
-
-  it('does not notify user, when expanding the selfview', () => {
-    const isSelfViewMinimized = false;
-    const listenerApi = getMockListenerApi(isSelfViewMinimized);
-    handleNotificationOnSelfViewMinimizedToggled(toggledSelfViewMinimized(), listenerApi);
-    expect(notifications.info).not.toHaveBeenCalled();
   });
 });
