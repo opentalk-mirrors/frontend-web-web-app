@@ -18,6 +18,11 @@ vi.mock('../../../assets/icons', async (importOriginal) => ({
   CameraOnIcon: () => <svg data-testid="camera-on-icon" />,
 }));
 
+vi.mock('../../HandRaisedIndicator', () => ({
+  __esModule: true,
+  default: ({ label }: { label: string }) => <div data-testid="hand-raised-indicator">{label}</div>,
+}));
+
 vi.mock('../../../commonComponents/NameTile', () => ({
   __esModule: true,
   default: (props: NameTileProps) => (
@@ -64,5 +69,29 @@ describe('SelfViewBar', () => {
     renderWithProviders(<SelfViewBar id="bar-id" />, { store, provider: { mui: true } });
     expect(screen.getByTestId('name-tile')).toBeInTheDocument();
     expect(screen.queryByTestId('icons')).not.toBeInTheDocument();
+  });
+
+  it('renders the hand raised indicator with the "you want to say something" label when our hand is up', () => {
+    const { store } = configureStore({
+      initialState: {
+        moderation: {
+          hasHandUp: true,
+        },
+      },
+    });
+    renderWithProviders(<SelfViewBar id="bar-id" />, { store, provider: { mui: true } });
+    expect(screen.getByTestId('hand-raised-indicator')).toHaveTextContent('indicator-you-have-raised-hand');
+  });
+
+  it('does not render the hand raised indicator when our hand is down', () => {
+    const { store } = configureStore({
+      initialState: {
+        moderation: {
+          hasHandUp: false,
+        },
+      },
+    });
+    renderWithProviders(<SelfViewBar id="bar-id" />, { store, provider: { mui: true } });
+    expect(screen.queryByTestId('hand-raised-indicator')).not.toBeInTheDocument();
   });
 });

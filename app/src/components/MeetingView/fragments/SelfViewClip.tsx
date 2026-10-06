@@ -1,19 +1,19 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, styled } from '@mui/material';
+import { Box, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { NameTile } from '../../../commonComponents';
 import { useAppSelector } from '../../../hooks';
-import { selectDisplayName } from '../../../store/slices/userSlice';
+import { selectHandUp } from '../../../store/slices/moderationSlice';
+import { selectDisplayName, selectOurUuid } from '../../../store/slices/userSlice';
+import HandRaisedIndicator from '../../HandRaisedIndicator';
+import ReactionIndicator from '../../ReactionIndicator';
 import SelfVideoContent from './SelfVideoContent';
 
 const ClipNameTile = styled(NameTile)(({ theme }) => ({
-  position: 'absolute',
   borderRadius: theme.borderRadius.small,
-  bottom: theme.spacing(0.5),
-  left: theme.spacing(0.5),
   fontSize: 'clamp(0.5rem, 7cqi, 0.9rem)',
   '& .MuiTypography-root': { fontSize: 'inherit' },
 }));
@@ -48,6 +48,27 @@ const SelfViewClipContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
+const StatusBar = styled(Stack)(() => ({
+  position: 'absolute',
+  bottom: 0,
+  width: '100%',
+  justifyContent: 'space-evenly',
+  alignItems: 'center',
+}));
+
+const PositionedReactionIndicator = styled(ReactionIndicator)(({ theme }) => ({
+  position: 'absolute',
+  left: theme.spacing(0.5),
+  top: 0,
+  bottom: theme.spacing(0.5),
+}));
+
+const PositionedHandRaisedIndicator = styled(HandRaisedIndicator)(({ theme }) => ({
+  position: 'absolute',
+  right: theme.spacing(0.5),
+  bottom: theme.spacing(0.5),
+}));
+
 type SelfViewClipProps = {
   id: string;
 };
@@ -55,11 +76,16 @@ type SelfViewClipProps = {
 const SelfViewClip = ({ id }: SelfViewClipProps) => {
   const { t } = useTranslation();
   const displayName = useAppSelector(selectDisplayName);
-
+  const ownParticipantId = useAppSelector(selectOurUuid);
+  const handIsUp = useAppSelector(selectHandUp);
   return (
     <SelfViewClipContainer data-testid="selfview-clip" id={id}>
       <SelfVideoContent displayName={displayName} />
-      <ClipNameTile displayName={t('global-you')} showIcons={false} />
+      <StatusBar direction="row">
+        {ownParticipantId !== null && <PositionedReactionIndicator participantId={ownParticipantId} />}
+        <ClipNameTile displayName={t('global-you')} showIcons={false} />
+        {handIsUp && <PositionedHandRaisedIndicator label={t('indicator-you-have-raised-hand')} />}
+      </StatusBar>
     </SelfViewClipContainer>
   );
 };

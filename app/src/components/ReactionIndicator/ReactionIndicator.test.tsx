@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
 
-import { ReactionEmoji } from '../../../types/reaction';
-import { configureStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
+import { ReactionEmoji } from '../../types/reaction';
+import { configureStore, mockedParticipant, renderWithProviders } from '../../utils/testUtils';
 import ReactionIndicator from './ReactionIndicator';
 
 const participant1 = mockedParticipant(1);

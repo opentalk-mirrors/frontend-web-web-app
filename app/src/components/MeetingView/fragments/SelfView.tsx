@@ -12,7 +12,9 @@ import { selectIsSelfViewMinimized, toggledSelfViewMinimized } from '../../../st
 import SelfViewBar from './SelfViewBar';
 import SelfViewClip from './SelfViewClip';
 
-const SelfViewContainer = styled(Box)(({ theme }) => ({
+const SelfViewContainer = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isMinimized',
+})<{ isMinimized: boolean }>(({ theme, isMinimized }) => ({
   position: 'absolute',
   right: theme.spacing(1),
   bottom: theme.spacing(1),
@@ -21,18 +23,22 @@ const SelfViewContainer = styled(Box)(({ theme }) => ({
   outline: `1px solid ${alpha(theme.palette.common.white, 0.15)}`,
   outlineOffset: '-1px',
   zIndex: theme.zIndex.fab,
+  pointerEvents: 'auto',
   // The selfview anchor container in the speaker view disables pointer events so it doesn't block the speaker window,
   // re-enable them here, to make the minimize button interactive again
-  pointerEvents: 'auto',
-  [theme.breakpoints.down('sm')]: {
-    width: '93px',
-  },
-  [theme.breakpoints.up('sm')]: {
-    width: '120px',
-  },
-  [theme.breakpoints.up('lg')]: {
-    width: '150px',
-  },
+  ...(isMinimized
+    ? { width: 100 }
+    : {
+        [theme.breakpoints.down('sm')]: {
+          width: '93px',
+        },
+        [theme.breakpoints.up('sm')]: {
+          width: '120px',
+        },
+        [theme.breakpoints.up('lg')]: {
+          width: '150px',
+        },
+      }),
 }));
 
 const MinimizeButton = styled(OverlayIconButton, {
@@ -58,7 +64,7 @@ const SelfView = () => {
   return (
     // E.g. in case of speaker view layout we need to portal self view to a different location
     <Portal container={anchor} disablePortal={!anchor}>
-      <SelfViewContainer>
+      <SelfViewContainer isMinimized={isMinimized}>
         {isMinimized ? <SelfViewBar id={BAR_ID} /> : <SelfViewClip id={CLIP_ID} />}
         <Tooltip title={buttonLabel}>
           <MinimizeButton
