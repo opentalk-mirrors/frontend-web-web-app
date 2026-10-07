@@ -22,12 +22,3 @@ export const getInitials = (name: string, length?: number) => {
     .slice(0, length)
     .join('');
 };
-
-export const deriveErrorString = (error: string) => {
-  return `joinform-${error.replaceAll('_', '-')}`;
-};
-
-export const getEnumKey = <T>(enumType: Record<string, T>, value: T) => {
-  const index = Object.values(enumType).indexOf(value);
-  return Object.keys(enumType)[index];
-};

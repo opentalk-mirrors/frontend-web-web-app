@@ -4,7 +4,7 @@
 import { EventId, RoomId } from '@opentalk/rest-api-rtk-query';
 
 import type { useLocale } from '../hooks';
-import type { ConfigState, DefaultAvatarImage } from '../store/slices/configSlice';
+import type { ConfigState } from '../store/slices/configSlice';
 
 const createHeaders = (headers?: HeadersInit) => {
   let newHeaders;
@@ -71,24 +71,6 @@ export const fetchWithAuth = async (
 ): Promise<Response> => {
   const accessToken = window.localStorage.getItem('access_token') || undefined;
   return fetchWithAccessToken(url, data, accessToken);
-};
-
-type LibravatarOptions = {
-  size?: number;
-  defaultImage?: DefaultAvatarImage;
-};
-
-/**
- * Add defaultImage parameter to a libravatarUrl
- *
- * @param url A libravatarUrl
- * @param options Options to modify the libravartUrl defaultImage = d in the documentation https://wiki.libravatar.org/api/
- */
-export const addParameterToLibravatarUrl = (
-  url: string,
-  { size = 512, defaultImage = 'robohash' }: LibravatarOptions
-) => {
-  return `${url}?d=${defaultImage}&s=${size}`;
 };
 
 /**

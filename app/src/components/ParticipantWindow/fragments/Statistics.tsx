@@ -12,7 +12,6 @@ import { OverlayIconButton } from '../../../commonComponents';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 
 // Will be addressed in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2129
-// import { StatisticsContent } from './StatisticsContent';
 
 const Statistics = ({
   descriptor,
@@ -65,9 +64,7 @@ const Statistics = ({
         }}
         disablePortal={disablePopoverPortal}
         keepMounted={false}
-      >
-        {/* <StatisticsContent descriptor={descriptor} /> */}
-      </Popover>
+      ></Popover>
     </>
   );
 };

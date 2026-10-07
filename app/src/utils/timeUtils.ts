@@ -5,8 +5,6 @@ import { add, Duration, Interval, intervalToDuration } from 'date-fns';
 
 import { getRandomInteger } from './numberUtils';
 
-export const getISOStringWithoutMilliseconds = (date: Date) => date.toISOString().split('.')[0] + 'Z';
-
 export const getIntervalToDurationString = (interval: Interval) => {
   const duration = intervalToDuration(interval);
 

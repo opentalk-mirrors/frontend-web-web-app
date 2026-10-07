@@ -99,11 +99,6 @@ export const selectJoinedFirstTimestamp = createSelector(
       .sort((a, b) => a.localeCompare(b))[0]
 );
 
-export const selectCombinedParticipantsAndUserCount = createSelector(
-  [selectCombinedParticipantsAndUser],
-  (users) => users.length
-);
-
 export const selectAllMeetingNotesParticipants = createSelector(
   [selectCombinedParticipantsAndUser, selectUserAsParticipant],
   (participants, user) => {

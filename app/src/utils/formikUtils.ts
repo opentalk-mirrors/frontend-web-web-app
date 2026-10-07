@@ -62,10 +62,6 @@ export interface IFormikCustomFieldPropsReturnDurationValue extends IFormikCommo
   setFieldValue: (field: string, value: Primitive, shouldValidate?: boolean) => void;
 }
 
-export interface IFormikSelectPropsReturnValue extends IFormikCommonPropsReturnValue {
-  value: string | undefined;
-}
-
 export interface IFormikRatingPropsReturnValue extends IFormikCommonPropsReturnValue {
   value: number | null | undefined;
 }
@@ -122,34 +118,6 @@ export function formikProps<Values>(
     value: getValue(),
     error: hasError,
     helperText: (hasError && (errorMessage as string)) || undefined,
-  };
-}
-
-export function formikSelectProps<Values>(
-  fieldName: FormikPaths<Values>,
-  formik: FormikProps<Values>
-): IFormikSelectPropsReturnValue {
-  const { values, handleBlur, handleChange, errors } = formik;
-  const errorMessage = get(errors, fieldName);
-  const hasError = Boolean(errorMessage);
-
-  const getValue = () => {
-    const raw = get(values, fieldName);
-    if (typeof raw === 'string') {
-      return raw;
-    }
-    if (typeof raw === 'number') {
-      return String(raw);
-    }
-    return '';
-  };
-
-  return {
-    name: fieldName,
-    onChange: handleChange,
-    onBlur: handleBlur,
-    value: getValue(),
-    error: hasError,
   };
 }
 

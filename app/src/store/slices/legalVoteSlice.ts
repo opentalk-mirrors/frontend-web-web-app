@@ -236,7 +236,7 @@ export const legalVoteSlice = createSlice({
   },
 });
 
-export const actions = legalVoteSlice.actions;
+const actions = legalVoteSlice.actions;
 export const {
   initialized,
   started,
