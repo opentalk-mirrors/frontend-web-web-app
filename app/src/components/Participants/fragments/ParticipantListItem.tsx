@@ -251,7 +251,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
           muteOption,
         ];
         break;
-      case Role.User: {
+      case Role.User:
         if (participant.participationKind === ParticipationKind.Registered) {
           options = [
             {
@@ -281,7 +281,19 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
           ];
         }
         break;
-      }
+      case Role.Guest:
+        options = [
+          {
+            i18nKey: 'participant-menu-rename',
+            action: handleRenameParticipantDialog,
+          },
+          {
+            i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
+            action: handlePresenterRoleRight,
+          },
+          muteOption,
+        ];
+        break;
       default:
         options = [];
     }
@@ -467,7 +479,8 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   };
 
   const renderAvatar = useCallback(() => {
-    const isParticipantGuest = participant.participationKind === ParticipationKind.Guest;
+    const isParticipantGuest =
+      participant.role === Role.Guest || participant.participationKind === ParticipationKind.Guest;
     const isParticipantModerator = participant.role === Role.Moderator;
     const renderWithBadge = isParticipantGuest || isParticipantModerator;
 

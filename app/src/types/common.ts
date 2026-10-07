@@ -84,6 +84,7 @@ export interface Command {
 export enum Role {
   User = 'user',
   Moderator = 'moderator',
+  Guest = 'guest',
 }
 
 export enum WaitingState {

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { codeCallback } from '@opentalk/redux-oidc';
 import { BackendModules, CoreFeatures } from '@opentalk/rest-api-rtk-query';
-import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, Selector, createSelector, createSlice } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 
 import type { RootState } from '../';
@@ -11,7 +11,7 @@ import { restApi } from '../../api/rest';
 import { sendChatMessage } from '../../api/types/outgoing/chat';
 import { lowerHand, raiseHand } from '../../api/types/outgoing/raiseHands';
 import i18n from '../../i18n';
-import { MeetingNotesAccess, ParticipantId, ParticipationKind, Role, WaitingState } from '../../types';
+import { MeetingNotesAccess, Participant, ParticipantId, ParticipationKind, Role, WaitingState } from '../../types';
 import { initSentryReportWithUser } from '../../utils/glitchtipUtils';
 import { changeMedia, joinSuccess, setScreenShareEnabled, startRoom } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
@@ -87,6 +87,7 @@ export const userSlice = createSlice({
         state.isRoomOwner = isRoomOwner;
         state.joinedAsModerator = role === Role.Moderator;
         state.isTariffUpgradable = enabledModules[BackendModules.Core]?.includes(CoreFeatures.StorageUpgradable);
+        state.participationKind = role === Role.Guest ? ParticipationKind.Guest : ParticipationKind.Registered;
       }
     );
     builder.addCase(connectionClosed, (state) => {
@@ -143,31 +144,33 @@ export const selectCanManageRoomAssets = createSelector(
 
 export const selectIsGuest = createSelector(
   [userState],
-  (state) => state.participationKind === ParticipationKind.Guest
+  (state) => state.role === Role.Guest || state.participationKind === ParticipationKind.Guest
 );
 export const selectRole = createSelector([userState], (state) => state.role);
+export const selectParticipationKind = createSelector([userState], (state) => state.participationKind);
 export const selectIsRoomOwner = createSelector([userState], (state) => state.isRoomOwner);
 export const selectJoinedAt = createSelector([userState], (state) => state.joinedAt);
 export const selectLastActive = createSelector([userState], (state) => state.lastActive);
 
-export const selectUserAsPartialParticipant = createSelector(
+export const selectUserAsPartialParticipant: Selector<
+  RootState,
+  Omit<Participant, 'connections' | 'handIsUp' | 'handUpdatedAt' | 'breakoutRoomId'> | undefined
+> = createSelector(
   [
     selectDisplayName,
     selectAvatarUrl,
     selectUserMeetingNotesAccess,
     selectRole,
+    selectParticipationKind,
     selectOurUuid,
     selectIsRoomOwner,
     selectJoinedAt,
     selectLastActive,
   ],
-  (displayName, avatarUrl, meetingNotesAccess, role, uuid, isRoomOwner, joinedAt, lastActive) => {
+  (displayName, avatarUrl, meetingNotesAccess, role, participationKind, uuid, isRoomOwner, joinedAt, lastActive) => {
     if (uuid === null || joinedAt === undefined || lastActive === undefined) {
       return undefined;
     }
-
-    const participationKind =
-      role === Role.User || role === Role.Moderator ? ParticipationKind.Registered : ParticipationKind.Guest;
 
     return {
       id: uuid,
