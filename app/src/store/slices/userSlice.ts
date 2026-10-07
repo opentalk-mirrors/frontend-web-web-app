@@ -37,7 +37,7 @@ const initialState: UserState = {
   displayName: '',
   role: Role.User,
   participationKind: ParticipationKind.Registered,
-  meetingNotesAccess: 'none' as MeetingNotesAccess.None, // this will be fixed with the next version of the ts-jest
+  meetingNotesAccess: MeetingNotesAccess.None,
   isRoomOwner: false,
   joinedAsModerator: false,
 };
