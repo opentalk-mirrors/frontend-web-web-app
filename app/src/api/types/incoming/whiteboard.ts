@@ -88,32 +88,15 @@ type EditRestrictionsDisabled = {
 export enum WhiteboardError {
   /// The requesting user has insufficient permissions for the operation.
   InsufficientPermissions = 'insufficient_permissions',
-  /// Spacedeck has not been initialized yet.
-  NotInitialized = 'not_initialized',
-  /// Spacedeck is already initializing.
-  CurrentlyInitializing = 'currently_initializing',
-  /// The spacedeck initialization failed.
-  InitializationFailed = 'initialization_failed',
-  /// Spacedeck is already initialized.
-  AlreadyInitialized = 'already_initialized',
-  /// The requesting user has exceeded their storage.
-  StorageExceeded = 'storage_exceeded',
-  /// An internal error occurred while saving the whiteboard pdf.
-  InternalStorage = 'internal_storage',
-  ///
-  GenerateFailed = 'generate_failed',
+  /// A whiteboard session is already running.
+  AlreadyStarted = 'already_started',
+  /// No whiteboard session is running.
+  NotStarted = 'not_started',
+  /// The referenced participant is not known to the room.
+  UnknownParticipant = 'unknown_participant',
 }
 
-type SpacedeckInitialized = {
-  message: 'initialized';
-  url: string;
-};
-
-interface SpacedeckPdfCreated extends AssetRef {
-  message: 'pdf_created';
-}
-
-export type ExcalidrawMessage =
+export type WhiteboardPayload =
   | Started
   | Stopped
   | VolatileBroadcast
@@ -127,10 +110,6 @@ export type ExcalidrawMessage =
   | EditRestrictionsDisabled
   | ErrorStruct<WhiteboardError>;
 
-export type SpacedeckMessage = SpacedeckInitialized | SpacedeckPdfCreated | ErrorStruct<WhiteboardError>;
-
-type ExcalidrawWhiteboard = NamespacedIncoming<ExcalidrawMessage, 'excalidraw'>;
-type SpacedeckWhiteboard = NamespacedIncoming<SpacedeckMessage, 'whiteboard'>;
-type WhiteboardMessage = ExcalidrawWhiteboard | SpacedeckWhiteboard;
+type WhiteboardMessage = NamespacedIncoming<WhiteboardPayload, 'whiteboard'>;
 
 export default WhiteboardMessage;

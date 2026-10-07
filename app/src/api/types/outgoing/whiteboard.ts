@@ -73,47 +73,26 @@ export type Action =
   | Follow
   | Unfollow
   | EnableEditRestrictions
-  | DisableEditRestrictions
-  | StartWhiteboard
-  | GenerateWhiteboardPdf;
+  | DisableEditRestrictions;
 type Whiteboard = Namespaced<Action, 'whiteboard'>;
 
-// Spacedeck block start
-export interface StartWhiteboard {
-  action: 'initialize';
-}
-
-export interface GenerateWhiteboardPdf {
-  action: 'generate_pdf';
-}
-
-export const startWhiteboard = createSignalingApiCall<StartWhiteboard>('whiteboard', 'initialize');
-export const generateWhiteboardPdf = createSignalingApiCall<GenerateWhiteboardPdf>('whiteboard', 'generate_pdf');
-// spacedeck block end
-
-export const start = createSignalingApiCall<Start>('excalidraw', 'start');
-export const broadcast = createSignalingApiCall<Broadcast>('excalidraw', 'broadcast');
-export const broadcastVolatile = createSignalingApiCall<BroadcastVolatile>('excalidraw', 'broadcast_volatile');
-export const storeScene = createSignalingApiCall<StoreScene>('excalidraw', 'store_scene');
-export const follow = createSignalingApiCall<Follow>('excalidraw', 'follow');
-export const unfollow = createSignalingApiCall<Unfollow>('excalidraw', 'unfollow');
+export const start = createSignalingApiCall<Start>('whiteboard', 'start');
+export const broadcast = createSignalingApiCall<Broadcast>('whiteboard', 'broadcast');
+export const broadcastVolatile = createSignalingApiCall<BroadcastVolatile>('whiteboard', 'broadcast_volatile');
+export const storeScene = createSignalingApiCall<StoreScene>('whiteboard', 'store_scene');
+export const follow = createSignalingApiCall<Follow>('whiteboard', 'follow');
+export const unfollow = createSignalingApiCall<Unfollow>('whiteboard', 'unfollow');
 export const enableEditRestrictions = createSignalingApiCall<EnableEditRestrictions>(
-  'excalidraw',
+  'whiteboard',
   'enable_edit_restrictions'
 );
 export const disableEditRestrictions = createSignalingApiCall<DisableEditRestrictions>(
-  'excalidraw',
+  'whiteboard',
   'disable_edit_restrictions'
 );
 
 export const handler = createModule<RootState>((builder) => {
   builder
-    .addCase(startWhiteboard.action, (_state, { payload }) => {
-      sendMessage(startWhiteboard(payload));
-    })
-    .addCase(generateWhiteboardPdf.action, (_state, { payload }) => {
-      sendMessage(generateWhiteboardPdf(payload));
-    })
     .addCase(start.action, (_state, { payload }) => {
       sendMessage(start(payload));
     })

@@ -35,7 +35,7 @@ import {
 } from '../../store/slices/roomSlice';
 import { showSubtitles } from '../../store/slices/transcriptionSlice';
 import { selectIsModerator } from '../../store/slices/userSlice';
-import { setEditRestrictions, setWhiteboardAvailable, updateRemoteScene } from '../../store/slices/whiteboardSlice';
+import { setEditRestrictions, updateRemoteScene } from '../../store/slices/whiteboardSlice';
 import {
   AutomodSelectionStrategy,
   CorePeerState,
@@ -272,21 +272,18 @@ export const handleRoomServerCoreMessage = async (
         });
       }
 
-      if (state.config.spacedeck.enabled && moduleData.whiteboard?.status === 'initialized') {
-        dispatch(setWhiteboardAvailable({ url: moduleData.whiteboard.url }));
-      }
-      if (moduleData.excalidraw && 'elements' in moduleData.excalidraw.scene) {
+      if (moduleData.whiteboard && 'elements' in moduleData.whiteboard.scene) {
         dispatch(
           updateRemoteScene({
-            elements: moduleData.excalidraw.scene.elements,
+            elements: moduleData.whiteboard.scene.elements,
           })
         );
         dispatch(
           setEditRestrictions({
-            enabled: moduleData.excalidraw.editRestrictions.type === 'enabled',
+            enabled: moduleData.whiteboard.editRestrictions.type === 'enabled',
             participants:
-              'unrestrictedParticipants' in moduleData.excalidraw.editRestrictions
-                ? moduleData.excalidraw.editRestrictions.unrestrictedParticipants
+              'unrestrictedParticipants' in moduleData.whiteboard.editRestrictions
+                ? moduleData.whiteboard.editRestrictions.unrestrictedParticipants
                 : undefined,
           })
         );

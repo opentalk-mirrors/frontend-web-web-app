@@ -207,9 +207,6 @@ const config: ConfigState = {
   meetingInactivityMediaDisableSeconds: 120 as Seconds,
   meetingInactivityWarningSeconds: 900 as Seconds,
   meetingInactivityTerminationSeconds: 3600 as Seconds,
-  spacedeck: {
-    enabled: false,
-  },
 };
 
 window.config = config;

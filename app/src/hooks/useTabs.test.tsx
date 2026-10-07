@@ -44,12 +44,6 @@ vi.mock('../config/moderationTabs', async () => {
         moduleKey: BackendModules.Whiteboard,
         divider: false,
       },
-      {
-        key: 'tab-whiteboard',
-        featureKey: undefined,
-        moduleKey: BackendModules.Excalidraw,
-        divider: false,
-      },
     ],
     Tab: {},
   };
@@ -184,12 +178,12 @@ describe('useTabs', () => {
     expect(coffeeBreakTab?.disabled).toBe(false);
   });
 
-  it('shows the whiteboard tab when only the excalidraw module is enabled', () => {
+  it('shows a single whiteboard tab when the whiteboard module is enabled', () => {
     const { store } = configureStore({
       initialState: {
         config: {
           features: {},
-          enabledModules: { [BackendModules.Excalidraw]: [] },
+          enabledModules: { [BackendModules.Whiteboard]: [] },
         },
       },
     });
@@ -201,29 +195,6 @@ describe('useTabs', () => {
     const whiteboardTabs = result.current.filter((tab: Tab) => tab.key === ModerationTabKey.Whiteboard);
 
     expect(whiteboardTabs).toHaveLength(1);
-    expect(whiteboardTabs[0].moduleKey).toBe(BackendModules.Excalidraw);
-  });
-
-  it('shows a single whiteboard tab when both whiteboard and excalidraw modules are enabled', () => {
-    const { store } = configureStore({
-      initialState: {
-        config: {
-          features: {},
-          enabledModules: {
-            [BackendModules.Whiteboard]: [],
-            [BackendModules.Excalidraw]: [],
-          },
-        },
-      },
-    });
-
-    const { result } = renderHook(() => useTabs(), {
-      wrapper: ({ children }) => <ReduxProvider store={store}>{children}</ReduxProvider>,
-    });
-
-    const whiteboardTabs = result.current.filter((tab: Tab) => tab.key === ModerationTabKey.Whiteboard);
-
-    expect(whiteboardTabs).toHaveLength(1);
-    expect(whiteboardTabs[0].moduleKey).toBe(BackendModules.Excalidraw);
+    expect(whiteboardTabs[0].moduleKey).toBe(BackendModules.Whiteboard);
   });
 });

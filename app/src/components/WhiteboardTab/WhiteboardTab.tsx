@@ -8,19 +8,10 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { AssetRef } from '../../api/types/incoming/whiteboard';
-import {
-  generateWhiteboardPdf,
-  start as startWhiteboard,
-  startWhiteboard as startSpacedeck,
-} from '../../api/types/outgoing/whiteboard';
-import { showStorageNearLimitNotification } from '../../commonComponents/Notistack/helper';
+import { start as startWhiteboard } from '../../api/types/outgoing/whiteboard';
 import { useAppSelector } from '../../hooks';
 import { useDownloadRoomAsset } from '../../hooks/useDownloadRoomAsset';
-import { useStorageStatus, StorageStatus } from '../../hooks/useStorageStatus';
-import { selectIsSpacedeckEnabled, selectAccountManagementUrl } from '../../store/slices/configSlice';
-import { selectIsModerator } from '../../store/slices/userSlice';
 import { selectIsWhiteboardAvailable, selectWhiteboardAssets } from '../../store/slices/whiteboardSlice';
-import StorageFullTooltip from '../StorageFullTooltip';
 
 const Link = styled(MUILink)<LinkProps>(() => ({
   cursor: 'pointer',
@@ -29,20 +20,12 @@ const Link = styled(MUILink)<LinkProps>(() => ({
 const WhiteboardTab = () => {
   const { t } = useTranslation();
   const whiteboardAssets: ReturnType<typeof selectWhiteboardAssets> = useAppSelector(selectWhiteboardAssets);
-  const showWhiteboard: ReturnType<typeof selectIsWhiteboardAvailable> = useAppSelector(selectIsWhiteboardAvailable);
-  const isModerator = useAppSelector(selectIsModerator);
-  const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
-  const isSpacedeckEnabled = useAppSelector(selectIsSpacedeckEnabled);
+  const isWhiteboardAvailable = useAppSelector(selectIsWhiteboardAvailable);
   const dispatch = useDispatch();
   const downloadAsset = useDownloadRoomAsset();
-  const { storageStatus, canUpgrade } = useStorageStatus();
   const { roomId } = useParams<'roomId'>() as { roomId: RoomId };
 
   const handleStartWhiteboard = () => {
-    if (isSpacedeckEnabled) {
-      dispatch(startSpacedeck.action());
-      return;
-    }
     dispatch(
       startWhiteboard.action({
         initialScene: {
@@ -55,36 +38,8 @@ const WhiteboardTab = () => {
     );
   };
 
-  const createPdf = () => {
-    if (isModerator) {
-      showStorageNearLimitNotification({ storageStatus, canUpgrade, accountManagementUrl });
-    }
-    dispatch(generateWhiteboardPdf.action());
-  };
-
   const handleDownload = async ({ assetId }: AssetRef) => {
     await downloadAsset({ roomId, assetId });
-  };
-
-  const renderButton = () => {
-    if (!showWhiteboard) {
-      return (
-        <Button onClick={handleStartWhiteboard} color="secondary">
-          {t('whiteboard-start-whiteboard-button')}
-        </Button>
-      );
-    }
-    if (!isSpacedeckEnabled) {
-      return null;
-    }
-
-    return (
-      <StorageFullTooltip>
-        <Button onClick={createPdf} color="secondary" disabled={storageStatus === StorageStatus.Full} fullWidth>
-          {t('whiteboard-create-pdf-button')}
-        </Button>
-      </StorageFullTooltip>
-    );
   };
 
   return (
@@ -113,7 +68,11 @@ const WhiteboardTab = () => {
           })}
         </Stack>
       </Box>
-      {renderButton()}
+      {!isWhiteboardAvailable && (
+        <Button onClick={handleStartWhiteboard} color="secondary">
+          {t('whiteboard-start-whiteboard-button')}
+        </Button>
+      )}
     </Stack>
   );
 };

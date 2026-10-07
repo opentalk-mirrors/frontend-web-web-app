@@ -61,7 +61,6 @@ const createState = (overrides: DeepPartial<RootState> = {}): RootState =>
     },
     config: {
       libravatarDefaultImage: 'robohash',
-      spacedeck: { enabled: false },
     },
     participants: {
       entities: {},
@@ -228,8 +227,7 @@ describe('handleRoomServerCoreMessage', () => {
       reaction: (payload) => payload.reaction,
       raiseHands: (payload) => payload.raiseHands,
       transcription: (payload) => payload.transcription,
-      whiteboard: null, // applied via setWhiteboardAvailable, not the joinSuccess payload
-      excalidraw: null, // applied via updateRemoteScene / setEditRestrictions
+      whiteboard: null, // applied via updateRemoteScene / setEditRestrictions
     };
 
     // Sentinels are shaped to avoid the handler's side-effect branches (extra dispatches), so that
@@ -248,8 +246,7 @@ describe('handleRoomServerCoreMessage', () => {
       trainingParticipationReport: { state: 'disabled' },
       transcription: { status: TranscriptionStatus.Inactive, showSubtitles: false, segments: [] },
       reaction: { restrictions: { type: 'disabled' } },
-      whiteboard: { status: 'not_initialized' },
-      excalidraw: { scene: {} },
+      whiteboard: { scene: {} },
       raiseHands: { raiseHandsEnabled: true, state: { raisedAt: new Date().toISOString() } },
     };
 

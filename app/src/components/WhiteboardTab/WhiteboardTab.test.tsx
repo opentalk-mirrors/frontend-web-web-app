@@ -32,9 +32,6 @@ describe('WhiteboardTab', () => {
     const configuredStore = configureStore({
       initialState: {
         config: {
-          spacedeck: {
-            enabled: false,
-          },
           provider: {
             accountManagementUrl: 'https://account.opentalk.eu',
           },
@@ -88,6 +85,28 @@ describe('WhiteboardTab', () => {
         },
       })
     );
+  });
+
+  it('hides the start button while a whiteboard session is running', () => {
+    const { store: runningStore } = configureStore({
+      initialState: {
+        whiteboard: {
+          whiteboardAssetList: [],
+          isWhiteboardAvailable: true,
+        },
+      },
+    });
+
+    renderWithProviders(
+      <MemoryRouter initialEntries={[`/room/${roomId}`]}>
+        <Routes>
+          <Route path="/room/:roomId" element={<WhiteboardTab />} />
+        </Routes>
+      </MemoryRouter>,
+      { store: runningStore }
+    );
+
+    expect(screen.queryByRole('button', { name: 'whiteboard-start-whiteboard-button' })).not.toBeInTheDocument();
   });
 
   it('calls downloadAsset function when clicking on a file link', async () => {

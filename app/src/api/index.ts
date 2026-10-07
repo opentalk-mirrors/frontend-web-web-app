@@ -80,7 +80,6 @@ const onMessage = (dispatch: AppDispatch, getState: () => RootState) => async (m
       handleTimerMessage(dispatch, message.payload);
       break;
     case 'whiteboard':
-    case 'excalidraw':
       handleWhiteboardMessage(dispatch, message.payload, getState());
       break;
     case 'reaction':

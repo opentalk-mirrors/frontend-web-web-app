@@ -99,7 +99,6 @@ export interface ModuleData {
   automod?: InitialAutomod;
   breakout?: InitialBreakout;
   chat: InitialChat;
-  excalidraw?: WhiteboardState;
   legalVote?: LegalVoteJoinSuccess;
   livekit: Livekit;
   moderation?: ModerationState;
