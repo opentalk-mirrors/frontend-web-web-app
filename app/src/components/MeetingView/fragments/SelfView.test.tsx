@@ -2,97 +2,38 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import type { NameTileProps } from '../../../commonComponents/NameTile';
 import SelfViewAnchorContext from '../../../provider/SelfViewAnchorContext';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
-import { SelfVideoContentProps } from './SelfVideoContent';
 import SelfView from './SelfView';
 
-const DEFAULT_VIEWPORT_WIDTH_PX = 1024;
-
-vi.mock('../../../commonComponents/NameTile', () => ({
+vi.mock('./SelfViewClip', () => ({
   __esModule: true,
-  default: (props: NameTileProps) => (
-    <div data-testid="name-tile">
-      {props.displayName}
-      {props.showIcons && <div data-testid="icons" />}
-    </div>
-  ),
+  default: ({ id }: { id: string }) => <div data-testid="selfview-clip-stub" id={id} />,
 }));
 
-vi.mock('./SelfVideoContent', () => ({
+vi.mock('./SelfViewBar', () => ({
   __esModule: true,
-  default: (props: SelfVideoContentProps) => <div data-testid="self-video-content">{props.displayName}</div>,
+  default: ({ id }: { id: string }) => <div data-testid="selfview-bar-stub" id={id} />,
 }));
+
+vi.mock('../../../assets/icons', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../assets/icons')>()),
+  CloseFullscreenIcon: () => <svg data-testid="close-fullscreen-icon" />,
+  OpenInFullIcon: () => <svg data-testid="open-in-full-icon" />,
+}));
+
+const renderSelfView = (isSelfViewMinimized = false) => {
+  const { store } = configureStore({ initialState: { ui: { isSelfViewMinimized } } });
+  const view = renderWithProviders(<SelfView />, { store, provider: { mui: true } });
+  return { store, ...view };
+};
 
 describe('SelfView', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  describe('size', () => {
-    // Reset to the default afterwards
-    afterEach(() => {
-      window.happyDOM?.setViewport({ width: DEFAULT_VIEWPORT_WIDTH_PX });
-    });
-
-    it.each([
-      { width: 390, size: 'sm', expected: { width: '93px', height: '140px' } },
-      { width: 1024, size: 'md', expected: { width: '120px', height: '80px' } },
-      { width: 1440, size: 'lg', expected: { width: '150px', height: '100px' } },
-      { width: 1536, size: 'xl', expected: { width: '150px', height: '100px' } },
-    ])('renders with specified fixed size for a $size viewport', ({ width, expected }) => {
-      window.happyDOM?.setViewport({ width });
-
-      const { store } = configureStore();
-      renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-
-      const container = screen.getByTestId('selfview-container');
-      expect(container).toHaveStyle({ width: expected.width, height: expected.height });
-    });
-  });
-
-  it('renders video content', () => {
-    const { store } = configureStore();
-    renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(screen.getByTestId('self-video-content')).toBeInTheDocument();
-  });
-
-  it('passes display name to video content', () => {
-    const { store } = configureStore({
-      initialState: {
-        user: {
-          displayName: 'Bob Benton',
-        },
-      },
-    });
-    renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(screen.getByTestId('self-video-content')).toHaveTextContent('Bob Benton');
-  });
-
-  it('renders name tile', () => {
-    const { store } = configureStore();
-    renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(screen.getByTestId('name-tile')).toBeInTheDocument();
-  });
-
-  it('passes "you" as name to the name tile', () => {
-    const { store } = configureStore();
-    renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(screen.getByTestId('name-tile')).toHaveTextContent('global-you');
-  });
-
-  it('prevent rendering icons in the name tile', () => {
-    const { store } = configureStore();
-    renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(screen.getByTestId('name-tile')).not.toContainElement(screen.queryByTestId('icons'));
-  });
-
   it('portals into the provided anchor element', () => {
     const { store } = configureStore();
     const anchor = document.createElement('div');
-    anchor.setAttribute('data-testid', 'anchor');
     document.body.appendChild(anchor);
 
     const { container } = renderWithProviders(
@@ -102,15 +43,79 @@ describe('SelfView', () => {
       { store, provider: { mui: true } }
     );
 
-    expect(anchor).toContainElement(screen.getByTestId('self-video-content'));
-    expect(container).not.toContainElement(screen.getByTestId('self-video-content'));
+    expect(anchor).toContainElement(screen.getByTestId('selfview-clip-stub'));
+    expect(container).not.toContainElement(screen.getByTestId('selfview-clip-stub'));
 
     anchor.remove();
   });
 
   it('renders inline (no portal) when no anchor is set', () => {
-    const { store } = configureStore();
-    const { container } = renderWithProviders(<SelfView />, { store, provider: { mui: true } });
-    expect(container).toContainElement(screen.getByTestId('self-video-content'));
+    const { container } = renderSelfView();
+    expect(container).toContainElement(screen.getByTestId('selfview-clip-stub'));
+  });
+
+  describe('in expanded state', () => {
+    it('renders the clip and not the bar', () => {
+      renderSelfView(false);
+      expect(screen.getByTestId('selfview-clip-stub')).toBeInTheDocument();
+      expect(screen.queryByTestId('selfview-bar-stub')).not.toBeInTheDocument();
+    });
+
+    it('renders a minimize button controlling the clip', () => {
+      renderSelfView(false);
+      const button = screen.getByRole('button', { name: 'selfview-minimize' });
+      expect(button).toContainElement(screen.getByTestId('close-fullscreen-icon'));
+      expect(button).toHaveAttribute('aria-controls', screen.getByTestId('selfview-clip-stub').id);
+    });
+
+    it('shows a tooltip when hovering over a button', async () => {
+      const user = userEvent.setup();
+      renderSelfView(false);
+      const button = screen.getByRole('button', { name: 'selfview-minimize' });
+
+      await user.hover(button);
+
+      const tooltip = await screen.findByRole('tooltip', { name: 'selfview-minimize' });
+      expect(tooltip).toBeInTheDocument();
+    });
+  });
+
+  describe('in minimized state', () => {
+    it('renders the bar and not the clip', () => {
+      renderSelfView(true);
+      expect(screen.getByTestId('selfview-bar-stub')).toBeInTheDocument();
+      expect(screen.queryByTestId('selfview-clip-stub')).not.toBeInTheDocument();
+    });
+
+    it('renders an expand button controlling the bar', () => {
+      renderSelfView(true);
+      const button = screen.getByRole('button', { name: 'selfview-expand' });
+      expect(button).toContainElement(screen.getByTestId('open-in-full-icon'));
+      expect(button).toHaveAttribute('aria-controls', screen.getByTestId('selfview-bar-stub').id);
+    });
+
+    it('shows a tooltip when hovering over a button', async () => {
+      const user = userEvent.setup();
+      renderSelfView(true);
+      const button = screen.getByRole('button', { name: 'selfview-expand' });
+
+      await user.hover(button);
+
+      const tooltip = await screen.findByRole('tooltip', { name: 'selfview-expand' });
+      expect(tooltip).toBeInTheDocument();
+    });
+  });
+
+  it('toggles the minimized state on click', async () => {
+    const user = userEvent.setup();
+    const { store } = renderSelfView(false);
+
+    await user.click(screen.getByRole('button', { name: 'selfview-minimize' }));
+    expect(store.getState().ui.isSelfViewMinimized).toBe(true);
+    expect(screen.getByTestId('selfview-bar-stub')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'selfview-expand' }));
+    expect(store.getState().ui.isSelfViewMinimized).toBe(false);
+    expect(screen.getByTestId('selfview-clip-stub')).toBeInTheDocument();
   });
 });

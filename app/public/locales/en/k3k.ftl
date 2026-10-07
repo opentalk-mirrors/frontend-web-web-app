@@ -322,6 +322,7 @@ more-menu-stop-streaming = Stop livestream
 more-menu-export-attendance-report = Export attendance report
 more-menu-start-remote-control = Start Remote Control App
 
+camera-on-reminder-notification = Your video is still being sent to others.
 microphones-enabled-notification = Microphones were enabled by the moderator
 microphones-disabled-notification = Microphones were disabled by the moderator
 turn-handraises-off-notification = Handraises were disabled by the moderator
@@ -667,9 +668,9 @@ indicator-has-audio-off = {$participantName} has the mic off
 indicator-has-audio-on = {$participantName} has the mic on
 indicator-has-raised-hand = {$participantName} wants to say something
 indicator-pinned = {$participantName} is pinned
-indicator-fullscreen-open = open fullscreen
-indicator-fullscreen-close = close fullscreen
 indicator-change-position = change position
+selfview-minimize = Minimize self-view
+selfview-expand = Expand self-view
 
 wrong-browser-dialog-title = Your browser is only partially supported.
 wrong-browser-dialog-message = Please use the latest version of Chrome, Firefox or Safari. If you have further difficulties, check whether your browser is running in compatibility or incognito mode. Disable them and try again here.
@@ -789,6 +790,8 @@ global-meeting = { $count ->
     *[other] meetings
 }
 global-open-new-tab = Open in new tab
+global-fullscreen-open = Open fullscreen
+global-fullscreen-close = Close fullscreen
 global-required-field = This is a mandatory field
 global-unknown = Unknown
 global-unknown-username = Unknown

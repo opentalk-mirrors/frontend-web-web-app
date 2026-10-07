@@ -12,6 +12,7 @@ import {
   isAnyOf,
   ListenerEffectAPI,
   PayloadAction,
+  UnknownAction,
 } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import {
@@ -64,7 +65,12 @@ import { selectShouldForceMuted } from './moderationSlice';
 import { abortedReconnection, enteredWaitingRoom } from './roomSlice';
 import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice';
 import { timerStarted } from './timerSlice';
-import { pinnedConnectionIdentifierSet, pinnedRemoteScreenshare, updatedCinemaLayout } from './uiSlice';
+import {
+  pinnedConnectionIdentifierSet,
+  pinnedRemoteScreenshare,
+  toggledSelfViewMinimized,
+  updatedCinemaLayout,
+} from './uiSlice';
 
 type WritableDraft<T> = {
   -readonly [K in keyof T]: Draft<T[K]>;
@@ -477,6 +483,24 @@ function updateLobbyTrack(
 /*                  Listeners                   */
 /*                                              */
 /************************************************/
+
+export const handleCameraOnReminder = (
+  _action: UnknownAction,
+  listenerApi: ListenerEffectAPI<RootState, AppDispatch>
+) => {
+  const state = listenerApi.getState();
+
+  if (state.ui.isSelfViewMinimized && state.livekit.mediaSettings.cameraEnabled) {
+    notifications.info(t('camera-on-reminder-notification'));
+  }
+};
+
+const startCameraOnReminderListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    matcher: isAnyOf(setMediaSettingVideoEnabled, toggledSelfViewMinimized),
+    effect: handleCameraOnReminder,
+  });
+
 const startConnectLivekitListeners = (startAppListening: StartAppListening) => {
   startAppListening({
     actionCreator: connectRoom.fulfilled,
@@ -804,6 +828,7 @@ export const startLivekitListeners = (startAppListening: StartAppListening) => {
   startDisconnectRoomCleanupListener(startAppListening);
   startPageUnloadCleanupListener(startAppListening);
   startSwitchRoomListener(startAppListening);
+  startCameraOnReminderListener(startAppListening);
 };
 
 /************************************************/

@@ -5,9 +5,11 @@ import { AutomodStartedEvent } from '../../api/types/incoming/automod';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { MODERATION_MENU_VIEW, ModerationTabKey } from '../../config/constants';
 import LayoutOptions from '../../enums/LayoutOptions';
+import { ChatScope, ConnectionIdentifier, ParticipantId, SortOption } from '../../types';
 import { started as automodStarted } from './automodSlice';
 import { SwitchedRoomPayload, switchedRoom } from './breakoutSlice';
 import { CinemaViewSortOrder } from './common';
+import { connectionClosed } from './roomSlice';
 import reducer, {
   closeSidePanel,
   loadCinemaLayoutSettingsFromLocalStorage,
@@ -19,6 +21,7 @@ import reducer, {
   toggleModerationPanel,
   toggleSidePanel,
   updatedCinemaLayout,
+  type UIState,
 } from './uiSlice';
 
 const getInitialState = () => reducer(undefined, { type: '@@INIT' });
@@ -363,5 +366,61 @@ describe('per-meeting default grid size', () => {
 
       expect(loadCinemaLayoutSettingsFromLocalStorage()).toEqual({ cinemaLayout: LayoutOptions.Grid });
     });
+  });
+});
+
+describe('connection closed', () => {
+  it('resets self view state', () => {
+    const initialState: UIState = { ...getInitialState(), isSelfViewMinimized: true };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.isSelfViewMinimized).toBe(false);
+  });
+
+  it('resets chat conversation state', () => {
+    const initialState: UIState = {
+      ...getInitialState(),
+      chatConversationState: { scope: ChatScope.Private, target: 'participant-1' as ParticipantId },
+    };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.chatConversationState).toEqual({ scope: ChatScope.Global });
+  });
+
+  it('resets cinema layout', () => {
+    const initialState: UIState = { ...getInitialState(), cinemaLayout: LayoutOptions.Speaker };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.cinemaLayout).toBe(LayoutOptions.Grid);
+  });
+
+  it('resets cinema view order', () => {
+    const initialState: UIState = { ...getInitialState(), cinemaViewOrder: CinemaViewSortOrder.VideoFirst };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.cinemaViewOrder).toBe(CinemaViewSortOrder.ActivityFirst);
+  });
+
+  it('resets participants sort option', () => {
+    const initialState: UIState = { ...getInitialState(), participantsSortOption: SortOption.LastActive };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.participantsSortOption).toBe(SortOption.NameASC);
+  });
+
+  it('resets pinned connection identifier', () => {
+    const initialState: UIState = {
+      ...getInitialState(),
+      pinnedConnectionIdentifier: 'participant-1:connection-1' as ConnectionIdentifier,
+    };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.pinnedConnectionIdentifier).toBeUndefined();
+  });
+
+  it('resets pagination page', () => {
+    const initialState: UIState = { ...getInitialState(), paginationPage: 3 };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.paginationPage).toBe(1);
+  });
+
+  it('resets participants search value', () => {
+    const initialState: UIState = { ...getInitialState(), participantsSearchValue: 'alice' };
+    const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
+    expect(state.participantsSearchValue).toBe('');
   });
 });

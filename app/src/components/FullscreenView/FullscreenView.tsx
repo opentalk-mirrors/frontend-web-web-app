@@ -188,7 +188,7 @@ const FullscreenView = () => {
             >
               <PinIcon />
             </IconButton>
-            <IconButton aria-label={t('indicator-fullscreen-close')} onClick={handleCloseFullscreen} color="primary">
+            <IconButton aria-label={t('global-fullscreen-close')} onClick={handleCloseFullscreen} color="primary">
               <CloseIcon />
             </IconButton>
           </Box>

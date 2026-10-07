@@ -67,6 +67,7 @@ export type UIState = {
   cinemaViewOrder: CinemaViewSortOrder;
   cinemaGridSize: (typeof GRID_SIZES)[number];
   lastCinemaLayout: LayoutOptions;
+  isSelfViewMinimized: boolean;
   paginationPage: number;
   paginationDirection: PaginationDirection;
   // V2-CLEANUP: is not needed after transition to V2
@@ -109,6 +110,7 @@ export const initialState: UIState = {
   cinemaViewOrder: CinemaViewSortOrder.ActivityFirst,
   cinemaGridSize: GRID_SIZES[0],
   lastCinemaLayout: LayoutOptions.Grid,
+  isSelfViewMinimized: false,
   paginationPage: 1,
   paginationDirection: 'right',
   pinnedConnectionIdentifier: undefined,
@@ -273,6 +275,9 @@ export const uiSlice = createSlice({
     setSelfRenameDialogVisible: (state, { payload }: PayloadAction<boolean>) => {
       state.showSelfRenameDialog = payload;
     },
+    toggledSelfViewMinimized: (state) => {
+      state.isSelfViewMinimized = !state.isSelfViewMinimized;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(
@@ -298,6 +303,7 @@ export const uiSlice = createSlice({
       state.pinnedConnectionIdentifier = initialState.pinnedConnectionIdentifier;
       state.paginationPage = initialState.paginationPage;
       state.participantsSearchValue = initialState.participantsSearchValue;
+      state.isSelfViewMinimized = initialState.isSelfViewMinimized;
     });
     builder.addCase(setMeetingNotesReadUrl, (state) => {
       state.isCurrentMeetingNotesHighlighted = true;
@@ -394,6 +400,7 @@ export const {
   setPresenterVideoPosition,
   setUiMode,
   setSelfRenameDialogVisible,
+  toggledSelfViewMinimized,
 } = uiSlice.actions;
 
 export const actions = uiSlice.actions;
@@ -455,6 +462,8 @@ export const selectHaveSeenMobilePollsAndVotes = (state: RootState) => state.ui.
 export const selectIsDrawerOpen = (state: RootState) => state.ui.isDrawerOpen;
 export const selectCurrentMenuTab = (state: RootState) => state.ui.currentMenuTab;
 export const selectPresenterVideoPosition = (state: RootState) => state.ui.presenterVideoPosition;
+
+export const selectIsSelfViewMinimized = (state: RootState) => state.ui.isSelfViewMinimized;
 
 export default uiSlice.reducer;
 

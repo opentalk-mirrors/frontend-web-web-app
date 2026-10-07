@@ -10,13 +10,12 @@ import { VideoHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PinIcon, WarningIcon } from '../../assets/icons';
-import { NameTile } from '../../commonComponents';
+import { NameTile, OverlayIconButton } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
 import useMediaDevice from '../../hooks/useMediaDevice';
 import { selectLivekitUnavailable } from '../../store/slices/livekitSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
 import { selectDisplayName, selectOurUuid } from '../../store/slices/userSlice';
-import { OverlayIconButton } from '../ParticipantWindow/fragments/OverlayIconButton';
 import ReactionIndicator from '../ParticipantWindow/fragments/ReactionIndicator';
 
 type PropsType = VideoHTMLAttributes<HTMLVideoElement>;

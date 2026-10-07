@@ -43,7 +43,7 @@ describe('VideoOverlay general', () => {
       provider: { snackbar: true, mui: true },
     });
 
-    const fullscreenButton = screen.getByRole('button', { name: 'indicator-fullscreen-open' });
+    const fullscreenButton = screen.getByRole('button', { name: 'global-fullscreen-open' });
     expect(fullscreenButton).toBeInTheDocument();
   });
   it('does not render fullscreen button if fullscreen feature is unavailable', () => {
@@ -55,7 +55,7 @@ describe('VideoOverlay general', () => {
       provider: { snackbar: true, mui: true },
     });
 
-    expect(screen.queryByRole('button', { name: 'indicator-fullscreen-open' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'global-fullscreen-open' })).not.toBeInTheDocument();
   });
 });
 

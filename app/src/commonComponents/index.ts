@@ -10,7 +10,7 @@ import CopyTextField from './CopyTextField';
 import DurationField, { DurationValueOptions } from './DurationField';
 import ErrorFormMessage from './ErrorFormMessage';
 import FormWrapper from './FormWrapper';
-import { AdornmentIconButton, CircularIconButton, IconButton, InfoButton } from './IconButtons';
+import { AdornmentIconButton, CircularIconButton, IconButton, InfoButton, OverlayIconButton } from './IconButtons';
 import { MenuSectionTitle, MenuTitle } from './MenuUtils';
 import NameTile from './NameTile';
 import {
@@ -52,6 +52,7 @@ export {
   CircularIconButton,
   IconButton,
   InfoButton,
+  OverlayIconButton,
   SnackbarProvider,
   notificationAction,
   notificationPersistent,
