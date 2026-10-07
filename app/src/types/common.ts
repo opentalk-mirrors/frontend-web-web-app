@@ -63,17 +63,6 @@ export interface NamespacedIncoming<P = void, T extends string = Namespaces> ext
   timestamp: Timestamp;
 }
 
-export interface IParticipantControl {
-  displayName: string;
-  avatarUrl?: string;
-  handIsUp: boolean;
-  joinedAt: string;
-  leftAt: string | null;
-  handUpdatedAt: string;
-  participationKind: ParticipationKind;
-  role?: Role;
-  isRoomOwner: boolean;
-}
 export enum ForceMuteType {
   Enabled = 'enabled',
   Disabled = 'disabled',
