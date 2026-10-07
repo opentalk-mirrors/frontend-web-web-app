@@ -4,12 +4,12 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MoreIcon } from '../../../assets/icons';
-import { ToolbarButtonIds } from '../../../constants';
-import { useAppSelector } from '../../../hooks';
-import { selectIsRoomDeleted } from '../../../store/slices/roomSlice';
+import { MoreIcon } from '../../assets/icons';
+import { ToolbarButtonIds } from '../../constants';
+import { useAppSelector } from '../../hooks';
+import { selectIsRoomDeleted } from '../../store/slices/roomSlice';
+import ToolbarButton from '../Toolbar/fragments/ToolbarButton';
 import MoreMenu from './MoreMenu';
-import ToolbarButton from './ToolbarButton';
 
 const MenuButton = () => {
   const [showMenu, setShowMenu] = useState(false);

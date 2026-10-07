@@ -11,6 +11,7 @@ import DurationField, { DurationValueOptions } from './DurationField';
 import ErrorFormMessage from './ErrorFormMessage';
 import FormWrapper from './FormWrapper';
 import { AdornmentIconButton, CircularIconButton, IconButton, InfoButton } from './IconButtons';
+import { MenuSectionTitle, MenuTitle } from './MenuUtils';
 import NameTile from './NameTile';
 import {
   SnackbarProvider,
@@ -30,7 +31,6 @@ import Rating from './Rating';
 import SortPopoverMenu from './SortPopoverMenu';
 import SuspenseLoading from './SuspenseLoading';
 import Toggle, { ToggleOptions } from './Toggle';
-import ToolbarMenuUtils from './ToolbarMenuUtils';
 import VisuallyHiddenTitle from './VisuallyHiddenTitle';
 
 export {
@@ -42,11 +42,12 @@ export {
   CopyTextField,
   DurationField,
   NameTile,
+  MenuTitle,
+  MenuSectionTitle,
   ErrorFormMessage,
   Rating,
   FormWrapper,
   SuspenseLoading,
-  ToolbarMenuUtils,
   AdornmentIconButton,
   CircularIconButton,
   IconButton,

@@ -4,8 +4,8 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { setIsRoomDeleted } from '../../../store/slices/roomSlice';
-import { configureStore, renderWithProviders } from '../../../utils/testUtils';
+import { setIsRoomDeleted } from '../../store/slices/roomSlice';
+import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import MoreButton from './MoreButton';
 
 const mockedMoreMenu = vi.hoisted(() =>

@@ -17,7 +17,7 @@ import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CameraOnIcon, CloseIcon, SettingsIcon } from '../../../assets/icons';
-import { CommonSwitch } from '../../../commonComponents';
+import { CommonSwitch, MenuSectionTitle } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import useMediaDevice from '../../../hooks/useMediaDevice';
 import { setBackgroundEffects, switchActiveDevice, switchLocalDevice } from '../../../store/commonActions';
@@ -33,7 +33,6 @@ import { mirroredVideoSet, selectMirroredVideoEnabled } from '../../../store/sli
 import { VideoSetting } from '../../../types';
 import { DeviceId } from '../../../types/device';
 import { isBackgroundEffectSupported } from '../../../utils/mediaUtils';
-import { MenuSectionTitle } from '../../Toolbar/fragments/ToolbarMenuUtils';
 import DeviceManager from './DeviceManager';
 import { DevicePermissionState } from './constants';
 

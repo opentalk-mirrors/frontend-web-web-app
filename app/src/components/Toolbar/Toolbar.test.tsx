@@ -33,7 +33,7 @@ vi.mock('./fragments/EndCallButton', () => ({
   default: () => <div data-testid="end-call-button"></div>,
 }));
 
-vi.mock('./fragments/MoreButton', () => ({
+vi.mock('../MoreMenu/MoreButton', () => ({
   __esModule: true,
   default: () => <div data-testid="more-button"></div>,
 }));
