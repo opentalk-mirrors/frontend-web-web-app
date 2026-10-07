@@ -49,7 +49,7 @@ import uiVersionReducer, {
 import userReducer from './slices/userSlice';
 import whiteboardReducer from './slices/whiteboardSlice';
 
-export const middleware: Array<Middleware> = [
+const middleware: Array<Middleware> = [
   apiMiddleware,
   restApi.middleware,
   rtkQueryErrorLoggerMiddleware,
@@ -72,7 +72,7 @@ if (process.env.NODE_ENV === 'development') {
   middleware.push(crashReporter);
 }
 
-export const rootReducer = combineReducers({
+const rootReducer = combineReducers({
   auth: authReducer,
   automod: automodReducer,
   breakout: breakoutReducer,
@@ -105,7 +105,7 @@ export const rootReducer = combineReducers({
 
 // disable action sanitizer for localTrack and room object to prevent Redux toolkit for doing excesive work
 
-export const mediaRehydrateSlice = () => {
+const mediaRehydrateSlice = () => {
   const storageItem = localStorage.getItem('mediaChoices');
   if (storageItem === null) {
     return undefined;

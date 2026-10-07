@@ -7,7 +7,8 @@ import { ConnectionQuality, ParticipantEvent } from 'livekit-client';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ConnectionGoodIcon, ConnectionMediumIcon } from '../../../assets/icons';
+import { ConnectionGoodIcon } from '../../../assets/icons';
+import ConnectionMediumIcon from '../../../assets/icons/ConnectionMediumIcon';
 import { OverlayIconButton } from '../../../commonComponents';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 

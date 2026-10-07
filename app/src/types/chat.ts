@@ -10,7 +10,7 @@ export enum ChatScope {
   Breakout = 'breakout',
 }
 
-export type GlobalChatIdentifier = {
+type GlobalChatIdentifier = {
   scope: ChatScope.Global;
   target?: never;
 };
@@ -20,7 +20,7 @@ export type PrivateChatIdentifier = {
   target: ParticipantId;
 };
 
-export type BreakoutChatIdentifier = {
+type BreakoutChatIdentifier = {
   scope: ChatScope.Breakout;
   target: BreakoutRoomId;
 };
@@ -44,7 +44,7 @@ export interface InitialChat {
   lastSeenTimestampsPrivate: Record<string, string>;
 }
 
-export interface PrivateHistory {
+interface PrivateHistory {
   correspondent: ParticipantId;
   history: ChatChunk;
 }

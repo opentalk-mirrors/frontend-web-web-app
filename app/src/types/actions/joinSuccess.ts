@@ -114,16 +114,16 @@ export interface ModuleData {
   transcription?: TranscriptionJoinState;
 }
 
-export interface TrainingParticipationReport {
+interface TrainingParticipationReport {
   state: ParticipationLoggingState;
   parameter?: TrainingParticipationReportParameterSet;
 }
 
-export interface TranscriptionJoinState {
+interface TranscriptionJoinState {
   status: TranscriptionStatus;
 }
 
-export interface WaitingRoomParticipant {
+interface WaitingRoomParticipant {
   participantId: ParticipantId;
   connections: ConnectionId[];
   accepted: boolean;
@@ -165,30 +165,30 @@ export interface CorePeerState {
   isRoomOwner: boolean;
 }
 
-export interface BreakoutPeerState {
+interface BreakoutPeerState {
   room: RoomKindMain | RoomKindBreakout;
 }
 
-export interface MeetingNotesPeerState {
+interface MeetingNotesPeerState {
   readonly: boolean;
 }
 
-export interface TimerPeerState {
+interface TimerPeerState {
   readyStatus: boolean;
 }
 
-export interface RaiseHandsPeerState {
+interface RaiseHandsPeerState {
   raisedAt: Timestamp;
 }
 
-export interface Livekit {
+interface Livekit {
   microphoneRestrictionState: MicrophoneRestrictionState;
   publicUrl: string;
   room: string;
   token: string;
 }
 
-export interface MicrophoneRestrictionState {
+interface MicrophoneRestrictionState {
   type: ForceMuteType;
   unrestrictedParticipants: ParticipantId[];
 }
@@ -207,22 +207,22 @@ export interface SignalingTariff {
   disabledFeatures: BackendFeatures[];
 }
 
-export type ConnectionInfo = { connectionId: ConnectionId; deviceId: DeviceId };
+type ConnectionInfo = { connectionId: ConnectionId; deviceId: DeviceId };
 
-export interface ServiceStreamingTarget {
+interface ServiceStreamingTarget {
   location: URL;
 }
 
-export interface RecordingServiceState {
+interface RecordingServiceState {
   streamingTargets: Record<StreamingTargetId, ServiceStreamingTarget>;
 }
 
-export type StreamingTarget = {
+type StreamingTarget = {
   name: string;
   publicUrl: string;
 } & StreamStatusInfo;
 
-export interface RecordingState {
+interface RecordingState {
   recordingState: RecordingStatusInfo;
   streamStates: Record<StreamingTargetId, StreamingTarget>;
   service?: RecordingServiceState;
@@ -235,11 +235,11 @@ export interface ModeratorJoinInfo {
   waitingRoom: WaitingRoom;
 }
 
-export interface ModerationState extends ModeratorJoinInfo {
+interface ModerationState extends ModeratorJoinInfo {
   displayNameChangeRestrictions: InitialDisplayNameChangeRestrictions;
 }
 
-export interface RaiseHandsState {
+interface RaiseHandsState {
   raiseHandsEnabled: boolean;
   state?: RaiseHandsPeerState;
 }

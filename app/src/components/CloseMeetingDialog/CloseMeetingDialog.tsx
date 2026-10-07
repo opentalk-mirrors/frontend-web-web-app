@@ -46,7 +46,7 @@ export interface CloseMeetingDialogProps {
 const DIALOG_DESCRIPTION_ID = 'close-meeting-dialog-description-id';
 const DIALOG_TITLE_ID = 'close-meeting-dialog-label-id';
 
-export const CloseMeetingDialog = ({ open, onClose }: CloseMeetingDialogProps) => {
+const CloseMeetingDialog = ({ open, onClose }: CloseMeetingDialogProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { roomId } = useParams<'roomId'>() as {

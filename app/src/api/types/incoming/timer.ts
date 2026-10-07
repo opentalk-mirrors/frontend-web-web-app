@@ -22,10 +22,10 @@ export enum TimerError {
   ReadyCheckNotEnabled = 'ready_check_not_enabled',
 }
 
-export const isError = isEnumErrorStruct(TimerError);
+isEnumErrorStruct(TimerError);
 
 export type Message = TimerStarted | TimerStopped | ReadyToContinue | ErrorStruct<TimerError>;
 
-export type Timer = NamespacedIncoming<Message, 'timer'>;
+type Timer = NamespacedIncoming<Message, 'timer'>;
 
 export default Timer;

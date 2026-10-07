@@ -21,7 +21,7 @@ export interface GeneratePdf {
 }
 
 export type Action = GrantWriteAccess | RevokeWriteAccess | GeneratePdf;
-export type MeetingNotes = Namespaced<Action, 'meeting_notes'>;
+type MeetingNotes = Namespaced<Action, 'meeting_notes'>;
 
 export const grantWriteAccess = createSignalingApiCall<GrantWriteAccess>('meeting_notes', 'grant_write_access');
 export const revokeWriteAccess = createSignalingApiCall<RevokeWriteAccess>('meeting_notes', 'revoke_write_access');

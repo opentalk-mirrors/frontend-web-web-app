@@ -35,7 +35,7 @@ export interface LeaveWhisperGroup {
 export type Action =
   CreateWhisperGroup | InviteToWhisperGroup | AcceptWhisperInvite | DeclineWhisperInvite | LeaveWhisperGroup;
 
-export type SubroomAudio = Namespaced<Action, 'subroom_audio'>;
+type SubroomAudio = Namespaced<Action, 'subroom_audio'>;
 
 export const requestWhisperGroup = createSignalingApiCall<CreateWhisperGroup>('subroom_audio', 'create_whisper_group');
 export const inviteToWhisperGroup = createSignalingApiCall<InviteToWhisperGroup>(

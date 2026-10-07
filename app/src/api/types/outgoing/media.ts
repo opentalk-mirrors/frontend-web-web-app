@@ -27,54 +27,54 @@ interface TargetedCandidate extends Target {
   candidate: TrickleCandidate;
 }
 
-export interface MediaSessionInfo {
+interface MediaSessionInfo {
   mediaSessionType: MediaSessionType;
   mediaSessionState: MediaSessionState;
 }
 
-export interface Publish extends TargetedSdp {
+interface Publish extends TargetedSdp {
   action: 'publish';
 }
 
-export interface PublishComplete extends MediaSessionInfo {
+interface PublishComplete extends MediaSessionInfo {
   action: 'publish_complete';
 }
 
-export interface Unpublish extends AssociatedMediaSession {
+interface Unpublish extends AssociatedMediaSession {
   action: 'unpublish';
 }
 
-export interface UpdateMediaSession extends MediaSessionInfo {
+interface UpdateMediaSession extends MediaSessionInfo {
   action: 'update_media_session';
 }
 
-export interface Subscribe extends Target {
+interface Subscribe extends Target {
   action: 'subscribe';
 }
 
-export interface Resubscribe extends Target {
+interface Resubscribe extends Target {
   action: 'resubscribe';
 }
 
-export interface Configure extends Target {
+interface Configure extends Target {
   action: 'configure';
   configuration: Configuration;
 }
 
-export interface Configuration {
+interface Configuration {
   video?: boolean;
   substream?: VideoSetting;
 }
 
-export interface SdpAnswer extends TargetedSdp {
+interface SdpAnswer extends TargetedSdp {
   action: 'sdp_answer';
 }
 
-export interface SdpCandidate extends TargetedCandidate {
+interface SdpCandidate extends TargetedCandidate {
   action: 'sdp_candidate';
 }
 
-export interface SdpEndOfCandidates extends Target {
+interface SdpEndOfCandidates extends Target {
   action: 'sdp_end_of_candidates';
 }
 
@@ -90,6 +90,6 @@ export type Action =
   | SdpCandidate
   | SdpEndOfCandidates;
 
-export type Media = Namespaced<Action, 'media'>;
+type Media = Namespaced<Action, 'media'>;
 
 export default Media;

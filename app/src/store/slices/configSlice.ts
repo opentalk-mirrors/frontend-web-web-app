@@ -50,7 +50,7 @@ type Features = {
   [value in FeaturesKeys]?: boolean;
 };
 
-export interface Config {
+interface Config {
   controller?: string;
   insecure?: boolean;
   baseUrl?: string;
@@ -257,7 +257,7 @@ export const initialState: ConfigState = {
   },
 };
 
-export const configSlice = createSlice({
+const configSlice = createSlice({
   name: 'config',
   initialState,
   reducers: {
@@ -280,10 +280,8 @@ export const configSlice = createSlice({
   },
 });
 
-export const { update, setStorageQuota } = configSlice.actions;
-export const actions = configSlice.actions;
+export const { setStorageQuota } = configSlice.actions;
 
-export const selectController = (state: RootState) => state.config.controller;
 export const selectBaseUrl = (state: RootState) => state.config.baseUrl;
 export const selectControllerUrl = (state: RootState) => {
   const prefix = state.config.insecure ? 'http' : 'https';
@@ -301,11 +299,8 @@ export const selectLibravatarDefaultImage = (state: RootState) => state.config.l
 export const selectUserSurveyUrl = (state: RootState) => state.config.userSurveyUrl;
 export const selectIsBetaRelease = (state: RootState) => state.config.beta.isBeta;
 export const selectBetaBadgeUrl = (state: RootState) => state.config.beta.badgeUrl;
-export const selectLivekitE2EESalt = (state: RootState) => state.config.livekit?.e2eeSalt;
-export const selectLivekitPreferredVideoCodec = (state: RootState) => state.config.livekit?.preferredVideoCodec;
 export const selectErrorReportEmail = (state: RootState) => state.config.errorReportAddress;
 export const selectDisallowCustomDisplayName = (state: RootState) => state.config.disallowCustomDisplayName;
-export const selectLogLevel = (state: RootState) => state.config.logLevel;
 export const selectChangePassword = (state: RootState) => state.config.changePassword;
 export const selectEnabledModulesList = createSelector(
   (state: RootState) => state.config.enabledModules,

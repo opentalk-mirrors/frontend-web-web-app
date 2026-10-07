@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { NamespacedIncoming } from '../../../types';
 
-export interface UpdateSharedFolder {
+interface UpdateSharedFolder {
   message: 'updated';
   read: string;
   readWrite?: string;
@@ -11,6 +11,6 @@ export interface UpdateSharedFolder {
 
 export type Message = UpdateSharedFolder;
 
-export type SharedFolder = NamespacedIncoming<Message, 'shared_folder'>;
+type SharedFolder = NamespacedIncoming<Message, 'shared_folder'>;
 
 export default SharedFolder;

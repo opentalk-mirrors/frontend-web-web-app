@@ -46,7 +46,7 @@ export interface Service {
   command: RecordingServiceEvent;
 }
 
-export type RecordingServiceEvent = RecordingUpdated | StreamUpdated;
+type RecordingServiceEvent = RecordingUpdated | StreamUpdated;
 
 interface RecordingUpdated {
   kind: 'recording_updated';
@@ -62,16 +62,16 @@ interface StreamUpdated {
 export type Action =
   StartRecording | PauseRecording | StopRecording | StartStream | StopStream | PauseStream | SetStreamConsent | Service;
 
-export type Streaming = Namespaced<Action, 'recording'>;
+type Streaming = Namespaced<Action, 'recording'>;
 
 export const sendStartStreamSignal = createSignalingApiCall<StartStream>('recording', 'start_stream');
 export const sendStopStreamSignal = createSignalingApiCall<StopStream>('recording', 'stop_stream');
-export const sendPauseStreamSignal = createSignalingApiCall<PauseStream>('recording', 'pause_stream');
+const sendPauseStreamSignal = createSignalingApiCall<PauseStream>('recording', 'pause_stream');
 export const sendStreamConsentSignal = createSignalingApiCall<SetStreamConsent>('recording', 'set_consent');
 export const sendStartRecordingSignal = createSignalingApiCall<StartRecording>('recording', 'start_recording');
-export const sendPauseRecordingSignal = createSignalingApiCall<PauseRecording>('recording', 'pause_recording');
+const sendPauseRecordingSignal = createSignalingApiCall<PauseRecording>('recording', 'pause_recording');
 export const sendStopRecordingSignal = createSignalingApiCall<StopRecording>('recording', 'stop_recording');
-export const sendRecordingServiceCommandSignal = createSignalingApiCall<Service>('recording', 'service');
+const sendRecordingServiceCommandSignal = createSignalingApiCall<Service>('recording', 'service');
 
 export const handler = createModule<RootState>((builder) => {
   builder

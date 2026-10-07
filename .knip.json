@@ -6,6 +6,7 @@
     "ignore": [
         ".pa11y-local.js",
         "app/public/**",
+        "app/src/assets/**",
         "packages/rtk-rest-api/example/**",
         "public/**",
         "ci/modifyJUnitReportForTestRail.ts",

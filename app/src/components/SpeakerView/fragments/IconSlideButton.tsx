@@ -15,7 +15,7 @@ const SlideButton = styled(Button)<{ direction: 'left' | 'right' }>(({ theme, di
   },
 }));
 
-export interface IconSlideButtonProps extends ButtonProps {
+interface IconSlideButtonProps extends ButtonProps {
   direction: 'left' | 'right';
   onClick: () => void;
 }

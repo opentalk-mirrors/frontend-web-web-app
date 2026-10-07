@@ -18,11 +18,6 @@ export type FetchRequestError = {
   statusText: string;
 };
 
-export type FetchRequestState = {
-  error?: FetchRequestError;
-  loading: boolean;
-};
-
 export type MediaSessionType = Track.Source.Camera | Track.Source.ScreenShare;
 
 export enum VideoSetting {

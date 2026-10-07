@@ -10,12 +10,10 @@ import type { ErrorStruct, NamespacedIncoming, ParticipantId } from '../../../ty
 
 export type ExcalidrawVolatileData = Parameters<NonNullable<ExcalidrawProps['onPointerUpdate']>>[0];
 export type ExcalidrawElements = readonly ExcalidrawElement[];
-export type ExcalidrawAppState = ReturnType<ExcalidrawImperativeAPI['getAppState']>;
+type ExcalidrawAppState = ReturnType<ExcalidrawImperativeAPI['getAppState']>;
 export type ExcalidrawScene = {
   elements: ExcalidrawElements;
 };
-
-export type Token = string;
 
 export interface AssetRef {
   assetId: AssetId;
@@ -31,13 +29,13 @@ export type WhiteboardEditRestrictions = {
   unrestrictedParticipants?: ParticipantId[];
 };
 
-export type Started = {
+type Started = {
   message: 'started';
   initialScene: WhiteboardScene;
   editRestrictions: WhiteboardEditRestrictions;
 };
 
-export type Stopped = {
+type Stopped = {
   message: 'stopped';
 };
 
@@ -47,43 +45,43 @@ export type VolatileBroadcast = {
   data: ExcalidrawVolatileData | { sceneBounds: SceneBounds };
 };
 
-export type Broadcast = {
+type Broadcast = {
   message: 'broadcast';
   sender: ParticipantId;
   data: Pick<ExcalidrawScene, 'elements'>;
 };
 
-export type SceneStored = {
+type SceneStored = {
   message: 'scene_stored';
   scene: ExcalidrawScene;
 };
 
-export type FollowerGained = {
+type FollowerGained = {
   message: 'follower_gained';
   participantId: ParticipantId;
 };
 
-export type Followed = {
+type Followed = {
   message: 'followed';
   participantId: ParticipantId;
 };
 
-export type FollowerLost = {
+type FollowerLost = {
   message: 'follower_lost';
   participantId: ParticipantId;
 };
 
-export type Unfollowed = {
+type Unfollowed = {
   message: 'unfollowed';
   participantId: ParticipantId;
 };
 
-export type EditRestrictionsEnabled = {
+type EditRestrictionsEnabled = {
   message: 'edit_restrictions_enabled';
   unrestrictedParticipants: ParticipantId[];
 };
 
-export type EditRestrictionsDisabled = {
+type EditRestrictionsDisabled = {
   message: 'edit_restrictions_disabled';
 };
 
@@ -111,11 +109,7 @@ type SpacedeckInitialized = {
   url: string;
 };
 
-export interface SpacedeckPdfUrl extends AssetRef {
-  message: 'pdf_asset';
-}
-
-export interface SpacedeckPdfCreated extends AssetRef {
+interface SpacedeckPdfCreated extends AssetRef {
   message: 'pdf_created';
 }
 
@@ -135,8 +129,8 @@ export type ExcalidrawMessage =
 
 export type SpacedeckMessage = SpacedeckInitialized | SpacedeckPdfCreated | ErrorStruct<WhiteboardError>;
 
-export type ExcalidrawWhiteboard = NamespacedIncoming<ExcalidrawMessage, 'excalidraw'>;
-export type SpacedeckWhiteboard = NamespacedIncoming<SpacedeckMessage, 'whiteboard'>;
-export type WhiteboardMessage = ExcalidrawWhiteboard | SpacedeckWhiteboard;
+type ExcalidrawWhiteboard = NamespacedIncoming<ExcalidrawMessage, 'excalidraw'>;
+type SpacedeckWhiteboard = NamespacedIncoming<SpacedeckMessage, 'whiteboard'>;
+type WhiteboardMessage = ExcalidrawWhiteboard | SpacedeckWhiteboard;
 
 export default WhiteboardMessage;

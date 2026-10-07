@@ -6,7 +6,7 @@ import { Seconds } from '../utils/tsUtils';
 export type PollId = string & { readonly __tag: unique symbol };
 export type ChoiceId = number & { readonly __tag: unique symbol };
 
-export interface ChoiceCommon {
+interface ChoiceCommon {
   id: ChoiceId;
 }
 

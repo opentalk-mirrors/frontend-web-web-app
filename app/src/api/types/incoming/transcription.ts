@@ -9,7 +9,7 @@ export enum TranscriptionStatus {
   Running = 'running',
 }
 
-export interface TranscriptionStateUpdated {
+interface TranscriptionStateUpdated {
   message: 'state_updated';
   status: TranscriptionStatus;
   language: TranscriptionLanguageKey;
@@ -33,9 +33,9 @@ export enum TranscriptionError {
   ServiceDisconnected = 'service_disconnected',
 }
 
-export type TranscriptionCommand = { kind: 'stop' };
+type TranscriptionCommand = { kind: 'stop' };
 
-export interface TranscriptionServiceCommand {
+interface TranscriptionServiceCommand {
   message: 'service_command';
   command: TranscriptionCommand;
 }
@@ -43,7 +43,7 @@ export interface TranscriptionServiceCommand {
 export type TranscriptionMessage =
   TranscriptionStateUpdated | TranscriptionSegment | TranscriptionServiceCommand | ErrorStruct<TranscriptionError>;
 
-export type Transcription = NamespacedIncoming<TranscriptionMessage, 'transcription'>;
+type Transcription = NamespacedIncoming<TranscriptionMessage, 'transcription'>;
 
 export default Transcription;
 

@@ -41,7 +41,7 @@ export type ParticipationLogging = {
 
 export type Action = EnablePresenceLogging | DisablePresenceLogging | ConfirmPresence;
 
-export type TrainingParticipationReport = Namespaced<Action, 'training_participation_report'>;
+type TrainingParticipationReport = Namespaced<Action, 'training_participation_report'>;
 
 export const enablePresenceLogging = createSignalingApiCall<EnablePresenceLogging>(
   'training_participation_report',

@@ -17,7 +17,7 @@ import { joinSuccess, startRoom } from '../commonActions';
 // `ownParticipantId` is added client-side; the incoming `switched_room` message omits it.
 export type SwitchedRoomPayload = Omit<SwitchedRoom, 'message'> & { ownParticipantId?: ParticipantId };
 
-export interface Room {
+interface Room {
   id: BreakoutRoomId;
   name: string;
 }
@@ -108,12 +108,9 @@ export const breakoutSlice = createSlice({
 
 export const { started, closing, closeNotice, switchedRoom, closed } = breakoutSlice.actions;
 
-export const selectBreakoutRooms = (state: { breakout: BreakoutState }) => state.breakout.breakoutRooms;
-export const {
-  selectById,
-  selectEntities: selectBreakoutRoomEntities,
-  selectAll: selectAllBreakoutRooms,
-} = breakoutRooms.getSelectors(selectBreakoutRooms);
+const selectBreakoutRooms = (state: { breakout: BreakoutState }) => state.breakout.breakoutRooms;
+const { selectEntities: selectBreakoutRoomEntities } = breakoutRooms.getSelectors(selectBreakoutRooms);
+export const { selectAll: selectAllBreakoutRooms } = breakoutRooms.getSelectors(selectBreakoutRooms);
 export const selectIsActive = (state: { breakout: BreakoutState }) => state.breakout.active;
 
 export const selectCurrentBreakoutRoomId = (state: { breakout: BreakoutState }) => state.breakout.currentBreakoutRoomId;
@@ -131,7 +128,5 @@ export const selectAssignedBreakoutRoomId = (state: { breakout: BreakoutState })
 export const selectLastDispatchedActionType = (state: { breakout: BreakoutState }) => state.breakout.action;
 export const selectExpiredDate = (state: { breakout: BreakoutState }) => state.breakout.expires;
 export const selectBreakoutStopsAt = (state: { breakout: BreakoutState }) => state.breakout.stopsAt;
-export const selectBreakoutClosedAt = (state: { breakout: BreakoutState }) => state.breakout.closedAt;
-export const actions = breakoutSlice.actions;
 
 export default breakoutSlice.reducer;

@@ -4,14 +4,13 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 import { VideoSetting } from '../../types';
-import type { RootState } from '../index';
 
-export interface ScreenShareConfig {
+interface ScreenShareConfig {
   resolution?: ScreenShareResolution;
   contentHint?: ContentHint;
 }
 
-export enum ContentHint {
+enum ContentHint {
   Text = 'text',
   Motion = 'motion',
 }
@@ -30,12 +29,7 @@ export const ScreenShareResolutionValues = {
   [ScreenShareResolution.R2160p]: { width: 3840, height: 2160 },
 };
 
-export enum NotificationKind {
-  ForceMute = 'forceMute',
-  RequestMute = 'requestMute',
-}
-
-export type MediaState = {
+type MediaState = {
   qualityCap: VideoSetting;
   isUserSpeaking: boolean;
   screenShareConfig?: ScreenShareConfig;
@@ -43,7 +37,7 @@ export type MediaState = {
 
 export type MediaDeviceKindExtended = MediaDeviceKind | 'screenshare';
 
-export const initialState: MediaState = {
+const initialState: MediaState = {
   qualityCap: VideoSetting.High,
   isUserSpeaking: false,
   screenShareConfig: {
@@ -52,7 +46,7 @@ export const initialState: MediaState = {
   },
 };
 
-export const mediaSlice = createSlice({
+const mediaSlice = createSlice({
   name: 'media',
   initialState,
   reducers: {
@@ -63,19 +57,5 @@ export const mediaSlice = createSlice({
 });
 
 export const { setScreenShareConfig } = mediaSlice.actions;
-
-export const selectIsUserSpeaking = (state: RootState) => state.media.isUserSpeaking;
-export const selectScreenShareConfig = (state: RootState) => state.media.screenShareConfig;
-
-export const actions = mediaSlice.actions;
-
-export const reHydrateSlice = () => {
-  const storageItem = localStorage.getItem('mediaChoices');
-  if (storageItem !== null) {
-    return JSON.parse(storageItem);
-  }
-
-  return undefined;
-};
 
 export default mediaSlice.reducer;

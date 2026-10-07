@@ -12,7 +12,7 @@ export interface GenerateAttendanceReport {
 }
 
 export type Action = GenerateAttendanceReport;
-export type MeetingReport = Namespaced<Action, 'meeting_report'>;
+type MeetingReport = Namespaced<Action, 'meeting_report'>;
 
 export const generateAttendanceReport = createSignalingApiCall<GenerateAttendanceReport>(
   'meeting_report',

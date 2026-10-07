@@ -10,5 +10,5 @@ type IncomingStorageUsageUpdate = {
 
 type IncomingAssetStorage = IncomingStorageUsageUpdate;
 
-export type AssetStorage = NamespacedIncoming<IncomingAssetStorage, 'asset_storage'>;
+type AssetStorage = NamespacedIncoming<IncomingAssetStorage, 'asset_storage'>;
 export default AssetStorage;

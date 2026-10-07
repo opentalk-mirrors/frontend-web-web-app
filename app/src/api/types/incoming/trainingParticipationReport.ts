@@ -73,6 +73,6 @@ export type Message =
   | PresenceConfirmationLogged
   | PdfCreated
   | ErrorStruct<TrainingParticipationReportError>;
-export type TrainingParticipationReport = NamespacedIncoming<Message, 'training_participation_report'>;
+type TrainingParticipationReport = NamespacedIncoming<Message, 'training_participation_report'>;
 
 export default TrainingParticipationReport;

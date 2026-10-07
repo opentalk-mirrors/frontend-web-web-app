@@ -3,6 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import TimeLimitNotification from './TimeLimitNotification';
 
-export { startTimeLimitNotification, stopTimeLimitNotification } from './utils';
+export { startTimeLimitNotification } from './utils';
 
 export default TimeLimitNotification;

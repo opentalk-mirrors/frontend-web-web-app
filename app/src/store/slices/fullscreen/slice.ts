@@ -13,7 +13,7 @@ const initialState: FullscreenState = {
   element: undefined,
 };
 
-export const fullscreenSlice = createSlice({
+const fullscreenSlice = createSlice({
   name: 'fullscreen',
   initialState,
   reducers: {
@@ -56,4 +56,3 @@ export const fullscreenActions = fullscreenSlice.actions;
 export const selectFullscreenElement = (state: { fullscreen: FullscreenState }) => state.fullscreen.element;
 export const selectFullscreenSupported = (state: { fullscreen: FullscreenState }) => state.fullscreen.supported;
 export const selectFullscreenActive = (state: { fullscreen: FullscreenState }) => state.fullscreen.active;
-export const selectFullscreenError = (state: { fullscreen: FullscreenState }) => state.fullscreen.error;

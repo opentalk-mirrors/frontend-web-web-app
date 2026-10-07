@@ -23,7 +23,7 @@ export interface DisableRestrictions {
 
 export type Action = ReactCommand | EnableRestrictions | DisableRestrictions;
 
-export type Reaction = Namespaced<Action, 'reaction'>;
+type Reaction = Namespaced<Action, 'reaction'>;
 
 export const reactCommand = createSignalingApiCall<ReactCommand>('reaction', 'react');
 export const enableReactionRestrictions = createSignalingApiCall<EnableRestrictions>('reaction', 'enable_restrictions');

@@ -55,7 +55,7 @@ export type State = {
   showResult: boolean;
 };
 
-export const pollSlice = createSlice({
+const pollSlice = createSlice({
   name: 'poll',
   initialState: {
     polls: pollAdapter.getInitialState(),
@@ -126,13 +126,12 @@ export const pollSlice = createSlice({
 });
 
 export const { started, liveUpdated, done, savePollFormValues, closedResultWindow, voted } = pollSlice.actions;
-export const actions = pollSlice.actions;
 
 const selectPolls = (state: { poll: State }) => state.poll.polls;
+const { selectEntities: selectPollVotes } = pollAdapter.getSelectors(selectPolls);
 export const {
-  selectIds: selectPollIds,
   selectAll: selectAllPolls,
-  selectEntities: selectPollVotes,
+
   selectById: selectPollById,
 } = pollAdapter.getSelectors(selectPolls);
 
@@ -147,5 +146,4 @@ export const selectSavedPollPerId = createSelector(
   (savedPolls, id) => savedPolls.find((savedPoll) => savedPoll.id === id)
 );
 
-export const selectShowResult = (state: { poll: State }) => state.poll.showResult;
 export default pollSlice.reducer;

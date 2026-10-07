@@ -9,7 +9,7 @@
 import { Locale } from 'date-fns';
 import { format } from 'date-fns-tz';
 
-export const SECOND_MS = 1000; //ms
+const SECOND_MS = 1000; //ms
 export const MINUTE_MS = 60 * SECOND_MS; //ms
 
 export const formatDate = (date: Date, locale?: Locale, timeZone?: string) => {
@@ -32,5 +32,3 @@ export const formatDate = (date: Date, locale?: Locale, timeZone?: string) => {
 export const getCurrentTimezone = (): string => {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
-
-export { isValid as isValidDate } from 'date-fns';

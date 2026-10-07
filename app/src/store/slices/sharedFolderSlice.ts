@@ -7,7 +7,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '..';
 import { joinSuccess } from '../commonActions';
 
-export type SharedFolderState = {
+type SharedFolderState = {
   opened: boolean;
   sharedFolderData?: SharedFolderData;
   isAvailableIndicatorVisible: boolean;
@@ -18,7 +18,7 @@ const initialState: SharedFolderState = {
   isAvailableIndicatorVisible: false,
 };
 
-export const sharedFolderSlice = createSlice({
+const sharedFolderSlice = createSlice({
   name: 'shared-folder',
   initialState,
   reducers: {
@@ -44,8 +44,6 @@ export const sharedFolderSlice = createSlice({
 });
 
 export const { sharedFolderOpened, sharedFolderUpdated } = sharedFolderSlice.actions;
-
-export const actions = sharedFolderSlice.actions;
 
 export const selectIsSharedFolderOpened = (state: RootState) => state.sharedFolder.opened;
 export const selectIsSharedFolderAvailable = (state: RootState) => {

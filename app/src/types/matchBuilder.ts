@@ -8,7 +8,7 @@ interface TypedActionCreator<Type extends string> {
   type: Type;
 }
 
-export type CaseResponder<S = never, A extends Action = Action> = (state: S, action: A) => void;
+type CaseResponder<S = never, A extends Action = Action> = (state: S, action: A) => void;
 
 export type CaseResponders<S, AS extends Actions> = {
   [T in keyof AS]: AS[T] extends Action ? CaseResponder<S, AS[T]> : void;

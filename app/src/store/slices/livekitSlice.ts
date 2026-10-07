@@ -85,7 +85,7 @@ type PopoutStreamAccesses = Array<PopoutStreamAccess>;
 
 export type MediaDeviceKindExtended = MediaDeviceKind | 'screenshare';
 
-export type MediaSettings = {
+type MediaSettings = {
   microphoneEnabled: boolean;
   cameraEnabled: boolean;
   screenShareEnabled: boolean;
@@ -94,7 +94,7 @@ export type MediaSettings = {
   audioOutputDeviceId?: string;
 };
 
-export type Lobby = {
+type Lobby = {
   audioTrackPublication?: LocalAudioTrack;
   videoTrackPublication?: LocalVideoTrack;
 };
@@ -152,7 +152,7 @@ export const initialState: LivekitState = {
   reconnectLoop: { active: false, attempt: 0, timerId: null, nextDelayMs: null },
 };
 
-export const livekitSlice = createSlice({
+const livekitSlice = createSlice({
   name: 'livekit',
   initialState,
   reducers: {
@@ -374,6 +374,16 @@ export const livekitSlice = createSlice({
   },
 });
 
+const {
+  startReconnectLoop,
+  scheduledReconnectAttempt,
+  incrementReconnectAttempt,
+  abortReconnectLoop,
+  finishReconnectLoop,
+  setMediaSettingsAudioEnabled,
+  setMediaSettingScreenShareEnabled,
+} = livekitSlice.actions;
+
 export const {
   addPopoutStreamAccess,
   setLivekitPopoutStreamAccessToken,
@@ -381,16 +391,11 @@ export const {
   setDisableRemoteVideos,
   setNewAccessToken,
   setLivekitRoom,
-  startReconnectLoop,
-  scheduledReconnectAttempt,
-  incrementReconnectAttempt,
-  abortReconnectLoop,
-  finishReconnectLoop,
+
   cleanMediaSettingsState,
   clearMediaSettingsBeforeRoomSwitch,
-  setMediaSettingsAudioEnabled,
+
   setMediaSettingVideoEnabled,
-  setMediaSettingScreenShareEnabled,
 } = livekitSlice.actions;
 
 export const setLivekitUnavailable = createAction<boolean>('livekit/set_livekit_unavailable');
@@ -447,7 +452,6 @@ export const selectLivekitPopoutStreamAccessByParticipantId = createSelector(
 );
 
 export const selectQualityCap = (state: RootState) => state.livekit.qualityCap;
-export const selectIsPopoutStream = (state: RootState) => state.livekit.isPopoutStream;
 
 export default livekitSlice.reducer;
 

@@ -18,6 +18,6 @@ export enum MeetingReportError {
 }
 
 export type Message = PdfAsset | ErrorStruct<MeetingReportError>;
-export type MeetingReport = NamespacedIncoming<Message, 'meeting_report'>;
+type MeetingReport = NamespacedIncoming<Message, 'meeting_report'>;
 
 export default MeetingReport;

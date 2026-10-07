@@ -29,7 +29,7 @@ export const saveUiVersionToLocalStorage = (version: ConferenceUiVersion) => {
   localStorage.setItem(localStorageItems.conferenceUiVersion, version);
 };
 
-export const uiVersionSlice = createSlice({
+const uiVersionSlice = createSlice({
   name: 'uiVersion',
   initialState,
   reducers: {

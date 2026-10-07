@@ -17,7 +17,7 @@ const MAX_TITLE_CHARACTERS = 150;
 const MAX_SUBTITLE_CHARACTERS = 255;
 const MAX_TOPIC_CHARACTERS = 500;
 
-export const LegalVoteSetupForm = () => {
+const LegalVoteSetupForm = () => {
   const { validateForm, ...restFormik } = useFormikContext<LegalVoteFormValues>();
   const { t } = useTranslation();
 

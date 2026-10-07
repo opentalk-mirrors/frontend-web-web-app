@@ -52,14 +52,8 @@ export interface VoteReportIssue {
   description?: string;
 }
 
-export interface VoteGeneratePdf {
-  action: 'generate_pdf';
-  legalVoteId: LegalVoteId;
-  timezone?: string;
-}
-
 export type Action = VoteStart | VoteStop | VoteCancel | VoteOutgoing | VoteReportIssue;
-export type LegalVote = Namespaced<Action, 'legal_vote'>;
+type LegalVote = Namespaced<Action, 'legal_vote'>;
 
 export const start = createSignalingApiCall<VoteStart>('legal_vote', 'start');
 export const stop = createSignalingApiCall<VoteStop>('legal_vote', 'stop');

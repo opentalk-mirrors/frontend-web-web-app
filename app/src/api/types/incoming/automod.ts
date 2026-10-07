@@ -8,19 +8,18 @@ export interface AutomodStartedEvent extends AutomodStartConfig {
   message: 'started';
 }
 
-export type AutomodStoppedEvent =
-  ({ message: 'stopped' } & StoppedByModerator) | ({ message: 'stopped' } & SessionFinished);
+type AutomodStoppedEvent = ({ message: 'stopped' } & StoppedByModerator) | ({ message: 'stopped' } & SessionFinished);
 
-export interface StoppedByModerator {
+interface StoppedByModerator {
   reason: 'stopped_by_moderator';
   issuedBy: ParticipantId;
 }
 
-export interface SessionFinished {
+interface SessionFinished {
   reason: 'session_finished';
 }
 
-export interface AutomodStartAnimationEvent {
+interface AutomodStartAnimationEvent {
   message: 'start_animation';
   pool: Array<ParticipantId>;
   result: ParticipantId;
@@ -38,7 +37,7 @@ export interface AutomodRemainingUpdatedEvent {
   remaining: Array<ParticipantId>;
 }
 
-export enum AutomodError {
+enum AutomodError {
   InvalidSelection = 'invalid_selection',
   InsufficientPermissions = 'insufficient_permissions',
   SessionAlreadyRunning = 'session_already_running',
@@ -47,7 +46,7 @@ export enum AutomodError {
   Internal = 'internal',
 }
 
-export const isError = isEnumErrorStruct(AutomodError);
+isEnumErrorStruct(AutomodError);
 
 export type AutomodEventType =
   | AutomodStartedEvent
@@ -56,6 +55,6 @@ export type AutomodEventType =
   | AutomodRemainingUpdatedEvent
   | AutomodStartAnimationEvent
   | ErrorStruct<AutomodError>;
-export type AutomodEvent = NamespacedIncoming<AutomodEventType, 'automod'>;
+type AutomodEvent = NamespacedIncoming<AutomodEventType, 'automod'>;
 
 export default AutomodEvent;

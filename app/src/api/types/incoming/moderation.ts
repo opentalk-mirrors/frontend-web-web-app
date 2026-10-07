@@ -12,16 +12,16 @@ import {
   WaitingRoom,
 } from '../../../types';
 
-export interface KickedParticipant {
+interface KickedParticipant {
   message: 'kicked';
   reason: KickReason;
 }
 
-export interface BannedParticipant {
+interface BannedParticipant {
   message: 'banned';
 }
 
-export interface ParticipantBanned {
+interface ParticipantBanned {
   message: 'participant_banned';
   participantId: ParticipantId;
   displayName: string;
@@ -30,7 +30,7 @@ export interface ParticipantBanned {
   bannedAt: Timestamp;
 }
 
-export interface ParticipantUnbanned {
+interface ParticipantUnbanned {
   message: 'participant_unbanned';
   participantId: ParticipantId;
 }
@@ -43,33 +43,33 @@ export interface RoleUpdated {
   issuedBy: ParticipantId;
 }
 
-export interface DebriefStarted {
+interface DebriefStarted {
   message: 'debriefing_started';
   issuedBy: ParticipantId;
 }
 
-export interface WaitingRoomUpdated {
+interface WaitingRoomUpdated {
   message: 'waiting_room_updated';
   newState: WaitingRoom;
 }
 
-export interface GuestAccessEnabled {
+interface GuestAccessEnabled {
   message: 'guest_access_enabled';
 }
 
-export interface GuestAccessDisabled {
+interface GuestAccessDisabled {
   message: 'guest_access_disabled';
 }
 
-export interface SentToWaitingRoom {
+interface SentToWaitingRoom {
   message: 'sent_to_waiting_room';
 }
 
-export interface AcceptedInMeeting {
+interface AcceptedInMeeting {
   message: 'accepted';
 }
 
-export interface ParticipantAccepted {
+interface ParticipantAccepted {
   message: 'participant_accepted';
   participantId: ParticipantId;
 }
@@ -87,29 +87,29 @@ export interface DisplayNameAssigned {
   newName?: string;
 }
 
-export interface DisplayNameChangeRestrictionsDisabled {
+interface DisplayNameChangeRestrictionsDisabled {
   message: 'display_name_change_restrictions_disabled';
 }
 
-export interface DisplayNameChangeRestrictionsEnabled {
+interface DisplayNameChangeRestrictionsEnabled {
   message: 'display_name_change_restrictions_enabled';
 }
 
-export interface Muted {
+interface Muted {
   message: 'muted';
   moderator: ParticipantId;
 }
 
-export interface MicrophoneRestrictionsEnabled {
+interface MicrophoneRestrictionsEnabled {
   message: 'microphone_restrictions_enabled';
   unrestrictedParticipants: Array<ParticipantId>;
 }
 
-export interface MicrophoneRestrictionsDisabled {
+interface MicrophoneRestrictionsDisabled {
   message: 'microphone_restrictions_disabled';
 }
 
-export interface EntryPermissionChanged {
+interface EntryPermissionChanged {
   message: 'entry_permission_changed';
   canEnter: boolean;
 }
@@ -180,6 +180,6 @@ export type Message =
   | EntryPermissionChanged
   | ErrorStruct<ModerationError>;
 
-export type Moderation = NamespacedIncoming<Message, 'moderation'>;
+type Moderation = NamespacedIncoming<Message, 'moderation'>;
 
 export default Moderation;

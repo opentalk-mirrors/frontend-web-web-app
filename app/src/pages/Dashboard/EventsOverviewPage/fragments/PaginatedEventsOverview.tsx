@@ -15,7 +15,7 @@ interface PaginatedEventsOverviewProps {
   currentCursorIndex: number;
 }
 
-export function PaginatedEventsOverview({
+function PaginatedEventsOverview({
   groups,
   isFetching,
   isLoading,

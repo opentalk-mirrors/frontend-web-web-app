@@ -19,7 +19,7 @@ const StyledCloseButton = styled(CloseButton)(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
-export interface SnackbarProviderProps extends SnackbarProviderPropsDefault {
+interface SnackbarProviderProps extends SnackbarProviderPropsDefault {
   children: React.ReactNode;
 }
 

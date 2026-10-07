@@ -37,7 +37,7 @@ export const handleMediaPermissionError = ({ error, kind, deviceId }: MediaPermi
   }
   throw new Error(`Error toggling ${kind}: ${error}`);
 };
-export enum MediaError {
+enum MediaError {
   NotAllowedError = 'NotAllowedError',
   AbortError = 'AbortError',
 }

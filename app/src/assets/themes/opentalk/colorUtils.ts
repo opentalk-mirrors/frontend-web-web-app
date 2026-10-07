@@ -15,40 +15,6 @@ export enum ContrastThreshold {
   MIN = 15, //absolute minimum, should only be used for non-text elements like outlines, dividers, etc.
 }
 
-/**
- * Returns the color with the highest contrast against the given background color.
- * It compares the contrast of each candidate color with the given contrast threshold
- * If non matches it checks if white or black has a higher contrast against the background
- * @param background string representing the background color
- * @param options optional object to specify contrast threshold
- * @param options.contrastThreshold defaults to ContrastThreshold.BodyMin
- * @param candidates array of candidate colors to compare against the background
- * @returns {string} The color with the highest contrast against the background
- */
-export function getContrastColor(
-  background: string,
-  options?: { contrastThreshold?: ContrastThreshold },
-  ...candidates: string[]
-): string {
-  const contrastThreshold = options?.contrastThreshold || ContrastThreshold.BodyMin;
-  if (!background || !candidates) {
-    return '#fff';
-  }
-  const backgroundColor = new Color(background);
-
-  const contrasts = candidates.map((candidate) => Math.abs(backgroundColor.contrast(new Color(candidate), 'APCA')));
-  const maxContrast = Math.max(...contrasts);
-
-  if (maxContrast > contrastThreshold) {
-    const maxContrastIndex = contrasts.indexOf(maxContrast);
-    return candidates[maxContrastIndex];
-  } else {
-    const whiteContrast = Math.abs(backgroundColor.contrast(new Color('#fff'), 'APCA'));
-    const blackContrast = Math.abs(backgroundColor.contrast(new Color('#000'), 'APCA'));
-    return whiteContrast > blackContrast ? '#fff' : '#000';
-  }
-}
-
 const contrastCache = new Map<string, string>();
 
 export function getContrastText(

@@ -37,7 +37,7 @@ export const defaultDarkModeColors: BasePalette = {
 };
 
 // FIXME: These colors should be replaced by BasePalette items
-export const avatarBg = '#00212E';
+const avatarBg = '#00212E';
 
 export const avatarColorTable: Array<string> = [
   '#03BEF7',

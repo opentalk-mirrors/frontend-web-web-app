@@ -8,7 +8,7 @@ import { ParticipationLoggingState } from '../../api/types/outgoing/trainingPart
 import { ForceMute, ForceMuteType, ModeratorJoinInfo, WaitingRoom } from '../../types';
 import { joinSuccess } from '../commonActions';
 
-export type ModerationState = {
+type ModerationState = {
   hasHandUp: boolean;
   handUpdatedAt?: string;
   raiseHandsEnabled: boolean;
@@ -34,7 +34,7 @@ const initialState: ModerationState = {
   debriefingStarted: false,
 };
 
-export const moderationSlice = createSlice({
+const moderationSlice = createSlice({
   name: 'moderation',
   initialState,
   reducers: {
@@ -155,7 +155,6 @@ export const {
   setModeratorData,
   setDebriefingStarted,
 } = moderationSlice.actions;
-export const actions = moderationSlice.actions;
 
 export const selectHandUp = (state: RootState) => state.moderation.hasHandUp;
 export const selectHandUpdatedAt = (state: RootState) => state.moderation.handUpdatedAt;
@@ -173,6 +172,5 @@ export const selectSelfRenameEnabled = (state: RootState) => state.moderation.se
 export const selectWaitingRoomState = (state: RootState) => state.moderation.waitingRoom;
 export const selectIsWaitingRoomActive = (state: RootState) => state.moderation.waitingRoom !== WaitingRoom.Disabled;
 export const selectGuestAccessEnabled = (state: RootState) => state.moderation.guestAccessEnabled;
-export const selectDebriefingStarted = (state: RootState) => state.moderation.debriefingStarted;
 
 export default moderationSlice.reducer;

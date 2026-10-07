@@ -18,14 +18,12 @@ export type IsAny<T, True, False = never> =
  *
  * @internal
  */
-export type IsUnknown<T, True, False = never> = unknown extends T ? IsAny<T, False, True> : False;
-
-export type FallbackIfUnknown<T, Fallback> = IsUnknown<T, Fallback, T>;
+type IsUnknown<T, True, False = never> = unknown extends T ? IsAny<T, False, True> : False;
 
 /**
  * @internal
  */
-export type IfMaybeUndefined<P, True, False> = [undefined] extends [P] ? True : False;
+type IfMaybeUndefined<P, True, False> = [undefined] extends [P] ? True : False;
 
 /**
  * @internal
@@ -49,7 +47,7 @@ export type IsEmptyObj<T, True, False = never> = T extends unknown
  *
  * @internal
  */
-export type AtLeastTS35<True, False> = [True, False][IsUnknown<ReturnType<<T>() => T>, 0, 1>];
+type AtLeastTS35<True, False> = [True, False][IsUnknown<ReturnType<<T>() => T>, 0, 1>];
 
 /**
  * @internal
@@ -58,5 +56,3 @@ export type IsUnknownOrNonInferrable<T, True, False> = AtLeastTS35<
   IsUnknown<T, True, False>,
   IsEmptyObj<T, True, IsUnknown<T, True, False>>
 >;
-
-export type Property<T, K> = K extends keyof T ? T[K] : never;

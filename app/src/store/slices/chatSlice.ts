@@ -19,7 +19,7 @@ import {
 import { joinSuccess } from '../commonActions';
 import { UserState } from './userSlice';
 
-export type ChatProps = {
+type ChatProps = {
   chatIdentifier: ChatIdentifier;
   messages: Array<ChatMessage>;
   lastMessage: ChatMessage;
@@ -118,7 +118,7 @@ const getPrivateMessageRecipient = (message: ChatMessage, currentUserId: Partici
   return message.source;
 };
 
-export const chatSlice = createSlice({
+const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
@@ -306,19 +306,18 @@ export const {
   setIsLoadingMoreChunks,
   setSlowDownDelay,
 } = chatSlice.actions;
-export const actions = chatSlice.actions;
 
-export const selectLastSeenTimestampGlobal = (state: { chat: ChatState }) => state.chat.scope.global.lastSeenTimestamp;
+const selectLastSeenTimestampGlobal = (state: { chat: ChatState }) => state.chat.scope.global.lastSeenTimestamp;
 export const selectChatEnabledState = (state: { chat: ChatState }) => state.chat.settings.enabled;
 export const selectIsLoadingMoreChunks = (state: { chat: ChatState }) => state.chat.isLoadingMoreChunks;
 export const selectChatSearchResults = (state: { chat: ChatState }) => state.chat.searchResults;
 export const selectChatState = (state: { chat: ChatState }) => state.chat;
 export const selectChatStateChunkScope = (state: { chat: ChatState }) => state.chat.scope;
-export const selectChatScopePrivate = (state: { chat: ChatState }) => state.chat.scope.private;
-export const selectChatScopeBreakout = (state: { chat: ChatState }) => state.chat.scope.breakout;
+const selectChatScopePrivate = (state: { chat: ChatState }) => state.chat.scope.private;
+const selectChatScopeBreakout = (state: { chat: ChatState }) => state.chat.scope.breakout;
 export const selectChatMessageSlowDown = (state: { chat: ChatState }) => state.chat.messageSlowDown;
 
-export const selectHasAnyUnreadBreakoutChatMessage = createSelector([selectChatScopeBreakout], (breakouts) => {
+createSelector([selectChatScopeBreakout], (breakouts) => {
   if (!breakouts) {
     return false;
   }
@@ -346,22 +345,21 @@ export const selectHasAnyUnreadPrivateChatMessage = createSelector([selectChatSc
   });
 });
 
-export const selectAllGlobalChatMessages = createSelector(
+const selectAllGlobalChatMessages = createSelector(
   [(state: { chat: ChatState }) => state.chat.scope.global.messages],
   (messages) => globalMessagesSelectors.selectAll(messages)
 );
 
-export const selectAllPrivateChatMessages = createSelector([selectChatScopePrivate], (privateChats) =>
+const selectAllPrivateChatMessages = createSelector([selectChatScopePrivate], (privateChats) =>
   Object.values(privateChats).flatMap((chat) => privateMessagesSelectors.selectAll(chat.messages))
 );
 
-export const selectAllBreakoutChatMessages = createSelector([selectChatScopeBreakout], (breakoutChats) =>
+createSelector([selectChatScopeBreakout], (breakoutChats) =>
   Object.values(breakoutChats).flatMap((chat) => breakoutMessagesSelectors.selectAll(chat.messages))
 );
 
-export const selectAllChatMessages = createSelector(
-  [selectAllGlobalChatMessages, selectAllPrivateChatMessages],
-  (globalMessages, privateMessages) => [...globalMessages, ...privateMessages].filter((msg) => msg !== undefined)
+createSelector([selectAllGlobalChatMessages, selectAllPrivateChatMessages], (globalMessages, privateMessages) =>
+  [...globalMessages, ...privateMessages].filter((msg) => msg !== undefined)
 );
 
 export const selectAllPrivateChats = createSelector([selectChatScopePrivate], (privateScope) => {

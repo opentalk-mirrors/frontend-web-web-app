@@ -6,5 +6,3 @@
 // 9/16 is the aspect ratio applied to the height
 export const THUMB_WIDTH_XL = 340;
 export const THUMB_WIDTH_LG = 240;
-export const THUMB_HEIGHT_XL = 340 * (9 / 16);
-export const THUMB_HEIGHT_LG = 240 * (9 / 16);

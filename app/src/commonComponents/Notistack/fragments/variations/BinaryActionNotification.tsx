@@ -50,7 +50,7 @@ const CustomButton = styled(Button)(({ theme, color, variant }) => {
   return {};
 });
 
-export interface BinaryActionNotificationProps extends CustomContentProps {
+interface BinaryActionNotificationProps extends CustomContentProps {
   type: 'info' | 'warning' | 'error' | 'success';
   primaryBtnText: string;
   secondaryBtnText: string;

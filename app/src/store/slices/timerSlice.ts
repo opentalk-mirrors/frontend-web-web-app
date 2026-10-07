@@ -14,7 +14,7 @@ import type { AppDispatch, RootState } from '../index';
 import type { StartAppListening } from '../listenerMiddleware';
 import { switchedRoom } from './breakoutSlice';
 
-export type State = {
+type State = {
   startedAt?: Timestamp;
   endsAt?: Timestamp;
   participantsReady: Array<ParticipantId>;
@@ -53,7 +53,7 @@ const applyTimerState = (state: State, timer: TimerState) => {
     : undefined;
 };
 
-export const timerSlice = createSlice({
+const timerSlice = createSlice({
   name: 'timer',
   initialState: initialState,
   reducers: {
@@ -126,9 +126,7 @@ export const timerSlice = createSlice({
   },
 });
 
-export const { updateParticipantsReady, resetTimerState, timerStarted, timerStopped } = timerSlice.actions;
-
-export const actions = timerSlice.actions;
+export const { updateParticipantsReady, timerStarted, timerStopped } = timerSlice.actions;
 
 export const selectTimerStartedAt = (state: RootState) => state.timer.startedAt;
 export const selectTimerEndsAt = (state: RootState) => state.timer.endsAt;
@@ -136,7 +134,6 @@ export const selectParticipantsReady = (state: RootState) => state.timer.partici
 export const selectReadyCheckEnabled = (state: RootState) => state.timer.readyCheckEnabled;
 export const selectTimerTitle = (state: RootState) => state.timer.title;
 export const selectTimerActive = (state: RootState) => state.timer.startedAt && !state.timer.timerStopKind;
-export const selectTimerKind = (state: RootState) => state.timer.kind;
 export const selectTimerStyle = (state: RootState) => state.timer.style;
 export const selectTotalDuration = (state: RootState) => state.timer.totalDuration;
 

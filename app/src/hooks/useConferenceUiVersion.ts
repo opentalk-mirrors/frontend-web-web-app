@@ -9,7 +9,7 @@ import { selectIsConferenceUiV2Available } from '../store/slices/configSlice';
 import { selectPreferredConferenceUiVersion, setPreferredConferenceUiVersion } from '../store/slices/uiVersionSlice';
 import { useAppDispatch, useAppSelector } from './useCustomRedux';
 
-export const useConferenceUiVersion = () => {
+const useConferenceUiVersion = () => {
   const dispatch = useAppDispatch();
   const isV2Available = useAppSelector(selectIsConferenceUiV2Available);
   const preferredVersion = useAppSelector(selectPreferredConferenceUiVersion);

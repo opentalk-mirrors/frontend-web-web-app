@@ -46,7 +46,7 @@ interface SearchHistory {
 
 export type Action = SetLastSeenTimestamp | SendMessage | EnableChat | DisableChat | GetHistoryChunk | SearchHistory;
 
-export type Chat = Namespaced<Action, 'chat'>;
+type Chat = Namespaced<Action, 'chat'>;
 
 export const sendChatMessage = createSignalingApiCall<SendMessage>('chat', 'send_message');
 export const enableChat = createSignalingApiCall<EnableChat>('chat', 'enable_chat');

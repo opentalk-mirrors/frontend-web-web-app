@@ -33,7 +33,7 @@ import { disableRaisedHands } from './moderationSlice';
 import { connectionClosed } from './roomSlice';
 import { removeParticipant } from './subroomAudioSlice';
 
-export const participantAdapter = createEntityAdapter<Participant>({
+const participantAdapter = createEntityAdapter<Participant>({
   sortComparer: (a, b) => a.displayName.localeCompare(b.displayName),
 });
 
@@ -50,7 +50,7 @@ type PatchParticipant = Pick<
   | 'breakoutRoomId'
 >;
 
-export const participantsSlice = createSlice({
+const participantsSlice = createSlice({
   name: 'participants',
   initialState: participantAdapter.getInitialState(),
   reducers: {
@@ -234,13 +234,12 @@ export const participantsSlice = createSlice({
   },
 });
 
-export const { join, leave, update, patch, waitingRoomJoined, waitingRoomLeft, approveToEnter, approvedAll, rename } =
+export const { join, leave, patch, waitingRoomJoined, waitingRoomLeft, approveToEnter, approvedAll, rename } =
   participantsSlice.actions;
-export const actions = participantsSlice.actions;
 
-export const participantSelectors = participantAdapter.getSelectors<RootState>((state) => state.participants);
+const participantSelectors = participantAdapter.getSelectors<RootState>((state) => state.participants);
 
-export const selectAllParticipants = (state: RootState) => participantSelectors.selectAll(state);
+const selectAllParticipants = (state: RootState) => participantSelectors.selectAll(state);
 
 export const selectAllVisibleParticipants = createSelector([selectAllParticipants], (participants) =>
   participants.filter((participant) => !HiddenParticipationKinds.includes(participant.participationKind))
@@ -271,8 +270,6 @@ export const selectAllOnlineParticipants = createSelector(
   (participants, currentBreakoutRoomId) =>
     participants.filter((participant) => participant.breakoutRoomId === currentBreakoutRoomId)
 );
-
-export const selectParticipants = (state: RootState) => participantSelectors.selectEntities(state);
 
 export const selectParticipantsTotal = createSelector(
   [selectAllOnlineParticipants],
@@ -327,7 +324,7 @@ export default participantsSlice.reducer;
 /*                                              */
 /************************************************/
 
-export const shouldShowNotification = (role: Role, participantId: ParticipantId, activeVoteEntry: LegalVote) => {
+const shouldShowNotification = (role: Role, participantId: ParticipantId, activeVoteEntry: LegalVote) => {
   if (role !== Role.Moderator) {
     return false;
   }
@@ -337,7 +334,7 @@ export const shouldShowNotification = (role: Role, participantId: ParticipantId,
   return participantWasAllowedToVote && !participantVoted;
 };
 
-export const handleParticipantJoinDuringVoteEffect = (
+const handleParticipantJoinDuringVoteEffect = (
   action: ReturnType<typeof join>,
   listenerApi: ListenerEffectAPI<RootState, AppDispatch>
 ) => {
@@ -358,7 +355,7 @@ export const handleParticipantJoinDuringVoteEffect = (
   }
 };
 
-export const handleParticipantLeaveEffect = (
+const handleParticipantLeaveEffect = (
   action: ReturnType<typeof leave>,
   listenerApi: ListenerEffectAPI<RootState, AppDispatch>
 ) => {
@@ -399,9 +396,7 @@ const startParticipantJoinDuringVoteListener = (startAppListening: StartAppListe
 
 export const participantJoined = createAction<{ participant: Participant }>('events/participantJoined');
 export const participantRejoined = createAction<{ participant: Participant }>('events/participantRejoined');
-export const participantOpenedConnection = createAction<{ participant: Participant }>(
-  'events/participantOpenedConnection'
-);
+const participantOpenedConnection = createAction<{ participant: Participant }>('events/participantOpenedConnection');
 
 const startParticipantJoinedAgainListener = (startAppListening: StartAppListening) => {
   startAppListening({
@@ -428,7 +423,7 @@ const startParticipantJoinedAgainListener = (startAppListening: StartAppListenin
 export const participantLeft = createAction<{ participant: Participant; reason?: DisconnectReason }>(
   'events/participantLastLeave'
 );
-export const participantClosedConnection = createAction<{ participant: Participant; reason?: DisconnectReason }>(
+const participantClosedConnection = createAction<{ participant: Participant; reason?: DisconnectReason }>(
   'events/participantClosedConnection'
 );
 

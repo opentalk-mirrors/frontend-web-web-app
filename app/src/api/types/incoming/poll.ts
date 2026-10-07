@@ -32,9 +32,9 @@ export enum PollError {
   StillRunning = 'still_running',
 }
 
-export const isError = isEnumErrorStruct(PollError);
+isEnumErrorStruct(PollError);
 
 export type Message = Started | LiveUpdate | Done | ErrorStruct<PollError>;
-export type Poll = NamespacedIncoming<Message, 'polls'>;
+type Poll = NamespacedIncoming<Message, 'polls'>;
 
 export default Poll;

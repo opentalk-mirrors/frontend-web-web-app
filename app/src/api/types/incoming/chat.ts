@@ -11,10 +11,10 @@ import {
   ChatMessage as ChatMessageBase,
 } from '../../../types';
 
-export type MessageSent = ChatMessageBase & {
+type MessageSent = ChatMessageBase & {
   message: 'message_sent';
 };
-export interface ChatEnabled {
+interface ChatEnabled {
   message: 'chat_enabled';
   issuedBy: ParticipantId;
 }
@@ -24,14 +24,14 @@ interface ChatDisabled {
   issuedBy: ParticipantId;
 }
 
-export interface ClearGlobalChat {
+interface ClearGlobalChat {
   message: 'history_cleared';
 }
-export interface SlowDown {
+interface SlowDown {
   message: 'slow_down';
   recommendedWaitMs: number;
 }
-export interface TooManyRequests {
+interface TooManyRequests {
   message: 'error';
   retryAfterMs: number;
   error: 'too_many_requests';
@@ -61,8 +61,7 @@ type SetBreakoutLastSeenTimestamp = {
   target: BreakoutRoomId;
 } & SetLastSeenTimestampBase;
 
-export type SetLastSeenTimestamp =
-  SetGlobalLastSeenTimestamp | SetPrivateLastSeenTimestamp | SetBreakoutLastSeenTimestamp;
+type SetLastSeenTimestamp = SetGlobalLastSeenTimestamp | SetPrivateLastSeenTimestamp | SetBreakoutLastSeenTimestamp;
 
 export interface RoomChatHistoryChunk {
   message: 'room_chat_history_chunk';
@@ -75,7 +74,7 @@ export interface PrivateChatHistoryChunk {
   history: ChatChunk;
 }
 
-export interface SearchResults {
+interface SearchResults {
   message: 'search_results';
   matches: ChatChunk;
   scope: ChatScope;
@@ -94,6 +93,6 @@ export type ChatMessage =
   | TooManyRequests
   | ParticipantRateLimited;
 
-export type Chat = NamespacedIncoming<ChatMessage, 'chat'>;
+type Chat = NamespacedIncoming<ChatMessage, 'chat'>;
 
 export default Chat;

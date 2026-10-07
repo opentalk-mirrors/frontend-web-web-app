@@ -30,7 +30,7 @@ const streamingAdapter = createEntityAdapter<StreamingTargetEntity, StreamingTar
   selectId: (streamTarget) => streamTarget.targetId,
 });
 
-export type StreamingState = {
+type StreamingState = {
   streams: EntityState<StreamingTargetEntity, StreamingTargetId>;
   recording: StreamingStatus;
   isStartRecordingRequested: boolean;

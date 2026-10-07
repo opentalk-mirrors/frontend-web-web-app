@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { VisuallyHiddenTitle } from '../../../commonComponents';
 import { useUpdateDocumentTitle } from '../../../hooks/useUpdateDocumentTitle';
 
-export const UserManualPage = () => {
+const UserManualPage = () => {
   const { t } = useTranslation();
   const pageHeading = t('dashboard-help-user-manual');
 

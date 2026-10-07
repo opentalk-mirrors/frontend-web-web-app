@@ -26,15 +26,15 @@ export interface VoteResponse {
   consumedToken: string;
 }
 
-export interface VoteResultsType {
+interface VoteResultsType {
   yes: number;
   no: number;
   abstain?: number;
   votingRecord: UserVotingRecord | TokenVotingRecord;
 }
 
-export type UserVotingRecord = Record<ParticipantId, LegalVoteOption>;
-export type TokenVotingRecord = Record<string, LegalVoteOption>;
+type UserVotingRecord = Record<ParticipantId, LegalVoteOption>;
+type TokenVotingRecord = Record<string, LegalVoteOption>;
 
 export interface VoteUpdated extends VoteResultsType {
   message: 'updated';
@@ -59,24 +59,24 @@ interface BaseStopped extends VoteResultsType {
   endTime: Timestamp;
 }
 
-export interface VoteStoppedAuto extends BaseStopped {
+interface VoteStoppedAuto extends BaseStopped {
   kind: StopKind.Auto;
 }
 
-export interface VoteStoppedExpired extends BaseStopped {
+interface VoteStoppedExpired extends BaseStopped {
   kind: StopKind.Expired;
 }
 
-export interface VoteStoppedByParticipant extends BaseStopped {
+interface VoteStoppedByParticipant extends BaseStopped {
   kind: StopKind.ByParticipant;
   issuer: ParticipantId;
 }
 
-export interface VoteStoppedValid extends BaseStopped, VoteResultsType {
+interface VoteStoppedValid extends BaseStopped, VoteResultsType {
   results: VoteFinalResults.Valid;
 }
 
-export interface VoteStoppedInvalid extends BaseStopped {
+interface VoteStoppedInvalid extends BaseStopped {
   results: VoteFinalResults.Invalid;
   reason: VoteInvalidReason;
 }
@@ -85,21 +85,21 @@ type VoteStoppedKind = VoteStoppedAuto | VoteStoppedExpired | VoteStoppedByParti
 type VoteStoppedFinalResults = VoteStoppedInvalid | VoteStoppedValid;
 export type VoteStopped = VoteStoppedKind & VoteStoppedFinalResults;
 
-export interface VoteCancelBase {
+interface VoteCancelBase {
   message: 'canceled';
   legalVoteId: LegalVoteId;
   reason: VoteCancelReason;
   endTime: Timestamp;
 }
-export interface VoteCanceledInitiatorLeft extends VoteCancelBase {
+interface VoteCanceledInitiatorLeft extends VoteCancelBase {
   reason: VoteCancelReason.InitiatorLeft;
 }
 
-export interface CanceledRoomDestroyed extends VoteCancelBase {
+interface CanceledRoomDestroyed extends VoteCancelBase {
   reason: VoteCancelReason.RoomDestroyed;
 }
 
-export interface VoteCanceledCustom extends VoteCancelBase {
+interface VoteCanceledCustom extends VoteCancelBase {
   reason: VoteCancelReason.Custom;
   custom: string;
 }
@@ -132,7 +132,7 @@ export enum LegalVoteError {
   Internal = 'internal_server_error',
 }
 
-export interface ReportGenerated {
+interface ReportGenerated {
   message: 'report_generated';
   filename: string;
   legalVoteId: LegalVoteId;

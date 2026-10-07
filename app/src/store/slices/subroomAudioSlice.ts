@@ -12,7 +12,7 @@ import { ParticipantId, WhisperId, WhisperParticipant, WhisperParticipantState }
 import { disconnectRoom, hangUp } from '../commonActions';
 import type { StartAppListening } from '../listenerMiddleware';
 
-export type SubroomAudioState = {
+type SubroomAudioState = {
   token: string | undefined;
   whisperId: WhisperId | undefined;
   participants: WhisperParticipant[];
@@ -26,7 +26,7 @@ const initialState: SubroomAudioState = {
   isWhisperActive: false,
 };
 
-export const subroomAudioSlice = createSlice({
+const subroomAudioSlice = createSlice({
   name: 'subroomAudio',
   initialState,
   reducers: {
@@ -88,7 +88,6 @@ export const {
 } = subroomAudioSlice.actions;
 
 export const selectSubroomAudioToken = (state: RootState) => state.subroomAudio.token;
-export const selectSubroomAudioState = (state: RootState) => state.subroomAudio;
 export const selectWhisperGroupId = (state: RootState) => state.subroomAudio.whisperId;
 export const selectSubroomAudioParticipants = (state: RootState) => state.subroomAudio.participants;
 export const selectIsWhisperActive = (state: RootState) => state.subroomAudio.isWhisperActive;

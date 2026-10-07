@@ -24,7 +24,7 @@ const eventAdapter = createEntityAdapter<RoomEvent, string>({
   selectId: (event) => `${event.target}@${event.id}`,
 });
 
-export const eventSlice = createSlice({
+const eventSlice = createSlice({
   name: 'event',
   initialState: eventAdapter.getInitialState(),
   reducers: {},
@@ -80,7 +80,5 @@ export const selectAllEvents = (state: RootState) => eventSelector.selectAll(sta
 export const selectVisibleEvents = createSelector([selectAllEvents], (events) =>
   events.filter((event) => event.participationKind && !HiddenParticipationKinds.includes(event.participationKind))
 );
-
-export const actions = eventSlice.actions;
 
 export default eventSlice.reducer;

@@ -10,7 +10,6 @@ import type {
   DeviceId,
   JoinedWaitingRoomParticipant,
 } from '../../../types';
-import { isErrorStruct } from '../../../utils/tsUtils';
 
 export interface JoinSuccess extends JoinSuccessRoomserver {
   message: 'join_success';
@@ -23,17 +22,17 @@ export interface ParticipantConnected {
   peerData: PeerModuleData;
 }
 
-export interface JoinBlocked {
+interface JoinBlocked {
   message: 'join_blocked';
   reason: JoinBlockedReason;
 }
 
-export enum JoinBlockedReason {
+enum JoinBlockedReason {
   /// The participant limit for the meeting's tariff has been reached
   ParticipantLimitReached = 'participant_limit_reached',
 }
 
-export interface ParticipantDisconnected {
+interface ParticipantDisconnected {
   message: 'participant_disconnected';
   participantId: ParticipantId;
   connectionId: ConnectionId;
@@ -56,13 +55,13 @@ export interface JoinedWaitingRoom extends JoinedWaitingRoomParticipant {
 }
 
 // Signals to moderator that a participant has left the waiting room.
-export interface LeftWaitingRoom {
+interface LeftWaitingRoom {
   message: 'left_waiting_room';
   id: ParticipantId;
   connectionId: ConnectionId;
 }
 
-export interface InWaitingRoom {
+interface InWaitingRoom {
   message: 'in_waiting_room';
   participantId: ParticipantId;
   connectionId: ConnectionId;
@@ -77,7 +76,7 @@ export interface JoinedLobby {
   displayName?: string;
 }
 
-export interface Closing {
+interface Closing {
   message: RoomserverMessageKey.Closing;
   reason: RoomCloseReason;
 }
@@ -99,15 +98,13 @@ export interface RoomParametersChanged {
   };
 }
 
-export interface StorageQuotaChanged {
+interface StorageQuotaChanged {
   message: RoomserverMessageKey.StorageQuotaChanged;
   quota: {
     total?: number;
     used: number;
   };
 }
-
-export const isError = isErrorStruct;
 
 export type Message =
   | JoinSuccess
@@ -136,6 +133,6 @@ export enum RoomserverMessageKey {
   Closing = 'closing',
 }
 
-export type RoomserverCore = NamespacedIncoming<Message, 'core'>;
+type RoomserverCore = NamespacedIncoming<Message, 'core'>;
 
 export default RoomserverCore;

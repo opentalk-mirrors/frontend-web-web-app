@@ -24,9 +24,9 @@ interface SwitchRoomBase {
   action: 'switch_room';
 }
 
-export type SwitchRoomToMain = SwitchRoomBase & RoomKindMain;
+type SwitchRoomToMain = SwitchRoomBase & RoomKindMain;
 
-export type SwitchRoomToBreakout = SwitchRoomBase & RoomKindBreakout;
+type SwitchRoomToBreakout = SwitchRoomBase & RoomKindBreakout;
 
 export type SwitchRoom = SwitchRoomToMain | SwitchRoomToBreakout;
 
@@ -36,7 +36,7 @@ export interface StopAction {
 }
 
 export type Action = StartAction | SwitchRoom | StopAction;
-export type Breakout = Namespaced<Action, 'breakout'>;
+type Breakout = Namespaced<Action, 'breakout'>;
 
 export const start = createSignalingApiCall<StartAction>('breakout', 'start');
 export const switchRoom = createSignalingApiCall<SwitchRoom>('breakout', 'switch_room');

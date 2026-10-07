@@ -9,8 +9,5 @@ export {
   notifications,
   createStackedMessages,
   startTimeLimitNotification,
-  stopTimeLimitNotification,
   showConsentNotification,
 } from './fragments';
-
-export type { ISnackActionsProps, ISnackbarPersistentProps } from './fragments';

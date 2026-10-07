@@ -34,7 +34,7 @@ type RouteValue = {
   children?: Routes;
 };
 
-export type Routes = {
+type Routes = {
   [key: string]: RouteValue;
 };
 

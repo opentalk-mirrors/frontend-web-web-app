@@ -98,11 +98,11 @@ export const {
 } = transcriptionSlice.actions;
 
 export const selectTranscriptionStatus = (state: RootState) => state.transcription.status;
-export const selectSegments = (state: RootState) => state.transcription.segments;
+const selectSegments = (state: RootState) => state.transcription.segments;
 export const selectShowSubtitles = (state: RootState) => state.transcription.showSubtitles;
 export const selectShowSubtitlesSettings = (state: RootState) => state.transcription.showSettings;
 export const selectTranscriptionLanguage = (state: RootState) => state.transcription.language;
-export const selectSegmentsSortedByTimestamp = createSelector([selectSegments], (segments) => {
+const selectSegmentsSortedByTimestamp = createSelector([selectSegments], (segments) => {
   return [...segments].sort((a, b) => new Date(a.endsAt).getTime() - new Date(b.endsAt).getTime());
 });
 
@@ -118,7 +118,7 @@ const startLanguageRestoreListener = (startAppListening: StartAppListening) => {
   });
 };
 
-export function loadTranscriptionLanguageFromLocalStorage(): TranscriptionLanguageKey | null {
+function loadTranscriptionLanguageFromLocalStorage(): TranscriptionLanguageKey | null {
   const language_str = localStorage.getItem('transcription-language');
   if ((language_str || []).length > 0) {
     return language_str as TranscriptionLanguageKey;
@@ -149,9 +149,6 @@ export const selectSubtitles = createSelector(
   }
 );
 
-export const selectIsTranscriptionActive = createSelector(
-  [selectTranscriptionStatus],
-  (status) => status === TranscriptionStatus.Running
-);
+createSelector([selectTranscriptionStatus], (status) => status === TranscriptionStatus.Running);
 
 export default transcriptionSlice.reducer;

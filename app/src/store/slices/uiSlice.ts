@@ -56,7 +56,7 @@ export const presenterVideoPositions = ['bottomLeft', 'upperRight', 'bottomRight
 
 export type PresenterVideoPosition = (typeof presenterVideoPositions)[number];
 
-export type PaginationDirection = 'left' | 'right';
+type PaginationDirection = 'left' | 'right';
 
 export type UIState = {
   participantsSortOption: SortOption;
@@ -142,7 +142,7 @@ export const initialState: UIState = {
   showSelfRenameDialog: false,
 };
 
-export const uiSlice = createSlice({
+const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
@@ -371,7 +371,7 @@ export const uiSlice = createSlice({
 
 export const {
   setParticipantsSortOption,
-  setSortByGroups,
+
   setParticipantsSearchValue,
   chatConversationStateSet,
   updatedCinemaLayout,
@@ -381,10 +381,10 @@ export const {
   pinnedConnectionIdentifierSet,
   presenterOverlayPinnedParticipantIdSet,
   mirroredVideoSet,
-  setShowVoteOrPollResult,
+
   setVoteOrPollIdToShow,
   setChatSearchValue,
-  setMeetingNotesHighlight,
+
   setCoffeeBreakCurtainOpenFlag,
   setActiveTab,
   openSidePanel,
@@ -406,7 +406,6 @@ export const {
 export const actions = uiSlice.actions;
 
 export const selectParticipantsSortOption = (state: RootState) => state.ui.participantsSortOption;
-export const selectShowParticipantGroups = (state: RootState) => state.ui.showParticipantGroups;
 export const selectParticipantsSearchValue = (state: RootState) => state.ui.participantsSearchValue;
 export const selectCinemaLayout = (state: RootState) => state.ui.cinemaLayout;
 export const selectCinemaViewOrder = (state: RootState) => state.ui.cinemaViewOrder;
@@ -427,7 +426,6 @@ export const selectPinnedConnectionIdentifier = (state: RootState) => state.ui.p
 export const selectPresenterOverlayPinnedParticipantId = (state: RootState) =>
   state.ui.presenterOverlayPinnedParticipantId;
 export const selectMirroredVideoEnabled = (state: RootState) => state.ui.localVideoMirroringEnabled;
-export const selectShowPollOrVoteResult = (state: RootState) => state.ui.showVoteOrPollResult;
 export const selectVoteOrPollIdToShow = (state: RootState) => state.ui.voteOrPollIdToShow;
 export const selectChatSearchValue = (state: RootState) => state.ui.chatSearchValue;
 export const selectIsCurrentWhiteboardHighlighted = (state: RootState) => state.ui.isCurrentWhiteboardHighlighted;

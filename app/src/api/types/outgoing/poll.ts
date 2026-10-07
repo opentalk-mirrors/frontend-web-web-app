@@ -27,7 +27,7 @@ export interface Finish {
 }
 
 export type Action = Start | Finish | Vote;
-export type Poll = Namespaced<Action, 'polls'>;
+type Poll = Namespaced<Action, 'polls'>;
 
 export const start = createSignalingApiCall<Start>('polls', 'start');
 export const finish = createSignalingApiCall<Finish>('polls', 'finish');

@@ -9,7 +9,7 @@ import { selectTimerEndsAt } from '../../../store/slices/timerSlice';
 import { TimerStyle } from '../../../types';
 
 type AlignItems = 'center' | 'initial';
-export interface TimerCounterProps {
+interface TimerCounterProps {
   alignItems?: AlignItems;
   style: TimerStyle;
 }

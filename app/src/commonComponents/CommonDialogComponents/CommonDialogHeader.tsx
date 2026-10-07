@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { CloseIcon } from '../../assets/icons';
 import IconButton from '../IconButtons/IconButton';
 
-export type CommonDialogHeaderProps = {
+type CommonDialogHeaderProps = {
   closeMenu: () => void;
   titleKey: string;
 };

@@ -64,7 +64,7 @@ type ConferenceEvent = {
 
 let currentConferenceRoom: ConferenceRoom | undefined = undefined;
 
-export const setCurrentConferenceRoom = (room: ConferenceRoom) => {
+const setCurrentConferenceRoom = (room: ConferenceRoom) => {
   currentConferenceRoom = room;
   const shutdownHandler = () => {
     currentConferenceRoom?.removeEventListener('shutdown', shutdownHandler);
@@ -99,7 +99,7 @@ const createOrGenerateDeviceSecret = async () => {
   return newSecret;
 };
 
-export const startRoom = async (credentials: RoomCredentials, config: ConfigState, displayName: string) => {
+const startRoom = async (credentials: RoomCredentials, config: ConfigState, displayName: string) => {
   const roomPath = `v1/rooms/${credentials.roomId}`;
 
   const authUrl = new URL(`${roomPath}/start`, getControllerBaseUrl(config));

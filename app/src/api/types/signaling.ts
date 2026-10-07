@@ -15,7 +15,7 @@ interface BasePrepareMessage<P, OP, N extends string = Namespaces> {
   action: PayloadActionCreator<OP>;
 }
 
-export interface PrepareMessageWithPayload<P, OP, N extends string = Namespaces> extends BasePrepareMessage<P, OP, N> {
+interface PrepareMessageWithPayload<P, OP, N extends string = Namespaces> extends BasePrepareMessage<P, OP, N> {
   /**
    * Calling this {@link redux#ActionCreator} with an argument will
    * return a {@link PayloadAction} of type `T` with a payload of `P`
@@ -24,7 +24,7 @@ export interface PrepareMessageWithPayload<P, OP, N extends string = Namespaces>
   action: PayloadActionCreator<OP>;
 }
 
-export interface PrepareMessageWithoutPayload<P, N extends string = Namespaces> extends BasePrepareMessage<P, void, N> {
+interface PrepareMessageWithoutPayload<P, N extends string = Namespaces> extends BasePrepareMessage<P, void, N> {
   /**
    * Calling this {@link redux#ActionCreator} with an argument will
    * return a {@link PayloadAction} of type `T` with a payload of `P`
@@ -33,7 +33,7 @@ export interface PrepareMessageWithoutPayload<P, N extends string = Namespaces> 
   action: PayloadActionCreator;
 }
 
-export interface PrepareMessageWithNonInferrablePayload<N extends string = Namespaces> extends BasePrepareMessage<
+interface PrepareMessageWithNonInferrablePayload<N extends string = Namespaces> extends BasePrepareMessage<
   unknown,
   unknown,
   N

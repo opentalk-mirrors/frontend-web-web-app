@@ -26,7 +26,7 @@ export type StartAppListening = TypedStartListening<RootState, AppDispatch>;
 
 const startAppListening = listenerMiddleware.startListening.withTypes<RootState, AppDispatch>();
 
-export const startListening = () => {
+const startListening = () => {
   startCommonListeners(startAppListening);
   startLivekitListeners(startAppListening);
   startTimerListeners(startAppListening);
