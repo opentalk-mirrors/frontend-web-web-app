@@ -5,13 +5,8 @@ import type { RootState } from '../../store';
 import { setEditRestrictions } from '../../store/slices/whiteboardSlice';
 import { ParticipantId } from '../../types';
 import { WhiteboardError } from '../types/incoming/whiteboard';
-import type { ExcalidrawMessage as WhiteboardMessage } from '../types/incoming/whiteboard';
-import { handleStorageExceededError } from './helpers';
+import type { WhiteboardPayload as WhiteboardMessage } from '../types/incoming/whiteboard';
 import { handleWhiteboardMessage } from './whiteboard';
-
-vi.mock('./helpers', () => ({
-  handleStorageExceededError: vi.fn(),
-}));
 
 vi.mock('../../logger', () => ({
   default: {
@@ -29,14 +24,13 @@ describe('handleWhiteboardMessage', () => {
     vi.clearAllMocks();
   });
 
-  it('routes storage errors through helper', () => {
+  it('does not dispatch on module errors', () => {
     const dispatch = vi.fn();
     const state = createState();
-    const data: WhiteboardMessage = { message: 'error', error: WhiteboardError.StorageExceeded };
+    const data: WhiteboardMessage = { message: 'error', error: WhiteboardError.InsufficientPermissions };
 
     handleWhiteboardMessage(dispatch, data, state);
 
-    expect(handleStorageExceededError).toHaveBeenCalledExactlyOnceWith(state, WhiteboardError.StorageExceeded);
     expect(dispatch).not.toHaveBeenCalled();
   });
 

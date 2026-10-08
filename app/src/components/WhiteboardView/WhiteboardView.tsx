@@ -433,7 +433,7 @@ const WhiteboardView = () => {
     (message: Message) => {
       const { namespace, payload } = message;
 
-      if (namespace !== 'excalidraw') {
+      if (namespace !== 'whiteboard') {
         return;
       }
 
@@ -452,9 +452,7 @@ const WhiteboardView = () => {
           break;
         case 'error':
           console.error(payload.error);
-          if (payload.error !== 'storage_exceeded') {
-            notifications.error(t(getWhiteboardErrorMessageKey(payload.error)), { preventDuplicate: true });
-          }
+          notifications.error(t(getWhiteboardErrorMessageKey(payload.error)), { preventDuplicate: true });
           break;
         default:
           break;

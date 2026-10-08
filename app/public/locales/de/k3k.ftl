@@ -1216,7 +1216,6 @@ debug-panel-remote-count-label = Anzahl der Verbindungen:
 whiteboard-tab-title = Whiteboard
 whiteboard-create-pdf-button = Erstelle PDF von Szene
 whiteboard-start-whiteboard-button = Whiteboard anzeigen
-whiteboard-new-pdf-message = Es wurde ein neues Whiteboard PDF erstellt
 whiteboard-hide = Whiteboard ausblenden
 whiteboard-edit-restrictions-menu-item = Bearbeitungsrechte verwalten
 whiteboard-dialog-edit-restrictions-title = Bearbeitungsrechte verwalten

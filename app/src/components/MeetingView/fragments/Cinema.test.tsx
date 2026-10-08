@@ -116,15 +116,7 @@ describe('Cinema', () => {
   });
 
   it('renders media reconnection dialog when livekit is unavailable', () => {
-    const { store } = configureStore({
-      initialState: {
-        config: {
-          spacedeck: {
-            enabled: false,
-          },
-        },
-      },
-    });
+    const { store } = configureStore();
     (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
     store.dispatch(setLivekitUnavailable(true));
 

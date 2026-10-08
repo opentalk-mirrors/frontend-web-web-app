@@ -8,7 +8,6 @@ import { VisuallyHiddenTitle } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
 import { useAppDispatch, useAppSelector, useConferenceUiVersion } from '../../../hooks';
 import SelfViewAnchorContext from '../../../provider/SelfViewAnchorContext';
-import { selectIsSpacedeckEnabled } from '../../../store/slices/configSlice';
 import { fullscreenActions, selectFullscreenActive } from '../../../store/slices/fullscreen/slice';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
 import { selectCinemaLayout } from '../../../store/slices/uiSlice';
@@ -19,7 +18,6 @@ import MeetingNotesView from '../../MeetingNotesView';
 import SpeakerView from '../../SpeakerView';
 import TranscriptionSubtitlesDisplay from '../../TranscriptionSubtitlesDisplay';
 import WhiteboardView from '../../WhiteboardView';
-import Spacedeck from '../../WhiteboardView/fragments/Spacedeck';
 import MediaReconnectionDialog from './MediaReconnectionDialog';
 import SelfView from './SelfView';
 
@@ -39,7 +37,6 @@ const Cinema = () => {
   const userLayout = useAppSelector(selectCinemaLayout);
   const isLivekitUnavailable = useAppSelector(selectLivekitUnavailable);
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
-  const isSpacedeckEnabled = useAppSelector(selectIsSpacedeckEnabled);
   const refForFullscreen = useRef<HTMLDivElement | null>(null);
   const dispatch = useAppDispatch();
 
@@ -61,7 +58,7 @@ const Cinema = () => {
       case LayoutOptions.Speaker:
         return <SpeakerView />;
       case LayoutOptions.Whiteboard:
-        return isSpacedeckEnabled ? <Spacedeck /> : <WhiteboardView />;
+        return <WhiteboardView />;
       case LayoutOptions.MeetingNotes:
         return <MeetingNotesView />;
       case LayoutOptions.Grid:

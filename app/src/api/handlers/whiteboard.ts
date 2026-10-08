@@ -1,41 +1,22 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import i18next from 'i18next';
-
-import { notificationAction } from '../../commonComponents';
 import LayoutOptions from '../../enums/LayoutOptions';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import { updatedCinemaLayout } from '../../store/slices/uiSlice';
-import {
-  addWhiteboardAsset,
-  setEditRestrictions,
-  setStarted,
-  setStopped,
-  setWhiteboardAvailable,
-  updateRemoteScene,
-} from '../../store/slices/whiteboardSlice';
+import { setEditRestrictions, setStarted, setStopped, updateRemoteScene } from '../../store/slices/whiteboardSlice';
 import { whiteboard } from '../types/incoming';
-import { handleStorageExceededError } from './helpers';
 
 /**
  * Handles whiteboard messages.
  */
 export const handleWhiteboardMessage = (
   dispatch: AppDispatch,
-  payload: whiteboard.ExcalidrawMessage | whiteboard.SpacedeckMessage,
+  payload: whiteboard.WhiteboardPayload,
   state: RootState
 ) => {
   switch (payload.message) {
-    case 'initialized':
-      dispatch(setWhiteboardAvailable({ url: payload.url }));
-      dispatch(updatedCinemaLayout({ layout: LayoutOptions.Whiteboard, cacheLastLayout: false }));
-      break;
-    case 'pdf_created':
-      dispatch(addWhiteboardAsset({ asset: { assetId: payload.assetId, filename: payload.filename } }));
-      notificationAction({ msg: i18next.t('whiteboard-new-pdf-message'), variant: 'info', ariaLive: 'polite' });
-      break;
     case 'started':
       dispatch(
         setStarted({ initialElements: payload.initialScene.elements, editRestrictions: payload.editRestrictions })
@@ -70,7 +51,7 @@ export const handleWhiteboardMessage = (
       dispatch(setEditRestrictions({ enabled: false, participants: [] }));
       break;
     case 'error':
-      handleStorageExceededError(state, payload.error);
+      // Surfaced to the user in app/src/components/WhiteboardView/WhiteboardView.tsx
       break;
     default: {
       const dataString = JSON.stringify(payload, null, 2);

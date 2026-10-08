@@ -26,10 +26,6 @@ type Beta = {
   badgeUrl?: string;
 };
 
-type Spacedeck = {
-  enabled: boolean;
-};
-
 export type DefaultAvatarImage = '404' | 'mm' | 'monsterid' | 'wavatar' | 'retro' | 'robohash' | 'pagan';
 
 export enum FeaturesKeys {
@@ -172,7 +168,6 @@ export type ConfigState = {
   glitchtip?: {
     dsn?: string;
   };
-  spacedeck: Spacedeck;
 };
 /**
  * Initial Configuration.
@@ -252,9 +247,6 @@ export const initialState: ConfigState = {
   glitchtip: {
     dsn: undefined,
   },
-  spacedeck: {
-    enabled: true,
-  },
 };
 
 const configSlice = createSlice({
@@ -324,7 +316,6 @@ export const selectMeetingInactivityMediaDisableSeconds = (state: RootState) =>
 export const selectMeetingInactivityWarningSeconds = (state: RootState) => state.config.meetingInactivityWarningSeconds;
 export const selectMeetingInactivityTerminationSeconds = (state: RootState) =>
   state.config.meetingInactivityTerminationSeconds;
-export const selectIsSpacedeckEnabled = (state: RootState) => state.config.spacedeck.enabled;
 export const selectAvailableGridSizes = createSelector(
   (state: RootState) => state.config.maxGridTiles,
   (maxGridTiles) => getAvailableGridSizes(maxGridTiles)

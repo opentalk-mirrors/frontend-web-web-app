@@ -134,9 +134,6 @@ window.config = {
     waitingRoomDefaultValue: ${WAITING_ROOM_DEFAULT_VALUE:-false},
     suppressBrowserCompatibilityInfo: ${SUPPRESS_BROWSER_COMPATIBILITY_INFO:-false}
   },
-  spacedeck: {
-    enabled: ${SPACEDECK_ENABLED:-true},
-  },
 }
 EOF
 

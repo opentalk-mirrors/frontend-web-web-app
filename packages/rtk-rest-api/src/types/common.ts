@@ -20,7 +20,6 @@ export type Namespaces =
   | 'control'
   | 'core'
   | 'ee_chat'
-  | 'excalidraw'
   | 'legal_vote'
   | 'polls'
   | 'media'

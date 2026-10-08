@@ -165,19 +165,6 @@ export const tabs: Array<Tab> = [
     key: ModerationTabKey.Whiteboard,
     titleKey: 'whiteboard-tab-title',
   },
-  // TODO: dublicated whiteboard entry can be removed with https://git.opentalk.dev/opentalk/product/tickets/-/work_items/321
-  {
-    icon: <WhiteboardIcon />,
-    tooltipTranslationKey: 'moderationbar-button-whiteboard-tooltip',
-    component: (
-      <Suspense fallback={<SuspenseLoading />}>
-        <WhiteboardTab />
-      </Suspense>
-    ),
-    moduleKey: BackendModules.Excalidraw,
-    key: ModerationTabKey.Whiteboard,
-    titleKey: 'whiteboard-tab-title',
-  },
   {
     icon: <BreakroomsIcon />,
     component: (
