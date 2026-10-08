@@ -11,6 +11,7 @@ import {
   toggleFullscreen,
   toggleMicrophone,
   toggleVideo,
+  toggleSelfView,
 } from './events';
 import { registerHotkeys, resetHotkeys } from './listener';
 import { domFocusIn, domFocusOut, domKeyDown, domKeyUp, domWindowBlur } from './slice';
@@ -72,6 +73,12 @@ export class ReduxDomEvents {
         modifier: toggleModifier,
         onPress: screenShare,
         descriptionKey: 'hotkey-screen-share-toggle',
+      },
+      {
+        key: 'y',
+        modifier: toggleModifier,
+        onPress: toggleSelfView,
+        descriptionKey: 'hotkey-selfview-toggle',
       },
     ]);
   }

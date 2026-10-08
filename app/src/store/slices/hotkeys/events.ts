@@ -27,6 +27,7 @@ import {
 import { selectHandUp, selectRaiseHandsEnabled } from '../moderationSlice';
 import { selectNeedRecordingConsent } from '../streamingSlice';
 import { selectIsWhisperActive, setIsWhisperActive } from '../subroomAudioSlice';
+import { toggledSelfViewMinimized } from '../uiSlice';
 import type { HotkeyCallbackParams } from './types';
 
 type AbortablePromise<T = unknown> = Promise<T> & {
@@ -168,6 +169,10 @@ export const toggleFullscreen = ({ state, dispatch }: HotkeyCallbackParams) => {
   }
 
   dispatch(fullscreenActions.toggle());
+};
+
+export const toggleSelfView = ({ dispatch }: HotkeyCallbackParams) => {
+  dispatch(toggledSelfViewMinimized());
 };
 
 export const raiseHandEvent = ({ state, dispatch }: HotkeyCallbackParams) => {

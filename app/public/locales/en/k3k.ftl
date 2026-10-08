@@ -1241,6 +1241,7 @@ hotkey-fullscreen-toggle = Fullscreen on / off
 hotkey-whisper-to-whisper-group = Whisper on / off (when active)
 hotkey-raise-hand-toggle = Raise hand on / off
 hotkey-screen-share-toggle = Screen share on / off
+hotkey-selfview-toggle = Self-view minimize / expand
 
 meeting-required-start-date = Start date is required
 meeting-required-end-date = End date is required
