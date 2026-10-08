@@ -91,18 +91,6 @@ export const selectCombinedParticipantsAndUser = createSelector(
   (participants, user) => (user ? [...participants, user] : participants)
 );
 
-export const selectParticipantsWithoutGuestAndSip = createSelector(
-  [selectCombinedParticipantsAndUser],
-  (participants) =>
-    participants.filter(
-      (participant) =>
-        !(
-          participant.participationKind.match(ParticipationKind.Guest) ||
-          participant.participationKind.match(ParticipationKind.CallIn)
-        )
-    )
-);
-
 export const selectJoinedFirstTimestamp = createSelector(
   [selectAllVisibleParticipants, selectUserAsParticipant],
   (participants, user) =>
