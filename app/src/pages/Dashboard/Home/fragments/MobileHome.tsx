@@ -53,7 +53,7 @@ const DEFAULT_VIEW: ViewOption = ViewOption.Current;
 const MEETINGS_CONATINER_ID = 'meetings-container';
 const VIEW_SELECT_ID = 'view-select';
 
-export const MobileHome = () => {
+const MobileHome = () => {
   const { t } = useTranslation();
   const [selectedView, setSelectedView] = useState<ViewOption>(DEFAULT_VIEW);
 

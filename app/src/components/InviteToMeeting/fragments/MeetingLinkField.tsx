@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { CopyTextField } from '../../../commonComponents';
 import { FieldKeys } from './constants';
 
-export type MeetingLinkFieldProps = {
+type MeetingLinkFieldProps = {
   fieldKey: FieldKeys;
   checked: boolean;
   value?: string | URL;

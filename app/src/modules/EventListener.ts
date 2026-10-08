@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import mitt, { Handler, EventType } from 'mitt';
 
-export interface EventListener<E> {
+interface EventListener<E> {
   addEventListener<Key extends keyof E>(type: Key, handler: Handler<E[Key]>): void;
   removeEventListener<Key extends keyof E>(type: Key, handler: Handler<E[Key]>): void;
 }

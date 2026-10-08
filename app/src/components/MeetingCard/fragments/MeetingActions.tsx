@@ -26,7 +26,7 @@ import { selectBaseUrl } from '../../../store/slices/configSlice';
 import getReferrerRouterState from '../../../utils/getReferrerRouterState';
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
-export interface MeetingCardBaseProps {
+interface MeetingCardBaseProps {
   event: Event | EventInstance;
   highlighted?: boolean;
 }

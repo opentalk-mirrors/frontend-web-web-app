@@ -29,7 +29,7 @@ export interface ResetRaisedHands {
 
 export type Action = EnableRaiseHands | DisableRaiseHands | RaiseHand | LowerHand | ResetRaisedHands;
 
-export type RaiseHands = Namespaced<Action, 'raise_hands'>;
+type RaiseHands = Namespaced<Action, 'raise_hands'>;
 
 export const enableRaiseHands = createSignalingApiCall<EnableRaiseHands>('raise_hands', 'enable_raise_hands');
 export const disableRaiseHands = createSignalingApiCall<DisableRaiseHands>('raise_hands', 'disable_raise_hands');

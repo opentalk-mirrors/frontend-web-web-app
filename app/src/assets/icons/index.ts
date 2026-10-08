@@ -9,8 +9,6 @@ import ArrowLeftIcon from './ArrowLeftIcon';
 import ArrowRightIcon from './ArrowRightIcon';
 import ArrowUpIcon from './ArrowUpIcon';
 import AttendanceReportIcon from './AttendanceReportIcon';
-import AudioIcon from './AudioIcon';
-import AvatarIcon from './AvatarIcon';
 import BackIcon from './BackIcon';
 import BreakroomsIcon from './BreakroomsIcon';
 import BugIcon from './BugIcon';
@@ -19,17 +17,14 @@ import CameraOffIcon from './CameraOffIcon';
 import CameraOnIcon from './CameraOnIcon';
 import ChatIcon from './ChatIcon';
 import ChatOffIcon from './ChatOffIcon';
-import CheckIcon from './CheckIcon';
 import ClockIcon from './ClockIcon';
 import CloseFullscreenIcon from './CloseFullscreenIcon';
 import CloseIcon from './CloseIcon';
 import CoffeeBreakIcon from './CoffeeBreakIcon';
 import ConnectionBadIcon from './ConnectionBadIcon';
 import ConnectionGoodIcon from './ConnectionGoodIcon';
-import ConnectionMediumIcon from './ConnectionMediumIcon';
 import ContactIcon from './ContactIcon';
 import CopyIcon from './CopyIcon';
-import CrownIcon from './CrownIcon';
 import DashboardLegalIcon from './DashboardLegalIcon';
 import DebriefingIcon from './DebriefingIcon';
 import DoneIcon from './DoneIcon';
@@ -45,13 +40,11 @@ import FavoriteIcon from './FavoriteIcon';
 import FeedbackIcon from './FeedbackIcon';
 import ForwardIcon from './ForwardIcon';
 import FullscreenViewIcon from './FullscreenViewIcon';
-import GongIcon from './GongIcon';
 import GridSize6Icon from './GridSize6Icon';
 import GridSize9Icon from './GridSize9Icon';
 import GridSize16Icon from './GridSize16Icon';
 import GridSize24Icon from './GridSize24Icon';
 import GridViewIcon from './GridViewIcon';
-import HelpIcon from './HelpIcon';
 import HelpSquareIcon from './HelpSquareIcon';
 import HiddenIcon from './HiddenIcon';
 import HomeIcon from './HomeIcon';
@@ -64,7 +57,6 @@ import InviteIcon from './InviteIcon';
 import KeyboardIcon from './KeyboardIcon';
 import LegalBallotIcon from './LegalBallotIcon';
 import LiveIcon from './LiveIcon';
-import LockedIcon from './LockedIcon';
 import LogoIcon from './LogoIcon';
 import MeetingNotesIcon from './MeetingNotesIcon';
 import MeetingRoomIcon from './MeetingRoomIcon';
@@ -80,13 +72,9 @@ import MyAccountIcon from './MyAccountIcon';
 import NewMessageIcon from './NewMessageIcon';
 import NoMeetingRoomIcon from './NoMeetingRoomIcon';
 import NoMessagesIcon from './NoMessagesIcon';
-import NoOfParticipantsIcon from './NoOfParticipantsIcon';
-import NoOfRoomsIcon from './NoOfRoomsIcon';
 import NoPollsIcon from './NoPollsIcon';
 import NoVotesIcon from './NoVotesIcon';
 import OpenInFullIcon from './OpenInFullIcon';
-import PersonIcon from './PersonIcon';
-import PersonOffIcon from './PersonOffIcon';
 import PhoneIcon from './PhoneIcon';
 import PictureIcon from './PictureIcon';
 import PinIcon from './PinIcon';
@@ -95,7 +83,6 @@ import RaiseHandOffIcon from './RaiseHandOffIcon';
 import RaiseHandOnIcon from './RaiseHandOnIcon';
 import RecordingsIcon from './RecordingsIcon';
 import RectAddPlusIcon from './RectAddPlusIcon';
-import RemoveIcon from './RemoveIcon';
 import SearchIcon from './SearchIcon';
 import SecureFilledIcon from './SecureFilledIcon';
 import SecureIcon from './SecureIcon';
@@ -111,10 +98,7 @@ import SpeedTestIcon from './SpeedTestIcon';
 import TalkingStickIcon from './TalkingStickIcon';
 import TelephoneStrokeIcon from './TelephoneStrokeIcon';
 import TimerIcon from './TimerIcon';
-import TranscriptionSettingsIcon from './TranscriptionSettingsIcon';
-import TranscriptionShowIcon from './TranscriptionShowIcon';
 import TrashIcon from './TrashIcon';
-import UnlockedIcon from './UnlockedIcon';
 import VisibleIcon from './VisibleIcon';
 import VolumeIcon from './VolumeIcon';
 import WarningIcon from './WarningIcon';
@@ -133,8 +117,6 @@ export {
   ArrowRightIcon,
   ArrowUpIcon,
   AttendanceReportIcon,
-  AudioIcon,
-  AvatarIcon,
   BackIcon,
   BreakroomsIcon,
   BugIcon,
@@ -143,17 +125,14 @@ export {
   CameraOnIcon,
   ChatIcon,
   ChatOffIcon,
-  CheckIcon,
   ClockIcon,
   CloseFullscreenIcon,
   CloseIcon,
   CoffeeBreakIcon,
   ConnectionBadIcon,
   ConnectionGoodIcon,
-  ConnectionMediumIcon,
   ContactIcon,
   CopyIcon,
-  CrownIcon,
   DashboardLegalIcon,
   DebriefingIcon,
   DoneIcon,
@@ -169,28 +148,23 @@ export {
   FeedbackIcon,
   ForwardIcon,
   FullscreenViewIcon,
-  GongIcon,
   GridSize16Icon,
   GridSize24Icon,
   GridSize6Icon,
   GridSize9Icon,
   GridViewIcon,
-  HelpIcon,
   HelpSquareIcon,
   HiddenIcon,
   HomeIcon,
   Icon_cc_hideIcon,
   Icon_cc_settingsIcon,
   Icon_cc_showIcon,
-  TranscriptionSettingsIcon,
-  TranscriptionShowIcon,
   InfoIcon,
   InfoOutlinedIcon,
   InviteIcon,
   KeyboardIcon,
   LegalBallotIcon,
   LiveIcon,
-  LockedIcon,
   LogoIcon,
   MeetingNotesIcon,
   MeetingRoomIcon,
@@ -206,8 +180,6 @@ export {
   NewMessageIcon,
   NoMeetingRoomIcon,
   NoMessagesIcon,
-  NoOfParticipantsIcon,
-  NoOfRoomsIcon,
   NoPollsIcon,
   NoVotesIcon,
   OpenInFullIcon,
@@ -215,13 +187,10 @@ export {
   PictureIcon,
   PinIcon,
   PollIcon,
-  PersonIcon,
-  PersonOffIcon,
   RaiseHandOffIcon,
   RaiseHandOnIcon,
   RecordingsIcon,
   RectAddPlusIcon,
-  RemoveIcon,
   SearchIcon,
   SecureFilledIcon,
   SecureIcon,
@@ -238,7 +207,6 @@ export {
   TelephoneStrokeIcon,
   TimerIcon,
   TrashIcon,
-  UnlockedIcon,
   VisibleIcon,
   VolumeIcon,
   WarningIcon,

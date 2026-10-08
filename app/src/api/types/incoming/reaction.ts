@@ -4,28 +4,28 @@
 import { ErrorStruct, NamespacedIncoming, ParticipantId } from '../../../types';
 import { ReactionEmoji } from '../../../types/reaction';
 
-export type Reacted = {
+type Reacted = {
   message: 'reacted';
   participantId: ParticipantId;
   reaction: ReactionEmoji;
 };
 
-export type RestrictionsEnabled = {
+type RestrictionsEnabled = {
   message: 'restrictions_enabled';
   unrestrictedParticipants: ParticipantId[];
 };
 
-export type RestrictionsDisabled = {
+type RestrictionsDisabled = {
   message: 'restrictions_disabled';
 };
 
-export enum ReactionError {
+enum ReactionError {
   InsufficientPermissions = 'insufficient_permissions',
   Restricted = 'restricted',
 }
 
 export type Message = Reacted | RestrictionsEnabled | RestrictionsDisabled | ErrorStruct<ReactionError>;
 
-export type Reaction = NamespacedIncoming<Message, 'reaction'>;
+type Reaction = NamespacedIncoming<Message, 'reaction'>;
 
 export default Reaction;

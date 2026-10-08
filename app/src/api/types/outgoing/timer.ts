@@ -25,7 +25,7 @@ export interface ReadyToContinue {
 
 export type Action = StartTimer | StopTimer | ReadyToContinue;
 
-export type Timer = Namespaced<Action, 'timer'>;
+type Timer = Namespaced<Action, 'timer'>;
 
 export const startTimer = createSignalingApiCall<StartTimer>('timer', 'start');
 export const stopTimer = createSignalingApiCall<StopTimer>('timer', 'stop');

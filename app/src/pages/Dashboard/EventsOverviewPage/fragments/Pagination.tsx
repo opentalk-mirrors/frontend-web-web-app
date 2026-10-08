@@ -12,7 +12,7 @@ interface PaginationProps {
   currentCursorIndex: number;
 }
 
-export function Pagination({ after, isFetching, onNextPage, onPreviousPage, currentCursorIndex }: PaginationProps) {
+function Pagination({ after, isFetching, onNextPage, onPreviousPage, currentCursorIndex }: PaginationProps) {
   const { t } = useTranslation();
 
   const handleNextPage = () => {

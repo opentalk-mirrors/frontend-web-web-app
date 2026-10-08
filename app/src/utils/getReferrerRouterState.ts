@@ -11,5 +11,3 @@ export default function getReferrerRouterState(location: { pathname: string }) {
     referrer: location.pathname,
   };
 }
-
-export type ReferrerRouterState = ReturnType<typeof getReferrerRouterState>;

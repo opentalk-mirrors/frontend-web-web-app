@@ -3,23 +3,6 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { shuffle } from 'es-toolkit';
 
-export const spliceIntoChunks = <T>(array: T[], splitSize: number): T[][] => {
-  if (splitSize >= array.length) {
-    return array.map((item) => [item]);
-  }
-
-  const base = Math.floor(array.length / splitSize);
-  const remainder = array.length % splitSize;
-
-  let index = 0;
-  return Array.from({ length: splitSize }, (_, i) => {
-    const size = base + (i < remainder ? 1 : 0);
-    const chunk = array.slice(index, index + size);
-    index += size;
-    return chunk;
-  });
-};
-
 /**
  * Creates an array of shuffled values, using a version of the Fisher-Yates shuffle.
  * Facade of Lodash `shuffle` method.

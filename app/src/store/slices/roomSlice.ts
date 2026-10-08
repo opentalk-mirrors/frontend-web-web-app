@@ -108,7 +108,7 @@ export const fetchRoomByInviteId = createAsyncThunk<
   }
 });
 
-export const roomSlice = createSlice({
+const roomSlice = createSlice({
   name: 'room',
   initialState,
   reducers: {
@@ -290,7 +290,8 @@ export const roomSlice = createSlice({
   },
 });
 
-export const actions = roomSlice.actions;
+const actions = roomSlice.actions;
+const { updatedReconnectTimerId } = actions;
 export const {
   joinBlocked,
   connectionClosed,
@@ -298,7 +299,7 @@ export const {
   joinedLobby,
   lobbyDisplayNameAssigned,
   readyToEnter,
-  updatedReconnectTimerId,
+
   abortedReconnection,
   roomReset,
   presenceConfirmationRequested,
@@ -308,7 +309,6 @@ export const {
   roomParametersChanged,
 } = actions;
 
-export const selectRoomPassword = (state: RootState) => state.room.password;
 export const selectRoomId = (state: RootState) => state.room.roomId;
 export const selectRoomConnectionState = (state: RootState) => state.room.connectionState;
 export const selectCanEnter = (state: RootState) => state.room.canEnter;
@@ -325,7 +325,6 @@ export const selectIsRoomOwner = (state: RootState) => state.room.isOwnedByCurre
 export const selectIsParticipationConfirmationActive = (state: RootState) => state.room.isPresenceConfirmationActive;
 export const selectIsRoomDeleted = (state: RootState) => state.room.isDeleted;
 export const selectE2EEncryption = (state: RootState) => state.room.eventInfo?.e2eEncryption;
-export const selectRoomKind = (state: RootState) => state.room.roomKind;
 
 export default roomSlice.reducer;
 

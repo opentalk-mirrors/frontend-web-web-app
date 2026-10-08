@@ -10,11 +10,11 @@ import { createSignalingApiCall } from '../../createSignalingApiCall';
 import type { ExcalidrawScene, ExcalidrawVolatileData, WhiteboardScene } from '../incoming/whiteboard';
 import { sendMessage } from './common';
 
-export interface DisabledEditRestrictions {
+interface DisabledEditRestrictions {
   type: 'disabled';
 }
 
-export interface EnabledEditRestrictions {
+interface EnabledEditRestrictions {
   type: 'enabled';
   unrestrictedParticipants: ParticipantId[];
 }
@@ -76,7 +76,7 @@ export type Action =
   | DisableEditRestrictions
   | StartWhiteboard
   | GenerateWhiteboardPdf;
-export type Whiteboard = Namespaced<Action, 'whiteboard'>;
+type Whiteboard = Namespaced<Action, 'whiteboard'>;
 
 // Spacedeck block start
 export interface StartWhiteboard {

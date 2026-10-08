@@ -9,9 +9,9 @@ import type {
   SnackbarActionButtonProps,
 } from '../SnackbarActionButtons/SnackbarActionButtons';
 
-export interface ISnackActionsProps extends OptionsObject, SnackbarActionButtonProps {}
+interface ISnackActionsProps extends OptionsObject, SnackbarActionButtonProps {}
 
-export interface ISnackbarPersistentProps extends Omit<OptionsObject, 'persist' | 'action' | 'autoHideDuration'> {
+interface ISnackbarPersistentProps extends Omit<OptionsObject, 'persist' | 'action' | 'autoHideDuration'> {
   msg: string;
 }
 export type NotificationType = 'info' | 'warning' | 'error' | 'success';

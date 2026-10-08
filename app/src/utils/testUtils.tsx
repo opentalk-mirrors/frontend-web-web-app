@@ -178,12 +178,6 @@ export const renderHookWithProviders = <Props, Result>(
   return rtlRenderHook(render, { wrapper: WrappedComponent, ...options });
 };
 
-export const jwtVariables = {
-  NAME: 'Jürgen Tests',
-  TOKEN:
-    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiSsO8cmdlbiBUZXN0cyJ9.t9f4AJVApbVfSWUJetD7qAOF-UQvebb3eVuDtE8RmHY',
-};
-
 /*
  * const mockStore
  * create participants and use them to create a redux store for testing.
@@ -299,15 +293,6 @@ export const mockedVideoMediaDescriptor = (index: number) =>
       mockedParticipant(index).connections[0]
     ),
     mediaType: Track.Source.Camera,
-  }) as MediaDescriptor;
-
-export const mockedScreenMediaDescriptor = (index: number) =>
-  ({
-    connectionIdentifier: constructConnectionIdentifier(
-      mockedParticipant(index).id,
-      mockedParticipant(index).connections[0]
-    ),
-    mediaType: Track.Source.ScreenShare,
   }) as MediaDescriptor;
 
 export const mockedAudioInputs: Array<MediaDeviceInfo> = [
@@ -516,31 +501,6 @@ export const mockedRoomAssets: Array<BaseAsset> = [
     size: 0,
   },
 ];
-
-type MockSubscriberState = {
-  descriptor: string;
-  participantId: ParticipantId;
-  audioOn: boolean;
-  videoOn: boolean;
-};
-
-export const mockSubscriberState = ({ descriptor, participantId, videoOn, audioOn }: MockSubscriberState) => ({
-  ids: [descriptor],
-  entities: {
-    [descriptor]: {
-      participantId,
-      mediaType: Track.Source.Camera,
-      audio: audioOn,
-      video: videoOn,
-      subscriberState: {
-        videoRunning: videoOn,
-        audioRunning: audioOn,
-        connection: 'connected',
-      },
-      limit: 2,
-    },
-  },
-});
 
 export const mockPoll: Poll = {
   id: 'fake-poll-id' as PollId,

@@ -42,7 +42,7 @@ const initialState: UserState = {
   joinedAsModerator: false,
 };
 
-export const userSlice = createSlice({
+const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
@@ -119,8 +119,8 @@ export const userSlice = createSlice({
   },
 });
 
-export const actions = userSlice.actions;
-export const { updateRole, setDisplayName, updateLastActive } = actions;
+const actions = userSlice.actions;
+export const { updateRole, setDisplayName } = actions;
 
 const userState = (state: RootState) => state.user;
 
@@ -146,11 +146,11 @@ export const selectIsGuest = createSelector(
   [userState],
   (state) => state.role === Role.Guest || state.participationKind === ParticipationKind.Guest
 );
-export const selectRole = createSelector([userState], (state) => state.role);
-export const selectParticipationKind = createSelector([userState], (state) => state.participationKind);
-export const selectIsRoomOwner = createSelector([userState], (state) => state.isRoomOwner);
-export const selectJoinedAt = createSelector([userState], (state) => state.joinedAt);
-export const selectLastActive = createSelector([userState], (state) => state.lastActive);
+const selectRole = createSelector([userState], (state) => state.role);
+const selectParticipationKind = createSelector([userState], (state) => state.participationKind);
+const selectIsRoomOwner = createSelector([userState], (state) => state.isRoomOwner);
+const selectJoinedAt = createSelector([userState], (state) => state.joinedAt);
+const selectLastActive = createSelector([userState], (state) => state.lastActive);
 
 export const selectUserAsPartialParticipant: Selector<
   RootState,

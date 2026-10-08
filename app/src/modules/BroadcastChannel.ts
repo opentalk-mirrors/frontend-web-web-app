@@ -18,11 +18,3 @@ export function getBroadcastChannel(name: ChannelName): BroadcastChannel | null 
 
   return channels.get(name) || null;
 }
-
-export function closeBroadcastChannel(name: ChannelName): void {
-  const channel = channels.get(name);
-  if (channel) {
-    channel.close();
-    channels.delete(name);
-  }
-}

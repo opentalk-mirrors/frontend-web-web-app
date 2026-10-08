@@ -7,7 +7,7 @@ import { ElementType, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { TimePerspectiveFilter } from '../../../../utils/eventUtils';
-import { DashboardEventsFilters, FilterChangeCallbackType, MeetingsProp, TimeFilter } from '../types';
+import { DashboardEventsFilters, FilterChangeCallbackType, MeetingsProp } from '../types';
 import { CreateNewMeetingButton } from './CreateNewMeetingButton';
 import { EventFilterButtonBar } from './EventFilterButtonBar';
 import { EventPageFilters } from './EventPageFilters';
@@ -15,8 +15,6 @@ import { EventPageFilters } from './EventPageFilters';
 // In order to avoid circular dependency I moved file to common parent folder "../types",
 // many files are actually importing this interface from here, which is why I re-exported it
 // for compatibility reasons. And to avoid touching many files, increasing the end size of the PR.
-export { TimeFilter };
-
 interface EventsPageHeaderProps {
   filters: DashboardEventsFilters;
   onFilterChange: FilterChangeCallbackType;

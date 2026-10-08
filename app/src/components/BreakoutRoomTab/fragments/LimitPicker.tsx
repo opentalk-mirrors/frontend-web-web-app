@@ -17,8 +17,7 @@ type LimitPickerProps = {
   name: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const TextNumberInput = styled(CommonTextField)(() => ({
+const TextNumberInput = styled(CommonTextField)(() => ({
   appearance: 'textfield',
   width: '4rem',
   '& input': {

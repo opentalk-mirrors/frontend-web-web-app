@@ -8,7 +8,7 @@ interface SelfViewAnchorValue {
   setAnchor: (el: HTMLElement | null) => void;
 }
 
-export const SelfViewAnchorContext = createContext<SelfViewAnchorValue>({
+const SelfViewAnchorContext = createContext<SelfViewAnchorValue>({
   anchor: null,
   setAnchor: () => {},
 });

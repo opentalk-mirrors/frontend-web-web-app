@@ -21,7 +21,7 @@ const ThumbsHolder = styled(Stack, {
   width: '100%',
 }));
 
-export interface ThumbsProps {
+interface ThumbsProps {
   thumbWidth: number;
   thumbsPerWindow: number;
 }

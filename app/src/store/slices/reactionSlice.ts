@@ -16,7 +16,7 @@ const REACTION_TIMEOUT_DURATION = 9000;
 /* The duration the emoji is shown in the floating reaction area */
 export const FLOATING_REACTION_DURATION = 3000;
 
-export type ReactionState = {
+type ReactionState = {
   /* The current state of the reaction restriction */
   restrictionsState: ReactionRestriction;
 
@@ -29,7 +29,7 @@ export type ReactionState = {
   floatingReaction: ActiveReaction[];
 };
 
-export const reactionSlice = createSlice({
+const reactionSlice = createSlice({
   name: 'reaction',
   initialState: {
     restrictionsState: { type: 'disabled' },
@@ -71,11 +71,13 @@ export const reactionSlice = createSlice({
   },
 });
 
+const { reactionExpired } = reactionSlice.actions;
+
 export const {
   reacted,
   reactionRestrictionsEnabled,
   reactionRestrictionsDisabled,
-  reactionExpired,
+
   floatingReactionExpired,
 } = reactionSlice.actions;
 
@@ -100,9 +102,6 @@ export const selectParticipantReaction = (
   state: RootState,
   participantId: ParticipantId
 ): Omit<ActiveReaction, 'participantId'> | null => state.reaction.activeReactions[participantId] ?? null;
-
-export const selectHasOwnReaction = (state: RootState): boolean =>
-  state.user.uuid ? state.user.uuid in state.reaction.activeReactions : false;
 
 export const selectFloatingReactions = (state: RootState): ActiveReaction[] => state.reaction.floatingReaction;
 

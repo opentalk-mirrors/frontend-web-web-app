@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import type { RootState } from '../';
 import { ParticipantId } from '../../types';
 
-export interface MachineState {
+interface MachineState {
   showMachine: boolean;
   winnerId: ParticipantId;
   initiatorId: ParticipantId;
@@ -25,7 +24,7 @@ const machineState: MachineState = {
   members: [],
 };
 
-export const slotSlice = createSlice({
+const slotSlice = createSlice({
   name: 'slot',
   initialState: machineState,
   reducers: {
@@ -49,9 +48,5 @@ export const slotSlice = createSlice({
     },
   },
 });
-
-export const { initLottery, endLottery } = slotSlice.actions;
-export const lotteryState = (state: RootState) => state.slot;
-export const isVisible = (state: RootState) => state.slot.showMachine;
 
 export default slotSlice.reducer;

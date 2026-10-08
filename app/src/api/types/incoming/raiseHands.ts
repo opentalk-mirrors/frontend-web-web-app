@@ -3,27 +3,27 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { ErrorStruct, NamespacedIncoming, ParticipantId } from '../../../types';
 
-export interface RaiseHandsEnabled {
+interface RaiseHandsEnabled {
   message: 'raise_hands_enabled';
   issuedBy: ParticipantId;
 }
 
-export interface RaiseHandsDisabled {
+interface RaiseHandsDisabled {
   message: 'raise_hands_disabled';
   issuedBy: ParticipantId;
 }
 
-export interface HandRaised {
+interface HandRaised {
   message: 'hand_raised';
   participant: ParticipantId;
 }
 
-export interface HandLowered {
+interface HandLowered {
   message: 'hand_lowered';
   participant: ParticipantId;
 }
 
-export interface RaisedHandResetByModerator {
+interface RaisedHandResetByModerator {
   message: 'raised_hand_reset_by_moderator';
   issuedBy: ParticipantId;
   participants: ParticipantId[];
@@ -43,6 +43,6 @@ export type Message =
   | RaisedHandResetByModerator
   | ErrorStruct<RaiseHandsError>;
 
-export type RaiseHands = NamespacedIncoming<Message, 'raise_hands'>;
+type RaiseHands = NamespacedIncoming<Message, 'raise_hands'>;
 
 export default RaiseHands;

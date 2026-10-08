@@ -4,7 +4,7 @@
 import { Rating as MuiRating, RatingProps, styled } from '@mui/material';
 import React from 'react';
 
-import { FormWrapper, FormProps } from '../FormWrapper/FormWrapper';
+import FormWrapper, { FormProps } from '../FormWrapper';
 
 const Ratings = styled(MuiRating)(({ theme }) => ({
   '&.MuiRating-root': {

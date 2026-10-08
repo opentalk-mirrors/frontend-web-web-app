@@ -5,7 +5,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { RootState } from '..';
 
-export interface SpeedMeterState {
+interface SpeedMeterState {
   download: number | undefined;
   upload: number | undefined;
   latency: number | undefined;
@@ -17,7 +17,7 @@ const meterState: SpeedMeterState = {
   latency: undefined,
 };
 
-export const speedMeterSlice = createSlice({
+const speedMeterSlice = createSlice({
   name: 'speed',
   initialState: meterState,
   reducers: {

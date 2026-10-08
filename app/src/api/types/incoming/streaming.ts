@@ -5,27 +5,27 @@ import { RecordingStatusInfo, StreamStatusInfo, StreamingTargetId } from '@opent
 
 import { ErrorStruct, NamespacedIncoming, ParticipantId } from '../../../types';
 
-export type RecordingUpdated = {
+type RecordingUpdated = {
   message: 'recording_updated';
 } & RecordingStatusInfo;
 
-export type StreamUpdated = {
+type StreamUpdated = {
   message: 'stream_updated';
   targetId: StreamingTargetId;
 } & StreamStatusInfo;
 
-export interface ConsentUpdated {
+interface ConsentUpdated {
   message: 'consent_updated';
   participantId: ParticipantId;
   consents: boolean;
 }
 
-export interface Service {
+interface Service {
   message: 'service';
   event: RecordingServiceCommand;
 }
 
-export type RecordingServiceCommand =
+type RecordingServiceCommand =
   | { type: 'StartRecording' }
   | { type: 'PauseRecording' }
   | { type: 'StopRecording' }
@@ -65,6 +65,6 @@ export enum RecordingError {
 
 export type Message = RecordingUpdated | StreamUpdated | ConsentUpdated | Service | ErrorStruct<RecordingError>;
 
-export type Streaming = NamespacedIncoming<Message, 'recording'>;
+type Streaming = NamespacedIncoming<Message, 'recording'>;
 
 export default Streaming;

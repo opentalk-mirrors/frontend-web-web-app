@@ -4,12 +4,6 @@
 import SnackbarProvider from './SnackbarProvider';
 
 export { notificationAction, notificationPersistent, notifications } from './utils';
-export type { ISnackActionsProps, ISnackbarPersistentProps } from './utils';
 export { createStackedMessages } from './StackedMessages';
-export {
-  getNotistackComponents,
-  startTimeLimitNotification,
-  stopTimeLimitNotification,
-  showConsentNotification,
-} from './variations';
+export { startTimeLimitNotification, showConsentNotification } from './variations';
 export { SnackbarProvider };

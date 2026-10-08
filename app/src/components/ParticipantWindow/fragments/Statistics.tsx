@@ -7,12 +7,12 @@ import { ConnectionQuality, ParticipantEvent } from 'livekit-client';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ConnectionGoodIcon, ConnectionMediumIcon } from '../../../assets/icons';
+import { ConnectionGoodIcon } from '../../../assets/icons';
+import ConnectionMediumIcon from '../../../assets/icons/ConnectionMediumIcon';
 import { OverlayIconButton } from '../../../commonComponents';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 
 // Will be addressed in https://git.opentalk.dev/opentalk/frontend/web/web-app/-/issues/2129
-// import { StatisticsContent } from './StatisticsContent';
 
 const Statistics = ({
   descriptor,
@@ -65,9 +65,7 @@ const Statistics = ({
         }}
         disablePortal={disablePopoverPortal}
         keepMounted={false}
-      >
-        {/* <StatisticsContent descriptor={descriptor} /> */}
-      </Popover>
+      ></Popover>
     </>
   );
 };

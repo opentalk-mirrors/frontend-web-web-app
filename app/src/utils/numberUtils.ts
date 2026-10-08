@@ -6,20 +6,6 @@ export const getRandomInteger = (max = 1) => {
   return Math.round(Math.random() * max);
 };
 
-export const formatBitRate = (bitRate?: number): string => {
-  if (bitRate === undefined) {
-    return '-';
-  }
-
-  if (bitRate > 1000000) {
-    const mRate = bitRate / 1000000;
-    return `${mRate.toPrecision(3)} Mbit/s`;
-  } else {
-    const kRate = bitRate / 1000;
-    return `${kRate.toPrecision(3)} kbit/s`;
-  }
-};
-
 /*
   Format filsize units:
   Can be standard units (KB, MB...) or binary units (KiB, MiB)

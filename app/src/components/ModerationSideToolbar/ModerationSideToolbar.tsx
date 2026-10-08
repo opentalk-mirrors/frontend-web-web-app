@@ -97,7 +97,7 @@ const Aside = styled('aside')(({ theme }) => ({
   overflow: 'hidden',
 }));
 
-export type ModerationSideToolbarProps = {
+type ModerationSideToolbarProps = {
   onSelect: (tabKey: ModerationTabKey) => void;
   displayedTabs: TabProps[];
   activeTab: ModerationTabKey;

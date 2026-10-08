@@ -46,10 +46,10 @@ export enum MeetingNotesError {
   FailedToGenerateUrl = 'failed_to_generate_url',
 }
 
-export const isError = isEnumErrorStruct(MeetingNotesError);
+isEnumErrorStruct(MeetingNotesError);
 
 export type IncomingMeetingNotes =
   WriteAccessReceived | ReadAccessReceived | PdfCreated | AccessChanged | ErrorStruct<MeetingNotesError>;
-export type MeetingNotes = NamespacedIncoming<IncomingMeetingNotes, 'meeting_notes'>;
+type MeetingNotes = NamespacedIncoming<IncomingMeetingNotes, 'meeting_notes'>;
 
 export default MeetingNotes;

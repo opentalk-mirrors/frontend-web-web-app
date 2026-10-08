@@ -15,11 +15,11 @@ import {
 import { ParticipantId } from '../../types';
 import { switchedRoom } from './breakoutSlice';
 
-export interface SpacedeckParam {
+interface SpacedeckParam {
   url: string | undefined;
 }
 
-export interface WhiteboardState {
+interface WhiteboardState {
   isWhiteboardAvailable: boolean;
   whiteboardAssetList: Array<AssetRef>;
   scene: {
@@ -50,7 +50,7 @@ const initialState: WhiteboardState = {
   },
 };
 
-export const whiteboardSlice = createSlice({
+const whiteboardSlice = createSlice({
   name: 'whiteboard',
   initialState,
   reducers: {
@@ -128,8 +128,6 @@ export const {
   setEditRestrictions,
   setWhiteboardAvailable,
 } = whiteboardSlice.actions;
-
-export const actions = whiteboardSlice.actions;
 
 export const selectWhiteboardUrl = (state: RootState) => state.whiteboard.spacedeck.url;
 export const selectIsWhiteboardAvailable = (state: RootState) => state.whiteboard.isWhiteboardAvailable;

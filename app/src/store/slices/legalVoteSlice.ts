@@ -93,7 +93,7 @@ const initialState: State = {
 // We currently only allow a single active shown vote.
 // It can be changed to Array<VoteId> once we decided to support multiple active votes.
 
-export const legalVoteSlice = createSlice({
+const legalVoteSlice = createSlice({
   name: 'legalVote',
   initialState: initialState,
   reducers: {
@@ -236,7 +236,7 @@ export const legalVoteSlice = createSlice({
   },
 });
 
-export const actions = legalVoteSlice.actions;
+const actions = legalVoteSlice.actions;
 export const {
   initialized,
   started,
@@ -244,26 +244,24 @@ export const {
   updated,
   voted,
   canceled,
-  closed,
+
   closedResultWindow,
   savedLegalVoteForm,
 } = actions;
 
-export const selectLegalVotes = (state: { legalVote: State }) => state.legalVote.votes;
+const selectLegalVotes = (state: { legalVote: State }) => state.legalVote.votes;
+const { selectEntities: selectVotes } = legalVoteAdapter.getSelectors(selectLegalVotes);
 export const {
   selectById: selectVoteById,
-  selectIds: selectVoteIds,
+
   selectAll: selectAllVotes,
-  selectEntities: selectVotes,
 } = legalVoteAdapter.getSelectors(selectLegalVotes);
 
-export const selectShowLegalVoteWindow = (state: { legalVote: State }) => state.legalVote.showResultWindow;
 export const selectCurrentShownVoteId = (state: { legalVote: State }) => state.legalVote.currentShownVoteId;
 export const selectCurrentShownVote = createSelector(
   [selectVotes, selectCurrentShownVoteId],
   (votesById, currentShownVoteId) => (currentShownVoteId !== undefined ? votesById[currentShownVoteId] : undefined)
 );
-export const selectActiveVoteId = (state: { legalVote: State }) => state.legalVote.activeVote?.id;
 export const selectPersistedToken = (state: { legalVote: State }) => state.legalVote.activeVote?.persistedToken;
 export const selectAllSavedLegalVotes = (state: { legalVote: State }) => state.legalVote.savedLegalVotes;
 export const selectSavedLegalVotePerId = createSelector(

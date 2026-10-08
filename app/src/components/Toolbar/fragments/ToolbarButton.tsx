@@ -148,7 +148,7 @@ const ToggleButton = styled(IconButton, {
   },
 }));
 
-export type ToolbarButtonProps = {
+type ToolbarButtonProps = {
   hasContext?: boolean;
   tooltipTitle: string;
   contextDisabled?: boolean;

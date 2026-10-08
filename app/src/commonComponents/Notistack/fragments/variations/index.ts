@@ -9,10 +9,10 @@ import { showConsentNotification } from './ConsentNotification/utils';
 import { CustomNotification } from './CustomNotification';
 import { TalkingStickMutedNotification } from './TalkingStickMutedNotification';
 import { TalkingStickUnmutedNotification } from './TalkingStickUnmutedNotification';
-import TimeLimitNotification, { startTimeLimitNotification, stopTimeLimitNotification } from './TimeLimitNotification';
+import TimeLimitNotification, { startTimeLimitNotification } from './TimeLimitNotification';
 import { TranscriptionEnabledNotification } from './TranscriptionEnabledNotification';
 
-export { startTimeLimitNotification, stopTimeLimitNotification, showConsentNotification };
+export { startTimeLimitNotification, showConsentNotification };
 interface NotistackCustomComponents {
   binaryAction: typeof BinaryActionNotification;
   timeLimit: typeof TimeLimitNotification;

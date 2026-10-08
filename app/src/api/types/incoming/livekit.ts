@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { NamespacedIncoming, ParticipantId } from '../../../types';
 
-export interface LivekitError {
+interface LivekitError {
   message: 'error';
   error: 'livekit_unavailable';
 }
 
-export interface PopoutStreamAccessToken {
+interface PopoutStreamAccessToken {
   message: 'popout_stream_access_token';
   token: string;
 }
@@ -20,7 +20,7 @@ export interface Credentials {
   publicUrl: string;
 }
 
-export interface ScreenSharePermissionsUpdated {
+interface ScreenSharePermissionsUpdated {
   message: 'screen_share_permissions_updated';
   grant: boolean;
   participants: ParticipantId[];
@@ -28,6 +28,6 @@ export interface ScreenSharePermissionsUpdated {
 
 export type Message = PopoutStreamAccessToken | Credentials | ScreenSharePermissionsUpdated | LivekitError;
 
-export type Livekit = NamespacedIncoming<Message, 'livekit'>;
+type Livekit = NamespacedIncoming<Message, 'livekit'>;
 
 export default Livekit;

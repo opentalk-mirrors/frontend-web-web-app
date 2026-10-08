@@ -102,11 +102,11 @@ export type Action =
   | EnableMicrophoneRestrictions
   | DisableMicrophoneRestrictions;
 
-export type Moderation = Namespaced<Action, 'moderation'>;
+type Moderation = Namespaced<Action, 'moderation'>;
 
 export const kickParticipant = createSignalingApiCall<KickParticipant>('moderation', 'kick');
-export const banParticipant = createSignalingApiCall<BanParticipant>('moderation', 'ban');
-export const unbanParticipant = createSignalingApiCall<UnbanParticipant>('moderation', 'unban');
+const banParticipant = createSignalingApiCall<BanParticipant>('moderation', 'ban');
+const unbanParticipant = createSignalingApiCall<UnbanParticipant>('moderation', 'unban');
 export const sendParticipantToWaitingRoom = createSignalingApiCall<SendParticipantToWaitingRoom>(
   'moderation',
   'send_to_waiting_room'
@@ -115,8 +115,8 @@ export const changeWaitingRoomState = createSignalingApiCall<ChangeWaitingRoomSt
   'moderation',
   'change_waiting_room_state'
 );
-export const enableGuestAccess = createSignalingApiCall<EnableGuestAccess>('moderation', 'enable_guest_access');
-export const disableGuestAccess = createSignalingApiCall<DisableGuestAccess>('moderation', 'disable_guest_access');
+const enableGuestAccess = createSignalingApiCall<EnableGuestAccess>('moderation', 'enable_guest_access');
+const disableGuestAccess = createSignalingApiCall<DisableGuestAccess>('moderation', 'disable_guest_access');
 export const acceptParticipantFromWaitingRoomToRoom = createSignalingApiCall<AcceptParticipantFromWaitingRoomToRoom>(
   'moderation',
   'accept'

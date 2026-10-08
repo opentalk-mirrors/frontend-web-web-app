@@ -18,7 +18,7 @@ import { composeInviteUrl } from '../../../utils/apiUtils';
 import { FieldKeys } from '../../InviteToMeeting/fragments/constants';
 import MeetingDetailsDialogActions from './MeetingDetailsDialogActions';
 
-export type MeetingDetailsDialogProps = {
+type MeetingDetailsDialogProps = {
   eventInfo: EventInfo;
   meetingDetails: MeetingDetails;
   roomInfo: RoomInfo;

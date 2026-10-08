@@ -21,15 +21,15 @@ export interface ChangeTranscriptionLanguage {
   language: TranscriptionLanguageKey;
 }
 
-export interface TranscriptionStarted {
+interface TranscriptionStarted {
   kind: 'started';
 }
 
-export interface TranscriptionStopped {
+interface TranscriptionStopped {
   kind: 'stopped';
 }
 
-export interface TranscriptionSegment {
+interface TranscriptionSegment {
   kind: 'segment';
   participantId: string;
   trackId: string;
@@ -38,7 +38,7 @@ export interface TranscriptionSegment {
   text: string;
 }
 
-export type TranscriptionEvent = TranscriptionStarted | TranscriptionStopped | TranscriptionSegment;
+type TranscriptionEvent = TranscriptionStarted | TranscriptionStopped | TranscriptionSegment;
 
 export interface SendTranscriptionEvent {
   action: 'transcription_service_event';
@@ -47,11 +47,11 @@ export interface SendTranscriptionEvent {
 
 export type Action = StartTranscription | StopTranscription | SendTranscriptionEvent | ChangeTranscriptionLanguage;
 
-export type Transcription = Namespaced<Action, 'transcription'>;
+type Transcription = Namespaced<Action, 'transcription'>;
 
 export const sendStartTranscriptionSignal = createSignalingApiCall<StartTranscription>('transcription', 'start');
 export const sendStopTranscriptionSignal = createSignalingApiCall<StopTranscription>('transcription', 'stop');
-export const sendTranscriptionEventSignal = createSignalingApiCall<SendTranscriptionEvent>(
+const sendTranscriptionEventSignal = createSignalingApiCall<SendTranscriptionEvent>(
   'transcription',
   'transcription_service_event'
 );

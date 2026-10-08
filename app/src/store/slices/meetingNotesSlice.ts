@@ -6,7 +6,7 @@ import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '..';
 import { hangUp } from '../commonActions';
 
-export type MeetingNotesState = {
+type MeetingNotesState = {
   meetingNotesUrl: string | null;
 };
 
@@ -14,7 +14,7 @@ const initialState: MeetingNotesState = {
   meetingNotesUrl: null,
 };
 
-export const meetingNotesSlice = createSlice({
+const meetingNotesSlice = createSlice({
   name: 'meetingNotes',
   initialState,
   reducers: {

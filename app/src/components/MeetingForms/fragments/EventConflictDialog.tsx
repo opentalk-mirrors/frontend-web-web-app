@@ -16,7 +16,7 @@ interface EventConflictDialogProps {
   isUpdate?: boolean;
 }
 
-export const EventConflictDialog = ({ onConfirm, onCancel, event, isUpdate }: EventConflictDialogProps) => {
+const EventConflictDialog = ({ onConfirm, onCancel, event, isUpdate }: EventConflictDialogProps) => {
   const { t } = useTranslation();
   const startDate = new Date(event.startsAt.datetime);
   const endDate = new Date(event.endsAt.datetime);

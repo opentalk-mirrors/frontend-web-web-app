@@ -19,7 +19,7 @@ const langLocaleMap = new Map([
   ['de', deDE.components.MuiLocalizationProvider.defaultProps.localeText],
 ]);
 
-export interface DateTimeProviderProps extends LocalizationProviderProps<Locale> {
+interface DateTimeProviderProps extends LocalizationProviderProps<Locale> {
   children: React.ReactNode;
 }
 

@@ -36,7 +36,7 @@ const TimeTypography = styled(Typography)({
   opacity: 0.7,
 });
 
-export interface ChatOverviewItemProps {
+interface ChatOverviewItemProps {
   chat: PrivateChatProps;
   onClick: (arg: string) => void;
 }

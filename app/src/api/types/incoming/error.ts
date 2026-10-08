@@ -26,8 +26,8 @@ type NotSupported = {
   error: 'not_supported';
 };
 
-export type Message = InvalidJSON | Internal | UnknownNamespace | FatalModuleError | NotSupported;
+type Message = InvalidJSON | Internal | UnknownNamespace | FatalModuleError | NotSupported;
 
-export type RoomServerErrorMessage = NamespacedIncoming<Message, 'error'>;
+type RoomServerErrorMessage = NamespacedIncoming<Message, 'error'>;
 
 export default RoomServerErrorMessage;

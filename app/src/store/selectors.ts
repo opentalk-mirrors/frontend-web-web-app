@@ -99,11 +99,6 @@ export const selectJoinedFirstTimestamp = createSelector(
       .sort((a, b) => a.localeCompare(b))[0]
 );
 
-export const selectCombinedParticipantsAndUserCount = createSelector(
-  [selectCombinedParticipantsAndUser],
-  (users) => users.length
-);
-
 export const selectAllMeetingNotesParticipants = createSelector(
   [selectCombinedParticipantsAndUser, selectUserAsParticipant],
   (participants, user) => {
@@ -127,7 +122,7 @@ export const selectAllMeetingNotesParticipants = createSelector(
   }
 );
 
-export const sortParticipants = sortParticipantsWithConfig({ language: i18next.language });
+const sortParticipants = sortParticipantsWithConfig({ language: i18next.language });
 
 /**
  * @private
@@ -142,7 +137,7 @@ const sortAndFilterParticipants = (participants: Participant[], sortOption: Sort
   return filterParticipants(sortParticipants(participants, sortOption), searchValue);
 };
 
-export const selectAllParticipantsSortedAndFiltered = createSelector(
+createSelector(
   [
     selectCombinedParticipantsAndUser,
     selectParticipantsSortOption,
@@ -182,7 +177,7 @@ const selectBreakoutChatMessagesState = createSelector(
   }
 );
 
-export const selectChatMessagesByScope = createSelector(
+const selectChatMessagesByScope = createSelector(
   [
     selectChatConversationScope,
     selectGlobalChatMessagesState,
@@ -318,21 +313,20 @@ export const selectRoomTitle = createSelector(
   }
 );
 
-export const selectOtherParticipants = createSelector(
-  [selectAllVisibleParticipants, selectOurUuid],
-  (participants, ourUuid) => participants.filter((participant) => participant.id !== ourUuid)
+const selectOtherParticipants = createSelector([selectAllVisibleParticipants, selectOurUuid], (participants, ourUuid) =>
+  participants.filter((participant) => participant.id !== ourUuid)
 );
 
 export const selectOtherOnlineParticipants = createSelector([selectOtherParticipants], (participants) =>
   participants.filter((participant) => participant.leftAt === null && participant.waitingState === WaitingState.Joined)
 );
 
-export const selectOtherOnlineParticipantsInBreakoutRoom = createSelector(
+const selectOtherOnlineParticipantsInBreakoutRoom = createSelector(
   [selectOtherOnlineParticipants, selectCurrentBreakoutRoomId],
   (participants, breakoutRoomId) => participants.filter((participant) => participant.breakoutRoomId === breakoutRoomId)
 );
 
-export const selectOtherOnlineParticipantsInBreakoutRoomCount = createSelector(
+const selectOtherOnlineParticipantsInBreakoutRoomCount = createSelector(
   [selectOtherOnlineParticipantsInBreakoutRoom],
   (participants) => participants.length
 );

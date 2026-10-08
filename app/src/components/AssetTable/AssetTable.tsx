@@ -58,7 +58,7 @@ type AssetRowState = Record<
   If onDelete function is set => the assets are deletable and `Delete` button will be exposed in the UI
   Otherwise we show only the `Download` button
 */
-export const AssetTable = ({ assets, onDownload, onDelete, maxHeight = 'none' }: AssetTableProps) => {
+const AssetTable = ({ assets, onDownload, onDelete, maxHeight = 'none' }: AssetTableProps) => {
   const { t } = useTranslation();
   const [assetRows, setAssetRows] = useState<AssetRowState>({});
 

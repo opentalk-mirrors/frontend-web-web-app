@@ -71,7 +71,7 @@ function reset(state: AutomodState) {
   state.speakerState = SpeakerState.Inactive;
 }
 
-export const automodSlice = createSlice({
+const automodSlice = createSlice({
   name: 'automod',
   initialState: getInitialState(),
   reducers: {
@@ -128,17 +128,8 @@ export const automodSlice = createSlice({
   },
 });
 
-export const {
-  started,
-  stopped,
-  speakerUpdated,
-  remainingUpdated,
-  setAsActiveSpeaker,
-  setAsInactiveSpeaker,
-  setAsTransitioningSpeaker,
-} = automodSlice.actions;
-
-export const actions = automodSlice.actions;
+export const { started, stopped, speakerUpdated, remainingUpdated, setAsActiveSpeaker, setAsInactiveSpeaker } =
+  automodSlice.actions;
 
 export const selectAutomodActiveState = (state: RootState) => state.automod.active;
 
@@ -157,10 +148,8 @@ export const selectAutomoderationParticipantIds = createSelector(
 
 export const selectSpeakerId = (state: RootState) => state.automod.speakerId;
 
-export const selectSpeakerState = (state: RootState) => state.automod.speakerState;
-
 export const selectMyParticipantId = (state: RootState) => state.automod.participantId;
 
-export const automodReducer = automodSlice.reducer;
+const automodReducer = automodSlice.reducer;
 
 export default automodReducer;

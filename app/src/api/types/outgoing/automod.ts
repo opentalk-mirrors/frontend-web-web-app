@@ -12,7 +12,7 @@ import {
 import { createSignalingApiCall } from '../../createSignalingApiCall';
 import { sendMessage } from './common';
 
-export interface AutomodStartCommand extends Command, AutomodStartBase {
+interface AutomodStartCommand extends Command, AutomodStartBase {
   action: 'start';
 }
 
@@ -24,33 +24,33 @@ export interface AutomodEditCommand extends Command {
   action: 'edit';
 }
 
-export enum AutomodSelectHow {
+enum AutomodSelectHow {
   None = 'none',
   Random = 'random',
   Specific = 'specific',
   Next = 'next',
 }
 
-export interface AutomodSelectCommand extends Command {
+interface AutomodSelectCommand extends Command {
   action: 'select';
   how: AutomodSelectHow;
 }
 
-export interface AutomodSelectNoneCommand extends AutomodSelectCommand {
+interface AutomodSelectNoneCommand extends AutomodSelectCommand {
   how: AutomodSelectHow.None;
 }
 
-export interface AutomodSelectRandomCommand extends AutomodSelectCommand {
+interface AutomodSelectRandomCommand extends AutomodSelectCommand {
   how: AutomodSelectHow.Random;
 }
 
-export interface AutomodSelectSpecificCommand extends AutomodSelectCommand {
+interface AutomodSelectSpecificCommand extends AutomodSelectCommand {
   how: AutomodSelectHow.Specific;
   participant: ParticipantId;
   keepInRemaining: boolean;
 }
 
-export interface AutomodSelectNextCommand extends AutomodSelectCommand {
+interface AutomodSelectNextCommand extends AutomodSelectCommand {
   how: AutomodSelectHow.Next;
 }
 
@@ -66,7 +66,7 @@ export type Action =
 
 type AutomodMessage = Namespaced<Action, 'automod'>;
 
-export interface TalkingStickStartCommand extends AutomodStartCommand {
+interface TalkingStickStartCommand extends AutomodStartCommand {
   playlist: Array<ParticipantId>;
   autoAppendOnJoin: boolean;
   selectionStrategy: AutomodSelectionStrategy.Playlist;
@@ -76,8 +76,8 @@ export type AutomodStartCommandType = TalkingStickStartCommand;
 
 export const start = createSignalingApiCall<AutomodStartCommandType>('automod', 'start');
 export const stop = createSignalingApiCall<AutomodStopCommand>('automod', 'stop');
-export const edit = createSignalingApiCall<AutomodEditCommand>('automod', 'edit');
-export const select = createSignalingApiCall<SelectCommandType>('automod', 'select');
+const edit = createSignalingApiCall<AutomodEditCommand>('automod', 'edit');
+const select = createSignalingApiCall<SelectCommandType>('automod', 'select');
 export const pass = createSignalingApiCall<AutomodYieldCommand>('automod', 'yield');
 
 export const talkingStickStart = {
@@ -97,35 +97,6 @@ export const selectNext = {
     return select.action({ how: AutomodSelectHow.Next });
   },
 };
-export const selectNone = {
-  action: () => {
-    return select.action({ how: AutomodSelectHow.None });
-  },
-};
-export const selectSpecific = {
-  action: (participant: ParticipantId, keepInRemaining: boolean) => {
-    return select.action({
-      how: AutomodSelectHow.Specific,
-      participant,
-      keepInRemaining,
-    });
-  },
-};
-export const selectRandom = {
-  action: () => {
-    return select.action({ how: AutomodSelectHow.Random });
-  },
-};
-export interface AutomodApiMessages {
-  talkingStickStart: typeof talkingStickStart;
-  stop: typeof stop;
-  edit: typeof edit;
-  pass: typeof pass;
-  selectNext: typeof selectNext;
-  selectNone: typeof selectNone;
-  selectSpecific: typeof selectSpecific;
-  selectRandom: typeof selectRandom;
-}
 
 export const handler = createModule((builder) => {
   builder.addCase(start.action, (_state, action) => {
