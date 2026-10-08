@@ -11,8 +11,26 @@ import {
 } from '../../components/StreamUpdatedNotification';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
-import { recordingStatusUpdated, streamUpdated } from '../../store/slices/streamingSlice';
+import { recordingStatusUpdated, startRecordingFailed, streamUpdated } from '../../store/slices/streamingSlice';
 import { streaming } from '../types/incoming';
+import { RecordingError } from '../types/incoming/streaming';
+
+/**
+ * Errors the backend may answer a start recording request with. Some of them are sent without a preceding
+ * `recording_updated` message, so the pending start request has to be reset here.
+ */
+const START_RECORDING_ERRORS: ReadonlyArray<RecordingError> = [
+  RecordingError.InsufficientPermissions,
+  RecordingError.RecordFeatureDisabled,
+  RecordingError.RecordingAlreadyActive,
+  RecordingError.FailedToRequestRecordingService,
+  RecordingError.RecorderNotStarted,
+];
+
+const RECORDING_SERVICE_UNAVAILABLE_ERRORS: ReadonlyArray<RecordingError> = [
+  RecordingError.FailedToRequestRecordingService,
+  RecordingError.RecorderNotStarted,
+];
 
 /**
  * Handles messages in the streaming namespace.
@@ -72,7 +90,10 @@ export const handleStreamingMessage = async (dispatch: AppDispatch, data: stream
       break;
     }
     case 'error': {
-      if (data.error === 'recorder_not_started') {
+      if (START_RECORDING_ERRORS.includes(data.error)) {
+        dispatch(startRecordingFailed());
+      }
+      if (RECORDING_SERVICE_UNAVAILABLE_ERRORS.includes(data.error)) {
         notifications.error(i18next.t('livestream-recording-error'));
         log.error('recording error:', data.error);
       }

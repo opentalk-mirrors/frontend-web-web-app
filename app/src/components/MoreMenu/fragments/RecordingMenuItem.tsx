@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useStorageStatus, StorageStatus } from '../../../hooks/useStorageStatus';
 import { selectAccountManagementUrl, selectIsFeatureEnabled } from '../../../store/slices/configSlice';
 import { selectE2EEncryption } from '../../../store/slices/roomSlice';
-import { selectRecordingTargetStatus } from '../../../store/slices/streamingSlice';
+import { selectIsStartRecordingRequested, selectRecordingTargetStatus } from '../../../store/slices/streamingSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import HighSecurityTooltip from './HighSecurityTooltip';
 import MoreMenuItem from './MoreMenuItem';
@@ -34,7 +34,9 @@ const RecordingMenuItem = ({ onClose }: RecordingMenuItemProps) => {
   const { storageStatus, canUpgrade } = useStorageStatus();
   const highSecurityEnabled = useAppSelector(selectE2EEncryption);
 
-  const disableRecording = storageStatus === StorageStatus.Full || highSecurityEnabled;
+  const isStartRecordingRequested = useAppSelector(selectIsStartRecordingRequested);
+
+  const disableRecording = storageStatus === StorageStatus.Full || highSecurityEnabled || isStartRecordingRequested;
 
   if (!hasRecordingFeatureOn) {
     return null;
@@ -90,7 +92,7 @@ const RecordingMenuItem = ({ onClose }: RecordingMenuItemProps) => {
     }
     case StreamingStatus.Requested:
       return (
-        <MoreMenuItem onClick={onClose}>
+        <MoreMenuItem disabled>
           <ListItemIcon>
             <RecordingsIcon disabled />
           </ListItemIcon>

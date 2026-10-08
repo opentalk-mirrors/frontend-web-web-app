@@ -79,6 +79,17 @@ describe('RecordingMenuItem', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it('disables the start recording option after the first click while awaiting server status', async () => {
+    const user = userEvent.setup();
+    renderRecordingMenuItem({ recordingStatus: StreamingStatus.Inactive });
+
+    const startRecordingItem = screen.getByRole('menuitem', { name: 'more-menu-start-recording' });
+    await user.click(startRecordingItem);
+
+    expect(startRecordingItem).toHaveAttribute('aria-disabled', 'true');
+    await expect(user.click(startRecordingItem)).rejects.toThrow(/pointer-events: none/);
+  });
+
   it('shows the stop recording option when recording is active', () => {
     renderRecordingMenuItem({ recordingStatus: StreamingStatus.Active });
     expect(screen.getByRole('menuitem', { name: 'more-menu-stop-recording' })).toBeInTheDocument();

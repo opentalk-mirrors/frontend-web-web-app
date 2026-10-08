@@ -8,11 +8,19 @@ import {
   StreamingTargetEntity,
   StreamingTargetStatusInfo,
 } from '@opentalk/rest-api-rtk-query';
-import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import {
+  EntityState,
+  ListenerEffectAPI,
+  PayloadAction,
+  createEntityAdapter,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 
-import type { RootState } from '../';
-import { sendStreamConsentSignal } from '../../api/types/outgoing/streaming';
+import type { AppDispatch, RootState } from '../';
+import { sendStartRecordingSignal, sendStreamConsentSignal } from '../../api/types/outgoing/streaming';
 import { hangUp, joinSuccess } from '../commonActions';
+import type { StartAppListening } from '../listenerMiddleware';
 
 interface StreamingTargetFilter {
   status?: StreamStatus;
@@ -25,12 +33,14 @@ const streamingAdapter = createEntityAdapter<StreamingTargetEntity, StreamingTar
 export type StreamingState = {
   streams: EntityState<StreamingTargetEntity, StreamingTargetId>;
   recording: StreamingStatus;
+  isStartRecordingRequested: boolean;
   consent?: boolean;
 };
 
 const initialState: StreamingState = {
   streams: streamingAdapter.getInitialState(),
   recording: StreamingStatus.Inactive,
+  isStartRecordingRequested: false,
   consent: undefined,
 };
 
@@ -44,10 +54,18 @@ const streamingSlice = createSlice({
     },
     recordingStatusUpdated: (state, { payload }: PayloadAction<StreamingStatus>) => {
       state.recording = payload;
+      state.isStartRecordingRequested = false;
+    },
+    startRecordingRequestTimedOut: (state) => {
+      state.isStartRecordingRequested = false;
+    },
+    startRecordingFailed: (state) => {
+      state.isStartRecordingRequested = false;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload: { recording: streaming } }) => {
+      state.isStartRecordingRequested = false;
       if (!streaming) {
         streamingAdapter.removeAll(state.streams);
         return;
@@ -72,15 +90,20 @@ const streamingSlice = createSlice({
     builder.addCase(sendStreamConsentSignal.action, (state, { payload: { consent } }) => {
       state.consent = consent;
     });
+    builder.addCase(sendStartRecordingSignal.action, (state) => {
+      state.isStartRecordingRequested = true;
+    });
   },
 });
 
-export const { streamUpdated, recordingStatusUpdated } = streamingSlice.actions;
+export const { streamUpdated, recordingStatusUpdated, startRecordingRequestTimedOut, startRecordingFailed } =
+  streamingSlice.actions;
 
 const streamingSelectors = streamingAdapter.getSelectors<RootState>((state) => state.streaming.streams);
 
 const selectAllStreamingTargets = (state: RootState) => streamingSelectors.selectAll(state);
 export const selectRecordingTargetStatus = (state: RootState) => state.streaming.recording;
+export const selectIsStartRecordingRequested = (state: RootState) => state.streaming.isStartRecordingRequested;
 
 const selectTargetsByStatus = ({ status }: StreamingTargetFilter) =>
   createSelector([selectAllStreamingTargets], (targets) =>
@@ -127,3 +150,22 @@ export const selectNeedRecordingConsent = createSelector(
 );
 
 export default streamingSlice.reducer;
+
+const START_RECORDING_REQUEST_TIMEOUT_MS = 10_000;
+
+// Fallback in case the backend never answers the start recording request with a status update.
+const startRecordingRequestTimeoutListener = (startAppListening: StartAppListening) =>
+  startAppListening({
+    actionCreator: sendStartRecordingSignal.action,
+    effect: async (_, listenerApi: ListenerEffectAPI<RootState, AppDispatch>) => {
+      listenerApi.cancelActiveListeners();
+      await listenerApi.delay(START_RECORDING_REQUEST_TIMEOUT_MS);
+      if (listenerApi.getState().streaming.isStartRecordingRequested) {
+        listenerApi.dispatch(startRecordingRequestTimedOut());
+      }
+    },
+  });
+
+export const startStreamingListeners = (startAppListening: StartAppListening) => {
+  startRecordingRequestTimeoutListener(startAppListening);
+};
