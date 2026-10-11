@@ -10,7 +10,7 @@ import { NameTile } from '../../commonComponents';
 import { useAppSelector } from '../../hooks';
 import { selectFullscreenActive } from '../../store/slices/fullscreen/slice';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
-import type { ConnectionIdentifier } from '../../types';
+import type { ConnectionIdentifier, MediaSessionType } from '../../types';
 import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 import ReactionIndicator from '../ReactionIndicator';
 import ParticipantHandRaisedIndicator from './fragments/ParticipantHandRaisedIndicator';
@@ -43,9 +43,10 @@ interface ParticipantWindowProps {
   activePresenter?: boolean;
   alwaysShowOverlay?: boolean;
   isThumbnail?: boolean;
+  source: MediaSessionType;
 }
 
-const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: ParticipantWindowProps) => {
+const ParticipantWindow = ({ source, activePresenter, alwaysShowOverlay, isThumbnail }: ParticipantWindowProps) => {
   const participant = useParticipantContext();
   const connectionIdentifier = participant.identity as ConnectionIdentifier;
   const remoteParticipant = useRemoteParticipant(connectionIdentifier, {
@@ -73,8 +74,13 @@ const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: 
         connectionIdentifier={connectionIdentifier}
         presenterVideoIsActive={activePresenter}
         isThumbnail={isThumbnail}
+        source={source}
       />
-      <VideoOverlay connectionIdentifier={connectionIdentifier} active={activeOverlay && !isFullscreenActive} />
+      <VideoOverlay
+        connectionIdentifier={connectionIdentifier}
+        source={source}
+        active={activeOverlay && !isFullscreenActive}
+      />
       {!isFullscreenActive && (
         <NameTile
           displayName={displayName || participant.name || ''}

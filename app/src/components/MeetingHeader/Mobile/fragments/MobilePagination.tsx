@@ -5,8 +5,7 @@ import { Popover, Stack, styled } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import LayoutOptions from '../../../../enums/LayoutOptions';
-import { useAppSelector, useAppDispatch } from '../../../../hooks';
-import { useGridPageCount } from '../../../../hooks/useGridPageCount';
+import { useAppSelector, useAppDispatch, useGridPageCount } from '../../../../hooks';
 import { setPaginationPage, selectCinemaLayout, selectPaginationPageState } from '../../../../store/slices/uiSlice';
 import PageIndex from './PageIndex';
 

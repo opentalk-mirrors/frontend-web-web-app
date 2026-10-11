@@ -1,22 +1,31 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { Track } from 'livekit-client';
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
 import { CinemaViewSortOrder } from '../store/slices/common';
 import { selectCinemaViewOrder, selectPaginationPageState } from '../store/slices/uiSlice';
-import { ConnectionId, ConnectionIdentifier, ParticipantId } from '../types';
+import { ConnectionId, ConnectionIdentifier, MediaSessionType, ParticipantId } from '../types';
 import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
-import { useCurrentSpeaker } from './useCurrentSpeaker';
+import useConferenceUiVersion from './useConferenceUiVersion';
 import { useAppSelector } from './useCustomRedux';
 import { useGridPageSize } from './useGridPageSize';
 
-type CinemaViewParticipantForOrdering = {
+type ParticipantForTiles = {
   id: ParticipantId;
   connections: ConnectionId[];
   joinedAt: string;
   lastSpokeAt?: Date;
   isCameraEnabled?: boolean;
+  isScreenShareEnabled?: boolean;
+};
+
+export type CinemaViewTile<T extends ParticipantForTiles> = {
+  participant: T;
+  connectionIdentifier: ConnectionIdentifier;
+  source: MediaSessionType;
+  tileKey: string;
 };
 
 /**
@@ -24,10 +33,7 @@ type CinemaViewParticipantForOrdering = {
  * participant has been inactive for longer and is therefore a better displacement
  * target
  */
-const getInactivityScore = (
-  participant: CinemaViewParticipantForOrdering,
-  cameraActivationAt: number | undefined
-): number => {
+const getInactivityScore = (participant: ParticipantForTiles, cameraActivationAt: number | undefined): number => {
   const joinedAtMs = new Date(participant.joinedAt).getTime();
   return Math.max(
     Number.isFinite(joinedAtMs) ? joinedAtMs : Number.NEGATIVE_INFINITY,
@@ -42,7 +48,7 @@ type PersistedOrderingState = {
   cameraActivationAt: Map<ConnectionIdentifier, number>;
 };
 
-type ParticipantsIndexingResult<T extends CinemaViewParticipantForOrdering> = {
+type ParticipantsIndexingResult<T extends ParticipantForTiles> = {
   participantKeys: ConnectionIdentifier[];
   participantsByKey: Map<ConnectionIdentifier, T>;
 };
@@ -52,7 +58,7 @@ let hookInstanceCounter = 0;
 
 const readNow = (): number => Date.now();
 
-const getParticipantKey = <T extends CinemaViewParticipantForOrdering>(participant: T): ConnectionIdentifier | null => {
+const getParticipantKey = <T extends ParticipantForTiles>(participant: T): ConnectionIdentifier | null => {
   const [connectionId] = participant.connections;
   if (!connectionId) {
     return null;
@@ -71,24 +77,40 @@ const reconcileOrder = (
   return [...keptKeys, ...addedKeys];
 };
 
-const mapKeysToParticipants = <T extends CinemaViewParticipantForOrdering>(
+const mapKeysToTiles = <T extends ParticipantForTiles>(
   orderedKeys: ConnectionIdentifier[],
-  participantsByKey: Map<ConnectionIdentifier, T>
-): T[] => {
-  const mappedParticipants: T[] = [];
+  participantsByKey: Map<ConnectionIdentifier, T>,
+  splitScreenShare: boolean
+): CinemaViewTile<T>[] => {
+  const tiles: CinemaViewTile<T>[] = [];
 
   for (const key of orderedKeys) {
     const participant = participantsByKey.get(key);
     if (!participant) {
       continue;
     }
-    mappedParticipants.push(participant);
+    // V2-CLEANUP: In V1 there is only camera tile source. After transition to V2 this condition can be removed
+    if (!splitScreenShare) {
+      tiles.push({ participant, connectionIdentifier: key, source: Track.Source.Camera, tileKey: key });
+    } else {
+      // The Camera tile for participant exists always
+      // Add additional ScreenShare tile, if participant shares screen
+      tiles.push({ participant, connectionIdentifier: key, source: Track.Source.Camera, tileKey: key });
+      if (participant.isScreenShareEnabled) {
+        tiles.push({
+          participant,
+          connectionIdentifier: key,
+          source: Track.Source.ScreenShare,
+          tileKey: `${key}:screen`,
+        });
+      }
+    }
   }
 
-  return mappedParticipants;
+  return tiles;
 };
 
-const indexParticipantsForOrdering = <T extends CinemaViewParticipantForOrdering>(
+const indexParticipantsForOrdering = <T extends ParticipantForTiles>(
   participants: T[]
 ): ParticipantsIndexingResult<T> => {
   const participantKeys: ConnectionIdentifier[] = [];
@@ -110,7 +132,7 @@ const indexParticipantsForOrdering = <T extends CinemaViewParticipantForOrdering
   };
 };
 
-const computeCameraActivationAt = <T extends CinemaViewParticipantForOrdering>(
+const computeCameraActivationAt = <T extends ParticipantForTiles>(
   participantKeys: ConnectionIdentifier[],
   participantsByKey: Map<ConnectionIdentifier, T>,
   previous: Map<ConnectionIdentifier, number> | undefined,
@@ -127,7 +149,7 @@ const computeCameraActivationAt = <T extends CinemaViewParticipantForOrdering>(
 };
 
 // SpeakerView strip ordering: sort by most-recent activity first
-const orderStripByActivity = <T extends CinemaViewParticipantForOrdering>(
+const orderStripByActivity = <T extends ParticipantForTiles>(
   order: ConnectionIdentifier[],
   participantsByKey: Map<ConnectionIdentifier, T>,
   cameraActivationAt: Map<ConnectionIdentifier, number>
@@ -146,7 +168,7 @@ const orderStripByActivity = <T extends CinemaViewParticipantForOrdering>(
 
 // Cinema-grid ordering: keep the grid tiles stable by only swapping participants
 // onto the first page instead of re-sorting everything
-const orderGridByPriority = <T extends CinemaViewParticipantForOrdering>(
+const orderGridByPriority = <T extends ParticipantForTiles>(
   order: ConnectionIdentifier[],
   participantsByKey: Map<ConnectionIdentifier, T>,
   cameraActivationAt: Map<ConnectionIdentifier, number>,
@@ -217,29 +239,37 @@ const orderGridByPriority = <T extends CinemaViewParticipantForOrdering>(
   return workingOrder;
 };
 
-export type CinemaViewParticipantsOrderingOptions = {
+export type ParticipantTilesOptions = {
   // When true, ordering is computed for a single, scrollable strip (the
-  // SpeakerView `ThumbsRow`) instead of the paginated cinema grid
+  // SpeakerView `Filmstrip`) instead of the paginated cinema grid
   unbounded?: boolean;
+  // Connection identifier of the featured tile, kept visible on the first page of the
+  // cinema grid while the participant is active. Not used for the unbounded strip
+  featuredConnectionIdentifier?: ConnectionIdentifier;
 };
 
 /**
  *
- * @param participants - Pre sorted participants.
+ * Maps participants to tiles
+ *
+ * A participant can have up to 2 tiles:
+ *  - a camera tile, always
+ *  - a screen share tile, while they share their screen (V2 only)
+ *
+ * @param participants - Sorted participants.
  * @param options - Optional behavior switches; see
- *   {@link CinemaViewParticipantsOrderingOptions}.
+ *   {@link ParticipantTilesOptions}.
  */
-export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipantForOrdering>(
-  participants: T[],
-  options?: CinemaViewParticipantsOrderingOptions
-) {
+export function useOrderedTiles<T extends ParticipantForTiles>(participants: T[], options?: ParticipantTilesOptions) {
   const unbounded = options?.unbounded === true;
-  const [hookInstanceId] = useState(() => `useCinemaViewParticipantsOrdering-${hookInstanceCounter++}`);
+  // V2-CLEANUP: always split screen shares into their own tile after transition to V2
+  const { isV2 } = useConferenceUiVersion();
+  const [hookInstanceId] = useState(() => `useOrderedTiles-${hookInstanceCounter++}`);
   const { participantKeys, participantsByKey } = useMemo(
     () => indexParticipantsForOrdering(participants),
     [participants]
   );
-  const currentSpeaker = useCurrentSpeaker().currentSpeakerId;
+  const featuredConnectionIdentifier = options?.featuredConnectionIdentifier;
 
   const currentPage = useAppSelector(selectPaginationPageState);
   const maxGridTiles = useGridPageSize();
@@ -276,7 +306,13 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
 
     const reordered = unbounded
       ? orderStripByActivity(nextOrder, participantsByKey, computedCameraActivationAt)
-      : orderGridByPriority(nextOrder, participantsByKey, computedCameraActivationAt, currentSpeaker, maxGridTiles);
+      : orderGridByPriority(
+          nextOrder,
+          participantsByKey,
+          computedCameraActivationAt,
+          featuredConnectionIdentifier,
+          maxGridTiles
+        );
 
     return { orderedKeys: reordered, cameraActivationAt: computedCameraActivationAt };
   }, [
@@ -284,7 +320,7 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
     participantsByKey,
     hookInstanceId,
     cinemaViewOrder,
-    currentSpeaker,
+    featuredConnectionIdentifier,
     maxGridTiles,
     currentPageIndex,
     unbounded,
@@ -298,12 +334,12 @@ export function useCinemaViewParticipantsOrdering<T extends CinemaViewParticipan
     });
   }, [hookInstanceId, orderedKeys, cinemaViewOrder, cameraActivationAt]);
 
+  const orderedTiles = mapKeysToTiles(orderedKeys, participantsByKey, isV2);
   const pageStartIndex = currentPageIndex * maxGridTiles;
   const pageEndIndex = (currentPageIndex + 1) * maxGridTiles;
-  const pageKeys = orderedKeys.slice(pageStartIndex, pageEndIndex);
 
   return {
-    pageParticipants: mapKeysToParticipants(pageKeys, participantsByKey),
-    orderedParticipants: mapKeysToParticipants(orderedKeys, participantsByKey),
+    pageTiles: orderedTiles.slice(pageStartIndex, pageEndIndex),
+    orderedTiles,
   };
 }

@@ -20,6 +20,11 @@ export type FetchRequestError = {
 
 export type MediaSessionType = Track.Source.Camera | Track.Source.ScreenShare;
 
+export type TileIdentifier = {
+  connectionIdentifier: ConnectionIdentifier;
+  source: MediaSessionType;
+};
+
 export enum VideoSetting {
   Off = -1,
   Low = 0,

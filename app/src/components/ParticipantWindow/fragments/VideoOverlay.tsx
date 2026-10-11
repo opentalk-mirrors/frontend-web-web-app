@@ -14,7 +14,7 @@ import { requestPopoutStreamAccessToken } from '../../../api/types/outgoing/live
 import { ExtendToTabIcon, FullscreenViewIcon, PinIcon } from '../../../assets/icons';
 import { OverlayIconButton } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useAppDispatch, useAppSelector, useConferenceUiVersion } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
 import { fullscreenActions, selectFullscreenSupported } from '../../../store/slices/fullscreen/slice';
 import {
@@ -25,13 +25,10 @@ import {
 } from '../../../store/slices/livekitSlice';
 import { selectParticipantName } from '../../../store/slices/participantsSlice';
 import { selectE2EEncryption } from '../../../store/slices/roomSlice';
-import {
-  pinnedConnectionIdentifierSet,
-  selectCinemaLayout,
-  selectPinnedConnectionIdentifier,
-} from '../../../store/slices/uiSlice';
-import { ConnectionIdentifier } from '../../../types';
+import { setPinnedTile, selectCinemaLayout, selectPinnedTile } from '../../../store/slices/uiSlice';
+import { ConnectionIdentifier, MediaSessionType, TileIdentifier } from '../../../types';
 import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
+import { isSameTile } from '../../../utils/isSameTile';
 import BrokenSubscriberIndicator from './BrokenSubscriberIndicator';
 
 const OverlayContainer = styled(Grid)(({ theme }) => ({
@@ -55,9 +52,11 @@ const IndicatorContainer = styled(Grid)(({ theme }) => ({
 interface VideoOverlayProps {
   connectionIdentifier: ConnectionIdentifier;
   active: boolean;
+  source: MediaSessionType;
 }
 
-const VideoOverlay = ({ connectionIdentifier, active }: VideoOverlayProps) => {
+const VideoOverlay = ({ connectionIdentifier, active, source }: VideoOverlayProps) => {
+  const { isV2 } = useConferenceUiVersion();
   const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
   const userLayout = useAppSelector(selectCinemaLayout);
   const [channelId, setChannelId] = useState<string | undefined>();
@@ -85,9 +84,14 @@ const VideoOverlay = ({ connectionIdentifier, active }: VideoOverlayProps) => {
   const isScreenShareActive = participant?.isScreenShareEnabled;
   const isVideoActive = participant?.isCameraEnabled;
   const isScreenShareOrVideoActive = isScreenShareActive || isVideoActive;
-  const descriptor = isScreenShareActive ? screenDescriptor : videoDescriptor;
+  // V2-CLEANUP: after transition to V2 use the source only
+  const showsScreenShare = isV2 ? source === Track.Source.ScreenShare : isScreenShareActive;
+  const descriptor = showsScreenShare ? screenDescriptor : videoDescriptor;
+  const tile = useMemo<TileIdentifier>(() => ({ connectionIdentifier, source }), [connectionIdentifier, source]);
   const displayName = useAppSelector((state) => selectParticipantName(state, participantId));
-  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
+  const pinnedTile = useAppSelector(selectPinnedTile);
+  // V2-CLEANUP: After transition to V2 use isSameTile check only
+  const isPinned = isV2 ? isSameTile(pinnedTile, tile) : pinnedTile?.connectionIdentifier === connectionIdentifier;
   const popoutStreamAccess = useAppSelector((state) =>
     selectLivekitPopoutStreamAccessByParticipantId(state, connectionIdentifier)
   );
@@ -134,17 +138,16 @@ const VideoOverlay = ({ connectionIdentifier, active }: VideoOverlayProps) => {
   }, [channelId, dispatch, livekitUrl, popoutStreamAccess, roomId]);
 
   const togglePin = useCallback(() => {
-    const updatePinnedId = pinnedConnectionIdentifier === connectionIdentifier ? undefined : connectionIdentifier;
-    dispatch(pinnedConnectionIdentifierSet(updatePinnedId));
-  }, [dispatch, connectionIdentifier, pinnedConnectionIdentifier]);
+    dispatch(setPinnedTile(isPinned ? undefined : tile));
+  }, [dispatch, isPinned, tile]);
 
   const openFullScreenView: MouseEventHandler = useCallback(
     (e) => {
       e.stopPropagation();
-      dispatch(pinnedConnectionIdentifierSet(connectionIdentifier));
+      dispatch(setPinnedTile(tile));
       dispatch(fullscreenActions.request());
     },
-    [dispatch, connectionIdentifier]
+    [dispatch, tile]
   );
 
   const openInNewTab: MouseEventHandler = (event) => {
@@ -167,7 +170,7 @@ const VideoOverlay = ({ connectionIdentifier, active }: VideoOverlayProps) => {
                   aria-label={t('indicator-pinned', {
                     participantName: displayName || '',
                   })}
-                  aria-pressed={pinnedConnectionIdentifier === descriptor.connectionIdentifier}
+                  aria-pressed={isPinned}
                 >
                   <PinIcon />
                 </OverlayIconButton>

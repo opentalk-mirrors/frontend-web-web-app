@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
+import { Track } from 'livekit-client';
 import { Mock } from 'vitest';
 
 import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
@@ -27,10 +28,13 @@ describe('VideoOverlay general', () => {
   });
 
   it('does not render any button if overlay is not active', () => {
-    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={false} />, {
-      store,
-      provider: { snackbar: true, mui: true },
-    });
+    renderWithProviders(
+      <VideoOverlay connectionIdentifier={connectionIdentifier} active={false} source={Track.Source.Camera} />,
+      {
+        store,
+        provider: { snackbar: true, mui: true },
+      }
+    );
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
@@ -38,10 +42,13 @@ describe('VideoOverlay general', () => {
     const { store } = configureStore({
       initialState: { fullscreen: { supported: true, active: false } },
     });
-    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
-      store,
-      provider: { snackbar: true, mui: true },
-    });
+    renderWithProviders(
+      <VideoOverlay connectionIdentifier={connectionIdentifier} active={true} source={Track.Source.Camera} />,
+      {
+        store,
+        provider: { snackbar: true, mui: true },
+      }
+    );
 
     const fullscreenButton = screen.getByRole('button', { name: 'global-fullscreen-open' });
     expect(fullscreenButton).toBeInTheDocument();
@@ -50,10 +57,13 @@ describe('VideoOverlay general', () => {
     const { store } = configureStore({
       initialState: { fullscreen: { supported: false, active: false } },
     });
-    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
-      store,
-      provider: { snackbar: true, mui: true },
-    });
+    renderWithProviders(
+      <VideoOverlay connectionIdentifier={connectionIdentifier} active={true} source={Track.Source.Camera} />,
+      {
+        store,
+        provider: { snackbar: true, mui: true },
+      }
+    );
 
     expect(screen.queryByRole('button', { name: 'global-fullscreen-open' })).not.toBeInTheDocument();
   });
@@ -69,10 +79,13 @@ describe('VideoOverlay extend tab', () => {
       isCameraEnabled: false,
     });
 
-    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
-      store,
-      provider: { snackbar: true, mui: true },
-    });
+    renderWithProviders(
+      <VideoOverlay connectionIdentifier={connectionIdentifier} active={true} source={Track.Source.Camera} />,
+      {
+        store,
+        provider: { snackbar: true, mui: true },
+      }
+    );
 
     const extendNewTabButton = screen.queryByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).not.toBeInTheDocument();
@@ -84,10 +97,13 @@ describe('VideoOverlay extend tab', () => {
       isCameraEnabled: false,
     });
 
-    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
-      store,
-      provider: { snackbar: true, mui: true },
-    });
+    renderWithProviders(
+      <VideoOverlay connectionIdentifier={connectionIdentifier} active={true} source={Track.Source.Camera} />,
+      {
+        store,
+        provider: { snackbar: true, mui: true },
+      }
+    );
 
     const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).toBeInTheDocument();
@@ -99,10 +115,13 @@ describe('VideoOverlay extend tab', () => {
       isCameraEnabled: true,
     });
 
-    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
-      store,
-      provider: { snackbar: true, mui: true },
-    });
+    renderWithProviders(
+      <VideoOverlay connectionIdentifier={connectionIdentifier} active={true} source={Track.Source.Camera} />,
+      {
+        store,
+        provider: { snackbar: true, mui: true },
+      }
+    );
 
     const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).toBeInTheDocument();
@@ -114,10 +133,13 @@ describe('VideoOverlay extend tab', () => {
       isCameraEnabled: true,
     });
 
-    renderWithProviders(<VideoOverlay connectionIdentifier={connectionIdentifier} active={true} />, {
-      store,
-      provider: { snackbar: true, mui: true },
-    });
+    renderWithProviders(
+      <VideoOverlay connectionIdentifier={connectionIdentifier} active={true} source={Track.Source.Camera} />,
+      {
+        store,
+        provider: { snackbar: true, mui: true },
+      }
+    );
 
     const extendNewTabButton = screen.getByRole('button', { name: 'global-open-new-tab' });
     expect(extendNewTabButton).toBeInTheDocument();

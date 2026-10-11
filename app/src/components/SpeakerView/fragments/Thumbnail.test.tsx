@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen } from '@testing-library/react';
+import { Track } from 'livekit-client';
 import { PropsWithChildren } from 'react';
 
 import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
@@ -30,9 +31,9 @@ describe('Thumbnail', () => {
     const participant = Object.values(store.getState().participants.entities)[0];
     const connectionIdentifier = constructConnectionIdentifier(participant.id, participant.connections[0]);
 
-    renderWithProviders(<Thumbnail width={0} />, { store, provider: { mui: true } });
+    renderWithProviders(<Thumbnail width={0} source={Track.Source.Camera} />, { store, provider: { mui: true } });
 
     // Initial ThumbnailContainer appears
-    expect(screen.getByTestId(`thumbsVideo-${connectionIdentifier}`)).toBeInTheDocument();
+    expect(screen.getByTestId(`thumbnail-${connectionIdentifier}`)).toBeInTheDocument();
   });
 });

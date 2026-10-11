@@ -1,11 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { Track } from 'livekit-client';
+
 import { AutomodStartedEvent } from '../../api/types/incoming/automod';
 import { MenuTab } from '../../components/MenuTabs/fragments/constants';
 import { MODERATION_MENU_VIEW, ModerationTabKey } from '../../config/constants';
+import { GRID_SIZES, MAX_GRID_TILES_DESKTOP, MAX_GRID_TILES_MOBILE } from '../../constants';
 import LayoutOptions from '../../enums/LayoutOptions';
 import { ChatScope, ConnectionIdentifier, ParticipantId, SortOption } from '../../types';
+import type { RootState } from '../index';
 import { started as automodStarted } from './automodSlice';
 import { SwitchedRoomPayload, switchedRoom } from './breakoutSlice';
 import { CinemaViewSortOrder } from './common';
@@ -17,6 +21,7 @@ import reducer, {
   openSidePanel,
   persistCinemaLayoutSettings,
   resolveMeetingGridSize,
+  selectEffectiveGridPageSize,
   storeGridSizeToSessionStorage,
   toggleModerationPanel,
   toggleSidePanel,
@@ -403,13 +408,16 @@ describe('connection closed', () => {
     expect(state.participantsSortOption).toBe(SortOption.NameASC);
   });
 
-  it('resets pinned connection identifier', () => {
+  it('resets pinned tile', () => {
     const initialState: UIState = {
       ...getInitialState(),
-      pinnedConnectionIdentifier: 'participant-1:connection-1' as ConnectionIdentifier,
+      pinnedTile: {
+        connectionIdentifier: 'participant-1:connection-1' as ConnectionIdentifier,
+        source: Track.Source.Camera,
+      },
     };
     const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
-    expect(state.pinnedConnectionIdentifier).toBeUndefined();
+    expect(state.pinnedTile).toBeUndefined();
   });
 
   it('resets pagination page', () => {
@@ -423,4 +431,30 @@ describe('connection closed', () => {
     const state = reducer(initialState, connectionClosed({ errorCode: 1006 }));
     expect(state.participantsSearchValue).toBe('');
   });
+});
+
+describe('selectEffectiveGridPageSize', () => {
+  const createState = (cinemaGridSize: number) => ({ ui: { cinemaGridSize } }) as unknown as RootState;
+
+  it.each(GRID_SIZES)('returns the selected size %i on desktop', (cinemaGridSize) => {
+    expect(selectEffectiveGridPageSize(createState(cinemaGridSize))).toBe(cinemaGridSize);
+  });
+
+  it.each(GRID_SIZES)('caps the selected size %i on mobile', (cinemaGridSize) => {
+    expect(selectEffectiveGridPageSize(createState(cinemaGridSize), true)).toBe(
+      Math.min(cinemaGridSize, MAX_GRID_TILES_MOBILE)
+    );
+  });
+
+  it('caps sizes above the desktop maximum', () => {
+    expect(selectEffectiveGridPageSize(createState(MAX_GRID_TILES_DESKTOP + 1))).toBe(MAX_GRID_TILES_DESKTOP);
+  });
+
+  it.each([0, -1, Number.NaN, Number.POSITIVE_INFINITY])(
+    'falls back to the breakpoint maximum for the invalid size %s',
+    (cinemaGridSize) => {
+      expect(selectEffectiveGridPageSize(createState(cinemaGridSize))).toBe(MAX_GRID_TILES_DESKTOP);
+      expect(selectEffectiveGridPageSize(createState(cinemaGridSize), true)).toBe(MAX_GRID_TILES_MOBILE);
+    }
+  );
 });

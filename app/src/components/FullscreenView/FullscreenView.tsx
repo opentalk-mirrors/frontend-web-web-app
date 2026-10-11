@@ -8,15 +8,15 @@ import {
   useSortedParticipants,
 } from '@livekit/components-react';
 import { Box, IconButton as MuiIconButton, Slide, styled } from '@mui/material';
-import { ParticipantEvent, RoomEvent } from 'livekit-client';
-import { useCallback, useRef, useState } from 'react';
+import { ParticipantEvent, RoomEvent, Track } from 'livekit-client';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CloseIcon, PinIcon, PollIcon } from '../../assets/icons';
 import { useAppDispatch, useAppSelector, useConferenceUiVersion } from '../../hooks';
 import { fullscreenActions, selectFullscreenElement } from '../../store/slices/fullscreen/slice';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
-import { pinnedConnectionIdentifierSet, selectPinnedConnectionIdentifier } from '../../store/slices/uiSlice';
+import { setPinnedTile, selectPinnedTile } from '../../store/slices/uiSlice';
 import type { ConnectionIdentifier } from '../../types';
 import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
 import Ballot from '../Ballot';
@@ -83,8 +83,8 @@ const FullscreenView = () => {
   const [hasVisibleControls, setVisibleControls] = useState<boolean>(false);
   // V2-CLEANUP: is not needed after transition to V2
   const [isLocalVideoPinned, setIsLocalVideoPinned] = useState<boolean>(false);
-  // V2-CLEANUP: is not needed after transition to V2
-  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
+  const pinnedTile = useAppSelector(selectPinnedTile);
+  const pinnedConnectionIdentifier = pinnedTile?.connectionIdentifier;
   const sortedParticipants = useSortedParticipants(
     useRemoteParticipants({
       updateOnlyOn: [
@@ -122,7 +122,7 @@ const FullscreenView = () => {
 
   const dispatch = useAppDispatch();
 
-  const handleMouseMove = useCallback(() => {
+  const handleMouseMove = () => {
     if (!hasVisibleControls) {
       setVisibleControls(true);
     }
@@ -133,8 +133,7 @@ const FullscreenView = () => {
       setVisibleControls(false);
       timeoutRef.current = null;
     }, 5000);
-  }, [hasVisibleControls]);
-
+  };
   // V2-CLEANUP: is not needed after transition to V2
   const toggleLocalVideoPin = () => setIsLocalVideoPinned((prevState) => !prevState);
 
@@ -146,11 +145,13 @@ const FullscreenView = () => {
   // V2-CLEANUP: is not needed after transition to V2
   const isPinned = pinnedConnectionIdentifier ? pinnedConnectionIdentifier === selectedParticipant?.identity : false;
   // V2-CLEANUP: is not needed after transition to V2
-  const togglePin = useCallback(() => {
+  const togglePin = () => {
     const updatePinnedId =
       pinnedConnectionIdentifier === sortedParticipantsIdentity ? undefined : sortedParticipantsIdentity;
-    dispatch(pinnedConnectionIdentifierSet(updatePinnedId));
-  }, [dispatch, sortedParticipantsIdentity, pinnedConnectionIdentifier]);
+    dispatch(
+      setPinnedTile(updatePinnedId ? { connectionIdentifier: updatePinnedId, source: Track.Source.Camera } : undefined)
+    );
+  };
 
   return (
     <ParticipantContext.Provider value={selectedParticipant}>
@@ -212,7 +213,9 @@ const FullscreenView = () => {
             <Toolbar layout="fullscreen" />
           </ToolbarWrapper>
         </Slide>
-        {selectedParticipant && <ParticipantWindow activePresenter={isActive} />}
+        {selectedParticipant && (
+          <ParticipantWindow activePresenter={isActive} source={pinnedTile?.source ?? Track.Source.Camera} />
+        )}
       </Container>
       <Ballot container={fullscreenElement} />
       <TimerPopover />

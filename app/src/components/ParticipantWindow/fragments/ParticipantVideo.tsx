@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipant } from '@livekit/components-react';
-import { Slide, styled } from '@mui/material';
+import { Box, Slide, styled } from '@mui/material';
 import { ParticipantEvent, Track } from 'livekit-client';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector, useConferenceUiVersion, useParticipantFallbackProps } from '../../../hooks';
 import { MediaDescriptor } from '../../../modules/WebRTC';
@@ -16,13 +16,13 @@ import {
   presenterOverlayPinnedParticipantIdSet,
   selectPresenterOverlayPinnedParticipantId,
 } from '../../../store/slices/uiSlice';
-import { ConnectionIdentifier, VideoSetting } from '../../../types';
+import { ConnectionIdentifier, MediaSessionType, VideoSetting } from '../../../types';
 import { deconstructConnectionIdentifier } from '../../../utils/deconstructConnectionIdentifier';
 import ParticipantVideoFallback from '../../ParticipantVideoFallback';
 import RemoteVideo from './RemoteVideo';
 import ScreenPresenterVideo from './ScreenPresenterVideo';
 
-const ScreenShareContainer = styled('div')({
+const ScreenShareContainer = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
@@ -36,9 +36,15 @@ interface ParticipantVideoProps {
   connectionIdentifier: ConnectionIdentifier;
   presenterVideoIsActive?: boolean;
   isThumbnail?: boolean;
+  source: MediaSessionType;
 }
 
-const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThumbnail }: ParticipantVideoProps) => {
+const ParticipantVideo = ({
+  source,
+  connectionIdentifier,
+  presenterVideoIsActive,
+  isThumbnail,
+}: ParticipantVideoProps) => {
   const { isV2 } = useConferenceUiVersion();
   const participant = useRemoteParticipant(connectionIdentifier, {
     updateOnlyOn: [
@@ -52,14 +58,8 @@ const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThum
   const { participantId } = deconstructConnectionIdentifier(connectionIdentifier);
   const { displayName, avatarUrl, isSipParticipant } = useParticipantFallbackProps(participantId);
 
-  const videoDescriptor = useMemo<MediaDescriptor>(
-    () => ({ connectionIdentifier, mediaType: Track.Source.Camera }),
-    [connectionIdentifier]
-  );
-  const screenDescriptor = useMemo<MediaDescriptor>(
-    () => ({ connectionIdentifier, mediaType: Track.Source.ScreenShare }),
-    [connectionIdentifier]
-  );
+  const videoDescriptor: MediaDescriptor = { connectionIdentifier, mediaType: Track.Source.Camera };
+  const screenDescriptor: MediaDescriptor = { connectionIdentifier, mediaType: Track.Source.ScreenShare };
 
   const qualityCap = useAppSelector(selectQualityCap);
   const areParticipantVideosEnabled = qualityCap !== VideoSetting.Off;
@@ -92,9 +92,9 @@ const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThum
     });
   }, [areParticipantVideosEnabled, participant?.videoTrackPublications]);
 
-  const displayPresenterVideo = useCallback(() => {
+  const displayPresenterVideo = () => {
     !presenterVideoIsActive && setShowPresenterVideo(true);
-  }, [presenterVideoIsActive]);
+  };
 
   const togglePin = () => {
     dispatch(presenterOverlayPinnedParticipantIdSet(isVideoPinned ? undefined : connectionIdentifier));
@@ -106,21 +106,36 @@ const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThum
     dispatch(setPresenterVideoPosition(presenterVideoPositions[nextIndex]));
   };
 
-  const handleContainerRef = useCallback((node: HTMLDivElement | null) => {
+  const handleContainerRef = (node: HTMLDivElement | null) => {
     setContainerElement(node);
-  }, []);
+  };
 
-  if (participant?.isScreenShareEnabled) {
-    return (
-      <ScreenShareContainer
-        onMouseMove={displayPresenterVideo}
-        data-testid="participantScreenShareVideo"
-        ref={handleContainerRef}
-      >
-        <RemoteVideo descriptor={screenDescriptor} />
-        {
-          // V2-CLEANUP: Remove the rendering completely after transition to V2, presenter video is not needed
-          showCamera && !isV2 && (
+  // V2-CLEANUP: Remove the else branch after transition to V2
+  if (isV2) {
+    switch (source) {
+      case Track.Source.ScreenShare:
+        return (
+          <ScreenShareContainer data-testid="participantScreenShareVideo">
+            <RemoteVideo descriptor={screenDescriptor} />
+          </ScreenShareContainer>
+        );
+      case Track.Source.Camera:
+      default:
+        if (showCamera) {
+          return <RemoteVideo descriptor={videoDescriptor} />;
+        }
+        break;
+    }
+  } else {
+    if (participant?.isScreenShareEnabled) {
+      return (
+        <ScreenShareContainer
+          onMouseMove={displayPresenterVideo}
+          data-testid="participantScreenShareVideo"
+          ref={handleContainerRef}
+        >
+          <RemoteVideo descriptor={screenDescriptor} />
+          {showCamera && (
             <Slide direction={slideDirection} in={isVisible} mountOnEnter container={containerElement}>
               <ScreenPresenterVideo
                 connectionIdentifier={connectionIdentifier}
@@ -131,14 +146,14 @@ const ParticipantVideo = ({ connectionIdentifier, presenterVideoIsActive, isThum
                 isThumbnail={isThumbnail}
               />
             </Slide>
-          )
-        }
-      </ScreenShareContainer>
-    );
-  }
+          )}
+        </ScreenShareContainer>
+      );
+    }
 
-  if (showCamera) {
-    return <RemoteVideo descriptor={videoDescriptor} />;
+    if (showCamera) {
+      return <RemoteVideo descriptor={videoDescriptor} />;
+    }
   }
 
   return (
