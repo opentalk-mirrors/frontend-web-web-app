@@ -265,7 +265,7 @@ const LayoutSelection = () => {
       <Dialog open={isOpen} onClose={closeViewPopover} component="div" id="view-popover-menu">
         <CommonDialogHeader closeMenu={closeViewPopover} titleKey="layout-selection-title" />
 
-        <Divider aria-hidden={true} />
+        <Divider aria-hidden={true} sx={{ marginTop: 0 }} />
 
         <Typography
           variant="caption"
