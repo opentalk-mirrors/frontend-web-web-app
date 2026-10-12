@@ -2,14 +2,16 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { MicOnIcon } from '../../../assets/icons';
-import { renderWithProviders } from '../../../utils/testUtils';
+import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import ToolbarButton from './ToolbarButton';
 
 const handleClick = vi.fn();
 
 describe('<ToolbarButton />', () => {
+  const { store } = configureStore();
   const toolbarButtonProps = {
     hasContext: true,
     contextDisabled: false,
@@ -31,7 +33,7 @@ describe('<ToolbarButton />', () => {
       <ToolbarButton {...toolbarButtonProps}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>,
-      { provider: { mui: true } }
+      { store, provider: { mui: true } }
     );
 
     expect(screen.getByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
@@ -44,7 +46,7 @@ describe('<ToolbarButton />', () => {
       <ToolbarButton {...toolbarButtonProps} hasContext={false}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>,
-      { provider: { mui: true } }
+      { store, provider: { mui: true } }
     );
 
     expect(screen.getByRole('button', { name: 'toolbarMainButton' })).toBeInTheDocument();
@@ -57,7 +59,7 @@ describe('<ToolbarButton />', () => {
       <ToolbarButton {...toolbarButtonProps} onClick={handleClick}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>,
-      { provider: { mui: true } }
+      { store, provider: { mui: true } }
     );
     const button = screen.getByRole('button', { name: 'toolbarMainButton' });
 
@@ -73,7 +75,7 @@ describe('<ToolbarButton />', () => {
       <ToolbarButton {...toolbarButtonProps} openMenu={handleClick} disabled>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>,
-      { provider: { mui: true } }
+      { store, provider: { mui: true } }
     );
     const button = screen.getByRole('button', { name: 'toolbarMainButton' });
 
@@ -85,12 +87,43 @@ describe('<ToolbarButton />', () => {
     expect(handleClick).not.toHaveBeenCalled();
   });
 
+  it.each([
+    { title: 'toolbarMainButton', selector: 'span', active: true },
+    { title: 'toolbarToggleButton', selector: 'button', active: true },
+    { title: 'toolbarMainButton', selector: 'span', active: false },
+    { title: 'toolbarToggleButton', selector: 'button', active: false },
+  ])('uses the correct $title tooltip container when fullscreen is $active', async ({ title, selector, active }) => {
+    const user = userEvent.setup();
+    const fullscreenElement = document.createElement('div');
+    document.body.appendChild(fullscreenElement);
+    const { store } = configureStore({
+      initialState: { fullscreen: { supported: true, active, error: undefined, element: fullscreenElement } },
+    });
+    const { unmount } = renderWithProviders(
+      <ToolbarButton {...toolbarButtonProps} disabled>
+        <MicOnIcon />
+      </ToolbarButton>,
+      { store, provider: { mui: true } }
+    );
+
+    try {
+      await user.hover(screen.getByLabelText(title, { selector }));
+
+      const tooltip = await screen.findByRole('tooltip');
+      expect(tooltip).toHaveTextContent(title);
+      expect(fullscreenElement.contains(tooltip)).toBe(active);
+    } finally {
+      unmount();
+      fullscreenElement.remove();
+    }
+  });
+
   it('handles click events on ToggleToolbarButton', () => {
     renderWithProviders(
       <ToolbarButton {...toolbarButtonProps} openMenu={handleClick}>
         <MicOnIcon data-testid="toolbarChildrenTest" />
       </ToolbarButton>,
-      { provider: { mui: true } }
+      { store, provider: { mui: true } }
     );
     const toggleButton = screen.getByRole('button', { name: 'toolbarToggleButton' });
     expect(toggleButton).toBeInTheDocument();
