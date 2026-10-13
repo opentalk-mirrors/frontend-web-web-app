@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import { Mock } from 'vitest';
 
+import { SIDE_PANEL_OFFSET_VARIABLE, SIDE_PANEL_WIDTH_PX } from '../../../constants';
 import useConferenceUiVersion from '../../../hooks/useConferenceUiVersion';
-import { initialState as uiInitialState } from '../../../store/slices/uiSlice';
+import { fullscreenActions } from '../../../store/slices/fullscreen/slice';
+import { closeSidePanel, initialState as uiInitialState, openSidePanel } from '../../../store/slices/uiSlice';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import { MenuTab } from '../../MenuTabs/fragments/constants';
 import DesktopInnerLayout from './DesktopInnerLayout';
@@ -52,8 +54,11 @@ vi.mock('../../CoffeeBreakView', () => ({
 
 const renderDesktopInnerLayout = (sidePanelView = uiInitialState.sidePanelView) => {
   const { store } = configureStore({ initialState: { ui: { ...uiInitialState, sidePanelView } } });
-  return renderWithProviders(<DesktopInnerLayout />, { store });
+  return { ...renderWithProviders(<DesktopInnerLayout />, { store }), store };
 };
+
+const getNotificationOffset = () =>
+  getComputedStyle(document.documentElement).getPropertyValue(SIDE_PANEL_OFFSET_VARIABLE);
 
 describe('DesktopInnerLayout ui-version branching', () => {
   it('renders the legacy layout when v2 is not active', () => {
@@ -63,6 +68,7 @@ describe('DesktopInnerLayout ui-version branching', () => {
 
     expect(screen.getByTestId('desktop-inner-layout-legacy')).toBeInTheDocument();
     expect(screen.queryByTestId('meeting-footer')).not.toBeInTheDocument();
+    expect(getNotificationOffset()).toBe('');
   });
 
   it('renders the new layout with a footer when v2 is active', () => {
@@ -91,5 +97,35 @@ describe('DesktopInnerLayout side panel', () => {
 
     expect(screen.queryByTestId('meeting-sidebar')).not.toBeInTheDocument();
     expect(screen.getByTestId('cinema')).toBeInTheDocument();
+  });
+
+  it('updates the notification offset when the panel closes and reopens', () => {
+    const { store } = renderDesktopInnerLayout(MenuTab.Chat);
+
+    expect(getNotificationOffset()).toContain(`${SIDE_PANEL_WIDTH_PX}px`);
+
+    act(() => {
+      store.dispatch(closeSidePanel());
+    });
+    expect(getNotificationOffset()).not.toContain(`${SIDE_PANEL_WIDTH_PX}px`);
+
+    act(() => {
+      store.dispatch(openSidePanel(MenuTab.People));
+    });
+    expect(getNotificationOffset()).toContain(`${SIDE_PANEL_WIDTH_PX}px`);
+  });
+
+  it('clears the offset in fullscreen and restores it on exit', () => {
+    const { store } = renderDesktopInnerLayout(MenuTab.Chat);
+
+    act(() => {
+      store.dispatch(fullscreenActions.changed({ active: true }));
+    });
+    expect(getNotificationOffset()).not.toContain(`${SIDE_PANEL_WIDTH_PX}px`);
+
+    act(() => {
+      store.dispatch(fullscreenActions.changed({ active: false }));
+    });
+    expect(getNotificationOffset()).toContain(`${SIDE_PANEL_WIDTH_PX}px`);
   });
 });

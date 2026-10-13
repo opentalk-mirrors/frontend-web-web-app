@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Box, CircularProgress, styled } from '@mui/material';
+import { Box, CircularProgress, GlobalStyles, styled } from '@mui/material';
 
+import { SIDE_PANEL_OFFSET_VARIABLE, SIDE_PANEL_WIDTH_PX } from '../../../constants';
 import { useAppSelector } from '../../../hooks';
 import useConferenceUiVersion from '../../../hooks/useConferenceUiVersion';
 import { ConnectionState } from '../../../modules/WebRTC/ConferenceRoom';
+import { selectFullscreenActive } from '../../../store/slices/fullscreen/slice';
 import { selectRoomConnectionState } from '../../../store/slices/roomSlice';
 import { selectIsSidePanelOpen, selectShowCoffeeBreakCurtain } from '../../../store/slices/uiSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
@@ -30,15 +32,6 @@ const InnerContainer = styled(Box, { shouldForwardProp: (prop) => prop !== 'isSi
   gridTemplateRows: 'auto 1fr auto',
   gridTemplateColumns: isSidePanelOpen ? '1fr auto' : '1fr',
   gridTemplateAreas: isSidePanelOpen ? `'header sidebar' 'main sidebar' 'footer footer'` : `'header' 'main' 'footer'`,
-
-  [theme.breakpoints.down('lg')]: {
-    gridTemplateColumns: '1fr',
-    gridTemplateAreas: `
-      'header'
-      'main'
-      'footer'
-    `,
-  },
 }));
 
 const CircularProgressBar = styled(CircularProgress)({
@@ -52,6 +45,7 @@ const DesktopInnerLayout = () => {
   const showCoffeeBreakCurtain = useAppSelector(selectShowCoffeeBreakCurtain);
   const isModerator = useAppSelector(selectIsModerator);
   const isSidePanelOpen = useAppSelector(selectIsSidePanelOpen);
+  const isFullscreenActive = useAppSelector(selectFullscreenActive);
 
   // V2-CLEANUP: drop this guard and DesktopInnerLayoutLegacy
   if (!isV2) {
@@ -59,26 +53,35 @@ const DesktopInnerLayout = () => {
   }
 
   return (
-    <InnerContainer isSidePanelOpen={isSidePanelOpen}>
-      <JumpLinkContainer />
-      <MeetingHeader />
-      {showCoffeeBreakCurtain && isModerator ? (
-        <CoffeeBreakView roundBorders />
-      ) : (
-        <>
-          {connectionState === ConnectionState.Leaving || connectionState === ConnectionState.Starting ? (
-            <CircularProgressBar />
-          ) : (
-            <>
-              <Cinema />
-              <Ballot />
-            </>
-          )}
-        </>
-      )}
-      {isSidePanelOpen && <MeetingSidebar />}
-      <MeetingFooter />
-    </InnerContainer>
+    <>
+      <GlobalStyles
+        styles={(theme) => ({
+          ':root': {
+            // Lines notifications up with the main column, which the panel shortens by its width plus the gutter.
+            [SIDE_PANEL_OFFSET_VARIABLE]:
+              isSidePanelOpen && !isFullscreenActive
+                ? `calc(${SIDE_PANEL_WIDTH_PX}px + ${theme.spacing(4)})`
+                : theme.spacing(2),
+          },
+        })}
+      />
+      <InnerContainer isSidePanelOpen={isSidePanelOpen}>
+        <JumpLinkContainer />
+        <MeetingHeader />
+        {showCoffeeBreakCurtain && isModerator ? (
+          <CoffeeBreakView roundBorders />
+        ) : connectionState === ConnectionState.Leaving || connectionState === ConnectionState.Starting ? (
+          <CircularProgressBar />
+        ) : (
+          <>
+            <Cinema />
+            <Ballot />
+          </>
+        )}
+        {isSidePanelOpen && <MeetingSidebar />}
+        <MeetingFooter />
+      </InnerContainer>
+    </>
   );
 };
 

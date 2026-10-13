@@ -9,6 +9,7 @@ import {
 } from 'notistack';
 import React from 'react';
 
+import { SIDE_PANEL_OFFSET_VARIABLE } from '../../../../constants';
 import { useAppSelector } from '../../../../hooks/useCustomRedux';
 import { selectFullscreenActive, selectFullscreenElement } from '../../../../store/slices/fullscreen/slice';
 import { CloseButton } from '../CloseButton';
@@ -25,6 +26,7 @@ interface SnackbarProviderProps extends SnackbarProviderPropsDefault {
 
 const getSnackbarContainerRootClass = (theme: Theme) => ({
   top: '60px !important',
+  right: `var(${SIDE_PANEL_OFFSET_VARIABLE}, ${theme.spacing(2.5)}) !important`,
   '& > div': {
     width: '100%',
     minWidth: '280px',

@@ -79,7 +79,7 @@ const ListItemAvatar = styled(MuiListItemAvatar)({
 const ListItem = styled(MuiListItem, {
   shouldForwardProp: (prop) => !(['isWhispering', 'isMoreMenuOpen'] as Array<PropertyKey>).includes(prop),
 })<{ isMoreMenuOpen?: boolean; isWhispering?: boolean }>(({ theme, isMoreMenuOpen, isWhispering }) => ({
-  padding: 0,
+  padding: theme.spacing(0, 1.5),
   '& .more-icon': {
     color: isMoreMenuOpen ? theme.palette.text.primary : 'transparent',
   },
