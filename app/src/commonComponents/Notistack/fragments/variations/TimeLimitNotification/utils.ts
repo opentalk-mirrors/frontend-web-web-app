@@ -5,11 +5,10 @@ import { SnackbarKey } from 'notistack';
 
 import log from '../../../../../logger';
 import { MINUTE_MS } from '../../../../../utils/timeFormatUtils';
-import { sleep } from '../../../../../utils/timeUtils';
 import { DEFAULT_AUTO_HIDE_DURATION, notifications } from '../../utils';
 
-let showFirstNotificationTimer: ReturnType<typeof setTimeout>;
-let triggerFollowingNotificationTimer: ReturnType<typeof setInterval>;
+let notificationTimer: ReturnType<typeof setTimeout> | undefined;
+let timeLimitSnackBarKey: SnackbarKey | undefined;
 
 // How many minutes in advance before end of conference we shall start to notify user
 // E.g. MINUTES_BEFORE_END = 5 -> first notification will be shown 5 minutes
@@ -24,61 +23,52 @@ const DELAY_BETWEEN_SNACKBARS = 1000; //ms
 // User can close a notification manually, but a new one shall appear after current minute is over.
 // Last minute notification shows running seconds and cannot be closed.
 export const startTimeLimitNotification = async (conferenceEndTimestamp: string) => {
-  let remainingNotificationMinutes: number;
-  let showFirstNotificationInMs: number;
-  let timeLimitSnackBarKey: SnackbarKey;
+  stopTimeLimitNotification();
 
-  const updateNotification = async (minutes: number) => {
-    if (timeLimitSnackBarKey) {
+  const conferenceEndTime = new Date(conferenceEndTimestamp).getTime();
+
+  const updateNotification = () => {
+    notificationTimer = undefined;
+
+    const remainingTimeMs = conferenceEndTime - Date.now();
+    if (!Number.isFinite(remainingTimeMs) || remainingTimeMs <= 0) {
+      stopTimeLimitNotification();
+      return;
+    }
+
+    const minutes = Math.ceil(remainingTimeMs / MINUTE_MS);
+    let nextNotificationInMs: number;
+
+    if (minutes > MINUTES_BEFORE_CONFERENCE_END) {
+      nextNotificationInMs = remainingTimeMs - MINUTES_BEFORE_CONFERENCE_END * MINUTE_MS;
+    } else if (timeLimitSnackBarKey !== undefined) {
       notifications.close(timeLimitSnackBarKey);
       log.debug(`Closed snackbar ${timeLimitSnackBarKey}`);
-
-      // we must wait between closing a snackbar and opening a new one
-      // race condition in the notistack? Anyway, maybe even better from the UX point of view
-      await sleep(DELAY_BETWEEN_SNACKBARS);
-    }
-
-    timeLimitSnackBarKey = notifications.toast('', {
-      variant: 'timeLimit',
-      ariaLive: 'polite',
-      persist: true,
-      minutes,
-      autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
-    });
-  };
-
-  const handleMinutesUpdate = async () => {
-    if (remainingNotificationMinutes > 0) {
-      --remainingNotificationMinutes;
-      await updateNotification(remainingNotificationMinutes);
+      timeLimitSnackBarKey = undefined;
+      nextNotificationInMs = Math.min(DELAY_BETWEEN_SNACKBARS, remainingTimeMs);
     } else {
-      stopTimeLimitNotification();
+      timeLimitSnackBarKey = notifications.toast('', {
+        variant: 'timeLimit',
+        ariaLive: 'polite',
+        persist: true,
+        minutes,
+        autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
+      });
+      nextNotificationInMs = remainingTimeMs - (minutes - 1) * MINUTE_MS;
     }
+
+    notificationTimer = setTimeout(updateNotification, nextNotificationInMs);
   };
 
-  const conferenceEndDate = new Date(conferenceEndTimestamp);
-  const remainingTimeOfConferenceMs = conferenceEndDate.getTime() - Date.now();
-  const remainingTimeOfConferenceMinutes = Math.ceil(remainingTimeOfConferenceMs / MINUTE_MS);
-  const doesNotificationTimeslotAlreadyStarted = remainingTimeOfConferenceMinutes <= MINUTES_BEFORE_CONFERENCE_END;
-  if (doesNotificationTimeslotAlreadyStarted) {
-    remainingNotificationMinutes = remainingTimeOfConferenceMinutes;
-    await updateNotification(remainingTimeOfConferenceMinutes);
-    showFirstNotificationInMs =
-      remainingTimeOfConferenceMs - Math.floor(remainingTimeOfConferenceMs / MINUTE_MS) * MINUTE_MS;
-  } else {
-    remainingNotificationMinutes = MINUTES_BEFORE_CONFERENCE_END + 1;
-    showFirstNotificationInMs = remainingTimeOfConferenceMs - MINUTES_BEFORE_CONFERENCE_END * MINUTE_MS;
-  }
-
-  showFirstNotificationTimer = setTimeout(() => {
-    handleMinutesUpdate();
-    triggerFollowingNotificationTimer = setInterval(() => {
-      handleMinutesUpdate();
-    }, MINUTE_MS);
-  }, showFirstNotificationInMs);
+  updateNotification();
 };
 
 export const stopTimeLimitNotification = () => {
-  clearTimeout(showFirstNotificationTimer);
-  clearTimeout(triggerFollowingNotificationTimer);
+  clearTimeout(notificationTimer);
+  notificationTimer = undefined;
+
+  if (timeLimitSnackBarKey !== undefined) {
+    notifications.close(timeLimitSnackBarKey);
+    timeLimitSnackBarKey = undefined;
+  }
 };
