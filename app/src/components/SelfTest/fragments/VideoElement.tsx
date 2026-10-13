@@ -54,12 +54,15 @@ const VideoElement = () => {
   const isVideoMissing = videoEnabled && videoTrack?.isMuted;
 
   useEffect(() => {
-    if (videoTrack && videoRef.current) {
+    const videoElement = videoRef.current;
+    if (videoTrack && videoElement) {
       videoTrack.unmute();
-      videoTrack.attach(videoRef.current);
+      videoTrack.attach(videoElement);
     }
     return () => {
-      videoTrack?.detach();
+      if (videoElement) {
+        videoTrack?.detach(videoElement);
+      }
     };
   }, [videoTrack]);
 
