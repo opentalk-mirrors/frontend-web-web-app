@@ -666,7 +666,8 @@ speed-meter-download-label = Download
 
 indicator-has-audio-off = {$participantName} has the mic off
 indicator-has-audio-on = {$participantName} has the mic on
-indicator-has-raised-hand = {$participantName} wants to say something
+indicator-participant-has-raised-hand = {$participantName} wants to say something
+indicator-you-have-raised-hand = You want to say something
 indicator-pinned = {$participantName} is pinned
 indicator-change-position = change position
 selfview-minimize = Minimize self-view

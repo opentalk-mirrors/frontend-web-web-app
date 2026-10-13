@@ -16,9 +16,15 @@ import useMediaDevice from '../../hooks/useMediaDevice';
 import { selectLivekitUnavailable } from '../../store/slices/livekitSlice';
 import { selectMirroredVideoEnabled } from '../../store/slices/uiSlice';
 import { selectDisplayName, selectOurUuid } from '../../store/slices/userSlice';
-import ReactionIndicator from '../ParticipantWindow/fragments/ReactionIndicator';
+import ReactionIndicator from '../ReactionIndicator';
 
 type PropsType = VideoHTMLAttributes<HTMLVideoElement>;
+
+const PositionedReactionIndicator = styled(ReactionIndicator)(({ theme }) => ({
+  position: 'absolute',
+  left: theme.spacing(1),
+  bottom: theme.spacing(1),
+}));
 
 const Container = styled(Grid)({
   position: 'relative',
@@ -142,7 +148,7 @@ const LocalVideoLegacy = ({ noRoundedCorners, fullscreenMode, togglePinVideo, is
           />
         </>
       )}
-      {ownParticipantId !== null && <ReactionIndicator participantId={ownParticipantId} />}
+      {ownParticipantId !== null && <PositionedReactionIndicator participantId={ownParticipantId} />}
       {isCameraEnabled && !outgoingVideoStreamTrack && !isLivekitUnavailable && (
         <CircularProgress color="primary" size="2.5rem" />
       )}

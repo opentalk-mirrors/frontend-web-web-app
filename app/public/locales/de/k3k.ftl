@@ -664,7 +664,8 @@ speed-meter-download-label = Download
 
 indicator-has-audio-off = {$participantName} hat keinen Ton an
 indicator-has-audio-on = {$participantName} hat den Ton an
-indicator-has-raised-hand = {$participantName} möchte etwas sagen
+indicator-participant-has-raised-hand = {$participantName} möchte etwas sagen
+indicator-you-have-raised-hand = Du möchtest etwas sagen
 indicator-pinned = {$participantName} ist im Fokus
 indicator-change-position = Position ändern
 selfview-minimize = Eigenansicht verkleinern

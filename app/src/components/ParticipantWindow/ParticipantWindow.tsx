@@ -12,10 +12,16 @@ import { selectFullscreenActive } from '../../store/slices/fullscreen/slice';
 import { selectParticipantName } from '../../store/slices/participantsSlice';
 import type { ConnectionIdentifier } from '../../types';
 import { deconstructConnectionIdentifier } from '../../utils/deconstructConnectionIdentifier';
-import HandRaisedIndicator from './fragments/HandRaisedIndicator';
+import ReactionIndicator from '../ReactionIndicator';
+import ParticipantHandRaisedIndicator from './fragments/ParticipantHandRaisedIndicator';
 import ParticipantVideo from './fragments/ParticipantVideo';
-import ReactionIndicator from './fragments/ReactionIndicator';
 import VideoOverlay from './fragments/VideoOverlay';
+
+const PositionedReactionIndicator = styled(ReactionIndicator)(({ theme }) => ({
+  position: 'absolute',
+  left: theme.spacing(1),
+  bottom: theme.spacing(1),
+}));
 
 const Container = styled(MuiBox)(({ theme }) => ({
   containerType: 'inline-size',
@@ -77,8 +83,8 @@ const ParticipantWindow = ({ activePresenter, alwaysShowOverlay, isThumbnail }: 
           className="positionBottom"
         />
       )}
-      <HandRaisedIndicator participantId={participantId} />
-      <ReactionIndicator participantId={participantId} />
+      <ParticipantHandRaisedIndicator participantId={participantId} />
+      <PositionedReactionIndicator participantId={participantId} />
     </Container>
   );
 };
