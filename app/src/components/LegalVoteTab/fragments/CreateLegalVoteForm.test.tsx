@@ -119,6 +119,52 @@ describe('CreateLegalVoteForm', () => {
     expect(notifications.success).toHaveBeenCalledExactlyOnceWith('legal-vote-save-form-success');
   });
 
+  it('disables save as template after saving until the form values change', async () => {
+    const { store } = configureStore();
+    const user = userEvent.setup({ delay: null });
+
+    renderWithProviders(
+      <CreateLegalVoteForm initialValues={buildInitialValues()} onClose={vi.fn()} isCoffeeBreakActive={false} />,
+      { store, provider: { mui: true } }
+    );
+
+    await user.type(screen.getByPlaceholderText('legal-vote-title-placeholder'), 'Title');
+    await user.type(screen.getByPlaceholderText('legal-vote-topic-placeholder'), 'Topic');
+    const saveButton = screen.getByRole('button', { name: 'save-as-template-button' });
+    await user.click(saveButton);
+
+    expect(saveButton).toBeDisabled();
+
+    await user.type(screen.getByPlaceholderText('legal-vote-topic-placeholder'), ' 2027');
+
+    await waitFor(() => {
+      expect(saveButton).toBeEnabled();
+    });
+  });
+
+  it('disables save as template for an unchanged saved template until the form values change', async () => {
+    const { store } = configureStore();
+    const user = userEvent.setup({ delay: null });
+
+    renderWithProviders(
+      <CreateLegalVoteForm
+        initialValues={buildInitialValues({ id: 2, name: 'Title', topic: 'Topic' })}
+        onClose={vi.fn()}
+        isCoffeeBreakActive={false}
+      />,
+      { store, provider: { mui: true } }
+    );
+
+    const saveButton = screen.getByRole('button', { name: 'save-as-template-button' });
+    expect(saveButton).toBeDisabled();
+
+    await user.type(screen.getByPlaceholderText('legal-vote-topic-placeholder'), ' 2027');
+
+    await waitFor(() => {
+      expect(saveButton).toBeEnabled();
+    });
+  });
+
   it('submits the start action and closes after completing both steps', async () => {
     const initialValues = buildInitialValues({
       duration: 2,

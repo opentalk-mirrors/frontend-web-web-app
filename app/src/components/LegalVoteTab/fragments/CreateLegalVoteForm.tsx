@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { styled, Button, Typography, Stack } from '@mui/material';
+import { isEqual } from 'es-toolkit';
 import { isEmpty } from 'es-toolkit/compat';
 import { Formik, Form as FormikForm } from 'formik';
 import { FormikProps, FormikValues } from 'formik/dist/types';
@@ -53,7 +54,11 @@ const CreateLegalVoteForm = ({
   const { t } = useTranslation();
   const legalVoteId = useRef(useSelector(selectLegalVoteId));
   const dispatch = useDispatch();
+  const isEditingVote = initialValues?.id !== undefined;
   const [currentStep, setCurrentStep] = useState(0);
+  const [lastSavedValues, setLastSavedValues] = useState<LegalVoteFormValues | null>(
+    isEditingVote ? initialValues : null
+  );
   const { storageStatus } = useStorageStatus();
   const isStorageFull = storageStatus === StorageStatus.Critical || storageStatus === StorageStatus.Full;
 
@@ -76,6 +81,7 @@ const CreateLegalVoteForm = ({
             ...legalVoteFormValues,
           })
         );
+        setLastSavedValues(legalVoteFormValues);
         notifications.success(t('legal-vote-save-form-success'));
       }
     },
@@ -144,10 +150,14 @@ const CreateLegalVoteForm = ({
   const renderButtons = (formik: FormikProps<LegalVoteFormValues>) => {
     const isLastStep = currentStep === 1;
     const disableStartForStorage = isLastStep && isStorageFull;
+    const isAlreadySaved = lastSavedValues !== null && isEqual(lastSavedValues, formik.values);
     return (
       <>
         {!isLastStep && (
-          <SaveAsTemplateButton onClick={() => saveFormValues(formik.values)} disabled={!formik.isValid} />
+          <SaveAsTemplateButton
+            onClick={() => saveFormValues(formik.values)}
+            disabled={!formik.isValid || isAlreadySaved}
+          />
         )}
         <Stack
           direction="row"
@@ -199,9 +209,7 @@ const CreateLegalVoteForm = ({
                 paddingBottom: 2,
               }}
             >
-              {initialValues?.id !== undefined
-                ? t('legal-vote-header-title-update')
-                : t('legal-vote-header-title-create')}
+              {isEditingVote ? t('legal-vote-header-title-update') : t('legal-vote-header-title-create')}
             </Typography>
             {renderStep()}
           </Form>
