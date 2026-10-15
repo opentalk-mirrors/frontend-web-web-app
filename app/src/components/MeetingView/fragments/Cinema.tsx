@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector, useConferenceUiVersion } from '../../..
 import SelfViewAnchorContext from '../../../provider/SelfViewAnchorContext';
 import { fullscreenActions, selectFullscreenActive } from '../../../store/slices/fullscreen/slice';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
-import { selectCinemaLayout } from '../../../store/slices/uiSlice';
+import { selectCinemaLayout, selectIsSelfViewMinimized } from '../../../store/slices/uiSlice';
 import FloatingReactionsOverlay from '../../FloatingReactions/FloatingReactionsOverlay';
 import FullscreenView from '../../FullscreenView';
 import GridView from '../../GridView';
@@ -21,15 +21,23 @@ import WhiteboardView from '../../WhiteboardView';
 import MediaReconnectionDialog from './MediaReconnectionDialog';
 import SelfView from './SelfView';
 
-const Container = styled('main')({
+const Container = styled('main', { shouldForwardProp: (prop) => prop !== 'reserveSelfViewSpace' })<{
+  reserveSelfViewSpace: boolean;
+}>(({ theme, reserveSelfViewSpace }) => ({
   gridArea: 'main',
   height: '100%',
   overflow: 'hidden',
   position: 'relative',
   display: 'flex',
   flexDirection: 'column',
-  gap: '1rem',
-});
+  gap: theme.typography.pxToRem(16),
+  ...(reserveSelfViewSpace && {
+    paddingRight: theme.spacing(10),
+    [theme.breakpoints.up('sm')]: {
+      paddingRight: theme.spacing(15),
+    },
+  }),
+}));
 
 const Cinema = () => {
   const { isV2 } = useConferenceUiVersion();
@@ -39,6 +47,9 @@ const Cinema = () => {
   const isFullscreenActive = useAppSelector(selectFullscreenActive);
   const refForFullscreen = useRef<HTMLDivElement | null>(null);
   const dispatch = useAppDispatch();
+  const isSelfViewMinimized = useAppSelector(selectIsSelfViewMinimized);
+  const shouldReserveSpaceForSelfView =
+    !isSelfViewMinimized && !isFullscreenActive && userLayout === LayoutOptions.Grid;
 
   useEffect(() => {
     if (refForFullscreen.current) {
@@ -68,7 +79,7 @@ const Cinema = () => {
 
   return (
     <SelfViewAnchorContext.Provider value={{ anchor: selfViewAnchor, setAnchor: setSelfViewAnchor }}>
-      <Container ref={refForFullscreen}>
+      <Container reserveSelfViewSpace={shouldReserveSpaceForSelfView} ref={refForFullscreen}>
         <VisuallyHiddenTitle component="h2" label="videoroom-hidden-heading" />
         {isLivekitUnavailable && <MediaReconnectionDialog />}
         {renderView()}
