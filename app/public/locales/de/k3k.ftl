@@ -1344,7 +1344,8 @@ legal-vote-report-issue-kind-video = Kein Video
 legal-vote-report-issue-kind-screenshare = Keine Bildschirmfreigabe
 legal-vote-report-issue-inform-moderator = Moderator informieren
 legal-vote-report-issue-kind-notification = {displayName} meldet ein {kind} Problem
-legal-vote-report-issue-description-notification = {displayName} meldet ein Problem: "{description}"
+legal-vote-report-issue-description-participant-notification = {displayName} meldet ein Problem: "{description}"
+legal-vote-report-issue-description-pseudonymous-notification = Ein Problem wurde gemeldet: "{description}"
 legal-vote-report-issue-inform-moderator-success = Die Störung wurde an den Moderator gesendet
 legal-vote-report-issue-description-placeholder = Beschreiben Sie das Problem...
 

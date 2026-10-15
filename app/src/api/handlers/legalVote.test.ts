@@ -225,6 +225,40 @@ describe('handleLegalVoteMessage', () => {
     expect(notifications.warning).toHaveBeenCalledExactlyOnceWith('legal-vote-report-issue-kind-notification');
   });
 
+  it('notifies about pseudonymous reported issues without participantId', () => {
+    const dispatch = vi.fn();
+    const state = createState();
+    const data: VoteReportedIssue = {
+      message: 'reported_issue',
+      description: 'problem',
+      legalVoteId: baseVote.legalVoteId,
+    };
+
+    handleLegalVoteMessage(dispatch, data, state);
+
+    expect(i18n.t).toHaveBeenCalledWith('legal-vote-report-issue-description-pseudonymous-notification', {
+      description: 'problem',
+    });
+    expect(notifications.warning).toHaveBeenCalledExactlyOnceWith(
+      'legal-vote-report-issue-description-pseudonymous-notification'
+    );
+  });
+
+  it('does not notify about own reported issues', () => {
+    const dispatch = vi.fn();
+    const state = createState();
+    const data: VoteReportedIssue = {
+      message: 'reported_issue',
+      participantId: 'user-1' as ParticipantId,
+      description: 'problem',
+      legalVoteId: baseVote.legalVoteId,
+    };
+
+    handleLegalVoteMessage(dispatch, data, state);
+
+    expect(notifications.warning).not.toHaveBeenCalled();
+  });
+
   it('throws on unknown message type', () => {
     const dispatch = vi.fn();
     const state = createState();

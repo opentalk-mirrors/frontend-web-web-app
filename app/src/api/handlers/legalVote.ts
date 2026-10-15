@@ -5,6 +5,7 @@ import { truncate } from 'es-toolkit/compat';
 import i18next from 'i18next';
 
 import { notifications } from '../../commonComponents';
+import { MAX_CHARS_FOR_NOTIFICATION } from '../../constants';
 import i18n from '../../i18n';
 import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
@@ -47,24 +48,33 @@ export const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMes
       dispatch(legalVoteVoted(data));
       break;
     case 'reported_issue': {
-      // report came from others and not us, our id is not part of participants but user slice.
-      if (data.participantId && data.participantId !== state.user.uuid) {
-        const displayName = state.participants?.entities[data.participantId]?.displayName || i18n.t('global-someone');
-        if (data.kind) {
-          notifications.warning(
-            i18n.t('legal-vote-report-issue-kind-notification', {
-              displayName: truncate(displayName, { length: 50 }),
-              kind: data.kind,
-            })
-          );
-        } else {
-          notifications.warning(
-            i18n.t('legal-vote-report-issue-description-notification', {
-              displayName: truncate(displayName, { length: 50 }),
-              description: data.description,
-            })
-          );
-        }
+      // our own reports are not echoed as notification; pseudonymous reports carry no participantId
+      if (data.participantId === state.user.uuid) {
+        break;
+      }
+      const displayName = data.participantId
+        ? state.participants?.entities[data.participantId]?.displayName || i18n.t('global-someone')
+        : i18n.t('global-someone');
+      if (data.kind) {
+        notifications.warning(
+          i18n.t('legal-vote-report-issue-kind-notification', {
+            displayName: truncate(displayName, { length: MAX_CHARS_FOR_NOTIFICATION }),
+            kind: data.kind,
+          })
+        );
+      } else if (data.participantId) {
+        notifications.warning(
+          i18n.t('legal-vote-report-issue-description-participant-notification', {
+            displayName: truncate(displayName, { length: MAX_CHARS_FOR_NOTIFICATION }),
+            description: data.description,
+          })
+        );
+      } else {
+        notifications.warning(
+          i18n.t('legal-vote-report-issue-description-pseudonymous-notification', {
+            description: data.description,
+          })
+        );
       }
       break;
     }

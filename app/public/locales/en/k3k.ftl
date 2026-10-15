@@ -1347,7 +1347,8 @@ legal-vote-report-issue-kind-video = No video
 legal-vote-report-issue-kind-screenshare = No screenshare
 legal-vote-report-issue-inform-moderator = Inform moderator
 legal-vote-report-issue-kind-notification = {displayName} reports {kind} problem
-legal-vote-report-issue-description-notification = {displayName} reports a problem: "{description}"
+legal-vote-report-issue-description-participant-notification = {displayName} reports a problem: "{description}"
+legal-vote-report-issue-description-pseudonymous-notification = A problem was reported: "{description}"
 legal-vote-report-issue-inform-moderator-success = The technical problem is reported to moderator
 legal-vote-report-issue-description-placeholder = Describe the problem...
 
