@@ -271,10 +271,14 @@ const livekitSlice = createSlice({
       state.accessToken = undefined;
       state.unavailable = false;
     });
-    builder.addCase(cleanLocalTracks, (state) => {
-      state.lobby.audioTrackPublication?.stop();
+    builder.addCase(cleanLocalTracks, (state, { payload }) => {
+      if (!payload?.keep.audio) {
+        state.lobby.audioTrackPublication?.stop();
+      }
       state.lobby.audioTrackPublication = undefined;
-      state.lobby.videoTrackPublication?.stop();
+      if (!payload?.keep.video) {
+        state.lobby.videoTrackPublication?.stop();
+      }
       state.lobby.videoTrackPublication = undefined;
     });
     builder.addCase(hangUp.rejected, (state) => {
@@ -402,7 +406,9 @@ export const setLivekitUnavailable = createAction<boolean>('livekit/set_livekit_
 export const startBroadcastRoom = createAction<{ accessToken?: string; connectionIdentifier?: string }>(
   'livekit/start_broadcast_room'
 );
-export const cleanLocalTracks = createAction('livekit/clean_local_tracks');
+export const cleanLocalTracks = createAction<{ keep: { audio: boolean; video: boolean } } | undefined>(
+  'livekit/clean_local_tracks'
+);
 export const triggerLivekitReconnect = createAction('livekit/triggerReconnect');
 
 export const selectLivekitUnavailable = (state: RootState) => state.livekit.unavailable;
@@ -890,7 +896,7 @@ const detachRoomListeners = (room: Room) => {
   roomListeners.delete(room);
 };
 
-const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
+export const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootState, room: Room) => {
   const state = getState();
   const isWhisperRoom = state.livekit.whisperRoom?.name === room.name;
 
@@ -900,22 +906,36 @@ const handleRoomConnected = async (dispatch: AppDispatch, getState: () => RootSt
 
   dispatch(setLivekitUnavailable(false));
   dispatch(finishReconnectLoop());
-  const isLobbyCameraEnabled = selectLobbyVideoEnabled(state);
-  const isLobbyMicrophoneEnabled = selectLobbyAudioEnabled(state);
+  const lobbyVideoTrack = selectLobbyVideoTrack(state);
+  const lobbyAudioTrack = selectLobbyAudioTrack(state);
   const isMicrophoneDisabledForRoomByModerator = selectShouldForceMuted(state) ?? true;
   // On a room switch (e.g. breakout rooms) there are no lobby tracks, so fall
   // back to the media intent captured before the switch started.
   const mediaBeforeSwitch = state.livekit.mediaSettingsBeforeRoomSwitch;
-  const shouldEnableCamera = isLobbyCameraEnabled || Boolean(mediaBeforeSwitch?.cameraEnabled);
-  const shouldEnableMicrophone = isLobbyMicrophoneEnabled || Boolean(mediaBeforeSwitch?.microphoneEnabled);
+  const shouldEnableCamera = Boolean(lobbyVideoTrack) || Boolean(mediaBeforeSwitch?.cameraEnabled);
+  const shouldEnableMicrophone = Boolean(lobbyAudioTrack) || Boolean(mediaBeforeSwitch?.microphoneEnabled);
 
-  if (shouldEnableCamera) {
-    dispatch(changeMedia({ kind: 'videoinput', enabled: true }));
-  }
-  if (!isMicrophoneDisabledForRoomByModerator && shouldEnableMicrophone) {
-    dispatch(changeMedia({ kind: 'audioinput', enabled: true }));
-  }
-  dispatch(cleanLocalTracks());
+  const adoptLobbyTrack = async (track: LocalAudioTrack | LocalVideoTrack | undefined, kind: MediaDeviceKind) => {
+    if (track) {
+      try {
+        await room.localParticipant.publishTrack(track);
+        return true;
+      } catch (error) {
+        log.error(`Failed to publish lobby ${kind} track, re-acquiring the device:`, error);
+      }
+    }
+    dispatch(changeMedia({ kind, enabled: true }));
+    return false;
+  };
+
+  const [video, audio] = await Promise.all([
+    shouldEnableCamera ? adoptLobbyTrack(lobbyVideoTrack, 'videoinput') : false,
+    !isMicrophoneDisabledForRoomByModerator && shouldEnableMicrophone
+      ? adoptLobbyTrack(lobbyAudioTrack, 'audioinput')
+      : false,
+  ]);
+
+  dispatch(cleanLocalTracks({ keep: { audio, video } }));
   if (mediaBeforeSwitch) {
     dispatch(clearMediaSettingsBeforeRoomSwitch());
   }

@@ -6,7 +6,7 @@ import { Track } from 'livekit-client';
 
 import { switchRoom } from '../../api/types/outgoing/breakout';
 import { notifications } from '../../commonComponents';
-import { RoomKind, TimerStyle } from '../../types';
+import { RoomKind, TimerStyle, ForceMuteType } from '../../types';
 import { configureStore } from '../../utils/testUtils';
 import { changeMedia, setScreenShareEnabled } from '../commonActions';
 import type { AppDispatch, RootState } from '../index';
@@ -20,6 +20,7 @@ import livekitReducer, {
   selectVideoChangeInProgress,
   setMediaSettingVideoEnabled,
   handleCameraOnReminder,
+  handleRoomConnected,
 } from './livekitSlice';
 import { timerStarted } from './timerSlice';
 import { toggledSelfViewMinimized } from './uiSlice';
@@ -145,6 +146,83 @@ describe('livekit slice - disable media on coffee break', () => {
     await flushMacrotask();
     expect(audioTrackStop).not.toHaveBeenCalled();
     expect(setMicrophoneEnabled).not.toHaveBeenCalled();
+  });
+});
+
+describe('livekit slice - adopting lobby tracks on connect', () => {
+  const buildLobbyTrack = () => ({ stop: vi.fn() });
+
+  const buildConnectedRoom = () => {
+    const publishTrack = vi.fn().mockResolvedValue(undefined);
+    const room = { name: 'main', localParticipant: { publishTrack } } as unknown as typeof initialState.room;
+    return { room, publishTrack };
+  };
+
+  const buildStore = (lobby: { audioTrackPublication?: unknown; videoTrackPublication?: unknown }) =>
+    configureStore({
+      initialState: {
+        user: { uuid: 'user-id' },
+        livekit: { ...initialState, lobby: { ...initialState.lobby, ...lobby } },
+      },
+    });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('publishes the existing lobby tracks instead of re-acquiring the devices', async () => {
+    const audioTrack = buildLobbyTrack();
+    const videoTrack = buildLobbyTrack();
+    const { room, publishTrack } = buildConnectedRoom();
+    const { store, dispatchSpy } = buildStore({
+      audioTrackPublication: audioTrack,
+      videoTrackPublication: videoTrack,
+    });
+
+    await handleRoomConnected(store.dispatch, store.getState, room!);
+
+    expect(publishTrack).toHaveBeenCalledWith(videoTrack);
+    expect(publishTrack).toHaveBeenCalledWith(audioTrack);
+    expect(dispatchSpy).not.toHaveBeenCalledWith(expect.objectContaining({ type: changeMedia.pending.type }));
+    expect(audioTrack.stop).not.toHaveBeenCalled();
+    expect(videoTrack.stop).not.toHaveBeenCalled();
+    expect(store.getState().livekit.lobby.audioTrackPublication).toBeUndefined();
+    expect(store.getState().livekit.lobby.videoTrackPublication).toBeUndefined();
+  });
+
+  it('stops the lobby microphone track when the moderator force-muted the room', async () => {
+    const audioTrack = buildLobbyTrack();
+    const videoTrack = buildLobbyTrack();
+    const { room, publishTrack } = buildConnectedRoom();
+    const { store } = configureStore({
+      initialState: {
+        user: { uuid: 'user-id' },
+        moderation: { forceMute: { type: ForceMuteType.Enabled, unrestrictedParticipants: [] } },
+        livekit: {
+          ...initialState,
+          lobby: { ...initialState.lobby, audioTrackPublication: audioTrack, videoTrackPublication: videoTrack },
+        },
+      },
+    });
+
+    await handleRoomConnected(store.dispatch, store.getState, room!);
+
+    expect(publishTrack).toHaveBeenCalledTimes(1);
+    expect(publishTrack).toHaveBeenCalledWith(videoTrack);
+    expect(audioTrack.stop).toHaveBeenCalledTimes(1);
+    expect(videoTrack.stop).not.toHaveBeenCalled();
+  });
+
+  it('falls back to acquiring a new device when publishing the lobby track fails', async () => {
+    const videoTrack = buildLobbyTrack();
+    const { room, publishTrack } = buildConnectedRoom();
+    publishTrack.mockRejectedValue(new Error('publish failed'));
+    const { store } = buildStore({ videoTrackPublication: videoTrack });
+
+    await handleRoomConnected(store.dispatch, store.getState, room!);
+
+    expect(videoTrack.stop).toHaveBeenCalledTimes(1);
+    expect(store.getState().livekit.mediaChangeInProgress['videoinput']).toEqual({ enabled: true });
   });
 });
 
