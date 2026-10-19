@@ -1437,5 +1437,4 @@ subtitle-notification-show = Show
 subtitle-notification-hide = Not now
 subtitle-notification-enabled = Subtitles are now available
 subtitle-notification-disabled = Subtitles have been turned off by the host
-subtitle-notification-not-enabled-warning = Subtitles are currently unavailable. Please try again later.
 subtitle-notification-language-changed = The subtitle language was changed to {$language}.
