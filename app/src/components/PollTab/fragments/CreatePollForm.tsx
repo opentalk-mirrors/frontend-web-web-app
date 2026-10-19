@@ -79,11 +79,11 @@ const isSaveAsTemplateInvalid = (values: PollFormValues) => isEmpty(values.topic
 const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollFormProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const isEditing = initialValues?.id !== undefined;
+  const isEditingPoll = initialValues?.id !== undefined;
   const isCoffeeBreakActive = useAppSelector(selectCurrentRoomMode) === RoomMode.CoffeeBreak;
   const savedPollsCount = useAppSelector(selectSavedPollsCount);
   const pollTemplateId = useRef(initialValues?.id ?? savedPollsCount);
-  const [lastSavedValues, setLastSavedValues] = useState<PollFormValues | null>(isEditing ? initialValues : null);
+  const [lastSavedValues, setLastSavedValues] = useState<PollFormValues | null>(isEditingPoll ? initialValues : null);
 
   const isSaveAsTemplateDisabled = (values: PollFormValues) =>
     isSaveAsTemplateInvalid(values) || isEqual(values, lastSavedValues);
@@ -133,7 +133,7 @@ const CreatePollForm = ({ initialValues = defaultInitialValues, onClose }: PollF
         >
           <Form data-testid="create-poll-form" onSubmit={formik.handleSubmit}>
             <Typography component="h4">
-              {isEditing ? t('poll-header-title-update') : t('poll-header-title-create')}
+              {isEditingPoll ? t('poll-header-title-update') : t('poll-header-title-create')}
             </Typography>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
