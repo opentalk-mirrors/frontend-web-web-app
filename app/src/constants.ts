@@ -24,6 +24,7 @@ export enum ToolbarButtonIds {
 }
 
 export const DISPLAY_NAME_MAX_CHARACTERS = 100;
+export const MAX_CHARS_FOR_NOTIFICATION = 50;
 
 export const MAX_GRID_TILES_DESKTOP = 24;
 export const MAX_GRID_TILES_MOBILE = 9;
