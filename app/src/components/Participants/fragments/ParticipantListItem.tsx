@@ -211,6 +211,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
   };
 
   const handleModerationRight = () => {
+    // Demoted moderators become users, never guests again.
     const newRole = participant?.role === Role.Moderator ? Role.User : Role.Moderator;
     dispatch(updateRole.action({ participantId, newRole }));
     closePopover();
@@ -253,38 +254,25 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
         ];
         break;
       case Role.User:
-        if (participant.participationKind === ParticipationKind.Registered) {
-          options = [
-            {
-              i18nKey: 'participant-menu-grant-moderator',
-              action: handleModerationRight,
-            },
-            {
-              i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
-              action: handlePresenterRoleRight,
-            },
-            muteOption,
-          ];
-        } else if (
-          participant.participationKind === ParticipationKind.Guest ||
-          participant.participationKind === ParticipationKind.CallIn
-        ) {
-          options = [
-            {
-              i18nKey: 'participant-menu-rename',
-              action: handleRenameParticipantDialog,
-            },
-            {
-              i18nKey: selectedParticipantCanPublishScreenShare ? 'revoke-presenter-role' : 'grant-presenter-role',
-              action: handlePresenterRoleRight,
-            },
-            muteOption,
-          ];
+      case Role.Guest: {
+        // Uninvited participants with an account have the guest role but are registered. Guests are treated the same no
+        // matter if they have an account: they can always be renamed and never become moderators. Users can become
+        // moderators if they have an account and can be renamed otherwise.
+        const isGuest = participant.role === Role.Guest;
+        const canBecomeModerator = !isGuest && participant.participationKind === ParticipationKind.Registered;
+        const isRenameable =
+          isGuest ||
+          participant.participationKind === ParticipationKind.Unregistered ||
+          participant.participationKind === ParticipationKind.CallIn;
+        if (!canBecomeModerator && !isRenameable) {
+          break;
         }
-        break;
-      case Role.Guest:
         options = [
-          {
+          canBecomeModerator && {
+            i18nKey: 'participant-menu-grant-moderator',
+            action: handleModerationRight,
+          },
+          isRenameable && {
             i18nKey: 'participant-menu-rename',
             action: handleRenameParticipantDialog,
           },
@@ -295,6 +283,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
           muteOption,
         ];
         break;
+      }
       default:
         options = [];
     }
@@ -484,7 +473,7 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
 
   const renderAvatar = useCallback(() => {
     const isParticipantGuest =
-      participant.role === Role.Guest || participant.participationKind === ParticipationKind.Guest;
+      participant.role === Role.Guest || participant.participationKind === ParticipationKind.Unregistered;
     const isParticipantModerator = participant.role === Role.Moderator;
     const renderWithBadge = isParticipantGuest || isParticipantModerator;
 

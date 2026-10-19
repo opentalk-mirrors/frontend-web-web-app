@@ -6,7 +6,7 @@ import type { RootState } from '../../store';
 import { hangUp, joinSuccess } from '../../store/commonActions';
 import { waitingRoomJoined } from '../../store/slices/participantsSlice';
 import { joinedLobby, setIsRoomDeleted } from '../../store/slices/roomSlice';
-import { Role } from '../../types';
+import { ParticipationKind, Role } from '../../types';
 import type {
   ConnectionId,
   DeviceId,
@@ -87,6 +87,7 @@ const makeJoinSuccess = (moduleData: ModuleData): JoinSuccess =>
     message: 'join_success',
     connections: [],
     role: Role.User,
+    participationKind: ParticipationKind.Registered,
     displayName: 'Me',
     isRoomOwner: false,
     tariff: { quotas: {} },
@@ -285,6 +286,23 @@ describe('handleRoomServerCoreMessage', () => {
       handleRoomServerCoreMessage(dispatch, makeJoinSuccess(baseModuleData), timestamp, state);
 
       expect(getJoinSuccessPayload(dispatch).participantId).toBe('participant-9');
+    });
+
+    it.each([
+      [Role.Guest, ParticipationKind.Registered],
+      [Role.Guest, ParticipationKind.Unregistered],
+      [Role.User, ParticipationKind.Registered],
+    ])('forwards role %s and participation kind %s independently', (role, participationKind) => {
+      const dispatch = vi.fn();
+
+      handleRoomServerCoreMessage(
+        dispatch,
+        { ...makeJoinSuccess(baseModuleData), role, participationKind } as JoinSuccess,
+        timestamp,
+        createState()
+      );
+
+      expect(getJoinSuccessPayload(dispatch)).toMatchObject({ role, participationKind });
     });
   });
 });

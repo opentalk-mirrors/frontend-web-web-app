@@ -7,6 +7,7 @@ import { screen, within, fireEvent, waitForElementToBeRemoved } from '@testing-l
 import userEvent from '@testing-library/user-event';
 import { List } from 'react-window';
 
+import { updateRole } from '../../../api/types/outgoing/moderation';
 import { selectAllVisibleParticipants } from '../../../store/slices/participantsSlice';
 import {
   ChatScope,
@@ -155,7 +156,7 @@ describe('participant context menu', () => {
     describe('and the participant is a guest', () => {
       const { store } = mockStore(2, {
         role: [Role.Moderator, Role.User],
-        participantKinds: [ParticipationKind.Registered, ParticipationKind.Guest],
+        participantKinds: [ParticipationKind.Registered, ParticipationKind.Unregistered],
         store: USER_IS_MODERATOR_STORE,
       });
       beforeEach(() => {
@@ -213,7 +214,10 @@ describe('participant context menu', () => {
       });
     });
     describe('and the participant is a user', () => {
-      const { store } = mockStore(2, { role: [Role.Moderator, Role.User], store: USER_IS_MODERATOR_STORE });
+      const { store, dispatchSpy } = mockStore(2, {
+        role: [Role.Moderator, Role.User],
+        store: USER_IS_MODERATOR_STORE,
+      });
       beforeEach(() => {
         openMenu(store);
       });
@@ -228,6 +232,93 @@ describe('participant context menu', () => {
           name: 'grant-presenter-role',
         });
         expect(grantPresenterRoleOption).toBeInTheDocument();
+      });
+      it('should promote the participant to moderator when clicking the grant moderator option', () => {
+        fireEvent.click(screen.getByRole('menuitem', { name: 'participant-menu-grant-moderator' }));
+        expect(dispatchSpy).toHaveBeenCalledWith(
+          updateRole.action({ participantId: participants[1].id, newRole: Role.Moderator })
+        );
+      });
+    });
+    describe('and the participant is an uninvited user with an account', () => {
+      const { store } = mockStore(2, {
+        role: [Role.Moderator, Role.Guest],
+        participantKinds: [ParticipationKind.Registered, ParticipationKind.Registered],
+        store: USER_IS_MODERATOR_STORE,
+      });
+      beforeEach(() => {
+        openMenu(store);
+      });
+      it('should not contain the grant moderator option in the opened menu on a participant', () => {
+        const grantModeratorOption = screen.queryByRole('menuitem', {
+          name: 'participant-menu-grant-moderator',
+        });
+        expect(grantModeratorOption).not.toBeInTheDocument();
+      });
+      it('should contain the rename participant option in the opened menu on a participant', () => {
+        const renameParticipantOption = screen.getByRole('menuitem', {
+          name: 'participant-menu-rename',
+        });
+        expect(renameParticipantOption).toBeInTheDocument();
+      });
+      it('should contain the grant presenter role option in the opened menu on a participant', () => {
+        const grantPresenterRoleOption = screen.getByRole('menuitem', {
+          name: 'grant-presenter-role',
+        });
+        expect(grantPresenterRoleOption).toBeInTheDocument();
+      });
+    });
+    describe('and the participant is a guest without an account', () => {
+      const { store } = mockStore(2, {
+        role: [Role.Moderator, Role.Guest],
+        participantKinds: [ParticipationKind.Registered, ParticipationKind.Unregistered],
+        store: USER_IS_MODERATOR_STORE,
+      });
+      beforeEach(() => {
+        openMenu(store);
+      });
+      it('should contain the rename participant option in the opened menu on a participant', () => {
+        const renameParticipantOption = screen.getByRole('menuitem', {
+          name: 'participant-menu-rename',
+        });
+        expect(renameParticipantOption).toBeInTheDocument();
+      });
+      it('should not contain the grant moderator option in the opened menu on a participant', () => {
+        const grantModeratorOption = screen.queryByRole('menuitem', {
+          name: 'participant-menu-grant-moderator',
+        });
+        expect(grantModeratorOption).not.toBeInTheDocument();
+      });
+    });
+    describe('and the participant is a dial-in participant with the guest role', () => {
+      const { store } = mockStore(2, {
+        role: [Role.Moderator, Role.Guest],
+        participantKinds: [ParticipationKind.Registered, ParticipationKind.CallIn],
+        store: USER_IS_MODERATOR_STORE,
+      });
+      beforeEach(() => {
+        openMenu(store);
+      });
+      it('should not contain the grant moderator option in the opened menu on a participant', () => {
+        const grantModeratorOption = screen.queryByRole('menuitem', {
+          name: 'participant-menu-grant-moderator',
+        });
+        expect(grantModeratorOption).not.toBeInTheDocument();
+      });
+    });
+    describe('and the participant is a moderator', () => {
+      const { store, dispatchSpy } = mockStore(2, {
+        role: [Role.Moderator, Role.Moderator],
+        store: USER_IS_MODERATOR_STORE,
+      });
+      beforeEach(() => {
+        openMenu(store);
+      });
+      it('should demote the participant to a user when clicking the revoke moderator option', () => {
+        fireEvent.click(screen.getByRole('menuitem', { name: 'participant-menu-revoke-moderator' }));
+        expect(dispatchSpy).toHaveBeenCalledWith(
+          updateRole.action({ participantId: participants[1].id, newRole: Role.User })
+        );
       });
     });
   });

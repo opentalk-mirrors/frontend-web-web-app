@@ -155,6 +155,8 @@ export enum ModerationError {
   LivekitUnavailable = 'livekit_unavailable',
   /// The user cannot be assigned as a moderator
   UserCannotBeModerator = 'user_cannot_be_moderator',
+  /// The guest role cannot be assigned, demoted moderators become users
+  UserCannotBeGuest = 'user_cannot_be_guest',
 }
 
 export type Message =

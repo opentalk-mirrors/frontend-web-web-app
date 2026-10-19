@@ -72,7 +72,7 @@ describe('LobbyView', () => {
   const { store } = configureStore({
     initialState: {
       auth: { state: 'authorized' },
-      user: { loggedIdToken: undefined, role: Role.User, participantKind: ParticipationKind.Guest },
+      user: { loggedIdToken: undefined, role: Role.User, participantKind: ParticipationKind.Unregistered },
       room: { invite: {}, connectionState: ConnectionState.Lobby, canEnter: true },
     },
   });
@@ -132,7 +132,7 @@ describe('LobbyView connect-first WS lobby', () => {
     configureStore({
       initialState: {
         auth: { state: 'authorized' },
-        user: { role: Role.User, participantKind: ParticipationKind.Guest },
+        user: { role: Role.User, participantKind: ParticipationKind.Unregistered },
         room: { invite: {}, ...roomOverrides },
       },
     });
@@ -255,7 +255,7 @@ describe('LobbyView password step', () => {
     configureStore({
       initialState: {
         auth: { state: 'authorized' },
-        user: { role: Role.User, participantKind: ParticipationKind.Guest },
+        user: { role: Role.User, participantKind: ParticipationKind.Unregistered },
         room: { invite: {}, ...roomOverrides },
       },
     });
@@ -368,7 +368,7 @@ describe('LobbyView guest join (not logged in)', () => {
     configureStore({
       initialState: {
         auth: { state: 'anonymous' },
-        user: { role: Role.User, participantKind: ParticipationKind.Guest },
+        user: { role: Role.User, participantKind: ParticipationKind.Unregistered },
         room: { passwordRequired: false, invite: {}, ...roomOverrides },
       },
     });

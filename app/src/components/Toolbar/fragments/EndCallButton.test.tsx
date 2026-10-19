@@ -1,30 +1,13 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { UserId } from '@opentalk/rest-api-rtk-query';
 import { screen, fireEvent } from '@testing-library/react';
 
 import { renderWithProviders, configureStore } from '../../../utils/testUtils';
 import EndCallButton from './EndCallButton';
 
-vi.mock('../../../api/rest', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useGetMeQuery: () => ({
-    data: {
-      id: '3645d74d-9a4b-4cd4-9d9f-f1871c970167' as UserId,
-    },
-  }),
-  useGetRoomQuery: () => ({
-    data: {
-      createdBy: {
-        id: '3645d74d-9a4b-4cd4-9d9f-f1871c970167' as UserId,
-      },
-    },
-  }),
-  useGetEventQuery: () => ({}),
-}));
 describe('<EndCallButton />', () => {
-  const { store } = configureStore();
+  const { store } = configureStore({ initialState: { room: { isOwnedByCurrentUser: true } } });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -35,7 +18,7 @@ describe('<EndCallButton />', () => {
     expect(screen.getByTestId('toolbarEndCallButton')).toBeInTheDocument();
   });
 
-  it('If creator of meeting click on EndCallButton, popup should be displayed with delete room option', async () => {
+  it('If room owner clicks on EndCallButton, popup should be displayed with delete room option', async () => {
     renderWithProviders(<EndCallButton />, { store, provider: { snackbar: true, router: true, mui: true } });
     const endButton = await screen.findByTestId('toolbarEndCallButton');
     expect(endButton).toBeInTheDocument();

@@ -58,7 +58,7 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRoomByInviteId.fulfilled, (state) => {
-      state.participationKind = ParticipationKind.Guest;
+      state.participationKind = ParticipationKind.Unregistered;
     });
     builder.addCase(
       startRoom.pending,
@@ -71,15 +71,18 @@ const userSlice = createSlice({
         }
       ) => {
         state.displayName = displayName;
-        if (state.participationKind === ParticipationKind.Guest) {
+        if (state.participationKind === ParticipationKind.Unregistered) {
           initSentryReportWithUser({ name: state.displayName, lang: i18next.language });
         }
       }
     );
     builder.addCase(
       joinSuccess,
-      (state, { payload: { avatarUrl, role, participantId, isRoomOwner, enabledModules } }) => {
+      (state, { payload: { avatarUrl, role, participationKind, participantId, isRoomOwner, enabledModules } }) => {
         state.role = role;
+        // The role does not tell whether we have an account: uninvited users with an account join with the
+        // guest role but as a registered participant.
+        state.participationKind = participationKind;
         state.avatarUrl = avatarUrl;
         state.uuid = participantId;
         state.joinedAt = new Date().toISOString();
@@ -87,7 +90,6 @@ const userSlice = createSlice({
         state.isRoomOwner = isRoomOwner;
         state.joinedAsModerator = role === Role.Moderator;
         state.isTariffUpgradable = enabledModules[BackendModules.Core]?.includes(CoreFeatures.StorageUpgradable);
-        state.participationKind = role === Role.Guest ? ParticipationKind.Guest : ParticipationKind.Registered;
       }
     );
     builder.addCase(connectionClosed, (state) => {
@@ -142,10 +144,20 @@ export const selectCanManageRoomAssets = createSelector(
   (state) => state.isRoomOwner || state.joinedAsModerator
 );
 
-export const selectIsGuest = createSelector(
+/**
+ * Whether the user joined without an OpenTalk account.
+ *
+ * Not to be confused with {@link selectHasGuestRole}: uninvited users with an account have the guest role but are
+ * still registered participants.
+ */
+export const selectIsUnregistered = createSelector(
   [userState],
-  (state) => state.role === Role.Guest || state.participationKind === ParticipationKind.Guest
+  (state) => state.participationKind === ParticipationKind.Unregistered
 );
+/**
+ * Whether the user has the guest role, i.e. was not invited to the meeting.
+ */
+export const selectHasGuestRole = createSelector([userState], (state) => state.role === Role.Guest);
 const selectRole = createSelector([userState], (state) => state.role);
 const selectParticipationKind = createSelector([userState], (state) => state.participationKind);
 const selectIsRoomOwner = createSelector([userState], (state) => state.isRoomOwner);

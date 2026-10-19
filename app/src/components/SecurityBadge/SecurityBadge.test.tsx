@@ -89,7 +89,7 @@ describe('<SecurityBadge />', () => {
     expect(popoverTitle).not.toBeInTheDocument();
   });
   it('should show the guest participant popover message when a guest is present', async () => {
-    const { store } = mockStore(NUMBER_OF_PARTICIPANTS, { participantKinds: [ParticipationKind.Guest] });
+    const { store } = mockStore(NUMBER_OF_PARTICIPANTS, { participantKinds: [ParticipationKind.Unregistered] });
     renderWithProviders(<SecurityBadge />, { store });
 
     const button = screen.getByRole('button', { name: 'secure-connection-button-label' });
@@ -121,7 +121,7 @@ describe('<SecurityBadge />', () => {
   });
   it('should show the mixed popover message when a sip user and a guest user is present', async () => {
     const { store } = mockStore(NUMBER_OF_PARTICIPANTS, {
-      participantKinds: [ParticipationKind.CallIn, ParticipationKind.Guest],
+      participantKinds: [ParticipationKind.CallIn, ParticipationKind.Unregistered],
     });
     renderWithProviders(<SecurityBadge />, { store });
 

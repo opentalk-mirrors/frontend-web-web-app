@@ -76,12 +76,33 @@ describe('sortCinemaViewParticipants', () => {
         role: Role.User,
         joinedAt: '2024-01-01',
         isSpeaking: false,
-        participationKind: ParticipationKind.Guest,
+        participationKind: ParticipationKind.Unregistered,
       },
       {
         isCameraEnabled: false,
         role: Role.User,
         joinedAt: '2024-01-01',
+        isSpeaking: false,
+        participationKind: ParticipationKind.Registered,
+      },
+    ];
+    const sorted = sortCinemaViewParticipants(participants, CinemaViewSortOrder.ModeratorsFirst);
+    expect(sorted).toEqual([participants[1], participants[0]]);
+  });
+
+  it('should prioritize uninvited users with an account over guests without one when the sort order is moderatorsFirst', () => {
+    const participants: SortableCinemaViewParticipant[] = [
+      {
+        isCameraEnabled: false,
+        role: Role.Guest,
+        joinedAt: '2024-01-01',
+        isSpeaking: false,
+        participationKind: ParticipationKind.Unregistered,
+      },
+      {
+        isCameraEnabled: false,
+        role: Role.Guest,
+        joinedAt: '2024-01-02',
         isSpeaking: false,
         participationKind: ParticipationKind.Registered,
       },

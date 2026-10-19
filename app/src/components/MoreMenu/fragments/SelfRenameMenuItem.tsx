@@ -8,16 +8,16 @@ import { EditIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectSelfRenameEnabled } from '../../../store/slices/moderationSlice';
 import { setSelfRenameDialogVisible } from '../../../store/slices/uiSlice';
-import { selectIsGuest } from '../../../store/slices/userSlice';
+import { selectIsUnregistered } from '../../../store/slices/userSlice';
 import MoreMenuItem from './MoreMenuItem';
 
 const SelfRenameMenuItem = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const isGuest = useAppSelector(selectIsGuest);
+  const isUnregistered = useAppSelector(selectIsUnregistered);
   const hasSelfRenameEnabled = useAppSelector(selectSelfRenameEnabled);
 
-  if (!isGuest) {
+  if (!isUnregistered) {
     return null;
   }
 

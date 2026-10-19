@@ -162,7 +162,7 @@ export const handleRoomServerCoreMessage = async (
         const coreModuleData: CorePeerState = {
           displayName: data.displayName,
           role: data.role,
-          participationKind: ParticipationKind.Registered,
+          participationKind: data.participationKind,
           joinedAt: new Date().toISOString() as Timestamp,
           isRoomOwner: data.isRoomOwner,
         };
@@ -249,6 +249,7 @@ export const handleRoomServerCoreMessage = async (
           reaction: moduleData.reaction,
           recording: moduleData.recording,
           role: data.role,
+          participationKind: data.participationKind,
           roomInfo: data.roomInfo,
           serverTimeOffset,
           sharedFolder: moduleData.sharedFolder,
