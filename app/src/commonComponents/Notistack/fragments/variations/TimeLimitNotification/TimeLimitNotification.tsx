@@ -29,11 +29,12 @@ const BoxInteractive = styled(Box)({
 
 interface TimeLimitNotificationProps extends CustomContentProps {
   minutes: number;
+  endsAt: number;
 }
 
 const TimeLimitNotification = forwardRef<HTMLDivElement, TimeLimitNotificationProps>((props, ref) => {
   const { t } = useTranslation();
-  const { id, minutes } = props;
+  const { id, minutes, endsAt } = props;
 
   const handleClose = () => {
     notifications.close(id);
@@ -62,7 +63,7 @@ const TimeLimitNotification = forwardRef<HTMLDivElement, TimeLimitNotificationPr
           {minutes === 1 && (
             <>
               <span>{t('time-limit-less-than-one-minute-remained')}</span>
-              <AnimationTimerDown />
+              <AnimationTimerDown endsAt={endsAt} />
             </>
           )}
         </BoxInteractive>

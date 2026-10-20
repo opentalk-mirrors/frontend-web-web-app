@@ -41,6 +41,7 @@ declare module 'notistack' {
   }
   interface OptionsObject {
     minutes?: number;
+    endsAt?: number;
     ariaLive?: 'assertive' | 'off' | 'polite';
   }
 }
