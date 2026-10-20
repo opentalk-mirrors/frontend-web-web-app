@@ -58,6 +58,15 @@ vi.mock('../../commonComponents', () => ({
   },
 }));
 
+const createLegalVoteState = (initiatorId: ParticipantId) => ({
+  votes: {
+    ids: ['vote-1' as LegalVoteId],
+    entities: {
+      ['vote-1' as LegalVoteId]: { id: 'vote-1' as LegalVoteId, initiatorId },
+    },
+  },
+});
+
 const createState = (overrides: Partial<RootState> = {}) =>
   ({
     participants: {
@@ -66,6 +75,7 @@ const createState = (overrides: Partial<RootState> = {}) =>
     user: {
       uuid: 'user-1' as ParticipantId,
     },
+    legalVote: createLegalVoteState('user-1' as ParticipantId),
     ...overrides,
   }) as RootState;
 
@@ -252,6 +262,36 @@ describe('handleLegalVoteMessage', () => {
       participantId: 'user-1' as ParticipantId,
       description: 'problem',
       legalVoteId: baseVote.legalVoteId,
+    };
+
+    handleLegalVoteMessage(dispatch, data, state);
+
+    expect(notifications.warning).not.toHaveBeenCalled();
+  });
+
+  it('does not notify about own pseudonymous reported issues when not the initiator', () => {
+    const dispatch = vi.fn();
+    const state = createState({
+      legalVote: createLegalVoteState('user-2' as ParticipantId),
+    } as Partial<RootState>);
+    const data: VoteReportedIssue = {
+      message: 'reported_issue',
+      description: 'problem',
+      legalVoteId: baseVote.legalVoteId,
+    };
+
+    handleLegalVoteMessage(dispatch, data, state);
+
+    expect(notifications.warning).not.toHaveBeenCalled();
+  });
+
+  it('does not notify about reported issues for unknown votes', () => {
+    const dispatch = vi.fn();
+    const state = createState();
+    const data: VoteReportedIssue = {
+      message: 'reported_issue',
+      description: 'problem',
+      legalVoteId: 'unknown-vote' as LegalVoteId,
     };
 
     handleLegalVoteMessage(dispatch, data, state);
