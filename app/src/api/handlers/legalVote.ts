@@ -11,6 +11,7 @@ import log from '../../logger';
 import type { AppDispatch, RootState } from '../../store';
 import {
   canceled as legalVoteCanceled,
+  selectVoteById,
   started as legalVoteStarted,
   stopped as legalVoteStopped,
   updated as legalVoteUpdated,
@@ -48,8 +49,10 @@ export const handleLegalVoteMessage = (dispatch: AppDispatch, data: LegalVoteMes
       dispatch(legalVoteVoted(data));
       break;
     case 'reported_issue': {
-      // our own reports are not echoed as notification; pseudonymous reports carry no participantId
-      if (data.participantId === state.user.uuid) {
+      // Reports are only sent to the vote initiator and the reporter. When we are not the initiator,
+      // it is the echo of our own report (pseudonymous reports carry no participantId).
+      const isInitiator = selectVoteById(state, data.legalVoteId)?.initiatorId === state.user.uuid;
+      if (!isInitiator || data.participantId === state.user.uuid) {
         break;
       }
       const displayName = data.participantId
