@@ -59,6 +59,23 @@ describe('TranscriptionSubtitlesDisplay', () => {
       vi.useRealTimers();
     });
 
+    it('does not attempt to remove expired segments while subtitles are hidden', () => {
+      const mockDispatch = vi.fn();
+
+      vi.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(mockDispatch);
+      vi.useFakeTimers();
+      const { store } = configureStore({
+        initialState: { ...initialState, transcription: { ...initialState.transcription, showSubtitles: false } },
+      });
+      renderWithProviders(<TranscriptionSubtitlesDisplay />, { store, provider: { mui: true } });
+
+      vi.advanceTimersByTime(1000);
+
+      expect(mockDispatch).not.toHaveBeenCalled();
+
+      vi.useRealTimers();
+    });
+
     it('does not show a settings button', () => {
       const { store } = configureStore({
         initialState: {

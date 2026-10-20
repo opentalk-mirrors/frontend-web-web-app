@@ -65,12 +65,16 @@ const TranscriptionSubtitlesDisplay = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    if (!subtitlesEnabled) {
+      return;
+    }
+
     const interval = setInterval(() => {
       dispatch(removeExpiredSegments(new Date().toISOString()));
     }, REFRESH_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [dispatch]);
+  }, [dispatch, subtitlesEnabled]);
 
   const closeDisplay = () => {
     dispatch(hideSubtitles());
