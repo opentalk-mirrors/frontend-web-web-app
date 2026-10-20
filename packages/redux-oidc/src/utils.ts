@@ -45,7 +45,32 @@ export function hasActiveSession() {
   return true;
 }
 
-export const getSessionStatus = () => (hasActiveSession() ? SessionStatus.AUTHORIZED : SessionStatus.ANONYMOUS);
+export function hasExpiredSession() {
+  const accessToken = localStorage.getItem('access_token');
+  const refreshToken = localStorage.getItem('refresh_token');
+  if (!refreshToken) {
+    return accessToken !== null;
+  }
+  let refreshExpiresAt: number;
+  try {
+    refreshExpiresAt = getTokenExpirationDate(refreshToken);
+  } catch {
+    return false;
+  }
+  if (Number.isNaN(refreshExpiresAt)) {
+    console.warn('Refresh token has no expiration date, keeping the stored tokens');
+    return false;
+  }
+  return getAdjustedClientTime() > refreshExpiresAt;
+}
+
+// leftover tokens of an expired session would otherwise still be sent as bearer token
+export const getSessionStatus = () => {
+  if (hasExpiredSession()) {
+    clearStoredTokens();
+  }
+  return hasActiveSession() ? SessionStatus.AUTHORIZED : SessionStatus.ANONYMOUS;
+};
 
 export function hasValidToken(token: string | null) {
   if (!token) {
@@ -65,11 +90,15 @@ export const storeToken = (payload: CodeResponse | RefreshTokenResponse) => {
   localStorage.setItem('refresh_token', refreshToken);
 };
 
-export const clearApplicationStorage = () => {
+const clearStoredTokens = () => {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('id_token');
   localStorage.removeItem('server_time_offset');
+};
+
+export const clearApplicationStorage = () => {
+  clearStoredTokens();
   sessionStorage.removeItem('code_verifier');
 };
 
