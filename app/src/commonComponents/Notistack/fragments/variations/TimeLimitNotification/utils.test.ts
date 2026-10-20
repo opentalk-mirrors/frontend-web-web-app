@@ -47,6 +47,12 @@ describe('time limit notification', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
+  it('passes the conference end time to the notification', async () => {
+    await startTimeLimitNotification(endsInMinutes(5));
+
+    expect(toast).toHaveBeenCalledExactlyOnceWith('', expect.objectContaining({ endsAt: START + 5 * MINUTE_MS }));
+  });
+
   it('closes the open notification when stopped', async () => {
     await startTimeLimitNotification(endsInMinutes(6));
     await vi.advanceTimersByTimeAsync(MINUTE_MS);

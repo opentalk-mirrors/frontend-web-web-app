@@ -16,29 +16,36 @@ const Circle = styled('circle')({
   transition: 'all 1s linear',
 });
 
-function AnimationTimerDown() {
+const TOTAL_SECONDS = 60;
+
+const getRemainingSeconds = (endsAt: number) =>
+  Math.min(TOTAL_SECONDS, Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)));
+
+interface AnimationTimerDownProps {
+  endsAt: number;
+}
+
+function AnimationTimerDown({ endsAt }: AnimationTimerDownProps) {
   const theme = useTheme();
-  const [time, setTime] = useState(60);
+  const [time, setTime] = useState(() => getRemainingSeconds(endsAt));
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime((prevTime) => {
-        if (prevTime === 0) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prevTime - 1;
-      });
+      const remainingSeconds = getRemainingSeconds(endsAt);
+      setTime(remainingSeconds);
+      if (remainingSeconds === 0) {
+        clearInterval(interval);
+      }
     }, 1000);
 
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [endsAt]);
 
   const radius = 17;
   const initialOffset = 2 * Math.PI * radius;
-  const currentOffset = initialOffset - (time * initialOffset) / 60;
+  const currentOffset = initialOffset - (time * initialOffset) / TOTAL_SECONDS;
 
   return (
     <Box

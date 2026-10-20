@@ -52,6 +52,7 @@ export const startTimeLimitNotification = async (conferenceEndTimestamp: string)
         ariaLive: 'polite',
         persist: true,
         minutes,
+        endsAt: conferenceEndTime,
         autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
       });
       nextNotificationInMs = remainingTimeMs - (minutes - 1) * MINUTE_MS;
