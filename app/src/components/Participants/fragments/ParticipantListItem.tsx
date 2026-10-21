@@ -45,6 +45,7 @@ import {
 } from '../../../store/slices/subroomAudioSlice';
 import {
   chatConversationStateSet,
+  openSidePanel,
   selectParticipantsSortOption,
   setCurrentMenuTab,
 } from '../../../store/slices/uiSlice';
@@ -350,13 +351,16 @@ const ParticipantListItem = ({ data, index, style }: RowComponentProps<Participa
     {
       i18nKey: 'participant-menu-send-message',
       action: () => {
+        closePopover();
         dispatch(
           chatConversationStateSet({
             scope: ChatScope.Private,
             target: participantId,
           })
         );
+        // V2-CLEANUP: drop setCurrentMenuTab once the legacy menu tabs are removed
         dispatch(setCurrentMenuTab(MenuTab.Messages));
+        dispatch(openSidePanel(MenuTab.Messages));
       },
     },
 

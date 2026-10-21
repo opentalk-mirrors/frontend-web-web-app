@@ -343,7 +343,9 @@ const uiSlice = createSlice({
     });
     builder.addCase(automodStarted, (state) => {
       state.currentMenuTab = MenuTab.People;
-      state.sidePanelView = MenuTab.People;
+      if (state.sidePanelView !== ModerationTabKey.TalkingStick) {
+        state.sidePanelView = MenuTab.People;
+      }
     });
     builder.addCase(switchedRoom, (state) => {
       // The whiteboard session belongs to the room it was opened in, so close it on

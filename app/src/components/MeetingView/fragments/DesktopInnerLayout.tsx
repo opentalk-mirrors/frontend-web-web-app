@@ -78,8 +78,8 @@ const DesktopInnerLayout = () => {
             <Ballot />
           </>
         )}
-        {isSidePanelOpen && <MeetingSidebar />}
         <MeetingFooter />
+        {isSidePanelOpen && <MeetingSidebar />}
       </InnerContainer>
     </>
   );
