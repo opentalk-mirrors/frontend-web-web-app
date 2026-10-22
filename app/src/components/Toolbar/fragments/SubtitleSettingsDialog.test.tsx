@@ -17,6 +17,7 @@ vi.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(mockDispatch);
 const buildInitialState = (language: TranscriptionLanguageKey | null = null) => ({
   transcription: {
     status: TranscriptionStatus.Inactive,
+    liveTranscription: false,
     showSubtitles: false,
     language,
     segments: [],
@@ -136,6 +137,7 @@ describe('SubtitleSettingsDialog', () => {
       initialState: {
         transcription: {
           status: TranscriptionStatus.Running,
+          liveTranscription: true,
           showSubtitles: false,
           language: 'en',
           segments: [],
@@ -164,6 +166,30 @@ describe('SubtitleSettingsDialog', () => {
         payload: expect.objectContaining({ language: 'de' }),
       })
     );
+  });
+
+  it('starts live transcription when the service only runs for the meeting protocol', async () => {
+    const { store } = configureStore({
+      initialState: {
+        transcription: {
+          status: TranscriptionStatus.Running,
+          liveTranscription: false,
+          meetingProtocol: { pseudonymous: false, paused: false },
+          showSubtitles: false,
+          language: 'en',
+          segments: [],
+        },
+      },
+    });
+    renderWithProviders(<SubtitleSettingsDialog open />, { store, provider: { mui: true } });
+    const user = userEvent.setup();
+
+    const enableSubtitlesSwitch = screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' });
+    expect(enableSubtitlesSwitch).not.toBeChecked();
+    await user.click(enableSubtitlesSwitch);
+    await user.click(screen.getByRole('button', { name: 'global-save' }));
+
+    expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'signaling/transcription/start' }));
   });
 
   it('dispatches start transcription action with correct language when saving with enabled transcription', async () => {

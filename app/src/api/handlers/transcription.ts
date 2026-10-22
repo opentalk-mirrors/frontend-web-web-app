@@ -11,6 +11,7 @@ import {
   segmentReceived,
   setTranscriptionLanguage,
   showSubtitles,
+  transcriptionModesUpdated,
   transcriptionStatusUpdated,
 } from '../../store/slices/transcriptionSlice';
 import { TranscriptionLanguage, TranscriptionStatus, TranscriptionMessage } from '../types/incoming/transcription';
@@ -19,51 +20,56 @@ import { TranscriptionLanguage, TranscriptionStatus, TranscriptionMessage } from
  * Handles messages in the transcription namespace.
  */
 export const handleTranscriptionMessage = (dispatch: AppDispatch, data: TranscriptionMessage, state: RootState) => {
+  const showEnabledNotification = () =>
+    notifications.showTranscriptionEnabledNotification({
+      onActivated: () => {
+        dispatch(showSubtitles());
+      },
+    });
+
   switch (data.message) {
     case 'state_updated': {
+      const { status: previousStatus, language: previousLanguage, liveTranscription } = state.transcription;
+      const language = data.language && data.language in TranscriptionLanguage ? data.language : undefined;
       dispatch(transcriptionStatusUpdated(data.status));
-      if (data.language in TranscriptionLanguage) {
-        dispatch(setTranscriptionLanguage(data.language));
+      if (language) {
+        dispatch(setTranscriptionLanguage(language));
       }
 
-      // if the status has not changed but the language has, we also want to notify the user about the language change
-      if (
-        data.status === state.transcription.status &&
-        data.status === TranscriptionStatus.Running &&
-        data.language !== state.transcription.language &&
-        data.language in TranscriptionLanguage
-      ) {
-        notifications.info(
-          i18next.t('subtitle-notification-language-changed', { language: TranscriptionLanguage[data.language] })
-        );
+      // The service may also run for the meeting protocol alone, which is irrelevant for subtitles
+      if (!liveTranscription || data.status !== TranscriptionStatus.Running) {
         break;
       }
-      switch (data.status) {
-        case TranscriptionStatus.Inactive: {
-          dispatch(hideSubtitles());
-          notifications.info(i18next.t('subtitle-notification-disabled'));
-          break;
-        }
-        case TranscriptionStatus.Requested:
-          break;
-        case TranscriptionStatus.Running: {
-          notifications.showTranscriptionEnabledNotification({
-            onActivated: () => {
-              dispatch(showSubtitles());
-            },
-          });
-          break;
-        }
-      }
 
+      if (previousStatus !== TranscriptionStatus.Running) {
+        showEnabledNotification();
+      } else if (language && language !== previousLanguage) {
+        notifications.info(
+          i18next.t('subtitle-notification-language-changed', { language: TranscriptionLanguage[language] })
+        );
+      }
+      break;
+    }
+    case 'modes_updated': {
+      const { liveTranscription: wasLiveTranscriptionActive, status } = state.transcription;
+      dispatch(
+        transcriptionModesUpdated({ liveTranscription: data.liveTranscription, meetingProtocol: data.meetingProtocol })
+      );
+
+      if (wasLiveTranscriptionActive && !data.liveTranscription) {
+        dispatch(hideSubtitles());
+        notifications.info(i18next.t('subtitle-notification-disabled'));
+      } else if (!wasLiveTranscriptionActive && data.liveTranscription && status === TranscriptionStatus.Running) {
+        showEnabledNotification();
+      }
       break;
     }
     case 'segment': {
       dispatch(segmentReceived(data));
       break;
     }
-    case 'service_command': {
-      // directed to the transcription service, not the client, so no action needed here
+    case 'pdf_created':
+    case 'meeting_protocol_consent_updated': {
       break;
     }
     case 'error': {

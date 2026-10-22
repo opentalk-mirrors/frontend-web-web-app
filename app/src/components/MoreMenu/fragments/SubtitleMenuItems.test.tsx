@@ -17,6 +17,7 @@ interface RenderOptions {
   role?: Role;
   subtitlesEnabled?: boolean;
   subtitlesShown?: boolean;
+  protocolOnly?: boolean;
 }
 
 const renderSubtitleMenuItems = ({
@@ -25,6 +26,7 @@ const renderSubtitleMenuItems = ({
   role = Role.Moderator,
   subtitlesEnabled = false,
   subtitlesShown = false,
+  protocolOnly = false,
 }: RenderOptions = {}) => {
   const { store, dispatchSpy } = configureStore({
     initialState: {
@@ -36,7 +38,13 @@ const renderSubtitleMenuItems = ({
           : {},
       },
       room: { eventInfo: { e2eEncryption: highSecurityEnabled } },
-      transcription: { status: subtitlesEnabled ? 'running' : 'inactive', segments: [], showSubtitles: subtitlesShown },
+      transcription: {
+        status: subtitlesEnabled || protocolOnly ? 'running' : 'inactive',
+        liveTranscription: subtitlesEnabled,
+        meetingProtocol: protocolOnly ? { pseudonymous: false, paused: false } : null,
+        segments: [],
+        showSubtitles: subtitlesShown,
+      },
     },
   });
 
@@ -154,6 +162,13 @@ describe('SubtitleMenuItems', () => {
       renderSubtitleMenuItems({ subtitlesShown: true });
 
       expect(getMenuItemState('more-menu-hide-subtitles')).toBe('disabled');
+    });
+
+    it('offers to enable subtitles while the service only runs for the meeting protocol', () => {
+      renderSubtitleMenuItems({ protocolOnly: true });
+
+      expect(getMenuItemState('more-menu-subtitle-enable')).toBe('active');
+      expect(getMenuItemState('more-menu-show-subtitles')).toBe('disabled');
     });
   });
 

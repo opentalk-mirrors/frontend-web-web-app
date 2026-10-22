@@ -327,7 +327,7 @@ export const handleRoomServerCoreMessage = async (
         showConsentNotification(dispatch);
       }
 
-      if (moduleData.transcription?.status === 'running') {
+      if (moduleData.transcription?.status === 'running' && moduleData.transcription.liveTranscription) {
         notifications.showTranscriptionEnabledNotification({
           onActivated: () => {
             dispatch(showSubtitles());

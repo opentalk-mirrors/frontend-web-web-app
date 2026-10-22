@@ -5,6 +5,9 @@ import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import type { RootState } from '../';
 import {
+  MeetingProtocolMode,
+  TranscriptionLanguage,
+  TranscriptionModes,
   TranscriptionStatus,
   TranscriptionSegment,
   TranscriptionLanguageKey,
@@ -17,6 +20,8 @@ import { selectBreakoutRoomSelectorParticipants } from '../selectors';
 
 export interface TranscriptionState {
   status: TranscriptionStatus;
+  liveTranscription: boolean;
+  meetingProtocol: MeetingProtocolMode | null;
   showSubtitles: boolean;
   showSettings: boolean;
   language: TranscriptionLanguageKey | '';
@@ -32,6 +37,8 @@ export interface TranscriptionSubtitle {
 
 const initialState: TranscriptionState = {
   status: TranscriptionStatus.Inactive,
+  liveTranscription: false,
+  meetingProtocol: null,
   showSubtitles: false,
   showSettings: false,
   language: '',
@@ -44,6 +51,10 @@ const transcriptionSlice = createSlice({
   reducers: {
     transcriptionStatusUpdated: (state, { payload }: PayloadAction<TranscriptionStatus>) => {
       state.status = payload;
+    },
+    transcriptionModesUpdated: (state, { payload }: PayloadAction<TranscriptionModes>) => {
+      state.liveTranscription = payload.liveTranscription;
+      state.meetingProtocol = payload.meetingProtocol ?? null;
     },
     segmentReceived: (state, { payload }: PayloadAction<TranscriptionSegment>) => {
       state.segments.push(payload);
@@ -76,11 +87,12 @@ const transcriptionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(joinSuccess, (state, { payload }) => {
-      if (payload.transcription) {
-        state.status = payload.transcription.status;
-      } else {
-        state.status = TranscriptionStatus.Inactive;
-      }
+      const transcription = payload.transcription;
+      state.status = transcription?.status ?? TranscriptionStatus.Inactive;
+      state.liveTranscription = transcription?.liveTranscription ?? false;
+      state.meetingProtocol = transcription?.meetingProtocol
+        ? { pseudonymous: transcription.meetingProtocol.pseudonymous, paused: transcription.meetingProtocol.paused }
+        : null;
     });
     builder.addCase(hangUp.pending, () => initialState);
   },
@@ -88,6 +100,7 @@ const transcriptionSlice = createSlice({
 
 export const {
   transcriptionStatusUpdated,
+  transcriptionModesUpdated,
   segmentReceived,
   removeExpiredSegments,
   showSubtitles,
@@ -97,7 +110,8 @@ export const {
   hideTranscriptionSettings,
 } = transcriptionSlice.actions;
 
-export const selectTranscriptionStatus = (state: RootState) => state.transcription.status;
+export const selectIsLiveTranscriptionRunning = (state: RootState) =>
+  state.transcription.liveTranscription && state.transcription.status === TranscriptionStatus.Running;
 const selectSegments = (state: RootState) => state.transcription.segments;
 export const selectShowSubtitles = (state: RootState) => state.transcription.showSubtitles;
 export const selectShowSubtitlesSettings = (state: RootState) => state.transcription.showSettings;
@@ -109,8 +123,12 @@ const selectSegmentsSortedByTimestamp = createSelector([selectSegments], (segmen
 const startLanguageRestoreListener = (startAppListening: StartAppListening) => {
   startAppListening({
     actionCreator: joinSuccess,
-    effect: (_, listenerApi) => {
-      const transcriptionLanguage = loadTranscriptionLanguageFromLocalStorage();
+    effect: ({ payload }, listenerApi) => {
+      const serverLanguage = payload.transcription?.language;
+      const transcriptionLanguage =
+        serverLanguage && serverLanguage in TranscriptionLanguage
+          ? serverLanguage
+          : loadTranscriptionLanguageFromLocalStorage();
       if (transcriptionLanguage) {
         listenerApi.dispatch(setTranscriptionLanguage(transcriptionLanguage));
       }
@@ -148,7 +166,5 @@ export const selectSubtitles = createSelector(
     }));
   }
 );
-
-createSelector([selectTranscriptionStatus], (status) => status === TranscriptionStatus.Running);
 
 export default transcriptionSlice.reducer;
