@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+// sort-imports-ignore
+// Configure fonts before any application dependency can initialize Excalidraw's font registry.
+import './excalidrawAssetPath';
 import 'context-filter-polyfill';
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
