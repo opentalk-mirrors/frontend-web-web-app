@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { confirmPresence } from '../../../api/types/outgoing/trainingParticipationReport';
 import { presenceConfirmationDone } from '../../../store/slices/roomSlice';
@@ -50,9 +51,32 @@ describe('ParticipationConfirmationDialog', () => {
   it('dispatch correct actions if button is clicked', async () => {
     renderWithProviders(<ParticipationConfirmationDialog />, { store: storeOngoing });
     const button = await screen.findByRole('button', { name: 'participation-confirmation-dialog-confirm-button' });
-    fireEvent.click(button);
+    await userEvent.click(button);
 
     expect(dispatchSpy.mock.calls).toContainEqual([confirmPresence.action()]);
     expect(dispatchSpy.mock.calls).toContainEqual([presenceConfirmationDone()]);
   });
+
+  it.each([true, false])(
+    'renders dialog inside fullscreen element only if fullscreen is active (%s)',
+    async (active) => {
+      const fullscreenElement = document.createElement('div');
+      document.body.appendChild(fullscreenElement);
+      const { store } = configureStore({
+        initialState: {
+          room: { isPresenceConfirmationActive: true },
+          fullscreen: { supported: true, active, error: undefined, element: fullscreenElement },
+        },
+      });
+
+      try {
+        renderWithProviders(<ParticipationConfirmationDialog />, { store, provider: { mui: true } });
+
+        const dialog = await screen.findByRole('dialog');
+        expect(fullscreenElement.contains(dialog)).toBe(active);
+      } finally {
+        fullscreenElement.remove();
+      }
+    }
+  );
 });
