@@ -87,7 +87,7 @@ const ignoreWarningsPlugin = () => ({
 // Copies a subset of Excalidraw's bundled fonts into our public dir so they are
 // served from our own origin. Without this, Excalidraw lazy-loads them from the
 // esm.sh CDN, which is unreachable in network-restricted deployments. Paired with
-// window.EXCALIDRAW_ASSET_PATH in index.html. The font binaries and license copies
+// window.EXCALIDRAW_ASSET_PATH in src/excalidrawAssetPath.ts. The font binaries and license copies
 // are gitignored and regenerated here; their licenses are documented in
 // public/excalidraw-assets/THIRD-PARTY-FONT-LICENSES.txt.
 const excalidrawAssetsPlugin = (): Plugin => {
@@ -108,7 +108,7 @@ const excalidrawAssetsPlugin = (): Plugin => {
       );
       if (missing.length > 0) {
         const message = `Excalidraw font families missing under ${EXCALIDRAW_FONTS_SRC_DIR}: ${missing.join(', ')}`;
-        // index.html hard-codes EXCALIDRAW_ASSET_PATH, so a missing copy would ship a
+        // src/excalidrawAssetPath.ts hard-codes EXCALIDRAW_ASSET_PATH, so a missing copy would ship a
         // broken font path. Fail the build; only warn during dev serve.
         if (isBuild) {
           this.error(`${message}; cannot self-host fonts`);

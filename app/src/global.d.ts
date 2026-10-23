@@ -11,6 +11,7 @@ export {};
 declare global {
   interface Window {
     config: ConfigState;
+    EXCALIDRAW_ASSET_PATH?: string | string[];
     happyDOM?: DetachedWindowAPI;
     showReportDialog: (options?: Sentry.ReportDialogOptions | undefined, hub?: Sentry.Hub | undefined) => void;
     webkitAudioContext: typeof AudioContext;
