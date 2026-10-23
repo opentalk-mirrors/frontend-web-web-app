@@ -86,7 +86,25 @@ describe('SubtitleSettingsDialog', () => {
     rerender(<SubtitleSettingsDialog open />);
 
     expect(screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' })).not.toBeChecked();
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' }));
     expect(screen.getByRole('combobox')).toHaveTextContent('English');
+  });
+
+  it('shows the language selector only when subtitles are enabled', async () => {
+    const { store } = configureStore({ initialState: buildInitialState('en') });
+    renderWithProviders(<SubtitleSettingsDialog open />, { store, provider: { mui: true } });
+    const user = userEvent.setup();
+
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+
+    const enableSubtitlesSwitch = screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' });
+    await user.click(enableSubtitlesSwitch);
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+
+    await user.click(enableSubtitlesSwitch);
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
   });
 
   it('keeps the selected state when the dialog is saved', async () => {

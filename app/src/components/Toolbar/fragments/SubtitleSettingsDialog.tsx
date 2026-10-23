@@ -28,6 +28,7 @@ import {
   sendStartTranscriptionSignal,
   sendStopTranscriptionSignal,
 } from '../../../api/types/outgoing/transcription';
+import { Icon_cc_showIcon } from '../../../assets/icons';
 import { CommonSwitch } from '../../../commonComponents';
 import CommonDialogHeader from '../../../commonComponents/CommonDialogComponents/CommonDialogHeader';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -38,8 +39,26 @@ import {
   selectTranscriptionStatus,
 } from '../../../store/slices/transcriptionSlice';
 
-const PlaceholderText = styled(Typography)(() => ({
-  fontStyle: 'italic',
+const LanguageSelectLabel = styled(Typography)<{ component?: string; htmlFor?: string }>(({ theme }) => ({
+  fontSize: theme.typography.pxToRem(14),
+  display: 'block',
+  marginBottom: theme.spacing(0.5),
+}));
+
+const StyledDialog = styled(Dialog)(() => ({
+  '& .MuiDialog-paper': { width: 440, maxWidth: 'calc(100% - 64px)' },
+}));
+
+const EnableSubtitlesSwitchContainer = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr) auto',
+  alignItems: 'center',
+  columnGap: theme.spacing(4),
+  rowGap: theme.spacing(0.5),
+}));
+
+const LanguageSelectContainer = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(2),
 }));
 
 const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
@@ -104,20 +123,12 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
   };
 
   return (
-    <Dialog {...props} onClose={onClose}>
-      <CommonDialogHeader closeMenu={onClose} titleKey="subtitle-settings-dialog-title" />
-      <Divider aria-hidden={true} />
+    <StyledDialog {...props} onClose={onClose}>
+      <CommonDialogHeader closeMenu={onClose} titleKey="subtitle-settings-dialog-title" icon={<Icon_cc_showIcon />} />
+      <Divider aria-hidden={true} sx={{ margin: 0 }} />
       <DialogContent>
         <Stack>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: 2,
-              gap: 4,
-            }}
-          >
+          <EnableSubtitlesSwitchContainer>
             <Typography component="label" htmlFor="enable-subtitles-switch">
               {t('subtitle-settings-enable-subtitles')}
             </Typography>
@@ -126,42 +137,51 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
               checked={desiredTranscriptionStatus}
               onChange={() => setDesiredTranscriptionStatus((prev) => !prev)}
             />
-          </Box>
-          <Box>
-            <Typography variant="caption" component="label" htmlFor="input-language-select">
-              {t('subtitle-settings-input-language')}
+            <Typography variant="caption" sx={{ gridColumn: 1 }}>
+              {t('subtitle-settings-enable-subtitles-hint')}
             </Typography>
-            <Select
-              renderValue={(lang: TranscriptionLanguageKey | '') => {
-                if (!lang) {
-                  return <PlaceholderText>{t('subtitle-settings-input-language-error')}</PlaceholderText>;
-                }
-                return TranscriptionLanguage[lang];
-              }}
-              disabled={!desiredTranscriptionStatus}
-              displayEmpty
-              inputProps={{ id: 'input-language-select' }}
-              value={desiredTranscriptionLanguage}
-              onChange={(e) => onLanguageSelectChange(e.target.value as TranscriptionLanguageKey)}
-            >
-              {Object.keys(TranscriptionLanguage).map((key) => (
-                <MenuItem key={key} value={key.toString()}>
-                  {TranscriptionLanguage[key as TranscriptionLanguageKey]}
-                </MenuItem>
-              ))}
-            </Select>
-          </Box>
+          </EnableSubtitlesSwitchContainer>
+          {desiredTranscriptionStatus && (
+            <LanguageSelectContainer>
+              <LanguageSelectLabel component="label" htmlFor="input-language-select">
+                {t('subtitle-settings-input-language')}
+              </LanguageSelectLabel>
+              <Select
+                renderValue={(lang: TranscriptionLanguageKey | '') => {
+                  if (!lang) {
+                    return <Typography variant="body2">{t('subtitle-settings-input-language-placeholder')}</Typography>;
+                  }
+                  return TranscriptionLanguage[lang];
+                }}
+                displayEmpty
+                inputProps={{ id: 'input-language-select' }}
+                value={desiredTranscriptionLanguage}
+                onChange={(e) => onLanguageSelectChange(e.target.value as TranscriptionLanguageKey)}
+              >
+                {Object.keys(TranscriptionLanguage).map((key) => (
+                  <MenuItem key={key} value={key.toString()}>
+                    {TranscriptionLanguage[key as TranscriptionLanguageKey]}
+                  </MenuItem>
+                ))}
+              </Select>
+            </LanguageSelectContainer>
+          )}
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button type="button" color="primary" onClick={onClose}>
           {t('global-cancel')}
         </Button>
-        <Button type="button" color="secondary" onClick={submit} disabled={!desiredTranscriptionLanguage}>
+        <Button
+          type="button"
+          color="secondary"
+          onClick={submit}
+          disabled={desiredTranscriptionStatus && !desiredTranscriptionLanguage}
+        >
           {t('global-save')}
         </Button>
       </DialogActions>
-    </Dialog>
+    </StyledDialog>
   );
 };
 
