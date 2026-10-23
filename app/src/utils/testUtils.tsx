@@ -253,6 +253,7 @@ export const mockedParticipant = (
   isCameraEnabled: boolean;
   isMicrophoneEnabled: boolean;
   getTrackPublication: () => LocalTrackPublication | undefined;
+  lastSpokeAt?: Date;
   setMicrophoneEnabled: (enabled: boolean) => LocalTrackPublication | undefined;
   videoTrackPublications: Map<string, RemoteTrackPublication>;
 } => ({
@@ -267,6 +268,7 @@ export const mockedParticipant = (
   breakoutRoomId: undefined,
   participationKind: kind,
   lastActive: '2022-03-23T12:32:30Z',
+  lastSpokeAt: undefined,
   waitingState: WaitingState.Joined,
   meetingNotesAccess: MeetingNotesAccess.None,
   isRoomOwner: false,

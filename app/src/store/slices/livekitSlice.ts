@@ -42,8 +42,9 @@ import { notifications } from '../../commonComponents';
 import LayoutOptions from '../../enums/LayoutOptions';
 import log from '../../logger';
 import { MediaDescriptor } from '../../modules/WebRTC';
-import { ConnectionIdentifier, TimerStyle, VideoSetting } from '../../types';
+import { ConnectionIdentifier, TileIdentifier, TimerStyle, VideoSetting } from '../../types';
 import { BackgroundEffect } from '../../types/livekit';
+import { isSameTile } from '../../utils/isSameTile';
 import { insertItem, removeItem } from '../../utils/reduxUtils';
 import {
   changeLocalMedia,
@@ -65,12 +66,7 @@ import { selectShouldForceMuted } from './moderationSlice';
 import { abortedReconnection, enteredWaitingRoom } from './roomSlice';
 import { resetSubroomAudioData, setSubroomAudioData } from './subroomAudioSlice';
 import { timerStarted } from './timerSlice';
-import {
-  pinnedConnectionIdentifierSet,
-  pinnedRemoteScreenshare,
-  toggledSelfViewMinimized,
-  updatedCinemaLayout,
-} from './uiSlice';
+import { pinnedRemoteScreenshare, setPinnedTile, toggledSelfViewMinimized, updatedCinemaLayout } from './uiSlice';
 
 type WritableDraft<T> = {
   -readonly [K in keyof T]: Draft<T[K]>;
@@ -1046,8 +1042,12 @@ const handleRemoteTrackUnpublished = (
   getState: () => RootState
 ) => {
   const state = getState();
-  if (pub.source === Track.Source.ScreenShare && participant.identity === state.ui.pinnedConnectionIdentifier) {
-    dispatch(pinnedConnectionIdentifierSet(undefined));
+  const unpublishedScreenShare: TileIdentifier = {
+    connectionIdentifier: participant.identity as ConnectionIdentifier,
+    source: Track.Source.ScreenShare,
+  };
+  if (pub.source === Track.Source.ScreenShare && isSameTile(state.ui.pinnedTile, unpublishedScreenShare)) {
+    dispatch(setPinnedTile(undefined));
     dispatch(updatedCinemaLayout({ layout: state.ui.lastCinemaLayout }));
   }
 };

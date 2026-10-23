@@ -1,19 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantContext } from '@livekit/components-react';
 import { Box, styled } from '@mui/material';
-import { Participant } from 'livekit-client';
-import { CSSProperties, useEffect, useState } from 'react';
+import { CSSProperties } from 'react';
 
-import { useAppSelector } from '../../hooks';
+import { useAppSelector, useOrderedTiles, useCinemaViewParticipants } from '../../hooks';
 import { useBestFitGridLayout } from '../../hooks/useBestFitGridLayout';
-import { useCinemaViewParticipants } from '../../hooks/useCinemaViewParticipants';
-import { useCinemaViewParticipantsOrdering } from '../../hooks/useCinemaViewParticipantsOrdering';
 import { useIsMobile } from '../../hooks/useMediaQuery';
+import TileParticipantProvider from '../../provider/TileParticipantProvider';
+import { selectParticipantsTotal } from '../../store/slices/participantsSlice';
 import { selectPaginationDirectionState } from '../../store/slices/uiSlice';
-import { ConnectionIdentifier } from '../../types';
-import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import GridCell from './fragments/GridCell';
 import { GRID_COLUMNS_VAR, GRID_GAP, GRID_GAP_VAR, GRID_TILE_WIDTH_VAR } from './gridLayout';
 
@@ -38,56 +34,31 @@ const GridContainer = styled(Box, {
 }));
 
 const GridView = () => {
-  const { cinemaViewParticipants, remoteParticipantsMap } = useCinemaViewParticipants();
-  const { pageParticipants: participants } = useCinemaViewParticipantsOrdering(cinemaViewParticipants);
-  const [fallbackParticipantCache] = useState(() => new Map<ConnectionIdentifier, Participant>());
+  const { cinemaViewParticipants, remoteParticipantsMap, featuredTile } = useCinemaViewParticipants();
+  const { pageTiles } = useOrderedTiles(cinemaViewParticipants, {
+    featuredConnectionIdentifier: featuredTile?.connectionIdentifier,
+  });
   const direction = useAppSelector(selectPaginationDirectionState);
 
-  const tileCount = participants.reduce((sum, participant) => sum + participant.connections.length, 0);
   const isMobile = useIsMobile();
-  const { containerRef, layout, isScrolling } = useBestFitGridLayout(tileCount, {
+  const { containerRef, layout, isScrolling } = useBestFitGridLayout(pageTiles.length, {
     gap: GRID_GAP,
     allowScroll: isMobile,
   });
-  const highlight = participants.length >= 2;
 
-  useEffect(() => {
-    const activeIds = new Set(
-      participants.flatMap((p) => p.connections.map((c) => constructConnectionIdentifier(p.id, c)))
-    );
-    for (const key of fallbackParticipantCache.keys()) {
-      if (remoteParticipantsMap.has(key) || !activeIds.has(key)) {
-        fallbackParticipantCache.delete(key);
-      }
-    }
-  }, [participants, remoteParticipantsMap, fallbackParticipantCache]);
+  const participantsCount = useAppSelector(selectParticipantsTotal);
+  const highlight = participantsCount > 2;
 
-  const createOrGetFallbackParticipant = (connectionIdentifier: ConnectionIdentifier, displayName: string) => {
-    if (!fallbackParticipantCache.has(connectionIdentifier)) {
-      fallbackParticipantCache.set(
-        connectionIdentifier,
-        new Participant(connectionIdentifier, connectionIdentifier, displayName)
-      );
-    }
-    return fallbackParticipantCache.get(connectionIdentifier)!;
-  };
-
-  const gridCells = participants.map((participant) => {
-    return participant.connections.map((connection) => {
-      const connectionIdentifier = constructConnectionIdentifier(participant.id, connection);
-
-      // We will use participant data from the controller until we get the more preferable data from the livekit server
-      const participantData =
-        remoteParticipantsMap.get(connectionIdentifier) ||
-        createOrGetFallbackParticipant(connectionIdentifier, participant.displayName);
-
-      return (
-        <ParticipantContext.Provider value={participantData} key={connectionIdentifier}>
-          <GridCell direction={direction} highlight={highlight} />
-        </ParticipantContext.Provider>
-      );
-    });
-  });
+  const gridCells = pageTiles.map(({ participant, connectionIdentifier, tileKey, source }) => (
+    <TileParticipantProvider
+      key={tileKey}
+      connectionIdentifier={connectionIdentifier}
+      displayName={participant.displayName}
+      remoteParticipant={remoteParticipantsMap.get(connectionIdentifier)}
+    >
+      <GridCell direction={direction} highlight={highlight} source={source} />
+    </TileParticipantProvider>
+  ));
 
   // Leave the variables unset until measured, so GridCell can apply its own fallback size.
   // The column count fixes how tiles wrap; the pixel width only caps their max size, so a

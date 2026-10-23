@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useParticipantContext, useSpeakingParticipants } from '@livekit/components-react';
 import { Slide, keyframes, styled, Box } from '@mui/material';
+import { Track } from 'livekit-client';
 
+import { MediaSessionType } from '../../../types';
 import ParticipantWindow from '../../ParticipantWindow';
 import { GRID_CELL_WIDTH } from '../gridLayout';
 
@@ -51,19 +53,21 @@ const CinemaCell = styled(Box, {
 type GridCellProps = {
   direction: 'left' | 'right';
   highlight: boolean;
+  source: MediaSessionType;
 };
 
 const GridCell = (props: GridCellProps) => {
   const participant = useParticipantContext();
-  const { direction, highlight } = props;
+  const { direction, highlight, source } = props;
   const speakingParticipants = useSpeakingParticipants();
+  const isScreenShare = source === Track.Source.ScreenShare;
   const highlightSpeaker =
-    highlight && speakingParticipants.some((speaker) => speaker.identity === participant.identity);
+    highlight && !isScreenShare && speakingParticipants.some((speaker) => speaker.identity === participant.identity);
 
   return (
     <Slide direction={direction} in mountOnEnter unmountOnExit>
       <CinemaCell data-testid="cinemaCell" highlight={highlightSpeaker}>
-        <ParticipantWindow />
+        <ParticipantWindow source={source} />
       </CinemaCell>
     </Slide>
   );

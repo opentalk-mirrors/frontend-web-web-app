@@ -18,7 +18,7 @@ vi.mock('../../hooks/useMediaQuery', async (importOriginal) => ({
 
 vi.mock('./fragments/GridCell', () => ({
   __esModule: true,
-  default: () => <div data-testid="gridCell"></div>,
+  default: ({ highlight }: { highlight: boolean }) => <div data-testid="gridCell" data-highlight={highlight}></div>,
 }));
 
 vi.mock('@livekit/components-react', async (importOriginal) => {
@@ -81,6 +81,39 @@ describe('GridView', () => {
     renderWithProviders(<GridView />, { store });
 
     expect(screen.getByTestId('gridCell')).toBeVisible();
+  });
+
+  describe('speaker highlight', () => {
+    const getGridCells = (participantCount: number, paginationPage = 1) => {
+      const { store } = mockStore(participantCount, {
+        store: { initialState: { ui: { cinemaGridSize: 6, paginationPage } } },
+      });
+      renderWithProviders(<GridView />, { store });
+      return screen.getAllByTestId('gridCell');
+    };
+
+    it('disables highlight in a one-to-one meeting', () => {
+      const gridCells = getGridCells(1);
+
+      expect(gridCells).toHaveLength(1);
+      expect(gridCells[0]).toHaveAttribute('data-highlight', 'false');
+    });
+
+    it('enables highlight on every cell when more than two participants are in the meeting', () => {
+      const gridCells = getGridCells(2);
+
+      expect(gridCells).toHaveLength(2);
+      for (const cell of gridCells) {
+        expect(cell).toHaveAttribute('data-highlight', 'true');
+      }
+    });
+
+    it('enables highlight for a single tile on a page, if there are more than two participants in the meeting', () => {
+      const gridCells = getGridCells(7, 2);
+
+      expect(gridCells).toHaveLength(1);
+      expect(gridCells[0]).toHaveAttribute('data-highlight', 'true');
+    });
   });
 
   describe('tile size variables', () => {

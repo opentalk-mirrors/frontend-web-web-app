@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { createSelector, createSlice, isAnyOf, ListenerEffectAPI, PayloadAction } from '@reduxjs/toolkit';
 import { ErrorEvent } from '@sentry/react';
+import { Track } from 'livekit-client';
 
 import type { AppDispatch, RootState } from '../';
 import { VoteStarted } from '../../api/types/incoming/legalVote';
@@ -23,6 +24,7 @@ import {
   PollId,
   RoomKind,
   SortOption,
+  TileIdentifier,
   TimerStyle,
 } from '../../types';
 import { SidePanelView } from '../../types/sidepanel';
@@ -70,8 +72,7 @@ export type UIState = {
   isSelfViewMinimized: boolean;
   paginationPage: number;
   paginationDirection: PaginationDirection;
-  // V2-CLEANUP: is not needed after transition to V2
-  pinnedConnectionIdentifier?: ConnectionIdentifier;
+  pinnedTile?: TileIdentifier;
   // V2-CLEANUP: is not needed after transition to V2
   presenterOverlayPinnedParticipantId?: ConnectionIdentifier;
   localVideoMirroringEnabled: boolean;
@@ -113,7 +114,7 @@ export const initialState: UIState = {
   isSelfViewMinimized: false,
   paginationPage: 1,
   paginationDirection: 'right',
-  pinnedConnectionIdentifier: undefined,
+  pinnedTile: undefined,
   presenterOverlayPinnedParticipantId: undefined,
   localVideoMirroringEnabled: true,
   showVoteOrPollResult: false,
@@ -185,8 +186,8 @@ const uiSlice = createSlice({
       state.paginationDirection = action.payload > state.paginationPage ? 'left' : 'right';
       state.paginationPage = action.payload;
     },
-    pinnedConnectionIdentifierSet: (state, { payload }: PayloadAction<ConnectionIdentifier | undefined>) => {
-      state.pinnedConnectionIdentifier = payload;
+    setPinnedTile: (state, { payload }: PayloadAction<TileIdentifier | undefined>) => {
+      state.pinnedTile = payload;
     },
     presenterOverlayPinnedParticipantIdSet: (state, { payload }: PayloadAction<ConnectionIdentifier | undefined>) => {
       state.presenterOverlayPinnedParticipantId = payload;
@@ -234,7 +235,7 @@ const uiSlice = createSlice({
       state.sidePanelView = isModerationView(state.sidePanelView) ? null : state.lastModerationView;
     },
     pinnedRemoteScreenshare(state, { payload: id }: PayloadAction<ConnectionIdentifier>) {
-      state.pinnedConnectionIdentifier = id;
+      state.pinnedTile = { connectionIdentifier: id, source: Track.Source.ScreenShare };
       state.lastCinemaLayout = state.cinemaLayout;
     },
     saveDefaultChatMessage(state, { payload }: PayloadAction<ChatIdentifier & { input: string }>) {
@@ -284,8 +285,8 @@ const uiSlice = createSlice({
       leave,
       (state, { payload: { id, connection } }: PayloadAction<{ id: ParticipantId; connection: ConnectionId }>) => {
         const identifier = constructConnectionIdentifier(id, connection);
-        if (state.pinnedConnectionIdentifier === identifier) {
-          state.pinnedConnectionIdentifier = undefined;
+        if (state.pinnedTile?.connectionIdentifier === identifier) {
+          state.pinnedTile = undefined;
         }
       }
     );
@@ -300,7 +301,7 @@ const uiSlice = createSlice({
       state.cinemaLayout = initialState.cinemaLayout;
       state.cinemaViewOrder = initialState.cinemaViewOrder;
       state.participantsSortOption = initialState.participantsSortOption;
-      state.pinnedConnectionIdentifier = initialState.pinnedConnectionIdentifier;
+      state.pinnedTile = initialState.pinnedTile;
       state.paginationPage = initialState.paginationPage;
       state.participantsSearchValue = initialState.participantsSearchValue;
       state.isSelfViewMinimized = initialState.isSelfViewMinimized;
@@ -378,7 +379,7 @@ export const {
   updatedCinemaViewSortOrder,
   updatedCinemaGridSize,
   setPaginationPage,
-  pinnedConnectionIdentifierSet,
+  setPinnedTile,
   presenterOverlayPinnedParticipantIdSet,
   mirroredVideoSet,
 
@@ -421,8 +422,7 @@ export const selectChatConversationTarget = (state: RootState) => state.ui.chatC
 export const selectPaginationPageState = (state: RootState) => state.ui.paginationPage;
 export const selectPaginationDirectionState = (state: RootState) => state.ui.paginationDirection;
 export const selectChatConversationScope = (state: RootState) => state.ui.chatConversationState.scope;
-// V2-CLEANUP: is not needed after transition to V2
-export const selectPinnedConnectionIdentifier = (state: RootState) => state.ui.pinnedConnectionIdentifier;
+export const selectPinnedTile = (state: RootState) => state.ui.pinnedTile;
 export const selectPresenterOverlayPinnedParticipantId = (state: RootState) =>
   state.ui.presenterOverlayPinnedParticipantId;
 export const selectMirroredVideoEnabled = (state: RootState) => state.ui.localVideoMirroringEnabled;

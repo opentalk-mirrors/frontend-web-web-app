@@ -2,25 +2,32 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
-import { RoomEvent } from 'livekit-client';
+import { RoomEvent, Track } from 'livekit-client';
 import { useMemo } from 'react';
 
-import { selectPinnedConnectionIdentifier } from '../store/slices/uiSlice';
-import { ConnectionIdentifier } from '../types';
+import { selectPinnedTile } from '../store/slices/uiSlice';
+import { ConnectionIdentifier, TileIdentifier } from '../types';
 import { useAppSelector } from './useCustomRedux';
 import { useThresholdSpeaker } from './useThresholdSpeaker';
 
-export function useCurrentSpeaker(): {
-  currentSpeakerId: ConnectionIdentifier | undefined;
+/**
+ * Selects the tile featured in the speaker window.
+ *
+ * A featured tile is: a pinned tile (pinned manually by a user or automatically, if remote participant has shared screen).
+ * If no tile is pinned - the camera tile of the active speaker.
+ * Note: A screen share tile is only featured when pinned
+ */
+export function useFeaturedTile(): {
+  featuredTile: TileIdentifier | undefined;
   sustainedActivity: ReadonlyMap<string, Date>;
 } {
   const remoteParticipants = useRemoteParticipants({
     updateOnlyOn: [RoomEvent.ParticipantConnected, RoomEvent.ParticipantDisconnected, RoomEvent.ActiveSpeakersChanged],
   });
   const sortedParticipants = useSortedParticipants(remoteParticipants);
-  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
+  const pinnedTile = useAppSelector(selectPinnedTile);
 
-  const speakerId = pinnedConnectionIdentifier || (sortedParticipants[0]?.identity as ConnectionIdentifier);
+  const speakerId = pinnedTile?.connectionIdentifier || (sortedParticipants[0]?.identity as ConnectionIdentifier);
   const speakerLastSpokeAt = speakerId
     ? sortedParticipants.find((participant) => participant.identity === speakerId)?.lastSpokeAt
     : undefined;
@@ -32,10 +39,17 @@ export function useCurrentSpeaker(): {
 
   const { stableSpeakerId, sustainedActivity } = useThresholdSpeaker({
     speakerId,
-    isPinned: Boolean(pinnedConnectionIdentifier),
+    isPinned: Boolean(pinnedTile),
     participantIds,
     speakerLastSpokeAt,
   });
 
-  return { currentSpeakerId: (stableSpeakerId as ConnectionIdentifier) ?? undefined, sustainedActivity };
+  const featuredTile: TileIdentifier | undefined = stableSpeakerId
+    ? {
+        connectionIdentifier: stableSpeakerId,
+        source: pinnedTile?.connectionIdentifier === stableSpeakerId ? pinnedTile.source : Track.Source.Camera,
+      }
+    : undefined;
+
+  return { featuredTile, sustainedActivity };
 }

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, within, waitFor } from '@testing-library/react';
 import { Track } from 'livekit-client';
 import React from 'react';
 import { Mock } from 'vitest';
@@ -14,7 +14,7 @@ import {
   presenterVideoPositions,
   setPresenterVideoPosition,
 } from '../../../store/slices/uiSlice';
-import { VideoSetting } from '../../../types';
+import { MediaSessionType, VideoSetting } from '../../../types';
 import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import { mockStore, mockedParticipant, renderWithProviders } from '../../../utils/testUtils';
 import ParticipantVideo from './ParticipantVideo';
@@ -84,6 +84,7 @@ const connectionIdentifier = constructConnectionIdentifier(participant.id, parti
 const baseProps = {
   connectionIdentifier,
   presenterVideoIsActive: false,
+  source: Track.Source.Camera as MediaSessionType,
 };
 
 const serializableParticipantsState = {
@@ -123,47 +124,6 @@ describe('ParticipantVideo', () => {
 
     expect(screen.getByTestId('participant-video-fallback')).toBeInTheDocument();
     expect(screen.queryByTestId(/remoteVideo/)).not.toBeInTheDocument();
-  });
-
-  it('renders the camera feed when the participant only shares video', () => {
-    const { store } = mockStore(1, {
-      store: { initialState: { participants: serializableParticipantsState } },
-    });
-    useRemoteParticipantMock.mockReturnValue({
-      ...participant,
-      isCameraEnabled: true,
-      isScreenShareEnabled: false,
-    });
-
-    renderWithProviders(<ParticipantVideo {...baseProps} />, { store, provider: { mui: true } });
-
-    expect(
-      screen.getByTestId(
-        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.Camera } as MediaDescriptor)}`
-      )
-    ).toBeInTheDocument();
-    expect(screen.queryByTestId('participantScreenShareVideo')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('participant-video-fallback')).not.toBeInTheDocument();
-  });
-
-  it('does not render the camera feed when the participant shares screen if ui V2 is selected', () => {
-    const { store } = mockStore(1, {
-      store: { initialState: { participants: serializableParticipantsState } },
-    });
-    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
-    useRemoteParticipantMock.mockReturnValue({
-      ...participant,
-      isCameraEnabled: true,
-      isScreenShareEnabled: true,
-    });
-
-    renderWithProviders(<ParticipantVideo {...baseProps} />, { store, provider: { mui: true } });
-
-    expect(
-      screen.queryByTestId(
-        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.Camera } as MediaDescriptor)}`
-      )
-    ).not.toBeInTheDocument();
   });
 
   it('shows and hides the presenter tile when screen sharing based on mouse movement', async () => {
@@ -248,5 +208,115 @@ describe('ParticipantVideo', () => {
     await waitFor(() => expect(cameraPublication.setSubscribed).toHaveBeenCalledWith(false));
     expect(screenPublication.setSubscribed).not.toHaveBeenCalled();
     expect(screen.getByTestId('participant-video-fallback')).toBeInTheDocument();
+  });
+});
+
+describe('media rendering logic in ui V1', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: false });
+    lastScreenPresenterVideoProps.current = undefined;
+  });
+  it('renders the camera feed when the participant only shares video', () => {
+    const { store } = mockStore(1, {
+      store: { initialState: { participants: serializableParticipantsState } },
+    });
+    useRemoteParticipantMock.mockReturnValue({
+      ...participant,
+      isCameraEnabled: true,
+      isScreenShareEnabled: false,
+    });
+
+    renderWithProviders(<ParticipantVideo {...baseProps} />, { store, provider: { mui: true } });
+
+    expect(
+      screen.getByTestId(
+        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.Camera } as MediaDescriptor)}`
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('participantScreenShareVideo')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('participant-video-fallback')).not.toBeInTheDocument();
+  });
+  it('renders screen share and camera feed inside, when the participant shares screen and the video is active', () => {
+    const { store } = mockStore(1, {
+      store: { initialState: { participants: serializableParticipantsState } },
+    });
+    useRemoteParticipantMock.mockReturnValue({
+      ...participant,
+      isCameraEnabled: true,
+      isScreenShareEnabled: true,
+    });
+
+    renderWithProviders(<ParticipantVideo {...baseProps} presenterVideoIsActive />, {
+      store,
+      provider: { mui: true },
+    });
+
+    const screenShare = screen.getByTestId('participantScreenShareVideo');
+    expect(
+      within(screenShare).getByTestId(
+        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.ScreenShare } as MediaDescriptor)}`
+      )
+    ).toBeInTheDocument();
+    expect(within(screenShare).getByTestId('screenPresenterVideo')).toBeInTheDocument();
+  });
+});
+
+describe('media rendering logic in ui V2', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
+    lastScreenPresenterVideoProps.current = undefined;
+  });
+
+  it('renders only the screen share in a screen share tile if ui V2 is selected', () => {
+    const { store } = mockStore(1, {
+      store: { initialState: { participants: serializableParticipantsState } },
+    });
+    useRemoteParticipantMock.mockReturnValue({
+      ...participant,
+      isCameraEnabled: true,
+      isScreenShareEnabled: true,
+    });
+
+    renderWithProviders(<ParticipantVideo {...baseProps} source={Track.Source.ScreenShare} presenterVideoIsActive />, {
+      store,
+      provider: { mui: true },
+    });
+
+    expect(
+      screen.getByTestId(
+        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.ScreenShare } as MediaDescriptor)}`
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId(
+        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.Camera } as MediaDescriptor)}`
+      )
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('screenPresenterVideo')).not.toBeInTheDocument();
+  });
+
+  it('renders only the camera feed in a camera tile while sharing screen if ui V2 is selected', () => {
+    const { store } = mockStore(1, {
+      store: { initialState: { participants: serializableParticipantsState } },
+    });
+    useRemoteParticipantMock.mockReturnValue({
+      ...participant,
+      isCameraEnabled: true,
+      isScreenShareEnabled: true,
+    });
+
+    renderWithProviders(<ParticipantVideo {...baseProps} source={Track.Source.Camera} />, {
+      store,
+      provider: { mui: true },
+    });
+
+    expect(
+      screen.getByTestId(
+        `remoteVideo-${idFromDescriptor({ connectionIdentifier, mediaType: Track.Source.Camera } as MediaDescriptor)}`
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('participantScreenShareVideo')).not.toBeInTheDocument();
   });
 });

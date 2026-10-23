@@ -8,8 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { LogoIcon, MeetingNotesIcon, WhiteboardIcon } from '../../../assets/icons';
 import LayoutOptions from '../../../enums/LayoutOptions';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { useGridPageCount } from '../../../hooks/useGridPageCount';
+import { useAppDispatch, useAppSelector, useGridPageCount } from '../../../hooks';
 import { selectPollsAndVotingCount } from '../../../store/selectors';
 import { selectMeetingNotesUrl } from '../../../store/slices/meetingNotesSlice';
 import { selectIsSharedFolderAvailable } from '../../../store/slices/sharedFolderSlice';

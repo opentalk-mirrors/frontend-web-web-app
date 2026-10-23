@@ -5,9 +5,10 @@ import { Stack, Theme, styled, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useEffect, useRef, useState } from 'react';
 
-import { THUMB_WIDTH_LG, THUMB_WIDTH_XL } from './constants';
+import { useCinemaViewParticipants } from '../../hooks';
+import { THUMBNAIL_WIDTH_LG, THUMBNAIL_WIDTH_XL } from './constants';
+import Filmstrip from './fragments/Filmstrip';
 import SpeakerWindow from './fragments/SpeakerWindow';
-import ThumbsRow from './fragments/ThumbsRow';
 
 const Container = styled(Stack)(({ theme }) => ({
   width: '100%',
@@ -29,9 +30,10 @@ const SpeakerWindowContainer = styled('div')({
 
 const SpeakerView = () => {
   const theme: Theme = useTheme();
-  const thumbWidth = useMediaQuery(theme.breakpoints.up('xl')) ? THUMB_WIDTH_XL : THUMB_WIDTH_LG;
-  const [thumbsPerPage, setThumbsPerPage] = useState(1);
+  const thumbnailWidth = useMediaQuery(theme.breakpoints.up('xl')) ? THUMBNAIL_WIDTH_XL : THUMBNAIL_WIDTH_LG;
+  const [visibleThumbnails, setVisibleThumbnails] = useState(1);
   const [speakerWindowDimensions, setSpeakerWindowDimensions] = useState({ width: 0, height: 0 });
+  const { cinemaViewParticipants, remoteParticipantsMap, featuredTile } = useCinemaViewParticipants();
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const speakerWindowRef = useRef<HTMLDivElement | null>(null);
@@ -50,8 +52,8 @@ const SpeakerView = () => {
       }
 
       const containerWidth = container.clientWidth;
-      const qtyParticipants = Math.max(1, Math.floor(containerWidth / thumbWidth));
-      setThumbsPerPage(qtyParticipants);
+      const qtyParticipants = Math.max(1, Math.floor(containerWidth / thumbnailWidth));
+      setVisibleThumbnails(qtyParticipants);
 
       const { clientWidth, clientHeight } = speakerWindow;
       setSpeakerWindowDimensions({ width: clientWidth, height: clientHeight });
@@ -67,7 +69,7 @@ const SpeakerView = () => {
     updateLayout();
 
     return () => observer.disconnect();
-  }, [thumbWidth]);
+  }, [thumbnailWidth]);
 
   return (
     <Container ref={containerRef} data-testid="SpeakerView-Container">
@@ -75,9 +77,18 @@ const SpeakerView = () => {
         <SpeakerWindow
           speakerWindowWidth={speakerWindowDimensions.width}
           speakerWindowHeight={speakerWindowDimensions.height}
+          cinemaViewParticipants={cinemaViewParticipants}
+          remoteParticipantsMap={remoteParticipantsMap}
+          featuredTile={featuredTile}
         />
       </SpeakerWindowContainer>
-      <ThumbsRow thumbsPerWindow={thumbsPerPage} thumbWidth={thumbWidth} />
+      <Filmstrip
+        visibleThumbnails={visibleThumbnails}
+        thumbnailWidth={thumbnailWidth}
+        cinemaViewParticipants={cinemaViewParticipants}
+        remoteParticipantsMap={remoteParticipantsMap}
+        featuredTile={featuredTile}
+      />
     </Container>
   );
 };

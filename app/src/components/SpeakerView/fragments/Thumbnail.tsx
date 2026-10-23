@@ -6,8 +6,9 @@ import { styled } from '@mui/material';
 import { useCallback } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { pinnedConnectionIdentifierSet, selectPinnedConnectionIdentifier } from '../../../store/slices/uiSlice';
-import { ConnectionIdentifier } from '../../../types';
+import { setPinnedTile, selectPinnedTile } from '../../../store/slices/uiSlice';
+import { ConnectionIdentifier, type MediaSessionType, TileIdentifier } from '../../../types';
+import { isSameTile } from '../../../utils/isSameTile';
 import ParticipantWindow from '../../ParticipantWindow';
 
 const ThumbnailContainer = styled('div')<{ width: number }>(({ width, theme }) => ({
@@ -28,20 +29,24 @@ const ThumbnailContainer = styled('div')<{ width: number }>(({ width, theme }) =
   },
 }));
 
-export const Thumbnail = ({ width }: { width: number }) => {
+interface ThumbnailProps {
+  width: number;
+  source: MediaSessionType;
+}
+
+export const Thumbnail = ({ width, source }: ThumbnailProps) => {
   const participant = useParticipantContext();
-  const pinnedConnectionIdentifier = useAppSelector(selectPinnedConnectionIdentifier);
+  const pinnedTile = useAppSelector(selectPinnedTile);
   const dispatch = useAppDispatch();
 
   const togglePin = useCallback(() => {
-    const updatePinnedId =
-      pinnedConnectionIdentifier === participant.identity ? undefined : (participant.identity as ConnectionIdentifier);
-    dispatch(pinnedConnectionIdentifierSet(updatePinnedId));
-  }, [dispatch, participant.identity, pinnedConnectionIdentifier]);
+    const tile: TileIdentifier = { connectionIdentifier: participant.identity as ConnectionIdentifier, source };
+    dispatch(setPinnedTile(isSameTile(pinnedTile, tile) ? undefined : tile));
+  }, [dispatch, participant.identity, pinnedTile, source]);
 
   return (
-    <ThumbnailContainer onClick={togglePin} width={width} data-testid={`thumbsVideo-${participant.identity}`}>
-      <ParticipantWindow isThumbnail={true} />
+    <ThumbnailContainer onClick={togglePin} width={width} data-testid={`thumbnail-${participant.identity}`}>
+      <ParticipantWindow isThumbnail={true} source={source} />
     </ThumbnailContainer>
   );
 };

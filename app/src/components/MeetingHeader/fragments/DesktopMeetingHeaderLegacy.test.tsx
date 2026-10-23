@@ -9,6 +9,11 @@ import { WaitingState } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import DesktopMeetingHeaderLegacy from './DesktopMeetingHeaderLegacy';
 
+const useGridPageCountMock = vi.fn();
+vi.mock('../../../hooks/useGridPageCount', () => ({
+  useGridPageCount: () => useGridPageCountMock(),
+}));
+
 vi.mock('./LayoutSelection', () => ({
   __esModule: true,
   default: () => <div>LayoutSelection</div>,
@@ -64,12 +69,13 @@ const { store } = configureStore({
   },
 });
 
-describe('DesktopMeetingHeaderLegacy rendering logic', () => {
+describe('DesktopMeetingHeaderLegacy', () => {
   it('should render without crashing', () => {
     expect(() => renderWithProviders(<DesktopMeetingHeaderLegacy />, { store, provider: { mui: true } })).not.toThrow();
   });
 
   it('renders header pagination when layout is grid.', () => {
+    useGridPageCountMock.mockReturnValue(2);
     const { unmount } = renderWithProviders(<DesktopMeetingHeaderLegacy />, { store, provider: { mui: true } });
     expect(screen.queryByText('1')).not.toBeInTheDocument();
     expect(screen.queryByText('2')).not.toBeInTheDocument();

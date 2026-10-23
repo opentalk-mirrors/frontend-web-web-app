@@ -3,19 +3,19 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useRemoteParticipants } from '@livekit/components-react';
 import { RemoteParticipant, RoomEvent } from 'livekit-client';
-import { useMemo } from 'react';
 
 import { selectAllOnlineParticipants } from '../store/slices/participantsSlice';
 import { selectCinemaViewOrder } from '../store/slices/uiSlice';
-import { Participant } from '../types';
+import { Participant, TileIdentifier } from '../types';
 import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
 import { sortCinemaViewParticipants } from '../utils/sortCinemaViewParticipants';
-import { useCurrentSpeaker } from './useCurrentSpeaker';
 import { useAppSelector } from './useCustomRedux';
+import { useFeaturedTile } from './useFeaturedTile';
 
 export type CinemaViewParticipant = Participant & {
   audioLevel: number;
   isCameraEnabled: boolean;
+  isScreenShareEnabled: boolean;
   isSpeaking: boolean;
   lastSpokeAt?: Date;
 };
@@ -23,12 +23,12 @@ export type CinemaViewParticipant = Participant & {
 /**
  * Merges participant data from controller with livekit participant data and sorts it
  * according to the selected cinema view sort order
- * @returns Sorted list of merged participants
+ * @returns Sorted list of merged participants and the featured tile
  */
 export function useCinemaViewParticipants(): {
   cinemaViewParticipants: CinemaViewParticipant[];
   remoteParticipantsMap: Map<string, RemoteParticipant>;
-  currentSpeakerId?: string;
+  featuredTile: TileIdentifier | undefined;
 } {
   const remoteParticipants = useRemoteParticipants({
     updateOnlyOn: [
@@ -41,35 +41,30 @@ export function useCinemaViewParticipants(): {
       RoomEvent.ActiveSpeakersChanged,
     ],
   });
-  const { currentSpeakerId, sustainedActivity } = useCurrentSpeaker();
-
+  const { featuredTile, sustainedActivity } = useFeaturedTile();
   const onlineParticipants = useAppSelector(selectAllOnlineParticipants);
-  const remoteParticipantsMap = useMemo(
-    () => new Map(remoteParticipants.map((rp) => [rp.identity, rp])),
-    [remoteParticipants]
-  );
-
   const viewOrder = useAppSelector(selectCinemaViewOrder);
 
-  const cinemaViewParticipants = useMemo(() => {
-    const mergedParticipants = onlineParticipants.flatMap((op) => {
-      return op.connections.map((connectionId) => {
-        const combinedId = constructConnectionIdentifier(op.id, connectionId);
-        const remoteParticipant = remoteParticipantsMap.get(combinedId);
+  const remoteParticipantsMap = new Map(
+    remoteParticipants.map((remoteParticipant) => [remoteParticipant.identity, remoteParticipant])
+  );
+  const mergedParticipants = onlineParticipants.flatMap((onlineParticipant) => {
+    return onlineParticipant.connections.map((connectionId) => {
+      const combinedId = constructConnectionIdentifier(onlineParticipant.id, connectionId);
+      const remoteParticipant = remoteParticipantsMap.get(combinedId);
 
-        return {
-          ...op,
-          connections: [connectionId],
-          audioLevel: remoteParticipant?.audioLevel ?? 0,
-          isCameraEnabled: remoteParticipant?.isCameraEnabled ?? false,
-          isSpeaking: remoteParticipant?.isSpeaking ?? false,
-          lastSpokeAt: sustainedActivity.get(combinedId),
-        };
-      });
+      return {
+        ...onlineParticipant,
+        connections: [connectionId],
+        audioLevel: remoteParticipant?.audioLevel ?? 0,
+        isCameraEnabled: remoteParticipant?.isCameraEnabled ?? false,
+        isScreenShareEnabled: remoteParticipant?.isScreenShareEnabled ?? false,
+        isSpeaking: remoteParticipant?.isSpeaking ?? false,
+        lastSpokeAt: sustainedActivity.get(combinedId),
+      };
     });
+  });
+  const cinemaViewParticipants = sortCinemaViewParticipants(mergedParticipants, viewOrder);
 
-    return sortCinemaViewParticipants(mergedParticipants, viewOrder);
-  }, [onlineParticipants, remoteParticipantsMap, viewOrder, sustainedActivity]);
-
-  return { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId };
+  return { cinemaViewParticipants, remoteParticipantsMap, featuredTile };
 }

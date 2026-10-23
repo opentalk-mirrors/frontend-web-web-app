@@ -1,19 +1,24 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { ParticipantContext } from '@livekit/components-react';
 import { Box, styled } from '@mui/material';
-import { Participant } from 'livekit-client';
+import { RemoteParticipant, Track } from 'livekit-client';
 import { useMemo } from 'react';
 
 import { useConferenceUiVersion } from '../../../hooks';
-import { useCinemaViewParticipants } from '../../../hooks/useCinemaViewParticipants';
+import type { CinemaViewParticipant } from '../../../hooks/useCinemaViewParticipants';
 import { useSelfViewAnchor } from '../../../provider/SelfViewAnchorContext';
+import TileParticipantProvider from '../../../provider/TileParticipantProvider';
+import { ConnectionIdentifier, TileIdentifier } from '../../../types';
+import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import ParticipantWindow from '../../ParticipantWindow';
 
-interface SpeakerWindowProps {
+export interface SpeakerWindowProps {
   speakerWindowWidth?: number;
   speakerWindowHeight?: number;
+  cinemaViewParticipants: CinemaViewParticipant[];
+  remoteParticipantsMap: Map<string, RemoteParticipant>;
+  featuredTile: TileIdentifier | undefined;
 }
 
 const Container = styled('div', {
@@ -35,29 +40,25 @@ const SelfViewContainer = styled(Box)({
   pointerEvents: 'none',
 });
 
-const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerWindowProps) => {
+const SpeakerWindow = ({
+  speakerWindowWidth,
+  speakerWindowHeight,
+  cinemaViewParticipants,
+  remoteParticipantsMap,
+  featuredTile,
+}: SpeakerWindowProps) => {
   const { isV2 } = useConferenceUiVersion();
   const { setAnchor } = useSelfViewAnchor();
 
-  const { cinemaViewParticipants, remoteParticipantsMap, currentSpeakerId } = useCinemaViewParticipants();
-  const selectedParticipant = (() => {
-    if (currentSpeakerId) {
-      const remoteParticipant = remoteParticipantsMap.get(currentSpeakerId);
-      if (remoteParticipant) {
-        return remoteParticipant;
-      }
-
-      // Create a fallback participant when LiveKit data isn't available yet
-      const speaker = cinemaViewParticipants.find(
-        (p) => p.connections[0] && currentSpeakerId.includes(p.connections[0])
-      );
-      return new Participant(currentSpeakerId, currentSpeakerId, speaker?.displayName ?? '');
-    }
-
-    // Smooth out the transition between grid and speaker view by showing the first available participant
-    const firstRemote = remoteParticipantsMap.values().next();
-    return firstRemote.done ? undefined : firstRemote.value;
-  })();
+  // Show the first available participant if there is no featured tile
+  const firstRemoteParticipant = remoteParticipantsMap.values().next().value;
+  const selectedConnectionIdentifier =
+    featuredTile?.connectionIdentifier ?? (firstRemoteParticipant?.identity as ConnectionIdentifier | undefined);
+  const selectedParticipant =
+    selectedConnectionIdentifier &&
+    cinemaViewParticipants.find(
+      (p) => p.connections[0] && constructConnectionIdentifier(p.id, p.connections[0]) === selectedConnectionIdentifier
+    );
 
   // Fit a 16:9 box entirely within the available area (contain), preserving the
   // aspect ratio so the video is never cropped or distorted when the window is resized.
@@ -73,10 +74,17 @@ const SpeakerWindow = ({ speakerWindowWidth, speakerWindowHeight }: SpeakerWindo
 
   return (
     <Container width={width} height={height}>
-      {selectedParticipant && (
-        <ParticipantContext.Provider value={selectedParticipant}>
-          <ParticipantWindow alwaysShowOverlay />
-        </ParticipantContext.Provider>
+      {selectedConnectionIdentifier && (
+        <TileParticipantProvider
+          connectionIdentifier={selectedConnectionIdentifier}
+          displayName={selectedParticipant?.displayName ?? ''}
+          remoteParticipant={remoteParticipantsMap.get(selectedConnectionIdentifier)}
+        >
+          {
+            // Pass camera as source by default, if featured tile is not available yet
+            <ParticipantWindow alwaysShowOverlay source={featuredTile?.source ?? Track.Source.Camera} />
+          }
+        </TileParticipantProvider>
       )}
       {
         // V2-CLEANUP: Remove the isV2 guard after transition to V2
