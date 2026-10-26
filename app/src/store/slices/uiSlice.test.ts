@@ -158,6 +158,15 @@ describe('uiSlice side panel', () => {
 
     expect(state.sidePanelView).toBe(MenuTab.People);
   });
+
+  it('keeps the moderator on the talking stick tool when it starts', () => {
+    const state = reducer(
+      { ...getInitialState(), sidePanelView: ModerationTabKey.TalkingStick },
+      automodStarted({} as unknown as AutomodStartedEvent)
+    );
+
+    expect(state.sidePanelView).toBe(ModerationTabKey.TalkingStick);
+  });
 });
 
 describe('uiSlice moderation panel', () => {

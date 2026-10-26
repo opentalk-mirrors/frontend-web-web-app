@@ -4,10 +4,12 @@
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { Store } from '@reduxjs/toolkit';
 import { screen, within, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { List } from 'react-window';
 
 import { selectAllVisibleParticipants } from '../../../store/slices/participantsSlice';
 import {
+  ChatScope,
   Participant,
   ParticipantId,
   ParticipationKind,
@@ -16,6 +18,7 @@ import {
   WhisperParticipantState,
 } from '../../../types';
 import { mockedParticipant, mockStore, renderWithProviders } from '../../../utils/testUtils';
+import { MenuTab } from '../../MenuTabs/fragments/constants';
 import ParticipantListItem from './ParticipantListItem';
 
 vi.mock('@livekit/components-react', () => ({
@@ -93,6 +96,23 @@ describe('participant context menu', () => {
 
       const sendMessageButton = screen.queryByRole('menuitem', { name: 'participant-menu-send-message' });
       expect(sendMessageButton).toBeInTheDocument();
+    });
+    it('opens the private conversation in the messages panel when sending a message', async () => {
+      const user = userEvent.setup();
+      const { store } = mockStore(1);
+      openMenu(store);
+      const sendMessageOption = screen.getByRole('menuitem', { name: 'participant-menu-send-message' });
+
+      await user.click(sendMessageOption);
+
+      expect(store.getState().ui.sidePanelView).toBe(MenuTab.Messages);
+      expect(store.getState().ui.chatConversationState).toEqual({
+        scope: ChatScope.Private,
+        target: participants[0].id,
+      });
+      expect(screen.getAllByRole('button', { name: 'participant-menu-open-label' })[0]).not.toHaveAttribute(
+        'aria-expanded'
+      );
     });
     it('should not contain the moderator options in the opened menu on a participant', () => {
       openMenu(store);

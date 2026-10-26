@@ -3,13 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Paper, styled } from '@mui/material';
 
+import { SIDE_PANEL_OFFSET_VARIABLE } from '../../../constants';
+
 export const Container = styled(Paper, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<{ open: boolean }>(({ theme, open }) => ({
   display: open ? 'block' : 'none',
   position: 'fixed',
   top: theme.spacing(8),
-  right: theme.spacing(2),
+  right: `var(${SIDE_PANEL_OFFSET_VARIABLE}, ${theme.spacing(2)})`,
   padding: theme.spacing(2, 4),
   zIndex: 8,
   backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))',

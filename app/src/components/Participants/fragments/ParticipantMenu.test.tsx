@@ -85,4 +85,25 @@ describe('ParticipantMenu', () => {
     expect(setAnchorEl).toHaveBeenCalledExactlyOnceWith(undefined);
     expect(onClose).toHaveBeenCalledExactlyOnceWith();
   });
+
+  it('follows its anchor on the frame after a window resize', () => {
+    const anchor = document.createElement('button');
+    document.body.append(anchor);
+    const anchorRect = vi.spyOn(anchor, 'getBoundingClientRect');
+    anchorRect.mockReturnValue(new DOMRect(100, 100, 20, 20));
+    const frames: FrameRequestCallback[] = [];
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => frames.push(callback));
+
+    render(<ParticipantMenu id="" open={true} setAnchorEl={setAnchorEl} anchorEl={anchor} options={options} />);
+    // eslint-disable-next-line testing-library/no-node-access -- MUI positions the paper, which has no role
+    const paper = screen.getByRole('menu').parentElement as HTMLElement;
+    const initialLeft = paper.style.left;
+
+    anchorRect.mockReturnValue(new DOMRect(400, 100, 20, 20));
+    fireEvent(window, new Event('resize'));
+    frames.forEach((frame) => frame(0));
+
+    expect(paper.style.left).not.toBe(initialLeft);
+    anchor.remove();
+  });
 });

@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { MenuItem as MuiMenuItem, Menu, styled, Typography } from '@mui/material';
-import { Dispatch, SetStateAction } from 'react';
+import { MenuItem as MuiMenuItem, Menu, PopoverActions, styled, Typography } from '@mui/material';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface ParticipantMenuOption {
@@ -29,6 +29,19 @@ const MenuItem = styled(MuiMenuItem)({
 
 function ParticipantMenu<T>({ setAnchorEl, anchorEl, open, onClose, options, id }: ParticipantMenuProps<T>) {
   const { t } = useTranslation();
+  const menuActions = useRef<PopoverActions>(null);
+
+  // MUI debounces its own resize handling, which leaves the menu behind while the panel reflows
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const reposition = () => menuActions.current?.updatePosition();
+
+    window.addEventListener('resize', reposition);
+    return () => window.removeEventListener('resize', reposition);
+  }, [open]);
 
   const handleClose = () => {
     setAnchorEl(undefined);
@@ -45,6 +58,7 @@ function ParticipantMenu<T>({ setAnchorEl, anchorEl, open, onClose, options, id 
   return (
     <Menu
       id={id}
+      action={menuActions}
       open={open}
       anchorEl={anchorEl}
       onClose={handleClose}
