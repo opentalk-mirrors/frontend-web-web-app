@@ -158,13 +158,28 @@ describe('handleRoomServerCoreMessage', () => {
       const dispatch = vi.fn();
       const moduleData = {
         ...baseModuleData,
-        transcription: { status: TranscriptionStatus.Running, showSubtitles: false, segments: [] },
+        transcription: { status: TranscriptionStatus.Running, liveTranscription: true },
       } as unknown as ModuleData;
       handleRoomServerCoreMessage(dispatch, makeJoinSuccess(moduleData), timestamp, createState());
 
       expect(notifications.showTranscriptionEnabledNotification).toHaveBeenCalledWith(
         expect.objectContaining({ onActivated: expect.any(Function) })
       );
+    });
+
+    it('does not offer subtitles when the transcription service only runs for the meeting protocol', () => {
+      const dispatch = vi.fn();
+      const moduleData = {
+        ...baseModuleData,
+        transcription: {
+          status: TranscriptionStatus.Running,
+          liveTranscription: false,
+          meetingProtocol: { pseudonymous: false, paused: false, consents: false },
+        },
+      } as unknown as ModuleData;
+      handleRoomServerCoreMessage(dispatch, makeJoinSuccess(moduleData), timestamp, createState());
+
+      expect(notifications.showTranscriptionEnabledNotification).not.toHaveBeenCalled();
     });
   });
 
@@ -244,7 +259,7 @@ describe('handleRoomServerCoreMessage', () => {
       polls: { id: 'poll-1' },
       sharedFolder: { read: {} },
       trainingParticipationReport: { state: 'disabled' },
-      transcription: { status: TranscriptionStatus.Inactive, showSubtitles: false, segments: [] },
+      transcription: { status: TranscriptionStatus.Inactive, liveTranscription: false },
       reaction: { restrictions: { type: 'disabled' } },
       whiteboard: { scene: {} },
       raiseHands: { raiseHandsEnabled: true, state: { raisedAt: new Date().toISOString() } },

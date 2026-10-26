@@ -14,7 +14,11 @@ import {
   RecordingStatusInfo,
 } from '@opentalk/rest-api-rtk-query';
 
-import { TranscriptionStatus } from '../../api/types/incoming/transcription';
+import {
+  MeetingProtocolMode,
+  TranscriptionLanguageKey,
+  TranscriptionStatus,
+} from '../../api/types/incoming/transcription';
 import type {
   ParticipationLogging,
   ParticipationLoggingState,
@@ -120,6 +124,13 @@ interface TrainingParticipationReport {
 
 interface TranscriptionJoinState {
   status: TranscriptionStatus;
+  language?: TranscriptionLanguageKey;
+  liveTranscription: boolean;
+  meetingProtocol?: MeetingProtocolJoinState;
+}
+
+interface MeetingProtocolJoinState extends MeetingProtocolMode {
+  consents: boolean;
 }
 
 interface WaitingRoomParticipant {

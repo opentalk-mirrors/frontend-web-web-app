@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import { AssetId } from '@opentalk/rest-api-rtk-query';
 import i18next from 'i18next';
 
 import { notifications } from '../../commonComponents';
@@ -59,14 +60,20 @@ describe('handleTranscriptionMessage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  const defaultState = (status: TranscriptionStatus = TranscriptionStatus.Inactive) =>
+  const defaultState = (
+    status: TranscriptionStatus = TranscriptionStatus.Inactive,
+    overrides: Partial<RootState['transcription']> = {}
+  ) =>
     createState({
       transcription: {
         status,
+        liveTranscription: true,
+        meetingProtocol: null,
         language: '',
         showSubtitles: false,
         showSettings: false,
         segments: [],
+        ...overrides,
       },
     });
   describe('state_updated message received', () => {
@@ -85,7 +92,7 @@ describe('handleTranscriptionMessage', () => {
         expect.objectContaining({ type: 'transcription/setTranscriptionLanguage', payload: 'en' })
       );
     });
-    it("dispatches a notification when the transcription status is updated to 'inactive'", () => {
+    it("does not notify when the transcription status is updated to 'inactive'", () => {
       const mockDispatch = vi.fn();
       const message: TranscriptionMessage = {
         message: 'state_updated',
@@ -94,18 +101,17 @@ describe('handleTranscriptionMessage', () => {
       };
       handleTranscriptionMessage(mockDispatch, message, defaultState(TranscriptionStatus.Running));
 
-      expect(i18next.t).toHaveBeenCalledWith('subtitle-notification-disabled');
-      expect(notifications.info).toHaveBeenCalledWith('subtitle-notification-disabled');
+      expect(notifications.info).not.toHaveBeenCalled();
+      expect(mockDispatch).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'transcription/hideSubtitles' }));
     });
-    it("turns subtitles off when the transcription status is updated to 'inactive'", () => {
+    it('keeps the language when the inactive state carries none', () => {
       const mockDispatch = vi.fn();
-      const message: TranscriptionMessage = {
-        message: 'state_updated',
-        status: 'inactive' as TranscriptionStatus,
-        language: 'en' as TranscriptionLanguageKey,
-      };
+      const message: TranscriptionMessage = { message: 'state_updated', status: TranscriptionStatus.Inactive };
       handleTranscriptionMessage(mockDispatch, message, defaultState(TranscriptionStatus.Running));
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'transcription/hideSubtitles' }));
+
+      expect(mockDispatch).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'transcription/setTranscriptionLanguage' })
+      );
     });
     it("dispatches a notification when the transcription status is updated to 'running'", () => {
       const mockDispatch = vi.fn();
@@ -122,18 +128,28 @@ describe('handleTranscriptionMessage', () => {
         expect.objectContaining({ onActivated: expect.any(Function) })
       );
     });
+    it('does not offer subtitles when the service only runs for the meeting protocol', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'state_updated',
+        status: 'running' as TranscriptionStatus,
+        language: 'en' as TranscriptionLanguageKey,
+      };
+      handleTranscriptionMessage(
+        mockDispatch,
+        message,
+        defaultState(TranscriptionStatus.Requested, { liveTranscription: false })
+      );
+
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'transcription/transcriptionStatusUpdated', payload: 'running' })
+      );
+      expect(notifications.showTranscriptionEnabledNotification).not.toHaveBeenCalled();
+    });
     describe('status stays the same but language changes', () => {
       it('dispatches a notification when the transcription language changes', () => {
         const mockDispatch = vi.fn();
-        const stateWithRunningTranscription = createState({
-          transcription: {
-            status: TranscriptionStatus.Running,
-            language: 'en' as TranscriptionLanguageKey,
-            showSubtitles: false,
-            showSettings: false,
-            segments: [],
-          },
-        });
+        const stateWithRunningTranscription = defaultState(TranscriptionStatus.Running, { language: 'en' });
         const message: TranscriptionMessage = {
           message: 'state_updated',
           status: 'running' as TranscriptionStatus,
@@ -145,7 +161,89 @@ describe('handleTranscriptionMessage', () => {
           expect.objectContaining({ type: 'transcription/setTranscriptionLanguage', payload: 'de' })
         );
         expect(notifications.info).toHaveBeenCalledWith('subtitle-notification-language-changed');
+        expect(notifications.showTranscriptionEnabledNotification).not.toHaveBeenCalled();
       });
+    });
+  });
+  describe('modes_updated message received', () => {
+    it('stores the received modes', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'modes_updated',
+        liveTranscription: false,
+        meetingProtocol: { pseudonymous: true, paused: false },
+      };
+      handleTranscriptionMessage(mockDispatch, message, defaultState(TranscriptionStatus.Running));
+
+      expect(mockDispatch).toHaveBeenCalledWith({
+        type: 'transcription/transcriptionModesUpdated',
+        payload: { liveTranscription: false, meetingProtocol: { pseudonymous: true, paused: false } },
+      });
+    });
+    it('hides the subtitles and notifies when live transcription is stopped', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = { message: 'modes_updated', liveTranscription: false };
+      handleTranscriptionMessage(mockDispatch, message, defaultState(TranscriptionStatus.Running));
+
+      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'transcription/hideSubtitles' }));
+      expect(notifications.info).toHaveBeenCalledWith('subtitle-notification-disabled');
+    });
+    it('offers subtitles when live transcription is started while the service is already running', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'modes_updated',
+        liveTranscription: true,
+        meetingProtocol: { pseudonymous: false, paused: false },
+      };
+      handleTranscriptionMessage(
+        mockDispatch,
+        message,
+        defaultState(TranscriptionStatus.Running, { liveTranscription: false })
+      );
+
+      expect(notifications.showTranscriptionEnabledNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ onActivated: expect.any(Function) })
+      );
+    });
+    it('waits for the running service before offering subtitles', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = { message: 'modes_updated', liveTranscription: true };
+      handleTranscriptionMessage(
+        mockDispatch,
+        message,
+        defaultState(TranscriptionStatus.Inactive, { liveTranscription: false })
+      );
+
+      expect(notifications.showTranscriptionEnabledNotification).not.toHaveBeenCalled();
+    });
+    it('does not notify when only the meeting protocol changes', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'modes_updated',
+        liveTranscription: true,
+        meetingProtocol: { pseudonymous: false, paused: false },
+      };
+      handleTranscriptionMessage(mockDispatch, message, defaultState(TranscriptionStatus.Running));
+
+      expect(notifications.info).not.toHaveBeenCalled();
+      expect(notifications.showTranscriptionEnabledNotification).not.toHaveBeenCalled();
+      expect(mockDispatch).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'transcription/hideSubtitles' }));
+    });
+  });
+  describe('meeting protocol messages received', () => {
+    it.each<TranscriptionMessage>([
+      {
+        message: 'pdf_created',
+        filename: 'protocol.pdf',
+        assetId: 'asset-1' as AssetId,
+        quota: { total: 1000, used: 100 },
+      },
+      { message: 'meeting_protocol_consent_updated', participant: 'participant-1' as ParticipantId, consents: true },
+    ])('accepts $message without throwing', (message) => {
+      const mockDispatch = vi.fn();
+
+      expect(() => handleTranscriptionMessage(mockDispatch, message, defaultState())).not.toThrow();
+      expect(log.error).not.toHaveBeenCalled();
     });
   });
   describe('segment message received', () => {

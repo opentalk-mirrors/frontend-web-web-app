@@ -18,11 +18,7 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  TranscriptionStatus,
-  TranscriptionLanguage,
-  TranscriptionLanguageKey,
-} from '../../../api/types/incoming/transcription';
+import { TranscriptionLanguage, TranscriptionLanguageKey } from '../../../api/types/incoming/transcription';
 import {
   changeTranscriptionLanguageSignal,
   sendStartTranscriptionSignal,
@@ -35,8 +31,8 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import {
   hideTranscriptionSettings,
   saveTranscriptionLanguageToLocalStorage,
+  selectIsLiveTranscriptionRunning,
   selectTranscriptionLanguage,
-  selectTranscriptionStatus,
 } from '../../../store/slices/transcriptionSlice';
 
 const LanguageSelectLabel = styled(Typography)<{ component?: string; htmlFor?: string }>(({ theme }) => ({
@@ -64,19 +60,18 @@ const LanguageSelectContainer = styled(Box)(({ theme }) => ({
 const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
   const { t } = useTranslation();
   const transcriptionLanguage = useAppSelector(selectTranscriptionLanguage);
-  const transcriptionStatus = useAppSelector(selectTranscriptionStatus);
-  const [desiredTranscriptionStatus, setDesiredTranscriptionStatus] = useState<boolean>(
-    transcriptionStatus === TranscriptionStatus.Running
-  ); // maps running to true, inactive to false
+  const isLiveTranscriptionRunning = useAppSelector(selectIsLiveTranscriptionRunning);
+  const [shouldEnableLiveTranscription, setShouldEnableLiveTranscription] =
+    useState<boolean>(isLiveTranscriptionRunning);
   const [desiredTranscriptionLanguage, setDesiredTranscriptionLanguage] = useState<TranscriptionLanguageKey | ''>(
     transcriptionLanguage || ''
   );
   const dispatch = useAppDispatch();
   const hasLanguageChanged = desiredTranscriptionLanguage && desiredTranscriptionLanguage !== transcriptionLanguage;
-  const hasStatusChanged = desiredTranscriptionStatus !== (transcriptionStatus === TranscriptionStatus.Running);
+  const hasStatusChanged = shouldEnableLiveTranscription !== isLiveTranscriptionRunning;
 
   const resetDraftState = () => {
-    setDesiredTranscriptionStatus(transcriptionStatus === TranscriptionStatus.Running);
+    setShouldEnableLiveTranscription(isLiveTranscriptionRunning);
     setDesiredTranscriptionLanguage(transcriptionLanguage || '');
   };
 
@@ -110,7 +105,7 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
       closeDialog();
       return;
     }
-    if (desiredTranscriptionStatus) {
+    if (shouldEnableLiveTranscription) {
       dispatch(
         sendStartTranscriptionSignal.action({
           language: desiredTranscriptionLanguage.toString(),
@@ -134,14 +129,14 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
             </Typography>
             <CommonSwitch
               id="enable-subtitles-switch"
-              checked={desiredTranscriptionStatus}
-              onChange={() => setDesiredTranscriptionStatus((prev) => !prev)}
+              checked={shouldEnableLiveTranscription}
+              onChange={() => setShouldEnableLiveTranscription((prev) => !prev)}
             />
             <Typography variant="caption" sx={{ gridColumn: 1 }}>
               {t('subtitle-settings-enable-subtitles-hint')}
             </Typography>
           </EnableSubtitlesSwitchContainer>
-          {desiredTranscriptionStatus && (
+          {shouldEnableLiveTranscription && (
             <LanguageSelectContainer>
               <LanguageSelectLabel component="label" htmlFor="input-language-select">
                 {t('subtitle-settings-input-language')}
@@ -176,7 +171,7 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
           type="button"
           color="secondary"
           onClick={submit}
-          disabled={desiredTranscriptionStatus && !desiredTranscriptionLanguage}
+          disabled={shouldEnableLiveTranscription && !desiredTranscriptionLanguage}
         >
           {t('global-save')}
         </Button>

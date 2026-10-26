@@ -5,15 +5,14 @@ import { ListItemIcon, Typography } from '@mui/material';
 import { BackendModules, TranscriptionFeatures } from '@opentalk/rest-api-rtk-query';
 import { useTranslation } from 'react-i18next';
 
-import { TranscriptionStatus } from '../../../api/types/incoming/transcription';
 import { Icon_cc_hideIcon, Icon_cc_settingsIcon, Icon_cc_showIcon } from '../../../assets/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectIsFeatureEnabled } from '../../../store/slices/configSlice';
 import { selectE2EEncryption } from '../../../store/slices/roomSlice';
 import {
   hideSubtitles,
+  selectIsLiveTranscriptionRunning,
   selectShowSubtitles,
-  selectTranscriptionStatus,
   showSubtitles,
   showTranscriptionSettings,
 } from '../../../store/slices/transcriptionSlice';
@@ -59,10 +58,9 @@ const useSubtitleButtonStates = () => {
     selectIsFeatureEnabled(BackendModules.Transcription, TranscriptionFeatures.Transcription)
   );
   const isModerator = useAppSelector(selectIsModerator);
-  const transcriptionStatus = useAppSelector(selectTranscriptionStatus);
+  const subtitlesEnabled = useAppSelector(selectIsLiveTranscriptionRunning);
   const highSecurityEnabled = Boolean(useAppSelector(selectE2EEncryption));
   const subtitlesShown = useAppSelector(selectShowSubtitles);
-  const subtitlesEnabled = transcriptionStatus === TranscriptionStatus.Running;
 
   return {
     ...getSubtitleButtonStates({ featureAvailable, isModerator, subtitlesEnabled, highSecurityEnabled }),

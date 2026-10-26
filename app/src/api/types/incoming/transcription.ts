@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
+import type { AssetId } from '@opentalk/rest-api-rtk-query';
+
 import type { ErrorStruct, NamespacedIncoming, ParticipantId, Timestamp } from '../../../types';
 
 export enum TranscriptionStatus {
@@ -12,7 +14,7 @@ export enum TranscriptionStatus {
 interface TranscriptionStateUpdated {
   message: 'state_updated';
   status: TranscriptionStatus;
-  language: TranscriptionLanguageKey;
+  language?: TranscriptionLanguageKey;
 }
 
 export interface TranscriptionSegment {
@@ -24,6 +26,33 @@ export interface TranscriptionSegment {
   text: string;
 }
 
+export interface MeetingProtocolMode {
+  pseudonymous: boolean;
+  paused: boolean;
+}
+
+export interface TranscriptionModes {
+  liveTranscription: boolean;
+  meetingProtocol?: MeetingProtocolMode;
+}
+
+interface TranscriptionModesUpdated extends TranscriptionModes {
+  message: 'modes_updated';
+}
+
+interface MeetingProtocolPdfCreated {
+  message: 'pdf_created';
+  filename: string;
+  assetId: AssetId;
+  quota: { total?: number; used: number };
+}
+
+interface MeetingProtocolConsentUpdated {
+  message: 'meeting_protocol_consent_updated';
+  participant: ParticipantId;
+  consents: boolean;
+}
+
 export enum TranscriptionError {
   ServiceRequestFailed = 'service_request_failed',
   FeatureDisabled = 'feature_disabled',
@@ -31,17 +60,16 @@ export enum TranscriptionError {
   AlreadyActive = 'already_active',
   NotActive = 'not_active',
   ServiceDisconnected = 'service_disconnected',
-}
-
-type TranscriptionCommand = { kind: 'stop' };
-
-interface TranscriptionServiceCommand {
-  message: 'service_command';
-  command: TranscriptionCommand;
+  GenerateProtocol = 'generate_protocol',
 }
 
 export type TranscriptionMessage =
-  TranscriptionStateUpdated | TranscriptionSegment | TranscriptionServiceCommand | ErrorStruct<TranscriptionError>;
+  | TranscriptionStateUpdated
+  | TranscriptionModesUpdated
+  | TranscriptionSegment
+  | MeetingProtocolPdfCreated
+  | MeetingProtocolConsentUpdated
+  | ErrorStruct<TranscriptionError>;
 
 type Transcription = NamespacedIncoming<TranscriptionMessage, 'transcription'>;
 
