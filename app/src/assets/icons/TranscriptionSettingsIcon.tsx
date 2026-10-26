@@ -4,10 +4,10 @@
 import { SvgIconProps } from '@mui/material';
 
 import AccessibleSvgIcon from './helpers/AccessibleSvgIcon';
-import IconTranscriptionSettings from './source/icon_transcription_settings.svg?react';
+import TranscriptionSettings from './source/transcription_settings.svg?react';
 
 const TranscriptionSettingsIcon = (props: SvgIconProps) => (
-  <AccessibleSvgIcon {...props} component={IconTranscriptionSettings} />
+  <AccessibleSvgIcon {...props} component={TranscriptionSettings} />
 );
 
 export default TranscriptionSettingsIcon;

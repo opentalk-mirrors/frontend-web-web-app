@@ -70,22 +70,28 @@ describe('transcriptionSlice', () => {
     it('stores the modes when they are updated', () => {
       const state = reducer(
         undefined,
-        transcriptionModesUpdated({ liveTranscription: true, meetingProtocol: { pseudonymous: true, paused: false } })
+        transcriptionModesUpdated({
+          liveTranscription: true,
+          automaticMeetingProtocol: { pseudonymous: true, paused: false },
+        })
       );
 
       expect(state.liveTranscription).toBe(true);
-      expect(state.meetingProtocol).toEqual({ pseudonymous: true, paused: false });
+      expect(state.automaticMeetingProtocol).toEqual({ pseudonymous: true, paused: false });
     });
 
-    it('clears the meeting protocol when it is no longer part of the modes', () => {
-      const withProtocol = reducer(
+    it('clears the automatic meeting protocol when it is no longer part of the modes', () => {
+      const withAutomaticMeetingProtocol = reducer(
         undefined,
-        transcriptionModesUpdated({ liveTranscription: false, meetingProtocol: { pseudonymous: false, paused: false } })
+        transcriptionModesUpdated({
+          liveTranscription: false,
+          automaticMeetingProtocol: { pseudonymous: false, paused: false },
+        })
       );
 
-      const state = reducer(withProtocol, transcriptionModesUpdated({ liveTranscription: false }));
+      const state = reducer(withAutomaticMeetingProtocol, transcriptionModesUpdated({ liveTranscription: false }));
 
-      expect(state.meetingProtocol).toBeNull();
+      expect(state.automaticMeetingProtocol).toBeNull();
     });
 
     it('restores the modes from the join success payload', () => {
@@ -95,27 +101,30 @@ describe('transcriptionSlice', () => {
           transcription: {
             status: TranscriptionStatus.Running,
             liveTranscription: false,
-            meetingProtocol: { pseudonymous: true, paused: true, consents: false },
+            automaticMeetingProtocol: { pseudonymous: true, paused: true, consents: false },
           },
         } as JoinSuccessInternalState)
       );
 
       expect(state.status).toBe(TranscriptionStatus.Running);
       expect(state.liveTranscription).toBe(false);
-      expect(state.meetingProtocol).toEqual({ pseudonymous: true, paused: true });
+      expect(state.automaticMeetingProtocol).toEqual({ pseudonymous: true, paused: true });
     });
 
     it('resets the modes when joining without transcription state', () => {
       const withModes = reducer(
         undefined,
-        transcriptionModesUpdated({ liveTranscription: true, meetingProtocol: { pseudonymous: false, paused: false } })
+        transcriptionModesUpdated({
+          liveTranscription: true,
+          automaticMeetingProtocol: { pseudonymous: false, paused: false },
+        })
       );
 
       const state = reducer(withModes, joinSuccess({} as JoinSuccessInternalState));
 
       expect(state.status).toBe(TranscriptionStatus.Inactive);
       expect(state.liveTranscription).toBe(false);
-      expect(state.meetingProtocol).toBeNull();
+      expect(state.automaticMeetingProtocol).toBeNull();
     });
   });
 

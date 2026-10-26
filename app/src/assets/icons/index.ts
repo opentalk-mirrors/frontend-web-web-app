@@ -9,6 +9,8 @@ import ArrowLeftIcon from './ArrowLeftIcon';
 import ArrowRightIcon from './ArrowRightIcon';
 import ArrowUpIcon from './ArrowUpIcon';
 import AttendanceReportIcon from './AttendanceReportIcon';
+import AutomaticMeetingProtocolOffIcon from './AutomaticMeetingProtocolOffIcon';
+import AutomaticMeetingProtocolOnIcon from './AutomaticMeetingProtocolOnIcon';
 import BackIcon from './BackIcon';
 import BreakroomsIcon from './BreakroomsIcon';
 import BugIcon from './BugIcon';
@@ -118,6 +120,8 @@ export {
   ArrowRightIcon,
   ArrowUpIcon,
   AttendanceReportIcon,
+  AutomaticMeetingProtocolOffIcon,
+  AutomaticMeetingProtocolOnIcon,
   BackIcon,
   BreakroomsIcon,
   BugIcon,

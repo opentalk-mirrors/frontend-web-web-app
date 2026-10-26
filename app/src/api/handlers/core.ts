@@ -328,12 +328,17 @@ export const handleRoomServerCoreMessage = async (
         showConsentNotification(dispatch);
       }
 
-      if (moduleData.transcription?.status === 'running' && moduleData.transcription.liveTranscription) {
-        notifications.showTranscriptionEnabledNotification({
-          onActivated: () => {
-            dispatch(showSubtitles());
-          },
-        });
+      if (moduleData.transcription?.status === 'running') {
+        if (moduleData.transcription.liveTranscription) {
+          notifications.showTranscriptionEnabledNotification({
+            onActivated: () => {
+              dispatch(showSubtitles());
+            },
+          });
+        }
+        if (moduleData.transcription.automaticMeetingProtocol) {
+          notifications.info(i18next.t('automatic-meeting-protocol-notification-started'));
+        }
       }
 
       // Switch to a breakout room, if a breakout session is active

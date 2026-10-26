@@ -2,18 +2,20 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { useLocalParticipant } from '@livekit/components-react';
-import { Grid, Stack, Tooltip, Typography, styled } from '@mui/material';
+import { Box, Grid, Stack, Tooltip, Typography, styled } from '@mui/material';
 import { ConnectionQuality } from 'livekit-client';
 import { useTranslation } from 'react-i18next';
 
 import {
   ConnectionBadIcon,
-  LiveIcon as DefaultLiveIcon,
-  RecordingsIcon as DefaultRecordingsIcon,
+  LiveIcon,
+  RecordingsIcon,
   DurationIcon,
+  AutomaticMeetingProtocolOnIcon,
 } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
 import { selectIsRecordingActive, selectIsStreamActive } from '../../../store/slices/streamingSlice';
+import { selectIsAutomaticMeetingProtocolRunning } from '../../../store/slices/transcriptionSlice';
 import { selectIsModerator } from '../../../store/slices/userSlice';
 import { getLocationProtocol } from '../../../utils/apiUtils';
 import PopoverButton from '../../PopoverButton.tsx/PopoverButton';
@@ -26,7 +28,7 @@ const ContainerWithBackground = styled(Stack)(({ theme }) => ({
   color: theme.palette.background.customPaper.contrastText,
   height: '100%',
   alignItems: 'center',
-  justifyContet: 'center',
+  justifyContent: 'center',
   padding: theme.spacing(0, 1),
   borderRadius: '0.25rem',
   //Applies proper size to each icon inside
@@ -35,19 +37,22 @@ const ContainerWithBackground = styled(Stack)(({ theme }) => ({
   },
 }));
 
+const IconContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  padding: theme.spacing(0, 1),
+  borderRadius: '0.25rem',
+  background: theme.palette.background.customPaper.primary,
+  color: theme.palette.error.light,
+}));
+
 const Container = styled(Stack)({
   display: 'flex',
   justifyContent: 'flex-end',
   alignItems: 'center',
 });
-
-const RecordingsIcon = styled(DefaultRecordingsIcon)(({ theme }) => ({
-  fill: theme.palette.error.light,
-}));
-
-const LiveIcon = styled(DefaultLiveIcon)(({ theme }) => ({
-  fill: theme.palette.error.light,
-}));
 
 const BadConnectionIcon = styled(ConnectionBadIcon)(({ theme }) => ({
   color: theme.palette.warning.main,
@@ -74,6 +79,7 @@ const MeetingUtilsSection = () => {
   const isModerator = useAppSelector(selectIsModerator);
   const isRecordingActive = useAppSelector(selectIsRecordingActive);
   const isStreamingActive = useAppSelector(selectIsStreamActive);
+  const isAutomaticMeetingProtocolRunning = useAppSelector(selectIsAutomaticMeetingProtocolRunning);
   const showSecurityBadge = getLocationProtocol() === 'https:';
   const { t } = useTranslation();
   const { localParticipant } = useLocalParticipant();
@@ -98,11 +104,24 @@ const MeetingUtilsSection = () => {
         {showSecurityBadge && <SecurityBadge />}
       </ContainerWithBackground>
       {isRecordingActive && (
-        <Tooltip title={t('recording-started-tooltip')}>
-          <RecordingsIcon aria-label={t('recording-active-label')} />
-        </Tooltip>
+        <IconContainer>
+          <Tooltip title={t('recording-started-tooltip')}>
+            <RecordingsIcon aria-label={t('recording-active-label')} />
+          </Tooltip>
+        </IconContainer>
       )}
-      {isStreamingActive && <LiveIcon aria-label={t('livestream-active-label')} />}
+      {isStreamingActive && (
+        <IconContainer>
+          <LiveIcon aria-label={t('livestream-active-label')} />
+        </IconContainer>
+      )}
+      {isAutomaticMeetingProtocolRunning && (
+        <IconContainer>
+          <Tooltip title={t('automatic-meeting-protocol-active')}>
+            <AutomaticMeetingProtocolOnIcon aria-label={t('automatic-meeting-protocol-active')} />
+          </Tooltip>
+        </IconContainer>
+      )}
     </Container>
   );
 };

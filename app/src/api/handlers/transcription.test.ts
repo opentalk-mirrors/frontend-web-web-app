@@ -1,10 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { AssetId } from '@opentalk/rest-api-rtk-query';
+import { selectIsAuthenticated } from '@opentalk/redux-oidc';
+import { AssetId, EventId } from '@opentalk/rest-api-rtk-query';
 import i18next from 'i18next';
 
 import { notifications } from '../../commonComponents';
+import { showWithLinkNotification } from '../../components/WithLinkNotification';
 import log from '../../logger';
 import { RootState } from '../../store';
 import { ParticipantId, Timestamp } from '../../types';
@@ -25,6 +27,15 @@ vi.mock('../../i18n', () => ({
 }));
 vi.mock('../../commonComponents', () => ({
   notifications: { info: vi.fn(), error: vi.fn(), showTranscriptionEnabledNotification: vi.fn() },
+}));
+
+vi.mock('../../components/WithLinkNotification', () => ({
+  showWithLinkNotification: vi.fn(),
+}));
+
+vi.mock('@opentalk/redux-oidc', async (importOriginal) => ({
+  ...(await importOriginal()),
+  selectIsAuthenticated: vi.fn(),
 }));
 
 vi.mock('../../logger', () => ({
@@ -68,7 +79,7 @@ describe('handleTranscriptionMessage', () => {
       transcription: {
         status,
         liveTranscription: true,
-        meetingProtocol: null,
+        automaticMeetingProtocol: null,
         language: '',
         showSubtitles: false,
         showSettings: false,
@@ -128,7 +139,7 @@ describe('handleTranscriptionMessage', () => {
         expect.objectContaining({ onActivated: expect.any(Function) })
       );
     });
-    it('does not offer subtitles when the service only runs for the meeting protocol', () => {
+    it('does not offer subtitles when the service only runs for the automatic meeting protocol', () => {
       const mockDispatch = vi.fn();
       const message: TranscriptionMessage = {
         message: 'state_updated',
@@ -161,7 +172,52 @@ describe('handleTranscriptionMessage', () => {
           expect.objectContaining({ type: 'transcription/setTranscriptionLanguage', payload: 'de' })
         );
         expect(notifications.info).toHaveBeenCalledWith('subtitle-notification-language-changed');
+      });
+    });
+    describe('automatic meeting protocol', () => {
+      const runningMessage: TranscriptionMessage = {
+        message: 'state_updated',
+        status: TranscriptionStatus.Running,
+        language: 'en' as TranscriptionLanguageKey,
+      };
+      it('notifies that the automatic meeting protocol has started when the service starts running', () => {
+        const mockDispatch = vi.fn();
+        handleTranscriptionMessage(
+          mockDispatch,
+          runningMessage,
+          defaultState(TranscriptionStatus.Requested, {
+            liveTranscription: false,
+            automaticMeetingProtocol: { pseudonymous: false, paused: false },
+          })
+        );
+        expect(notifications.info).toHaveBeenCalledWith('automatic-meeting-protocol-notification-started');
         expect(notifications.showTranscriptionEnabledNotification).not.toHaveBeenCalled();
+      });
+      it('does not notify again when the service was already running', () => {
+        const mockDispatch = vi.fn();
+        handleTranscriptionMessage(
+          mockDispatch,
+          runningMessage,
+          defaultState(TranscriptionStatus.Running, {
+            liveTranscription: false,
+            automaticMeetingProtocol: { pseudonymous: false, paused: false },
+            language: 'en',
+          })
+        );
+        expect(notifications.info).not.toHaveBeenCalled();
+      });
+      it('does not notify when the service is not running', () => {
+        const mockDispatch = vi.fn();
+        const message: TranscriptionMessage = { message: 'state_updated', status: TranscriptionStatus.Inactive };
+        handleTranscriptionMessage(
+          mockDispatch,
+          message,
+          defaultState(TranscriptionStatus.Requested, {
+            liveTranscription: false,
+            automaticMeetingProtocol: { pseudonymous: false, paused: false },
+          })
+        );
+        expect(notifications.info).not.toHaveBeenCalledWith('automatic-meeting-protocol-notification-started');
       });
     });
   });
@@ -171,13 +227,13 @@ describe('handleTranscriptionMessage', () => {
       const message: TranscriptionMessage = {
         message: 'modes_updated',
         liveTranscription: false,
-        meetingProtocol: { pseudonymous: true, paused: false },
+        automaticMeetingProtocol: { pseudonymous: true, paused: false },
       };
       handleTranscriptionMessage(mockDispatch, message, defaultState(TranscriptionStatus.Running));
 
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'transcription/transcriptionModesUpdated',
-        payload: { liveTranscription: false, meetingProtocol: { pseudonymous: true, paused: false } },
+        payload: { liveTranscription: false, automaticMeetingProtocol: { pseudonymous: true, paused: false } },
       });
     });
     it('hides the subtitles and notifies when live transcription is stopped', () => {
@@ -193,7 +249,7 @@ describe('handleTranscriptionMessage', () => {
       const message: TranscriptionMessage = {
         message: 'modes_updated',
         liveTranscription: true,
-        meetingProtocol: { pseudonymous: false, paused: false },
+        automaticMeetingProtocol: { pseudonymous: false, paused: false },
       };
       handleTranscriptionMessage(
         mockDispatch,
@@ -216,33 +272,93 @@ describe('handleTranscriptionMessage', () => {
 
       expect(notifications.showTranscriptionEnabledNotification).not.toHaveBeenCalled();
     });
-    it('does not notify when only the meeting protocol changes', () => {
+    it('notifies that the automatic meeting protocol has started when it is added to the running service', () => {
       const mockDispatch = vi.fn();
       const message: TranscriptionMessage = {
         message: 'modes_updated',
         liveTranscription: true,
-        meetingProtocol: { pseudonymous: false, paused: false },
+        automaticMeetingProtocol: { pseudonymous: false, paused: false },
       };
       handleTranscriptionMessage(mockDispatch, message, defaultState(TranscriptionStatus.Running));
 
-      expect(notifications.info).not.toHaveBeenCalled();
+      expect(notifications.info).toHaveBeenCalledWith('automatic-meeting-protocol-notification-started');
       expect(notifications.showTranscriptionEnabledNotification).not.toHaveBeenCalled();
-      expect(mockDispatch).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'transcription/hideSubtitles' }));
+    });
+    it('does not notify when the already active automatic meeting protocol only changes its settings', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'modes_updated',
+        liveTranscription: true,
+        automaticMeetingProtocol: { pseudonymous: false, paused: true },
+      };
+      handleTranscriptionMessage(
+        mockDispatch,
+        message,
+        defaultState(TranscriptionStatus.Running, { automaticMeetingProtocol: { pseudonymous: false, paused: false } })
+      );
+
+      expect(notifications.info).not.toHaveBeenCalled();
+    });
+    it('notifes that the automatic meeting protocol has stopped', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'modes_updated',
+        liveTranscription: true,
+      };
+      handleTranscriptionMessage(
+        mockDispatch,
+        message,
+        defaultState(TranscriptionStatus.Running, { automaticMeetingProtocol: { pseudonymous: false, paused: false } })
+      );
+
+      expect(notifications.info).toHaveBeenCalledWith('automatic-meeting-protocol-notification-stopped');
     });
   });
-  describe('meeting protocol messages received', () => {
-    it.each<TranscriptionMessage>([
-      {
-        message: 'pdf_created',
-        filename: 'protocol.pdf',
-        assetId: 'asset-1' as AssetId,
-        quota: { total: 1000, used: 100 },
-      },
-      { message: 'meeting_protocol_consent_updated', participant: 'participant-1' as ParticipantId, consents: true },
-    ])('accepts $message without throwing', (message) => {
+  describe('pdf_created message received', () => {
+    const message: TranscriptionMessage = {
+      message: 'pdf_created',
+      filename: 'protocol.pdf',
+      assetId: 'asset-1' as AssetId,
+      quota: { total: 1000, used: 100 },
+    };
+    const pdfCreatedState = (eventId?: EventId) =>
+      createState({
+        ...defaultState(TranscriptionStatus.Running, {
+          automaticMeetingProtocol: { pseudonymous: false, paused: false },
+        }),
+        room: { eventInfo: eventId ? { id: eventId } : undefined },
+        config: { baseUrl: 'https://example.test' },
+      } as unknown as Partial<RootState>);
+
+    it('shows a notification with a link to the meeting details to authenticated users', () => {
+      vi.mocked(selectIsAuthenticated).mockReturnValue(true);
+      handleTranscriptionMessage(vi.fn(), message, pdfCreatedState('event-1' as EventId));
+
+      expect(showWithLinkNotification).toHaveBeenCalledWith({
+        translationKey: 'automatic-meeting-protocol-pdf-created-with-link-notification',
+        url: 'https://example.test/dashboard/meetings/event-1',
+      });
+    });
+    it('does not show a notification with a link to the meeting details to non-authenticated users', () => {
+      vi.mocked(selectIsAuthenticated).mockReturnValue(false);
+      handleTranscriptionMessage(vi.fn(), message, pdfCreatedState('event-1' as EventId));
+
+      expect(showWithLinkNotification).not.toHaveBeenCalled();
+      expect(notifications.info).not.toHaveBeenCalled();
+    });
+  });
+  describe('automatic meeting protocol messages received', () => {
+    it('accepts automatic_meeting_protocol_consent_updated without side effects', () => {
       const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'automatic_meeting_protocol_consent_updated',
+        participant: 'participant-1' as ParticipantId,
+        consents: true,
+      };
 
       expect(() => handleTranscriptionMessage(mockDispatch, message, defaultState())).not.toThrow();
+      expect(mockDispatch).not.toHaveBeenCalled();
+      expect(notifications.info).not.toHaveBeenCalled();
       expect(log.error).not.toHaveBeenCalled();
     });
   });
@@ -261,11 +377,31 @@ describe('handleTranscriptionMessage', () => {
       const mockDispatch = vi.fn();
       const message: TranscriptionMessage = {
         message: 'error',
-        error: 'service_request_failed' as TranscriptionError,
+        error: TranscriptionError.ServiceRequestFailed,
       };
       handleTranscriptionMessage(mockDispatch, message, defaultState());
       expect(notifications.error).toHaveBeenCalledWith('transcription-error');
       expect(log.error).toHaveBeenCalledWith('transcription error:', 'service_request_failed');
+    });
+    it('notifies registered users that transcript generation has failed', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'error',
+        error: TranscriptionError.GenerateAutomaticMeetingProtocol,
+      };
+      vi.mocked(selectIsAuthenticated).mockReturnValue(true);
+      handleTranscriptionMessage(mockDispatch, message, defaultState());
+      expect(notifications.error).toHaveBeenCalledWith('automatic-meeting-protocol-notification-generate-error');
+    });
+    it('does not notify guests that transcript generation has failed', () => {
+      const mockDispatch = vi.fn();
+      const message: TranscriptionMessage = {
+        message: 'error',
+        error: TranscriptionError.GenerateAutomaticMeetingProtocol,
+      };
+      vi.mocked(selectIsAuthenticated).mockReturnValue(false);
+      handleTranscriptionMessage(mockDispatch, message, defaultState());
+      expect(notifications.error).not.toHaveBeenCalled();
     });
     it('logs unknown message types and throws an error', () => {
       const mockDispatch = vi.fn();
