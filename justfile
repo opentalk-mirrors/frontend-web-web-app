@@ -44,6 +44,7 @@ update-changelog VERSION: _check_opentalk_git_cliff
     GITLAB_REPO=opentalk/frontend/web/web-app \
     opentalk-git-cliff \
         --unreleased \
+        --use-branch-tags \
         --tag "v{{ VERSION }}" \
         --prepend CHANGELOG.md
 
