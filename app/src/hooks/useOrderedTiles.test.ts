@@ -621,18 +621,18 @@ describe('useOrderedTiles', () => {
       );
     });
 
-    it('adds a screen share tile right after the camera tile of a sharing participant', () => {
+    it('adds a screen share tile right before the camera tile of a sharing participant', () => {
       const participants = getMockedParticipants(3);
       participants[1].isScreenShareEnabled = true;
       const { store } = configureStore(SHARED_INITIAL_STATE);
       const { result } = renderOrderedTiles(hookProps(participants), { store });
       expect(result.current.orderedTiles.map(({ tileKey, source }) => ({ tileKey, source }))).toEqual([
         { tileKey: participants[0].identity, source: Track.Source.Camera },
-        { tileKey: participants[1].identity, source: Track.Source.Camera },
         { tileKey: `${participants[1].identity}:screen`, source: Track.Source.ScreenShare },
+        { tileKey: participants[1].identity, source: Track.Source.Camera },
         { tileKey: participants[2].identity, source: Track.Source.Camera },
       ]);
-      expect(result.current.orderedTiles[2].participant).toBe(participants[1]);
+      expect(result.current.orderedTiles[1].participant).toBe(participants[1]);
     });
 
     it('produces unique tile keys with multiple sharing participants', () => {
