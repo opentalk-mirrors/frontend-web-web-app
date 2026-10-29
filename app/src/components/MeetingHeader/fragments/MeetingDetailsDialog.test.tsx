@@ -17,6 +17,7 @@ const mockEventInfo: EventInfo = {
   roomId: '1' as RoomId,
   e2eEncryption: false,
   passwordRequired: false,
+  isInvited: true,
 };
 
 const meetingDetails: MeetingDetails = {

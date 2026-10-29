@@ -6,6 +6,7 @@ interface CodeResponse {
   refreshToken: string;
   refreshExpiresIn: number;
   scope: string;
+  idToken?: string;
 }
 
 interface RefreshTokenResponse {
@@ -14,6 +15,7 @@ interface RefreshTokenResponse {
   refreshToken: string;
   refreshExpiresIn: number;
   scope: string;
+  idToken?: string;
 }
 
 export enum SessionStatus {
@@ -83,11 +85,15 @@ export function hasValidToken(token: string | null) {
 }
 
 export const storeToken = (payload: CodeResponse | RefreshTokenResponse) => {
-  const { accessToken, refreshToken } = payload;
+  const { accessToken, refreshToken, idToken } = payload;
   const serverTimeOffset = getTokenIssuedDateInMs(accessToken) - Date.now();
   localStorage.setItem('server_time_offset', String(serverTimeOffset));
   localStorage.setItem('access_token', accessToken);
   localStorage.setItem('refresh_token', refreshToken);
+
+  if (idToken) {
+    localStorage.setItem('id_token', idToken);
+  }
 };
 
 const clearStoredTokens = () => {

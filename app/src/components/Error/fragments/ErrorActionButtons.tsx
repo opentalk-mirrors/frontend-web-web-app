@@ -2,14 +2,14 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Button, IconButton as MuiIconButton, styled, Typography } from '@mui/material';
-import { getSavedLocation, useAuthContext } from '@opentalk/redux-oidc';
+import { getSavedLocation } from '@opentalk/redux-oidc';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { BackIcon } from '../../../assets/icons';
+import { useAuthActions } from '../../../hooks/useAuthActions';
 import useNavigateToHome from '../../../hooks/useNavigateToHome';
-import log from '../../../logger';
 
 interface ErrorActionButtonsProps {
   logout?: boolean;
@@ -40,7 +40,7 @@ const ErrorActionButtons = ({ logout, login, retry }: ErrorActionButtonsProps) =
   const { t } = useTranslation();
   const navigateToHome = useNavigateToHome();
   const navigate = useNavigate();
-  const auth = useAuthContext();
+  const { signIn, signOut, isAuthAvailable } = useAuthActions();
   const [secondsLeft, setSecondsLeft] = useState<number>(SECONDS_UNTIL_RETRY);
 
   const enableRetry = secondsLeft === 0;
@@ -67,9 +67,9 @@ const ErrorActionButtons = ({ logout, login, retry }: ErrorActionButtonsProps) =
   };
 
   if (logout) {
-    if (auth) {
+    if (isAuthAvailable) {
       return (
-        <Button onClick={() => auth.signOut()}>
+        <Button onClick={() => signOut()}>
           <Typography>{t('global-logout')}</Typography>
         </Button>
       );
@@ -78,9 +78,9 @@ const ErrorActionButtons = ({ logout, login, retry }: ErrorActionButtonsProps) =
   }
 
   if (login) {
-    if (auth) {
+    if (isAuthAvailable) {
       return (
-        <Button onClick={() => auth.signIn().catch((error) => log.error('failed to signIn:', error))}>
+        <Button onClick={() => signIn()}>
           <Typography>{t('global-login')}</Typography>
         </Button>
       );
