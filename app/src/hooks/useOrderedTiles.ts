@@ -94,8 +94,7 @@ const mapKeysToTiles = <T extends ParticipantForTiles>(
       tiles.push({ participant, connectionIdentifier: key, source: Track.Source.Camera, tileKey: key });
     } else {
       // The Camera tile for participant exists always
-      // Add additional ScreenShare tile, if participant shares screen
-      tiles.push({ participant, connectionIdentifier: key, source: Track.Source.Camera, tileKey: key });
+      // Add additional ScreenShare tile before the camera tile, if participant shares screen
       if (participant.isScreenShareEnabled) {
         tiles.push({
           participant,
@@ -104,6 +103,7 @@ const mapKeysToTiles = <T extends ParticipantForTiles>(
           tileKey: `${key}:screen`,
         });
       }
+      tiles.push({ participant, connectionIdentifier: key, source: Track.Source.Camera, tileKey: key });
     }
   }
 
