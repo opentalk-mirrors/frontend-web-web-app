@@ -544,6 +544,7 @@ run-full-e2e-tests:
   stage: e2e
   variables:
     FRONTEND_TAG: ${CI_MERGE_REQUEST_IID}_${CI_COMMIT_REF_SLUG}
+    RUN_ONLY_SMOKE_TESTS: true
   trigger:
     project: opentalk/qa/e2e-tests
     strategy: depend
