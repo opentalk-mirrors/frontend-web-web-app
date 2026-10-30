@@ -3,9 +3,13 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Stack, Theme, styled, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { Track } from 'livekit-client';
 import { useEffect, useRef, useState } from 'react';
 
 import { useCinemaViewParticipants } from '../../hooks';
+import type { CinemaViewParticipant } from '../../hooks/useCinemaViewParticipants';
+import { TileIdentifier } from '../../types';
+import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import { THUMBNAIL_WIDTH_LG, THUMBNAIL_WIDTH_XL } from './constants';
 import Filmstrip from './fragments/Filmstrip';
 import SpeakerWindow from './fragments/SpeakerWindow';
@@ -28,12 +32,24 @@ const SpeakerWindowContainer = styled('div')({
   flexDirection: 'column',
 });
 
+const getControllerFallbackTile = (participants: CinemaViewParticipant[]): TileIdentifier | undefined => {
+  const participant = participants.find(({ connections }) => connections.length > 0);
+  if (!participant) {
+    return undefined;
+  }
+  return {
+    connectionIdentifier: constructConnectionIdentifier(participant.id, participant.connections[0]),
+    source: Track.Source.Camera,
+  };
+};
+
 const SpeakerView = () => {
   const theme: Theme = useTheme();
   const thumbnailWidth = useMediaQuery(theme.breakpoints.up('xl')) ? THUMBNAIL_WIDTH_XL : THUMBNAIL_WIDTH_LG;
   const [visibleThumbnails, setVisibleThumbnails] = useState(1);
   const [speakerWindowDimensions, setSpeakerWindowDimensions] = useState({ width: 0, height: 0 });
   const { cinemaViewParticipants, remoteParticipantsMap, featuredTile } = useCinemaViewParticipants();
+  const speakerTile = featuredTile ?? getControllerFallbackTile(cinemaViewParticipants);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const speakerWindowRef = useRef<HTMLDivElement | null>(null);
@@ -79,7 +95,7 @@ const SpeakerView = () => {
           speakerWindowHeight={speakerWindowDimensions.height}
           cinemaViewParticipants={cinemaViewParticipants}
           remoteParticipantsMap={remoteParticipantsMap}
-          featuredTile={featuredTile}
+          featuredTile={speakerTile}
         />
       </SpeakerWindowContainer>
       <Filmstrip
@@ -87,7 +103,7 @@ const SpeakerView = () => {
         thumbnailWidth={thumbnailWidth}
         cinemaViewParticipants={cinemaViewParticipants}
         remoteParticipantsMap={remoteParticipantsMap}
-        featuredTile={featuredTile}
+        featuredTile={speakerTile}
       />
     </Container>
   );

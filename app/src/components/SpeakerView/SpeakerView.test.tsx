@@ -5,7 +5,8 @@ import { screen } from '@testing-library/react';
 import { Track } from 'livekit-client';
 
 import SpeakerView from '.';
-import { ConnectionIdentifier } from '../../types';
+import type { CinemaViewParticipant } from '../../hooks/useCinemaViewParticipants';
+import { ConnectionId, ConnectionIdentifier, ParticipantId } from '../../types';
 import { renderWithProviders, mockStore } from '../../utils/testUtils';
 
 const { mockUseCinemaViewParticipants, mockSpeakerWindow, mockFilmstrip } = vi.hoisted(() => ({
@@ -44,6 +45,13 @@ const cinemaViewData = {
   },
 };
 
+const createParticipant = (index: number, connections = [`connection-${index}` as ConnectionId]) =>
+  ({
+    id: `participant-${index}` as ParticipantId,
+    connections,
+    displayName: `Participant ${index}`,
+  }) as CinemaViewParticipant;
+
 describe('SpeakerView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -65,5 +73,64 @@ describe('SpeakerView', () => {
     expect(mockUseCinemaViewParticipants).toHaveBeenCalled();
     expect(mockSpeakerWindow).toHaveBeenLastCalledWith(expect.objectContaining(cinemaViewData));
     expect(mockFilmstrip).toHaveBeenLastCalledWith(expect.objectContaining(cinemaViewData));
+  });
+
+  describe('while LiveKit has not determined a featured tile yet', () => {
+    it('features the camera of the first participant known to the controller', () => {
+      const participants = [createParticipant(1), createParticipant(2)];
+      mockUseCinemaViewParticipants.mockReturnValue({
+        cinemaViewParticipants: participants,
+        remoteParticipantsMap: new Map(),
+        featuredTile: undefined,
+      });
+      const { store } = mockStore(0);
+      renderWithProviders(<SpeakerView />, { store });
+
+      const expectedTile = {
+        connectionIdentifier: 'participant-1:connection-1' as ConnectionIdentifier,
+        source: Track.Source.Camera,
+      };
+      expect(mockSpeakerWindow).toHaveBeenLastCalledWith(
+        expect.objectContaining({ cinemaViewParticipants: participants, featuredTile: expectedTile })
+      );
+      expect(mockFilmstrip).toHaveBeenLastCalledWith(
+        expect.objectContaining({ cinemaViewParticipants: participants, featuredTile: expectedTile })
+      );
+    });
+
+    it('skips participants without a connection', () => {
+      mockUseCinemaViewParticipants.mockReturnValue({
+        cinemaViewParticipants: [createParticipant(1, []), createParticipant(2)],
+        remoteParticipantsMap: new Map(),
+        featuredTile: undefined,
+      });
+      const { store } = mockStore(0);
+      renderWithProviders(<SpeakerView />, { store });
+
+      expect(mockSpeakerWindow).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          featuredTile: {
+            connectionIdentifier: 'participant-2:connection-2' as ConnectionIdentifier,
+            source: Track.Source.Camera,
+          },
+        })
+      );
+    });
+  });
+
+  it('prefers the featured tile from LiveKit over the controller fallback', () => {
+    mockUseCinemaViewParticipants.mockReturnValue({
+      ...cinemaViewData,
+      cinemaViewParticipants: [createParticipant(1)],
+    });
+    const { store } = mockStore(0);
+    renderWithProviders(<SpeakerView />, { store });
+
+    expect(mockSpeakerWindow).toHaveBeenLastCalledWith(
+      expect.objectContaining({ featuredTile: cinemaViewData.featuredTile })
+    );
+    expect(mockFilmstrip).toHaveBeenLastCalledWith(
+      expect.objectContaining({ featuredTile: cinemaViewData.featuredTile })
+    );
   });
 });
