@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Mock } from 'vitest';
 
@@ -9,7 +9,7 @@ import { MODERATION_MENU_VIEW, ModerationTabKey } from '../../config/constants';
 import { SIDE_PANEL_ID } from '../../constants';
 import useConferenceUiVersion from '../../hooks/useConferenceUiVersion';
 import useTabs from '../../hooks/useTabs';
-import { initialState as uiInitialState } from '../../store/slices/uiSlice';
+import { initialState as uiInitialState, openSidePanel } from '../../store/slices/uiSlice';
 import { Role } from '../../types';
 import { configureStore, renderWithProviders } from '../../utils/testUtils';
 import { MenuTab } from '../MenuTabs/fragments/constants';
@@ -39,7 +39,16 @@ vi.mock('../../hooks/useTabs', () => ({
 
 vi.mock('../Chat', () => ({ __esModule: true, default: () => <div data-testid="chat" /> }));
 vi.mock('../Participants', () => ({ __esModule: true, default: () => <div data-testid="participants" /> }));
-vi.mock('../ChatOverview', () => ({ __esModule: true, default: () => <div data-testid="chat-overview" /> }));
+vi.mock('../ChatOverview', async () => {
+  const { useLayoutEffect, useRef } = await import('react');
+  // Mirrors ChatForm, which focuses its input as soon as a private chat is shown.
+  const ChatOverviewMock = () => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    useLayoutEffect(() => inputRef.current?.focus(), []);
+    return <input ref={inputRef} data-testid="chat-overview" aria-label="message" />;
+  };
+  return { __esModule: true, default: ChatOverviewMock };
+});
 vi.mock('../ModerationMenu', () => ({ __esModule: true, default: () => <div data-testid="moderation-menu" /> }));
 vi.mock('./MeetingSidebarLegacy', () => ({ __esModule: true, default: () => <div data-testid="sidebar-legacy" /> }));
 
@@ -77,6 +86,26 @@ describe('MeetingSidebar side panel', () => {
     renderMeetingSidebar();
 
     expect(screen.getByRole('region')).toHaveAttribute('id', SIDE_PANEL_ID);
+  });
+
+  it('moves focus to the panel when switching to a view that does not focus itself', () => {
+    const { store } = renderMeetingSidebar({ role: Role.User, sidePanelView: MenuTab.Chat });
+
+    act(() => {
+      store.dispatch(openSidePanel(MenuTab.People));
+    });
+
+    expect(screen.getByRole('region')).toHaveFocus();
+  });
+
+  it('keeps the focus a view places inside the panel, e.g. the private chat input', () => {
+    const { store } = renderMeetingSidebar({ role: Role.User, sidePanelView: MenuTab.People });
+
+    act(() => {
+      store.dispatch(openSidePanel(MenuTab.Messages));
+    });
+
+    expect(screen.getByRole('textbox', { name: 'message' })).toHaveFocus();
   });
 
   it('closes the panel through the close button', async () => {
