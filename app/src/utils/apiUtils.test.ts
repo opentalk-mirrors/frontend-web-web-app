@@ -1,17 +1,50 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { openUserManual, USER_MANUAL_URL } from './apiUtils';
+import { de, deAT, enUS, fr } from 'date-fns/locale';
+
+import { DEFAULT_ACCESSIBILITY_URL_DE, DEFAULT_ACCESSIBILITY_URL_EN, getAccessibilityUrl } from './apiUtils';
 
 describe('api utils', () => {
-  it('opens user manual in new tab', () => {
-    const restoreWindowOpen = window.open;
-    window.open = vi.fn();
+  describe('getAccessibilityUrl', () => {
+    it.each([
+      [de, DEFAULT_ACCESSIBILITY_URL_DE],
+      [deAT, DEFAULT_ACCESSIBILITY_URL_DE],
+      [enUS, DEFAULT_ACCESSIBILITY_URL_EN],
+      [fr, DEFAULT_ACCESSIBILITY_URL_EN],
+      [undefined, DEFAULT_ACCESSIBILITY_URL_EN],
+    ])('uses the default for locale %j', (locale, expectedUrl) => {
+      expect(getAccessibilityUrl(locale)).toBe(expectedUrl);
+      expect(getAccessibilityUrl(locale, { accessibilityUrlEn: '', accessibilityUrlDe: '' })).toBe(expectedUrl);
+    });
 
-    openUserManual();
+    it.each([
+      [de, 'https://example.com/accessibility/de'],
+      [deAT, 'https://example.com/accessibility/de'],
+      [enUS, 'https://example.com/accessibility/en'],
+      [fr, 'https://example.com/accessibility/en'],
+      [undefined, 'https://example.com/accessibility/en'],
+    ])('uses the configured URL for locale %j', (locale, expectedUrl) => {
+      expect(
+        getAccessibilityUrl(locale, {
+          accessibilityUrlEn: 'https://example.com/accessibility/en',
+          accessibilityUrlDe: 'https://example.com/accessibility/de',
+        })
+      ).toBe(expectedUrl);
+    });
 
-    expect(window.open).toHaveBeenCalledExactlyOnceWith(USER_MANUAL_URL, '_blank');
+    it('uses an English-only override and keeps the German default', () => {
+      const overrides = { accessibilityUrlEn: 'https://example.com/accessibility/en' };
 
-    window.open = restoreWindowOpen;
+      expect(getAccessibilityUrl(enUS, overrides)).toBe(overrides.accessibilityUrlEn);
+      expect(getAccessibilityUrl(de, overrides)).toBe(DEFAULT_ACCESSIBILITY_URL_DE);
+    });
+
+    it('uses a German-only override and keeps the English default', () => {
+      const overrides = { accessibilityUrlDe: 'https://example.com/accessibility/de' };
+
+      expect(getAccessibilityUrl(de, overrides)).toBe(overrides.accessibilityUrlDe);
+      expect(getAccessibilityUrl(enUS, overrides)).toBe(DEFAULT_ACCESSIBILITY_URL_EN);
+    });
   });
 });

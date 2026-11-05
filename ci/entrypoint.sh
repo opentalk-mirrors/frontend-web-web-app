@@ -79,6 +79,9 @@ window.config = {
   baseUrl: ${BASE_URL},
   helpdeskUrl: "${HELPDESK_URL}",
   contactSupportUrl: "${CONTACT_SUPPORT_URL}",
+  userManualUrl: "${USER_MANUAL_URL}",
+  accessibilityUrlEn: "${ACCESSIBILITY_URL_EN}",
+  accessibilityUrlDe: "${ACCESSIBILITY_URL_DE}",
   imprintUrl: "${IMPRINT_URL}",
   dataProtectionUrl: "${DATA_PROTECTION_URL}",
   provider: {

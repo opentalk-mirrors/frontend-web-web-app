@@ -9,6 +9,7 @@ import type { RootState } from '../';
 import log from '../../logger';
 import { EnabledModules, SignalingTariff } from '../../types';
 import type { VideoCodec } from '../../types/livekit';
+import { DEFAULT_USER_MANUAL_URL } from '../../utils/apiUtils';
 import { getAvailableGridSizes } from '../../utils/getAvailableGridSizes';
 import { Seconds } from '../../utils/tsUtils';
 import { joinSuccess } from '../commonActions';
@@ -52,6 +53,9 @@ interface Config {
   baseUrl?: string;
   helpdeskUrl?: string;
   contactSupportUrl?: string;
+  userManualUrl?: string;
+  accessibilityUrlEn?: string;
+  accessibilityUrlDe?: string;
   userSurveyUrl?: string;
   userSurveyApiKey?: string;
   errorReportAddress: string;
@@ -113,6 +117,9 @@ export type ConfigState = {
   baseUrl: string;
   helpdeskUrl?: string;
   contactSupportUrl?: string;
+  userManualUrl?: string;
+  accessibilityUrlEn?: string;
+  accessibilityUrlDe?: string;
   userSurveyUrl?: string;
   userSurveyApiKey?: string;
   beta: Beta;
@@ -186,6 +193,9 @@ export const initialState: ConfigState = {
   baseUrl: 'http://localhost',
   helpdeskUrl: undefined,
   contactSupportUrl: undefined,
+  userManualUrl: undefined,
+  accessibilityUrlEn: undefined,
+  accessibilityUrlDe: undefined,
   userSurveyUrl: undefined,
   userSurveyApiKey: undefined,
   errorReportAddress: 'report@opentalk.eu',
@@ -281,6 +291,9 @@ export const selectControllerUrl = (state: RootState) => {
 };
 export const selectHelpdeskUrl = (state: RootState) => state.config.helpdeskUrl;
 export const selectContactSupportUrl = (state: RootState) => state.config.contactSupportUrl;
+export const selectUserManualUrl = (state: RootState) => state.config.userManualUrl || DEFAULT_USER_MANUAL_URL;
+export const selectAccessibilityUrlEn = (state: RootState) => state.config.accessibilityUrlEn;
+export const selectAccessibilityUrlDe = (state: RootState) => state.config.accessibilityUrlDe;
 export const selectOidcConfig = (state: RootState) => state.config.oidcConfig;
 export const selectSpeedTestConfig = (state: RootState) => state.config.speedTest;
 export const selectConfigFeatures = (state: RootState) => state.config.features;

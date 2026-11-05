@@ -7,8 +7,12 @@ import { NavLink } from 'react-router-dom';
 
 import { useAppSelector } from '../../../hooks';
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
-import { selectDataProtectionUrl, selectImprintUrl, selectHelpdeskUrl } from '../../../store/slices/configSlice';
-import { USER_MANUAL_URL } from '../../../utils/apiUtils';
+import {
+  selectDataProtectionUrl,
+  selectImprintUrl,
+  selectHelpdeskUrl,
+  selectUserManualUrl,
+} from '../../../store/slices/configSlice';
 
 export interface SecondaryRoute {
   path: string;
@@ -96,6 +100,7 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
   const imprintUrl = useAppSelector(selectImprintUrl);
   const dataProtectionUrl = useAppSelector(selectDataProtectionUrl);
   const helpdeskUrl = useAppSelector(selectHelpdeskUrl);
+  const userManualUrl = useAppSelector(selectUserManualUrl);
 
   const getTarget = (path: string) => {
     switch (path) {
@@ -118,7 +123,7 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
       case 'support':
         return helpdeskUrl ?? '';
       case 'user-manual':
-        return USER_MANUAL_URL ?? '';
+        return userManualUrl;
       default:
         return '';
     }
@@ -162,26 +167,25 @@ const SecondaryNavigation = ({ label, routes, submenu, setActiveNavbar }: Naviga
         </Typography>
       )}
       <List>
-        {routes &&
-          routes
-            .filter((route) => showSubmenuEntry(route.path))
-            .map(({ path, name }) => {
-              const target = getTarget(path);
+        {routes
+          ?.filter((route) => showSubmenuEntry(route.path))
+          .map(({ path, name }) => {
+            const target = getTarget(path);
 
-              return (
-                <ListItem key={path}>
-                  <NavItem
-                    to={getHref(submenu, path, target)}
-                    onClick={handleNavigation}
-                    data-testid="SecondaryNavItem"
-                    aria-controls={target === '_self' ? 'main-content-dashboard' : undefined}
-                    target={target}
-                  >
-                    <ListItemText>{t(name)}</ListItemText>
-                  </NavItem>
-                </ListItem>
-              );
-            })}
+            return (
+              <ListItem key={path}>
+                <NavItem
+                  to={getHref(submenu, path, target)}
+                  onClick={handleNavigation}
+                  data-testid="SecondaryNavItem"
+                  aria-controls={target === '_self' ? 'main-content-dashboard' : undefined}
+                  target={target}
+                >
+                  <ListItemText>{t(name)}</ListItemText>
+                </NavItem>
+              </ListItem>
+            );
+          })}
       </List>
     </Container>
   );

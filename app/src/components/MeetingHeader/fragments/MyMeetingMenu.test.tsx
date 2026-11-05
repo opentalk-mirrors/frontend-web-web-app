@@ -2,11 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MyMeetingMenu from './MyMeetingMenu';
-
-vi.mock('../../../utils/apiUtils');
 
 describe('My Meeting Menu', () => {
   it('renders menu and all default menu items on button click', async () => {
@@ -67,17 +66,23 @@ describe('My Meeting Menu', () => {
     expect(reportBugMenuItem).toBeInTheDocument();
   });
 
-  it('opens user manual when clicking on User Manual option', async () => {
-    const { store } = configureStore();
+  it.each([
+    [undefined, 'https://docs.opentalk.eu/user/manual/'],
+    ['', 'https://docs.opentalk.eu/user/manual/'],
+    ['https://example.com/manual', 'https://example.com/manual'],
+  ])('uses the user manual URL configured as %s', async (userManualUrl, expectedUrl) => {
+    const user = userEvent.setup();
+    const { store } = configureStore({ initialState: { config: { userManualUrl } } });
     renderWithProviders(<MyMeetingMenu />, { store, provider: { mui: true } });
 
     const menuButton = await screen.findByRole('button', { name: 'my-meeting-menu' });
-    fireEvent.click(menuButton);
+    await user.click(menuButton);
 
     const menuItem = await screen.findByRole('menuitem', { name: 'my-meeting-menu-user-manual global-open-new-tab' });
 
     expect(menuItem).toBeInTheDocument();
-    expect(menuItem).toHaveAttribute('href', 'https://docs.opentalk.eu/user/manual/');
+    expect(menuItem).toHaveAttribute('href', expectedUrl);
+    expect(menuItem).toHaveAttribute('target', '_blank');
     expect(menuItem).not.toBeDisabled();
   });
 });

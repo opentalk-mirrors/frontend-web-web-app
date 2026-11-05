@@ -27,8 +27,14 @@ import {
   AccessablityIcon,
 } from '../../assets/icons';
 import { useAppSelector, useLocale } from '../../hooks';
-import { selectContactSupportUrl, selectIsGlitchtipConfigured } from '../../store/slices/configSlice';
-import { getAccessibilityUrl, USER_MANUAL_URL } from '../../utils/apiUtils';
+import {
+  selectAccessibilityUrlDe,
+  selectAccessibilityUrlEn,
+  selectContactSupportUrl,
+  selectIsGlitchtipConfigured,
+  selectUserManualUrl,
+} from '../../store/slices/configSlice';
+import { getAccessibilityUrl } from '../../utils/apiUtils';
 import { triggerGlitchtipManually } from '../../utils/glitchtipUtils';
 import HotkeyDialog from '../Toolbar/fragments/HotkeyDialog';
 
@@ -87,8 +93,11 @@ export const SupportList = ({
   const isGlitchtipConfigured = useAppSelector(selectIsGlitchtipConfigured);
   const [isHotkeyListDialogOpen, setIsHotkeyListDialogOpen] = useState(false);
   const contactSupportUrl = useAppSelector(selectContactSupportUrl);
+  const userManualUrl = useAppSelector(selectUserManualUrl);
+  const accessibilityUrlEn = useAppSelector(selectAccessibilityUrlEn);
+  const accessibilityUrlDe = useAppSelector(selectAccessibilityUrlDe);
   const locale = useLocale();
-  const accessibilityUrl = getAccessibilityUrl(locale);
+  const accessibilityUrl = getAccessibilityUrl(locale, { accessibilityUrlEn, accessibilityUrlDe });
 
   const items = () => {
     const output: Item[] = [
@@ -109,9 +118,9 @@ export const SupportList = ({
         name: 'my-meeting-menu-user-manual',
         icon: <MenubookIcon fontSize="small" />,
         componentProps: {
-          href: USER_MANUAL_URL,
+          href: userManualUrl,
           target: '_blank',
-          onClick: () => window.open(USER_MANUAL_URL, '_blank'),
+          onClick: () => window.open(userManualUrl, '_blank'),
         },
       },
       {
