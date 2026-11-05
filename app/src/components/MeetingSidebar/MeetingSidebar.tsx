@@ -79,7 +79,9 @@ const MeetingSidebar = () => {
       isInitialView.current = false;
       return;
     }
-    panelRef.current?.focus();
+    if (!panelRef.current?.contains(document.activeElement)) {
+      panelRef.current?.focus();
+    }
   }, [sidePanelView]);
 
   // V2-CLEANUP: drop this guard and MeetingSidebarLegacy
