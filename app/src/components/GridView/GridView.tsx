@@ -2,11 +2,14 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, styled } from '@mui/material';
+import { RemoteParticipant } from 'livekit-client';
 import { CSSProperties } from 'react';
 
-import { useAppSelector, useOrderedTiles, useCinemaViewParticipants } from '../../hooks';
+import { useAppSelector } from '../../hooks';
 import { useBestFitGridLayout } from '../../hooks/useBestFitGridLayout';
+import type { CinemaViewParticipant } from '../../hooks/useCinemaViewParticipants';
 import { useIsMobile } from '../../hooks/useMediaQuery';
+import type { CinemaViewTile } from '../../hooks/useOrderedTiles';
 import TileParticipantProvider from '../../provider/TileParticipantProvider';
 import { selectParticipantsTotal } from '../../store/slices/participantsSlice';
 import { selectPaginationDirectionState } from '../../store/slices/uiSlice';
@@ -33,11 +36,12 @@ const GridContainer = styled(Box, {
   overflowY: isScrolling ? 'auto' : 'hidden',
 }));
 
-const GridView = () => {
-  const { cinemaViewParticipants, remoteParticipantsMap, featuredTile } = useCinemaViewParticipants();
-  const { pageTiles } = useOrderedTiles(cinemaViewParticipants, {
-    featuredConnectionIdentifier: featuredTile?.connectionIdentifier,
-  });
+type GridViewProps = {
+  pageTiles: CinemaViewTile<CinemaViewParticipant>[];
+  remoteParticipantsMap: Map<string, RemoteParticipant>;
+};
+
+const GridView = ({ pageTiles, remoteParticipantsMap }: GridViewProps) => {
   const direction = useAppSelector(selectPaginationDirectionState);
 
   const isMobile = useIsMobile();

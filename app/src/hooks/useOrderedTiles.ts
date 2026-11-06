@@ -5,7 +5,7 @@ import { Track } from 'livekit-client';
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
 import { CinemaViewSortOrder } from '../store/slices/common';
-import { selectCinemaViewOrder, selectPaginationPageState } from '../store/slices/uiSlice';
+import { selectCinemaViewOrder, selectPaginationPageState, selectPinnedTile } from '../store/slices/uiSlice';
 import { ConnectionId, ConnectionIdentifier, MediaSessionType, ParticipantId } from '../types';
 import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
 import useConferenceUiVersion from './useConferenceUiVersion';
@@ -17,6 +17,7 @@ type ParticipantForTiles = {
   connections: ConnectionId[];
   joinedAt: string;
   lastSpokeAt?: Date;
+  isSpeaking?: boolean;
   isCameraEnabled?: boolean;
   isScreenShareEnabled?: boolean;
 };
@@ -46,6 +47,8 @@ type PersistedOrderingState = {
   orderedKeys: ConnectionIdentifier[];
   sortOrder: unknown;
   cameraActivationAt: Map<ConnectionIdentifier, number>;
+  activityAt: Map<ConnectionIdentifier, number>;
+  pageSize: number;
 };
 
 type ParticipantsIndexingResult<T extends ParticipantForTiles> = {
@@ -166,12 +169,11 @@ const orderStripByActivity = <T extends ParticipantForTiles>(
     .map((entry) => entry.key);
 };
 
-// Cinema-grid ordering: keep the grid tiles stable by only swapping participants
-// onto the first page instead of re-sorting everything
 const orderGridByPriority = <T extends ParticipantForTiles>(
   order: ConnectionIdentifier[],
   participantsByKey: Map<ConnectionIdentifier, T>,
   cameraActivationAt: Map<ConnectionIdentifier, number>,
+  newlyActiveKeys: Set<ConnectionIdentifier>,
   currentSpeaker: ConnectionIdentifier | null | undefined,
   maxGridTiles: number
 ): ConnectionIdentifier[] => {
@@ -219,14 +221,10 @@ const orderGridByPriority = <T extends ParticipantForTiles>(
     }
   }
 
-  // Pass 2: promote other active participants from later pages
+  // Pass 2: promote newly active participants from later pages
   for (let i = firstPageLimit; i < workingOrder.length; i++) {
     const candidateKey = workingOrder[i];
-    if (candidateKey === currentSpeaker) {
-      continue;
-    }
-    const candidate = participantsByKey.get(candidateKey);
-    if (!candidate?.isCameraEnabled && !candidate?.lastSpokeAt) {
+    if (candidateKey === currentSpeaker || !newlyActiveKeys.has(candidateKey)) {
       continue;
     }
     const { index, score } = longestInactivePageOneSlot(workingOrder);
@@ -243,9 +241,9 @@ export type ParticipantTilesOptions = {
   // When true, ordering is computed for a single, scrollable strip (the
   // SpeakerView `Filmstrip`) instead of the paginated cinema grid
   unbounded?: boolean;
-  // Connection identifier of the featured tile, kept visible on the first page of the
-  // cinema grid while the participant is active. Not used for the unbounded strip
+  // Featured fallback alone does not grant grid priority; pins and qualified active speakers do.
   featuredConnectionIdentifier?: ConnectionIdentifier;
+  suspendReordering?: boolean;
 };
 
 /**
@@ -262,6 +260,7 @@ export type ParticipantTilesOptions = {
  */
 export function useOrderedTiles<T extends ParticipantForTiles>(participants: T[], options?: ParticipantTilesOptions) {
   const unbounded = options?.unbounded === true;
+  const suspendReordering = options?.suspendReordering === true;
   // V2-CLEANUP: always split screen shares into their own tile after transition to V2
   const { isV2 } = useConferenceUiVersion();
   const [hookInstanceId] = useState(() => `useOrderedTiles-${hookInstanceCounter++}`);
@@ -270,6 +269,13 @@ export function useOrderedTiles<T extends ParticipantForTiles>(participants: T[]
     [participants]
   );
   const featuredConnectionIdentifier = options?.featuredConnectionIdentifier;
+  const pinnedConnectionIdentifier = useAppSelector(selectPinnedTile)?.connectionIdentifier;
+  const featuredParticipant = featuredConnectionIdentifier
+    ? participantsByKey.get(featuredConnectionIdentifier)
+    : undefined;
+  const priorityConnectionIdentifier =
+    pinnedConnectionIdentifier ??
+    (featuredParticipant?.isSpeaking && featuredParticipant.lastSpokeAt ? featuredConnectionIdentifier : undefined);
 
   const currentPage = useAppSelector(selectPaginationPageState);
   const maxGridTiles = useGridPageSize();
@@ -283,12 +289,13 @@ export function useOrderedTiles<T extends ParticipantForTiles>(participants: T[]
     };
   }, [hookInstanceId]);
 
-  const { orderedKeys, cameraActivationAt } = useMemo(() => {
+  const { orderedKeys, cameraActivationAt, activityAt } = useMemo(() => {
     const persistedState = persistedOrderByHookInstance.get(hookInstanceId);
+    const isActivityFirst = cinemaViewOrder === CinemaViewSortOrder.ActivityFirst;
     const isSortOrderChanged = persistedState?.sortOrder !== cinemaViewOrder;
 
     const nextOrder =
-      persistedState && !isSortOrderChanged
+      isActivityFirst && persistedState && !isSortOrderChanged
         ? reconcileOrder(persistedState.orderedKeys, participantKeys)
         : participantKeys;
 
@@ -298,32 +305,58 @@ export function useOrderedTiles<T extends ParticipantForTiles>(participants: T[]
       persistedState?.cameraActivationAt,
       readNow()
     );
+    // A changed page size redefines which slots exist, so membership is re-evaluated.
+    // A departure only closes the gap, which keeps the remaining tiles in place.
+    const resetActivity = isSortOrderChanged || persistedState?.pageSize !== maxGridTiles;
+    const previousActivityAt = resetActivity ? undefined : persistedState?.activityAt;
 
-    const isActivityFirst = cinemaViewOrder === CinemaViewSortOrder.ActivityFirst;
-    if (!isActivityFirst || (!unbounded && currentPageIndex !== 0)) {
-      return { orderedKeys: nextOrder, cameraActivationAt: computedCameraActivationAt };
+    if (!isActivityFirst || unbounded || currentPageIndex !== 0 || suspendReordering) {
+      return {
+        orderedKeys:
+          isActivityFirst && unbounded
+            ? orderStripByActivity(nextOrder, participantsByKey, computedCameraActivationAt)
+            : nextOrder,
+        cameraActivationAt: computedCameraActivationAt,
+        activityAt: previousActivityAt ?? new Map(),
+      };
     }
 
-    const reordered = unbounded
-      ? orderStripByActivity(nextOrder, participantsByKey, computedCameraActivationAt)
-      : orderGridByPriority(
-          nextOrder,
-          participantsByKey,
-          computedCameraActivationAt,
-          featuredConnectionIdentifier,
-          maxGridTiles
-        );
+    const computedActivityAt = new Map(
+      nextOrder.map((key) => [
+        key,
+        Math.max(
+          participantsByKey.get(key)?.lastSpokeAt?.getTime() ?? Number.NEGATIVE_INFINITY,
+          computedCameraActivationAt.get(key) ?? Number.NEGATIVE_INFINITY
+        ),
+      ])
+    );
+    const newlyActiveKeys = new Set(
+      nextOrder.filter(
+        (key) =>
+          (computedActivityAt.get(key) ?? Number.NEGATIVE_INFINITY) >
+          (previousActivityAt?.get(key) ?? Number.NEGATIVE_INFINITY)
+      )
+    );
+    const reordered = orderGridByPriority(
+      nextOrder,
+      participantsByKey,
+      computedCameraActivationAt,
+      newlyActiveKeys,
+      priorityConnectionIdentifier,
+      maxGridTiles
+    );
 
-    return { orderedKeys: reordered, cameraActivationAt: computedCameraActivationAt };
+    return { orderedKeys: reordered, cameraActivationAt: computedCameraActivationAt, activityAt: computedActivityAt };
   }, [
     participantKeys,
     participantsByKey,
     hookInstanceId,
     cinemaViewOrder,
-    featuredConnectionIdentifier,
+    priorityConnectionIdentifier,
     maxGridTiles,
     currentPageIndex,
     unbounded,
+    suspendReordering,
   ]);
 
   useLayoutEffect(() => {
@@ -331,8 +364,10 @@ export function useOrderedTiles<T extends ParticipantForTiles>(participants: T[]
       orderedKeys,
       sortOrder: cinemaViewOrder,
       cameraActivationAt,
+      activityAt,
+      pageSize: maxGridTiles,
     });
-  }, [hookInstanceId, orderedKeys, cinemaViewOrder, cameraActivationAt]);
+  }, [hookInstanceId, orderedKeys, cinemaViewOrder, cameraActivationAt, activityAt, maxGridTiles]);
 
   const orderedTiles = mapKeysToTiles(orderedKeys, participantsByKey, isV2);
   const pageStartIndex = currentPageIndex * maxGridTiles;

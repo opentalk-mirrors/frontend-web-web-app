@@ -5,19 +5,13 @@ import { screen } from '@testing-library/react';
 import { Track } from 'livekit-client';
 
 import SpeakerView from '.';
-import type { CinemaViewParticipant } from '../../hooks/useCinemaViewParticipants';
+import type { CinemaViewParticipant, useCinemaViewParticipants } from '../../hooks/useCinemaViewParticipants';
 import { ConnectionId, ConnectionIdentifier, ParticipantId } from '../../types';
 import { renderWithProviders, mockStore } from '../../utils/testUtils';
 
-const { mockUseCinemaViewParticipants, mockSpeakerWindow, mockFilmstrip } = vi.hoisted(() => ({
-  mockUseCinemaViewParticipants: vi.fn(),
+const { mockSpeakerWindow, mockFilmstrip } = vi.hoisted(() => ({
   mockSpeakerWindow: vi.fn(),
   mockFilmstrip: vi.fn(),
-}));
-
-vi.mock('../../hooks', async (importOriginal) => ({
-  ...((await importOriginal()) as typeof import('../../hooks')),
-  useCinemaViewParticipants: () => mockUseCinemaViewParticipants(),
 }));
 
 vi.mock('./fragments/SpeakerWindow', () => ({
@@ -36,7 +30,7 @@ vi.mock('./fragments/Filmstrip', () => ({
   },
 }));
 
-const cinemaViewData = {
+const cinemaViewData: ReturnType<typeof useCinemaViewParticipants> = {
   cinemaViewParticipants: [],
   remoteParticipantsMap: new Map(),
   featuredTile: {
@@ -55,12 +49,11 @@ const createParticipant = (index: number, connections = [`connection-${index}` a
 describe('SpeakerView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseCinemaViewParticipants.mockReturnValue(cinemaViewData);
   });
 
   it('renders SpeakerView correctly', () => {
     const { store } = mockStore(0);
-    renderWithProviders(<SpeakerView />, { store });
+    renderWithProviders(<SpeakerView {...cinemaViewData} />, { store });
 
     // Initial elements appear
     expect(screen.getByTestId('SpeakerView-Container')).toBeInTheDocument();
@@ -68,9 +61,8 @@ describe('SpeakerView', () => {
 
   it('passes the same participant data to the speaker window and the filmstrip', () => {
     const { store } = mockStore(0);
-    renderWithProviders(<SpeakerView />, { store });
+    renderWithProviders(<SpeakerView {...cinemaViewData} />, { store });
 
-    expect(mockUseCinemaViewParticipants).toHaveBeenCalled();
     expect(mockSpeakerWindow).toHaveBeenLastCalledWith(expect.objectContaining(cinemaViewData));
     expect(mockFilmstrip).toHaveBeenLastCalledWith(expect.objectContaining(cinemaViewData));
   });
@@ -78,13 +70,11 @@ describe('SpeakerView', () => {
   describe('while LiveKit has not determined a featured tile yet', () => {
     it('features the camera of the first participant known to the controller', () => {
       const participants = [createParticipant(1), createParticipant(2)];
-      mockUseCinemaViewParticipants.mockReturnValue({
-        cinemaViewParticipants: participants,
-        remoteParticipantsMap: new Map(),
-        featuredTile: undefined,
-      });
       const { store } = mockStore(0);
-      renderWithProviders(<SpeakerView />, { store });
+      renderWithProviders(
+        <SpeakerView {...cinemaViewData} cinemaViewParticipants={participants} featuredTile={undefined} />,
+        { store }
+      );
 
       const expectedTile = {
         connectionIdentifier: 'participant-1:connection-1' as ConnectionIdentifier,
@@ -99,13 +89,15 @@ describe('SpeakerView', () => {
     });
 
     it('skips participants without a connection', () => {
-      mockUseCinemaViewParticipants.mockReturnValue({
-        cinemaViewParticipants: [createParticipant(1, []), createParticipant(2)],
-        remoteParticipantsMap: new Map(),
-        featuredTile: undefined,
-      });
       const { store } = mockStore(0);
-      renderWithProviders(<SpeakerView />, { store });
+      renderWithProviders(
+        <SpeakerView
+          {...cinemaViewData}
+          cinemaViewParticipants={[createParticipant(1, []), createParticipant(2)]}
+          featuredTile={undefined}
+        />,
+        { store }
+      );
 
       expect(mockSpeakerWindow).toHaveBeenLastCalledWith(
         expect.objectContaining({
@@ -119,12 +111,8 @@ describe('SpeakerView', () => {
   });
 
   it('prefers the featured tile from LiveKit over the controller fallback', () => {
-    mockUseCinemaViewParticipants.mockReturnValue({
-      ...cinemaViewData,
-      cinemaViewParticipants: [createParticipant(1)],
-    });
     const { store } = mockStore(0);
-    renderWithProviders(<SpeakerView />, { store });
+    renderWithProviders(<SpeakerView {...cinemaViewData} cinemaViewParticipants={[createParticipant(1)]} />, { store });
 
     expect(mockSpeakerWindow).toHaveBeenLastCalledWith(
       expect.objectContaining({ featuredTile: cinemaViewData.featuredTile })
