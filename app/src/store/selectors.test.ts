@@ -1,9 +1,16 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { BreakoutRoomId, ChatScope, ParticipantId, ParticipationKind } from '../types';
+import { BreakoutRoomId, ChatScope, MeetingNotesAccess, ParticipantId, ParticipationKind, Role } from '../types';
+import { mockedParticipant, mockStore } from '../utils/testUtils';
 import type { RootState } from './index';
-import { selectCombinedMessageAndEvents } from './selectors';
+import {
+  selectCombinedMessageAndEvents,
+  selectCombinedParticipantsAndUser,
+  selectCombinedParticipantsAndUserInConference,
+  selectCombinedUserAndParticipants,
+  selectVotingUsers,
+} from './selectors';
 
 describe('selectCombinedMessageAndEvents', () => {
   it('filters recorder and transcription events from global feed', () => {
@@ -127,5 +134,74 @@ describe('selectCombinedMessageAndEvents', () => {
       scope: ChatScope.Breakout,
       target: breakoutRoomId,
     });
+  });
+});
+
+describe('participant selectors combining the user', () => {
+  const ownId = '00000000-e6b4-4759-000' as ParticipantId;
+
+  const buildState = (
+    participants: Array<{ id: ParticipantId; role: Role; participationKind: ParticipationKind }>,
+    user: { role: Role; participationKind: ParticipationKind }
+  ) => {
+    const { store } = mockStore(0, {
+      store: {
+        initialState: {
+          participants: {
+            ids: participants.map(({ id }) => id),
+            entities: Object.fromEntries(
+              participants.map((participant, index) => [
+                participant.id,
+                { ...mockedParticipant(index), ...participant },
+              ])
+            ),
+          },
+          user: {
+            uuid: ownId,
+            displayName: 'Me',
+            joinedAt: '2022-03-23T12:32:30Z',
+            lastActive: '2022-03-23T12:32:30Z',
+            meetingNotesAccess: MeetingNotesAccess.None,
+            isRoomOwner: false,
+            joinedAsModerator: false,
+            ...user,
+          },
+        },
+      },
+    });
+    return store.getState() as RootState;
+  };
+
+  it('does not list the user twice when the same account is connected from another device', () => {
+    const otherId = '00000000-e6b4-4759-001' as ParticipantId;
+    const state = buildState(
+      [
+        { id: ownId, role: Role.Guest, participationKind: ParticipationKind.Registered },
+        { id: otherId, role: Role.User, participationKind: ParticipationKind.Registered },
+      ],
+      { role: Role.Guest, participationKind: ParticipationKind.Registered }
+    );
+
+    expect(selectCombinedParticipantsAndUser(state).map(({ id }) => id)).toEqual([otherId, ownId]);
+    expect(selectCombinedUserAndParticipants(state).map(({ id }) => id)).toEqual([ownId, otherId]);
+    expect(selectCombinedParticipantsAndUserInConference(state).map(({ id }) => id)).toEqual([otherId, ownId]);
+  });
+
+  it('lets only invited users with account vote', () => {
+    const uninvitedId = '00000000-e6b4-4759-001' as ParticipantId;
+    const guestId = '00000000-e6b4-4759-002' as ParticipantId;
+    const callInId = '00000000-e6b4-4759-003' as ParticipantId;
+    const serviceId = '00000000-e6b4-4759-004' as ParticipantId;
+    const state = buildState(
+      [
+        { id: uninvitedId, role: Role.Guest, participationKind: ParticipationKind.Registered },
+        { id: guestId, role: Role.Guest, participationKind: ParticipationKind.Unregistered },
+        { id: callInId, role: Role.Guest, participationKind: ParticipationKind.CallIn },
+        { id: serviceId, role: Role.Guest, participationKind: ParticipationKind.Recorder },
+      ],
+      { role: Role.Moderator, participationKind: ParticipationKind.Registered }
+    );
+
+    expect(selectVotingUsers(state).map(({ id }) => id)).toEqual([ownId]);
   });
 });

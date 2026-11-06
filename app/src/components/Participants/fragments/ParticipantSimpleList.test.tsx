@@ -36,9 +36,9 @@ const setup = () => {
 
 const setupModerator = () => {
   const participants = [
-    { ...mockedParticipant(0, ParticipationKind.Guest) },
-    { ...mockedParticipant(1, ParticipationKind.Guest) },
-    { ...mockedParticipant(2, ParticipationKind.Guest) },
+    { ...mockedParticipant(0, ParticipationKind.Unregistered) },
+    { ...mockedParticipant(1, ParticipationKind.Unregistered) },
+    { ...mockedParticipant(2, ParticipationKind.Unregistered) },
   ];
 
   const { store } = configureStore({

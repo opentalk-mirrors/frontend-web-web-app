@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { notifications } from '../../commonComponents';
+import { notifications, setLibravatarOptions } from '../../commonComponents';
 import type { RootState } from '../../store';
 import { hangUp, joinSuccess } from '../../store/commonActions';
 import { waitingRoomJoined } from '../../store/slices/participantsSlice';
 import { joinedLobby, setIsRoomDeleted } from '../../store/slices/roomSlice';
-import { Role } from '../../types';
+import { ParticipationKind, Role } from '../../types';
 import type {
   ConnectionId,
   DeviceId,
@@ -87,6 +87,7 @@ const makeJoinSuccess = (moduleData: ModuleData): JoinSuccess =>
     message: 'join_success',
     connections: [],
     role: Role.User,
+    participationKind: ParticipationKind.Registered,
     displayName: 'Me',
     isRoomOwner: false,
     tariff: { quotas: {} },
@@ -124,13 +125,18 @@ describe('handleRoomServerCoreMessage', () => {
       connectionIds: [],
       joinedAt: '2024-01-01T10:00:00Z' as Timestamp,
       displayName: 'Alex',
+      avatarUrl: 'https://seccdn.libravatar.org/avatar/abc',
     };
 
     handleRoomServerCoreMessage(dispatch, data, timestamp, state);
 
+    expect(setLibravatarOptions).toHaveBeenCalledExactlyOnceWith('https://seccdn.libravatar.org/avatar/abc', {
+      defaultImage: state.config.libravatarDefaultImage,
+    });
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(
       waitingRoomJoined({
         ...data,
+        avatarUrl: 'mocked-avatar',
       })
     );
   });
@@ -285,6 +291,23 @@ describe('handleRoomServerCoreMessage', () => {
       handleRoomServerCoreMessage(dispatch, makeJoinSuccess(baseModuleData), timestamp, state);
 
       expect(getJoinSuccessPayload(dispatch).participantId).toBe('participant-9');
+    });
+
+    it.each([
+      [Role.Guest, ParticipationKind.Registered],
+      [Role.Guest, ParticipationKind.Unregistered],
+      [Role.User, ParticipationKind.Registered],
+    ])('forwards role %s and participation kind %s independently', (role, participationKind) => {
+      const dispatch = vi.fn();
+
+      handleRoomServerCoreMessage(
+        dispatch,
+        { ...makeJoinSuccess(baseModuleData), role, participationKind } as JoinSuccess,
+        timestamp,
+        createState()
+      );
+
+      expect(getJoinSuccessPayload(dispatch)).toMatchObject({ role, participationKind });
     });
   });
 });

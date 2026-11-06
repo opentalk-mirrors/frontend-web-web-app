@@ -34,7 +34,7 @@ export enum VideoSetting {
 
 export enum ParticipationKind {
   Registered = 'registered',
-  Guest = 'guest',
+  Unregistered = 'unregistered',
   Recorder = 'recorder',
   CallIn = 'call_in',
   Transcription = 'transcription',

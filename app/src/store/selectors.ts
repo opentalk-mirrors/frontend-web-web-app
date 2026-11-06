@@ -68,9 +68,21 @@ export const selectUserAsParticipant = createSelector(
   }
 );
 
+/**
+ * Adds the user to the participants. A participant with the user's own id (e.g. the same account connected from
+ * another device) is dropped, so the user is not listed twice.
+ */
+const withUser = (participants: Participant[], user: Participant | undefined, position: 'first' | 'last') => {
+  if (!user) {
+    return participants;
+  }
+  const others = participants.filter((participant) => participant.id !== user.id);
+  return position === 'first' ? [user, ...others] : [...others, user];
+};
+
 export const selectCombinedParticipantsAndUserInConference = createSelector(
   [selectAllOnlineParticipantsInConference, selectUserAsParticipant],
-  (participants, user) => (user ? [...participants, user] : participants)
+  (participants, user) => withUser(participants, user, 'last')
 );
 
 export const selectModeratorParticipantIds = createSelector(
@@ -83,12 +95,12 @@ export const selectModeratorParticipantIds = createSelector(
 
 export const selectCombinedUserAndParticipants = createSelector(
   [selectAllOnlineParticipants, selectUserAsParticipant],
-  (participants, user) => (user ? [user, ...participants] : participants)
+  (participants, user) => withUser(participants, user, 'first')
 );
 
 export const selectCombinedParticipantsAndUser = createSelector(
   [selectAllOnlineParticipants, selectUserAsParticipant],
-  (participants, user) => (user ? [...participants, user] : participants)
+  (participants, user) => withUser(participants, user, 'last')
 );
 
 export const selectJoinedFirstTimestamp = createSelector(
@@ -252,10 +264,7 @@ export const selectParticipantsWithRaisedHands = createSelector(
 
 export const selectVotingUsers = createSelector([selectCombinedParticipantsAndUser], (records) => {
   return records.filter((record) => {
-    return (
-      (record.role === Role.User || record.participationKind === ParticipationKind.Registered) &&
-      record.participationKind !== ParticipationKind.Guest
-    );
+    return record.role !== Role.Guest && record.participationKind === ParticipationKind.Registered;
   });
 });
 

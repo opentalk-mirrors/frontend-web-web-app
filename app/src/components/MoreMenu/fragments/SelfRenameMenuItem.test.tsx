@@ -10,12 +10,12 @@ import { ParticipationKind, Role } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import SelfRenameMenuItem from './SelfRenameMenuItem';
 
-const renderSelfRenameMenuItem = (isGuest: boolean) => {
+const renderSelfRenameMenuItem = (participationKind: ParticipationKind) => {
   const { store, dispatchSpy } = configureStore({
     initialState: {
       user: {
         role: Role.User,
-        participationKind: isGuest ? ParticipationKind.Guest : ParticipationKind.Registered,
+        participationKind,
       },
       moderation: { selfRenameEnabled: true },
     },
@@ -32,21 +32,21 @@ const renderSelfRenameMenuItem = (isGuest: boolean) => {
 };
 
 describe('SelfRenameMenuItem', () => {
-  it('does not render for non-guests', () => {
-    renderSelfRenameMenuItem(false);
+  it('does not render for registered users', () => {
+    renderSelfRenameMenuItem(ParticipationKind.Registered);
 
     expect(screen.queryByRole('menuitem', { name: 'global-rename' })).not.toBeInTheDocument();
   });
 
-  it('renders for guests', () => {
-    renderSelfRenameMenuItem(true);
+  it('renders for unregistered users', () => {
+    renderSelfRenameMenuItem(ParticipationKind.Unregistered);
 
     expect(screen.getByRole('menuitem', { name: 'global-rename' })).toBeInTheDocument();
   });
 
   it('opens the rename dialog when clicked', async () => {
     const user = userEvent.setup();
-    const { dispatchSpy } = renderSelfRenameMenuItem(true);
+    const { dispatchSpy } = renderSelfRenameMenuItem(ParticipationKind.Unregistered);
 
     await user.click(screen.getByRole('menuitem', { name: 'global-rename' }));
 

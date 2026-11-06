@@ -46,17 +46,15 @@ export function sortCinemaViewParticipants<T extends SortableCinemaViewParticipa
       if (bRole === Role.Moderator) {
         return 1;
       }
-      // If both participants have the same role, prioritize registered users over guests.
-      if (aRole === Role.User && bRole === Role.User) {
-        const aPart = a.participationKind ?? ParticipationKind.Guest;
-        const bPart = b.participationKind ?? ParticipationKind.Guest;
-        if (aPart === ParticipationKind.Registered && bPart !== ParticipationKind.Registered) {
-          return -1;
-        }
-        if (bPart === ParticipationKind.Registered && aPart !== ParticipationKind.Registered) {
-          return 1;
-        }
-        return a.joinedAt.localeCompare(b.joinedAt);
+      // Prioritize participants with an account over those without one. The role is not considered here, as
+      // uninvited participants with an account have the guest role.
+      const aPart = a.participationKind ?? ParticipationKind.Unregistered;
+      const bPart = b.participationKind ?? ParticipationKind.Unregistered;
+      if (aPart === ParticipationKind.Registered && bPart !== ParticipationKind.Registered) {
+        return -1;
+      }
+      if (bPart === ParticipationKind.Registered && aPart !== ParticipationKind.Registered) {
+        return 1;
       }
       return a.joinedAt.localeCompare(b.joinedAt);
     });

@@ -27,7 +27,7 @@ const PopoverParagraph = styled(Typography)(({ theme }) => ({
 const CenteredGrid = styled(Grid)(() => ({ textAlign: 'center' }));
 
 const isParticipantUnsafe = (participant: Participant) =>
-  participant.participationKind === ParticipationKind.Guest ||
+  participant.participationKind === ParticipationKind.Unregistered ||
   participant.participationKind === ParticipationKind.CallIn;
 
 const SecurityBadge = () => {
@@ -44,12 +44,12 @@ const SecurityBadge = () => {
 
   const getBadgeTranslationKey = () => {
     if (
-      unsafeParticipantKinds.includes(ParticipationKind.Guest) &&
+      unsafeParticipantKinds.includes(ParticipationKind.Unregistered) &&
       unsafeParticipantKinds.includes(ParticipationKind.CallIn)
     ) {
       return 'secure-connection-contaminated';
     }
-    if (unsafeParticipantKinds.includes(ParticipationKind.Guest)) {
+    if (unsafeParticipantKinds.includes(ParticipationKind.Unregistered)) {
       return 'secure-connection-guests';
     }
     if (unsafeParticipantKinds.includes(ParticipationKind.CallIn)) {

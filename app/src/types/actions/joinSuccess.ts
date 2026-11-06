@@ -49,6 +49,7 @@ import { WhiteboardState } from '../whiteboard';
 export interface JoinSuccessInternalState {
   participantId: ParticipantId;
   role: Role;
+  participationKind: ParticipationKind;
   avatarUrl?: string;
   automod: InitialAutomod | undefined;
   breakout: InitialBreakout | undefined;
@@ -85,6 +86,7 @@ export interface JoinSuccessRoomserver {
   displayName: string;
   avatarUrl?: string;
   role: Role;
+  participationKind: ParticipationKind;
   closesAt?: Timestamp;
   tariff: SignalingTariff;
   enabledModules: EnabledModules;
