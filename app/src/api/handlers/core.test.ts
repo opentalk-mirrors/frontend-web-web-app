@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { notifications } from '../../commonComponents';
+import { notifications, setLibravatarOptions } from '../../commonComponents';
 import type { RootState } from '../../store';
 import { hangUp, joinSuccess } from '../../store/commonActions';
 import { waitingRoomJoined } from '../../store/slices/participantsSlice';
@@ -125,13 +125,18 @@ describe('handleRoomServerCoreMessage', () => {
       connectionIds: [],
       joinedAt: '2024-01-01T10:00:00Z' as Timestamp,
       displayName: 'Alex',
+      avatarUrl: 'https://seccdn.libravatar.org/avatar/abc',
     };
 
     handleRoomServerCoreMessage(dispatch, data, timestamp, state);
 
+    expect(setLibravatarOptions).toHaveBeenCalledExactlyOnceWith('https://seccdn.libravatar.org/avatar/abc', {
+      defaultImage: state.config.libravatarDefaultImage,
+    });
     expect(dispatch).toHaveBeenCalledExactlyOnceWith(
       waitingRoomJoined({
         ...data,
+        avatarUrl: 'mocked-avatar',
       })
     );
   });

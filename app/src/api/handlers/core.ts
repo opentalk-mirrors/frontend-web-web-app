@@ -394,7 +394,12 @@ export const handleRoomServerCoreMessage = async (
       break;
     }
     case RoomserverMessageKey.JoinedWaitingRoom:
-      dispatch(waitingRoomJoined(data));
+      dispatch(
+        waitingRoomJoined({
+          ...data,
+          avatarUrl: setLibravatarOptions(data.avatarUrl, { defaultImage: selectLibravatarDefaultImage(state) }),
+        })
+      );
       break;
     case RoomserverMessageKey.LeftWaitingRoom: {
       dispatch(waitingRoomLeft(data.id));
