@@ -49,7 +49,7 @@ const Cinema = () => {
   const dispatch = useAppDispatch();
   const isSelfViewMinimized = useAppSelector(selectIsSelfViewMinimized);
   const shouldReserveSpaceForSelfView =
-    !isSelfViewMinimized && !isFullscreenActive && userLayout === LayoutOptions.Grid;
+    isV2 && !isSelfViewMinimized && !isFullscreenActive && userLayout === LayoutOptions.Grid;
 
   useEffect(() => {
     if (refForFullscreen.current) {

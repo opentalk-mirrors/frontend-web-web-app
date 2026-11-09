@@ -82,6 +82,36 @@ describe('Cinema', () => {
     expect(screen.queryByTestId('self-view')).not.toBeInTheDocument();
   });
 
+  it.each([
+    { version: 'V1', isV2: false, isSelfViewMinimized: false, paddingRight: '' },
+    { version: 'V1', isV2: false, isSelfViewMinimized: true, paddingRight: '' },
+    { version: 'V2', isV2: true, isSelfViewMinimized: false, paddingRight: '120px' },
+    { version: 'V2', isV2: true, isSelfViewMinimized: true, paddingRight: '' },
+  ])(
+    'applies "$paddingRight" grid right padding in $version with minimized=$isSelfViewMinimized',
+    ({ isV2, isSelfViewMinimized, paddingRight }) => {
+      const { store } = configureStore({
+        initialState: { ui: { cinemaLayout: LayoutOptions.Grid, isSelfViewMinimized } },
+      });
+      (useConferenceUiVersion as Mock).mockReturnValue({ isV2 });
+      renderWithProviders(<Cinema />, { store, provider: { mui: true } });
+
+      expect(getComputedStyle(screen.getByRole('main')).paddingRight).toBe(paddingRight);
+    }
+  );
+
+  it('does not reserve self-view space for the V2 grid in fullscreen', () => {
+    const { store } = configureStore({
+      initialState: { ui: { cinemaLayout: LayoutOptions.Grid, isSelfViewMinimized: false } },
+    });
+    (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
+    store.dispatch(fullscreenActions.changed({ active: true }));
+    renderWithProviders(<Cinema />, { store, provider: { mui: true } });
+
+    expect(screen.getByTestId('fullscreen-view')).toBeInTheDocument();
+    expect(getComputedStyle(screen.getByRole('main')).paddingRight).toBe('');
+  });
+
   it('dispatches fullscreen element on mount and clears it on unmount', async () => {
     const { store, dispatchSpy } = configureStore();
     (useConferenceUiVersion as Mock).mockReturnValue({ isV2: true });
