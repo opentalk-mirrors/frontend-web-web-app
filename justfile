@@ -55,3 +55,10 @@ commit-release: _check_jq
     VERSION=$(cat package.json | jq -r .version)
     git commit -a -m "chore(release): prepare release ${VERSION}"
     git log HEAD^..HEAD
+
+# Create the release tag
+tag-release: _check_jq
+    #!/usr/bin/env bash
+    current_version=$(cat package.json | jq -r .version)
+    git tag -s -m "v$current_version" "v$current_version"
+    git show --no-patch "v$current_version"
