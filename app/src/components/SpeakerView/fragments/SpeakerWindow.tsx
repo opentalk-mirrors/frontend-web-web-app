@@ -2,14 +2,14 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, styled } from '@mui/material';
-import { RemoteParticipant, Track } from 'livekit-client';
+import { RemoteParticipant } from 'livekit-client';
 import { useMemo } from 'react';
 
 import { useConferenceUiVersion } from '../../../hooks';
 import type { CinemaViewParticipant } from '../../../hooks/useCinemaViewParticipants';
 import { useSelfViewAnchor } from '../../../provider/SelfViewAnchorContext';
 import TileParticipantProvider from '../../../provider/TileParticipantProvider';
-import { ConnectionIdentifier, TileIdentifier } from '../../../types';
+import { TileIdentifier } from '../../../types';
 import { constructConnectionIdentifier } from '../../../utils/constructConnectionIdentifier';
 import ParticipantWindow from '../../ParticipantWindow';
 
@@ -50,14 +50,11 @@ const SpeakerWindow = ({
   const { isV2 } = useConferenceUiVersion();
   const { setAnchor } = useSelfViewAnchor();
 
-  // Show the first available participant if there is no featured tile
-  const firstRemoteParticipant = remoteParticipantsMap.values().next().value;
-  const selectedConnectionIdentifier =
-    featuredTile?.connectionIdentifier ?? (firstRemoteParticipant?.identity as ConnectionIdentifier | undefined);
   const selectedParticipant =
-    selectedConnectionIdentifier &&
+    featuredTile &&
     cinemaViewParticipants.find(
-      (p) => p.connections[0] && constructConnectionIdentifier(p.id, p.connections[0]) === selectedConnectionIdentifier
+      (p) =>
+        p.connections[0] && constructConnectionIdentifier(p.id, p.connections[0]) === featuredTile.connectionIdentifier
     );
 
   // Fit a 16:9 box entirely within the available area (contain), preserving the
@@ -74,16 +71,13 @@ const SpeakerWindow = ({
 
   return (
     <Container width={width} height={height}>
-      {selectedConnectionIdentifier && (
+      {featuredTile && (
         <TileParticipantProvider
-          connectionIdentifier={selectedConnectionIdentifier}
+          connectionIdentifier={featuredTile.connectionIdentifier}
           displayName={selectedParticipant?.displayName ?? ''}
-          remoteParticipant={remoteParticipantsMap.get(selectedConnectionIdentifier)}
+          remoteParticipant={remoteParticipantsMap.get(featuredTile.connectionIdentifier)}
         >
-          {
-            // Pass camera as source by default, if featured tile is not available yet
-            <ParticipantWindow alwaysShowOverlay source={featuredTile?.source ?? Track.Source.Camera} />
-          }
+          <ParticipantWindow alwaysShowOverlay source={featuredTile.source} />
         </TileParticipantProvider>
       )}
       {

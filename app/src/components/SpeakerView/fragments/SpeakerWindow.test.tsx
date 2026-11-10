@@ -104,20 +104,17 @@ describe('SpeakerWindow', () => {
     expect(screen.queryByTestId('participantWindow')).not.toBeInTheDocument();
   });
 
-  it('renders the camera of the first remote participant while there is no featured tile', () => {
+  it('renders no participant window without featured tile, even if LiveKit still reports participants', () => {
     const props = setup({
       participants: [createParticipant(0), createParticipant(1)],
       remoteParticipants: [createRemoteParticipant(1), createRemoteParticipant(0)],
     });
     renderSpeakerWindow(props);
-    const provider = screen.getByTestId('tileParticipantProvider');
-    expect(provider).toHaveAttribute('data-connection-identifier', connectionIdentifierOf(1));
-    expect(provider).toHaveAttribute('data-display-name', 'Participant 1');
-    expect(provider).toHaveAttribute('data-remote-identity', connectionIdentifierOf(1));
-    expect(screen.getByTestId('participantWindow')).toHaveAttribute('data-source', Track.Source.Camera);
+    expect(screen.queryByTestId('tileParticipantProvider')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('participantWindow')).not.toBeInTheDocument();
   });
 
-  it('prefers the featured tile over the first remote participant', () => {
+  it('renders the featured tile', () => {
     const props = setup({
       featuredTile: featured(1),
       participants: [createParticipant(0), createParticipant(1)],

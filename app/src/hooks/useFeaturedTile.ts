@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { useRemoteParticipants, useSortedParticipants } from '@livekit/components-react';
-import { RoomEvent, Track } from 'livekit-client';
-import { useMemo } from 'react';
+import { useSortedParticipants } from '@livekit/components-react';
+import { Participant, Track } from 'livekit-client';
 
 import { selectPinnedTile } from '../store/slices/uiSlice';
 import { ConnectionIdentifier, TileIdentifier } from '../types';
@@ -17,25 +16,23 @@ import { useThresholdSpeaker } from './useThresholdSpeaker';
  * If no tile is pinned - the camera tile of the active speaker.
  * Note: A screen share tile is only featured when pinned
  */
-export function useFeaturedTile(): {
+export function useFeaturedTile(
+  remoteParticipants: Participant[],
+  participantIds: ReadonlySet<ConnectionIdentifier>
+): {
   featuredTile: TileIdentifier | undefined;
   sustainedActivity: ReadonlyMap<string, Date>;
 } {
-  const remoteParticipants = useRemoteParticipants({
-    updateOnlyOn: [RoomEvent.ParticipantConnected, RoomEvent.ParticipantDisconnected, RoomEvent.ActiveSpeakersChanged],
-  });
-  const sortedParticipants = useSortedParticipants(remoteParticipants);
   const pinnedTile = useAppSelector(selectPinnedTile);
+
+  const sortedParticipants = useSortedParticipants(remoteParticipants).filter((participant) =>
+    participantIds.has(participant.identity as ConnectionIdentifier)
+  );
 
   const speakerId = pinnedTile?.connectionIdentifier || (sortedParticipants[0]?.identity as ConnectionIdentifier);
   const speakerLastSpokeAt = speakerId
     ? sortedParticipants.find((participant) => participant.identity === speakerId)?.lastSpokeAt
     : undefined;
-
-  const participantIds = useMemo(
-    () => new Set(remoteParticipants.map((participant) => participant.identity as ConnectionIdentifier)),
-    [remoteParticipants]
-  );
 
   const { stableSpeakerId, sustainedActivity } = useThresholdSpeaker({
     speakerId,

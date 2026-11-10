@@ -6,7 +6,7 @@ import { RemoteParticipant, RoomEvent } from 'livekit-client';
 
 import { selectAllOnlineParticipants } from '../store/slices/participantsSlice';
 import { selectCinemaViewOrder } from '../store/slices/uiSlice';
-import { Participant, TileIdentifier } from '../types';
+import { ConnectionIdentifier, Participant, TileIdentifier } from '../types';
 import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
 import { sortCinemaViewParticipants } from '../utils/sortCinemaViewParticipants';
 import { useAppSelector } from './useCustomRedux';
@@ -41,28 +41,35 @@ export function useCinemaViewParticipants(): {
       RoomEvent.ActiveSpeakersChanged,
     ],
   });
-  const { featuredTile, sustainedActivity } = useFeaturedTile();
   const onlineParticipants = useAppSelector(selectAllOnlineParticipants);
   const viewOrder = useAppSelector(selectCinemaViewOrder);
 
+  const participantsByConnection = new Map(
+    onlineParticipants.flatMap((participant) =>
+      participant.connections.map((connectionId): [ConnectionIdentifier, Participant] => [
+        constructConnectionIdentifier(participant.id, connectionId),
+        { ...participant, connections: [connectionId] },
+      ])
+    )
+  );
+  const { featuredTile, sustainedActivity } = useFeaturedTile(
+    remoteParticipants,
+    new Set(participantsByConnection.keys())
+  );
   const remoteParticipantsMap = new Map(
     remoteParticipants.map((remoteParticipant) => [remoteParticipant.identity, remoteParticipant])
   );
-  const mergedParticipants = onlineParticipants.flatMap((onlineParticipant) => {
-    return onlineParticipant.connections.map((connectionId) => {
-      const combinedId = constructConnectionIdentifier(onlineParticipant.id, connectionId);
-      const remoteParticipant = remoteParticipantsMap.get(combinedId);
+  const mergedParticipants = Array.from(participantsByConnection, ([connectionIdentifier, participant]) => {
+    const remoteParticipant = remoteParticipantsMap.get(connectionIdentifier);
 
-      return {
-        ...onlineParticipant,
-        connections: [connectionId],
-        audioLevel: remoteParticipant?.audioLevel ?? 0,
-        isCameraEnabled: remoteParticipant?.isCameraEnabled ?? false,
-        isScreenShareEnabled: remoteParticipant?.isScreenShareEnabled ?? false,
-        isSpeaking: remoteParticipant?.isSpeaking ?? false,
-        lastSpokeAt: sustainedActivity.get(combinedId),
-      };
-    });
+    return {
+      ...participant,
+      audioLevel: remoteParticipant?.audioLevel ?? 0,
+      isCameraEnabled: remoteParticipant?.isCameraEnabled ?? false,
+      isScreenShareEnabled: remoteParticipant?.isScreenShareEnabled ?? false,
+      isSpeaking: remoteParticipant?.isSpeaking ?? false,
+      lastSpokeAt: sustainedActivity.get(connectionIdentifier),
+    };
   });
   const cinemaViewParticipants = sortCinemaViewParticipants(mergedParticipants, viewOrder);
 

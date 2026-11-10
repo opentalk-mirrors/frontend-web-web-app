@@ -3,24 +3,28 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { act } from '@testing-library/react';
 import { range } from 'es-toolkit';
+import { Participant as LivekitParticipant, Track } from 'livekit-client';
 
 import { CinemaViewSortOrder } from '../store/slices/common';
+import { leave } from '../store/slices/participantsSlice';
 import { initialState as initialUiState, setPaginationPage, updatedCinemaViewSortOrder } from '../store/slices/uiSlice';
-import { ParticipationKind, Role } from '../types';
+import { ConnectionId, ConnectionIdentifier, ParticipationKind, Role, Timestamp } from '../types';
 import { shuffleArrayItems } from '../utils/arrayUtils';
-import { mockedParticipant, mockStore, renderHookWithProviders } from '../utils/testUtils';
+import { constructConnectionIdentifier } from '../utils/constructConnectionIdentifier';
+import { mockedLivekitParticipant, mockedParticipant, mockStore, renderHookWithProviders } from '../utils/testUtils';
 import { CinemaViewParticipant, useCinemaViewParticipants } from './useCinemaViewParticipants';
 import { useOrderedTiles } from './useOrderedTiles';
 import { DEFAULT_THRESHOLD_MS } from './useThresholdSpeaker';
 
 const mockUseRemoteParticipants = vi.fn();
-const mockUseSortedParticipants = vi.fn<() => Array<{ identity: string; lastSpokeAt?: Date }>>(() => []);
+type SortedParticipant = Pick<LivekitParticipant, 'identity' | 'lastSpokeAt'>;
+const mockUseSortedParticipants = vi.fn<(participants: SortedParticipant[]) => SortedParticipant[]>(() => []);
 vi.mock('@livekit/components-react', async (importOriginal) => {
   const actual = (await importOriginal()) as typeof import('@livekit/components-react');
 
   return {
     ...actual,
-    useSortedParticipants: () => mockUseSortedParticipants(),
+    useSortedParticipants: (participants: LivekitParticipant[]) => mockUseSortedParticipants(participants),
     useRemoteParticipants: () => mockUseRemoteParticipants(),
   };
 });
@@ -41,6 +45,124 @@ const mockedRemoteParticipants = (total: number, usersWithCameraOn = 0) => {
 };
 
 describe('useCinemaViewParticipants hook', () => {
+  describe('shared controller membership', () => {
+    const remoteParticipants = [mockedLivekitParticipant(0), mockedLivekitParticipant(1)];
+    const leaveRoom = (index: number) =>
+      leave({
+        id: mockedParticipant(index).id,
+        connection: mockedParticipant(index).connections[0],
+        timestamp: new Date().toISOString() as Timestamp,
+      });
+
+    beforeEach(() => {
+      mockUseRemoteParticipants.mockReturnValue(remoteParticipants);
+      mockUseSortedParticipants.mockImplementation((participants) => participants);
+    });
+
+    it('removes a departed connection from both the tiles and featured speaker before LiveKit disconnects', () => {
+      const { store } = mockStore(2);
+      const { result } = renderHookWithProviders(() => useCinemaViewParticipants(), { store });
+      expect(result.current.featuredTile?.connectionIdentifier).toBe(remoteParticipants[0].identity);
+
+      act(() => {
+        store.dispatch(leaveRoom(0));
+      });
+
+      expect(result.current.cinemaViewParticipants.map(({ id }) => id)).toEqual([mockedParticipant(1).id]);
+      expect(result.current.featuredTile).toEqual({
+        connectionIdentifier: remoteParticipants[1].identity,
+        source: Track.Source.Camera,
+      });
+      expect(result.current.remoteParticipantsMap.has(remoteParticipants[0].identity)).toBe(true);
+    });
+
+    it('clears the featured tile when the last controller participant leaves', () => {
+      const { store } = mockStore(1);
+      const { result } = renderHookWithProviders(() => useCinemaViewParticipants(), { store });
+      expect(result.current.featuredTile?.connectionIdentifier).toBe(remoteParticipants[0].identity);
+
+      act(() => {
+        store.dispatch(leaveRoom(0));
+      });
+
+      expect(result.current.cinemaViewParticipants).toEqual([]);
+      expect(result.current.featuredTile).toBeUndefined();
+    });
+
+    it('keeps another connection of the same participant when the featured connection leaves', () => {
+      const participant = mockedParticipant(0);
+      const secondConnection = 'second-connection' as ConnectionId;
+      const secondIdentity = constructConnectionIdentifier(participant.id, secondConnection);
+      const { store } = mockStore(0, {
+        store: {
+          initialState: {
+            participants: {
+              ids: [participant.id],
+              entities: {
+                [participant.id]: { ...participant, connections: [...participant.connections, secondConnection] },
+              },
+            },
+          },
+        },
+      });
+      mockUseRemoteParticipants.mockReturnValue([
+        remoteParticipants[0],
+        new LivekitParticipant('second-session', secondIdentity),
+      ]);
+      const { result } = renderHookWithProviders(() => useCinemaViewParticipants(), { store });
+      expect(result.current.cinemaViewParticipants).toHaveLength(2);
+      expect(result.current.featuredTile?.connectionIdentifier).toBe(remoteParticipants[0].identity);
+
+      act(() => {
+        store.dispatch(leaveRoom(0));
+      });
+
+      expect(result.current.cinemaViewParticipants).toEqual([
+        expect.objectContaining({ id: participant.id, connections: [secondConnection] }),
+      ]);
+      expect(result.current.featuredTile?.connectionIdentifier).toBe(secondIdentity);
+    });
+
+    it('switches immediately from a pinned screen share when its controller connection leaves', () => {
+      const { store } = mockStore(2, {
+        store: {
+          initialState: {
+            ui: {
+              pinnedTile: {
+                connectionIdentifier: remoteParticipants[1].identity as ConnectionIdentifier,
+                source: Track.Source.ScreenShare,
+              },
+            },
+          },
+        },
+      });
+      const { result } = renderHookWithProviders(() => useCinemaViewParticipants(), { store });
+      expect(result.current.featuredTile?.source).toBe(Track.Source.ScreenShare);
+
+      act(() => {
+        store.dispatch(leaveRoom(1));
+      });
+
+      expect(result.current.featuredTile).toEqual({
+        connectionIdentifier: remoteParticipants[0].identity,
+        source: Track.Source.Camera,
+      });
+    });
+
+    it('keeps controller participants available before LiveKit media initialization', () => {
+      mockUseRemoteParticipants.mockReturnValue([]);
+      const { store } = mockStore(2);
+      const { result } = renderHookWithProviders(() => useCinemaViewParticipants(), { store });
+
+      expect(result.current.cinemaViewParticipants.map(({ id }) => id)).toEqual([
+        mockedParticipant(0).id,
+        mockedParticipant(1).id,
+      ]);
+      expect(result.current.featuredTile).toBeUndefined();
+      expect(result.current.remoteParticipantsMap.size).toBe(0);
+    });
+  });
+
   describe('sort order: join time', () => {
     mockUseRemoteParticipants.mockImplementation(() => mockedRemoteParticipants(10));
     const { store } = mockStore(10, {
