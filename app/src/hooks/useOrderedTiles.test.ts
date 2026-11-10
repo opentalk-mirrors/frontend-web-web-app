@@ -8,7 +8,7 @@ import { Track } from 'livekit-client';
 
 import { GRID_SIZES, MAX_GRID_TILES_MOBILE } from '../constants';
 import { CinemaViewSortOrder } from '../store/slices/common';
-import { updatedCinemaViewSortOrder } from '../store/slices/uiSlice';
+import { updatedCinemaGridSize, updatedCinemaViewSortOrder } from '../store/slices/uiSlice';
 import { ConnectionId, ConnectionIdentifier, ParticipantId } from '../types';
 import { configureStore, mockedParticipant, renderHookWithProviders } from '../utils/testUtils';
 import { useOrderedTiles } from './useOrderedTiles';
@@ -88,6 +88,64 @@ const participantsOf = <T>(tiles: Array<{ participant: T }>) => tiles.map((tile)
 const createLastSpokenAtTestDate = (hour: number) => new Date(`2024-06-01T${hour.toString().padStart(2, '0')}:00:00Z`);
 
 describe('useOrderedTiles', () => {
+  it.each([
+    { name: 'silent fallback', speaking: false, qualified: false, pinned: false, protected: false },
+    { name: 'stopped speaker', speaking: false, qualified: true, pinned: false, protected: false },
+    { name: 'unqualified speaker', speaking: true, qualified: false, pinned: false, protected: false },
+    { name: 'qualified active speaker', speaking: true, qualified: true, pinned: false, protected: true },
+    { name: 'pinned participant', speaking: false, qualified: false, pinned: true, protected: true },
+  ])(
+    'only protects the featured participant when appropriate: $name',
+    ({ speaking, qualified, pinned, protected: isProtected }) => {
+      const participants = getMockedParticipants(3);
+      participants[0].isSpeaking = speaking;
+      if (qualified) {
+        participants[0].lastSpokeAt = createLastSpokenAtTestDate(1);
+        participants[1].lastSpokeAt = createLastSpokenAtTestDate(2);
+      }
+      const { store } = configureStore({
+        initialState: {
+          ui: {
+            cinemaGridSize: 2,
+            cinemaViewOrder: CinemaViewSortOrder.ActivityFirst,
+            pinnedTile: pinned
+              ? { connectionIdentifier: participants[0].identity as ConnectionIdentifier, source: Track.Source.Camera }
+              : undefined,
+          },
+        },
+      });
+      const { result, rerender } = renderOrderedTiles(hookProps(participants, participants[0]), { store });
+      expect(participantsOf(result.current.pageTiles)).toEqual(participants.slice(0, 2));
+
+      const cameraOn = { ...participants[2], isCameraEnabled: true };
+      rerender(hookProps([...participants.slice(0, 2), cameraOn], participants[0]));
+      const expectedOrder = isProtected
+        ? [participants[0], cameraOn, participants[1]]
+        : [cameraOn, participants[1], participants[0]];
+      expect(participantsOf(result.current.orderedTiles)).toEqual(expectedOrder);
+      expect(participantsOf(result.current.pageTiles)).toEqual(expectedOrder.slice(0, 2));
+    }
+  );
+
+  it('tracks camera activity while suspended and applies it once on resuming', () => {
+    const participants = getMockedParticipants(10);
+    const { store } = configureStore(SHARED_INITIAL_STATE);
+    const { result, rerender } = renderHookWithProviders(
+      ({ participants, suspended }: HookProps & { suspended: boolean }) =>
+        useOrderedTiles(participants, { suspendReordering: suspended }),
+      { store, options: { initialProps: { participants, suspended: false } } }
+    );
+    const cameraOn = [...participants.slice(0, 9), { ...participants[9], isCameraEnabled: true }];
+    rerender({ participants: cameraOn, suspended: true });
+    expect(participantsOf(result.current.pageTiles)).toEqual(participants.slice(0, 9));
+
+    rerender({ participants: cameraOn, suspended: false });
+    expect(participantsOf(result.current.pageTiles)).toEqual([cameraOn[9], ...participants.slice(1, 9)]);
+
+    rerender({ participants, suspended: false });
+    expect(participantsOf(result.current.pageTiles)).toEqual([participants[9], ...participants.slice(1, 9)]);
+  });
+
   it('returns paginated tiles', () => {
     const participants = getMockedParticipants(20);
     const { store } = configureStore(SHARED_INITIAL_STATE);
@@ -155,19 +213,16 @@ describe('useOrderedTiles', () => {
 
   it('places the current speaker on the first page in place of the earliest never-spoken participant', () => {
     const participants = getMockedParticipants(20);
-    participants[0].lastSpokeAt = new Date();
-    participants[1].lastSpokeAt = new Date();
-    participants[2].lastSpokeAt = new Date();
-    participants[12].lastSpokeAt = new Date();
+    participants[0].lastSpokeAt = createLastSpokenAtTestDate(1);
+    participants[1].lastSpokeAt = createLastSpokenAtTestDate(2);
+    participants[2].lastSpokeAt = createLastSpokenAtTestDate(3);
+    participants[12].lastSpokeAt = createLastSpokenAtTestDate(4);
     const { store } = configureStore(SHARED_INITIAL_STATE);
     const { result } = renderOrderedTiles(hookProps(participants, participants[12]), { store });
-    // The speaker takes the slot held by the earliest joiner who has never spoken (p3),
-    // so the previous speakers (p0..p2) and later joiners on page 1 (p4..p8) all stay.
-    expect(result.current.pageTiles[3].participant).toEqual(participants[12]);
-    expect(participantsOf(result.current.pageTiles)).not.toContainEqual(participants[3]);
-    expect(participantsOf(result.current.pageTiles)).toContainEqual(participants[0]);
-    expect(participantsOf(result.current.pageTiles)).toContainEqual(participants[1]);
-    expect(participantsOf(result.current.pageTiles)).toContainEqual(participants[2]);
+    const expectedOrder = [...participants];
+    [expectedOrder[3], expectedOrder[12]] = [expectedOrder[12], expectedOrder[3]];
+    expect(participantsOf(result.current.orderedTiles)).toEqual(expectedOrder);
+    expect(participantsOf(result.current.pageTiles)).toEqual(expectedOrder.slice(0, 9));
   });
 
   it('replaces the participant with the smallest last-activity timestamp when no fully-inactive slot is available', () => {
@@ -204,49 +259,222 @@ describe('useOrderedTiles', () => {
     participants[9].lastSpokeAt = createLastSpokenAtTestDate(8);
     const { store } = configureStore(SHARED_INITIAL_STATE);
     const { result } = renderOrderedTiles(hookProps(participants, participants[9]), { store });
-    // p9 displaces p0 (oldest spoken). Camera-on participants (p3, p4) keep their
-    // slot because their activation timestamp is more recent than p0..p2's spoken
-    // timestamps.
-    expect(result.current.pageTiles[0].participant).toEqual(participants[9]);
-    expect(participantsOf(result.current.pageTiles)).not.toContainEqual(participants[0]);
-    expect(participantsOf(result.current.pageTiles)).toContainEqual(participants[3]);
-    expect(participantsOf(result.current.pageTiles)).toContainEqual(participants[4]);
+    expect(participantsOf(result.current.pageTiles)).toEqual([participants[9], ...participants.slice(1, 9)]);
   });
 
-  it('places a speaker into the first inactive slot, protecting a camera-on participant who joined after the inactive ones', () => {
+  it('promotes a speaker without displacing a more recently activated camera', () => {
     const participants = getMockedParticipants(10);
-    // Mirrors the realistic "U3 should not displace U2" scenario: p0 spoke (the first
-    // promoted speaker), p1 is camera-on but joined LATER than the inactive p2..p8
-    // (mirroring how camera-on swaps put a later joiner onto page 1). p9 is the new
-    // speaker. Because p1 joined after p2..p8, p1's inactivity score (joinedAt) is
-    // larger than p2..p8's, so the speaker correctly displaces p2 (smallest joinedAt
-    // among the truly idle slots) and leaves p1 in place.
     participants[0].lastSpokeAt = createLastSpokenAtTestDate(1);
     participants[1].isCameraEnabled = true;
     participants[1].joinedAt = '2024-02-01T00:00:00Z';
     participants[9].lastSpokeAt = createLastSpokenAtTestDate(2);
     const { store } = configureStore(SHARED_INITIAL_STATE);
     const { result } = renderOrderedTiles(hookProps(participants, participants[9]), { store });
-    expect(result.current.pageTiles[2].participant).toEqual(participants[9]);
-    expect(participantsOf(result.current.pageTiles)).toContainEqual(participants[0]);
-    expect(participantsOf(result.current.pageTiles)).toContainEqual(participants[1]);
+    expect(participantsOf(result.current.pageTiles).slice(0, 3)).toEqual([
+      participants[0],
+      participants[1],
+      participants[9],
+    ]);
     expect(participantsOf(result.current.pageTiles)).not.toContainEqual(participants[2]);
   });
 
-  it('a new current speaker takes the next inactive slot, complementing a previous speaker swap', () => {
+  it('promotes a participant from page 2 to page 1 when they turn their camera on', () => {
+    const participants = getMockedParticipants(10);
+    // p9 joined before everyone else, so `joinedAt` alone would keep them on page 2.
+    // Only the camera activation timestamp can lift them onto page 1.
+    participants[9].joinedAt = new Date(Date.UTC(2023, 0, 1)).toISOString();
+    const { store } = configureStore(SHARED_INITIAL_STATE);
+    const { result, rerender } = renderOrderedTiles(hookProps(participants), { store });
+    expect(participantsOf(result.current.pageTiles)).not.toContainEqual(participants[9]);
+
+    const cameraOn = { ...participants[9], isCameraEnabled: true };
+    rerender(hookProps([...participants.slice(0, 9), cameraOn]));
+
+    // Nobody spoke, so every page-1 score falls back to `joinedAt`. p0 joined first
+    // among them and is therefore the longest inactive slot.
+    expect(result.current.pageTiles[0].participant).toEqual(cameraOn);
+    expect(participantsOf(result.current.pageTiles)).not.toContainEqual(participants[0]);
+
+    // The activation timestamp is remembered, so the tile does not keep displacing a
+    // new page-1 slot on every following render.
+    rerender(hookProps([...participants.slice(0, 9), cameraOn]));
+    expect(result.current.pageTiles[0].participant).toEqual(cameraOn);
+    expect(participantsOf(result.current.pageTiles)).toContainEqual(participants[1]);
+  });
+
+  it('promotes several camera-on participants onto the longest inactive page-1 slots', () => {
+    const participants = getMockedParticipants(11);
+    participants[9].joinedAt = new Date(Date.UTC(2023, 0, 1, 0, 0, 0)).toISOString();
+    participants[10].joinedAt = new Date(Date.UTC(2023, 0, 1, 0, 0, 1)).toISOString();
+    const { store } = configureStore(SHARED_INITIAL_STATE);
+    const { result, rerender } = renderOrderedTiles(hookProps(participants), { store });
+
+    const camerasOn = [
+      { ...participants[9], isCameraEnabled: true },
+      { ...participants[10], isCameraEnabled: true },
+    ];
+    rerender(hookProps([...participants.slice(0, 9), ...camerasOn]));
+
+    const page = participantsOf(result.current.pageTiles);
+    expect(page).toContainEqual(camerasOn[0]);
+    expect(page).toContainEqual(camerasOn[1]);
+    expect(page).not.toContainEqual(participants[0]);
+    expect(page).not.toContainEqual(participants[1]);
+  });
+
+  it.each([false, true])(
+    'keeps a newly activated camera in its visible slot (previous speech: %s)',
+    (hasPreviousSpeech) => {
+      const participants = getMockedParticipants(5);
+      if (hasPreviousSpeech) {
+        participants.forEach((participant, index) => {
+          participant.lastSpokeAt = createLastSpokenAtTestDate(5 - index);
+        });
+      }
+      const { store } = configureStore(SHARED_INITIAL_STATE);
+      const { result, rerender } = renderOrderedTiles(hookProps(participants), { store });
+      expect(participantsOf(result.current.pageTiles)).toEqual(participants);
+
+      const cameraOn = { ...participants[4], isCameraEnabled: true };
+      rerender(hookProps([...participants.slice(0, 4), cameraOn]));
+
+      expect(participantsOf(result.current.pageTiles)).toEqual([...participants.slice(0, 4), cameraOn]);
+    }
+  );
+
+  it('keeps visible participants in their slots when newer speech arrives', () => {
+    const participants = getMockedParticipants(5);
+    participants.forEach((participant, index) => {
+      participant.lastSpokeAt = createLastSpokenAtTestDate(index + 1);
+    });
+    const { store } = configureStore(SHARED_INITIAL_STATE);
+    const { result, rerender } = renderOrderedTiles(hookProps(participants), { store });
+    expect(participantsOf(result.current.pageTiles)).toEqual(participants);
+
+    const speakingAgain = { ...participants[4], lastSpokeAt: createLastSpokenAtTestDate(6) };
+    const updatedParticipants = [...participants.slice(0, 4), speakingAgain];
+    rerender(hookProps(updatedParticipants, speakingAgain));
+    expect(participantsOf(result.current.pageTiles)).toEqual(updatedParticipants);
+  });
+
+  it('preserves the previous order when activity timestamps are equal', () => {
+    const participants = getMockedParticipants(5);
+    participants.forEach((participant) => {
+      participant.lastSpokeAt = createLastSpokenAtTestDate(1);
+    });
+    const { store } = configureStore(SHARED_INITIAL_STATE);
+    const { result, rerender } = renderOrderedTiles(hookProps(participants), { store });
+    rerender(hookProps([...participants].reverse()));
+    expect(participantsOf(result.current.pageTiles)).toEqual(participants);
+  });
+
+  it('keeps a tile in place when it loses activity instead of sinking it', () => {
+    const participants = getMockedParticipants(5);
+    participants.forEach((participant, index) => {
+      participant.lastSpokeAt = createLastSpokenAtTestDate(index + 1);
+    });
+    const { store } = configureStore(SHARED_INITIAL_STATE);
+    const { result, rerender } = renderOrderedTiles(hookProps(participants), { store });
+
+    rerender(hookProps([{ ...participants[0], isCameraEnabled: true }, ...participants.slice(1)]));
+    expect(result.current.pageTiles[0].participant.id).toBe(participants[0].id);
+
+    rerender(hookProps([{ ...participants[0], isCameraEnabled: false }, ...participants.slice(1)]));
+    expect(result.current.pageTiles[0].participant.id).toBe(participants[0].id);
+  });
+
+  it('does not promote old page-2 activity when a page-1 camera turns off', () => {
+    const participants = getMockedParticipants(10);
+    participants.forEach((participant) => {
+      participant.lastSpokeAt = createLastSpokenAtTestDate(6);
+    });
+    participants[0].lastSpokeAt = createLastSpokenAtTestDate(1);
+    participants[0].isCameraEnabled = true;
+    participants[9].lastSpokeAt = createLastSpokenAtTestDate(5);
+    const { store } = configureStore(SHARED_INITIAL_STATE);
+    const { result, rerender } = renderOrderedTiles(hookProps(participants, participants[1]), { store });
+    const idsOf = (tiles: typeof result.current.pageTiles) => tiles.map((tile) => tile.participant.id);
+    const originalOrder = idsOf(result.current.orderedTiles);
+    expect(result.current.pageTiles[0].participant.id).toBe(participants[0].id);
+    expect(idsOf(result.current.pageTiles)).not.toContain(participants[9].id);
+
+    const cameraOff = participants.map((participant) => ({ ...participant, isCameraEnabled: false }));
+    rerender(hookProps(cameraOff, participants[1]));
+    expect(idsOf(result.current.orderedTiles)).toEqual(originalOrder);
+
+    const pageOneSpeech = [...cameraOff];
+    pageOneSpeech[1] = { ...pageOneSpeech[1], lastSpokeAt: createLastSpokenAtTestDate(7) };
+    rerender(hookProps(pageOneSpeech, participants[1]));
+    expect(idsOf(result.current.orderedTiles)).toEqual(originalOrder);
+    expect(idsOf(result.current.pageTiles)).not.toContain(participants[9].id);
+
+    const pageTwoSpeech = [...pageOneSpeech];
+    pageTwoSpeech[9] = { ...pageTwoSpeech[9], lastSpokeAt: createLastSpokenAtTestDate(8) };
+    rerender(hookProps(pageTwoSpeech, participants[1]));
+    expect(result.current.pageTiles[0].participant.id).toBe(participants[9].id);
+    expect(idsOf(result.current.pageTiles)).not.toContain(participants[0].id);
+  });
+
+  it('re-evaluates page membership after a grid resize', () => {
+    const participants = getMockedParticipants(11);
+    participants.forEach((participant) => {
+      participant.lastSpokeAt = createLastSpokenAtTestDate(6);
+    });
+    participants[0].lastSpokeAt = createLastSpokenAtTestDate(1);
+    participants[0].isCameraEnabled = true;
+    participants[9].lastSpokeAt = createLastSpokenAtTestDate(5);
+    participants[10].lastSpokeAt = createLastSpokenAtTestDate(4);
+    const { store } = configureStore(SHARED_INITIAL_STATE);
+    const { result, rerender } = renderOrderedTiles(hookProps(participants), { store });
+
+    const cameraOff = participants.map((participant) => ({ ...participant, isCameraEnabled: false }));
+    rerender(hookProps(cameraOff));
+    expect(result.current.pageTiles[0].participant.id).toBe(participants[0].id);
+
+    act(() => {
+      store.dispatch(updatedCinemaGridSize(6));
+    });
+
+    expect(participantsOf(result.current.pageTiles)).toEqual([cameraOff[6], ...cameraOff.slice(1, 6)]);
+    expect(result.current.orderedTiles).toHaveLength(11);
+  });
+
+  it('only closes the gap when a participant leaves, without reshuffling the page', () => {
+    const participants = getMockedParticipants(11);
+    participants.forEach((participant, index) => {
+      participant.lastSpokeAt = createLastSpokenAtTestDate(index + 1);
+    });
+    const { store } = configureStore(SHARED_INITIAL_STATE);
+    const { result, rerender } = renderOrderedTiles(hookProps(participants), { store });
+    const settledOrder = result.current.orderedTiles.map((tile) => tile.participant.id);
+
+    const remaining = participants.filter((participant) => participant.id !== settledOrder[3]);
+    rerender(hookProps(remaining));
+
+    expect(result.current.orderedTiles.map((tile) => tile.participant.id)).toEqual(
+      settledOrder.filter((id) => id !== settledOrder[3])
+    );
+  });
+
+  it('swaps consecutive speakers into inactive slots and keeps them there when speech stops', () => {
     const participants = getMockedParticipants(11);
     // p0..p8 are inactive on page 1; p9 (page 2) starts speaking.
     participants[9].lastSpokeAt = createLastSpokenAtTestDate(9);
+    participants[9].isSpeaking = true;
     const { store } = configureStore(SHARED_INITIAL_STATE);
     const { result, rerender } = renderOrderedTiles(hookProps(participants, participants[9]), { store });
     // p9 displaces p0 (first inactive).
     expect(result.current.pageTiles[0].participant).toEqual(participants[9]);
-    // p10 starts speaking. p9 is now active and protected; p10 should displace the next
-    // inactive slot (p1), landing right next to p9.
+    participants[9].isSpeaking = false;
     participants[10].lastSpokeAt = createLastSpokenAtTestDate(10);
+    participants[10].isSpeaking = true;
     rerender(hookProps(participants, participants[10]));
-    expect(result.current.pageTiles[0].participant).toEqual(participants[9]);
-    expect(result.current.pageTiles[1].participant).toEqual(participants[10]);
+    const expectedPage = [participants[9], participants[10], ...participants.slice(2, 9)];
+    expect(participantsOf(result.current.pageTiles)).toEqual(expectedPage);
+
+    participants[10].isSpeaking = false;
+    rerender(hookProps(participants));
+    expect(participantsOf(result.current.pageTiles)).toEqual(expectedPage);
   });
 
   it('removes participants who left the call from the order', () => {
@@ -360,6 +588,24 @@ describe('useOrderedTiles', () => {
     const { result } = renderOrderedTiles(hookProps(participants, participants[9]), { store });
     expect(result.current.pageTiles[0]).not.toEqual(participants[9]);
   });
+
+  it.each([CinemaViewSortOrder.VideoFirst, CinemaViewSortOrder.ModeratorsFirst, CinemaViewSortOrder.FirstJoined])(
+    'follows the upstream order on every render when sorting by %s',
+    (cinemaViewOrder) => {
+      const participants = getMockedParticipants(5);
+      const { store } = configureStore({ initialState: { ui: { cinemaGridSize: 9, cinemaViewOrder } } });
+      const { result, rerender } = renderOrderedTiles(hookProps(participants), { store });
+      expect(participantsOf(result.current.pageTiles)).toEqual(participants);
+
+      // `sortCinemaViewParticipants` re-sorts upstream, here moving the last joiner to
+      // the front after they turned their camera on.
+      const cameraOn = { ...participants[4], isCameraEnabled: true };
+      const resorted = [cameraOn, ...participants.slice(0, 4)];
+      rerender(hookProps(resorted));
+
+      expect(participantsOf(result.current.pageTiles)).toEqual(resorted);
+    }
+  );
 
   it('promotes a page-2 participant who starts speaking onto page 1 (gridSize 6 + extra users)', () => {
     const initialParticipants = getMockedParticipants(8);

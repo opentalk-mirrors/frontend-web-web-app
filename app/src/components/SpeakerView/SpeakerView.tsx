@@ -6,8 +6,7 @@ import { useTheme } from '@mui/material/styles';
 import { Track } from 'livekit-client';
 import { useEffect, useRef, useState } from 'react';
 
-import { useCinemaViewParticipants } from '../../hooks';
-import type { CinemaViewParticipant } from '../../hooks/useCinemaViewParticipants';
+import type { CinemaViewParticipant, useCinemaViewParticipants } from '../../hooks/useCinemaViewParticipants';
 import { TileIdentifier } from '../../types';
 import { constructConnectionIdentifier } from '../../utils/constructConnectionIdentifier';
 import { THUMBNAIL_WIDTH_LG, THUMBNAIL_WIDTH_XL } from './constants';
@@ -43,12 +42,13 @@ const getControllerFallbackTile = (participants: CinemaViewParticipant[]): TileI
   };
 };
 
-const SpeakerView = () => {
+type SpeakerViewProps = ReturnType<typeof useCinemaViewParticipants>;
+
+const SpeakerView = ({ cinemaViewParticipants, remoteParticipantsMap, featuredTile }: SpeakerViewProps) => {
   const theme: Theme = useTheme();
   const thumbnailWidth = useMediaQuery(theme.breakpoints.up('xl')) ? THUMBNAIL_WIDTH_XL : THUMBNAIL_WIDTH_LG;
   const [visibleThumbnails, setVisibleThumbnails] = useState(1);
   const [speakerWindowDimensions, setSpeakerWindowDimensions] = useState({ width: 0, height: 0 });
-  const { cinemaViewParticipants, remoteParticipantsMap, featuredTile } = useCinemaViewParticipants();
   const speakerTile = featuredTile ?? getControllerFallbackTile(cinemaViewParticipants);
 
   const containerRef = useRef<HTMLDivElement | null>(null);

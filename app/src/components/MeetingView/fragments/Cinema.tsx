@@ -6,10 +6,18 @@ import { useEffect, useRef, useState } from 'react';
 
 import { VisuallyHiddenTitle } from '../../../commonComponents';
 import LayoutOptions from '../../../enums/LayoutOptions';
-import { useAppDispatch, useAppSelector, useConferenceUiVersion } from '../../../hooks';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useCinemaViewParticipants,
+  useConferenceUiVersion,
+  useOrderedTiles,
+} from '../../../hooks';
 import SelfViewAnchorContext from '../../../provider/SelfViewAnchorContext';
+import { selectCurrentBreakoutRoomId } from '../../../store/slices/breakoutSlice';
 import { fullscreenActions, selectFullscreenActive } from '../../../store/slices/fullscreen/slice';
 import { selectLivekitUnavailable } from '../../../store/slices/livekitSlice';
+import { selectRoomId } from '../../../store/slices/roomSlice';
 import { selectCinemaLayout, selectIsSelfViewMinimized } from '../../../store/slices/uiSlice';
 import FloatingReactionsOverlay from '../../FloatingReactions/FloatingReactionsOverlay';
 import FullscreenView from '../../FullscreenView';
@@ -39,7 +47,7 @@ const Container = styled('main', { shouldForwardProp: (prop) => prop !== 'reserv
   }),
 }));
 
-const Cinema = () => {
+const RoomCinema = () => {
   const { isV2 } = useConferenceUiVersion();
   const [selfViewAnchor, setSelfViewAnchor] = useState<HTMLElement | null>(null);
   const userLayout = useAppSelector(selectCinemaLayout);
@@ -50,6 +58,11 @@ const Cinema = () => {
   const isSelfViewMinimized = useAppSelector(selectIsSelfViewMinimized);
   const shouldReserveSpaceForSelfView =
     isV2 && !isSelfViewMinimized && !isFullscreenActive && userLayout === LayoutOptions.Grid;
+  const participantsState = useCinemaViewParticipants();
+  const { pageTiles } = useOrderedTiles(participantsState.cinemaViewParticipants, {
+    featuredConnectionIdentifier: participantsState.featuredTile?.connectionIdentifier,
+    suspendReordering: userLayout !== LayoutOptions.Grid || isFullscreenActive,
+  });
 
   useEffect(() => {
     if (refForFullscreen.current) {
@@ -67,13 +80,13 @@ const Cinema = () => {
 
     switch (userLayout) {
       case LayoutOptions.Speaker:
-        return <SpeakerView />;
+        return <SpeakerView {...participantsState} />;
       case LayoutOptions.Whiteboard:
         return <WhiteboardView />;
       case LayoutOptions.MeetingNotes:
         return <MeetingNotesView />;
       case LayoutOptions.Grid:
-        return <GridView />;
+        return <GridView pageTiles={pageTiles} remoteParticipantsMap={participantsState.remoteParticipantsMap} />;
     }
   };
 
@@ -92,6 +105,12 @@ const Cinema = () => {
       </Container>
     </SelfViewAnchorContext.Provider>
   );
+};
+
+const Cinema = () => {
+  const roomId = useAppSelector(selectRoomId);
+  const breakoutRoomId = useAppSelector(selectCurrentBreakoutRoomId);
+  return <RoomCinema key={JSON.stringify([roomId, breakoutRoomId])} />;
 };
 
 export default Cinema;

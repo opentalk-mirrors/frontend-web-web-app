@@ -5,6 +5,7 @@ import { act, screen } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 
 import { GRID_SIZES, MAX_GRID_TILES_MOBILE } from '../../constants';
+import { useCinemaViewParticipants, useOrderedTiles } from '../../hooks';
 import { setPaginationPage } from '../../store/slices/uiSlice';
 import { renderWithProviders, mockStore, mockedParticipant } from '../../utils/testUtils';
 import GridView from './GridView';
@@ -39,12 +40,20 @@ vi.mock('@livekit/components-react', async (importOriginal) => {
 
 const PARTICIPANTS_COUNT = 25;
 
+const GridWithParticipants = () => {
+  const { cinemaViewParticipants, remoteParticipantsMap, featuredTile } = useCinemaViewParticipants();
+  const { pageTiles } = useOrderedTiles(cinemaViewParticipants, {
+    featuredConnectionIdentifier: featuredTile?.connectionIdentifier,
+  });
+  return <GridView pageTiles={pageTiles} remoteParticipantsMap={remoteParticipantsMap} />;
+};
+
 describe('GridView', () => {
   const renderPages = (cinemaGridSize: number, participantCount: number, pageSize: number) => {
     const { store } = mockStore(participantCount, {
       store: { initialState: { ui: { cinemaGridSize, paginationPage: 1 } } },
     });
-    renderWithProviders(<GridView />, { store });
+    renderWithProviders(<GridWithParticipants />, { store });
 
     const tilesPerPage: number[] = [];
     for (let page = 1; page <= Math.ceil(participantCount / pageSize); page++) {
@@ -78,7 +87,7 @@ describe('GridView', () => {
 
   it('render GridView', () => {
     const { store } = mockStore(1);
-    renderWithProviders(<GridView />, { store });
+    renderWithProviders(<GridWithParticipants />, { store });
 
     expect(screen.getByTestId('gridCell')).toBeVisible();
   });
@@ -88,7 +97,7 @@ describe('GridView', () => {
       const { store } = mockStore(participantCount, {
         store: { initialState: { ui: { cinemaGridSize: 6, paginationPage } } },
       });
-      renderWithProviders(<GridView />, { store });
+      renderWithProviders(<GridWithParticipants />, { store });
       return screen.getAllByTestId('gridCell');
     };
 
@@ -121,7 +130,7 @@ describe('GridView', () => {
       const { store } = mockStore(4, {
         store: { initialState: { ui: { cinemaGridSize: 6, paginationPage: 1 } } },
       });
-      renderWithProviders(<GridView />, { store });
+      renderWithProviders(<GridWithParticipants />, { store });
       return screen.getByTestId('gridContainer');
     };
 
