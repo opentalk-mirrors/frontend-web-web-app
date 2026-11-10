@@ -23,6 +23,15 @@ _check_opentalk_git_cliff:
         exit 1
     fi
 
+[no-exit-message]
+_check_glab:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! command -v glab > /dev/null; then
+        echo 'glab is not available, see https://gitlab.com/gitlab-org/cli' >&2
+        exit 1
+    fi
+
 # Prepare a release
 prepare-release VERSION: (set-version VERSION) (update-changelog VERSION)
 
@@ -55,3 +64,32 @@ commit-release: _check_jq
     VERSION=$(cat package.json | jq -r .version)
     git commit -a -m "chore(release): prepare release ${VERSION}"
     git log HEAD^..HEAD
+
+# Create the release tag
+tag-release: _check_jq
+    #!/usr/bin/env bash
+    current_version=$(cat package.json | jq -r .version)
+    git tag -s -m "v$current_version" "v$current_version"
+    git show --no-patch "v$current_version"
+
+# Create a GitLab release from the current version tag
+create-release: _check_jq _check_glab
+    #!/usr/bin/env bash
+    set -euo pipefail
+    current_version=$(cat package.json | jq -r .version)
+    tag="v$current_version"
+
+    if ! git ls-remote --exit-code --tags upstream "refs/tags/$tag" > /dev/null; then
+        echo "Tag $tag does not exist in the upstream remote, push it first" >&2
+        exit 1
+    fi
+
+    # Extract the changelog section for this version
+    notes=$(awk "/^## \\[$current_version\\]/{found=1; next} /^## \\[/{if(found) exit} /^\\[$current_version\\]:/{next} found{print}" CHANGELOG.md)
+
+    if [ -z "$notes" ]; then
+        echo "No changelog entry found for version $current_version" >&2
+        exit 1
+    fi
+
+    glab release create "$tag" --notes "$notes"
