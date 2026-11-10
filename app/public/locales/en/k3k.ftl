@@ -27,7 +27,6 @@ media-subscription-failed = No connection to the participant
 
 
 error-system-currently-unavailable = The system is currently unavailable, please try again later.
-error-unauthorized = You may need to log in to join this meeting.<br />If already logged in, please contact the meeting moderator.
 error-livekit-unavailable = Livekit is not available, please contact your administrator.
 
 login-form-title = Login
@@ -39,6 +38,7 @@ route-not-found = Route not found
 room = Room {$roomNumber}
 joinform-title = Enter Conference
 joinform-enter-now = Enter now
+joinform-join-as-guest = Join as guest
 joinform-request-to-join = Request to join
 joinform-waiting-room-enter = Please wait...
 joinform-wrong-room-password = The password you entered is incorrect.
@@ -706,11 +706,18 @@ no-favorite-meetings = You don't have any favorites yet.
 selftest-header = Say hello to yourself.
 selftest-body = You might want to turn on your camera and microphone here and test it.
 selftest-body-do-test = Camera and microphone can be tested here.
-lobby-name-placeholder = Your name please
+lobby-name-placeholder = Enter your name
 lobby-password-placeholder = Enter password
 lobby-password-step-heading = This room is password protected.
 lobby-password-step-subtext = Access requires a valid password.
 lobby-name-max-error = Max. {$max} characters
+lobby-switch-account = Switch account
+lobby-already-registered = Already have an account?
+lobby-sign-in-required-heading = Sign-in required
+lobby-sign-in-required-subtext = Please sign in to join this meeting.
+lobby-no-access-heading = No access
+lobby-no-access-subtext = Access to this meeting is restricted to invited participants. Please contact the meeting moderators for access.
+lobby-signed-in-as = Signed in as {$name}
 dashboard-home-join = Start
 dashboard-home-join-label = Start {$title}
 dashboard-home-created-by = Created by {$author}

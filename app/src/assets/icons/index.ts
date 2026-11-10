@@ -57,6 +57,7 @@ import InviteIcon from './InviteIcon';
 import KeyboardIcon from './KeyboardIcon';
 import LegalBallotIcon from './LegalBallotIcon';
 import LiveIcon from './LiveIcon';
+import LockedIcon from './LockedIcon';
 import LogoIcon from './LogoIcon';
 import MeetingNotesIcon from './MeetingNotesIcon';
 import MeetingRoomIcon from './MeetingRoomIcon';
@@ -165,6 +166,7 @@ export {
   KeyboardIcon,
   LegalBallotIcon,
   LiveIcon,
+  LockedIcon,
   LogoIcon,
   MeetingNotesIcon,
   MeetingRoomIcon,

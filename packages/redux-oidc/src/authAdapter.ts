@@ -116,6 +116,8 @@ export class AuthAdapter {
 
   public getAccessToken = () => localStorage.getItem('access_token');
 
+  public getIdToken = () => localStorage.getItem('id_token');
+
   public async signOut(signOutUrl?: string): Promise<void> {
     const { endSessionEndpoint } = await this.getConfigurationEndpoints();
     const logoutUrl = new URL(endSessionEndpoint);
@@ -125,6 +127,13 @@ export class AuthAdapter {
       'post_logout_redirect_uri',
       signOutUrl ? signOutUrl : this._configuration.signOutRedirectUri
     );
+
+    // Without the ID token of the session, the identity provider asks the user to confirm the logout
+    const idToken = this.getIdToken();
+    if (idToken) {
+      logoutUrl.searchParams.append('id_token_hint', idToken);
+    }
+
     window.location.replace(logoutUrl);
     clearApplicationStorage();
   }

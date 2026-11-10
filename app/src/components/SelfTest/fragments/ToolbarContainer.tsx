@@ -28,7 +28,7 @@ const Container = styled('nav')(({ theme }) => ({
   zIndex: BOTTOM_CONTAINER_Z_INDEX,
   [theme.breakpoints.up('md')]: {
     position: 'absolute',
-    height: theme.typography.pxToRem(112),
+    height: theme.typography.pxToRem(146),
   },
 }));
 
@@ -80,7 +80,7 @@ const ToolbarContainer = ({ children, actionButton, localAudioTrack, waitingRoom
         spacing={2}
         sx={{
           justifyContent: 'center',
-          alignItems: { xs: 'center' },
+          alignItems: { xs: 'center', md: waitingRoom ? undefined : 'flex-start' },
         }}
       >
         {!isMobile && (

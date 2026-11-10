@@ -1,17 +1,15 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { AuthCallbackComponent, selectAuthIsPending } from '@opentalk/redux-oidc';
-import { selectIsAuthenticated, useAuthContext } from '@opentalk/redux-oidc';
+import { AuthCallbackComponent, selectAuthIsPending, selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { PropsWithChildren, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, To, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Error from '../../components/Error';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import log from '../../logger';
+import { useAuthActions } from '../../hooks/useAuthActions';
 import { selectUiMode, setUiMode, UiMode } from '../../store/slices/uiSlice';
-import { navigateTo } from '../../utils/navigation';
 
 type ProtectedRouteProps = PropsWithChildren<{
   allowGuests?: boolean;
@@ -41,7 +39,7 @@ export const Redirect = ({ to }: { to: To }) => {
 };
 
 export const ProtectedRoute = ({ children, allowGuests = false }: ProtectedRouteProps) => {
-  const auth = useAuthContext();
+  const { signIn, isAuthAvailable } = useAuthActions();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isAuthPending = useAppSelector(selectAuthIsPending);
   const shouldSignIn = !isAuthPending && !isAuthenticated && !allowGuests;
@@ -49,13 +47,10 @@ export const ProtectedRoute = ({ children, allowGuests = false }: ProtectedRoute
   // Trigger sign-in from an effect rather than during render, so the redirect side effect is not
   // invoked twice under React StrictMode (which would race two PKCE/state pairs and loop the login).
   useEffect(() => {
-    if (shouldSignIn) {
-      auth?.signIn().catch((error) => {
-        log.error('failed to signIn:', error);
-        navigateTo('server-issue');
-      });
+    if (shouldSignIn && isAuthAvailable) {
+      signIn();
     }
-  }, [shouldSignIn, auth]);
+  }, [shouldSignIn, isAuthAvailable, signIn]);
 
   if (isAuthPending) {
     return null;

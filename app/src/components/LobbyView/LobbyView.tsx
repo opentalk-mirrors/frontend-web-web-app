@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { Button, Container, Stack, styled } from '@mui/material';
+import { Box, Button, Container, Stack, styled } from '@mui/material';
 import { selectIsAuthenticated } from '@opentalk/redux-oidc';
 import { RoomId } from '@opentalk/rest-api-rtk-query';
 import { uniqueId } from 'es-toolkit/compat';
@@ -10,7 +10,7 @@ import i18next from 'i18next';
 import { isE2EESupported } from 'livekit-client';
 import { SnackbarKey } from 'notistack';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
@@ -29,6 +29,7 @@ import { DISPLAY_NAME_MAX_CHARACTERS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useDisplayName } from '../../hooks/useDisplayName';
 import useNavigateToHome from '../../hooks/useNavigateToHome';
+import { useSwitchAccount } from '../../hooks/useSwitchAccount';
 import { useUpdateDocumentTitle } from '../../hooks/useUpdateDocumentTitle';
 import log from '../../logger';
 import { ConnectionState } from '../../modules/WebRTC/ConferenceRoom';
@@ -47,6 +48,9 @@ import OpentalkError from '../Error';
 import ImprintContainer from '../ImprintContainer';
 import MeetingEndedDialog from '../MeetingView/fragments/MeetingEndedDialog';
 import SelfTest from '../SelfTest';
+import AccountAction from './fragments/AccountAction';
+import LobbyAccessDeniedNotInvited from './fragments/LobbyAccessDeniedNotInvited';
+import LobbyAccessDeniedSignIn from './fragments/LobbyAccessDeniedSignIn';
 import LobbyPasswordStep from './fragments/LobbyPasswordStep';
 
 const CommonTextField = styled(DefaultCommonTextField)(({ theme }) => ({
@@ -71,12 +75,6 @@ const CustomTextField = styled(CommonTextField)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     minWidth: theme.typography.pxToRem(220),
   },
-  [theme.breakpoints.up('md')]: {
-    '& .MuiFormHelperText-root': {
-      position: 'absolute',
-      bottom: `-${theme.typography.pxToRem(24)}`,
-    },
-  },
   '& .MuiInputBase-input.Mui-disabled': {
     WebkitTextFillColor: theme.palette.primary.main,
     backgroundColor: theme.palette.primary.contrastText,
@@ -88,9 +86,14 @@ const ActionButton = styled(Button)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     marginTop: `${theme.typography.pxToRem(4)} !important`,
     marginRight: 'auto !important',
-    alignSelf: 'center',
+    alignSelf: 'flex-start',
   },
 }));
+
+const NameFieldContainer = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+});
 
 let wrongPasswordSnackBarKey: SnackbarKey | undefined = undefined;
 
@@ -142,6 +145,7 @@ const LobbyView = () => {
   const { data } = useGetMeQuery(undefined, { skip: !isLoggedIn });
   const navigateToHome = useNavigateToHome();
   const navigate = useNavigate();
+  const { signIn, switchAccount, isSwitchingAccount } = useSwitchAccount();
 
   const { roomId } = useParams<'roomId'>() as {
     roomId: RoomId;
@@ -171,7 +175,7 @@ const LobbyView = () => {
     };
   }, []);
 
-  const disableDisplayNameField = disallowCustomDisplayName && isLoggedIn;
+  const isDisplayNameFieldDisabled = disallowCustomDisplayName && isLoggedIn;
   const initialDisplayName = useDisplayName(data);
 
   const validationSchema = useMemo(
@@ -258,7 +262,7 @@ const LobbyView = () => {
 
   const hasInitiatedConnect = useRef(false);
   useEffect(() => {
-    if (hasInitiatedConnect.current || isRoomDataLoading || !roomData) {
+    if (hasInitiatedConnect.current || isRoomDataLoading || !roomData || isSwitchingAccount) {
       return;
     }
     // On successful hangup the connection state will be `Left`
@@ -277,7 +281,15 @@ const LobbyView = () => {
     }
     hasInitiatedConnect.current = true;
     void openLobbyConnection();
-  }, [isRoomDataLoading, roomData, connectionState, openLobbyConnection, isPasswordRequired, isRoomDeleted]);
+  }, [
+    isRoomDataLoading,
+    roomData,
+    connectionState,
+    openLobbyConnection,
+    isPasswordRequired,
+    isRoomDeleted,
+    isSwitchingAccount,
+  ]);
 
   const formik = useFormik({
     initialValues: {
@@ -287,7 +299,7 @@ const LobbyView = () => {
     validateOnMount: true,
     validationSchema,
     onSubmit: (values) => {
-      const name = disableDisplayNameField ? initialDisplayName || '' : values.name;
+      const name = isDisplayNameFieldDisabled ? initialDisplayName || '' : values.name;
       // don't send a displayName if its already set by the server (via display_name_assigned` or returned in `joined_lobby`)
       if (lobbyDisplayName) {
         submitLobby();
@@ -300,35 +312,65 @@ const LobbyView = () => {
 
   const isInLobby = connectionState === ConnectionState.Lobby;
   const isStarting = connectionState === ConnectionState.Starting;
+  const isJoiningAsGuest = !roomData?.isInvited;
+  const isApprovalNeeded = isInLobby && canEnter === false;
 
   const disableSubmitButton = !formik.isValid || !isInLobby;
-  const submitButtonLabel = isInLobby && canEnter === false ? t('joinform-request-to-join') : t('joinform-enter-now');
+  const submitButtonLabel = isApprovalNeeded
+    ? t('joinform-request-to-join')
+    : isJoiningAsGuest
+      ? t('joinform-join-as-guest')
+      : t('joinform-enter-now');
 
-  if (isRoomDataLoading) {
+  if (isRoomDataLoading || isSwitchingAccount) {
     return <SuspenseLoading />;
   }
 
-  const isRoomAccessForbidden = roomDataError && 'status' in roomDataError && roomDataError.status === 403;
-  if (isRoomAccessForbidden) {
+  const roomDataErrorStatus = roomDataError && 'status' in roomDataError ? roomDataError.status : undefined;
+  // Without guest access, not authenticated users receive a 401 and logged in users, which are not invited, a 403
+  const isSignInRequired = roomDataErrorStatus === 401 && !isLoggedIn;
+  if (isSignInRequired) {
+    return (
+      <>
+        <Container>
+          <LobbyAccessDeniedSignIn onSignIn={signIn} />
+        </Container>
+        <ImprintContainer />
+      </>
+    );
+  }
+
+  const isAccessRestricted = roomDataErrorStatus === 403 && isLoggedIn;
+  if (isAccessRestricted) {
+    return (
+      <>
+        <Container>
+          <LobbyAccessDeniedNotInvited displayName={data?.displayName} onSwitchAccount={switchAccount} />
+        </Container>
+        <ImprintContainer />
+      </>
+    );
+  }
+
+  if (roomDataErrorStatus === 401 || roomDataErrorStatus === 403) {
     return <OpentalkError title={t('error-access-forbidden')} />;
   }
 
-  // A guest trying to join a room with guest access disabled receives a 401 from the room event endpoint.
-  // Logging in might grant them access, so offer a login option unless they are already authenticated.
-  const isRoomAccessUnauthorized = roomDataError && 'status' in roomDataError && roomDataError.status === 401;
-  if (isRoomAccessUnauthorized) {
-    return <OpentalkError title={<Trans i18nKey="error-unauthorized" />} login={!isLoggedIn} />;
+  if (roomDataError && !('status' in roomDataError)) {
+    return <OpentalkError title={t('error-general')} />;
   }
 
   if (showPasswordStep) {
     return (
       <>
-        <LobbyPasswordStep
-          isSubmitting={isStarting}
-          onSubmit={(enteredPassword) => {
-            void openLobbyConnection(enteredPassword);
-          }}
-        />
+        <Container>
+          <LobbyPasswordStep
+            isSubmitting={isStarting}
+            onSubmit={(enteredPassword) => {
+              void openLobbyConnection(enteredPassword);
+            }}
+          />
+        </Container>
         <ImprintContainer />
       </>
     );
@@ -352,18 +394,21 @@ const LobbyView = () => {
             onSubmit={formik.handleSubmit}
             aria-label={t('joinform-title') as string}
           >
-            <ConditionalToolTip
-              showToolTip={Boolean(disableDisplayNameField)}
-              title={t('joinform-display-name-field-disabled-tooltip')}
-            >
-              <CustomTextField
-                {...formikProps('name', formik)}
-                label={t('global-name')}
-                placeholder={t('lobby-name-placeholder')}
-                autoComplete="username"
-                disabled={disableDisplayNameField || Boolean(lobbyDisplayName)}
-              />
-            </ConditionalToolTip>
+            <NameFieldContainer>
+              <ConditionalToolTip
+                showToolTip={Boolean(isDisplayNameFieldDisabled)}
+                title={t('joinform-display-name-field-disabled-tooltip')}
+              >
+                <CustomTextField
+                  {...formikProps('name', formik)}
+                  label={t('global-name')}
+                  placeholder={t('lobby-name-placeholder')}
+                  autoComplete="username"
+                  disabled={isDisplayNameFieldDisabled || Boolean(lobbyDisplayName)}
+                />
+              </ConditionalToolTip>
+              <AccountAction isLoggedIn={isLoggedIn} onSignIn={signIn} onSwitchAccount={switchAccount} />
+            </NameFieldContainer>
           </Stack>
         </SelfTest>
       </Container>

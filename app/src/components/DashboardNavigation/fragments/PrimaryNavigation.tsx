@@ -2,12 +2,13 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { List as MuiList, styled } from '@mui/material';
-import { selectAuthIsPending, useAuthContext } from '@opentalk/redux-oidc';
+import { selectAuthIsPending } from '@opentalk/redux-oidc';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FeedbackIcon, SettingsIcon, SignOutIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
+import { useAuthActions } from '../../../hooks/useAuthActions';
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import {
   selectAccountManagementUrl,
@@ -84,7 +85,7 @@ const PrimaryNavigation = ({ submenu, routes, setActiveNavbar }: NavigationProps
   const accountManagementUrl = useAppSelector(selectAccountManagementUrl);
   const imprintUrl = useAppSelector(selectImprintUrl);
   const dataProtectionUrl = useAppSelector(selectDataProtectionUrl);
-  const auth = useAuthContext();
+  const { signOut } = useAuthActions();
   const isAuthPending = useAppSelector(selectAuthIsPending);
 
   const toggleFeedbackModal = () => setShowFeedbackModal((prevState) => !prevState);
@@ -137,7 +138,7 @@ const PrimaryNavigation = ({ submenu, routes, setActiveNavbar }: NavigationProps
         )}
 
         <PrimaryNavigationEntry
-          onClick={() => auth?.signOut()}
+          onClick={() => signOut()}
           Icon={<SignOutIcon />}
           collapsedBar={collapsedBar}
           label={t('global-logout')}

@@ -2,9 +2,11 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import DashboardNavigation from '.';
 import { HomeIcon, MeetingsIcon, SettingsIcon } from '../../assets/icons';
+import { useAuthActions } from '../../hooks/useAuthActions';
 import { renderWithProviders, configureStore } from '../../utils/testUtils';
 
 const routes = [
@@ -49,7 +51,15 @@ vi.mock('../../api/rest', async (importOriginal) => ({
   }),
 }));
 
+vi.mock('../../hooks/useAuthActions', () => ({ useAuthActions: vi.fn() }));
+
 describe('DashboardNavigation', () => {
+  const signOut = vi.fn();
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useAuthActions).mockReturnValue({ signIn: vi.fn(), signOut, isAuthAvailable: true });
+  });
+
   const { store } = configureStore({
     initialState: {
       config: {
@@ -78,6 +88,15 @@ describe('DashboardNavigation', () => {
     renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
 
     expect(screen.queryByTestId('SecondaryNavigation')).toBeNull();
+  });
+
+  it('uses the shared sign-out action for dashboard logout', async () => {
+    const user = userEvent.setup({ delay: null });
+    renderWithProviders(<DashboardNavigation routes={routes} />, { store, provider: { router: true, mui: true } });
+
+    await user.click(screen.getByRole('button', { name: 'global-logout' }));
+
+    expect(signOut).toHaveBeenCalledExactlyOnceWith();
   });
 
   it.skip('opens and closes secondary navigation', () => {

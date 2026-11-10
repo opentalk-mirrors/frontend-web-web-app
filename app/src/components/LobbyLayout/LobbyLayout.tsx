@@ -2,12 +2,10 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { Container, Stack, styled } from '@mui/material';
-import Color from 'colorjs.io';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BackIcon, LogoIcon } from '../../assets/icons';
-import arrowImage from '../../assets/images/arrow-illustration.png';
 import { CircularIconButton, IconButton as MuiIconButton } from '../../commonComponents';
 import { CircularIconButtonStyles } from '../../commonComponents/IconButtons/CircularIconButton';
 import { useAppSelector } from '../../hooks';
@@ -16,31 +14,7 @@ import useNavigateToHome from '../../hooks/useNavigateToHome';
 import { selectSpeedTestConfig } from '../../store/slices/configSlice';
 import MyMeetingMenu from '../MeetingHeader/fragments/MyMeetingMenu';
 import SpeedTestDialog from '../SpeedTestDialog';
-
-const InnerContainer = styled('div')(({ theme }) => {
-  const background = new Color(theme.palette.background.customPaper.primary);
-  background.alpha = 0.5;
-
-  return {
-    position: 'relative',
-    padding: 0,
-    width: '100%',
-    maxWidth: '1200px',
-
-    //The blur should be part of the theme and handled globally
-    backdropFilter: 'blur(100px)',
-    WebkitBackdropFilter: 'blur(100px)',
-    backgroundImage: `url(${arrowImage})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: '77% 67%',
-    backgroundColor: background.toString({ format: 'rgba' }),
-    color: theme.palette.background.customPaper.contrastText,
-    backgroundSize: '10rem',
-    '& .MuiButtonBase-root.Mui-focusVisible': {
-      outline: theme.palette.focus.outline,
-    },
-  };
-});
+import LobbyCard from './LobbyCard';
 
 const Header = styled('header')(({ theme }) => ({
   display: 'flex',
@@ -115,7 +89,7 @@ const LobbyLayout = ({ center, bottom }: LobbyLayoutProps) => {
 
   return (
     <Container>
-      <InnerContainer>
+      <LobbyCard>
         <Header>
           <IconButton onClick={navigateToHome} aria-label={t('conference-go-home')}>
             <LogoIcon />
@@ -135,7 +109,7 @@ const LobbyLayout = ({ center, bottom }: LobbyLayoutProps) => {
             <BackIcon />
           </MobileBackButton>
         )}
-      </InnerContainer>
+      </LobbyCard>
     </Container>
   );
 };
