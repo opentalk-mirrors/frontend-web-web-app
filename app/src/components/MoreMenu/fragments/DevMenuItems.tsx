@@ -4,8 +4,8 @@
 import { ListItemIcon, Typography } from '@mui/material';
 import { BackendModules } from '@opentalk/rest-api-rtk-query';
 
-import { disablePresenceLogging, enablePresenceLogging } from '../../../api/types/outgoing/trainingParticipationReport';
-import { ErrorIcon, CloseIcon } from '../../../assets/icons';
+import { triggerPresenceCheck } from '../../../api/types/outgoing/trainingParticipationReport';
+import { ErrorIcon } from '../../../assets/icons';
 import { notificationAction, notificationPersistent, notifications } from '../../../commonComponents';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { selectIsModuleEnabled } from '../../../store/slices/configSlice';
@@ -112,31 +112,15 @@ const DevMenuItems = ({ onClose }: DevMenuItemsProps) => {
     },
   ];
 
-  if (isTrainingParticipationReportModuleOn) {
-    entries.push(
-      isTrainingParticipationReportEnabled
-        ? {
-            label: 'Test training participation report off',
-            action: () => {
-              onClose();
-              dispatch(disablePresenceLogging.action());
-            },
-            icon: <CloseIcon />,
-          }
-        : {
-            label: 'Test training participation report on',
-            action: () => {
-              onClose();
-              dispatch(
-                enablePresenceLogging.action({
-                  initialCheckpointDelay: { after: 5, within: 10 },
-                  checkpointInterval: { after: 10, within: 5 },
-                })
-              );
-            },
-            icon: <ErrorIcon />,
-          }
-    );
+  if (isTrainingParticipationReportModuleOn && isTrainingParticipationReportEnabled) {
+    entries.push({
+      label: 'Trigger presence check',
+      action: () => {
+        onClose();
+        dispatch(triggerPresenceCheck.action());
+      },
+      icon: <ErrorIcon />,
+    });
   }
 
   return entries.map(({ label, action, icon }) => (
