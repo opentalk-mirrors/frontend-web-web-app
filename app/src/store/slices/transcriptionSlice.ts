@@ -5,7 +5,7 @@ import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import type { RootState } from '../';
 import {
-  MeetingProtocolMode,
+  AutomaticMeetingProtocolMode,
   TranscriptionLanguage,
   TranscriptionModes,
   TranscriptionStatus,
@@ -21,7 +21,7 @@ import { selectBreakoutRoomSelectorParticipants } from '../selectors';
 export interface TranscriptionState {
   status: TranscriptionStatus;
   liveTranscription: boolean;
-  meetingProtocol: MeetingProtocolMode | null;
+  automaticMeetingProtocol: AutomaticMeetingProtocolMode | null;
   showSubtitles: boolean;
   showSettings: boolean;
   language: TranscriptionLanguageKey | '';
@@ -38,7 +38,7 @@ export interface TranscriptionSubtitle {
 const initialState: TranscriptionState = {
   status: TranscriptionStatus.Inactive,
   liveTranscription: false,
-  meetingProtocol: null,
+  automaticMeetingProtocol: null,
   showSubtitles: false,
   showSettings: false,
   language: '',
@@ -54,7 +54,7 @@ const transcriptionSlice = createSlice({
     },
     transcriptionModesUpdated: (state, { payload }: PayloadAction<TranscriptionModes>) => {
       state.liveTranscription = payload.liveTranscription;
-      state.meetingProtocol = payload.meetingProtocol ?? null;
+      state.automaticMeetingProtocol = payload.automaticMeetingProtocol ?? null;
     },
     segmentReceived: (state, { payload }: PayloadAction<TranscriptionSegment>) => {
       state.segments.push(payload);
@@ -90,8 +90,11 @@ const transcriptionSlice = createSlice({
       const transcription = payload.transcription;
       state.status = transcription?.status ?? TranscriptionStatus.Inactive;
       state.liveTranscription = transcription?.liveTranscription ?? false;
-      state.meetingProtocol = transcription?.meetingProtocol
-        ? { pseudonymous: transcription.meetingProtocol.pseudonymous, paused: transcription.meetingProtocol.paused }
+      state.automaticMeetingProtocol = transcription?.automaticMeetingProtocol
+        ? {
+            pseudonymous: transcription.automaticMeetingProtocol.pseudonymous,
+            paused: transcription.automaticMeetingProtocol.paused,
+          }
         : null;
     });
     builder.addCase(hangUp.pending, () => initialState);
@@ -110,6 +113,9 @@ export const {
   hideTranscriptionSettings,
 } = transcriptionSlice.actions;
 
+export const selectTranscriptionStatus = (state: RootState) => state.transcription.status;
+export const selectIsAutomaticMeetingProtocolRunning = (state: RootState) =>
+  state.transcription.automaticMeetingProtocol !== null && state.transcription.status === TranscriptionStatus.Running;
 export const selectIsLiveTranscriptionRunning = (state: RootState) =>
   state.transcription.liveTranscription && state.transcription.status === TranscriptionStatus.Running;
 const selectSegments = (state: RootState) => state.transcription.segments;

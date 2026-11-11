@@ -1,7 +1,12 @@
 // SPDX-FileCopyrightText: OpenTalk GmbH <mail@opentalk.eu>
 //
 // SPDX-License-Identifier: EUPL-1.2
-import { BackendModules, RecordingFeatures, StreamingStatus } from '@opentalk/rest-api-rtk-query';
+import {
+  BackendModules,
+  RecordingFeatures,
+  StreamingStatus,
+  TranscriptionFeatures,
+} from '@opentalk/rest-api-rtk-query';
 import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -16,6 +21,11 @@ vi.mock('../../modules/WebRTC/ConferenceRoom', async (importOriginal) => ({
   getCurrentConferenceRoom: () => ({
     sendMessage: vi.fn(),
   }),
+}));
+
+vi.mock('../Toolbar/fragments/AutomaticMeetingProtocolSettingsDialog', () => ({
+  default: ({ open }: { open: boolean }) =>
+    open ? <div data-testid="automatic-meeting-protocol-settings-dialog" /> : null,
 }));
 
 const renderMenu = (initialState = {}) => {
@@ -99,6 +109,21 @@ describe('MoreMenu', () => {
 
     expect(screen.getByRole('menuitem', { name: 'more-menu-enable-microphones' })).toBeInTheDocument();
   });
+
+  it('opens the automatic meeting protocol settings dialog when starting automatic meeting protocol', async () => {
+    const user = userEvent.setup();
+    renderMenu({
+      user: { role: Role.Moderator },
+      config: {
+        provider: { accountManagementUrl: 'https://account.opentalk.eu' },
+        enabledModules: { [BackendModules.Transcription]: [TranscriptionFeatures.Transcription] },
+      },
+    });
+    expect(screen.queryByTestId('automatic-meeting-protocol-settings-dialog')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('menuitem', { name: 'more-menu-start-automatic-meeting-protocol' }));
+    expect(screen.getByTestId('automatic-meeting-protocol-settings-dialog')).toBeInTheDocument();
+  });
+
   it('keeps start recording disabled when the menu is reopened while awaiting server status', async () => {
     const user = userEvent.setup();
     const { store } = configureStore({

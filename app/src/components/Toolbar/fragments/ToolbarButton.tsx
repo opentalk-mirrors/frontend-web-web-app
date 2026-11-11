@@ -6,7 +6,7 @@ import { MouseEvent, ReactNode } from 'react';
 
 import { ArrowDownIcon } from '../../../assets/icons';
 import { useAppSelector } from '../../../hooks';
-import { selectFullscreenActive, selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
+import { selectFullscreenContainer } from '../../../store/slices/fullscreen/slice';
 
 interface IButtonProps {
   isActive?: boolean;
@@ -185,9 +185,7 @@ const ToolbarButton = ({
   isLobby,
   ...props
 }: ToolbarButtonProps) => {
-  const tooltipContainer = useAppSelector((state) =>
-    selectFullscreenActive(state) ? selectFullscreenElement(state) : undefined
-  );
+  const tooltipContainer = useAppSelector(selectFullscreenContainer);
 
   return (
     <ButtonContainer>

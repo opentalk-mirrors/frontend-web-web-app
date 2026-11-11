@@ -11,7 +11,7 @@ import React from 'react';
 
 import { SIDE_PANEL_OFFSET_VARIABLE } from '../../../../constants';
 import { useAppSelector } from '../../../../hooks/useCustomRedux';
-import { selectFullscreenActive, selectFullscreenElement } from '../../../../store/slices/fullscreen/slice';
+import { selectFullscreenContainer } from '../../../../store/slices/fullscreen/slice';
 import { CloseButton } from '../CloseButton';
 import { notifications } from '../utils';
 import { getNotistackComponents } from '../variations';
@@ -48,8 +48,7 @@ const getSnackbarRootClass = () => ({
 });
 
 const SnackbarProvider = (props: SnackbarProviderProps) => {
-  const fullscreenElement = useAppSelector(selectFullscreenElement);
-  const isFullscreenActive = useAppSelector(selectFullscreenActive);
+  const fullscreenContainer = useAppSelector(selectFullscreenContainer);
   const onClickDismiss = (key: SnackbarKey) => {
     notifications.close(key);
   };
@@ -83,7 +82,7 @@ const SnackbarProvider = (props: SnackbarProviderProps) => {
         }}
         action={(snackbarKey: SnackbarKey) => <StyledCloseButton onClick={() => onClickDismiss(snackbarKey)} />}
         Components={{ ...getNotistackComponents(Components) }}
-        domRoot={isFullscreenActive && fullscreenElement ? fullscreenElement : domRoot}
+        domRoot={fullscreenContainer ?? domRoot}
       >
         {children}
       </SnackbarProviderDefault>

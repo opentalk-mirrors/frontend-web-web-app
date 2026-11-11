@@ -15,7 +15,7 @@ import {
 } from '@opentalk/rest-api-rtk-query';
 
 import {
-  MeetingProtocolMode,
+  AutomaticMeetingProtocolMode,
   TranscriptionLanguageKey,
   TranscriptionStatus,
 } from '../../api/types/incoming/transcription';
@@ -128,10 +128,10 @@ interface TranscriptionJoinState {
   status: TranscriptionStatus;
   language?: TranscriptionLanguageKey;
   liveTranscription: boolean;
-  meetingProtocol?: MeetingProtocolJoinState;
+  automaticMeetingProtocol?: AutomaticMeetingProtocolJoinState;
 }
 
-interface MeetingProtocolJoinState extends MeetingProtocolMode {
+interface AutomaticMeetingProtocolJoinState extends AutomaticMeetingProtocolMode {
   consents: boolean;
 }
 

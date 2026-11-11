@@ -6,16 +6,13 @@ import { useTranslation } from 'react-i18next';
 
 import { confirmPresence } from '../../../api/types/outgoing/trainingParticipationReport';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { selectFullscreenActive, selectFullscreenElement } from '../../../store/slices/fullscreen/slice';
+import { selectFullscreenContainer } from '../../../store/slices/fullscreen/slice';
 import { presenceConfirmationDone, selectIsParticipationConfirmationActive } from '../../../store/slices/roomSlice';
 
 export const ParticipationConfirmationDialog = () => {
   const confirmationCheckpointOngoing = useAppSelector(selectIsParticipationConfirmationActive);
-  const isFullscreenActive = useAppSelector(selectFullscreenActive);
-  const fullscreenElement = useAppSelector(selectFullscreenElement);
+  const container = useAppSelector(selectFullscreenContainer);
   const dispatch = useAppDispatch();
-
-  const container = isFullscreenActive && fullscreenElement ? fullscreenElement : undefined;
   const { t } = useTranslation();
 
   const handleConfirm = () => {

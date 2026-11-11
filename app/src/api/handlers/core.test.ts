@@ -173,19 +173,60 @@ describe('handleRoomServerCoreMessage', () => {
       );
     });
 
-    it('does not offer subtitles when the transcription service only runs for the meeting protocol', () => {
+    it('does not offer subtitles when the transcription service only runs for the automatic meeting protocol', () => {
       const dispatch = vi.fn();
       const moduleData = {
         ...baseModuleData,
         transcription: {
           status: TranscriptionStatus.Running,
           liveTranscription: false,
-          meetingProtocol: { pseudonymous: false, paused: false, consents: false },
+          automaticMeetingProtocol: { pseudonymous: false, paused: false, consents: false },
         },
       } as unknown as ModuleData;
       handleRoomServerCoreMessage(dispatch, makeJoinSuccess(moduleData), timestamp, createState());
 
       expect(notifications.showTranscriptionEnabledNotification).not.toHaveBeenCalled();
+    });
+
+    it('notifies that the automatic meeting protocol is running when joining', () => {
+      const dispatch = vi.fn();
+      const moduleData = {
+        ...baseModuleData,
+        transcription: {
+          status: TranscriptionStatus.Running,
+          liveTranscription: false,
+          automaticMeetingProtocol: { pseudonymous: false, paused: false, consents: false },
+        },
+      } as unknown as ModuleData;
+      handleRoomServerCoreMessage(dispatch, makeJoinSuccess(moduleData), timestamp, createState());
+
+      expect(notifications.info).toHaveBeenCalledWith('automatic-meeting-protocol-notification-started');
+    });
+
+    it('does not notify about the automatic meeting protocol when only live transcription is running', () => {
+      const dispatch = vi.fn();
+      const moduleData = {
+        ...baseModuleData,
+        transcription: { status: TranscriptionStatus.Running, liveTranscription: true },
+      } as unknown as ModuleData;
+      handleRoomServerCoreMessage(dispatch, makeJoinSuccess(moduleData), timestamp, createState());
+
+      expect(notifications.info).not.toHaveBeenCalledWith('automatic-meeting-protocol-notification-started');
+    });
+
+    it('does not notify about the automatic meeting protocol when the service is not running', () => {
+      const dispatch = vi.fn();
+      const moduleData = {
+        ...baseModuleData,
+        transcription: {
+          status: TranscriptionStatus.Requested,
+          liveTranscription: false,
+          automaticMeetingProtocol: { pseudonymous: false, paused: false, consents: false },
+        },
+      } as unknown as ModuleData;
+      handleRoomServerCoreMessage(dispatch, makeJoinSuccess(moduleData), timestamp, createState());
+
+      expect(notifications.info).not.toHaveBeenCalledWith('automatic-meeting-protocol-notification-started');
     });
   });
 

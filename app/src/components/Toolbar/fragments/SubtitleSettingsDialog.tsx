@@ -9,8 +9,6 @@ import {
   DialogContent,
   DialogProps,
   Divider,
-  MenuItem,
-  Select,
   Stack,
   styled,
   Typography,
@@ -18,7 +16,7 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { TranscriptionLanguage, TranscriptionLanguageKey } from '../../../api/types/incoming/transcription';
+import { TranscriptionLanguageKey } from '../../../api/types/incoming/transcription';
 import {
   changeTranscriptionLanguageSignal,
   sendStartTranscriptionSignal,
@@ -28,18 +26,15 @@ import { Icon_cc_showIcon } from '../../../assets/icons';
 import { CommonSwitch } from '../../../commonComponents';
 import CommonDialogHeader from '../../../commonComponents/CommonDialogComponents/CommonDialogHeader';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { selectFullscreenContainer } from '../../../store/slices/fullscreen/slice';
 import {
   hideTranscriptionSettings,
   saveTranscriptionLanguageToLocalStorage,
+  selectIsAutomaticMeetingProtocolRunning,
   selectIsLiveTranscriptionRunning,
   selectTranscriptionLanguage,
 } from '../../../store/slices/transcriptionSlice';
-
-const LanguageSelectLabel = styled(Typography)<{ component?: string; htmlFor?: string }>(({ theme }) => ({
-  fontSize: theme.typography.pxToRem(14),
-  display: 'block',
-  marginBottom: theme.spacing(0.5),
-}));
+import TranscriptionLanguageSelect from './TranscriptionLanguageSelect';
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialog-paper': { width: 440, maxWidth: 'calc(100% - 64px)' },
@@ -60,45 +55,41 @@ const LanguageSelectContainer = styled(Box)(({ theme }) => ({
 const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
   const { t } = useTranslation();
   const transcriptionLanguage = useAppSelector(selectTranscriptionLanguage);
+  const container = useAppSelector(selectFullscreenContainer);
   const isLiveTranscriptionRunning = useAppSelector(selectIsLiveTranscriptionRunning);
-  const [shouldEnableLiveTranscription, setShouldEnableLiveTranscription] =
-    useState<boolean>(isLiveTranscriptionRunning);
-  const [desiredTranscriptionLanguage, setDesiredTranscriptionLanguage] = useState<TranscriptionLanguageKey | ''>(
-    transcriptionLanguage || ''
+  const isAutomaticMeetingProtocolRunning = useAppSelector(selectIsAutomaticMeetingProtocolRunning);
+  // Stores the switch state made by user before user submitted
+  // `null` means, the user has not made the choice yet
+  const [isLiveTranscriptionDesiredByUser, setIsLiveTranscriptionDesiredByUser] = useState<boolean | null>(null);
+  // `null` means, the user has not picked language yet
+  const [desiredTranscriptionLanguage, setDesiredTranscriptionLanguage] = useState<TranscriptionLanguageKey | null>(
+    null
   );
   const dispatch = useAppDispatch();
-  const hasLanguageChanged = desiredTranscriptionLanguage && desiredTranscriptionLanguage !== transcriptionLanguage;
+  // If user hasn't made choice yet, show the real state of the service
+  const shouldEnableLiveTranscription = isLiveTranscriptionDesiredByUser ?? isLiveTranscriptionRunning;
+  const selectedLanguage = isAutomaticMeetingProtocolRunning
+    ? transcriptionLanguage
+    : (desiredTranscriptionLanguage ?? transcriptionLanguage);
+  const hasLanguageChanged = selectedLanguage && selectedLanguage !== transcriptionLanguage;
   const hasStatusChanged = shouldEnableLiveTranscription !== isLiveTranscriptionRunning;
 
-  const resetDraftState = () => {
-    setShouldEnableLiveTranscription(isLiveTranscriptionRunning);
-    setDesiredTranscriptionLanguage(transcriptionLanguage || '');
-  };
-
   const closeDialog = () => {
+    // The dialog keeps always mounted in the menu
+    // therefore we need to reset user choice on close
+    setIsLiveTranscriptionDesiredByUser(null);
+    setDesiredTranscriptionLanguage(null);
     dispatch(hideTranscriptionSettings());
     props.onClose?.({}, 'escapeKeyDown');
   };
 
-  const onClose = () => {
-    resetDraftState();
-    closeDialog();
-  };
-
-  const onLanguageSelectChange = (selectedLanguage: TranscriptionLanguageKey) => {
-    if (selectedLanguage === desiredTranscriptionLanguage) {
-      return;
-    }
-    setDesiredTranscriptionLanguage(selectedLanguage);
-  };
-
   const submit = () => {
     if (hasLanguageChanged) {
-      saveTranscriptionLanguageToLocalStorage(desiredTranscriptionLanguage);
+      saveTranscriptionLanguageToLocalStorage(selectedLanguage);
       // check if the desired status is the same as the current status, if so, just close the dialog
       if (!hasStatusChanged) {
         // check if the language has changed, if so, send a change language signal
-        dispatch(changeTranscriptionLanguageSignal.action({ language: desiredTranscriptionLanguage }));
+        dispatch(changeTranscriptionLanguageSignal.action({ language: selectedLanguage }));
       }
     }
     if (!hasStatusChanged) {
@@ -108,7 +99,7 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
     if (shouldEnableLiveTranscription) {
       dispatch(
         sendStartTranscriptionSignal.action({
-          language: desiredTranscriptionLanguage.toString(),
+          language: selectedLanguage.toString(),
         })
       );
     } else {
@@ -118,8 +109,12 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
   };
 
   return (
-    <StyledDialog {...props} onClose={onClose}>
-      <CommonDialogHeader closeMenu={onClose} titleKey="subtitle-settings-dialog-title" icon={<Icon_cc_showIcon />} />
+    <StyledDialog container={container} {...props} onClose={closeDialog}>
+      <CommonDialogHeader
+        closeMenu={closeDialog}
+        titleKey="subtitle-settings-dialog-title"
+        icon={<Icon_cc_showIcon />}
+      />
       <Divider aria-hidden={true} sx={{ margin: 0 }} />
       <DialogContent>
         <Stack>
@@ -130,7 +125,7 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
             <CommonSwitch
               id="enable-subtitles-switch"
               checked={shouldEnableLiveTranscription}
-              onChange={() => setShouldEnableLiveTranscription((prev) => !prev)}
+              onChange={() => setIsLiveTranscriptionDesiredByUser(!shouldEnableLiveTranscription)}
             />
             <Typography variant="caption" sx={{ gridColumn: 1 }}>
               {t('subtitle-settings-enable-subtitles-hint')}
@@ -138,40 +133,25 @@ const SubtitleSettingsDialog = (props: Omit<DialogProps, 'children'>) => {
           </EnableSubtitlesSwitchContainer>
           {shouldEnableLiveTranscription && (
             <LanguageSelectContainer>
-              <LanguageSelectLabel component="label" htmlFor="input-language-select">
-                {t('subtitle-settings-input-language')}
-              </LanguageSelectLabel>
-              <Select
-                renderValue={(lang: TranscriptionLanguageKey | '') => {
-                  if (!lang) {
-                    return <Typography variant="body2">{t('subtitle-settings-input-language-placeholder')}</Typography>;
-                  }
-                  return TranscriptionLanguage[lang];
-                }}
-                displayEmpty
-                inputProps={{ id: 'input-language-select' }}
-                value={desiredTranscriptionLanguage}
-                onChange={(e) => onLanguageSelectChange(e.target.value as TranscriptionLanguageKey)}
-              >
-                {Object.keys(TranscriptionLanguage).map((key) => (
-                  <MenuItem key={key} value={key.toString()}>
-                    {TranscriptionLanguage[key as TranscriptionLanguageKey]}
-                  </MenuItem>
-                ))}
-              </Select>
+              <TranscriptionLanguageSelect
+                value={selectedLanguage}
+                onChange={setDesiredTranscriptionLanguage}
+                disabled={isAutomaticMeetingProtocolRunning}
+                hint={isAutomaticMeetingProtocolRunning ? t('subtitle-settings-language-locked-hint') : undefined}
+              />
             </LanguageSelectContainer>
           )}
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button type="button" color="primary" onClick={onClose}>
+        <Button type="button" color="primary" onClick={closeDialog}>
           {t('global-cancel')}
         </Button>
         <Button
           type="button"
           color="secondary"
           onClick={submit}
-          disabled={shouldEnableLiveTranscription && !desiredTranscriptionLanguage}
+          disabled={shouldEnableLiveTranscription && !selectedLanguage}
         >
           {t('global-save')}
         </Button>

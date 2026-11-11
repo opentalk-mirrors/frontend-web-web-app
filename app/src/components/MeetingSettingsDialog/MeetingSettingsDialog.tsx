@@ -5,7 +5,7 @@ import { Dialog } from '@mui/material';
 
 import { useAppSelector } from '../../hooks';
 import { useIsMobile } from '../../hooks/useMediaQuery';
-import { selectFullscreenActive, selectFullscreenElement } from '../../store/slices/fullscreen/slice';
+import { selectFullscreenContainer } from '../../store/slices/fullscreen/slice';
 import DesktopDialogContent from './fragments/DesktopDialogContent';
 import MobileDialogContent from './fragments/MobileDialogContent';
 import { MeetingSettings } from './fragments/settingPanels';
@@ -21,11 +21,7 @@ interface MeetingSettingsProps {
 const MeetingSettingsDialog = (props: MeetingSettingsProps) => {
   const { open, onClose, setting = DEFAULT_SETTING } = props;
   const isMobile = useIsMobile();
-  const isFullscreenActive = useAppSelector(selectFullscreenActive);
-  const fullscreenElement = useAppSelector(selectFullscreenElement);
-
-  // In fullscreen mode we need to insert the dialog into the fullscreen element to make it visible
-  const container = isFullscreenActive ? fullscreenElement : document.body;
+  const container = useAppSelector(selectFullscreenContainer);
 
   return (
     <Dialog container={container} onClose={onClose} open={open} maxWidth="md" fullWidth>

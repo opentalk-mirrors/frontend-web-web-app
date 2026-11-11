@@ -56,3 +56,5 @@ export const fullscreenActions = fullscreenSlice.actions;
 export const selectFullscreenElement = (state: { fullscreen: FullscreenState }) => state.fullscreen.element;
 export const selectFullscreenSupported = (state: { fullscreen: FullscreenState }) => state.fullscreen.supported;
 export const selectFullscreenActive = (state: { fullscreen: FullscreenState }) => state.fullscreen.active;
+export const selectFullscreenContainer = (state: { fullscreen: FullscreenState }) =>
+  state.fullscreen.active ? state.fullscreen.element : undefined;

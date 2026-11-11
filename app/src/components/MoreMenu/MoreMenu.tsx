@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { Box, MenuList, Divider as MuiDivider, Popover, Stack, Typography, styled } from '@mui/material';
 import { truncate } from 'es-toolkit/compat';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ParticipantAvatar } from '../../commonComponents';
@@ -11,8 +12,10 @@ import { selectFullscreenElement } from '../../store/slices/fullscreen/slice';
 import { hideTranscriptionSettings, selectShowSubtitlesSettings } from '../../store/slices/transcriptionSlice';
 import { selectAvatarUrl, selectDisplayName, selectIsModerator } from '../../store/slices/userSlice';
 import { isDevMode } from '../../utils/devMode';
+import AutomaticMeetingProtocolSettingsDialog from '../Toolbar/fragments/AutomaticMeetingProtocolSettingsDialog';
 import SubtitleSettingsDialog from '../Toolbar/fragments/SubtitleSettingsDialog';
 import AttendanceReportMenuItem from './fragments/AttendanceReportMenuItem';
+import AutomaticMeetingProtocolMenuItem from './fragments/AutomaticMeetingProtocolMenuItem';
 import DeleteGlobalChatMenuItem from './fragments/DeleteGlobalChatMenuItem';
 import DevMenuItems from './fragments/DevMenuItems';
 import RecordingMenuItem from './fragments/RecordingMenuItem';
@@ -71,6 +74,7 @@ const MoreMenu = ({ anchorEl, onClose, open }: MoreMenuProps) => {
   const displayName = useAppSelector(selectDisplayName);
   const avatarUrl = useAppSelector(selectAvatarUrl);
   const fullScreenElement = useAppSelector(selectFullscreenElement);
+  const [showAutomaticMeetingProtocolSettings, setShowAutomaticMeetingProtocolSettings] = useState(false);
 
   return (
     <>
@@ -123,6 +127,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: MoreMenuProps) => {
               <ToggleReactionRestrictionsMenuItem onClose={onClose} />
               <AttendanceReportMenuItem onClose={onClose} />
               <RecordingMenuItem onClose={onClose} />
+              <AutomaticMeetingProtocolMenuItem
+                onClose={onClose}
+                onStart={() => setShowAutomaticMeetingProtocolSettings(true)}
+              />
               <SubtitleSettingsMenuItem onClose={onClose} />
               <StreamingControlMenuItem onClose={onClose} />
             </>
@@ -135,6 +143,10 @@ const MoreMenu = ({ anchorEl, onClose, open }: MoreMenuProps) => {
         </MenuList>
       </MenuPopover>
       <SubtitleSettingsDialog open={showSubtitleSettings} onClose={() => hideTranscriptionSettings()} />
+      <AutomaticMeetingProtocolSettingsDialog
+        open={showAutomaticMeetingProtocolSettings}
+        onClose={() => setShowAutomaticMeetingProtocolSettings(false)}
+      />
     </>
   );
 };

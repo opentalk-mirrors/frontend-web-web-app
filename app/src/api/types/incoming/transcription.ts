@@ -26,29 +26,29 @@ export interface TranscriptionSegment {
   text: string;
 }
 
-export interface MeetingProtocolMode {
+export interface AutomaticMeetingProtocolMode {
   pseudonymous: boolean;
   paused: boolean;
 }
 
 export interface TranscriptionModes {
   liveTranscription: boolean;
-  meetingProtocol?: MeetingProtocolMode;
+  automaticMeetingProtocol?: AutomaticMeetingProtocolMode;
 }
 
 interface TranscriptionModesUpdated extends TranscriptionModes {
   message: 'modes_updated';
 }
 
-interface MeetingProtocolPdfCreated {
+interface TranscriptionPdfCreated {
   message: 'pdf_created';
   filename: string;
   assetId: AssetId;
   quota: { total?: number; used: number };
 }
 
-interface MeetingProtocolConsentUpdated {
-  message: 'meeting_protocol_consent_updated';
+interface AutomaticMeetingProtocolConsentUpdated {
+  message: 'automatic_meeting_protocol_consent_updated';
   participant: ParticipantId;
   consents: boolean;
 }
@@ -60,15 +60,15 @@ export enum TranscriptionError {
   AlreadyActive = 'already_active',
   NotActive = 'not_active',
   ServiceDisconnected = 'service_disconnected',
-  GenerateProtocol = 'generate_protocol',
+  GenerateAutomaticMeetingProtocol = 'generate_automatic_meeting_protocol',
 }
 
 export type TranscriptionMessage =
   | TranscriptionStateUpdated
   | TranscriptionModesUpdated
   | TranscriptionSegment
-  | MeetingProtocolPdfCreated
-  | MeetingProtocolConsentUpdated
+  | TranscriptionPdfCreated
+  | AutomaticMeetingProtocolConsentUpdated
   | ErrorStruct<TranscriptionError>;
 
 type Transcription = NamespacedIncoming<TranscriptionMessage, 'transcription'>;

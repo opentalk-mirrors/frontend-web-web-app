@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { useLocalParticipant } from '@livekit/components-react';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ConnectionQuality } from 'livekit-client';
 import { Mock } from 'vitest';
 
+import { TranscriptionStatus } from '../../../api/types/incoming/transcription';
 import { getLocationProtocol } from '../../../utils/apiUtils';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MeetingUtilsSection from './MeetingUtilsSection';
@@ -87,5 +89,64 @@ describe('MeetingUtilsSection rendering logic', () => {
     const { store } = configureStore();
     renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
     expect(screen.queryByText('SecurityBadge')).not.toBeInTheDocument();
+  });
+
+  it('should render the automatic meeting protocol icon when the automatic meeting protocol is running', () => {
+    const { store } = configureStore({
+      initialState: {
+        transcription: {
+          status: TranscriptionStatus.Running,
+          liveTranscription: false,
+          automaticMeetingProtocol: { pseudonymous: false, paused: false },
+        },
+      },
+    });
+    renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
+    expect(screen.getByLabelText('automatic-meeting-protocol-active')).toBeInTheDocument();
+  });
+
+  it('should show a tooltip on the automatic meeting protocol icon', async () => {
+    const user = userEvent.setup();
+    const { store } = configureStore({
+      initialState: {
+        transcription: {
+          status: TranscriptionStatus.Running,
+          liveTranscription: false,
+          automaticMeetingProtocol: { pseudonymous: false, paused: false },
+        },
+      },
+    });
+    renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
+
+    await user.hover(screen.getByLabelText('automatic-meeting-protocol-active'));
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('automatic-meeting-protocol-active');
+  });
+
+  it('should not render the automatic meeting protocol icon when only live transcription is running', () => {
+    const { store } = configureStore({
+      initialState: {
+        transcription: {
+          status: TranscriptionStatus.Running,
+          liveTranscription: true,
+          automaticMeetingProtocol: null,
+        },
+      },
+    });
+    renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
+    expect(screen.queryByLabelText('automatic-meeting-protocol-active')).not.toBeInTheDocument();
+  });
+
+  it('should not render the automatic meeting protocol icon while the automatic meeting protocol is only requested', () => {
+    const { store } = configureStore({
+      initialState: {
+        transcription: {
+          status: TranscriptionStatus.Requested,
+          liveTranscription: false,
+          automaticMeetingProtocol: { pseudonymous: false, paused: false },
+        },
+      },
+    });
+    renderWithProviders(<MeetingUtilsSection />, { store, provider: { mui: true } });
+    expect(screen.queryByLabelText('automatic-meeting-protocol-active')).not.toBeInTheDocument();
   });
 });

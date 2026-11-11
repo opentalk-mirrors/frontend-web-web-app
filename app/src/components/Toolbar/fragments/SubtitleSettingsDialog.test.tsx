@@ -7,6 +7,12 @@ import userEvent from '@testing-library/user-event';
 import { TranscriptionLanguageKey, TranscriptionStatus } from '../../../api/types/incoming/transcription';
 import { TranscriptionLanguage } from '../../../api/types/incoming/transcription';
 import * as reduxHooks from '../../../hooks/useCustomRedux';
+import {
+  setTranscriptionLanguage,
+  transcriptionModesUpdated,
+  TranscriptionState,
+  transcriptionStatusUpdated,
+} from '../../../store/slices/transcriptionSlice';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import SubtitleSettingsDialog from './SubtitleSettingsDialog';
 
@@ -18,6 +24,7 @@ const buildInitialState = (language: TranscriptionLanguageKey | null = null) => 
   transcription: {
     status: TranscriptionStatus.Inactive,
     liveTranscription: false,
+    automaticMeetingProtocol: null,
     showSubtitles: false,
     language,
     segments: [],
@@ -124,8 +131,12 @@ describe('SubtitleSettingsDialog', () => {
 
     const saveButton = screen.getByRole('button', { name: 'global-save' });
     await user.click(saveButton);
-
     rerender(<SubtitleSettingsDialog open={false} />);
+
+    // simulate the backend confirming the started live transcription
+    store.dispatch(setTranscriptionLanguage('de'));
+    store.dispatch(transcriptionStatusUpdated(TranscriptionStatus.Running));
+    store.dispatch(transcriptionModesUpdated({ liveTranscription: true }));
     rerender(<SubtitleSettingsDialog open />);
 
     expect(screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' })).toBeChecked();
@@ -138,6 +149,7 @@ describe('SubtitleSettingsDialog', () => {
         transcription: {
           status: TranscriptionStatus.Running,
           liveTranscription: true,
+          automaticMeetingProtocol: null,
           showSubtitles: false,
           language: 'en',
           segments: [],
@@ -168,13 +180,13 @@ describe('SubtitleSettingsDialog', () => {
     );
   });
 
-  it('starts live transcription when the service only runs for the meeting protocol', async () => {
+  it('starts live transcription when the service only runs for the automatic meeting protocol', async () => {
     const { store } = configureStore({
       initialState: {
         transcription: {
           status: TranscriptionStatus.Running,
           liveTranscription: false,
-          meetingProtocol: { pseudonymous: false, paused: false },
+          automaticMeetingProtocol: { pseudonymous: false, paused: false },
           showSubtitles: false,
           language: 'en',
           segments: [],
@@ -210,5 +222,75 @@ describe('SubtitleSettingsDialog', () => {
         payload: expect.objectContaining({ language: 'en' }),
       })
     );
+  });
+
+  describe('language interlocking with the automatic meeting protocol', () => {
+    const createRunningTranscriptionState = (overrides: Partial<TranscriptionState>) => ({
+      transcription: {
+        status: TranscriptionStatus.Running,
+        liveTranscription: false,
+        automaticMeetingProtocol: null,
+        showSubtitles: false,
+        language: 'en' as TranscriptionLanguageKey,
+        segments: [],
+        ...overrides,
+      },
+    });
+    const automaticMeetingProtocolRunning: Partial<TranscriptionState> = {
+      automaticMeetingProtocol: { pseudonymous: false, paused: false },
+    };
+    const liveTranscriptionRunning: Partial<TranscriptionState> = { liveTranscription: true };
+
+    it('locks the language select if the automatic meeting protocol is running', async () => {
+      const { store } = configureStore({
+        initialState: createRunningTranscriptionState(automaticMeetingProtocolRunning),
+      });
+      renderWithProviders(<SubtitleSettingsDialog open />, { store, provider: { mui: true } });
+      const user = userEvent.setup();
+
+      await user.click(screen.getByRole('switch', { name: 'subtitle-settings-enable-subtitles' }));
+
+      const languageSelect = screen.getByRole('combobox');
+      expect(languageSelect).toHaveAttribute('aria-disabled', 'true');
+      expect(languageSelect).toHaveTextContent('English');
+      expect(languageSelect).toHaveAccessibleDescription('subtitle-settings-language-locked-hint');
+    });
+
+    it('shows the current transcription language after the automatic meeting protocol stops', async () => {
+      const { store } = configureStore({ initialState: buildInitialState('de') });
+      const { rerender } = renderWithProviders(<SubtitleSettingsDialog open />, { store, provider: { mui: true } });
+      const user = userEvent.setup();
+
+      store.dispatch(setTranscriptionLanguage('en'));
+      store.dispatch(transcriptionStatusUpdated(TranscriptionStatus.Running));
+      store.dispatch(
+        transcriptionModesUpdated({
+          liveTranscription: true,
+          automaticMeetingProtocol: { pseudonymous: false, paused: false },
+        })
+      );
+      rerender(<SubtitleSettingsDialog open={false} />);
+      rerender(<SubtitleSettingsDialog open />);
+      expect(screen.getByRole('combobox')).toHaveTextContent('English');
+
+      await user.click(screen.getByRole('button', { name: 'global-cancel' }));
+      rerender(<SubtitleSettingsDialog open={false} />);
+
+      store.dispatch(transcriptionModesUpdated({ liveTranscription: true }));
+      rerender(<SubtitleSettingsDialog open />);
+
+      const languageSelect = screen.getByRole('combobox');
+      expect(languageSelect).not.toHaveAttribute('aria-disabled');
+      expect(languageSelect).toHaveTextContent('English');
+    });
+
+    it('does not lock the language select when only live transcription is running', () => {
+      const { store } = configureStore({ initialState: createRunningTranscriptionState(liveTranscriptionRunning) });
+      renderWithProviders(<SubtitleSettingsDialog open />, { store, provider: { mui: true } });
+
+      const languageSelect = screen.getByRole('combobox');
+      expect(languageSelect).not.toHaveAttribute('aria-disabled');
+      expect(screen.queryByText('subtitle-settings-language-locked-hint')).not.toBeInTheDocument();
+    });
   });
 });

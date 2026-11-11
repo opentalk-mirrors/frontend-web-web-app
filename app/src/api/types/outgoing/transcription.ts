@@ -16,6 +16,17 @@ export interface StopTranscription {
   action: 'stop';
 }
 
+export interface StartAutomaticMeetingProtocol {
+  action: 'start_automatic_meeting_protocol';
+  language?: TranscriptionLanguageKey;
+  timezone?: string;
+  pseudonymous: boolean;
+}
+
+export interface StopAutomaticMeetingProtocol {
+  action: 'stop_automatic_meeting_protocol';
+}
+
 export interface ChangeTranscriptionLanguage {
   action: 'change_language';
   language: TranscriptionLanguageKey;
@@ -45,12 +56,26 @@ export interface SendTranscriptionEvent {
   event: TranscriptionEvent;
 }
 
-export type Action = StartTranscription | StopTranscription | SendTranscriptionEvent | ChangeTranscriptionLanguage;
+export type Action =
+  | StartTranscription
+  | StopTranscription
+  | StartAutomaticMeetingProtocol
+  | StopAutomaticMeetingProtocol
+  | SendTranscriptionEvent
+  | ChangeTranscriptionLanguage;
 
 type Transcription = Namespaced<Action, 'transcription'>;
 
 export const sendStartTranscriptionSignal = createSignalingApiCall<StartTranscription>('transcription', 'start');
 export const sendStopTranscriptionSignal = createSignalingApiCall<StopTranscription>('transcription', 'stop');
+export const sendStartAutomaticMeetingProtocolSignal = createSignalingApiCall<StartAutomaticMeetingProtocol>(
+  'transcription',
+  'start_automatic_meeting_protocol'
+);
+export const sendStopAutomaticMeetingProtocolSignal = createSignalingApiCall<StopAutomaticMeetingProtocol>(
+  'transcription',
+  'stop_automatic_meeting_protocol'
+);
 const sendTranscriptionEventSignal = createSignalingApiCall<SendTranscriptionEvent>(
   'transcription',
   'transcription_service_event'
@@ -67,6 +92,12 @@ export const handler = createModule<RootState>((builder) => {
     })
     .addCase(sendStopTranscriptionSignal.action, (_state, action) => {
       sendMessage(sendStopTranscriptionSignal(action.payload));
+    })
+    .addCase(sendStartAutomaticMeetingProtocolSignal.action, (_state, action) => {
+      sendMessage(sendStartAutomaticMeetingProtocolSignal(action.payload));
+    })
+    .addCase(sendStopAutomaticMeetingProtocolSignal.action, (_state, action) => {
+      sendMessage(sendStopAutomaticMeetingProtocolSignal(action.payload));
     })
     .addCase(sendTranscriptionEventSignal.action, (_state, action) => {
       sendMessage(sendTranscriptionEventSignal(action.payload));

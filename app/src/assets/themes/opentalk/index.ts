@@ -679,7 +679,12 @@ export function createOpenTalkTheme(mode: PaletteMode, basePalette: ThemeBasePal
             variants: [
               {
                 props: { variant: 'outlined' },
-                style: { '& .MuiSelect-icon': { fill: theme.palette.primary.contrastText } },
+                style: {
+                  '& .MuiSelect-icon': { fill: theme.palette.primary.contrastText },
+                  '&.Mui-disabled': {
+                    '& .MuiSelect-select': { WebkitTextFillColor: theme.palette.primary.contrastText, opacity: 0.7 },
+                  },
+                },
               },
             ],
           }),
