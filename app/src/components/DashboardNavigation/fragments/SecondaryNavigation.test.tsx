@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 
 import { useIsDesktop } from '../../../hooks/useMediaQuery';
 import { initialState as initialConfigState, type ConfigState } from '../../../store/slices/configSlice';
-import { USER_MANUAL_URL } from '../../../utils/apiUtils';
+import { DEFAULT_USER_MANUAL_URL } from '../../../utils/apiUtils';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import SecondaryNavigation, { type SecondaryRoute } from './SecondaryNavigation';
 
@@ -105,7 +105,18 @@ describe('SecondaryNavigation', () => {
 
     const manualLink = screen.getByRole('link', { name: 'user-manual' });
     expect(manualLink).toHaveAttribute('target', '_blank');
-    expect(manualLink).toHaveAttribute('href', USER_MANUAL_URL);
+    expect(manualLink).toHaveAttribute('href', DEFAULT_USER_MANUAL_URL);
+  });
+
+  it.each([
+    ['', DEFAULT_USER_MANUAL_URL],
+    ['https://example.com/manual', 'https://example.com/manual'],
+  ])('uses the user manual URL configured as %s', (userManualUrl, expectedUrl) => {
+    renderComponent({ configOverrides: { userManualUrl } });
+
+    const manualLink = screen.getByRole('link', { name: 'user-manual' });
+    expect(manualLink).toHaveAttribute('href', expectedUrl);
+    expect(manualLink).toHaveAttribute('target', '_blank');
   });
 
   it('omits external entries without configured urls', () => {

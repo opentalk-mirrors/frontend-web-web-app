@@ -74,20 +74,21 @@ export const fetchWithAuth = async (
 };
 
 /**
- * Open user manual in a new tab
+ * Fallback for the user manual URL when `userManualUrl` is not configured.
  * The URL is language-independent, as the docs server
  * should recognize user language and re-direct appropriately.
- *
  */
-export const USER_MANUAL_URL = 'https://docs.opentalk.eu/user/manual/';
-export const openUserManual = () => {
-  window.open(USER_MANUAL_URL, '_blank');
-};
+export const DEFAULT_USER_MANUAL_URL = 'https://docs.opentalk.eu/user/manual/';
+export const DEFAULT_ACCESSIBILITY_URL_EN = 'https://opentalk.eu/en/accessibility-statement';
+export const DEFAULT_ACCESSIBILITY_URL_DE = 'https://opentalk.eu/de/erklaerung-zur-barrierefreiheit';
 
-export const getAccessibilityUrl = (locale: ReturnType<typeof useLocale>) => {
-  return locale?.code.startsWith('en')
-    ? 'https://opentalk.eu/en/accessibility-statement'
-    : 'https://opentalk.eu/de/erklaerung-zur-barrierefreiheit';
+export const getAccessibilityUrl = (
+  locale: ReturnType<typeof useLocale>,
+  { accessibilityUrlEn, accessibilityUrlDe }: Pick<ConfigState, 'accessibilityUrlEn' | 'accessibilityUrlDe'> = {}
+) => {
+  return locale?.code.startsWith('de')
+    ? accessibilityUrlDe || DEFAULT_ACCESSIBILITY_URL_DE
+    : accessibilityUrlEn || DEFAULT_ACCESSIBILITY_URL_EN;
 };
 
 export const getLocationProtocol = () => window.location.protocol;

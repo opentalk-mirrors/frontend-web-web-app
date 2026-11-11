@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import { USER_MANUAL_URL } from '../../utils/apiUtils';
+import { DEFAULT_USER_MANUAL_URL } from '../../utils/apiUtils';
 import { SupportList } from './SupportList';
 
 vi.mock('react-i18next', () => ({
@@ -12,7 +13,7 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('../../hooks', () => ({
   useAppSelector: (selector: () => unknown) => selector(),
-  useLocale: () => ({ code: 'en' }),
+  useLocale: () => ({ code: mockLocale }),
 }));
 
 vi.mock('../Toolbar/fragments/HotkeyDialog', () => ({
@@ -22,15 +23,28 @@ vi.mock('../Toolbar/fragments/HotkeyDialog', () => ({
 
 const mockSelectIsGlitchtipConfigured = vi.fn();
 const mockSelectContactSupportUrl = vi.fn();
+const mockSelectUserManualUrl = vi.fn();
+const mockSelectAccessibilityUrlEn = vi.fn();
+const mockSelectAccessibilityUrlDe = vi.fn();
+let mockLocale = 'en';
 
 vi.mock('../../store/slices/configSlice', () => ({
   selectIsGlitchtipConfigured: () => mockSelectIsGlitchtipConfigured(),
   selectContactSupportUrl: () => mockSelectContactSupportUrl(),
+  selectUserManualUrl: () => mockSelectUserManualUrl(),
+  selectAccessibilityUrlEn: () => mockSelectAccessibilityUrlEn(),
+  selectAccessibilityUrlDe: () => mockSelectAccessibilityUrlDe(),
 }));
 
 describe('SupportList', () => {
+  beforeEach(() => {
+    mockSelectUserManualUrl.mockReturnValue(DEFAULT_USER_MANUAL_URL);
+    mockLocale = 'en';
+  });
+
   afterEach(() => {
     vi.resetAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should render without crashing', () => {
@@ -97,8 +111,51 @@ describe('SupportList', () => {
     const link = screen.getByRole('link', { name: 'my-meeting-menu-user-manual global-open-new-tab' });
 
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute('href', USER_MANUAL_URL);
+    expect(link).toHaveAttribute('href', DEFAULT_USER_MANUAL_URL);
   });
+  describe.each([false, true])('configured links with menu=%s', (menu) => {
+    it('opens the configured user manual in a new tab', async () => {
+      const user = userEvent.setup();
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const url = 'https://example.com/manual';
+      mockSelectUserManualUrl.mockReturnValue(url);
+      render(<SupportList menu={menu} />);
+
+      const item = screen.getByRole(menu ? 'menuitem' : 'link', {
+        name: 'my-meeting-menu-user-manual global-open-new-tab',
+      });
+      expect(item).toHaveAttribute('href', url);
+      expect(item).toHaveAttribute('target', '_blank');
+
+      await user.click(item);
+
+      expect(open).toHaveBeenCalledExactlyOnceWith(url, '_blank');
+    });
+
+    it.each([
+      ['de', 'https://example.com/accessibility/de'],
+      ['en', 'https://example.com/accessibility/en'],
+      ['fr', 'https://example.com/accessibility/en'],
+    ])('opens the configured accessibility statement for %s in a new tab', async (locale, url) => {
+      const user = userEvent.setup();
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+      mockLocale = locale;
+      mockSelectAccessibilityUrlEn.mockReturnValue('https://example.com/accessibility/en');
+      mockSelectAccessibilityUrlDe.mockReturnValue('https://example.com/accessibility/de');
+      render(<SupportList menu={menu} />);
+
+      const item = screen.getByRole(menu ? 'menuitem' : 'link', {
+        name: 'my-meeting-menu-accessibility global-open-new-tab',
+      });
+      expect(item).toHaveAttribute('href', url);
+      expect(item).toHaveAttribute('target', '_blank');
+
+      await user.click(item);
+
+      expect(open).toHaveBeenCalledExactlyOnceWith(url, '_blank');
+    });
+  });
+
   it('should contain option that expands/collapses the hotkey dialog', () => {
     render(<SupportList />);
     const button = screen.getByRole('button', { name: 'my-meeting-menu-keyboard-hotkeys' });

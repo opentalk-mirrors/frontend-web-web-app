@@ -2,11 +2,27 @@
 //
 // SPDX-License-Identifier: EUPL-1.2
 import { GRID_SIZES } from '../../constants';
+import { DEFAULT_USER_MANUAL_URL } from '../../utils/apiUtils';
 import type { RootState } from '../index';
-import { selectAvailableGridSizes, selectDefaultGridSize } from './configSlice';
+import { type ConfigState, selectAvailableGridSizes, selectDefaultGridSize, selectUserManualUrl } from './configSlice';
 
-const createState = (config: { maxGridTiles?: number; defaultGridSize?: number }): RootState =>
-  ({ config }) as unknown as RootState;
+const createState = (config: Partial<ConfigState>): RootState => ({ config }) as unknown as RootState;
+
+describe('selectUserManualUrl', () => {
+  it('returns the default URL when unset', () => {
+    expect(selectUserManualUrl(createState({}))).toBe(DEFAULT_USER_MANUAL_URL);
+  });
+
+  it('returns the configured URL', () => {
+    const userManualUrl = 'https://example.com/manual';
+
+    expect(selectUserManualUrl(createState({ userManualUrl }))).toBe(userManualUrl);
+  });
+
+  it('returns the default URL for an empty string', () => {
+    expect(selectUserManualUrl(createState({ userManualUrl: '' }))).toBe(DEFAULT_USER_MANUAL_URL);
+  });
+});
 
 describe('config grid size selectors', () => {
   describe('selectAvailableGridSizes', () => {
