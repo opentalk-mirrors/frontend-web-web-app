@@ -20,6 +20,10 @@ export interface ConfirmPresence {
   action: 'confirm_presence';
 }
 
+export interface TriggerPresenceCheck {
+  action: 'trigger_presence_check';
+}
+
 export enum ParticipationLoggingState {
   /**
    * No participation logging is active.
@@ -39,7 +43,7 @@ export type ParticipationLogging = {
   state: ParticipationLoggingState;
 };
 
-export type Action = EnablePresenceLogging | DisablePresenceLogging | ConfirmPresence;
+export type Action = EnablePresenceLogging | DisablePresenceLogging | ConfirmPresence | TriggerPresenceCheck;
 
 type TrainingParticipationReport = Namespaced<Action, 'training_participation_report'>;
 
@@ -55,6 +59,10 @@ export const confirmPresence = createSignalingApiCall<ConfirmPresence>(
   'training_participation_report',
   'confirm_presence'
 );
+export const triggerPresenceCheck = createSignalingApiCall<TriggerPresenceCheck>(
+  'training_participation_report',
+  'trigger_presence_check'
+);
 
 export const handler = createModule<RootState>((builder) => {
   builder.addCase(enablePresenceLogging.action, (_state, { payload }) => {
@@ -65,6 +73,9 @@ export const handler = createModule<RootState>((builder) => {
   });
   builder.addCase(confirmPresence.action, (_state, { payload }) => {
     sendMessage(confirmPresence(payload));
+  });
+  builder.addCase(triggerPresenceCheck.action, (_state, { payload }) => {
+    sendMessage(triggerPresenceCheck(payload));
   });
 });
 

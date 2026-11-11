@@ -5,7 +5,9 @@ import { BackendModules } from '@opentalk/rest-api-rtk-query';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { triggerPresenceCheck } from '../../../api/types/outgoing/trainingParticipationReport';
 import { notifications } from '../../../commonComponents';
+import { trainingParticipationReportEnabled } from '../../../store/slices/moderationSlice';
 import { Role } from '../../../types';
 import { configureStore, renderWithProviders } from '../../../utils/testUtils';
 import MoreMenu from '../MoreMenu';
@@ -51,7 +53,7 @@ describe('DevMenuItems', () => {
     expect(spyNotificationsError).toHaveBeenCalledExactlyOnceWith('Test error context: Error: Test Error');
   });
 
-  it('shows the training participation developer button when the module is enabled', async () => {
+  it('hides the trigger presence check button when presence logging is not enabled', async () => {
     const { store } = configureStore({
       initialState: {
         user: { role: Role.Moderator },
@@ -70,6 +72,33 @@ describe('DevMenuItems', () => {
       provider: { snackbar: true, mui: true },
     });
 
-    expect(await screen.findByText('Test training participation report on')).toBeInTheDocument();
+    expect(await screen.findByText('Show Test Info')).toBeInTheDocument();
+    expect(screen.queryByText('Trigger presence check')).not.toBeInTheDocument();
+  });
+
+  it('dispatches trigger presence check when presence logging is enabled', async () => {
+    const user = userEvent.setup();
+    const { store, dispatchSpy } = configureStore({
+      initialState: {
+        user: { role: Role.Moderator },
+        room: { isOwnedByCurrentUser: true },
+        config: {
+          provider: {
+            accountManagementUrl: 'https://account.opentalk.eu',
+          },
+          enabledModules: { [BackendModules.TrainingParticipationReport]: [] },
+        },
+      },
+    });
+    store.dispatch(trainingParticipationReportEnabled());
+
+    renderWithProviders(<MoreMenu anchorEl={document.createElement('div')} onClose={() => vi.fn()} open />, {
+      store,
+      provider: { snackbar: true, mui: true },
+    });
+
+    await user.click(await screen.findByText('Trigger presence check'));
+
+    expect(dispatchSpy).toHaveBeenCalledWith(triggerPresenceCheck.action());
   });
 });
